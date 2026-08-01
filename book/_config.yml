@@ -25,7 +25,7 @@ latex:
     targetname: book.tex
 
 repository:
-  url: https://github.com/livethisdream/ece444
+  url: https://github.com/livethisdream/ece448
   path_to_book: book
   branch: main
 
