@@ -1,0 +1,20 @@
+# Table of contents for ECE 448.
+# Hand-maintained. One `part:` per module — each module gets its own landing
+# page (moduleXX/index.md) followed by its lessons. Additional modules land as
+# additional `part:` blocks as they're authored.
+
+format: jb-book
+root: intro
+
+parts:
+  - caption: Course Information
+    chapters:
+      - file: syllabus
+      - file: materials
+
+  - caption: Module 1 — Foundations of Detection & Link Budgets
+    chapters:
+      - file: module01/index
+        title: Module 1 overview
+      - file: module01/L01-course-intro/index
+        title: "L1 — Course Introduction"
