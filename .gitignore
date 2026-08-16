@@ -22,3 +22,6 @@ __pycache__/
 
 # Jupyter Book cache (kept out of version control; only useful locally).
 **/.jupyter_cache/
+
+# Nested private ECE448-faculty repo(s), per-semester
+/faculty/
