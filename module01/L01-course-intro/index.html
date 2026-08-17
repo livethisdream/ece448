@@ -1,0 +1,613 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>L1 — Course Introduction &#8212; ECE 448 — Software Defined Radios</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" href="../../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../_static/togglebutton.js"></script>
+    <script src="../../_static/sbt-sidebar-shim.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../../_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="../../_static/sphinx-thebe.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'module01/L01-course-intro/index';</script>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="prev" title="Module 1 — Foundations of Detection &amp; Link Budgets" href="../index.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../intro.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/DFEC-logo.png" class="logo__image only-light" alt="ECE 448 — Software Defined Radios - Home"/>
+    <script>document.write(`<img src="../../_static/DFEC-logo.png" class="logo__image only-dark" alt="ECE 448 — Software Defined Radios - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item">
+<h3><a href="../../intro.html">Table of Contents</a></h3>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Course Information</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../syllabus.html">Syllabus</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../materials.html">Materials</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 1 — Foundations of Detection &amp; Link Budgets</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Module 1 overview</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">L1 — Course Introduction</a></li>
+</ul>
+</div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../../_sources/module01/L01-course-intro/index.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>L1 — Course Introduction</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#learning-outcomes">Learning outcomes</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#welcome-introductions">Welcome &amp; introductions</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#about-your-instructor">About your instructor</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#outside-the-lab">Outside the lab</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-i-teach">How I teach</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#why-this-course-exists">Why this course exists</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-a-software-defined-radio">What is a Software Defined Radio?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#why-this-matters-to-you">Why this matters to you</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#course-roadmap">Course roadmap</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#show-tell-a-real-sdr-live">Show &amp; tell — a real SDR, live</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#preparing-for-l2">Preparing for L2</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="l1-course-introduction">
+<h1>L1 — Course Introduction<a class="headerlink" href="#l1-course-introduction" title="Permalink to this heading">#</a></h1>
+<div class="tip admonition">
+<p class="admonition-title">Slides</p>
+<p><a href="../../slides/01-course-intro.html">View slides →</a> ·
+<a href="../../slides/01-course-intro.md">raw markdown</a></p>
+</div>
+<section id="learning-outcomes">
+<h2>Learning outcomes<a class="headerlink" href="#learning-outcomes" title="Permalink to this heading">#</a></h2>
+<p>By the end of this lesson, you will be able to:</p>
+<ul class="simple">
+<li><p>State in plain language what a Software Defined Radio is and how it differs from a traditional hardware radio.</p></li>
+<li><p>Identify the wireless signals you interact with every day and connect them to the SDR platforms and modulations we’ll cover.</p></li>
+<li><p>Recognize the six modules of ECE 448 and how they build toward a self-defined final project.</p></li>
+<li><p>Identify the SDR platforms and antennas we’ll use across the course (RTL-SDR, HackRF, PlutoSDR, ADALM-PHASER).</p></li>
+</ul>
+</section>
+<section id="welcome-introductions">
+<h2>Welcome &amp; introductions<a class="headerlink" href="#welcome-introductions" title="Permalink to this heading">#</a></h2>
+<p><em>Instructor and student introductions — background, career interests, prior exposure to RF, DSP, or programming.</em></p>
+</section>
+<section id="about-your-instructor">
+<h2>About your instructor<a class="headerlink" href="#about-your-instructor" title="Permalink to this heading">#</a></h2>
+<p><strong>Lt Col Neil Rogers, USAF (Ret.)</strong> — BS from TU; MSEE and PhD from AFIT.
+Currently the <strong>Erdle Chair</strong> at USAFA and a <strong>Field Applications Engineer</strong> at <strong>Analog Devices</strong>.</p>
+<p><img alt="Duty stations across the career" src="../../_images/Duty_stations.png" />
+<em>DF/USAFA · AFRL Directed Energy, Kirtland AFB · NASIC and AFIT (×2), WPAFB · AFLCMC, Hanscom AFB.</em></p>
+<p><img alt="OTS commissioning" src="../../_images/nr-ots.jpg" />
+<em>Officer Training School — where it started.</em></p>
+<p><img alt="Active Denial System 2" src="../../_images/ads2.jpg" />
+<em>Active Denial System 2 at AFRL Directed Energy. Section chief for Active Denial and High-Power Sources.</em></p>
+<p><img alt="379th AEW deployment" src="../../_images/ig-team.JPG" />
+<em>Deployment with the 379th AEW.</em></p>
+<p><img alt="E-8C Joint STARS" src="../../_images/E8C.jpg" />
+<em>E-8C Joint STARS — airborne ground surveillance radar.</em></p>
+<p><img alt="ACUASR UAS Lab at USAFA" src="../../_images/Rogers_UAS_Lab.jpg" />
+<em>Directed the Academy Center for UAS Research (ACUASR) at USAFA through 2025.</em></p>
+<p><img alt="USAFA retirement" src="../../_images/usafa-retirement.jpg" />
+<em>Retirement from active duty — cadets sent me off with “No More Blues.”</em></p>
+<p>Today my day job with <strong>Analog Devices</strong> puts me shoulder-to-shoulder with the team designing the <strong>ADALM-PLUTO</strong> and <strong>ADALM-PHASER</strong> we’ll use in this course.</p>
+<p><img alt="Analog Devices booth" src="../../_images/nr-adi.jpg" />
+<em>Field Applications Engineer at Analog Devices — the folks who make the ADALM-PLUTO and ADALM-PHASER.</em></p>
+</section>
+<section id="outside-the-lab">
+<h2>Outside the lab<a class="headerlink" href="#outside-the-lab" title="Permalink to this heading">#</a></h2>
+<p><img alt="Family in the new house" src="../../_images/fam_newhouse.jpg" />
+<em>Four kids (ages 11, 13, 15, 17). We just moved into a new house — fixing it up is a running hobby.</em></p>
+<p><img alt="CrossFit" src="../../_images/CF_dying.png" />
+<em>CrossFit.</em></p>
+<p><img alt="Guitar at Trace church" src="../../_images/trace_guitar.jpg" />
+<em>Playing guitar with the band at Trace, my church.</em></p>
+</section>
+<section id="how-i-teach">
+<h2>How I teach<a class="headerlink" href="#how-i-teach" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p><strong>We’re learning this together.</strong> I don’t have all the answers, and I’ll say so when I don’t.</p></li>
+<li><p><strong>Mistakes are part of learning.</strong> Make them cheaply, and make them count.</p></li>
+<li><p><strong>Ask questions.</strong> There is no such thing as a dumb question — if something isn’t clicking for you, it’s almost certainly not clicking for someone else.</p></li>
+</ul>
+</section>
+<section id="why-this-course-exists">
+<h2>Why this course exists<a class="headerlink" href="#why-this-course-exists" title="Permalink to this heading">#</a></h2>
+<p>Think about the last hour. How many wireless links did you use? Cellular data, WiFi, Bluetooth earbuds, a car key fob, an RFID badge, GPS on your phone, maybe a garage door opener, a drone downlink, ADS-B chirping overhead every second — modern life is soaked in RF. <strong>Every one of those signals is generated, transmitted, and received the same fundamental way.</strong> Once you know how, you can decode most of them yourself.</p>
+<p><strong>ECE 447</strong> teaches you the <em>theory</em> behind these systems — the math of modulation, coding, and channel capacity. <strong>ECE 448 is where that theory meets a $30 dongle and a laptop.</strong> Instead of drawing block diagrams, you’ll build them in GNURadio. Instead of computing an SNR by hand, you’ll measure it. Instead of trusting that “the receiver demodulates the signal,” you’ll write the receiver.</p>
+</section>
+<section id="what-is-a-software-defined-radio">
+<h2>What is a Software Defined Radio?<a class="headerlink" href="#what-is-a-software-defined-radio" title="Permalink to this heading">#</a></h2>
+<p>Traditionally, a radio is a <strong>stack of specialized analog and digital hardware</strong> — filters, mixers, IF stages, demodulators — all tuned at the factory for one job (broadcast FM, GPS, LTE). Change the job and you change the hardware.</p>
+<p>A <strong>Software Defined Radio</strong> collapses that stack. It puts an <strong>ADC as close to the antenna as physically possible</strong> on receive, and a <strong>DAC as close to the antenna as possible</strong> on transmit. Everything between the ADC/DAC and the user — filtering, mixing, demodulation, decoding — moves into <strong>software</strong> running on a general-purpose CPU or FPGA.</p>
+<p>The consequence: <strong>the same $30 piece of hardware can be an FM radio, an ADS-B receiver, a GPS receiver, a spectrum analyzer, or a tool for reverse-engineering a garage door opener</strong> — depending only on the software you point at it.</p>
+<p>Two ideas we’ll keep coming back to:</p>
+<ol class="arabic simple">
+<li><p><strong>The signal is data.</strong> Once digitized, a radio wave is just a stream of complex numbers. Every DSP tool you know applies.</p></li>
+<li><p><strong>Real radios are messy.</strong> Noise, non-linearity, clock offsets, multipath — the reason SDR programming is hard isn’t the math, it’s the non-ideal hardware and channel.</p></li>
+</ol>
+</section>
+<section id="why-this-matters-to-you">
+<h2>Why this matters to you<a class="headerlink" href="#why-this-matters-to-you" title="Permalink to this heading">#</a></h2>
+<p>SDRs are how modern militaries build agile, reconfigurable RF systems. The same platform in your hands (a Pluto or Phaser) is a smaller sibling of what flies on aircraft, satellites, and deployed EW pods.</p>
+<ul class="simple">
+<li><p><strong>Communications</strong> — tactical radios, data links, SATCOM, Link-16.</p></li>
+<li><p><strong>Electronic warfare</strong> — DF, jamming, protection, cognitive EW.</p></li>
+<li><p><strong>Signals intelligence</strong> — SIGINT collection and analysis.</p></li>
+<li><p><strong>Radar</strong> — coherent radar processing, cognitive/adaptive radar (see ECE 444 for the antenna and beamforming side).</p></li>
+<li><p><strong>Test &amp; measurement</strong> — spectrum monitoring, waveform validation, over-the-air testing.</p></li>
+</ul>
+<p>By the end of this course you will have <strong>built receivers and transmitters for real waveforms</strong> — the same class of software running on the systems you may one day operate, specify, or defend against.</p>
+</section>
+<section id="course-roadmap">
+<h2>Course roadmap<a class="headerlink" href="#course-roadmap" title="Permalink to this heading">#</a></h2>
+<p>Seven modules, forty lessons, culminating in a <strong>self-defined final project</strong>:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head text-center"><p>Module</p></th>
+<th class="head text-left"><p>Focus</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-center"><p>1</p></td>
+<td class="text-left"><p>Foundations of Detection &amp; Link Budgets</p></td>
+</tr>
+<tr class="row-odd"><td class="text-center"><p>2</p></td>
+<td class="text-left"><p>SDR &amp; GNURadio Foundations</p></td>
+</tr>
+<tr class="row-even"><td class="text-center"><p>3</p></td>
+<td class="text-left"><p>Analog Modulation (AM, FM)</p></td>
+</tr>
+<tr class="row-odd"><td class="text-center"><p>4</p></td>
+<td class="text-left"><p>Digital Modulation (FSK, PAM, ASCII/PAM)</p></td>
+</tr>
+<tr class="row-even"><td class="text-center"><p>5</p></td>
+<td class="text-left"><p>Custom Blocks &amp; Midterm Activity</p></td>
+</tr>
+<tr class="row-odd"><td class="text-center"><p>6</p></td>
+<td class="text-left"><p>Waveform Applications &amp; RF Reverse Engineering</p></td>
+</tr>
+<tr class="row-even"><td class="text-center"><p>7</p></td>
+<td class="text-left"><p>Final Project</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>See the <a class="reference internal" href="../../syllabus.html"><span class="doc std std-doc">syllabus</span></a> for the full schedule, the midterm activity description, and the final-project structure.</p>
+</section>
+<section id="show-tell-a-real-sdr-live">
+<h2>Show &amp; tell — a real SDR, live<a class="headerlink" href="#show-tell-a-real-sdr-live" title="Permalink to this heading">#</a></h2>
+<p><em>Bring in the course SDR set (RTL-SDR, HackRF, PlutoSDR, ADALM-PHASER) plus a broadband whip antenna. Fire up GNURadio’s FFT sink, sweep across a few bands, and identify signals in real time — broadcast FM, ADS-B at 1090 MHz, cellular, WiFi, LTE, an FRS handheld. Point out that we’ll decode most of these ourselves by the end of the semester.</em></p>
+<p><em>Hardware checklist:</em> <code class="docutils literal notranslate"><span class="pre">_TBD_</span></code></p>
+</section>
+<section id="preparing-for-l2">
+<h2>Preparing for L2<a class="headerlink" href="#preparing-for-l2" title="Permalink to this heading">#</a></h2>
+<p>Read the assigned sections on <strong>SDR hardware architectures</strong> before the next class — we’ll dig into the RF frontend, ADC/DAC, and host boundary, and connect sample rate, bandwidth, and dynamic range to what a given SDR can (and can’t) do.</p>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./module01/L01-course-intro"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="../index.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Module 1 — Foundations of Detection &amp; Link Budgets</p>
+      </div>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#learning-outcomes">Learning outcomes</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#welcome-introductions">Welcome &amp; introductions</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#about-your-instructor">About your instructor</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#outside-the-lab">Outside the lab</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-i-teach">How I teach</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#why-this-course-exists">Why this course exists</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-a-software-defined-radio">What is a Software Defined Radio?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#why-this-matters-to-you">Why this matters to you</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#course-roadmap">Course roadmap</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#show-tell-a-real-sdr-live">Show &amp; tell — a real SDR, live</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#preparing-for-l2">Preparing for L2</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By N. Rogers
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2026.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

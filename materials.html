@@ -1,0 +1,536 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Materials &#8212; ECE 448 — Software Defined Radios</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" href="_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/clipboard.min.js"></script>
+    <script src="_static/copybutton.js"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js"></script>
+    <script src="_static/sbt-sidebar-shim.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="_static/sphinx-thebe.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'materials';</script>
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Module 1 — Foundations of Detection &amp; Link Budgets" href="module01/index.html" />
+    <link rel="prev" title="Syllabus" href="syllabus.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="intro.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="_static/DFEC-logo.png" class="logo__image only-light" alt="ECE 448 — Software Defined Radios - Home"/>
+    <script>document.write(`<img src="_static/DFEC-logo.png" class="logo__image only-dark" alt="ECE 448 — Software Defined Radios - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item">
+<h3><a href="intro.html">Table of Contents</a></h3>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Course Information</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="syllabus.html">Syllabus</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Materials</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 1 — Foundations of Detection &amp; Link Budgets</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="module01/index.html">Module 1 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module01/L01-course-intro/index.html">L1 — Course Introduction</a></li>
+</ul>
+</div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/materials.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Materials</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#primary-references">Primary references</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#hardware-software">Hardware &amp; software</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#legacy-slide-decks">Legacy slide decks</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#supplemental-references">Supplemental references</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#additional-resources">Additional resources</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="materials">
+<h1>Materials<a class="headerlink" href="#materials" title="Permalink to this heading">#</a></h1>
+<section id="primary-references">
+<h2>Primary references<a class="headerlink" href="#primary-references" title="Permalink to this heading">#</a></h2>
+<p>This is a hands-on course, so the “textbooks” are two curated web references
+that we’ll work through in parallel with in-class flowgraph exercises.</p>
+<ul class="simple">
+<li><p><strong><a class="reference external" href="https://wiki.gnuradio.org/index.php/Tutorials">GNU Radio Tutorials</a></strong> — official GNU Radio wiki tutorials. Primary reference for GRC, flowgraph construction, and out-of-tree module development.</p></li>
+<li><p><strong><a class="reference external" href="https://pysdr.org/">PySDR — A Guide to SDR and DSP using Python</a></strong> (Marc Lichtman) — free online textbook covering SDR fundamentals, DSP basics, and hands-on examples with PlutoSDR, RTL-SDR, and USRP.</p></li>
+</ul>
+</section>
+<section id="hardware-software">
+<h2>Hardware &amp; software<a class="headerlink" href="#hardware-software" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p><strong>GNURadio</strong> with <strong>GNU Radio Companion (GRC)</strong> — install instructions posted before Lesson 3.</p></li>
+<li><p><strong>RTL-SDR</strong> — introductory receive-only SDR (25 MHz – 1.75 GHz).</p></li>
+<li><p><strong>HackRF One</strong> — half-duplex Tx/Rx SDR (1 MHz – 6 GHz).</p></li>
+<li><p><strong>PlutoSDR / ADALM-PLUTO</strong> — full-duplex Tx/Rx SDR (325 MHz – 3.8 GHz, extendable).</p></li>
+<li><p><strong>ADALM-PHASER</strong> — phased-array SDR platform (shared with ECE 444).</p></li>
+<li><p><strong>Directional antennas</strong> (Yagi / log-periodic) — for the Lesson 20 fox hunt.</p></li>
+</ul>
+</section>
+<section id="legacy-slide-decks">
+<h2>Legacy slide decks<a class="headerlink" href="#legacy-slide-decks" title="Permalink to this heading">#</a></h2>
+<p>Prior-year Beamer PDFs are posted here as reference until the corresponding
+lessons are ported to the live reveal.js format. Each lesson page also links
+to its legacy PDF where one exists.</p>
+<ul class="simple">
+<li><p><a class="reference download internal" download="" href="_downloads/7bb6fea32f9735fe142ad79bea82579a/L02-noise-figure-link-budget.pdf"><span class="xref download myst">L2 — Noise Figure &amp; Link Budget</span></a></p></li>
+<li><p><a class="reference download internal" download="" href="_downloads/52cd385381e9903a7592da7fa6393255/L03-signal-space.pdf"><span class="xref download myst">L3 — Signal Space</span></a></p></li>
+<li><p><a class="reference download internal" download="" href="_downloads/94923763caa79a3629c73c24d8271a7a/L04-sdr-introduction.pdf"><span class="xref download myst">L4 — SDR Introduction</span></a></p></li>
+<li><p><a class="reference download internal" download="" href="_downloads/70b18909af6c5415a43624757e3a2e33/L07-am-simulation.pdf"><span class="xref download myst">L7 — AM Simulation</span></a></p></li>
+<li><p><a class="reference download internal" download="" href="_downloads/5952936ada28dfb0ec405baf5bd9e296/L08-am-fm-receivers.pdf"><span class="xref download myst">L8 — AM &amp; FM Receivers</span></a></p></li>
+<li><p><a class="reference download internal" download="" href="_downloads/094b0fb136f71d4ad32902e53ecbd8cc/L13-pam-theory.pdf"><span class="xref download myst">L13 — PAM Theory</span></a></p></li>
+<li><p><a class="reference download internal" download="" href="_downloads/e56db020a9ef66e141070cf900a55c5a/L14-ascii-pam.pdf"><span class="xref download myst">L14 — ASCII/PAM</span></a></p></li>
+<li><p><a class="reference download internal" download="" href="_downloads/b2dedf1d896efacb6d20aa980e116dae/L16-final-project-intro.pdf"><span class="xref download myst">L16 — Final Project Intro</span></a></p></li>
+<li><p><a class="reference download internal" download="" href="_downloads/3f495d71ef9bc8381e1cd1bcf6f6a5cd/L22-dtmf.pdf"><span class="xref download myst">L22 — DTMF</span></a></p></li>
+<li><p><a class="reference download internal" download="" href="_downloads/973c2ea94552c88cd643786fdeeb9876/L24-hd-radio.pdf"><span class="xref download myst">L24 — HD Radio</span></a></p></li>
+<li><p><a class="reference download internal" download="" href="_downloads/2185231834ca7a197d94c37aaab54104/L31-rf-reverse-engineering.pdf"><span class="xref download myst">L31 — RF Reverse Engineering</span></a></p></li>
+<li><p><a class="reference download internal" download="" href="_downloads/96eb1e3d2b80e985844ce2052481431c/L35-adsb.pdf"><span class="xref download myst">L35 — ADS-B</span></a></p></li>
+<li><p><a class="reference download internal" download="" href="_downloads/227af671b6dfbed79d4ecf13c34ea560/L36-ais.pdf"><span class="xref download myst">L36 — AIS</span></a></p></li>
+</ul>
+</section>
+<section id="supplemental-references">
+<h2>Supplemental references<a class="headerlink" href="#supplemental-references" title="Permalink to this heading">#</a></h2>
+<p>Third-party technical documents referenced by specific lessons.</p>
+<ul class="simple">
+<li><p><a class="reference download internal" download="" href="_downloads/f3e646fdfde420c7128ab07b20d56a26/adsb-decode-guide.pdf"><span class="xref download myst">ADS-B Decoding Guide</span></a> — companion reference for L35.</p></li>
+<li><p><a class="reference download internal" download="" href="_downloads/45aee2590978c7c5e5a149afd2e367e1/1090_Riddle.pdf"><span class="xref download myst">1090 MHz Riddle</span></a> — Mode-S ES background reading for L35.</p></li>
+<li><p><a class="reference download internal" download="" href="_downloads/0bd315b370ff4c2057a677207070a39b/adsb_magazu_usaf.pdf"><span class="xref download myst">ADS-B / Magazu (USAF)</span></a> — additional ADS-B reference.</p></li>
+<li><p><a class="reference download internal" download="" href="_downloads/172ce69925ae8a4d0127560106b32deb/nrsc-1011s_hd-radio.pdf"><span class="xref download myst">NRSC-1011s HD Radio spec</span></a> — companion reference for L24.</p></li>
+<li><p><a class="reference download internal" download="" href="_downloads/e3bfc940861196f98c0c476b2b6589db/differential-encoding-tutorial.pdf"><span class="xref download myst">Differential Encoding Tutorial</span></a> — companion reference for L27–L28 (mPSK).</p></li>
+</ul>
+</section>
+<section id="additional-resources">
+<h2>Additional resources<a class="headerlink" href="#additional-resources" title="Permalink to this heading">#</a></h2>
+<p><em>TBD — application notes, videos, and links will be added here as they are pulled into lessons.</em></p>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="syllabus.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Syllabus</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="module01/index.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Module 1 — Foundations of Detection &amp; Link Budgets</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#primary-references">Primary references</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#hardware-software">Hardware &amp; software</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#legacy-slide-decks">Legacy slide decks</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#supplemental-references">Supplemental references</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#additional-resources">Additional resources</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By N. Rogers
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2026.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
