@@ -1,15 +1,23 @@
 ---
 # ECE 448 course website — Jupyter Book.
-# Structure ported from ECE 444 (which was ported from usafa-ece/ece215-book).
+# Structure ported from the USAFA ECE 215 book template
+# (https://github.com/usafa-ece/ece215-book), pared down for ECE 444, then copied to ECE 343 and ECE 448.
 
 title: ECE 448 — Software Defined Radios
 author: N. Rogers
-copyright: "2026"
+copyright: "2027"
 logo: DFEC-logo.png
 
 # No notebooks in the initial migration; keep the setting future-proof.
 execute:
   execute_notebooks: "auto"
+
+# Practice sets are served as committed PDFs under extras/practice/ (linked from
+# each lesson's Practice section), not as HTML pages. The source .md are kept on
+# disk but excluded from the build so they don't render or appear in the nav.
+exclude_patterns:
+  - "**/practice.md"
+  - "**/practice-solutions.md"
 
 parse:
   myst_enable_extensions:
@@ -35,6 +43,8 @@ html:
   use_repository_button: true
 
 sphinx:
+  local_extensions:
+    frames: _ext
   config:
     # Reveal.js decks live under book/extras/slides/ and must survive the
     # Sphinx build with their /slides/ URL prefix intact. html_extra_path
@@ -62,6 +72,28 @@ sphinx:
         - icon-links.html
         - search-button-field.html
         - globaltoc.html
+
+    # The site nav behind the HUD's leftmost button. This book is one course
+    # among several on the same GitHub Pages site, so the bar carries the whole
+    # site rather than just this course -- which is what the module pills in
+    # the old top-left mark were doing badly, since the modules are already in
+    # the index overlay.
+    #
+    # `here: true` marks this book: it is linked to the book's own root doc, so
+    # the link works from an unzipped local build as well as from the published
+    # site, and its label is what the button itself shows. An empty list drops
+    # the button entirely.
+    #
+    # The off-site URLs are Neil's, given verbatim -- ECE 343 and ECE 444 are
+    # Jupyter Books like this one, so their landing pages are intro.html
+    # rather than the directory. Check any new entry actually resolves: a nav is the one thing
+    # on a page nobody forgives a 404 in.
+    ece448_site_nav:
+      - {label: "Home",     url: "https://livethisdream.github.io/"}
+      - {label: "ECE 343",  url: "https://livethisdream.github.io/ece343/intro.html"}
+      - {label: "ECE 444",  url: "https://livethisdream.github.io/ece444/intro.html"}
+      - {label: "ECE 448",  here: true}
+      - {label: "Projects", url: "https://livethisdream.github.io/projects"}
 
     html_theme: sphinx_book_theme
     html_theme_options:

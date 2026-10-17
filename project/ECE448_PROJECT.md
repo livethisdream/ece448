@@ -12,11 +12,15 @@ Grading is **25% Engagement / 35% Midterm / 40% Final Project**. The book was mi
 
 # Special Instructions
 
+- **Applications first. Teach only enough theory to get by** (Neil, 2026-10-17). Every lesson exists to build, receive, or decode a real signal in GNU Radio. Theory appears only as far as the application needs it. See `project/ROADMAP.md` § Course philosophy.
+
 - The authoritative tree is `~/projects/ece448` (this repo). Older copies at `C:\...\USAFA\ece448` (OneDrive) and `~/src/ece448` (WSL) are stale — do not commit to either. `livethisdream.github.io` (Chirpy) is historical.
 - Keep reveal.js decks; same shared `course-slides.css` and reveal 5.1.0 shell as ECE 444.
 - Author lessons **as they get taught during the semester**, not all up-front. The 22–27-line `_TBD` placeholders in the old Chirpy tree are not worth carrying over.
 
 # Decisions
+
+- **2026-10-17** — **Rebuild on ECE 444's shell for Spring 2027.** Use the Spring 2025 lesson content, numbered by topic. 2025 projects become 444-style lab packets. Grades use the 2025 weights (FP 40 / Projects 25 / Engagement 20 / Midterm 15). Objectives are rewritten for review. Details and the draft list are in `project/ROADMAP.md`.
 
 - **2026-08-16** — **Migrated to `~/projects/ece448/` (WSL-native).** OneDrive clone at `.../USAFA/ece448` remains as historical fallback; don't commit to it. Rebuilt `.venv/` in-repo on CPython 3.10.20 (matches CI per `deploy.yml`, pinned via new `.python-version`). Renamed the in-repo project note to `ece448_PROJECT.md` at repo root.
 - **2026-08-16** — **Course figures moved to `figures/` at repo root** (104 files / 30 MB, from `latex-tools/figures/ECE448/`). New LaTeX convention: `\graphicspath{{./figures/}}` — LaTeX-native, no absolute paths, no shared-tool coupling. The old central-figures pattern was a workaround for a relative-path issue; this is the fix.
@@ -38,6 +42,8 @@ Grading is **25% Engagement / 35% Midterm / 40% Final Project**. The book was mi
 - Rebuild the built-out reveal decks that the Chirpy repo never actually shipped.
 
 # Status
+
+- **2026-10-17: rebuilt on the ECE 444 shell for Spring 2027.** There are 7 modules and 20 lessons, with labs as child pages, generated from `scripts/scaffold_lessons.py`. L01 is a frame page. `project/ROADMAP.md` has the current status. The bullets below describe the August 2026 state.
 
 - Full book scaffold shipped: `_config.yml`, `_toc.yml`, `intro.md` (hero + 7 module cards + 3 deliverable cards), `syllabus.md` (390 lines), `materials.md` (51 lines).
 - Module 1 seeded — `book/module01/index.md` + L1 with 11 bio photos in `book/module01/L01-course-intro/img/`.

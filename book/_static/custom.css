@@ -1,4 +1,4 @@
-/* ECE 444 book custom stylesheet.
+/* ECE 448 book custom stylesheet.
    Adapted from USAFA/ece215-book/book/_static/custom.css:
    ECE-215-specific sections (flashcards, sy-globaltoc, hero, block-grid,
    deliverable-cards, demo-iframe, breadcrumb, download-cards, ref-tags,
@@ -31,7 +31,7 @@ html {
 }
 
 /* ============================================================
-   ECE 444 — palette (matched to assets/reveal/course-slides.css)
+   ECE 448 — palette (matched to assets/reveal/course-slides.css)
    ============================================================
    --tps-navy   : #004a85    (primary, brand)
    --tps-mid    : #0067b9    (accent / borders / table headers)
@@ -61,16 +61,6 @@ body, .bd-article {
   font-size: clamp(28px, 4vw, 40px);
   line-height: 1.15;
 }
-.bd-article h1::after {
-  content: '';
-  display: block;
-  width: 2.5em;
-  height: 4px;
-  background-color: #0067b9;
-  border-radius: 2px;
-  margin-top: 0.4em;
-  margin-bottom: 0.5em;
-}
 
 .bd-article h2 {
   color: #004a85;
@@ -88,6 +78,17 @@ body, .bd-article {
   padding-left: 0.65em;
   font-size: 18px;
   line-height: 1.25;
+}
+
+.bd-article h4 {
+  color: #3b4651;
+  font-weight: 600;
+  font-size: 15px;
+  line-height: 1.3;
+  margin-top: 1.2em;
+  margin-bottom: 0.4em;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
 }
 
 /* Inline code styling (consumes JetBrains Mono, navy on --tps-bg) */
@@ -234,8 +235,13 @@ div.admonition.example-problem > p.admonition-title {
   padding: 0.4em 1em;
   margin: 0;
 }
-div.admonition.example-problem > p.admonition-title::before {
-  display: none;
+div.admonition.example-problem > p.admonition-title::before,
+.admonition.example-problem > .admonition-title::after,
+div.admonition.example-problem > p.admonition-title::after {
+  content: none !important;
+  display: none !important;
+  width: 0 !important;
+  margin: 0 !important;
 }
 div.admonition.example-problem > *:not(.admonition-title) {
   padding: 0.5em 1.5em 0.25em 1.5em;
@@ -252,11 +258,17 @@ div.admonition.example-problem > *:not(.admonition-title) {
   font-size: 0.95em;
   margin: 1.25em 0;
 }
+/* Every color here is a token from shell.css, never a literal. These rules
+   were written light-mode-only -- a #0067b9 header slab, a #f5f9fc stripe and
+   `color:#000 !important` on every cell -- so in dark mode the odd rows went
+   black-on-near-black and the even ones showed as a white band. The literals
+   survive only as var() fallbacks, for a page served with `ece448_shell:
+   false`, where shell.css and its palette are not loaded at all. */
 .bd-article table thead tr {
-  background-color: #0067b9;
+  background-color: var(--tbl-head, #0067b9);
 }
 .bd-article table thead th {
-  color: #ffffff;
+  color: var(--tbl-head-ink, #ffffff);
   font-weight: 600;
   padding: 0.5em 0.85em;
   border: none;
@@ -264,20 +276,27 @@ div.admonition.example-problem > *:not(.admonition-title) {
 }
 .bd-article table tbody td {
   padding: 0.45em 0.85em;
-  border-bottom: 1px solid #b9d2e5;
-  color: #000000 !important;
+  border-bottom: 1px solid var(--tbl-rule, #b9d2e5);
+  color: var(--ink, #000000) !important;
   text-wrap: pretty;
 }
+/* Phone: the .85em gutters alone are ~70px of a 343px column. */
+@media (max-width: 480px) {
+  .bd-article table thead th,
+  .bd-article table tbody td { padding-left: .45em; padding-right: .45em; }
+  .bd-article table thead th:last-child,
+  .bd-article table tbody td:last-child { padding-right: 0; }
+}
 .bd-article table tbody tr:nth-child(even) {
-  background-color: #f5f9fc;
+  background-color: var(--tbl-stripe, #f5f9fc);
 }
 .bd-article table tbody tr:hover {
-  background-color: #f0f5fa;
-  box-shadow: inset 3px 0 0 #0067b9;
+  background-color: var(--tbl-hover, #f0f5fa);
+  box-shadow: inset 3px 0 0 var(--blue, #0067b9);
 }
 .bd-article table tbody tr:nth-child(even) td,
 .bd-article table tbody tr:hover td {
-  color: #000000 !important;
+  color: var(--ink, #000000) !important;
 }
 
 /* ============================================================
@@ -502,30 +521,26 @@ nav .theme-switch-button {
 @media (max-width: 560px) {
   .bd-article .block-grid { grid-template-columns: 1fr; }
 }
+/* Rounded cards, matching the umbrella site: a soft rule and the shell's
+   layered shadow instead of a navy top bar; hover tints and firms the rule. */
 .bd-article .block-card {
   position: relative;
   display: flex;
   flex-direction: column;
-  padding: 16px 18px 14px;
-  background: #fff;
-  border: 1px solid var(--tps-rule, #d8e2ec);
-  border-radius: 8px;
+  padding: 16px 26px 14px;
+  background: var(--panel, #fff);
+  border: 1px solid var(--rule, #d8e2ec);
+  border-radius: 28px;
+  box-shadow: var(--shadow, none);
   color: var(--ink, #15202b) !important;
   text-decoration: none !important;
-  transition: border-color 0.12s ease, transform 0.12s ease, box-shadow 0.12s ease;
-}
-.bd-article .block-card::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 3px;
-  background: #00205B;
-  border-radius: 8px 8px 0 0;
+  transition: border-color 0.12s ease, background 0.12s ease, transform 0.12s ease, box-shadow 0.12s ease;
 }
 .bd-article .block-card:hover {
-  border-color: #1f6098;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 32, 91, 0.08);
+  border-color: var(--rule-strong, #1f6098);
+  background: var(--soft, #f5f9fc);
+  transform: translateY(-2px);
+  box-shadow: 0 2px 4px rgba(0, 30, 60, .07), 0 14px 32px rgba(0, 30, 60, .09);
 }
 .bd-article .block-card .num {
   font-family: 'JetBrains Mono', 'Menlo', monospace;
@@ -677,140 +692,12 @@ div.admonition.ground-rules > *:not(.admonition-title) {
 }
 
 
-/* ============================================================
-   Print styles
-   ----------------------------------------------------------
-   Some students print readings to mark up by hand. Strip the
-   chrome (sidebar, navy hero, theme switcher), replace embedded
-   iframes with a printed URL placeholder, force backgrounds to
-   white, and reset the article column to full width.
-   ============================================================ */
-@media print {
-  html, body {
-    background: #fff !important;
-    color: #000 !important;
-  }
-
-  /* Hide every piece of theme chrome. */
-  .bd-sidebar-primary,
-  .bd-sidebar-secondary,
-  .bd-header,
-  .bd-header-article,
-  .bd-footer,
-  .bd-footer-content,
-  .bd-header-announcement,
-  .header-article,
-  .prev-next-area,
-  .theme-switch-button,
-  button.theme-switch-button,
-  .toc-h2,
-  .sphinxsidebar,
-  .sy-breadcrumb,
-  .block-nav,
-  .hero .hero-cta,
-  .fc-toolbar,
-  .fc-study {
-    display: none !important;
-  }
-
-  /* Main column: full width. */
-  .bd-main,
-  .bd-container,
-  .bd-content,
-  .bd-article-container,
-  .bd-article {
-    max-width: 100% !important;
-    width: 100% !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    grid-template-columns: 1fr !important;
-  }
-
-  /* Replace each demo iframe with its full-screen URL printed in mono.
-     The companion .demo-fullscreen anchor remains visible above. */
-  .demo-wrap iframe { display: none !important; }
-  .demo-wrap::after {
-    content: "Interactive demo — open the linked URL above to use it online.";
-    display: block;
-    padding: 14px;
-    border: 1px dashed #999;
-    border-radius: 4px;
-    color: #555;
-    font-style: italic;
-    font-size: 11pt;
-  }
-
-  /* Hero strip prints as a plain title row. */
-  .bd-article .hero {
-    background: none !important;
-    color: #000 !important;
-    padding: 0 0 12pt !important;
-    border-bottom: 2pt solid #000;
-    margin-bottom: 18pt;
-    page-break-after: avoid;
-  }
-  .bd-article .hero::after { display: none !important; }
-  .bd-article .hero .hero-shield { display: none !important; }
-  .bd-article .hero .hero-eyebrow { color: #444 !important; }
-  .bd-article .hero h1.hero-title,
-  .bd-article .hero .hero-lede { color: #000 !important; }
-
-  /* Block cards: stripped-down list look. */
-  .bd-article .block-grid {
-    display: block !important;
-  }
-  .bd-article .block-card {
-    background: none !important;
-    border: 1pt solid #999 !important;
-    margin-bottom: 6pt !important;
-    box-shadow: none !important;
-    transform: none !important;
-    page-break-inside: avoid;
-  }
-
-  /* Callouts: preserve the left-border accent, force white fill. */
-  .admonition,
-  div.admonition,
-  .admonition.key-concept,
-  .admonition.example-problem,
-  .admonition.type-along,
-  .admonition.ground-rules {
-    background: #fff !important;
-    box-shadow: none !important;
-    page-break-inside: avoid;
-  }
-  .admonition > .admonition-title,
-  div.admonition > p.admonition-title {
-    background: #fff !important;
-    color: #000 !important;
-    border-bottom: 1pt solid #000 !important;
-  }
-
-  /* Page breaks. */
-  h1, h2, h3 { page-break-after: avoid; }
-  figure, table, .deliverable-card, .bt-card { page-break-inside: avoid; }
-
-  /* MATLAB chip prints as a plain underlined reference. */
-  .bd-article .matlab-link {
-    background: none !important;
-    border: none !important;
-    color: #000 !important;
-    padding: 0 !important;
-    text-decoration: underline !important;
-  }
-  .bd-article .matlab-link svg,
-  .bd-article .matlab-link .ml-arrow { display: none !important; }
-
-  /* Inline code: no background, just JetBrains Mono. */
-  .bd-article :not(pre) > code {
-    background: none !important;
-    color: #000 !important;
-    padding: 0 !important;
-  }
-
-  a, a:visited { color: #000 !important; text-decoration: underline; }
-  a[href]::after { content: ""; }  /* don't print every URL */
-}
+/* Print styles for the theme chrome this stylesheet used to own (sidebar,
+   navy hero, theme switcher) were removed here -- every page is chrome-free
+   now (frame.html / page.html, routed by _ext/frames.py), so `.bd-sidebar-
+   primary`, `.bd-header` and the rest of that block had nothing left to
+   select. The site's print rules live where the chrome they hide actually
+   is: book/_static/frames.css and book/_static/page.css. */
 
 /* In-class media demos (Lesson 20 aliasing/quantization). Constrain the video
    so a 16:9 clip does not blow past the content column on wide screens. */
@@ -829,6 +716,116 @@ audio.lesson-demo {
   width: 100%;
   max-width: 640px;
   margin: 0.5rem 0 1rem;
+}
+
+/* ============================================================
+   Grade scale (syllabus.md)
+   ----------------------------------------------------------
+   A on the left, F on the right, tinted with a green→red
+   gradient at low opacity so it reads as one system with the
+   rest of the tables (which have a solid navy header row).
+   Overrides the theme's default table styling.
+   ============================================================ */
+.bd-article table.grade-scale {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1.25em 0;
+  font-size: 0.95em;
+  table-layout: fixed;
+}
+.bd-article table.grade-scale th,
+.bd-article table.grade-scale td {
+  text-align: center;
+  padding: 0.55em 0.5em;
+  border: 1px solid #cddce9;
+  font-variant-numeric: tabular-nums;
+}
+.bd-article table.grade-scale thead tr {
+  background-color: transparent;
+}
+.bd-article table.grade-scale thead th {
+  font-weight: 700;
+  color: #15202b;
+  background-color: transparent;
+  border: 1px solid #cddce9;
+}
+.bd-article table.grade-scale tbody tr {
+  background-color: transparent;
+}
+.bd-article table.grade-scale tbody tr:nth-child(even) {
+  background-color: transparent;
+}
+/* Column tint: green → yellow → red at 12% opacity, applied to
+   both the header cell and the body cell in each column. */
+.bd-article table.grade-scale th:nth-child(1),
+.bd-article table.grade-scale td:nth-child(1)  { background-color: rgba(29, 122, 77, 0.20); }
+.bd-article table.grade-scale th:nth-child(2),
+.bd-article table.grade-scale td:nth-child(2)  { background-color: rgba(72, 148, 74, 0.18); }
+.bd-article table.grade-scale th:nth-child(3),
+.bd-article table.grade-scale td:nth-child(3)  { background-color: rgba(122, 172, 71, 0.16); }
+.bd-article table.grade-scale th:nth-child(4),
+.bd-article table.grade-scale td:nth-child(4)  { background-color: rgba(168, 189, 65, 0.15); }
+.bd-article table.grade-scale th:nth-child(5),
+.bd-article table.grade-scale td:nth-child(5)  { background-color: rgba(210, 203, 58, 0.15); }
+.bd-article table.grade-scale th:nth-child(6),
+.bd-article table.grade-scale td:nth-child(6)  { background-color: rgba(232, 191, 60, 0.16); }
+.bd-article table.grade-scale th:nth-child(7),
+.bd-article table.grade-scale td:nth-child(7)  { background-color: rgba(232, 158, 60, 0.17); }
+.bd-article table.grade-scale th:nth-child(8),
+.bd-article table.grade-scale td:nth-child(8)  { background-color: rgba(224, 121, 55, 0.18); }
+.bd-article table.grade-scale th:nth-child(9),
+.bd-article table.grade-scale td:nth-child(9)  { background-color: rgba(212, 79, 51, 0.20); }
+.bd-article table.grade-scale th:nth-child(10),
+.bd-article table.grade-scale td:nth-child(10) { background-color: rgba(190, 45, 45, 0.22); }
+/* Suppress the theme's hover/inset-blue rule on this table. */
+.bd-article table.grade-scale tbody tr:hover {
+  background-color: transparent;
+  box-shadow: none;
+}
+
+/* ============================================================
+   Learning-objective list (moduleNN/index.md)
+   ----------------------------------------------------------
+   Author each module's LOs as a plain ordered list wrapped in
+   a `.lo-list` container with a `--module` CSS variable set to
+   the module number. The CSS then renders each item as
+   "<module>.<n> — <text>" (e.g. 1.1, 1.2, ...) so numbering
+   stays in sync with the list order and scales to future
+   modules without hand-editing every prefix.
+   ============================================================ */
+.bd-article ol.lo-list {
+  counter-reset: lo;
+  list-style: none;
+  padding-left: 1.5em;
+  margin: 1em 0 0.5em;
+}
+.bd-article ol.lo-list > li {
+  counter-increment: lo;
+  padding-left: 2.2em;
+  position: relative;
+  margin-bottom: 0.5em;
+  line-height: 1.5;
+}
+.bd-article ol.lo-list > li::before {
+  content: var(--module) "." counter(lo);
+  position: absolute;
+  left: 0;
+  top: 0;
+  font-weight: 700;
+  color: #004a85;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Lesson-level sub-objectives. Add the `lo-sublist` modifier and set
+   --module to the module number and --lo to the module objective this
+   lesson rolls up to. The prefix then renders as
+   "<module>.<objective>.<n>" (e.g. 1.2.1) so every lesson objective
+   ties back to the module objective it supports. */
+.bd-article ol.lo-list.lo-sublist > li {
+  padding-left: 2.9em;
+}
+.bd-article ol.lo-list.lo-sublist > li::before {
+  content: var(--module) "." var(--lo) "." counter(lo);
 }
 
 /* ============================================================
@@ -948,6 +945,54 @@ audio.lesson-demo {
 .bd-article .module-nav a:hover { color: #004a85; }
 .bd-article .module-nav .module-nav-prev { margin-right: auto; }
 .bd-article .module-nav .module-nav-next { margin-left:  auto; text-align: right; }
+
+/* ============================================================
+   Slides admonition (lesson pages) — compact pill strip
+   ============================================================ */
+.admonition.slides,
+div.admonition.slides {
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  margin: 0 0 1.25em !important;
+}
+.admonition.slides > .admonition-title,
+div.admonition.slides > p.admonition-title {
+  display: none !important;
+}
+.admonition.slides > p,
+div.admonition.slides > p {
+  margin: 0 !important;
+  padding: 0 !important;
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.admonition.slides a,
+div.admonition.slides a {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  background: rgba(0, 103, 185, 0.12);
+  border: 1px solid rgba(0, 103, 185, 0.30);
+  color: #0067b9 !important;
+  border-radius: 1em;
+  font-size: 0.8em;
+  font-weight: 600;
+  text-decoration: none !important;
+  white-space: nowrap;
+  line-height: 1.4;
+  transition: background 0.12s ease, border-color 0.12s ease;
+}
+.admonition.slides a:hover,
+div.admonition.slides a:hover {
+  background: rgba(0, 103, 185, 0.22);
+  border-color: rgba(0, 103, 185, 0.55);
+  color: #004a85 !important;
+}
 
 /* ============================================================
    Sidebar TOC — sphinx-book-theme globaltoc look, ported from ECE 215.
@@ -1101,3 +1146,677 @@ audio.lesson-demo {
 .sy-globaltoc details > summary { list-style: none; }
 .sy-globaltoc details > summary::marker { content: ""; }
 
+/* ============================================================
+   Dark mode overrides
+   ----------------------------------------------------------
+   Re-enable the theme toggle (previously hidden) and remap all
+   hardcoded light-palette values so pages remain readable when
+   sphinx-book-theme flips to data-theme="dark". The dark palette
+   is a shifted version of the DFEC navy/blue system:
+
+   Dark bg   : #1a1f26 (page)  · #232a33 (cards) · #2a323d (alt rows)
+   Dark ink  : #e6edf3 (body)  · #b4c0cc (muted) · #7d8b99 (dim)
+   Dark blue : #5aa3e5 (nav headers, links)  · #82bce8 (hover)
+   ============================================================ */
+
+/* Un-hide the theme switch button */
+html[data-theme="dark"] .theme-switch-button,
+html[data-theme="dark"] button.theme-switch-button,
+html[data-theme="dark"] .bd-header .theme-switch-button,
+html[data-theme="dark"] .bd-header-article .theme-switch-button,
+html[data-theme="dark"] .header-article-items .theme-switch-button,
+html[data-theme="dark"] .navbar-header-items .theme-switch-button,
+html[data-theme="dark"] nav .theme-switch-button,
+html[data-theme="light"] .theme-switch-button,
+html[data-theme="light"] button.theme-switch-button,
+html[data-theme="light"] .bd-header .theme-switch-button,
+html[data-theme="light"] .bd-header-article .theme-switch-button,
+html[data-theme="light"] .header-article-items .theme-switch-button,
+html[data-theme="light"] .navbar-header-items .theme-switch-button,
+html[data-theme="light"] nav .theme-switch-button {
+  display: inline-flex !important;
+  visibility: visible !important;
+  width: auto !important;
+  height: auto !important;
+  margin: revert !important;
+  padding: revert !important;
+  pointer-events: auto !important;
+}
+
+/* Repoint pydata-sphinx-theme primary variables for dark mode */
+html[data-theme="dark"] {
+  --pst-color-primary:    #5aa3e5;
+  --pst-color-primary-bg: #1e2833;
+  --pst-color-link:       #82bce8;
+  --pst-color-link-hover: #b4d4f0;
+  --pst-color-inline-code-links: #82bce8;
+  --pst-color-accent:     #5aa3e5;
+}
+
+/* Headings: brighten navy so they read on dark background */
+html[data-theme="dark"] .bd-article h1,
+html[data-theme="dark"] .bd-article h2 {
+  color: #b4d4f0;
+}
+html[data-theme="dark"] .bd-article h2 {
+  border-bottom-color: #3a4552;
+}
+html[data-theme="dark"] .bd-article h3 {
+  color: #82bce8;
+  border-left-color: #5aa3e5;
+}
+html[data-theme="dark"] .bd-article h4 {
+  color: #b4c0cc;
+}
+
+/* Inline code */
+html[data-theme="dark"] .bd-article :not(pre) > code {
+  background-color: #232a33;
+  color: #82bce8;
+}
+
+/* Tables — the biggest offender */
+html[data-theme="dark"] .bd-article table thead tr {
+  background-color: #1e4e7a;
+}
+html[data-theme="dark"] .bd-article table thead th {
+  color: #ffffff;
+}
+html[data-theme="dark"] .bd-article table tbody td {
+  color: #e6edf3 !important;
+  border-bottom-color: #3a4552;
+  background-color: transparent;
+}
+html[data-theme="dark"] .bd-article table tbody tr:nth-child(even) {
+  background-color: #232a33;
+}
+html[data-theme="dark"] .bd-article table tbody tr:hover {
+  background-color: #2a323d;
+  box-shadow: inset 3px 0 0 #5aa3e5;
+}
+html[data-theme="dark"] .bd-article table tbody tr:nth-child(even) td,
+html[data-theme="dark"] .bd-article table tbody tr:hover td {
+  color: #e6edf3 !important;
+}
+
+/* Grade-scale table: keep the green→red tint but darken the base */
+html[data-theme="dark"] .bd-article table.grade-scale th,
+html[data-theme="dark"] .bd-article table.grade-scale td {
+  border-color: #3a4552;
+  color: #e6edf3;
+}
+html[data-theme="dark"] .bd-article table.grade-scale thead th {
+  color: #e6edf3;
+}
+
+/* --- Admonition callouts ---------------------------------- */
+html[data-theme="dark"] .admonition.key-concept,
+html[data-theme="dark"] div.admonition.key-concept {
+  background-color: #1a2838 !important;
+  border-color: #2a4a6a !important;
+  border-left-color: #5aa3e5 !important;
+}
+html[data-theme="dark"] .admonition.key-concept > .admonition-title,
+html[data-theme="dark"] div.admonition.key-concept > p.admonition-title {
+  background-color: #1e4e7a !important;
+}
+
+html[data-theme="dark"] .admonition.type-along,
+html[data-theme="dark"] div.admonition.type-along {
+  background-color: #17232f !important;
+  border-color: #2a4a6a !important;
+  border-left-color: #5aa3e5 !important;
+}
+html[data-theme="dark"] .admonition.type-along > .admonition-title,
+html[data-theme="dark"] div.admonition.type-along > p.admonition-title {
+  background-color: #1e4e7a !important;
+}
+
+html[data-theme="dark"] div.admonition.example-problem {
+  background-color: #2a1f16;
+  border-color: #6a4a2c;
+  border-left-color: #c47030;
+}
+html[data-theme="dark"] div.admonition.example-problem > p.admonition-title {
+  background-color: #6a3410;
+}
+
+html[data-theme="dark"] .admonition.ground-rules,
+html[data-theme="dark"] div.admonition.ground-rules {
+  background-color: #2a1f16 !important;
+  border-color: #6a4a2c !important;
+  border-left-color: #c47030 !important;
+}
+html[data-theme="dark"] .admonition.ground-rules > .admonition-title,
+html[data-theme="dark"] div.admonition.ground-rules > p.admonition-title {
+  background-color: #6a3410 !important;
+}
+
+/* Slides pill strip */
+html[data-theme="dark"] .admonition.slides a,
+html[data-theme="dark"] div.admonition.slides a {
+  background: rgba(90, 163, 229, 0.15);
+  border-color: rgba(90, 163, 229, 0.40);
+  color: #82bce8 !important;
+}
+html[data-theme="dark"] .admonition.slides a:hover,
+html[data-theme="dark"] div.admonition.slides a:hover {
+  background: rgba(90, 163, 229, 0.28);
+  border-color: rgba(90, 163, 229, 0.65);
+  color: #b4d4f0 !important;
+}
+
+/* Figures */
+html[data-theme="dark"] .bd-article figure {
+  background: #232a33;
+  border-color: #3a4552;
+}
+html[data-theme="dark"] .bd-article figure figcaption {
+  color: #b4c0cc;
+}
+
+/* Hero — the navy gradient still reads fine, just soften card fill */
+html[data-theme="dark"] .bd-article .block-card,
+html[data-theme="dark"] .bd-article .mt-card {
+  background: #232a33;
+  border-color: #3a4552;
+  color: #e6edf3 !important;
+}
+html[data-theme="dark"] .bd-article .block-card h3,
+html[data-theme="dark"] .bd-article .mt-card h4 {
+  color: #b4d4f0;
+}
+html[data-theme="dark"] .bd-article .block-card p,
+html[data-theme="dark"] .bd-article .mt-card p {
+  color: #b4c0cc;
+}
+html[data-theme="dark"] .bd-article .block-card:hover,
+html[data-theme="dark"] .bd-article .mt-card:hover {
+  background: #2a323d;
+  border-color: #5aa3e5;
+}
+
+/* Deliverable cards */
+html[data-theme="dark"] .bd-article .deliverable-card {
+  background: #232a33;
+  border-color: #3a4552;
+  border-left-color: #5aa3e5;
+}
+html[data-theme="dark"] .bd-article .deliverable-card h3,
+html[data-theme="dark"] .bd-article .deliverable-card .d-w-num,
+html[data-theme="dark"] .bd-article .deliverable-card .d-due strong {
+  color: #b4d4f0;
+}
+html[data-theme="dark"] .bd-article .deliverable-card .d-eyebrow,
+html[data-theme="dark"] .bd-article .deliverable-card .d-link {
+  color: #82bce8;
+}
+html[data-theme="dark"] .bd-article .deliverable-card .d-weight,
+html[data-theme="dark"] .bd-article .deliverable-card .d-due {
+  color: #b4c0cc;
+}
+
+/* Module dashboard */
+html[data-theme="dark"] .bd-article .module-meta {
+  color: #b4c0cc;
+}
+html[data-theme="dark"] .bd-article .module-meta .m-module {
+  color: #b4d4f0;
+  background: #1e2833;
+}
+html[data-theme="dark"] .bd-article .module-synopsis {
+  color: #b4c0cc;
+}
+html[data-theme="dark"] .bd-article .mt-card .mt-kind {
+  color: #b4c0cc;
+}
+html[data-theme="dark"] .bd-article .module-nav {
+  border-top-color: #3a4552;
+}
+html[data-theme="dark"] .bd-article .module-nav a {
+  color: #82bce8;
+}
+html[data-theme="dark"] .bd-article .module-nav a:hover {
+  color: #b4d4f0;
+}
+
+/* MATLAB chip */
+html[data-theme="dark"] .bd-article .matlab-link {
+  background: #2a1f16;
+  border-color: #6a4a2c;
+  color: #e0b088 !important;
+}
+html[data-theme="dark"] .bd-article .matlab-link:hover {
+  background: #3a2a1e;
+  border-color: #c47030;
+}
+html[data-theme="dark"] .bd-article .matlab-link .ml-arrow {
+  color: #e87722;
+}
+
+/* LO list numbers */
+html[data-theme="dark"] .bd-article ol.lo-list > li::before {
+  color: #82bce8;
+}
+
+/* --- Left sidebar (globaltoc) ---------------------------- */
+html[data-theme="dark"] .sy-globaltoc p.caption {
+  color: #e6edf3;
+}
+html[data-theme="dark"] .sy-globaltoc > h3.sy-globaltoc-home a,
+html[data-theme="dark"] .sy-globaltoc li.toctree-l1 > a {
+  color: #c8d1db;
+}
+html[data-theme="dark"] .sy-globaltoc > h3.sy-globaltoc-home a:hover,
+html[data-theme="dark"] .sy-globaltoc li.toctree-l1 > a:hover {
+  background: #232a33;
+  color: #82bce8;
+}
+html[data-theme="dark"] .sy-globaltoc > h3.sy-globaltoc-home.current a,
+html[data-theme="dark"] .sy-globaltoc > h3.sy-globaltoc-home a.current,
+html[data-theme="dark"] .sy-globaltoc li.toctree-l1.current > a,
+html[data-theme="dark"] .sy-globaltoc li.toctree-l1 > a.current {
+  color: #82bce8;
+  border-left-color: #5aa3e5;
+}
+html[data-theme="dark"] .sy-globaltoc li.toctree-l2 > a {
+  color: #a1adb9;
+}
+html[data-theme="dark"] .sy-globaltoc li.toctree-l2 > a:hover {
+  background: #232a33;
+  color: #82bce8;
+}
+html[data-theme="dark"] .sy-globaltoc li.toctree-l2 > a.current,
+html[data-theme="dark"] .sy-globaltoc li.toctree-l2.current > a {
+  color: #82bce8;
+  background: #1e2833;
+  border-left-color: #5aa3e5;
+}
+html[data-theme="dark"] .sy-globaltoc li.toctree-l1.has-children > details > summary {
+  color: #7d8b99;
+}
+html[data-theme="dark"] .sy-globaltoc li.toctree-l1.has-children > details > summary:hover {
+  color: #82bce8;
+}
+html[data-theme="dark"] .sy-globaltoc li.sy-l2-reading    > a .sy-icon { color: #5aa3e5; }
+html[data-theme="dark"] .sy-globaltoc li.sy-l2-flashcards > a .sy-icon { color: #4ec4de; }
+html[data-theme="dark"] .sy-globaltoc li.sy-l2-slides     > a .sy-icon { color: #4fb478; }
+html[data-theme="dark"] .sy-globaltoc li.sy-l2-practice   > a .sy-icon { color: #d9a04a; }
+html[data-theme="dark"] .sy-globaltoc li.toctree-l2.current > a .sy-icon { color: #82bce8; }
+
+
+/* --- Worked example (tip) boxes — deck visual language ------ */
+/* Same construction as Key Concept, accented in the mid USAFA blue so
+   worked examples read as siblings of the key-concept cards. */
+.admonition.tip,
+div.admonition.tip {
+  border: 1px solid #b9d2e5 !important;
+  border-left: 5px solid #0067b9 !important;
+  border-radius: 0 6px 6px 0 !important;
+  background-color: #ffffff !important;
+  padding: 0 !important;
+  overflow: hidden;
+  margin: 1.5em 0;
+  box-shadow: none !important;
+}
+.admonition.tip > .admonition-title,
+div.admonition.tip > p.admonition-title {
+  background-color: #0067b9 !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  font-size: 0.85em !important;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.4em 1em !important;
+  margin: 0 !important;
+}
+.admonition.tip > .admonition-title::before,
+div.admonition.tip > p.admonition-title::before,
+.admonition.tip > .admonition-title::after,
+div.admonition.tip > p.admonition-title::after {
+  content: none !important;
+  display: none !important;
+  width: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  background: none !important;
+}
+.admonition.tip > *:not(.admonition-title),
+div.admonition.tip > *:not(.admonition-title) {
+  padding: 0.5em 1.5em !important;
+  margin: 0 !important;
+}
+
+/* --- Note asides — quiet card in the widget palette --------- */
+.admonition.note,
+div.admonition.note {
+  border: 1px solid #cddce9 !important;
+  border-left: 4px solid #b9d2e5 !important;
+  border-radius: 0 6px 6px 0 !important;
+  background-color: #f5f9fc !important;
+  padding: 0 !important;
+  overflow: hidden;
+  margin: 1.5em 0;
+  box-shadow: none !important;
+}
+.admonition.note > .admonition-title,
+div.admonition.note > p.admonition-title {
+  background-color: transparent !important;
+  color: #004a85 !important;
+  font-weight: 700 !important;
+  font-size: 0.85em !important;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.5em 1.2em 0 !important;
+  margin: 0 !important;
+}
+.admonition.note > .admonition-title::before,
+div.admonition.note > p.admonition-title::before,
+.admonition.note > .admonition-title::after,
+div.admonition.note > p.admonition-title::after {
+  content: none !important;
+  display: none !important;
+  width: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  background: none !important;
+}
+.admonition.note > *:not(.admonition-title),
+div.admonition.note > *:not(.admonition-title) {
+  padding: 0.4em 1.2em 0.6em !important;
+  margin: 0 !important;
+}
+
+/* --- Dark mode: worked-example (tip) and note boxes --------
+   These blocks are defined above with hardcoded light values and
+   !important, so they need explicit dark variants or the theme's
+   light-gray body text lands on a white card. Palette matches the
+   key-concept dark treatment. */
+html[data-theme="dark"] .admonition.tip,
+html[data-theme="dark"] div.admonition.tip {
+  background-color: #1e2731 !important;
+  border-color: #2a4a6a !important;
+  border-left-color: #5aa3e5 !important;
+}
+html[data-theme="dark"] .admonition.tip > .admonition-title,
+html[data-theme="dark"] div.admonition.tip > p.admonition-title {
+  background-color: #2565a0 !important;
+  color: #ffffff !important;
+}
+
+html[data-theme="dark"] .admonition.note,
+html[data-theme="dark"] div.admonition.note {
+  background-color: #232a33 !important;
+  border-color: #3a4552 !important;
+  border-left-color: #56708a !important;
+}
+html[data-theme="dark"] .admonition.note > .admonition-title,
+html[data-theme="dark"] div.admonition.note > p.admonition-title {
+  color: #82bce8 !important;
+}
+
+/* ============================================================
+   System dark on the shell pages
+   ------------------------------------------------------------
+   Every dark rule above is keyed to the theme's html[data-theme="dark"]
+   stamp. The frame and page shells never stamp it: their dark mode comes
+   from prefers-color-scheme alone (see shell.css). So on a phone in system
+   dark those rules never fired, and a note box shipped as a light card with
+   the dark theme's light text on it -- unreadable. This block repeats them
+   for that state, guarded the same way shell.css guards its tokens, so an
+   explicit light stamp still wins if one is ever added.
+   GENERATED from the rules above: keep the two in step.
+   ============================================================ */
+@media (prefers-color-scheme: dark) {
+html:not([data-theme="light"]) {
+  --pst-color-primary:    #5aa3e5;
+  --pst-color-primary-bg: #1e2833;
+  --pst-color-link:       #82bce8;
+  --pst-color-link-hover: #b4d4f0;
+  --pst-color-inline-code-links: #82bce8;
+  --pst-color-accent:     #5aa3e5;
+}
+html:not([data-theme="light"]) .bd-article h1,
+html:not([data-theme="light"]) .bd-article h2 {
+  color: #b4d4f0;
+}
+html:not([data-theme="light"]) .bd-article h2 {
+  border-bottom-color: #3a4552;
+}
+html:not([data-theme="light"]) .bd-article h3 {
+  color: #82bce8;
+  border-left-color: #5aa3e5;
+}
+html:not([data-theme="light"]) .bd-article h4 {
+  color: #b4c0cc;
+}
+html:not([data-theme="light"]) .bd-article :not(pre) > code {
+  background-color: #232a33;
+  color: #82bce8;
+}
+html:not([data-theme="light"]) .bd-article table thead tr {
+  background-color: #1e4e7a;
+}
+html:not([data-theme="light"]) .bd-article table thead th {
+  color: #ffffff;
+}
+html:not([data-theme="light"]) .bd-article table tbody td {
+  color: #e6edf3 !important;
+  border-bottom-color: #3a4552;
+  background-color: transparent;
+}
+html:not([data-theme="light"]) .bd-article table tbody tr:nth-child(even) {
+  background-color: #232a33;
+}
+html:not([data-theme="light"]) .bd-article table tbody tr:hover {
+  background-color: #2a323d;
+  box-shadow: inset 3px 0 0 #5aa3e5;
+}
+html:not([data-theme="light"]) .bd-article table tbody tr:nth-child(even) td,
+html:not([data-theme="light"]) .bd-article table tbody tr:hover td {
+  color: #e6edf3 !important;
+}
+html:not([data-theme="light"]) .bd-article table.grade-scale th,
+html:not([data-theme="light"]) .bd-article table.grade-scale td {
+  border-color: #3a4552;
+  color: #e6edf3;
+}
+html:not([data-theme="light"]) .bd-article table.grade-scale thead th {
+  color: #e6edf3;
+}
+html:not([data-theme="light"]) .admonition.key-concept,
+html:not([data-theme="light"]) div.admonition.key-concept {
+  background-color: #1a2838 !important;
+  border-color: #2a4a6a !important;
+  border-left-color: #5aa3e5 !important;
+}
+html:not([data-theme="light"]) .admonition.key-concept > .admonition-title,
+html:not([data-theme="light"]) div.admonition.key-concept > p.admonition-title {
+  background-color: #1e4e7a !important;
+}
+html:not([data-theme="light"]) .admonition.type-along,
+html:not([data-theme="light"]) div.admonition.type-along {
+  background-color: #17232f !important;
+  border-color: #2a4a6a !important;
+  border-left-color: #5aa3e5 !important;
+}
+html:not([data-theme="light"]) .admonition.type-along > .admonition-title,
+html:not([data-theme="light"]) div.admonition.type-along > p.admonition-title {
+  background-color: #1e4e7a !important;
+}
+html:not([data-theme="light"]) div.admonition.example-problem {
+  background-color: #2a1f16;
+  border-color: #6a4a2c;
+  border-left-color: #c47030;
+}
+html:not([data-theme="light"]) div.admonition.example-problem > p.admonition-title {
+  background-color: #6a3410;
+}
+html:not([data-theme="light"]) .admonition.ground-rules,
+html:not([data-theme="light"]) div.admonition.ground-rules {
+  background-color: #2a1f16 !important;
+  border-color: #6a4a2c !important;
+  border-left-color: #c47030 !important;
+}
+html:not([data-theme="light"]) .admonition.ground-rules > .admonition-title,
+html:not([data-theme="light"]) div.admonition.ground-rules > p.admonition-title {
+  background-color: #6a3410 !important;
+}
+html:not([data-theme="light"]) .admonition.slides a,
+html:not([data-theme="light"]) div.admonition.slides a {
+  background: rgba(90, 163, 229, 0.15);
+  border-color: rgba(90, 163, 229, 0.40);
+  color: #82bce8 !important;
+}
+html:not([data-theme="light"]) .admonition.slides a:hover,
+html:not([data-theme="light"]) div.admonition.slides a:hover {
+  background: rgba(90, 163, 229, 0.28);
+  border-color: rgba(90, 163, 229, 0.65);
+  color: #b4d4f0 !important;
+}
+html:not([data-theme="light"]) .bd-article figure {
+  background: #232a33;
+  border-color: #3a4552;
+}
+html:not([data-theme="light"]) .bd-article figure figcaption {
+  color: #b4c0cc;
+}
+html:not([data-theme="light"]) .bd-article .block-card,
+html:not([data-theme="light"]) .bd-article .mt-card {
+  background: #232a33;
+  border-color: #3a4552;
+  color: #e6edf3 !important;
+}
+html:not([data-theme="light"]) .bd-article .block-card h3,
+html:not([data-theme="light"]) .bd-article .mt-card h4 {
+  color: #b4d4f0;
+}
+html:not([data-theme="light"]) .bd-article .block-card p,
+html:not([data-theme="light"]) .bd-article .mt-card p {
+  color: #b4c0cc;
+}
+html:not([data-theme="light"]) .bd-article .block-card:hover,
+html:not([data-theme="light"]) .bd-article .mt-card:hover {
+  background: #2a323d;
+  border-color: #5aa3e5;
+}
+html:not([data-theme="light"]) .bd-article .deliverable-card {
+  background: #232a33;
+  border-color: #3a4552;
+  border-left-color: #5aa3e5;
+}
+html:not([data-theme="light"]) .bd-article .deliverable-card h3,
+html:not([data-theme="light"]) .bd-article .deliverable-card .d-w-num,
+html:not([data-theme="light"]) .bd-article .deliverable-card .d-due strong {
+  color: #b4d4f0;
+}
+html:not([data-theme="light"]) .bd-article .deliverable-card .d-eyebrow,
+html:not([data-theme="light"]) .bd-article .deliverable-card .d-link {
+  color: #82bce8;
+}
+html:not([data-theme="light"]) .bd-article .deliverable-card .d-weight,
+html:not([data-theme="light"]) .bd-article .deliverable-card .d-due {
+  color: #b4c0cc;
+}
+html:not([data-theme="light"]) .bd-article .module-meta {
+  color: #b4c0cc;
+}
+html:not([data-theme="light"]) .bd-article .module-meta .m-module {
+  color: #b4d4f0;
+  background: #1e2833;
+}
+html:not([data-theme="light"]) .bd-article .module-synopsis {
+  color: #b4c0cc;
+}
+html:not([data-theme="light"]) .bd-article .mt-card .mt-kind {
+  color: #b4c0cc;
+}
+html:not([data-theme="light"]) .bd-article .module-nav {
+  border-top-color: #3a4552;
+}
+html:not([data-theme="light"]) .bd-article .module-nav a {
+  color: #82bce8;
+}
+html:not([data-theme="light"]) .bd-article .module-nav a:hover {
+  color: #b4d4f0;
+}
+html:not([data-theme="light"]) .bd-article .matlab-link {
+  background: #2a1f16;
+  border-color: #6a4a2c;
+  color: #e0b088 !important;
+}
+html:not([data-theme="light"]) .bd-article .matlab-link:hover {
+  background: #3a2a1e;
+  border-color: #c47030;
+}
+html:not([data-theme="light"]) .bd-article .matlab-link .ml-arrow {
+  color: #e87722;
+}
+html:not([data-theme="light"]) .bd-article ol.lo-list > li::before {
+  color: #82bce8;
+}
+html:not([data-theme="light"]) .sy-globaltoc p.caption {
+  color: #e6edf3;
+}
+html:not([data-theme="light"]) .sy-globaltoc > h3.sy-globaltoc-home a,
+html:not([data-theme="light"]) .sy-globaltoc li.toctree-l1 > a {
+  color: #c8d1db;
+}
+html:not([data-theme="light"]) .sy-globaltoc > h3.sy-globaltoc-home a:hover,
+html:not([data-theme="light"]) .sy-globaltoc li.toctree-l1 > a:hover {
+  background: #232a33;
+  color: #82bce8;
+}
+html:not([data-theme="light"]) .sy-globaltoc > h3.sy-globaltoc-home.current a,
+html:not([data-theme="light"]) .sy-globaltoc > h3.sy-globaltoc-home a.current,
+html:not([data-theme="light"]) .sy-globaltoc li.toctree-l1.current > a,
+html:not([data-theme="light"]) .sy-globaltoc li.toctree-l1 > a.current {
+  color: #82bce8;
+  border-left-color: #5aa3e5;
+}
+html:not([data-theme="light"]) .sy-globaltoc li.toctree-l2 > a {
+  color: #a1adb9;
+}
+html:not([data-theme="light"]) .sy-globaltoc li.toctree-l2 > a:hover {
+  background: #232a33;
+  color: #82bce8;
+}
+html:not([data-theme="light"]) .sy-globaltoc li.toctree-l2 > a.current,
+html:not([data-theme="light"]) .sy-globaltoc li.toctree-l2.current > a {
+  color: #82bce8;
+  background: #1e2833;
+  border-left-color: #5aa3e5;
+}
+html:not([data-theme="light"]) .sy-globaltoc li.toctree-l1.has-children > details > summary {
+  color: #7d8b99;
+}
+html:not([data-theme="light"]) .sy-globaltoc li.toctree-l1.has-children > details > summary:hover {
+  color: #82bce8;
+}
+html:not([data-theme="light"]) .sy-globaltoc li.sy-l2-reading    > a .sy-icon { color: #5aa3e5; }
+html:not([data-theme="light"]) .sy-globaltoc li.sy-l2-flashcards > a .sy-icon { color: #4ec4de; }
+html:not([data-theme="light"]) .sy-globaltoc li.sy-l2-slides     > a .sy-icon { color: #4fb478; }
+html:not([data-theme="light"]) .sy-globaltoc li.sy-l2-practice   > a .sy-icon { color: #d9a04a; }
+html:not([data-theme="light"]) .sy-globaltoc li.toctree-l2.current > a .sy-icon { color: #82bce8; }
+html:not([data-theme="light"]) .admonition.tip,
+html:not([data-theme="light"]) div.admonition.tip {
+  background-color: #1e2731 !important;
+  border-color: #2a4a6a !important;
+  border-left-color: #5aa3e5 !important;
+}
+html:not([data-theme="light"]) .admonition.tip > .admonition-title,
+html:not([data-theme="light"]) div.admonition.tip > p.admonition-title {
+  background-color: #2565a0 !important;
+  color: #ffffff !important;
+}
+html:not([data-theme="light"]) .admonition.note,
+html:not([data-theme="light"]) div.admonition.note {
+  background-color: #232a33 !important;
+  border-color: #3a4552 !important;
+  border-left-color: #56708a !important;
+}
+html:not([data-theme="light"]) .admonition.note > .admonition-title,
+html:not([data-theme="light"]) div.admonition.note > p.admonition-title {
+  color: #82bce8 !important;
+}
+}

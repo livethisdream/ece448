@@ -1,52 +1,59 @@
 # Materials
 
+Everything you download or reference in this course lives on this page: the
+references, the hardware and software, the legacy slides, and the supporting
+documents. Each lesson page links its own materials in place; this is the one
+place they are all together.
+
 ## Primary references
 
-This is a hands-on course, so the "textbooks" are two curated web references
-that we'll work through in parallel with in-class flowgraph exercises.
+This is a hands-on course, so the "textbooks" are two free web references we
+work through alongside the in-class flowgraphs.
 
-- **[GNU Radio Tutorials](https://wiki.gnuradio.org/index.php/Tutorials)** — official GNU Radio wiki tutorials. Primary reference for GRC, flowgraph construction, and out-of-tree module development.
-- **[PySDR — A Guide to SDR and DSP using Python](https://pysdr.org/)** (Marc Lichtman) — free online textbook covering SDR fundamentals, DSP basics, and hands-on examples with PlutoSDR, RTL-SDR, and USRP.
+- **<a href="https://wiki.gnuradio.org/index.php/Tutorials" target="_blank" rel="noopener">GNU Radio Tutorials</a>**: the official GNU Radio wiki tutorials. The primary reference for GRC, flowgraph construction, and out-of-tree module development.
+- **<a href="https://pysdr.org/" target="_blank" rel="noopener">PySDR: A Guide to SDR and DSP using Python</a>** (Marc Lichtman): a free online textbook covering SDR fundamentals, DSP basics, and hands-on examples with PlutoSDR, RTL-SDR, and USRP.
 
 ## Hardware & software
 
-- **GNURadio** with **GNU Radio Companion (GRC)** — install instructions posted before Lesson 3.
-- **RTL-SDR** — introductory receive-only SDR (25 MHz – 1.75 GHz).
-- **HackRF One** — half-duplex Tx/Rx SDR (1 MHz – 6 GHz).
-- **PlutoSDR / ADALM-PLUTO** — full-duplex Tx/Rx SDR (325 MHz – 3.8 GHz, extendable).
-- **ADALM-PHASER** — phased-array SDR platform (shared with ECE 444).
-- **Directional antennas** (Yagi / log-periodic) — for the Lesson 20 fox hunt.
+- **GNU Radio** with **GNU Radio Companion (GRC)**: install instructions are posted with L5.
+- **RTL-SDR**: introductory receive-only SDR (25 MHz–1.75 GHz).
+- **HackRF One**: half-duplex Tx/Rx SDR (1 MHz–6 GHz).
+- **PlutoSDR / ADALM-PLUTO**: full-duplex Tx/Rx SDR (325 MHz–3.8 GHz, extendable).
+- **ADALM-PHASER**: phased-array SDR platform, shared with ECE 444.
+- **Directional antennas** (Yagi and log-periodic): for the midterm fox hunt.
 
-## Legacy slide decks
+## Lab packets
 
-Prior-year Beamer PDFs are posted here as reference until the corresponding
-lessons are ported to the live reveal.js format. Each lesson page also links
-to its legacy PDF where one exists.
+Each lab packet is posted on its lab page, and here, before the lab.
 
-- [L2 — Noise Figure & Link Budget](_static/legacy-slides/L02-noise-figure-link-budget.pdf)
-- [L3 — Signal Space](_static/legacy-slides/L03-signal-space.pdf)
-- [L4 — SDR Introduction](_static/legacy-slides/L04-sdr-introduction.pdf)
-- [L7 — AM Simulation](_static/legacy-slides/L07-am-simulation.pdf)
-- [L8 — AM & FM Receivers](_static/legacy-slides/L08-am-fm-receivers.pdf)
-- [L13 — PAM Theory](_static/legacy-slides/L13-pam-theory.pdf)
-- [L14 — ASCII/PAM](_static/legacy-slides/L14-ascii-pam.pdf)
-- [L16 — Final Project Intro](_static/legacy-slides/L16-final-project-intro.pdf)
-- [L22 — DTMF](_static/legacy-slides/L22-dtmf.pdf)
-- [L24 — HD Radio](_static/legacy-slides/L24-hd-radio.pdf)
-- [L31 — RF Reverse Engineering](_static/legacy-slides/L31-rf-reverse-engineering.pdf)
-- [L35 — ADS-B](_static/legacy-slides/L35-adsb.pdf)
-- [L36 — AIS](_static/legacy-slides/L36-ais.pdf)
+## Legacy slides
+
+The slides each topic was last taught from, posted as they were while the
+lessons are converted to the new format. As each lesson is converted, its new
+notes and slides replace these on the lesson page.
+
+| Deck | Lesson | Slides |
+| :- | :-: | :- |
+| Noise Figure and Link Budget | L2 | <a class="doc-link" href="legacy/L02-noise-figure-link-budget.pdf" target="_blank" rel="noopener">slides</a> |
+| Signal Space | L3 | <a class="doc-link" href="legacy/L03-signal-space.pdf" target="_blank" rel="noopener">slides</a> |
+| SDR Introduction | L4 | <a class="doc-link" href="legacy/L04-sdr-introduction.pdf" target="_blank" rel="noopener">slides</a> |
+| AM Simulation | L6 | <a class="doc-link" href="legacy/L07-am-simulation.pdf" target="_blank" rel="noopener">slides</a> |
+| AM and FM Receivers | L7 | <a class="doc-link" href="legacy/L08-am-fm-receivers.pdf" target="_blank" rel="noopener">slides</a> |
+| PAM Theory | L9 | <a class="doc-link" href="legacy/L13-pam-theory.pdf" target="_blank" rel="noopener">slides</a> |
+| ASCII over PAM | L10 | <a class="doc-link" href="legacy/L14-ascii-pam.pdf" target="_blank" rel="noopener">slides</a> |
+| DTMF | L13 | <a class="doc-link" href="legacy/L22-dtmf.pdf" target="_blank" rel="noopener">slides</a> |
+| HD Radio | L14 | <a class="doc-link" href="legacy/L24-hd-radio.pdf" target="_blank" rel="noopener">slides</a> |
+| RF Reverse Engineering | L17 | <a class="doc-link" href="legacy/L31-rf-reverse-engineering.pdf" target="_blank" rel="noopener">slides</a> |
+| ADS-B | L18 | <a class="doc-link" href="legacy/L35-adsb.pdf" target="_blank" rel="noopener">slides</a> |
+| AIS | L19 | <a class="doc-link" href="legacy/L36-ais.pdf" target="_blank" rel="noopener">slides</a> |
+| Final Project Introduction | Final Project | <a class="doc-link" href="legacy/L16-final-project-intro.pdf" target="_blank" rel="noopener">slides</a> |
 
 ## Supplemental references
 
 Third-party technical documents referenced by specific lessons.
 
-- [ADS-B Decoding Guide](_static/legacy-slides/refs/adsb-decode-guide.pdf) — companion reference for L35.
-- [1090 MHz Riddle](_static/legacy-slides/refs/1090_Riddle.pdf) — Mode-S ES background reading for L35.
-- [ADS-B / Magazu (USAF)](_static/legacy-slides/refs/adsb_magazu_usaf.pdf) — additional ADS-B reference.
-- [NRSC-1011s HD Radio spec](_static/legacy-slides/refs/nrsc-1011s_hd-radio.pdf) — companion reference for L24.
-- [Differential Encoding Tutorial](_static/legacy-slides/refs/differential-encoding-tutorial.pdf) — companion reference for L27–L28 (mPSK).
-
-## Additional resources
-
-_TBD — application notes, videos, and links will be added here as they are pulled into lessons._
+- <a class="doc-link" href="legacy/refs/nrsc-1011s_hd-radio.pdf" target="_blank" rel="noopener">NRSC-1011s HD Radio specification (PDF)</a>: companion reference for L14.
+- <a class="doc-link" href="legacy/refs/differential-encoding-tutorial.pdf" target="_blank" rel="noopener">Differential encoding tutorial (PDF)</a>: companion reference for L15 (mPSK).
+- <a class="doc-link" href="legacy/refs/adsb-decode-guide.pdf" target="_blank" rel="noopener">ADS-B decoding guide (PDF)</a>: companion reference for L18.
+- <a class="doc-link" href="legacy/refs/1090_Riddle.pdf" target="_blank" rel="noopener">The 1090 MHz Riddle (PDF)</a>: Mode S and ADS-B background reading for L18.
+- <a class="doc-link" href="legacy/refs/adsb_magazu_usaf.pdf" target="_blank" rel="noopener">ADS-B, Magazu, USAF (PDF)</a>: additional ADS-B reference.
