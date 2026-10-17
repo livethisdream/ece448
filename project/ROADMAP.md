@@ -30,6 +30,11 @@ budgets, checks) still apply. Where 444 would put a derivation on screen,
 
 ## Settled (Neil, 2026-10-17)
 
+- **Seven modules approved** (lesson list below).
+- **The midterm is a fox hunt plus a CTF.**
+- **Drop the 2025 "Theory Project"** (nobody remembers what it covered).
+  L2–L3 get ordinary practice sets, like every other lesson.
+
 - **mPSK is its own lesson** (L15, about two periods), using the GNU Radio
   tutorial in `ECE448-faculty/L19_MPSK`. It wasn't on the 2025 schedule.
 
@@ -48,7 +53,7 @@ budgets, checks) still apply. Where 444 would put a derivation on screen,
 - **Objectives** are the two-level "I can…" list (module.N). Neil reviews
   them before anything is scaffolded.
 
-## Draft lesson list (awaiting Neil's sign-off)
+## Lesson list (approved by Neil, 2026-10-17)
 
 Neil, 2026-10-17: keep the seven-module structure from the old site
 syllabus, and make sure it holds every lesson from the 2025 list. Lessons
@@ -61,25 +66,21 @@ lab under its lesson.
 | 2 · SDR & GNU Radio Foundations | L4 SDR Introduction · L5 GNU Radio Introduction → L5 Lab |
 | 3 · Analog Modulation | L6 AM Simulation → L6 Lab · L7 AM and FM Receivers (incl. broadcast FM and RDS) → L7 Lab |
 | 4 · Digital Modulation | L8 FSK → L8 Lab · L9 PAM Theory · L10 ASCII over PAM → L10 Lab |
-| 5 · Custom Blocks & Midterm | L11 Out-of-Tree Modules and Custom Blocks → L11 Lab · Midterm (GNU Radio + fox hunt, calendar) |
+| 5 · Custom Blocks & Midterm | L11 Out-of-Tree Modules and Custom Blocks → L11 Lab · Midterm (fox hunt + CTF, calendar) |
 | 6 · Waveform Applications & RF Reverse Engineering | L12 CW → L12 Lab · L13 DTMF → L13 Lab · L14 HD Radio → L14 Lab · L15 mPSK (about 2 periods) → L15 Lab · L16 Frequency Hopping → L16 Lab · L17 RF Reverse Engineering (GQRX, URH, remotes) → L17 Lab · L18 ADS-B · L19 AIS → L18–L19 Lab ADS-B/AIS |
 | 7 · Final Project | L20 QAM and OFDM · project days and presentations (calendar) |
 
-## Objectives (awaiting Neil's sign-off)
+## Objectives
 
 Use the seven-module objectives already in `book/syllabus.md` (1.1–7.4),
 since they follow this structure. Two changes:
 
 - **3.3** also covers RDS.
 - **6.4** (mPSK) adds carrier and symbol-timing recovery.
+- **5.3–5.4** become the midterm: a fox hunt and a CTF.
 
 ## Open
 
-- Sign-off on the lesson list and objectives above.
-- **2025 "Theory Project"** (due at period 9): turn it into the L2–L3
-  practice set, or make it a lab packet?
-- Midterm format: the old site's GNU Radio plus fox hunt, or the 2025
-  in-class portion plus a practical?
 - Spring 2027 meeting periods and calendar dates.
 
 ## Next
