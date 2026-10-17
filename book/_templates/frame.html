@@ -1,0 +1,146 @@
+{#- Chrome-free lecture page for `frame_view: true` lessons.
+
+    Deliberately NOT extending the theme: a frame is a full-viewport
+    scroll-snap section, so the page has to own the window. Everything the
+    sidebar would have given us that still matters -- prev, next, the module
+    index -- comes from Sphinx's own TOC context and is rendered into the HUD
+    instead.
+-#}
+<!doctype html>
+<html lang="en" data-mode="read">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ title|striptags|e }} &mdash; {{ docstitle|striptags|e }}</title>
+{{ metatags }}
+<link rel="icon" href="{{ pathto('_static/favicon.ico', 1) }}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap">
+{#- custom.css owns the content components a frame page may still use --
+    .module-toc lesson cards, .lo-list objective numbering, .fig. L05a needed
+    none of them, but the module overviews are built from exactly those, and
+    without this they render as bare underlined links. Loaded FIRST so the
+    shell and frames win on type, palette and .callout. -#}
+<link rel="stylesheet" href="{{ pathto('_static/custom.css', 1) }}">
+<link rel="stylesheet" href="{{ pathto('_static/shell.css', 1) }}">
+<link rel="stylesheet" href="{{ pathto('_static/frames.css', 1) }}">
+{#- script_files has already been filtered to MathJax by _ext/frames.py --
+    including its inline config, which has no filename to match on here.
+    js_tag() is required: pathto() on a _JavaScript object renders None. -#}
+{%- for js in script_files %}
+{{ js_tag(js) }}
+{%- endfor %}
+</head>
+<body>
+
+<div class="rail"><span id="railfill"></span></div>
+
+<div class="laser" id="laser" aria-hidden="true"></div>
+<div class="spot" id="spot" aria-hidden="true"></div>
+
+<div class="index" id="index" role="dialog" aria-label="Jump to a frame or another lesson">
+  <button class="index-close" id="btnIndexClose" type="button" aria-label="Close">&times;</button>
+  <div class="wrap">
+    <div class="index-cols">
+      <div class="index-here">
+        <h2>This lesson</h2>
+        <ol id="indexlist"></ol>
+      </div>
+      <div class="index-toc">
+        <h2>Course</h2>
+        {{ toctree(collapse=False, includehidden=True, titles_only=True, maxdepth=2) }}
+      </div>
+    </div>
+  </div>
+</div>
+
+{#- Four controls, two of which open a panel. The presenter tools used to sit
+    inline and were hidden below 46rem to stop the bar overflowing a phone --
+    exactly the wrong things to drop. Folding nav and tools into popovers wins
+    back the width, so every control is now available at every size.
+
+    The panels are children of .hud rather than of their buttons: .hud is
+    position:fixed and so already a containing block, and anchoring to the bar
+    keeps a long lesson title from running off the edge of a phone screen. -#}
+<div class="hud">
+  {#- One pill, centerd, holding three runs separated by a rule:
+
+          ECE 448 | present  tools | 12/27
+
+      Who and where, then what you can do here, then the contents. Pinning the
+      three as separate pills looked symmetric and was not -- `space-between`
+      centers the middle one between the other two rather than in the window,
+      so it sat off center by half the difference in the outer widths and moved
+      whenever a label changed. A centerd pill cannot drift. -#}
+  {#- The site's own name, and behind it the other sites it sits beside. It
+      used to float in the top-left corner with the modules springing out of
+      it; it covered the first line of every page for a nav the index overlay
+      already carries. Renders its own group, so an unconfigured nav leaves no
+      trace. -#}
+  {% include "_sitenav.html" %}
+
+  <div class="hud-group hud-mid">
+    {#- How the lesson is laid out, and what you point at it with. The mode
+        button is labeled with the mode in force: pressing it used to silently
+        swap the caption, which read as inert. Now it opens a menu showing both
+        options with the live one lit -- a control labeled with its current
+        value. -#}
+    <button id="btnMode" type="button" aria-expanded="false" aria-controls="modepop"
+            title="How the lesson is laid out (P)">read</button>
+    <button id="btnTools" type="button" aria-expanded="false" aria-controls="toolspop"
+            title="Presenter tools">tools</button>
+  </div>
+
+  <div class="hud-group">
+    {#- The counter is the button. "12/25" already says what it opens -- a deck
+        you can jump around in -- so a separate "index" label was a word for
+        something the number was saying anyway. -#}
+    <button id="btnIndex" class="counter" type="button" aria-pressed="false"
+            title="Contents (G) · double-tap for the top"><b id="cur">1</b>/<span id="tot">0</span></button>
+  </div>
+
+  {#- The panels are children of .hud rather than of a group: .hud spans the
+      whole bar and is position:fixed, so it is one containing block wide
+      enough for a panel to be placed under its own button and still be pulled
+      back on screen at a phone width. shell.js measures and places them. -#}
+  <div class="pop" id="modepop" role="group" aria-label="View mode" hidden>
+    <button id="btnPresent" class="choice" type="button" aria-pressed="false">
+      present<span class="pop-note">one frame at a time</span></button>
+    <button id="btnRead" class="choice" type="button" aria-pressed="true">
+      read<span class="pop-note">the whole lesson, continuous</span></button>
+  </div>
+
+  {#- These three keep their ids: frames.js wires them by id, so the move
+      into a panel costs no JS change. -#}
+  <div class="pop" id="toolspop" role="group" aria-label="Presenter tools" hidden>
+    <button id="btnLaser" type="button" aria-pressed="false">laser<kbd>L</kbd></button>
+    <button id="btnSpot" type="button" aria-pressed="false">spotlight<kbd>S</kbd></button>
+    <button id="btnFull" type="button">fullscreen<kbd>F</kbd></button>
+  </div>
+</div>
+
+{#- `bd-article` is a compatibility class, not a theme leftover. 149 of
+    custom.css's 256 rules are scoped `.bd-article ...` -- the theme's article
+    wrapper -- and that is where every content component lives: the callout
+    variants, the hero, the block grid, the deliverable cards, the module TOC
+    and its lesson cards. Without this class they all render unstyled. It comes
+    out when custom.css is rewritten against the shell's own selectors. -#}
+<main class="deck bd-article" id="deck" tabindex="-1">
+{{ body }}
+</main>
+
+<script src="{{ pathto('_static/shell.js', 1) }}"></script>
+<script src="{{ pathto('_static/frames.js', 1) }}"></script>
+{#- viz-autosize sizes each widget iframe to its content. Reading pages have
+    always loaded it; frame pages never did, so every widget iframe on a frame
+    lesson stayed pinned to the one hardcoded height in the markup -- correct at
+    a desktop column, far too short on a phone, where the widget then scrolled
+    inside its own frame. That is the whole course now, so it belongs here too.
+    It is only safe because every widget fits the frame budget at every width
+    (check_widget caps height at 555 wide / 660 narrow): without that, giving
+    the iframe its true height trades an inner scrollbar for a frame whose
+    bottom is simply gone in present mode. -#}
+<script src="{{ pathto('_static/viz-autosize.js', 1) }}"></script>
+</body>
+</html>

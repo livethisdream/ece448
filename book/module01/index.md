@@ -1,23 +1,54 @@
+---
+frame_view: true
+nav: Foundations of Detection & Link Budgets
+---
+
 # Module 1 — Foundations of Detection & Link Budgets
 
-<p class="module-meta"><span class="m-module">Module 01</span><span class="m-time">Lessons 1–3</span></p>
+::::{frame}
+:class: title-frame
 
-<p class="module-synopsis">Before hardware touches a signal, do the arithmetic. Module 1 walks the theory that every SDR link depends on: noise figure and cascade analysis for the receiver front end, Boltzmann's noise floor for the physics, and signal space for the geometry of what "detection" even means.</p>
+<div class="course-mark">ECE 448 · Module 01</div>
 
-## What you'll learn
+<h1 class="frame-title">Foundations of Detection &amp; Link Budgets</h1>
 
-1. **1.1** — Given a receive chain, calculate its cumulative noise figure using cascade (Friis) analysis and predict the system noise temperature.
-2. **1.2** — Build a link budget from transmitter power, antenna gains, path loss, and receiver NF, and evaluate whether a link closes at a target SNR.
-3. **1.3** — Represent signals as vectors in signal space and use inner products to reason about matched filtering and detection.
+<div class="title-rule"></div>
 
-## In this module
+Will the link close? The few numbers you need before hardware touches a signal.
+
+Lessons 1–3 · Software Defined Radios · Dr. Neil Rogers
+::::
+
+::::{frame} Where This Module Goes
+Noise figure, cascade analysis, the link budget, and signal space: just enough to predict whether a link will work and to read a constellation.
+::::
+
+::::{frame} Learning Objectives
+
+<ol class="lo-list" style="--module: '1'">
+  <li>I can define noise figure and cascade it through a receiver chain to predict system noise performance.</li>
+  <li>I can compute a link budget and predict received SNR for a specified geometry, transmitter, and antenna configuration.</li>
+  <li>I can describe signal-space concepts (basis functions, constellations, decision regions) and apply them to a digital modulation scheme.</li>
+</ol>
+::::
+
+::::{frame} In This Module
 
 <div class="module-toc">
   <a class="mt-card mt-lesson" href="L01-course-intro/index.html">
-    <span class="mt-kind">Lesson 1</span>
+    <span class="mt-kind">Lesson · L1</span>
     <h4>Course Introduction</h4>
-    <p>What an SDR is, why SDRs matter, and how ECE 448 is organized. Live SDR demo across the spectrum.</p>
+    <p>What an SDR is, the signals around you, and how the course is run.</p>
+  </a>
+  <a class="mt-card mt-lesson" href="L02-noise-figure-link-budget/index.html">
+    <span class="mt-kind">Lesson · L2</span>
+    <h4>Noise Figure and Link Budget</h4>
+    <p>Cascade noise figure through a receiver and predict the SNR a link delivers. Objectives 1.1, 1.2.</p>
+  </a>
+  <a class="mt-card mt-lesson" href="L03-signal-space/index.html">
+    <span class="mt-kind">Lesson · L3</span>
+    <h4>Signal Space</h4>
+    <p>Basis functions, constellations, and decision regions: the picture every digital receiver works from. Objective 1.3.</p>
   </a>
 </div>
-
-<p>Lessons 2 and 3 will be authored during the semester. The current legacy PDF decks are still available; ask the instructor.</p>
+::::

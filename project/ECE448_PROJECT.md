@@ -43,6 +43,8 @@ Grading is **25% Engagement / 35% Midterm / 40% Final Project**. The book was mi
 
 # Status
 
+- **2026-10-17: rebuilt on the ECE 444 shell for Spring 2027.** There are 7 modules and 20 lessons, with labs as child pages, generated from `scripts/scaffold_lessons.py`. L01 is a frame page. `project/ROADMAP.md` has the current status. The bullets below describe the August 2026 state.
+
 - Full book scaffold shipped: `_config.yml`, `_toc.yml`, `intro.md` (hero + 7 module cards + 3 deliverable cards), `syllabus.md` (390 lines), `materials.md` (51 lines).
 - Module 1 seeded — `book/module01/index.md` + L1 with 11 bio photos in `book/module01/L01-course-intro/img/`.
 - L1 reveal.js deck live at `book/extras/slides/01-course-intro.md` on the shared `course-slides.css`.

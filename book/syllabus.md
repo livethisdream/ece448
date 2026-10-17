@@ -1,22 +1,9 @@
 # Syllabus
 
-<style>
-.lo-table h3 { margin-top: 1.4em; color: #0067b9; font-size: 1.1em; }
-.lo-table table { width: 100%; border-collapse: collapse; margin-bottom: 0.6em; font-size: 0.95em; }
-.lo-table th { background: #f2f6fb; color: #003a75; text-align: left; border-bottom: 1px solid #cfd8e3; padding: 0.35em 0.6em; }
-.lo-table td { border-bottom: 1px solid #eef2f7; padding: 0.4em 0.6em; vertical-align: top; }
-.lo-table td:first-child { font-weight: 600; color: #0067b9; text-align: right; width: 3em; white-space: nowrap; font-variant-numeric: tabular-nums; }
-</style>
-
-<div style="float:right;margin:0 0 1em 1.5em;text-align:center;max-width:180px;">
-<img src="/assetsintro.mdimg/syllabus-qr.png" alt="QR code to this syllabus" style="width:160px;height:160px;">
-<div style="font-size:0.85em;color:#666;margin-top:0.3em;">Scan for the live syllabus</div>
-</div>
-
 ## Course
 
-**ECE 448 — Introduction to Software Defined Radios**
-Spring 2026
+**ECE 448 — Software Defined Radios**
+Spring 2027
 
 ## Instructor
 
@@ -41,10 +28,19 @@ methods of communication. **This course focuses on the applied side** of
 wireless communications: introducing SDRs, familiarizing you with the benefits
 and limitations of various SDR platforms and, more importantly, the various
 software packages used to interact with them. You'll spend most of your time
-in **GNURadio**, building real flowgraphs against real signals. The course
+in **GNU Radio**, building real flowgraphs against real signals. The course
 culminates in a substantial, **self-defined final project** that integrates
 every concept in the course into a specific wireless application of your
 choosing.
+
+### An applications course
+
+This course gives you **only as much theory as the application needs**. ECE 447
+derives communications theory; here we use it. Every lesson starts with a
+signal to build, receive, or decode, and most of every period is spent in
+GNU Radio with real hardware and real captures. When a lesson brings in an
+equation, it is because a block parameter, a sample rate, or a filter needs
+it.
 
 ## Course goals
 
@@ -77,13 +73,13 @@ mastery-based portion of the grade.
 | 1.2 | I can compute a link budget and predict received SNR for a specified geometry, transmitter, and antenna configuration. |
 | 1.3 | I can describe signal-space concepts (basis functions, constellations, decision regions) and apply them to a digital modulation scheme. |
 
-### Module 2 — SDR & GNURadio Foundations
+### Module 2 — SDR & GNU Radio Foundations
 
 | LO | Description |
 | :-: | :- |
 | 2.1 | I can describe what a Software Defined Radio is, contrast it with a traditional hardware radio, and identify the SDR platforms used in this course (RTL-SDR, HackRF, PlutoSDR, ADALM-PHASER). |
 | 2.2 | I can identify the roles of the RF frontend, ADC/DAC, and host in an SDR signal chain and describe sample-rate, bandwidth, and dynamic-range trade-offs. |
-| 2.3 | I can install GNURadio and use GNU Radio Companion (GRC) to build, inspect, and run a basic flowgraph. |
+| 2.3 | I can install GNU Radio and use GNU Radio Companion (GRC) to build, inspect, and run a basic flowgraph. |
 | 2.4 | I can capture a real RF signal using an SDR and interpret its time- and frequency-domain representations. |
 
 ### Module 3 — Analog Modulation
@@ -91,15 +87,15 @@ mastery-based portion of the grade.
 | LO | Description |
 | :-: | :- |
 | 3.1 | I can describe DSB-AM, DSB-SC, and SSB and identify each on a spectrum. |
-| 3.2 | I can implement an AM modulator and demodulator in GNURadio and verify demodulated audio against the source. |
-| 3.3 | I can implement an FM receiver in GNURadio and demodulate a live broadcast FM signal. |
+| 3.2 | I can implement an AM modulator and demodulator in GNU Radio and verify demodulated audio against the source. |
+| 3.3 | I can implement an FM receiver in GNU Radio, demodulate a live broadcast FM signal, and decode its RDS data. |
 | 3.4 | I can explain and demonstrate the trade-off between bandwidth and noise performance for AM vs. FM. |
 
 ### Module 4 — Digital Modulation
 
 | LO | Description |
 | :-: | :- |
-| 4.1 | I can describe FSK modulation and implement an FSK transmitter and receiver in GNURadio. |
+| 4.1 | I can describe FSK modulation and implement an FSK transmitter and receiver in GNU Radio. |
 | 4.2 | I can describe PAM theory and identify the pulse-shaping, symbol-rate, and bandwidth trade-offs. |
 | 4.3 | I can apply matched filtering and symbol-timing recovery to a received PAM signal. |
 | 4.4 | I can implement a PAM link that transmits and receives ASCII text end-to-end. |
@@ -108,21 +104,21 @@ mastery-based portion of the grade.
 
 | LO | Description |
 | :-: | :- |
-| 5.1 | I can create a GNURadio out-of-tree (OOT) module and add a custom Python block to it. |
-| 5.2 | I can implement a custom signal-processing block from scratch and integrate it into a GNURadio flowgraph. |
-| 5.3 | I can perform a direction-finding fox hunt using an SDR and a directional antenna. |
-| 5.4 | I can integrate detection theory, analog modulation, digital modulation, GNURadio flowgraph construction, and custom-block development into a graded practical exercise. |
+| 5.1 | I can create a GNU Radio out-of-tree (OOT) module and add a custom Python block to it. |
+| 5.2 | I can implement a custom signal-processing block from scratch and integrate it into a GNU Radio flowgraph. |
+| 5.3 | I can find a hidden transmitter in a direction-finding fox hunt using an SDR and a directional antenna. |
+| 5.4 | I can solve capture-the-flag challenges that require finding, capturing, demodulating, and decoding unknown signals with GNU Radio. |
 
 ### Module 6 — Waveform Applications & RF Reverse Engineering
 
 | LO | Description |
 | :-: | :- |
-| 6.1 | I can transmit and receive CW (Morse) using GNURadio and decode a received CW stream. |
+| 6.1 | I can transmit and receive CW (Morse) using GNU Radio and decode a received CW stream. |
 | 6.2 | I can decode DTMF tones from a captured audio signal. |
 | 6.3 | I can describe how HD Radio works and demodulate an HD Radio signal. |
-| 6.4 | I can implement an mPSK modulator and demodulator (BPSK, QPSK, 8PSK) and verify constellation behavior against theory. |
+| 6.4 | I can implement an mPSK modulator and demodulator (BPSK, QPSK, 8PSK), recover carrier and symbol timing, and verify constellation behavior against theory. |
 | 6.5 | I can implement FHSS transmission and reception, including hop-sequence synchronization. |
-| 6.6 | I can perform RF reverse engineering on an unknown signal — identify its modulation, symbol rate, and payload structure. |
+| 6.6 | I can perform RF reverse engineering on an unknown signal: identify its modulation, symbol rate, and payload structure. |
 | 6.7 | I can receive and decode ADS-B messages from aircraft transponders. |
 | 6.8 | I can receive and decode AIS messages from marine vessels. |
 
@@ -132,90 +128,103 @@ mastery-based portion of the grade.
 | :-: | :- |
 | 7.1 | I can describe QAM and OFDM and identify use cases for each. |
 | 7.2 | I can define the scope, objectives, and measurable success criteria for a self-directed SDR project. |
-| 7.3 | I can research, design, and implement a wireless communication system using an SDR and GNURadio. |
+| 7.3 | I can research, design, and implement a wireless communication system using an SDR and GNU Radio. |
 | 7.4 | I can present my project results in a professional-grade report and live demonstration and defend engineering trade-offs against my own stated success criteria. |
 
 </div>
 
 ## Grading
 
-Grades in this course are based on **mastery** of learning objectives, not
-single-attempt performance. Three components make up your final grade:
+Grades are based on **mastery** of the learning objectives, demonstrated by
+what you build: lab flowgraphs, the midterm, and the final project.
+
+### Final grade
 
 | Component | Weight |
 | :- | :-: |
-| Engagement | 25% |
-| Midterm activity | 35% |
 | Final project | 40% |
+| Labs | 25% |
+| Engagement | 20% |
+| Midterm | 15% |
 
 ### Mastery-based assessment
 
-The Midterm Activity and Final Project are assessed against the learning
-objectives on a **binary scale**:
+Labs, the midterm, and the final project checkpoints are assessed against the
+learning objectives on a **binary scale**:
 
-- **1** — you have mastered the objective.
-- **0** — you have not *yet* mastered the objective.
+- **1**: you have mastered the objective.
+- **0**: you have not *yet* mastered the objective.
 
 You may **revise your work** based on the detailed feedback provided, unless no
-effort is evident (the assessment is blank, incomplete, or significantly late).
-In those cases, a retake may be earned by giving a **5-minute technical
-presentation** during class on a relevant, pre-approved topic.
+effort is evident (the work is blank, incomplete, or significantly late).
 
 The bar is simple: I want you to *learn this material*, and I would rather you
 learn it late than not at all.
 
-### Self-defined success criteria (Final Project)
+### Labs
 
-The Final Project is intentionally open-ended. Instead of being graded against
-a one-size-fits-all rubric, you will **write your own success criteria** as
-part of the Project Proposal (due at Lesson 23). Those criteria — reviewed and
-signed off by me before you build — become the rubric your project is graded
-against. Craft them ambitiously but honestly: overshooting scope and missing is
-harder to defend than a tight, well-executed scope you cleared cleanly.
+Each lab is **one packet, one submission**, hung off the lesson it follows:
+
+- **Part 1, Pre-Lab**: individual, before the period.
+- **Part 2, Bench**: in class, on the hardware.
+- **Part 3, Writeup**: after the lab, in report format.
+
+### Midterm
+
+The midterm follows Lesson 11 and has two parts: a **fox hunt**, finding a
+hidden transmitter with an SDR and a directional antenna, and a
+**capture-the-flag**, a set of challenges that require finding, capturing,
+demodulating, and decoding unknown signals. It is an individual effort.
+
+### Final project
+
+The final project is intentionally open-ended. You choose the wireless
+application, **write your own success criteria** for A-, B-, and C-level
+outcomes, and defend the result. Each checkpoint below develops a section of
+your final report and is graded 1 / 0, with revisions under course policy:
+
+1. **Project proposal**: what you want to build, why it is meaningful and
+   feasible, and your success criteria.
+2. **Background research**: at least four high-quality sources and how your
+   project builds on them.
+3. **Design description**: your initial design, its critical components, use
+   cases, and test plan.
+4. **Prototype description**: build and test results, and your plan to
+   finish.
+5. **Final report and presentation**: an IEEE-quality report (typically 7-10
+   pages) and a five-minute presentation and live demonstration. Code goes in
+   a GitHub repository.
 
 ### Engagement credits (EC)
 
-Engagement is worth **25% of your final grade** and rewards active participation
-in the course rather than single-attempt performance on graded work. You may
-earn engagement points in the following ways:
+Engagement is earned in several ways:
 
-- **Module homework.** Each module ships with a small project keyed to that
-  module's learning objectives, **due 1–2 weeks after the module wraps up**.
-  These are your reps — not graded for correctness, but graded for a genuine,
-  documented attempt at every LO the module covers.
-- **Attending Extra Instruction (EI).** Book time with me and come prepared with
-  specific questions or a concept you want to work through.
-- **Lab prep and lab writeup engagement.** Coming to lab prepared with a
-  pre-lab plan, and turning in a thoughtful writeup, both count.
-- **Research paper (up to 5 EC).** You may complete a research paper on a
-  relevant, pre-approved topic — an SDR platform, a modulation scheme, a
-  reverse-engineering case study, or a mission application. Must be in **IEEE
-  format**, contain at least **3 scholarly references**, and adhere to the
-  submission standards in this syllabus.
-- **Course improvement contributions.** Spotted a bug in a lab writeup, an
-  unclear slide, a broken link on the course site? Tell me and it counts.
+- **Weekly quizzes** on Gradescope, 1 EC each. Revisions are allowed.
+- **Practice problems.** Graded for a genuine, documented attempt, not for
+  correctness.
+- **Extra Instruction (EI).** 1 EC for each session you schedule and attend.
+- **Peer review.** 1 EC for reviewing or revising a classmate's report.
+- **Course improvement.** Spotted a bug in a lab packet, an unclear slide, or
+  a broken link on this site? Tell me and it counts.
 
-Engagement is capped at 25%; extra credit does not roll over.
+Request EC for EI and peer review through the running Gradescope assignment.
 
 ### Grade scale
 
-| F | D | C− | C | C+ | B− | B | B+ | A− | A |
-| :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| ≤ 60% | 70% | 73% | 77% | 80% | 83% | 87% | 90% | 93% | 100% |
-
-## Projects
-
-Two graded projects anchor the course:
-
-- **Midterm Activity — GNURadio + Fox Hunt.** Runs at Lesson 20. A hands-on
-  practical that combines flowgraph construction, custom-block development,
-  and a direction-finding fox hunt against a hidden transmitter on campus.
-  Assessed against Module 1–5 learning objectives.
-- **Final Project — Self-Defined SDR Application.** Introduced at Lesson 16;
-  proposal due at Lesson 23; background research due at Lesson 28; prototype
-  description due at Lesson 38; final report and live demonstration due at
-  Lesson 40. You choose the wireless application; you write the success
-  criteria; you defend the result.
+<table class="grade-scale">
+  <thead>
+    <tr>
+      <th>A</th><th>A−</th><th>B+</th><th>B</th><th>B−</th>
+      <th>C+</th><th>C</th><th>C−</th><th>D</th><th>F</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>100%</td><td>93%</td><td>90%</td><td>87%</td><td>83%</td>
+      <td>80%</td><td>77%</td><td>73%</td><td>70%</td><td>≤ 60%</td>
+    </tr>
+  </tbody>
+</table>
 
 ## Course policies
 
@@ -257,7 +266,7 @@ extenuating circumstances.
 
 ### 4. Authorized resources
 
-The midterm activity and final project have their own resource policies
+The midterm and final project have their own resource policies
 described in their assignment packets. When electronic devices are authorized
 for viewing reference materials during any graded event, use of **internet,
 Teams, and generative AI tools is not allowed** unless explicitly permitted.
@@ -295,7 +304,7 @@ I am **pro-AI**; however, I expect you to use generative AI platforms
 (ChatGPT, Copilot, Claude, etc.) as a **tool**, not as a replacement for your
 own learning. It will be very clear if you are using AI irresponsibly: these
 tools frequently generate incorrect solutions to the DSP and RF problems
-you'll encounter here, and often produce GNURadio flowgraphs that don't quite
+you'll encounter here, and often produce GNU Radio flowgraphs that don't quite
 work or don't align with our course conventions. **If you use generative AI on
 any assignment, include a documentation statement** as outlined in the
 Documentation policy.
@@ -311,71 +320,81 @@ Documentation policy.
 - All submissions **MUST BE TYPED** and well-organized unless specifically
   noted. Use of **LaTeX** is encouraged.
 
-## Schedule
+## Course schedule
 
-Lessons link to notes on the [course home](intro.md).
-Labs are marked **LAB**.
+Lessons are topics, not class periods: a lesson takes as many periods as it
+needs, and its lab follows on the bench. Dates will follow the Spring 2027
+academic calendar.
 
 ### Module 1 — Foundations of Detection & Link Budgets
 
-1. Course Overview & Introduction — what an SDR is, why it matters, course roadmap, live SDR demo
-2. Noise Figure & Link Budget
-3. Signal Space
+| Lesson | Topic | Objectives |
+| :-: | :- | :- |
+| L1 | [Course Introduction](module01/L01-course-intro/index.md) | — |
+| L2 | [Noise Figure and Link Budget](module01/L02-noise-figure-link-budget/index.md) | 1.1, 1.2 |
+| L3 | [Signal Space](module01/L03-signal-space/index.md) | 1.3 |
 
-### Module 2 — SDR & GNURadio Foundations
+### Module 2 — SDR & GNU Radio Foundations
 
-4. SDR Introduction — hardware architectures, sample rate, bandwidth, dynamic range
-5. GNURadio Intro
-6. GNURadio Intro **(LAB)** &nbsp; · &nbsp; **Module 1 HW due**
+| Lesson | Topic | Objectives |
+| :-: | :- | :- |
+| L4 | [SDR Introduction](module02/L04-sdr-introduction/index.md) | 2.1, 2.2 |
+| L5 | [GNU Radio Introduction](module02/L05-gnu-radio-intro/index.md) | 2.3, 2.4 |
+| L5 Lab | [First Flowgraphs](module02/L05-lab-first-flowgraphs/index.md) | 2.3, 2.4 |
 
 ### Module 3 — Analog Modulation
 
-7. AM Simulation **(LAB)**
-8. AM & FM Receivers
-9. AM & FM Receivers **(LAB)** &nbsp; · &nbsp; **Module 2 HW due**
+| Lesson | Topic | Objectives |
+| :-: | :- | :- |
+| L6 | [AM Simulation](module03/L06-am-simulation/index.md) | 3.1, 3.2 |
+| L6 Lab | [AM Simulation](module03/L06-lab-am-simulation/index.md) | 3.1, 3.2 |
+| L7 | [AM and FM Receivers](module03/L07-am-fm-receivers/index.md) | 3.3, 3.4 |
+| L7 Lab | [AM and FM Receivers](module03/L07-lab-am-fm-receivers/index.md) | 3.3, 3.4 |
 
 ### Module 4 — Digital Modulation
 
-10. FSK
-11. FSK
-12. FSK **(LAB)** &nbsp; · &nbsp; **Module 3 HW due**
-13. PAM Theory
-14. ASCII/PAM
-15. ASCII/PAM **(LAB)**
-16. ASCII/PAM &nbsp; · &nbsp; **Final Project introduced**
+| Lesson | Topic | Objectives |
+| :-: | :- | :- |
+| L8 | [FSK](module04/L08-fsk/index.md) | 4.1 |
+| L8 Lab | [FSK](module04/L08-lab-fsk/index.md) | 4.1 |
+| L9 | [PAM Theory](module04/L09-pam-theory/index.md) | 4.2, 4.3 |
+| L10 | [ASCII over PAM](module04/L10-ascii-pam/index.md) | 4.4 |
+| L10 Lab | [PAM Link](module04/L10-lab-pam-link/index.md) | 4.4 |
 
 ### Module 5 — Custom Blocks & Midterm
 
-17. GRC: OOT Modules
-18. GRC: Custom Blocks **(LAB)** &nbsp; · &nbsp; **Module 4 HW due**
-19. GRC: Custom Blocks **(LAB)**
-20. **Midterm Activity — GNURadio + Fox Hunt**
+| Lesson | Topic | Objectives |
+| :-: | :- | :- |
+| L11 | [Out-of-Tree Modules and Custom Blocks](module05/L11-custom-blocks/index.md) | 5.1, 5.2 |
+| L11 Lab | [Custom Block](module05/L11-lab-custom-block/index.md) | 5.1, 5.2 |
+|  | [Midterm — Fox Hunt and CTF](module05/midterm/index.md) | 5.3, 5.4 |
 
 ### Module 6 — Waveform Applications & RF Reverse Engineering
 
-21. CW **(LAB)**
-22. DTMF
-23. DTMF **(LAB)** &nbsp; · &nbsp; **Project Proposal due**
-24. HD Radio
-25. HD Radio **(LAB)**
-26. Flex day
-27. mPSK &nbsp; · &nbsp; **Module 6a HW due (CW / DTMF / HD Radio)**
-28. mPSK **(LAB)** &nbsp; · &nbsp; **Project Background Research due**
-29. FHSS — Transmitter
-30. FHSS — Receiver **(LAB)**
-31. RF Reverse Engineering
-32. RF Reverse Engineering
-33. RF Reverse Engineering **(LAB)**
-34. Flex day
-35. ADS-B **(LAB)**
-36. AIS **(LAB)** &nbsp; · &nbsp; **Module 6b HW due (mPSK / FHSS / RF-RE)**
+| Lesson | Topic | Objectives |
+| :-: | :- | :- |
+| L12 | [CW](module06/L12-cw/index.md) | 6.1 |
+| L12 Lab | [CW](module06/L12-lab-cw/index.md) | 6.1 |
+| L13 | [DTMF](module06/L13-dtmf/index.md) | 6.2 |
+| L13 Lab | [DTMF](module06/L13-lab-dtmf/index.md) | 6.2 |
+| L14 | [HD Radio](module06/L14-hd-radio/index.md) | 6.3 |
+| L14 Lab | [HD Radio](module06/L14-lab-hd-radio/index.md) | 6.3 |
+| L15 | [mPSK](module06/L15-mpsk/index.md) | 6.4 |
+| L15 Lab | [mPSK](module06/L15-lab-mpsk/index.md) | 6.4 |
+| L16 | [Frequency Hopping](module06/L16-fhss/index.md) | 6.5 |
+| L16 Lab | [Frequency Hopping](module06/L16-lab-fhss/index.md) | 6.5 |
+| L17 | [RF Reverse Engineering](module06/L17-rf-reverse-engineering/index.md) | 6.6 |
+| L17 Lab | [RF Reverse Engineering](module06/L17-lab-rf-reverse-engineering/index.md) | 6.6 |
+| L18 | [ADS-B](module06/L18-adsb/index.md) | 6.7 |
+| L19 | [AIS](module06/L19-ais/index.md) | 6.8 |
+| L18–L19 Lab | [ADS-B and AIS](module06/L18-L19-lab-adsb-ais/index.md) | 6.7, 6.8 |
 
 ### Module 7 — Final Project
 
-37. Project Work Day **(LAB)**
-38. QAM & OFDM &nbsp; · &nbsp; **Prototype Description due**
-39. Project Day **(LAB)**
-40. **Final Project Presentations** &nbsp; · &nbsp; **Final Project due**
+| Lesson | Topic | Objectives |
+| :-: | :- | :- |
+| L20 | [QAM and OFDM](module07/L20-qam-ofdm/index.md) | 7.1 |
+|  | [Final Project](module07/final-project/index.md) | 7.2, 7.3, 7.4 |
 
 ## Textbooks & materials
 
@@ -383,9 +402,9 @@ See the [materials page](materials.md).
 
 ## Software & hardware
 
-- **GNURadio** with GNU Radio Companion (GRC)
+- **GNU Radio** with GNU Radio Companion (GRC)
 - **RTL-SDR** — introductory receive-only SDR
 - **HackRF** — half-duplex SDR (Tx and Rx)
 - **PlutoSDR / ADALM-PLUTO** — full-duplex SDR
 - **ADALM-PHASER** — phased-array SDR platform (guest appearance from ECE 444)
-- **Directional antennas** — for the Lesson 20 fox hunt
+- **Directional antennas** — for the midterm fox hunt

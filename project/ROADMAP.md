@@ -83,8 +83,26 @@ since they follow this structure. Two changes:
 
 - Spring 2027 meeting periods and calendar dates.
 
+## Status (2026-10-17)
+
+- **Shell ported.** The site runs on ECE 444's shell (by way of ECE 343):
+  frame pages, the bottom bar, the verify scripts, and the voice and review
+  skills. `scripts/scaffold_lessons.py` holds the manifest. All 20 lessons,
+  13 labs, the midterm, and the final project have generated pages, linking
+  their legacy slides where those exist. `jupyter-book build --all` runs with
+  no warnings, and `check_shell`, `check_frames`, and `check_bar` pass.
+- **L01 converted** to a frame page. Its deck now loads its images, and its
+  schedule matches the new lesson list.
+- The syllabus, landing page, and materials page are rewritten for the seven
+  modules, the 2025 weights, the lab packets, and the fox-hunt-and-CTF
+  midterm. The applications-first philosophy is stated in the syllabus and on
+  the landing page.
+
 ## Next
 
-1. Port ECE 444's shell, scaffolder, and checks into `ece448`, keeping L01.
-2. Rebuild the legacy slides as frame lessons, one lesson at a time, in
-   teaching order.
+1. Rebuild the legacy slides as frame lessons, one lesson at a time, in
+   teaching order, starting with L2. Theory stays minimal (see Course
+   philosophy above).
+2. Lab packets, one per lab, before each lab runs.
+3. Midterm (fox hunt and CTF) and final project packets, in
+   `ECE448-faculty` where they carry answers.
