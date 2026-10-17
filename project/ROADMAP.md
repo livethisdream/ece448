@@ -30,6 +30,9 @@ budgets, checks) still apply. Where 444 would put a derivation on screen,
 
 ## Settled (Neil, 2026-10-17)
 
+- **mPSK is its own lesson** (L9, about two periods), using the GNU Radio
+  tutorial in `ECE448-faculty/L19_MPSK`. It wasn't on the 2025 schedule.
+
 - **Teach it the way ECE 444 is taught**: same site, shell, voice, and checks.
   Keep L01 and the decisions in `ECE448_PROJECT.md`. Spring 2027.
 - **Use the Spring 2025 lesson content, numbered by topic** (the ECE 444
@@ -52,8 +55,8 @@ budgets, checks) still apply. Where 444 would put a derivation on screen,
 | :-- | :-- |
 | 1 · Link & Signal Foundations | L1 Course Introduction · L2 Noise Figure and Link Budget · L3 Signal Space |
 | 2 · Digital Modulation in GNU Radio | L4 PAM Theory · L5 ASCII over PAM → L5 Lab PAM Link · L6 Out-of-Tree Modules and Custom Blocks → L6 Lab Custom Block |
-| 3 · Waveforms (midterm after L9) | L7 CW → L7 Lab · L8 DTMF → L8 Lab · L9 Frequency Hopping (Tx/Rx) |
-| 4 · Real-World Signals + Final Project | L10 RF Reverse Engineering (GQRX, URH, remotes) → L10 Lab · L11 ADS-B · L12 AIS → L11–L12 Lab ADS-B/AIS · L13 Broadcast FM and RDS · L14 HD Radio · L15 QAM and OFDM |
+| 3 · Waveforms (midterm after L10) | L7 CW → L7 Lab · L8 DTMF → L8 Lab · L9 mPSK (about 2 periods) · L10 Frequency Hopping (Tx/Rx) |
+| 4 · Real-World Signals + Final Project | L11 RF Reverse Engineering (GQRX, URH, remotes) → L11 Lab · L12 ADS-B · L13 AIS → L12–L13 Lab ADS-B/AIS · L14 Broadcast FM and RDS · L15 HD Radio · L16 QAM and OFDM |
 
 ## Draft objectives (awaiting Neil's sign-off)
 
@@ -66,7 +69,8 @@ budgets, checks) still apply. Where 444 would put a derivation on screen,
 - **2.4** I can write a custom Python block and package it as an OOT module.
 - **3.1** I can generate and decode CW.
 - **3.2** I can detect DTMF tones (Goertzel).
-- **3.3** I can build a frequency-hopping transmitter and receiver that stay in sync.
+- **3.3** I can build a BPSK, QPSK, and 8PSK modem in GNU Radio, recover carrier and symbol timing, and check the constellation against theory.
+- **3.4** I can build a frequency-hopping transmitter and receiver that stay in sync.
 - **4.1** I can identify an unknown signal's modulation, symbol rate, and framing, and replay it.
 - **4.2** I can receive and decode ADS-B and AIS.
 - **4.3** I can demodulate broadcast FM and RDS and explain how HD Radio's OFDM sidebands are laid out.
@@ -76,11 +80,11 @@ budgets, checks) still apply. Where 444 would put a derivation on screen,
 ## Open
 
 - Sign-off on the lesson list and objectives above.
-- **mPSK**: `ECE448-faculty/L19_MPSK` holds a full GNU Radio tutorial, but
-  mPSK wasn't on the 2025 schedule. Make it its own lesson, or fold it into L15?
+- **mPSK lab**: give L9 a lab built from the `ECE448-faculty/L19_MPSK`
+  GNU Radio tutorial, or keep it lecture plus demo?
 - **2025 "Theory Project"** (due at period 9): turn it into the L2–L3
   practice set, or make it a lab packet?
-- **FHSS**: give L9 a lab, or keep it lecture plus demo?
+- **FHSS**: give L10 a lab, or keep it lecture plus demo?
 - Spring 2027 meeting periods and calendar dates.
 
 ## Next
