@@ -54,7 +54,21 @@ Lesson 1 introduced the radios we will use all semester. Before we build anythin
 The figure is the worked example at the end of this lesson, a 2.45 GHz drone link over 3 km. The path takes almost 110 dB, far more than every other entry combined, and the signal still arrives 10.2 dB above what the receiver needs. Every number on it is something we can look up, measure, or compute, and that is the point of the method: a link budget turns "will it work?" into arithmetic we can check before we transmit.
 ::::
 
-::::{frame} Part 1: Who May Transmit Where
+::::{frame} Part 1: The Spectrum Is Allocated
+:::{present}
+<img src="../../viz/img/L02-us-allocation-chart.png"
+     alt="The US frequency allocation chart: every band from 3 kHz to 300 GHz drawn as a colored bar for its assigned services, such as broadcasting, mobile, fixed, aeronautical, maritime, radar, amateur, and satellite"
+     style="max-width: 900px; width: 100%; display: block; margin: 0 auto;">
+:::
+:::{present}
+- Every band from 3 kHz to 300 GHz has assigned services.
+- Each color is one service; most bands carry several.
+:::
+
+The chart shows every allocation in the United States, from 3 kHz at the top left to 300 GHz at the bottom right, with each colored block a service such as broadcasting, mobile, aeronautical navigation, or radar. The version here is the 2003 edition; the current edition and its legend are on the <a href="https://www.ntia.gov/page/united-states-frequency-allocation-chart" target="_blank" rel="noopener">NTIA allocation chart page</a>. Two things stand out. Almost no band is empty, and most bands are shared by several services. That density is why so much of this course is about finding, identifying, and separating signals rather than generating them.
+::::
+
+::::{frame} Who May Transmit Where
 :::{present}
 - The FCC allocates every band; most require a license.
 - The **ISM** bands (915 MHz, 2.4 GHz, 5.8 GHz) allow low-power unlicensed use, which is why Wi-Fi, Bluetooth, and most drones live there.
@@ -66,7 +80,7 @@ The figure is the worked example at the end of this lesson, a 2.45 GHz drone lin
      style="max-width: 720px; width: 100%; display: block; margin: 0 auto;">
 :::
 
-In the United States the FCC (and the NTIA, for federal users) allocates the radio spectrum, and the <a href="https://www.ntia.gov/page/united-states-frequency-allocation-chart" target="_blank" rel="noopener">US frequency allocation chart</a> shows who holds each band. Almost all of it requires a license to transmit. The exceptions that matter most in this course are the **industrial, scientific, and medical (ISM)** bands. Part 15 of the FCC rules lets anyone transmit there at low power without a license, provided they accept interference from everyone else, and that is why Wi-Fi, Bluetooth, garage-door openers, and most hobby drones share 915 MHz, 2.4 GHz, and 5.8 GHz.
+In the United States the FCC (and the NTIA, for federal users) allocates the radio spectrum, and the allocation chart shows who holds each band. Almost all of it requires a license to transmit. The exceptions that matter most in this course are the **industrial, scientific, and medical (ISM)** bands. Part 15 of the FCC rules lets anyone transmit there at low power without a license, provided they accept interference from everyone else, and that is why Wi-Fi, Bluetooth, garage-door openers, and most hobby drones share 915 MHz, 2.4 GHz, and 5.8 GHz.
 
 Two rules govern what we do with the SDRs. Receiving is unrestricted: we can tune anywhere the hardware reaches and look at whatever is there, which is most of this course. Transmitting is not: in class we transmit only into a cable, into a shielded enclosure, or at very low power in an ISM band, and only when the lesson says to. The figure shows where the ISM bands fall against the tuning range of each course SDR. The RTL-SDR receives only, and it reaches 915 MHz but not 2.4 GHz; the PlutoSDR and the HackRF cover all three of the common ISM bands.
 ::::

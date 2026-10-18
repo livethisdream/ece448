@@ -35,7 +35,7 @@ Open with the question every radio engineer asks first: will the link close? Tod
 
 ## Today's Plan
 
-1. Who may transmit where: the ISM bands
+1. The allocated spectrum and the ISM bands
 2. Decibels and the Friis equation in dB
 3. The noise floor and the noise figure
 4. Cascaded noise figure, and where the LNA goes
@@ -55,6 +55,17 @@ The path takes 109.8 dB, and the signal still arrives 10.2 dB above what the rec
 
 Note:
 This is the worked example from the end of the lesson. Walk left to right: 28 dBm out of the radio, cable, antenna, then the path takes almost 110 dB. Point at the two horizontal lines: the noise floor, and the sensitivity 14 dB above it. The green bracket is the margin. Everything today is how to compute each step.
+
+---
+
+## The Spectrum Is Allocated
+
+<img src="./img/02-link-budget/L02-us-allocation-chart.png" alt="The US frequency allocation chart, 3 kHz to 300 GHz" style="max-height:520px; display:block; margin:0 auto;">
+
+Every band has assigned services, and most bands are shared.
+
+Note:
+This is the 2003 edition; NTIA posts the current one. Let them look for a minute and pick out a band they use every day: broadcast FM near 100 MHz, cellular, GPS at 1575 MHz. The point is density: almost nothing is empty, which is why so much of this course is about finding and separating signals.
 
 ---
 
