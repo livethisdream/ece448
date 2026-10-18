@@ -35,6 +35,10 @@ work.
 | `book/moduleNN/index.md` | module landing page, generated |
 | `book/extras/slides/<slug>.md` | a reveal.js deck; `.html` wrapper from `scripts/make_deck_html.py` |
 | `book/extras/legacy/*.pdf` | the legacy Beamer slides, served at `/legacy/`; `refs/` holds third-party references |
+| `book/extras/grc/` | flowgraphs (`.grc`) and scripts a cadet downloads, served at `/grc/` |
+| `book/extras/labs/*_blank.pdf` | lab packets, student copy only; the KEY goes to `ECE448-faculty/lab-keys/` |
+| `latex/` | practice-set and lab-packet sources and build scripts (444's harness) |
+| `scripts/grc/` | normalize a `.grc`, run one headless for screenshots, screenshot GRC itself |
 | `figures/` | course figure library for LaTeX (`\graphicspath{{./figures/}}`) |
 | `scripts/scaffold_lessons.py` | the manifest: lessons, labs, objectives, legacy decks |
 
@@ -68,18 +72,39 @@ scripts/verify/check_shell.py
 scripts/verify/check_frames.py
 scripts/verify/check_bar.py
 scripts/verify/check_math.py        # no display equation scrolls sideways at 320-390 px
+scripts/verify/check_grc.py         # every downloadable flowgraph compiles under GNU Radio 3.10
 scripts/verify/check_deck.py L01-course-intro
 ```
 
 The checks need `pip install playwright` and `npm install` in
 `scripts/verify/` once per container; see `scripts/verify/README.md`.
 
+## Flowgraphs
+
+GNU Radio 3.10 is the course version (Neil, 2026-10-18), installed by
+radioconda on cadet laptops and by the session hook here. Every `.grc` a lesson
+ships goes through three steps before it is committed:
+
+1. **Normalize** it with `scripts/grc/grc_normalize.py`, which loads it through
+   GRC's own platform and saves it back with every default filled in, so it
+   opens without warnings.
+2. **Compile** it: `scripts/verify/check_grc.py`.
+3. **Run** it, if it needs no hardware, with `scripts/grc/grc_shot.py` under
+   `xvfb-run`, and use that screenshot on the page. A flowgraph that needs an
+   SDR is compiled only; say so in the PR. A figure that stands in for a real
+   capture is labeled "Simulated" on the figure itself.
+
+The GNU Radio bindings are built for `/usr/bin/python3.12`; call `grcc` and the
+scripts through it, not through whatever `python3` is first on `PATH`.
+
 ## Public repo
 
-This repo is **public**. LaTeX sources, assessments, keys, solutions, grades,
-and anything answer-bearing live in the private `livethisdream/ECE448-faculty`,
-never here. Only built PDFs a cadet should see are committed. `.gitignore`
-blocks the usual names, but check every PDF before adding it.
+This repo is **public**. Assessments, the midterm and its keys, grades, and lab
+KEY PDFs live in the private `livethisdream/ECE448-faculty` (lab keys under
+`lab-keys/`), never here. Practice-set and lab-packet LaTeX sources are here,
+as in ECE 444, and practice SOLUTIONS PDFs are published; a lab's KEY PDF is
+built locally and never committed. `.gitignore` blocks the usual names, but
+check every PDF before adding it.
 
 American spelling everywhere. No thin spaces. "GNU Radio", two words. Never
 MATLAB for anything a cadet runs.

@@ -1,0 +1,393 @@
+\documentclass{exam}
+
+\newif\ifA
+\newif\ifkey
+\newif\ifprintselected   % required by exam_config's \ansbox
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% SET THESE IF VARIABLES
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Lab name -- labs are named by the lesson they belong to, never by a
+% sequential lab number (Neil, 2026-10-12): this is the L5 Lab.
+\def\labLesson{5}
+
+% is this the key or not?
+\ifdefined\iskey
+	\ifnum\iskey=1
+		\keytrue
+	\else
+		\keyfalse
+	\fi
+\else
+	%% Pick one manually
+	\keyfalse % if this is NOT the key
+%	\keytrue     % if this IS the key
+\fi
+
+% set up the header and footer - change for every term
+\ifdefined\thisTermIn
+	\def\thisterm{\thisTermIn}
+\else
+	\def\thisterm{Spring 2027}
+\fi
+%
+\def\thisclass{ECE 448}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% END SET THESE IF VARIABLES
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% packages and shortcuts
+\input{myPackages_gr}
+\usepackage[hidelinks, linkcolor=red]{hyperref}
+\input{myShortcuts}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt}
+
+%% exam class customization
+\input{exam_config}
+\input{ece448_fonts}   % Barlow body text (needs lualatex)
+\printselectedfalse      % full worked solutions in the key, not answers-only
+\CorrectChoiceEmphasis{\color{red}}
+\SolutionEmphasis{\color{red}}
+\renewcommand\questionlabel{\textbf{\thequestion.}}
+\renewcommand{\thepartno}{\alph{partno}}
+\renewcommand{\partlabel}{(\thepartno)}
+
+% Fillable table cell: blank in the student copy, the expected value in red on
+% the KEY. Fixed-width centered columns keep the blank cells writable.
+\newcolumntype{K}[1]{>{\centering\arraybackslash}p{#1}}
+\newcommand{\kv}[1]{\ifkey{\color{red}#1}\fi\rule[-0.10in]{0pt}{0.34in}}
+
+% print the answers if this is the key
+\ifkey
+	\printanswers % if this IS the key
+\else
+	\noprintanswers  %if this is NOT the key
+\fi
+
+% print the header and footer
+% need to print key on top if this is the key
+\ifkey
+	\firstpageheader{}{\color{red}{ KEY}}{}
+	\runningheader{\thisclass\hspace{1pt} -- \thisterm }{L\labLesson\ Lab\hspace{1pt}\color{red}{ KEY}}{\thepage\hspace{1pt} of\hspace{1pt} \numpages}
+	\firstpagefooter{}{}{}
+	\runningfooter{}{}{}
+\else
+	\firstpageheader{}{}{}
+	\runningheader{\thisclass \hspace{1pt} -- \thisterm }{L\labLesson\ Lab\hspace{1pt}}{\thepage\hspace{1pt} of\hspace{1pt} \numpages}
+	\firstpagefooter{}{}{}
+	\runningfooter{}{}{}
+\fi
+
+\runningheadrule
+
+
+\begin{document}
+\pagestyle{headandfoot}   % exam class
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% title block
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{center}
+USAF ACADEMY \\
+DEPARTMENT OF ELECTRICAL AND COMPUTER ENGINEERING \\
+LESSON \labLesson\ LAB - First Flowgraphs \\
+\textbf{Lab Packet} \\
+\thisterm \\[4mm]
+\end{center}
+
+\vspace{-4pt}
+\textbf{Name:} \rule[-2pt]{2.6in}{0.4pt} \hfill
+\textbf{Section:} \rule[-2pt]{0.9in}{0.4pt} \hfill
+\textbf{Date:} \rule[-2pt]{1.1in}{0.4pt}
+
+\vspace{4pt}
+
+\fullwidth{\textbf{Learning Objective 2.3: } I can install GNU Radio and use GNU Radio
+Companion (GRC) to build, inspect, and run a basic flowgraph.
+\\[2pt]\textbf{Learning Objective 2.4: } I can capture a real RF signal using an SDR
+and interpret its time- and frequency-domain representations.}
+
+\vspace{2pt}
+
+This packet is the L\labLesson\ Lab, in three parts, and you turn it in once, complete,
+before Lesson 6. Do \textbf{Part 1} on your own before the lab period: install
+GNU Radio and make the predictions you will check at the bench. \textbf{Part 2} is
+your own measurements, with your own laptop and RTL-SDR, recorded in class. Do
+\textbf{Part 3} on your own after the lab: compare the measurements with the
+predictions and answer the analysis questions.
+
+\textbf{Grading.} One submission, graded against Objectives 2.3 and 2.4 on the
+course's 1 / 0 scale, with revision allowed under course policy. Paste screenshots
+where a question asks for one.
+
+\textbf{Receive only.} Nothing in this lab transmits. The RTL-SDR cannot transmit,
+and the tone flowgraph never leaves your laptop.
+
+The flowgraphs and the Python script are on the L5 lesson page:
+\texttt{L05-tone.grc}, \texttt{L05-fm-spectrum.grc}, and \texttt{L05-psd.py}.
+
+\begin{questions}
+
+\fullwidth{\large\textbf{Part 1: Pre-Lab} \normalsize(individual, before the lab period)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{Install and verify.} Install radioconda as the L5 lesson page
+describes, plug in your RTL-SDR, and run the commands below from the radioconda
+prompt.
+
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Run \texttt{gnuradio-config-info --version} and record the version.
+		\begin{solution}[0.5in]
+		Any 3.10 release, for example 3.10.9.2. A 3.9 or earlier version means an
+		old install is first on the path.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		version = \ansbox[1.3in]{3.10.x}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Run \texttt{rtl\_test} and record the tuner it reports. Stop it with
+		Ctrl-C after a few seconds.
+		\begin{solution}[0.5in]
+		Most course dongles report a Rafael Micro R820T or R828D tuner.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		tuner = \ansbox[1.3in]{R820T / R828D}
+	\end{minipage}
+
+	\part Open \texttt{L05-tone.grc} in GRC, run it, and paste a screenshot of the
+	running flowgraph's window.
+		\begin{solution}[1.6in]
+		The window shows the frequency slider, the time sink with $I$ and $Q$ a quarter
+		cycle apart, and the frequency sink with one spike at $+1$ kHz.
+		\end{solution}
+
+\end{parts}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\question \textbf{Predictions.} You will check each of these at the bench.
+
+\begin{parts}
+
+	\part The tone flowgraph samples at $f_s = 32$ kHz. Predict where the frequency
+	sink shows each tone.
+
+	\begin{center}
+	\renewcommand{\arraystretch}{1.25}
+	\begin{tabular}{| l | K{0.68in} | K{0.68in} | K{0.68in} | K{0.68in} | K{0.68in} |}
+	\hline
+	Tone (kHz) & $1$ & $12$ & $20$ & $30$ & $-25$ \\\hline
+	Predicted (kHz) & \kv{$1$} & \kv{$12$} & \kv{$-12$} & \kv{$-2$} & \kv{$7$} \\\hline
+	\end{tabular}
+	\end{center}
+
+		\begin{solution}[0.6in]
+		Tones inside $\pm 16$ kHz appear where they are. Outside, subtract or add
+		$32$ kHz until the result lands inside: $20 - 32 = -12$, $30 - 32 = -2$,
+		$-25 + 32 = 7$.
+		\end{solution}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part The FM flowgraph samples at 2.4 MS/s centered on 100.1 MHz. Find the
+		band the display shows and the width of one bin of its 2048-point FFT.
+		\begin{solution}[1.0in]
+		\eq{ 100.1 \pm 1.2 &= 98.9 \text{ to } 101.3\ \text{MHz} \\
+			\dfrac{2.4\times10^{6}}{2048} &= 1.17\ \text{kHz} }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		band = \ansbox[1.5in]{98.9 to 101.3 MHz}
+
+		\vspace{4pt}
+		bin = \ansbox[1.5in]{1.17 kHz}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Predict the size of a 2 s recording at 2.4 MS/s.
+		\begin{solution}[0.7in]
+		\eq{ 2 \times 2.4\times10^{6} \times 8\ \text{bytes} = 38.4\ \text{MB} }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.3in]{38.4 MB}
+	\end{minipage}
+
+\end{parts}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\fullwidth{\large\textbf{Part 2: Measurements} \normalsize(your own laptop and RTL-SDR, in class)}
+
+\question \textbf{Build the tone flowgraph.} Start GRC with an empty canvas. Do not
+open \texttt{L05-tone.grc}: build it yourself from the Options block, a
+\texttt{samp\_rate} variable of 32000, a QT GUI Range named \texttt{freq} from
+$-48000$ to $48000$, a complex Signal Source, a Throttle, a QT GUI Time Sink, and
+a QT GUI Frequency Sink.
+
+\begin{parts}
+
+	\part Paste a screenshot of your flowgraph on the GRC canvas. Every connection
+	must be black, not red.
+		\begin{solution}[1.6in]
+		Matches the L5 lesson figure. Every port is blue (complex).
+		\end{solution}
+
+	\part Set each tone with the slider and record where the spike appears.
+
+	\begin{center}
+	\renewcommand{\arraystretch}{1.25}
+	\begin{tabular}{| l | K{0.68in} | K{0.68in} | K{0.68in} | K{0.68in} | K{0.68in} |}
+	\hline
+	Tone (kHz) & $1$ & $12$ & $20$ & $30$ & $-25$ \\\hline
+	Measured (kHz) & \kv{$1$} & \kv{$12$} & \kv{$-12$} & \kv{$-2$} & \kv{$7$} \\\hline
+	\end{tabular}
+	\end{center}
+
+		\begin{solution}[0.4in]
+		The measurements match the predictions exactly; aliasing of a computed tone
+		is exact.
+		\end{solution}
+
+\end{parts}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\question \textbf{The FM band.} Connect the antenna to the RTL-SDR and run
+\texttt{L05-fm-spectrum.grc}.
+
+\begin{parts}
+
+	\part Tune across 88 to 108 MHz and record the three strongest stations: the
+	frequency, the peak level on the display, and the approximate width.
+
+	\begin{center}
+	\renewcommand{\arraystretch}{1.25}
+	\begin{tabular}{| l | K{1.3in} | K{1.3in} | K{1.3in} |}
+	\hline
+	& Frequency (MHz) & Peak (dB) & Width (kHz) \\\hline
+	Station 1 & \kv{odd tenth} & \kv{varies} & \kv{$\approx 200$} \\\hline
+	Station 2 & & & \\\hline
+	Station 3 & & & \\\hline
+	\end{tabular}
+	\end{center}
+
+		\begin{solution}[0.5in]
+		Local stations vary. Every frequency should end in an odd tenth, and each
+		station should be about 150 to 250 kHz wide.
+		\end{solution}
+
+	\part Find the DC spike. Tune so that a station sits on it, then tune 300 kHz
+	away. Describe what moves and what does not.
+		\begin{solution}[0.9in]
+		The station moves across the display as you retune, and the spike stays at the
+		center frequency. The spike belongs to the receiver, not to the air.
+		\end{solution}
+
+	\part With the strongest station on screen, set the gain to each value and
+	record the noise floor away from any station. Mark the first setting where
+	extra signals appear between stations.
+
+	\begin{center}
+	\renewcommand{\arraystretch}{1.25}
+	\begin{tabular}{| l | K{0.7in} | K{0.7in} | K{0.7in} | K{0.7in} | K{0.7in} |}
+	\hline
+	Gain (dB) & $0$ & $20$ & $30$ & $40$ & $49$ \\\hline
+	Floor (dB) & & & & & \\\hline
+	Spurs? & & & & & \\\hline
+	\end{tabular}
+	\end{center}
+
+		\begin{solution}[0.5in]
+		The floor stays put at low gain, where the converter's own noise dominates, then
+		rises once the gain lifts the antenna's noise above it. Spurs between stations
+		usually appear in the 40 to 49 dB range near strong stations.
+		\end{solution}
+
+\end{parts}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\question \textbf{Record and plot.} Center the strongest station slightly off the
+DC spike and set the gain you chose in Question 4(c).
+
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Enable the File Sink, run the flowgraph for about 2 s, stop it, and record
+		the file size.
+		\begin{solution}[0.6in]
+		About 38 MB, matching Question 2(c); the exact size depends on how long it ran.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		size = \ansbox[1.3in]{$\approx 38$ MB}
+	\end{minipage}
+
+	\part Run the plotting script with your center frequency, and paste the plot:
+	\\[2pt]\texttt{python L05-psd.py fm\_capture.cfile --fs 2.4e6 --fc <center Hz>}
+		\begin{solution}[1.8in]
+		The plot reproduces the frequency sink's view: the same stations at the same
+		frequencies, the DC spike at the center, and the noise floor between them.
+		\end{solution}
+
+\end{parts}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\fullwidth{\large\textbf{Part 3: Writeup} \normalsize(individual, after the lab)}
+
+\question \textbf{Analysis.}
+
+\begin{parts}
+
+	\part Compare your measured aliases in Question 3(b) with the predictions in
+	Question 2(a). Explain why a 20 kHz tone and a $-12$ kHz tone produce the same
+	samples at 32 kHz.
+		\begin{solution}[1.2in]
+		They match exactly. The samples of $e^{j2\pi f n/f_s}$ depend on $f$ only through
+		$f/f_s$ modulo 1, because adding $f_s$ to $f$ adds a whole turn,
+		$e^{j2\pi n} = 1$, to every sample. $20$ kHz and $-12$ kHz differ by exactly
+		$32$ kHz, so their samples are identical.
+		\end{solution}
+
+	\part Your strongest station's peak sits some number of dB above the noise floor
+	on the display. Is that the SNR an FM demodulator would see? Explain, and
+	estimate the correction for a 200 kHz station with 1.17 kHz bins.
+		\begin{solution}[1.5in]
+		No. The display shows the noise in one 1.17 kHz bin, but the demodulator
+		filters to the station's 200 kHz, which lets in
+		$10\mylog{\dfrac{200\ \text{kHz}}{1.17\ \text{kHz}}} = 22.3$ dB more noise. The
+		station's power is already spread over the same 200 kHz, so its level per bin is
+		not the whole signal either. Comparing total power to total power over the
+		200 kHz gives the demodulator's SNR, which Lesson 2's "Reading SNR on an SDR"
+		describes.
+		\end{solution}
+
+	\part State the gain you would use to receive weak stations in this room, and
+	justify it from your table in Question 4(c).
+		\begin{solution}[1.0in]
+		The setting where the floor has risen a few dB above its low-gain value but no
+		spurs have appeared, typically 30 to 40 dB. Below it the converter's noise buries
+		weak stations; above it strong stations overload the converter.
+		\end{solution}
+
+\end{parts}
+
+\end{questions}
+
+\vspace{1.0em}
+\noindent\textbf{Documentation:} \rule[-2pt]{0.6\linewidth}{0.4pt}
+
+\end{document}

@@ -1,0 +1,182 @@
+% !TEX root =./ECE448_Practice_main.tex
+%
+% L5 practice set (GNU Radio Introduction). Short by design: the L5 Lab packet
+% carries the hands-on work. Blank copy: \begin{solution}[h] reserves h of work
+% space. SOLUTIONS copy (\iskey=1) prints the red worked solutions.
+
+\fullwidth{\textbf{Learning Objective 2.3: } I can install GNU Radio and use GNU Radio
+Companion (GRC) to build, inspect, and run a basic flowgraph.
+\\[2pt]\textbf{Learning Objective 2.4: } I can capture a real RF signal using an SDR
+and interpret its time- and frequency-domain representations.
+\\[4pt]\normalfont\small Show your work. Write a \textbf{Documentation} line at the
+end (\textbf{None} if you did not collaborate).}
+
+\begin{questions}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{Reading a flowgraph.} A classmate's flowgraph has a Signal Source,
+a Throttle, and a QT GUI Frequency Sink. GRC draws the arrow from the Throttle to
+the sink in red and will not run.
+\begin{parts}
+
+	\part The source and throttle ports are blue and the sink's input is orange.
+	What is wrong, and what are two ways to fix it?
+		\begin{solution}[1.0in]
+		The source and throttle carry complex samples (blue) and the sink expects
+		floats (orange); connected ports must have the same type. Either set the
+		sink's type to complex, or insert a conversion block such as Complex to Mag
+		or Complex to Real between them.
+		\end{solution}
+
+	\part The classmate then replaces the Signal Source with a Soapy RTLSDR Source and
+	keeps the Throttle. Explain why the Throttle should come out.
+		\begin{solution}[1.0in]
+		The RTL-SDR delivers samples at exactly its sample rate, so the hardware already
+		paces the flowgraph. A throttle only exists to pace a flowgraph with no hardware,
+		and with an SDR it adds a second, competing clock that can drop samples.
+		\end{solution}
+
+\end{parts}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{Complex sampling and aliasing.} A complex signal source runs at
+$f_s = 32$ kHz.
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part What range of frequencies can the samples represent?
+		\begin{solution}[0.7in]
+		\eq{ -\dfrac{f_s}{2} \text{ to } +\dfrac{f_s}{2} = -16 \text{ to } +16\ \text{kHz} }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.5in]{$-16$ to $+16$ kHz}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Where does the frequency sink show a 40 kHz tone, and a $-20$ kHz tone?
+		\begin{solution}[1.0in]
+		\eq{ 40 - 32 &= 8\ \text{kHz} \\ -20 + 32 &= 12\ \text{kHz} }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		40 kHz: \ansbox[1.0in]{$8$ kHz}
+
+		\vspace{4pt}
+		$-20$ kHz: \ansbox[1.0in]{$12$ kHz}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part An RTL-SDR samples at 2.4 MS/s centered on 100.1 MHz. What band does the
+		display show? A strong station at 102.1 MHz leaks past the RTL-SDR's filters
+		unattenuated. Where does it appear?
+		\begin{solution}[1.2in]
+		The display spans $100.1 \pm 1.2$ MHz, 98.9 to 101.3 MHz. The station is
+		$+2.0$ MHz from center, outside the $\pm 1.2$ MHz window, so it aliases to
+		$2.0 - 2.4 = -0.4$ MHz from center:
+		\eq{ 100.1 - 0.4 = 99.7\ \text{MHz} }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		band: \ansbox[1.5in]{98.9 to 101.3 MHz}
+
+		\vspace{4pt}
+		alias: \ansbox[1.5in]{99.7 MHz}
+	\end{minipage}
+
+	\part Explain why complex samples show twice the bandwidth of real samples at the
+	same rate.
+		\begin{solution}[0.9in]
+		Real samples cannot tell a positive frequency from a negative one, so they
+		represent only 0 to $f_s/2$, with a mirror image below zero. Complex samples
+		record the direction of rotation, so $+f$ and $-f$ are different signals and the
+		full $-f_s/2$ to $+f_s/2$ is usable.
+		\end{solution}
+
+\end{parts}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{Recording and reading IQ.} A File Sink records complex samples.
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Find the size of a 5 s capture at 2.4 MS/s.
+		\begin{solution}[0.8in]
+		\eq{ 5 \times 2.4\times10^{6} \times 8\ \text{bytes} = 96\ \text{MB} }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.3in]{96 MB}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part You analyze the capture with a 4096-point FFT. Find the width of one bin.
+		\begin{solution}[0.8in]
+		\eq{ \dfrac{f_s}{N} = \dfrac{2.4\times10^{6}}{4096} = 586\ \text{Hz} }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.3in]{586 Hz}
+	\end{minipage}
+
+	\part A teammate sends only the file \texttt{capture.cfile}. Name the two numbers
+	you need before the file is useful, and explain why.
+		\begin{solution}[0.9in]
+		The sample rate and the center frequency. The file holds raw $I$ and $Q$ values
+		with no header: without the sample rate the time and frequency axes have no
+		scale, and without the center frequency the frequency axis has no reference.
+		\end{solution}
+
+\end{parts}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{Gain and dynamic range.} Each bit of an analog-to-digital
+converter adds about 6 dB of dynamic range.
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Estimate the dynamic range of the RTL-SDR's 8-bit converter and the
+		PlutoSDR's 12-bit converter.
+		\begin{solution}[0.8in]
+		\eq{ 8 \times 6 = 48\db, \qquad 12 \times 6 = 72\db }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		RTL-SDR: \ansbox[1.0in]{$48\db$}
+
+		\vspace{4pt}
+		PlutoSDR: \ansbox[1.0in]{$72\db$}
+	\end{minipage}
+
+	\part With the gain at maximum, copies of a strong station appear at frequencies
+	where nothing transmits. Name the problem and the fix.
+		\begin{solution}[0.9in]
+		Overload: the strong station drives the converter past full scale, and the
+		clipping creates spurious signals. Lower the gain until the copies disappear,
+		keeping it high enough that the noise floor sits a few dB above the
+		converter's own.
+		\end{solution}
+
+	\part A student tunes the RTL-SDR exactly onto a weak narrowband signal and finds
+	it hidden in a spike at the center of the display. Explain the spike and the fix.
+		\begin{solution}[0.9in]
+		The spike is the receiver's own DC offset, which appears at 0 Hz, the center
+		frequency, in every direct-conversion SDR. Tuning the SDR a little off the
+		signal moves the signal away from the center while the spike stays there.
+		\end{solution}
+
+\end{parts}
+
+\vspace{1.5em}
+\noindent\textbf{Documentation:} \rule[-2pt]{0.6\linewidth}{0.4pt}
+
+\end{questions}

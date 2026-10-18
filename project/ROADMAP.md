@@ -113,6 +113,16 @@ since they follow this structure. Two changes:
 - **Phone-width math (2026-10-18).** Neil found L2 equations scrolling on his
   phone. `scripts/verify/check_math.py` now gates every lesson at 320, 360,
   and 390 px, and it caught one L3 equation before it shipped.
+- **L5 and the L5 Lab done (2026-10-18).** The first flowgraph lesson: two
+  `.grc` files and a Python IQ script under `book/extras/grc/`, real GRC and
+  QT GUI screenshots taken from GNU Radio 3.10.9 running under Xvfb, a
+  sampling-wheel widget for complex sampling and aliasing, a simulated FM-band
+  figure labeled as simulated, a short practice set, and the first lab packet
+  (Pre-Lab, Bench, Writeup). The FM flowgraph needs an RTL-SDR, so it is
+  compiled but not run. `mech_check.sh 05 gnu-radio-intro` passes.
+- **Beat budgets.** `scripts/verify/budgets.py` had carried ECE 444's
+  per-lesson exceptions, which let 448's L05-L14 run to 30 beats. They are
+  gone; every 448 lesson is held to 20.
 - What L2 settled for the lesson threads:
   - The practice harness is in `latex/` (ported from 444). It needs
     `livethisdream/latex-tools` attached and TeX Live installed (the session
@@ -125,6 +135,43 @@ since they follow this structure. Two changes:
     This is the applications-first rule made concrete.
   - Once a lesson is converted, its manifest entry gets `[]` for decks. The
     legacy PDF stays listed on the materials page.
+
+## Lesson threads (from L6 on)
+
+The trial is done. From L6 on, each lesson is its own thread, and this thread
+is the Integrator, as in ECE 444 (`project/ROADMAP.md` sections 1-3 there).
+
+**A lesson thread for lesson NN may edit only:**
+
+| What | Path |
+| :-- | :-- |
+| the lesson page and its lab page | `book/moduleMM/LNN-*/index.md` |
+| its deck | `book/extras/slides/LNN-*.md` and the generated `.html` |
+| its practice set | `latex/ECE448_Practice_LNN.tex` and its PDFs in `book/extras/practice/` |
+| its lab packet | `latex/ECE448_Lab_LNN_*.tex` and the blank PDF in `book/extras/labs/`; the KEY to `ECE448-faculty/lab-keys/` |
+| its figures | `book/extras/{viz/img,slides/fig,slides/img/NN-*}/LNN-*` and `scripts/graphics/lNN_figures.py` |
+| its flowgraphs and scripts | `book/extras/grc/LNN-*` |
+| a widget only it uses | `book/extras/viz/<widget>.html` |
+
+Everything else, including the manifest, the syllabus, the module pages, the
+shell, `scripts/verify/`, and this file, belongs to the Integrator; a lesson
+thread lists what it needs under "For the Integrator" in its PR body.
+
+**Every lesson PR carries, before it opens:**
+
+1. A frame page within 20 beats and 40 words a frame, opening from the
+   signal and closing with an application frame on the SDR or in GNU Radio.
+2. The deck, the practice set (one `Learning Objective M.N:` line per
+   objective served), and, where the lesson has a lab, the packet.
+3. Every flowgraph normalized, compiled, and, if it needs no hardware, run
+   for its screenshots (CLAUDE.md, "Flowgraphs").
+4. `mech_check.sh NN <slug>` with 0 failures, which includes the phone-math
+   gate, and `check_grc.py`, `check_shell.py`, and `check_frames.py` passing.
+5. A voice pass against `VOICE.md`: no fragments, no money metaphors, no
+   passive tells, American spelling.
+
+**Branches.** Each thread branches from current `main` as
+`claude/lNN-<slug>`, opens one PR, and does not merge it.
 
 ## Next
 
