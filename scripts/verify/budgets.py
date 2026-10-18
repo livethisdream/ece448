@@ -1,4 +1,4 @@
-"""Present-mode budgets: the one place to change them.
+"""Present-mode budgets: the one place to change them (copied from ECE 444).
 
 check_density.py reads these, and mech_check.sh gates on check_density, so a
 change here moves every gate at once. The numbers are a measured pace, not a
@@ -36,16 +36,9 @@ BEATS = 20
 # an earlier budget is listed here until it is recut; delete its entry when it
 # is. Keys match the lesson directory name by prefix (e.g. "L18").
 BEAT_EXCEPTIONS = {
-    "L05": (30, "cut under the 30-beat rule (2026-09); recut pending"),
-    "L06": (30, "cut under the 30-beat rule (2026-09); recut pending"),
-    "L07": (30, "cut under the 30-beat rule (2026-09); recut pending"),
-    "L08": (30, "cut under the 30-beat rule (2026-09); recut pending"),
-    "L09": (30, "cut under the 30-beat rule (2026-09); recut pending"),
-    "L11": (30, "cut under the 30-beat rule (2026-09); recut pending"),
-    "L12": (30, "cut under the 30-beat rule (2026-09); recut pending"),
-    "L13": (30, "cut under the 30-beat rule (2026-09); recut pending"),
-    "L14": (30, "cut under the 30-beat rule (2026-09); recut pending"),
-    "L18": (21, "phase-sweep widget frame added after the 20-beat cut (Neil, 2026-10-17)"),
+    # ECE 448 has none yet. (The entries copied from ECE 444 named 444's own
+    # lessons and were removed on 2026-10-18; they had let 448's L05-L14 run
+    # to 30 beats.)
 }
 
 

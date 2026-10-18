@@ -76,6 +76,23 @@ else
   $SUDO apt-get install -y -qq --no-install-recommends "${TEX_PKGS[@]}"
 fi
 
+# --- GNU Radio: the flowgraph toolchain (ECE 448) ----------------------------
+# Every flowgraph a lesson ships is compiled by scripts/verify/check_grc.py and,
+# where it needs no hardware, run headless for its screenshots by
+# scripts/grc/grc_shot.py under Xvfb. Ubuntu 24.04's gnuradio package is 3.10.9,
+# the course version. Its bindings are built for /usr/bin/python3.12, which the
+# scripts call explicitly. The GTK and X tools let scripts/grc/grc_canvas.sh
+# screenshot GRC itself.
+GR_PKGS=(gnuradio gnuradio-dev python3-pyqt5 xvfb gir1.2-gtk-3.0 python3-gi-cairo x11-apps imagemagick xdotool)
+if command -v grcc >/dev/null 2>&1 && command -v xvfb-run >/dev/null 2>&1; then
+  log "GNU Radio present, skipping apt install"
+else
+  log "installing GNU Radio 3.10 and Xvfb"
+  export DEBIAN_FRONTEND=noninteractive
+  $SUDO apt-get update -qq
+  $SUDO apt-get install -y -qq --no-install-recommends "${GR_PKGS[@]}"
+fi
+
 # --- where the house macros live --------------------------------------------
 # myPackages_gr / myShortcuts / exam_config live in the PRIVATE livethisdream/
 # latex-tools repo, which is not vendored here and cannot be cloned by a hook.

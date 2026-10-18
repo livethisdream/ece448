@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sampling wheel — complex sampling, negative frequencies, and aliasing</title>
+<style>
+  :root { --navy:#004a85; --mid:#0067b9; --edge:#cddce9; --edge2:#b9d2e5; --bg:#f5f9fc;
+          --ink:#15202b; --ink3:#5b6573;
+          --amber:#8a5a00; --red:#b01e24; --grn:#3f7d34; }
+  html,body { margin:0; padding:0; font-family:'Inter',system-ui,-apple-system,sans-serif; color:var(--ink); background:#fff; }
+  .app { display:flex; flex-direction:column; gap:8px; padding:12px; }
+  .plots { display:grid; grid-template-columns:minmax(0,0.9fr) minmax(0,1.3fr); gap:10px; }
+  @media (max-width:620px) { .plots { grid-template-columns:1fr; } }
+  canvas { display:block; box-sizing:border-box; width:100%; height:auto; background:#fff; border:1px solid var(--edge); border-radius:6px; }
+  .controls { display:grid; grid-template-columns:minmax(0,2fr) minmax(0,1fr); gap:8px 16px; align-items:center;
+              padding:8px 12px; background:var(--bg); border:1px solid var(--edge); border-radius:6px; }
+  @media (max-width:620px) { .controls { grid-template-columns:1fr; } }
+  .ctl { display:grid; grid-template-columns:auto 1fr; column-gap:8px; row-gap:2px; align-items:center; min-width:0; }
+  .ctl label { font-size:10.5px; text-transform:uppercase; letter-spacing:0.05em; color:var(--ink3); font-weight:700; white-space:nowrap; }
+  .ctl .val { color:var(--navy); font-size:12px; font-weight:600; font-variant-numeric:tabular-nums; text-align:right; white-space:nowrap; }
+  .ctl input[type=range]{ grid-column:1 / span 2; width:100%; margin:0; accent-color:var(--mid); }
+  .seg { display:flex; gap:4px; justify-content:flex-end; flex-wrap:wrap; }
+  .seg button { font:inherit; font-size:11.5px; font-weight:600; color:var(--navy); background:#fff; border:1px solid var(--edge2); border-radius:14px; padding:3px 10px; cursor:pointer; }
+  .seg button.on { background:var(--navy); color:#fff; border-color:var(--navy); }
+  .readouts { display:grid; gap:6px; grid-template-columns:repeat(3,minmax(0,1fr)); }
+  .ro { display:flex; flex-direction:column; align-items:center; gap:2px; padding:5px 4px 6px; min-width:0;
+        border:1px solid var(--edge2); border-radius:6px; background:#eef4fa; }
+  .ro .k { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:var(--ink3); white-space:nowrap; }
+  .ro .v { font-size:14px; font-weight:700; white-space:nowrap; font-variant-numeric:tabular-nums; color:var(--navy); }
+  .ro.alias .v { color:var(--red); }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="plots">
+    <canvas id="wheel" aria-label="The tone's samples as points on the unit circle, with the apparent rotation"></canvas>
+    <canvas id="spec" aria-label="Where the tone appears on the frequency axis from minus half to plus half the sample rate"></canvas>
+  </div>
+  <div class="controls">
+    <div class="ctl"><label for="f">Tone frequency</label><span class="val" id="f-v"></span>
+      <input type="range" id="f" min="-48" max="48" step="0.25" value="4"></div>
+    <div class="seg" id="mode"><button data-m="complex" class="on">complex</button><button data-m="real">real</button></div>
+  </div>
+  <div class="readouts">
+    <div class="ro"><span class="k">true tone</span><span class="v" id="o-f">—</span></div>
+    <div class="ro" id="ro-a"><span class="k">appears at</span><span class="v" id="o-a">—</span></div>
+    <div class="ro"><span class="k">samples/cycle</span><span class="v" id="o-n">—</span></div>
+  </div>
+</div>
+
+<script>
+'use strict';
+// The sample rate is fixed at 32 kHz, the L5 tone flowgraph's. Every
+// frequency here is in kHz.
+const FS = 32, SANS = 'Inter, system-ui, -apple-system, sans-serif';
+const C = { navy:'#004a85', mid:'#0067b9', red:'#b01e24', amber:'#8a5a00', rule:'#cddce9', ink:'#15202b', ink3:'#5b6573', grn:'#3f7d34' };
+const fEl = document.getElementById('f');
+let mode = 'complex', n = 0, last = 0;
+document.querySelectorAll('#mode button').forEach(b => b.onclick = () => {
+  mode = b.dataset.m; document.querySelectorAll('#mode button').forEach(x => x.classList.toggle('on', x === b)); update(); });
+fEl.oninput = update;
+
+// The apparent frequency: the true one folded into -FS/2 .. +FS/2.
+function alias(f){ let a = ((f + FS/2) % FS + FS) % FS - FS/2; if (Math.abs(a + FS/2) < 1e-9) a = -FS/2; return a; }
+function fmt(v){ return (v < 0 ? '−' : '') + Math.abs(v).toFixed(2).replace(/\.?0+$/, '') + ' kHz'; }
+
+function setup(cv, aspect, narrowH){
+  const dpr = window.devicePixelRatio || 1, w = Math.max(200, cv.clientWidth || 300);
+  const narrow = window.matchMedia && window.matchMedia('(max-width:620px)').matches;
+  const h = narrow ? narrowH : Math.round(Math.min(w * aspect, 260));
+  cv.width = Math.round(w*dpr); cv.height = Math.round(h*dpr); cv.style.height = h + 'px';
+  const bh = cv.offsetHeight - cv.clientHeight; if (bh) cv.style.height = (h + bh) + 'px';
+  const ctx = cv.getContext('2d'); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); return { ctx, w, h };
+}
+function txt(ctx, s, x, y, px, col, align, bold){ ctx.fillStyle = col; ctx.font = (bold?'700 ':'') + px + 'px ' + SANS;
+  ctx.textAlign = align || 'left'; ctx.textBaseline = 'middle'; ctx.fillText(s, x, y); }
+
+function drawWheel() {
+  const cv = document.getElementById('wheel'), { ctx, w, h } = setup(cv, 0.9, 170);
+  const f = +fEl.value, cx = w/2, cy = h/2, R = Math.min(w, h)/2 - 22;
+  ctx.clearRect(0, 0, w, h);
+  ctx.strokeStyle = C.rule; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.arc(cx, cy, R, 0, 2*Math.PI); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(cx-R-8, cy); ctx.lineTo(cx+R+8, cy); ctx.moveTo(cx, cy-R-8); ctx.lineTo(cx, cy+R+8); ctx.stroke();
+  txt(ctx, 'I', cx+R+10, cy-8, 11, C.ink3); txt(ctx, 'Q', cx+6, cy-R-10, 11, C.ink3);
+  // The last eight samples, oldest faintest: each is exp(j 2 pi f n / fs).
+  const K = 8;
+  for (let k = K-1; k >= 0; k--) {
+    const m = n - k, ph = 2*Math.PI*f*m/FS;
+    const x = mode === 'complex' ? Math.cos(ph) : Math.cos(ph), y = mode === 'complex' ? Math.sin(ph) : 0;
+    ctx.globalAlpha = 1 - k/(K+1);
+    ctx.fillStyle = k === 0 ? C.navy : C.mid;
+    ctx.beginPath(); ctx.arc(cx + R*x, cy - R*y, k === 0 ? 6 : 4, 0, 2*Math.PI); ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+  const ph = 2*Math.PI*f*n/FS;
+  const x = Math.cos(ph), y = mode === 'complex' ? Math.sin(ph) : 0;
+  ctx.strokeStyle = C.navy; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + R*x, cy - R*y); ctx.stroke();
+  const a = alias(f);
+  const dir = mode === 'real' ? 'real: no direction' : (Math.abs(a) < 1e-9 ? 'standing still' : (a > 0 ? 'turns counterclockwise' : 'turns clockwise'));
+  txt(ctx, dir, 8, h - 10, 11.5, mode === 'complex' && Math.sign(a) !== Math.sign(f) && f !== 0 ? C.red : C.ink3, 'left', true);
+}
+
+function drawSpec() {
+  const cv = document.getElementById('spec'), { ctx, w, h } = setup(cv, 0.62, 170);
+  const f = +fEl.value, a = alias(f);
+  ctx.clearRect(0, 0, w, h);
+  const mL = 18, mR = 18, y0 = h - 40, top = 34;
+  const span = 3.1*FS, X = v => mL + (v + span/2) / span * (w - mL - mR);
+  // the window the samples can represent
+  ctx.fillStyle = '#eef4fa'; ctx.fillRect(X(-FS/2), top - 8, X(FS/2) - X(-FS/2), y0 - top + 8);
+  ctx.strokeStyle = C.ink3; ctx.lineWidth = 1.2;
+  ctx.beginPath(); ctx.moveTo(mL, y0); ctx.lineTo(w - mR, y0); ctx.stroke();
+  for (const v of [-FS, -FS/2, 0, FS/2, FS]) {
+    ctx.beginPath(); ctx.moveTo(X(v), y0); ctx.lineTo(X(v), y0 + 5); ctx.stroke();
+    const lab = v === 0 ? '0' : (Math.abs(v) === FS/2 ? (v < 0 ? '−fs/2' : 'fs/2') : (v < 0 ? '−fs' : 'fs'));
+    txt(ctx, lab, X(v), y0 + 16, 11, C.ink3, 'center');
+  }
+  txt(ctx, 'what the samples can show', (X(-FS/2) + X(FS/2))/2, top - 18, 11, C.ink3, 'center');
+  function spike(v, col, dashed, label) {
+    if (v < -span/2 || v > span/2) return;
+    ctx.strokeStyle = col; ctx.lineWidth = 3; ctx.setLineDash(dashed ? [5, 4] : []);
+    ctx.beginPath(); ctx.moveTo(X(v), y0); ctx.lineTo(X(v), top + 8); ctx.stroke(); ctx.setLineDash([]);
+    if (label) txt(ctx, label, X(v), top, 11, col, 'center', true);
+  }
+  const outside = Math.abs(f) > FS/2;
+  if (mode === 'complex') {
+    if (outside) spike(f, C.amber, true, 'true tone');
+    spike(a, outside ? C.red : C.navy, false, outside ? 'alias' : 'tone');
+  } else {
+    if (outside) { spike(f, C.amber, true, 'true'); spike(-f, C.amber, true, ''); }
+    spike(a, outside ? C.red : C.navy, false, 'tone'); spike(-a, outside ? C.red : C.navy, false, 'image');
+  }
+}
+
+function update() {
+  const f = +fEl.value, a = alias(f);
+  document.getElementById('f-v').textContent = fmt(f);
+  document.getElementById('o-f').textContent = fmt(f);
+  document.getElementById('o-a').textContent = mode === 'real' ? '±' + fmt(Math.abs(a)) : fmt(a);
+  document.getElementById('o-n').textContent = f === 0 ? '∞' : (FS / Math.abs(f)).toFixed(1);
+  document.getElementById('ro-a').className = 'ro' + (Math.abs(f) > FS/2 ? ' alias' : '');
+  drawWheel(); drawSpec();
+}
+
+// One new sample about every 0.45 s: slow enough to watch which way the wheel turns.
+function tick(t) { if (t - last > 450) { n++; last = t; drawWheel(); } requestAnimationFrame(tick); }
+window.addEventListener('resize', update);
+const q = new URLSearchParams(location.search);
+if (q.get('f')) fEl.value = q.get('f');
+update(); requestAnimationFrame(tick);
+</script>
+</body>
+</html>
