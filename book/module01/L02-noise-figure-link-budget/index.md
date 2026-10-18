@@ -112,7 +112,8 @@ $$P_r = P_t + G_t + G_r - L_p$$
 
 $$\begin{aligned}
 L_p &= 20\log_{10}\frac{4\pi d}{\lambda} \\
-&= 20\log_{10} d_{\text{km}} + 20\log_{10} f_{\text{MHz}} + 32.45
+&= 20\log_{10} d_{\text{km}} \\
+&\quad + 20\log_{10} f_{\text{MHz}} + 32.45
 \end{aligned}$$
 
 - $L_p$ is the **free-space path loss** in dB.
@@ -160,10 +161,14 @@ The atmosphere is nearly transparent below about 10 GHz. Above that, water vapor
 
 ::::{frame} Part 3: The Noise Floor
 :::{present}
-$$N = kTB \quad\Rightarrow\quad -174\ \text{dBm/Hz at 290 K}$$
+$$\begin{aligned}
+N &= kTB \\
+kT_0 &= -174\ \text{dBm/Hz}
+\end{aligned}$$
 
-$$N_\text{floor} = -174 + 10\log_{10}B + \text{NF} \quad \text{(dBm)}$$
+$$N_\text{floor} = -174 + 10\log_{10}B + \text{NF}$$
 
+- $T_0 = 290$ K; the floor is in dBm.
 - 1 MHz with NF 7 dB gives $-107.0$ dBm.
 :::
 
@@ -174,7 +179,10 @@ A real receiver adds noise of its own on top of that, and its **noise figure** N
 
 ::::{frame} Noise Figure
 :::{present}
-$$F = \frac{\text{SNR}_\text{in}}{\text{SNR}_\text{out}} \qquad \text{NF} = 10\log_{10}F$$
+$$\begin{aligned}
+F &= \frac{\text{SNR}_\text{in}}{\text{SNR}_\text{out}} \\
+\text{NF} &= 10\log_{10}F
+\end{aligned}$$
 
 - Every stage lowers the SNR; NF says by how much.
 - A passive loss of $L$ dB at room temperature has $\text{NF} = L$.
@@ -188,7 +196,10 @@ Two cases are worth knowing by heart. A passive loss at room temperature, a cabl
 
 ::::{frame} Cascaded Noise Figure
 :::{present}
-$$F = F_1 + \frac{F_2 - 1}{G_1} + \frac{F_3 - 1}{G_1 G_2} + \cdots$$
+$$\begin{aligned}
+F &= F_1 + \frac{F_2 - 1}{G_1} \\
+&\quad + \frac{F_3 - 1}{G_1 G_2} + \cdots
+\end{aligned}$$
 
 - The gain ahead of each stage divides down its noise.
 - The first stage sets the floor, so it should have low NF and high gain.
@@ -215,15 +226,19 @@ The design rule follows directly. The first stage dominates the noise figure of 
 An LNA with NF 1 dB and 20 dB of gain, a coax run with 3 dB of loss, and an SDR with NF 8 dB. In linear terms the LNA is $F_1 = 1.26$, $G_1 = 100$; the cable is $F_2 = 2.00$, $G_2 = 0.50$; the SDR is $F_3 = 6.31$.
 
 $$\begin{aligned}
-F &= 1.26 + \frac{2.00 - 1}{100} + \frac{6.31 - 1}{100 \times 0.50} \\
-&= 1.26 + 0.01 + 0.11 = 1.38
+F &= 1.26 + \frac{2.00 - 1}{100} \\
+&\quad + \frac{6.31 - 1}{100 \times 0.50} \\
+&= 1.26 + 0.01 + 0.11 \\
+&= 1.38
 \end{aligned}$$
 
 which is NF $= 1.4$ dB. With the cable first, the cable's 3 dB sits in front of everything and the LNA's gain cannot divide it down:
 
 $$\begin{aligned}
-F &= 2.00 + \frac{1.26 - 1}{0.50} + \frac{6.31 - 1}{0.50 \times 100} \\
-&= 2.00 + 0.52 + 0.11 = 2.62
+F &= 2.00 + \frac{1.26 - 1}{0.50} \\
+&\quad + \frac{6.31 - 1}{0.50 \times 100} \\
+&= 2.00 + 0.52 + 0.11 \\
+&= 2.62
 \end{aligned}$$
 
 which is NF $= 4.2$ dB. Without the LNA the cable and the SDR alone give 11.0 dB. The same three parts span almost 10 dB of noise figure, and 10 dB of noise floor is a factor of $\sqrt{10} = 3.2$ in range.
