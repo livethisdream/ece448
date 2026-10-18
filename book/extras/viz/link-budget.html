@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Link budget — from transmitter power to margin</title>
+<style>
+  :root { --navy:#004a85; --mid:#0067b9; --edge:#cddce9; --edge2:#b9d2e5; --bg:#f5f9fc;
+          --ink:#15202b; --ink3:#5b6573;
+          --amber:#8a5a00; --red:#b01e24; --grn:#3f7d34; }
+  html,body { margin:0; padding:0; font-family:'Inter',system-ui,-apple-system,sans-serif; color:var(--ink); background:#fff; }
+  .app { display:flex; flex-direction:column; gap:8px; padding:12px; }
+  canvas { display:block; box-sizing:border-box; width:100%; height:auto; background:#fff; border:1px solid var(--edge); border-radius:6px; }
+  .controls { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:6px 16px; align-items:center;
+              padding:8px 12px; background:var(--bg); border:1px solid var(--edge); border-radius:6px; }
+  @media (max-width:620px) { .controls { grid-template-columns:repeat(2,minmax(0,1fr)); gap:4px 10px; padding:6px 8px; } }
+  .ctl { display:grid; grid-template-columns:auto 1fr; grid-template-rows:auto auto; column-gap:6px; min-width:0; }
+  .ctl label { font-size:10.5px; text-transform:uppercase; letter-spacing:0.05em; color:var(--ink3); font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .ctl .val { color:var(--navy); font-size:12px; font-weight:600; font-variant-numeric:tabular-nums; white-space:nowrap; text-align:right; }
+  .ctl input[type=range]{ grid-column:1 / span 2; width:100%; margin:2px 0 0; accent-color:var(--mid); }
+  .readouts { display:grid; gap:6px; grid-template-columns:repeat(5,minmax(0,1fr)); }
+  @media (max-width:620px) { .readouts { grid-template-columns:repeat(3,minmax(0,1fr)); } }
+  .ro { display:flex; flex-direction:column; align-items:center; gap:2px; padding:5px 4px 6px; min-width:0;
+        border:1px solid var(--edge2); border-radius:6px; background:#eef4fa; }
+  .ro .k { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:var(--ink3); white-space:nowrap; }
+  .ro .v { font-size:14px; font-weight:700; white-space:nowrap; font-variant-numeric:tabular-nums; color:var(--navy); }
+  .ro.good { background:rgba(63,125,52,0.12); border-color:rgba(63,125,52,0.35); }
+  .ro.good .v { color:var(--grn); }
+  .ro.bad { background:rgba(176,30,36,0.10); border-color:rgba(176,30,36,0.30); }
+  .ro.bad .v { color:var(--red); }
+  .row { display:flex; gap:6px; justify-content:center; }
+  button { font:inherit; font-size:11.5px; font-weight:600; color:var(--navy); background:#fff; border:1px solid var(--edge2); border-radius:14px; padding:3px 10px; cursor:pointer; }
+  button:hover { background:var(--bg); }
+</style>
+</head>
+<body>
+<div class="app">
+  <canvas id="plot" aria-label="Level diagram from transmitter to receiver against the noise floor and the sensitivity"></canvas>
+
+  <div class="controls">
+    <div class="ctl"><label for="pt">Tx power</label><span class="val" id="pt-v"></span><input type="range" id="pt" min="-10" max="50" step="0.5"></div>
+    <div class="ctl"><label for="f">Frequency</label><span class="val" id="f-v"></span><input type="range" id="f" min="2" max="3.8" step="0.001"></div>
+    <div class="ctl"><label for="r">Distance</label><span class="val" id="r-v"></span><input type="range" id="r" min="-2" max="4.6" step="0.001"></div>
+    <div class="ctl"><label for="gt">Tx gain</label><span class="val" id="gt-v"></span><input type="range" id="gt" min="0" max="30" step="0.5"></div>
+    <div class="ctl"><label for="gr">Rx gain</label><span class="val" id="gr-v"></span><input type="range" id="gr" min="0" max="30" step="0.5"></div>
+    <div class="ctl"><label for="ls">Other losses</label><span class="val" id="ls-v"></span><input type="range" id="ls" min="0" max="20" step="0.5"></div>
+    <div class="ctl"><label for="bw">Bandwidth</label><span class="val" id="bw-v"></span><input type="range" id="bw" min="3" max="7.3" step="0.001"></div>
+    <div class="ctl"><label for="nf">Noise figure</label><span class="val" id="nf-v"></span><input type="range" id="nf" min="0" max="15" step="0.5"></div>
+    <div class="ctl"><label for="sn">SNR needed</label><span class="val" id="sn-v"></span><input type="range" id="sn" min="-30" max="30" step="0.5"></div>
+  </div>
+
+  <div class="readouts">
+    <div class="ro"><span class="k">path loss</span><span class="v" id="o-fspl">—</span></div>
+    <div class="ro"><span class="k">received</span><span class="v" id="o-pr">—</span></div>
+    <div class="ro"><span class="k">noise floor</span><span class="v" id="o-fl">—</span></div>
+    <div class="ro"><span class="k">SNR</span><span class="v" id="o-snr">—</span></div>
+    <div class="ro" id="ro-m"><span class="k">margin</span><span class="v" id="o-m">—</span></div>
+  </div>
+  <div class="row"><button id="reset">drone link (Lesson 2)</button><button id="wifi">Wi-Fi, 50 m</button><button id="gps">GPS from orbit</button></div>
+</div>
+
+<script>
+'use strict';
+const C = 299792458;
+const SANS = 'Inter, system-ui, -apple-system, sans-serif';
+const PRESETS = {
+  // The lesson's worked example: 630 mW, 2.45 GHz, 3 km, 1.5 dB of cable each
+  // side plus 3 dB of pointing, 1 MHz, NF 7 dB, modem needs 14 dB.
+  drone: { pt: 28.0, f: Math.log10(2450), r: Math.log10(3), gt: 4, gr: 1, ls: 6, bw: 6, nf: 7, sn: 14 },
+  wifi:  { pt: 20, f: Math.log10(5800), r: Math.log10(0.05), gt: 3, gr: 2, ls: 10, bw: Math.log10(20e6), nf: 6, sn: 25 },
+  // GPS L1 C/A: about 27 dBW EIRP (57 dBm) from 20,200 km in 2 MHz. Correlating
+  // against the 1023-chip code recovers about 30 dB, so the receiver works with
+  // about -20 dB of SNR before correlation.
+  gps:   { pt: 44, f: Math.log10(1575.42), r: Math.log10(20200), gt: 13, gr: 0, ls: 2, bw: Math.log10(2e6), nf: 2, sn: -20 },
+};
+const ids = ['pt','f','r','gt','gr','ls','bw','nf','sn'];
+const el = Object.fromEntries(ids.map(k => [k, document.getElementById(k)]));
+const state = {};
+
+function fmtF(mhz){ return mhz >= 1000 ? (mhz/1000).toFixed(mhz >= 10000 ? 0 : 2) + ' GHz' : mhz.toFixed(mhz < 100 ? 1 : 0) + ' MHz'; }
+function fmtR(km){ return km < 1 ? (km*1000).toFixed(0) + ' m' : km < 100 ? km.toFixed(km < 10 ? 2 : 1) + ' km' : km.toFixed(0) + ' km'; }
+function fmtB(hz){ return hz >= 1e6 ? (hz/1e6).toFixed(hz < 1e7 ? 2 : 1) + ' MHz' : (hz/1e3).toFixed(hz < 1e4 ? 1 : 0) + ' kHz'; }
+const M = v => (v < 0 ? '−' : '') + Math.abs(v).toFixed(1);
+
+function read() {
+  for (const k of ids) state[k] = parseFloat(el[k].value);
+  const mhz = 10 ** state.f, km = 10 ** state.r, hz = 10 ** state.bw;
+  document.getElementById('pt-v').textContent = M(state.pt) + ' dBm';
+  document.getElementById('f-v').textContent = fmtF(mhz);
+  document.getElementById('r-v').textContent = fmtR(km);
+  document.getElementById('gt-v').textContent = state.gt.toFixed(1) + ' dBi';
+  document.getElementById('gr-v').textContent = state.gr.toFixed(1) + ' dBi';
+  document.getElementById('ls-v').textContent = state.ls.toFixed(1) + ' dB';
+  document.getElementById('bw-v').textContent = fmtB(hz);
+  document.getElementById('nf-v').textContent = state.nf.toFixed(1) + ' dB';
+  document.getElementById('sn-v').textContent = state.sn.toFixed(1) + ' dB';
+  draw();
+}
+function load(p){ for (const k of ids) el[k].value = p[k]; read(); }
+for (const k of ids) el[k].addEventListener('input', read);
+document.getElementById('reset').onclick = () => load(PRESETS.drone);
+document.getElementById('wifi').onclick = () => load(PRESETS.wifi);
+document.getElementById('gps').onclick = () => load(PRESETS.gps);
+
+function derived() {
+  const f = 10 ** state.f * 1e6, d = 10 ** state.r * 1e3, B = 10 ** state.bw;
+  const fspl = 20 * Math.log10(4 * Math.PI * d * f / C);
+  const eirp = state.pt + state.gt;
+  const pr = eirp - fspl + state.gr - state.ls;
+  const floor = -174 + 10 * Math.log10(B) + state.nf;
+  const sens = floor + state.sn;
+  return { fspl, eirp, pr, floor, sens, snr: pr - floor, margin: pr - sens };
+}
+
+const canvas = document.getElementById('plot');
+const ctx = canvas.getContext('2d');
+function cvWidth(cv){ return Math.max(240, cv.clientWidth || Math.floor(cv.getBoundingClientRect().width)); }
+function setSize(cv, wCss, hCss, dpr){
+  cv.width = Math.round(wCss * dpr); cv.height = Math.round(hCss * dpr);
+  cv.style.height = hCss + 'px';
+  const bh = cv.offsetHeight - cv.clientHeight;
+  if (bh) cv.style.height = (hCss + bh) + 'px';
+}
+const DESIGN_W = 340;
+let SCL = 1;
+const MQ = window.matchMedia ? window.matchMedia('(max-width:620px)') : null;
+function fit() {
+  const dpr = window.devicePixelRatio || 1;
+  const wCss = cvWidth(canvas);
+  SCL = Math.min(1, wCss / DESIGN_W);
+  const w = wCss / SCL;
+  // Stacked controls take more height on a phone, so the drawing gets a shorter box there.
+  const h = (MQ && MQ.matches) ? 170 : Math.max(190, Math.min(w * 0.30, 230));
+  setSize(canvas, wCss, h * SCL, dpr);
+  ctx.setTransform(dpr * SCL, 0, 0, dpr * SCL, 0, 0);
+  draw();
+}
+window.addEventListener('resize', fit);
+
+function txt(s, x, y, px, color, align, bold){
+  ctx.fillStyle = color; ctx.font = (bold ? '700 ' : '') + px + 'px ' + SANS;
+  ctx.textAlign = align || 'left'; ctx.textBaseline = 'middle'; ctx.fillText(s, x, y);
+}
+
+function draw() {
+  if (!state.pt && state.pt !== 0) return;
+  const dpr = window.devicePixelRatio || 1;
+  const w = canvas.width / (dpr * SCL), h = canvas.height / (dpr * SCL);
+  ctx.clearRect(0, 0, w, h);
+  const d = derived();
+  const narrow = w < 520;
+  const mL = 46, mR = narrow ? 78 : 112, mT = 14, mB = 24;
+  const pW = w - mL - mR, pH = h - mT - mB;
+  // dBm range: fixed top, bottom follows the floor so a GPS-sized link fits.
+  const top = 60, bot = Math.min(-120, Math.floor((Math.min(d.floor, d.pr) - 15) / 20) * 20);
+  const Y = v => mT + (top - v) / (top - bot) * pH;
+  ctx.strokeStyle = '#e6eef6'; ctx.lineWidth = 1;
+  const stepDb = (top - bot) > 200 ? 40 : 20;
+  for (let v = bot; v <= top; v += stepDb) {
+    ctx.beginPath(); ctx.moveTo(mL, Y(v)); ctx.lineTo(mL + pW, Y(v)); ctx.stroke();
+    txt(v === 0 ? '0' : (v < 0 ? '−' : '+') + Math.abs(v), mL - 6, Y(v), 10.5, '#5b6573', 'right');
+  }
+  txt('dBm', mL - 6, h - 9, 10.5, '#5b6573', 'right');
+
+  // floor and sensitivity
+  ctx.setLineDash([6, 4]); ctx.lineWidth = 1.8;
+  ctx.strokeStyle = '#b01e24';
+  ctx.beginPath(); ctx.moveTo(mL, Y(d.floor)); ctx.lineTo(mL + pW, Y(d.floor)); ctx.stroke();
+  ctx.setLineDash([2, 4]); ctx.strokeStyle = '#8a5a00';
+  ctx.beginPath(); ctx.moveTo(mL, Y(d.sens)); ctx.lineTo(mL + pW, Y(d.sens)); ctx.stroke();
+  ctx.setLineDash([]);
+  // Each label sits on the side of its line away from the other line, so the
+  // two never overprint, including when the sensitivity is below the floor.
+  const sensAbove = d.sens >= d.floor;
+  txt('noise floor', mL + 6, Y(d.floor) + (sensAbove ? 9 : -9), 10.5, '#b01e24', 'left', true);
+  txt('sensitivity', mL + 6, Y(d.sens) + (sensAbove ? -9 : 9), 10.5, '#8a5a00', 'left', true);
+
+  // the level steps: Tx, EIRP, after the path, Rx input
+  const stages = [
+    ['Tx', state.pt, '#004a85'],
+    ['EIRP', d.eirp, '#004a85'],
+    ['path', d.eirp - d.fspl, '#8a5a00'],
+    ['Rx in', d.pr, '#0067b9'],
+  ];
+  const sw = pW / stages.length;
+  let prev = null;
+  stages.forEach(([name, lv, col], i) => {
+    const xa = mL + i * sw + 6, xb = mL + (i + 1) * sw - 6;
+    if (prev !== null) {
+      ctx.strokeStyle = '#9aa6b2'; ctx.lineWidth = 1.2;
+      ctx.beginPath(); ctx.moveTo(xa - 12, Y(prev)); ctx.lineTo(xa, Y(lv)); ctx.stroke();
+    }
+    ctx.strokeStyle = col; ctx.lineWidth = 4; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(xa, Y(lv)); ctx.lineTo(xb, Y(lv)); ctx.stroke();
+    const above = Y(lv) - 10 > mT + 2;
+    txt(M(lv), (xa + xb) / 2, above ? Y(lv) - 10 : Y(lv) + 12, 11.5, col, 'center', true);
+    txt(name, (xa + xb) / 2, h - 9, 11, '#15202b', 'center');
+    prev = lv;
+  });
+
+  // margin bracket at the right
+  const xm = mL + pW + 14;
+  const ok = d.margin >= 0;
+  ctx.strokeStyle = ok ? '#3f7d34' : '#b01e24'; ctx.lineWidth = 3;
+  ctx.beginPath(); ctx.moveTo(xm, Y(d.pr)); ctx.lineTo(xm, Y(d.sens)); ctx.stroke();
+  const ym = (Y(d.pr) + Y(d.sens)) / 2;
+  txt('margin', xm + 8, ym - 8, 11, ok ? '#3f7d34' : '#b01e24', 'left', true);
+  txt(M(d.margin) + ' dB', xm + 8, ym + 8, 11, ok ? '#3f7d34' : '#b01e24', 'left', true);
+
+  document.getElementById('o-fspl').textContent = d.fspl.toFixed(1) + ' dB';
+  document.getElementById('o-pr').textContent = M(d.pr) + ' dBm';
+  document.getElementById('o-fl').textContent = M(d.floor) + ' dBm';
+  document.getElementById('o-snr').textContent = M(d.snr) + ' dB';
+  document.getElementById('o-m').textContent = M(d.margin) + ' dB';
+  document.getElementById('ro-m').className = 'ro ' + (d.margin >= 10 ? 'good' : d.margin < 0 ? 'bad' : '');
+}
+
+// A preset by query string: link-budget.html?preset=gps
+const q = new URLSearchParams(location.search).get('preset');
+load(PRESETS[q] || PRESETS.drone);
+fit();
+</script>
+</body>
+</html>
