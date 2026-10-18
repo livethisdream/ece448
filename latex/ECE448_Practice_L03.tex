@@ -1,0 +1,289 @@
+% !TEX root =./ECE448_Practice_main.tex
+%
+% L3 practice set (Signal Space). Blank copy: \begin{solution}[h] reserves h of
+% work space. SOLUTIONS copy (\iskey=1) prints the red worked solutions.
+% Q(x) is the Gaussian tail; values are given where a part needs one.
+
+\fullwidth{\textbf{Learning Objective 1.3: } I can describe signal-space concepts
+(basis functions, constellations, decision regions) and apply them to a digital
+modulation scheme.
+\\[4pt]\normalfont\small Show your work. Write a \textbf{Documentation} line at the
+end (\textbf{None} if you did not collaborate).}
+
+\begin{questions}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{Constellations and data rate.} A link must carry 1 Mb/s.
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part How many bits per symbol do 8-PSK and 64-QAM carry?
+		\begin{solution}[0.8in]
+		\eq{ k = \log_2 M: \quad \log_2 8 = 3, \quad \log_2 64 = 6 }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		8-PSK: \ansbox[1.0in]{3 bits}
+
+		\vspace{4pt}
+		64-QAM: \ansbox[1.0in]{6 bits}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Find the symbol rate the link needs with QPSK and with 16-QAM.
+		\begin{solution}[1.0in]
+		\eq{ R_s &= \dfrac{R_b}{k} \\
+			\text{QPSK: } R_s &= \dfrac{10^{6}}{2} = 500\ \text{ksym/s} \\
+			\text{16-QAM: } R_s &= \dfrac{10^{6}}{4} = 250\ \text{ksym/s} }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		QPSK: \ansbox[1.3in]{500 ksym/s}
+
+		\vspace{4pt}
+		16-QAM: \ansbox[1.3in]{250 ksym/s}
+	\end{minipage}
+
+	\part Sketch QPSK and 4-PAM at the same average symbol energy, and explain in
+	one or two sentences why a radio uses QPSK rather than 4-PAM on a carrier.
+		\begin{solution}[1.3in]
+		QPSK puts one point in each quadrant; 4-PAM puts four points on the I axis.
+		Both carry two bits per symbol, but QPSK uses both basis functions and so
+		spaces its points 1.41 apart at unit energy against 0.89 for 4-PAM. Wider
+		spacing tolerates more noise for the same power.
+		\end{solution}
+
+\end{parts}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{Noise and decisions.} A BPSK receiver sees its two points at
+$+1$ V and $-1$ V on the I axis. The noise on each axis is Gaussian with a
+standard deviation of 0.4 V. Use $Q(2.5) = 6.2\times10^{-3}$ and
+$Q(4) = 3.2\times10^{-5}$.
+\begin{parts}
+
+	\part State the decision rule and draw the decision regions.
+		\begin{solution}[0.9in]
+		Decide $+1$ if $I > 0$ and $-1$ if $I < 0$. The boundary is the Q axis,
+		halfway between the two points, and the two regions are the right and left
+		half-planes.
+		\end{solution}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Find the bit error rate.
+		\begin{solution}[1.0in]
+		An error needs the noise to push the sample past 0, a distance of 1 V, which
+		is $1/0.4 = 2.5$ standard deviations:
+		\eq{ P_b = Q(2.5) = 6.2\times10^{-3} }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		$P_b$ = \ansbox[1.3in]{$6.2\times10^{-3}$}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part The noise drops to 0.25 V. Find the new bit error rate, and the change in
+		SNR in dB.
+		\begin{solution}[1.1in]
+		\eq{ P_b &= Q\lp\dfrac{1}{0.25}\rp = Q(4) = 3.2\times10^{-5} \\
+			\Delta\text{SNR} &= 20\mylog{\dfrac{0.4}{0.25}} = 4.1\db }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		$P_b$ = \ansbox[1.3in]{$3.2\times10^{-5}$}
+
+		\vspace{4pt}
+		$\Delta$SNR = \ansbox[1.3in]{$4.1\db$}
+	\end{minipage}
+
+	\part A 4.1 dB improvement in SNR cut the error rate by a factor of about 200.
+	Explain why the bit error rate changes so much faster than the SNR.
+		\begin{solution}[1.0in]
+		The error rate is the tail of a Gaussian beyond the decision boundary, and that
+		tail falls off as $e^{-x^2/2}$. Moving the boundary from 2.5 to 4 standard
+		deviations away removes almost all of the remaining tail, so a few dB of SNR
+		changes the error rate by orders of magnitude.
+		\end{solution}
+
+\end{parts}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{Eb/N0, Es/N0, and SNR.} A receiver filtered to its symbol rate
+measures an SNR of 15 dB.
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Find $E_s/N_0$, and $E_b/N_0$ for QPSK and for 16-QAM.
+		\begin{solution}[1.2in]
+		With $B = R_s$, $E_s/N_0 = \text{SNR} = 15$ dB.
+		\eq{ \text{QPSK: } \dfrac{E_b}{N_0} &= 15 - 10\mylog{2} = 12.0\db \\
+			\text{16-QAM: } \dfrac{E_b}{N_0} &= 15 - 10\mylog{4} = 9.0\db }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		QPSK: \ansbox[1.3in]{$12.0\db$}
+
+		\vspace{4pt}
+		16-QAM: \ansbox[1.3in]{$9.0\db$}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Use the lesson's BER curves to estimate the bit error rate of each.
+		\begin{solution}[1.0in]
+		QPSK at 12.0 dB is far past the $10^{-5}$ point (9.6 dB); the curve gives
+		about $10^{-8}$. 16-QAM at 9.0 dB is still near $4\times10^{-3}$.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		QPSK: \ansbox[1.3in]{$\approx 10^{-8}$}
+
+		\vspace{4pt}
+		16-QAM: \ansbox[1.3in]{$\approx 4\times10^{-3}$}
+	\end{minipage}
+
+	\part Explain why BER curves are plotted against $E_b/N_0$ rather than SNR.
+		\begin{solution}[0.9in]
+		Modulations carry different numbers of bits per symbol. $E_b/N_0$ measures the
+		energy spent on each bit, so it compares them on equal terms; at the same SNR,
+		16-QAM spreads the symbol's energy over four bits and QPSK over two.
+		\end{solution}
+
+\end{parts}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{Gray coding.} An 8-PSK modem places its points every
+$45\mydeg$ around a circle.
+\begin{parts}
+
+	\part Label the eight points with a Gray code, starting from 000 at $0\mydeg$.
+		\begin{solution}[1.0in]
+		Going counterclockwise: 000, 001, 011, 010, 110, 111, 101, 100. Each label
+		differs from both of its neighbors, including 100 and 000, in one bit.
+		\end{solution}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part With natural binary labels instead (000, 001, 010, \ldots, 111), how many
+		bits does a slip from the point labeled 011 to its neighbor 100 corrupt?
+		\begin{solution}[0.7in]
+		011 and 100 differ in all three positions, so all three bits are wrong.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.0in]{3 bits}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part The Gray-coded modem measures a symbol error rate of $3\times10^{-4}$.
+		Estimate its bit error rate.
+		\begin{solution}[0.8in]
+		\eq{ P_b \approx \dfrac{P_s}{k} = \dfrac{3\times10^{-4}}{3} = 1\times10^{-4} }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		$P_b$ = \ansbox[1.3in]{$1\times10^{-4}$}
+	\end{minipage}
+
+\end{parts}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{Choosing a modulation.} A link budget predicts an SNR of 21 dB in a
+receiver filtered to 1 Msym/s. The link needs a bit error rate of $10^{-5}$ and at
+least 6 dB of margin. At that error rate QPSK needs $E_s/N_0 = 12.6$ dB, 8-PSK
+needs 17.7 dB, and 16-QAM needs 19.5 dB.
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Find the margin each modulation leaves.
+		\begin{solution}[1.0in]
+		\eq{ \text{QPSK: } 21 - 12.6 &= 8.4\db \\
+			\text{8-PSK: } 21 - 17.7 &= 3.3\db \\
+			\text{16-QAM: } 21 - 19.5 &= 1.5\db }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		QPSK: \ansbox[1.0in]{$8.4\db$}
+
+		\vspace{4pt}
+		8-PSK: \ansbox[1.0in]{$3.3\db$}
+
+		\vspace{4pt}
+		16-QAM: \ansbox[1.0in]{$1.5\db$}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Which modulation meets the requirement, and what data rate does it carry?
+		\begin{solution}[0.8in]
+		Only QPSK leaves 6 dB. At 1 Msym/s and 2 bits/symbol it carries 2 Mb/s.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.3in]{QPSK, 2 Mb/s}
+	\end{minipage}
+
+	\part A customer wants 4 Mb/s. One option is 16-QAM at 1 Msym/s; the other is
+	QPSK at 2 Msym/s, which needs twice the bandwidth at the same transmit power.
+	Compare the margin of each and recommend one.
+		\begin{solution}[1.3in]
+		16-QAM at 1 Msym/s leaves 1.5 dB of margin. Doubling the bandwidth doubles the
+		noise power, so QPSK at 2 Msym/s sees an SNR of $21 - 3.0 = 18.0$ dB and leaves
+		$18.0 - 12.6 = 5.4$ dB. Neither meets 6 dB, but QPSK in twice the bandwidth
+		comes much closer; it is the better choice if the bandwidth is available, and
+		otherwise the link needs about 0.6 dB more from the budget, for example a
+		slightly higher-gain antenna.
+		\end{solution}
+
+\end{parts}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{Reading a constellation.} Four QPSK receivers each show one
+problem on a constellation sink. Name the cause of each.
+\begin{parts}
+
+	\part The four points sit in the middle of their quadrants, but each is a round
+	cloud about a third of the way to the boundaries.
+		\begin{solution}[0.6in]
+		Noise. The cloud's size reads the SNR; nothing else is wrong.
+		\end{solution}
+
+	\part Four tight clouds, each rotated $30\mydeg$ counterclockwise from where it
+	belongs, standing still.
+		\begin{solution}[0.6in]
+		A fixed phase offset between the transmitter and receiver oscillators.
+		\end{solution}
+
+	\part The points are smeared into a ring of constant radius.
+		\begin{solution}[0.6in]
+		A frequency offset: the phase error grows continuously, so the constellation
+		rotates through every angle during the capture.
+		\end{solution}
+
+	\part Explain why the constellation in part (b) would produce a very high bit
+	error rate if the rotation reached $45\mydeg$, even with no noise.
+		\begin{solution}[0.9in]
+		The QPSK decision boundaries are the axes, $45\mydeg$ from each point. A
+		rotation of $45\mydeg$ puts every point on a boundary, and anything past it puts
+		every point in a neighbor's region, so the receiver must correct the phase
+		before it decides.
+		\end{solution}
+
+\end{parts}
+
+\vspace{1.5em}
+\noindent\textbf{Documentation:} \rule[-2pt]{0.6\linewidth}{0.4pt}
+
+\end{questions}

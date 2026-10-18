@@ -104,6 +104,15 @@ since they follow this structure. Two changes:
   figures from `scripts/graphics/l02_figures.py`, the `link-budget.html`
   widget (drone, Wi-Fi, and GPS presets), and a 5-question practice set.
   `mech_check.sh 02 noise-figure-link-budget` passes with 0 failures.
+- **L3 done (2026-10-18).** Frame page (16/20 beats), deck (17 slides), five
+  figures from `scripts/graphics/l03_figures.py`, the
+  `constellation-explorer.html` widget (live symbols through noise, measured
+  against predicted BER), and a 5-question practice set. It closes L2's open
+  question: the drone's 14 dB is QPSK at $10^{-5}$ plus a real-receiver
+  allowance. `mech_check.sh 03 signal-space` passes with 0 failures.
+- **Phone-width math (2026-10-18).** Neil found L2 equations scrolling on his
+  phone. `scripts/verify/check_math.py` now gates every lesson at 320, 360,
+  and 390 px, and it caught one L3 equation before it shipped.
 - What L2 settled for the lesson threads:
   - The practice harness is in `latex/` (ported from 444). It needs
     `livethisdream/latex-tools` attached and TeX Live installed (the session
