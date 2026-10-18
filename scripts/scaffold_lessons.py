@@ -155,7 +155,7 @@ DECKS = {
 # (module, num, slug, title, [lo_ids], [deck keys], synopsis)
 LESSONS = [
     (1, 1, "L01-course-intro", "Course Introduction", [], [], "What an SDR is, the signals around you, and how the course is run."),
-    (1, 2, "L02-noise-figure-link-budget", "Noise Figure and Link Budget", ["1.1", "1.2"], ["noise"], "Cascade noise figure through a receiver and predict the SNR a link delivers."),
+    (1, 2, "L02-noise-figure-link-budget", "Noise Figure and Link Budget", ["1.1", "1.2"], [], "Cascade noise figure through a receiver and predict the SNR a link delivers."),
     (1, 3, "L03-signal-space", "Signal Space", ["1.3"], ["space"], "Basis functions, constellations, and decision regions: the picture every digital receiver works from."),
 
     (2, 4, "L04-sdr-introduction", "SDR Introduction", ["2.1", "2.2"], ["sdr"], "The SDR platforms in this course, what is inside them, and the sample-rate, bandwidth, and dynamic-range trade-offs."),

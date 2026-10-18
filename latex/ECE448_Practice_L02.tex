@@ -1,0 +1,315 @@
+% !TEX root =./ECE448_Practice_main.tex
+%
+% L2 practice set (Noise Figure and Link Budget). Blank copy: \begin{solution}[h]
+% reserves h of work space. SOLUTIONS copy (\iskey=1) prints the red worked solutions.
+
+\fullwidth{\textbf{Learning Objective 1.1: } I can define noise figure and cascade
+it through a receiver chain to predict system noise performance.
+\\[2pt]\textbf{Learning Objective 1.2: } I can compute a link budget and predict
+received SNR for a specified geometry, transmitter, and antenna configuration.
+\\[4pt]\normalfont\small Show your work. Write a \textbf{Documentation} line at the
+end (\textbf{None} if you did not collaborate).}
+
+\begin{questions}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{Decibels and the ISM bands.} A small 915 MHz telemetry radio
+puts out 100 mW. It connects to a 9 dBi antenna through a cable and connectors
+with 2 dB of loss.
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Express 5 W and 0.1 $\mu$W in dBm.
+		\begin{solution}[1.0in]
+		\eq{ 10\mylog{\dfrac{5000\ \text{mW}}{1\ \text{mW}}} &= 37.0\ \text{dBm} \\
+			10\mylog{\dfrac{10^{-4}\ \text{mW}}{1\ \text{mW}}} &= -40.0\ \text{dBm} }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		5 W = \ansbox[1.3in]{$37.0$ dBm}
+
+		\vspace{4pt}
+		0.1 $\mu$W = \ansbox[1.3in]{$-40.0$ dBm}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Find the radio's EIRP in dBm and in milliwatts.
+		\begin{solution}[1.0in]
+		\eq{ \text{EIRP} &= 10\mylog{100} - 2 + 9 = 20 - 2 + 9 = 27\ \text{dBm} \\
+			&= 10^{27/10} = 501\ \text{mW} }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		EIRP = \ansbox[1.3in]{$27$ dBm}
+
+		\vspace{4pt}
+		EIRP = \ansbox[1.3in]{$501$ mW}
+	\end{minipage}
+
+	\part Which of the course SDRs (RTL-SDR, PlutoSDR, HackRF One) can receive the
+	2.4 GHz ISM band, and which can transmit in it?
+		\begin{solution}[0.9in]
+		The PlutoSDR (325 MHz to 3.8 GHz) and the HackRF One (1 MHz to 6 GHz) both
+		cover 2.4 GHz and can both transmit. The RTL-SDR tops out near 1.77 GHz and is
+		receive-only, so it can reach the 915 MHz band but not 2.4 GHz.
+		\end{solution}
+
+	\part Explain in one or two sentences why Wi-Fi, Bluetooth, and most hobby
+	drones all operate in the same few bands.
+		\begin{solution}[0.9in]
+		The ISM bands are the bands where FCC Part 15 allows low-power transmitters to
+		operate without a license, as long as they accept interference from other
+		users. Every consumer device that cannot require its user to hold a license
+		ends up there.
+		\end{solution}
+
+\end{parts}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{Free-space path loss.} The 915 MHz radio of Question 1 talks to a
+ground station 10 km away. Both antennas have 6 dBi of gain, and the transmitter
+delivers 1 W to its antenna.
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Find the free-space path loss at 915 MHz and 10 km.
+		\begin{solution}[1.0in]
+		\eq{ L_p &= 20\mylog{10} + 20\mylog{915} + 32.45 \\
+			&= 20.0 + 59.2 + 32.45 = 111.7\db }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		$L_p$ = \ansbox[1.3in]{$111.7\db$}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Find the received power in dBm.
+		\begin{solution}[1.0in]
+		\eq{ P_r &= P_t + G_t + G_r - L_p \\
+			&= 30 + 6 + 6 - 111.7 = -69.7\ \text{dBm} }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		$P_r$ = \ansbox[1.3in]{$-69.7$ dBm}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part The same system moves to 2.45 GHz with the same antenna gains and
+		twice the distance. Find the new path loss using the rules of thumb, then
+		check it with the full expression.
+		\begin{solution}[1.3in]
+		Doubling the distance adds 6.0 dB. The frequency ratio adds
+		$20\mylog{2450/915} = 8.6$ dB. So
+		\eq{ L_p &\approx 111.7 + 6.0 + 8.6 = 126.3\db \\
+			L_p &= 20\mylog{20} + 20\mylog{2450} + 32.45 = 126.3\db }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		$L_p$ = \ansbox[1.3in]{$126.3\db$}
+	\end{minipage}
+
+	\part Path loss is not absorption, yet it grows with frequency. Explain why in
+	one or two sentences.
+		\begin{solution}[0.9in]
+		The power spreads over a sphere regardless of frequency, but an antenna of
+		fixed gain has an effective area proportional to $\lambda^2$. At a higher
+		frequency the same gain collects power over a smaller area, so less of the
+		spreading wave reaches the receiver.
+		\end{solution}
+
+\end{parts}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{The noise floor.} An RTL-SDR with a 6 dB noise figure receives a
+broadcast FM station. One FM channel occupies about 200 kHz.
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Find the receiver's noise floor in one 200 kHz channel.
+		\begin{solution}[1.0in]
+		\eq{ N &= -174 + 10\mylog{200\times10^{3}} + 6 \\
+			&= -174 + 53.0 + 6 = -115.0\ \text{dBm} }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		$N$ = \ansbox[1.3in]{$-115.0$ dBm}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part The station arrives at $-80$ dBm. Find the SNR in the channel.
+		\begin{solution}[0.8in]
+		\eq{ \text{SNR} = -80 - (-115.0) = 35.0\db }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		SNR = \ansbox[1.3in]{$35.0\db$}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part A student leaves the receiver filter open to the full 2.4 MHz sample
+		rate and measures the station's power against all of that noise. Find the
+		noise floor and the SNR the student would compute.
+		\begin{solution}[1.1in]
+		\eq{ N &= -174 + 10\mylog{2.4\times10^{6}} + 6 = -104.2\ \text{dBm} \\
+			\text{SNR} &= -80 - (-104.2) = 24.2\db }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		$N$ = \ansbox[1.3in]{$-104.2$ dBm}
+
+		\vspace{4pt}
+		SNR = \ansbox[1.3in]{$24.2\db$}
+	\end{minipage}
+
+	\part Explain why the answers to (b) and (c) differ, and which one the FM
+	demodulator experiences.
+		\begin{solution}[1.0in]
+		Noise power grows with bandwidth, but the station's power does not: it all lies
+		inside its 200 kHz channel. Letting in 12 times the bandwidth adds 10.8 dB of
+		noise and no signal. A demodulator that filters to the channel first sees the
+		35.0 dB of part (b), which is why every receiver filters before it demodulates.
+		\end{solution}
+
+\end{parts}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{Cascaded noise figure.} A ground station has a 2 dB cable run, an
+LNA with NF 0.8 dB and 18 dB of gain, and an SDR with NF 7 dB.
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Convert each stage to a linear noise factor and gain.
+		\begin{solution}[1.1in]
+		Cable: $F = 10^{0.2} = 1.585$, $G = 10^{-0.2} = 0.631$. LNA: $F = 10^{0.08}
+		= 1.202$, $G = 10^{1.8} = 63.1$. SDR: $F = 10^{0.7} = 5.01$.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		$F_\text{cable}$ = \ansbox[1.3in]{$1.585$}
+
+		\vspace{4pt}
+		$F_\text{LNA}$ = \ansbox[1.3in]{$1.202$}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part The cable runs from the antenna to the LNA, which sits next to the SDR.
+		Find the system noise figure.
+		\begin{solution}[1.2in]
+		\eq{ F &= 1.585 + \dfrac{1.202 - 1}{0.631} + \dfrac{5.01 - 1}{0.631 \times 63.1} \\
+			&= 1.585 + 0.320 + 0.101 = 2.006 \\
+			\text{NF} &= 10\mylog{2.006} = 3.0\db }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		NF = \ansbox[1.3in]{$3.0\db$}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part The LNA moves to the antenna, ahead of the cable. Find the new system
+		noise figure.
+		\begin{solution}[1.2in]
+		\eq{ F &= 1.202 + \dfrac{1.585 - 1}{63.1} + \dfrac{5.01 - 1}{63.1 \times 0.631} \\
+			&= 1.202 + 0.009 + 0.101 = 1.312 \\
+			\text{NF} &= 10\mylog{1.312} = 1.2\db }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		NF = \ansbox[1.3in]{$1.2\db$}
+	\end{minipage}
+
+	\part Moving the LNA lowered the noise figure by 1.8 dB. Explain why the
+	cable's loss matters so much more in front of the LNA than behind it.
+		\begin{solution}[1.0in]
+		In front of the LNA the cable is the first stage, so its full noise factor
+		counts and nothing divides it down: its 2 dB adds almost directly to the
+		system noise figure. Behind the LNA, the LNA's gain of 63 divides down the cable's
+		excess noise, and the cable contributes less than 0.04 dB.
+		\end{solution}
+
+\end{parts}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{A GPS link budget.} A GPS satellite transmits the L1 signal at
+1575.42 MHz with an EIRP of 27 dBW. A receiver on the ground sees the satellite
+directly overhead at 20,200 km through a 0 dBi antenna. Polarization and
+atmospheric losses total 2 dB. The receiver has a 2 dB noise figure and a 2 MHz
+bandwidth.
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Find the free-space path loss and the received power in dBm.
+		\begin{solution}[1.3in]
+		\eq{ L_p &= 20\mylog{20200} + 20\mylog{1575.42} + 32.45 \\
+			&= 86.1 + 63.9 + 32.45 = 182.5\db \\
+			\text{EIRP} &= 27\ \text{dBW} = 57\ \text{dBm} \\
+			P_r &= 57 - 182.5 + 0 - 2 = -127.5\ \text{dBm} }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		$L_p$ = \ansbox[1.3in]{$182.5\db$}
+
+		\vspace{4pt}
+		$P_r$ = \ansbox[1.3in]{$-127.5$ dBm}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Find the noise floor and the SNR at the receiver.
+		\begin{solution}[1.1in]
+		\eq{ N &= -174 + 10\mylog{2\times10^{6}} + 2 = -109.0\ \text{dBm} \\
+			\text{SNR} &= -127.5 - (-109.0) = -18.5\db }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		$N$ = \ansbox[1.3in]{$-109.0$ dBm}
+
+		\vspace{4pt}
+		SNR = \ansbox[1.3in]{$-18.5\db$}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part The receiver correlates the signal against the satellite's known
+		1023-chip code, which raises the SNR by $10\mylog{1023}$. Find the SNR after
+		correlation.
+		\begin{solution}[1.0in]
+		\eq{ 10\mylog{1023} &= 30.1\db \\
+			\text{SNR}_\text{corr} &= -18.5 + 30.1 = 11.6\db }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		SNR = \ansbox[1.3in]{$11.6\db$}
+	\end{minipage}
+
+	\part A car's GPS antenna sits on the roof with 5 m of cable to the dashboard
+	receiver. Where should the LNA go, and why? Use your answer to (b) to explain
+	what is at stake.
+		\begin{solution}[1.1in]
+		The LNA belongs at the antenna, ahead of the cable; that is why GPS antennas with
+		a built-in LNA, active antennas, are common. The signal already arrives 18.5 dB below the
+		noise floor, and the correlation leaves only about 12 dB of SNR, so every dB of
+		cable loss in front of the first amplifier would come straight out of that.
+		\end{solution}
+
+\end{parts}
+
+\vspace{1.5em}
+\noindent\textbf{Documentation:} \rule[-2pt]{0.6\linewidth}{0.4pt}
+
+\end{questions}

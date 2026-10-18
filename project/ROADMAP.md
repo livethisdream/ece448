@@ -98,6 +98,25 @@ since they follow this structure. Two changes:
   midterm. The applications-first philosophy is stated in the syllabus and on
   the landing page.
 
+## Trial lessons (master thread, before lesson threads start)
+
+- **L2 done (2026-10-18).** Frame page (18/20 beats), deck (19 slides), three
+  figures from `scripts/graphics/l02_figures.py`, the `link-budget.html`
+  widget (drone, Wi-Fi, and GPS presets), and a 5-question practice set.
+  `mech_check.sh 02 noise-figure-link-budget` passes with 0 failures.
+- What L2 settled for the lesson threads:
+  - The practice harness is in `latex/` (ported from 444). It needs
+    `livethisdream/latex-tools` attached and TeX Live installed (the session
+    hook does both).
+  - A lesson that serves two objectives puts one `Learning Objective M.N:`
+    line per objective in its practice banner, which is what `mech_check`
+    looks for.
+  - Every lesson ends its content with an application frame that says how
+    the idea shows up on the SDR (for L2, reading SNR off a dBFS display).
+    This is the applications-first rule made concrete.
+  - Once a lesson is converted, its manifest entry gets `[]` for decks. The
+    legacy PDF stays listed on the materials page.
+
 ## Next
 
 1. Rebuild the legacy slides as frame lessons, one lesson at a time, in
