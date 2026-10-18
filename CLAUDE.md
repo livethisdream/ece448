@@ -67,6 +67,7 @@ jupyter-book build book/ --all      # ALWAYS --all
 scripts/verify/check_shell.py
 scripts/verify/check_frames.py
 scripts/verify/check_bar.py
+scripts/verify/check_math.py        # no display equation scrolls sideways at 320-390 px
 scripts/verify/check_deck.py L01-course-intro
 ```
 

@@ -141,6 +141,17 @@ else
   ok "not a frame page (no frame_view in front matter)"
 fi
 
+# 3c2. phone-width math -- a display equation wider than the column does not
+# scroll the page, so check_shell misses it; MathJax scrolls it in place and
+# the reader swipes the equation. Found on L2 on a phone (Neil, 2026-10-18).
+rel="${page#$REPO/book/}"; rel="${rel%.md}.html"
+if mw=$(python3 "$HERE/check_math.py" "$rel" 2>&1); then
+  ok "phone math: $(echo "$mw" | tail -1)"
+else
+  bad "display equations scroll sideways on a phone"
+  echo "$mw" | sed -n '/SCROLL/,$p' | sed 's/^/        /'
+fi
+
 # 3d. present-mode density -- what the class sees, counted from the source.
 # Forty words a frame and thirty frames a lesson (Neil, 2026-09-03). A lesson
 # that has not been cut yet (no :::{present} block) is reported, not failed:

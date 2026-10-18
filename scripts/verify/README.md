@@ -41,6 +41,8 @@ scripts/verify/check_shell.py    # every page: no sideways scroll at 390px, no
                                  # JS error, the HUD's site button with its
                                  # panel closed, no theme asset sneaking back
 scripts/verify/check_frames.py   # every frame fits one screen in present mode
+scripts/verify/check_math.py     # no display equation scrolls sideways on a phone
+                                 # (320-390 px); check_shell cannot see this
 scripts/verify/check_bar.py      # the bottom bar: centerd in the window, outer
                                  # runs equal, middle run centerd in the pill,
                                  # nothing wrapped, panels clickable
