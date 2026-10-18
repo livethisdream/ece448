@@ -20,7 +20,7 @@ Seven modules, 20 lessons, and a final project you define yourself.
 <div class="hero-pills">
 <div class="hero-cta hero-grid" style="--cols: 4; --cols-phone: 2">
   <div class="pop-anchor">
-    <button class="cta cta-primary cta-menu" id="btnModules" type="button" aria-expanded="false" aria-controls="modpop">Modules</button>
+    <button class="cta cta-menu" id="btnModules" type="button" aria-expanded="false" aria-controls="modpop">Modules</button>
     <div class="mod-pop" id="modpop" role="group" aria-label="Modules" data-drop hidden>
       <a class="mod-link" href="module01/index.html"><span class="mod-n">01</span>Foundations of Detection &amp; Link Budgets</a>
       <a class="mod-link" href="module02/index.html"><span class="mod-n">02</span>SDR &amp; GNU Radio Foundations</a>
