@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PAM packet explorer — text to bits, the access-code search, and bit errors</title>
+<style>
+  :root { --navy:#004a85; --mid:#0067b9; --edge:#cddce9; --edge2:#b9d2e5; --bg:#f5f9fc;
+          --ink:#15202b; --ink3:#5b6573;
+          --amber:#8a5a00; --red:#b01e24; --grn:#3f7d34; }
+  html,body { margin:0; padding:0; font-family:'Inter',system-ui,-apple-system,sans-serif; color:var(--ink); background:#fff; }
+  .app { display:flex; flex-direction:column; gap:8px; padding:12px; }
+  .plots { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:10px; }
+  @media (max-width:620px) { .plots { grid-template-columns:1fr; } }
+  canvas { display:block; box-sizing:border-box; width:100%; height:auto; background:#fff; border:1px solid var(--edge); border-radius:6px; }
+  .controls { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px 16px; align-items:center;
+              padding:8px 12px; background:var(--bg); border:1px solid var(--edge); border-radius:6px; }
+  @media (max-width:620px) { .controls { grid-template-columns:1fr; } }
+  .ctl { display:grid; grid-template-columns:auto 1fr; column-gap:8px; row-gap:2px; align-items:center; min-width:0; }
+  .ctl label { font-size:10.5px; text-transform:uppercase; letter-spacing:0.05em; color:var(--ink3); font-weight:700; white-space:nowrap; }
+  .ctl .val { color:var(--navy); font-size:12px; font-weight:600; font-variant-numeric:tabular-nums; text-align:right; white-space:nowrap; }
+  .ctl input[type=range]{ grid-column:1 / span 2; width:100%; margin:0; accent-color:var(--mid); }
+  .ctl input[type=text]{ grid-column:1 / span 2; font:inherit; font-size:12.5px; padding:3px 6px; border:1px solid var(--edge2); border-radius:4px; min-width:0; }
+  .seg { display:flex; gap:4px; flex-wrap:wrap; }
+  .seg button, .btn { font:inherit; font-size:11.5px; font-weight:600; color:var(--navy); background:#fff; border:1px solid var(--edge2); border-radius:14px; padding:3px 10px; cursor:pointer; }
+  .seg button.on { background:var(--navy); color:#fff; border-color:var(--navy); }
+  .segs { grid-column:1 / -1; display:flex; justify-content:space-between; gap:8px; flex-wrap:wrap; }
+  .readouts { display:grid; gap:6px; grid-template-columns:repeat(3,minmax(0,1fr)); }
+  .ro { display:flex; flex-direction:column; align-items:center; gap:2px; padding:5px 4px 6px; min-width:0;
+        border:1px solid var(--edge2); border-radius:6px; background:#eef4fa; }
+  .ro .k { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:var(--ink3); white-space:nowrap; }
+  .ro .v { font-size:14px; font-weight:700; white-space:nowrap; font-variant-numeric:tabular-nums; color:var(--navy); }
+  .ro.bad .v { color:var(--red); }
+  .text { font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:13px; padding:6px 10px; min-height:18px;
+          border:1px solid var(--edge2); border-radius:6px; background:#fff; overflow-wrap:anywhere; }
+  .text .k { font-family:'Inter',system-ui,sans-serif; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:var(--ink3); margin-right:8px; }
+  .text .bad { color:#fff; background:var(--red); border-radius:2px; }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="plots">
+    <canvas id="soft" aria-label="The slicer input for one packet and the bits around it: one dot per symbol, colored by access code, header, and payload, with wrong decisions circled in red"></canvas>
+    <canvas id="corr" aria-label="The access-code search: how many of the 64 access-code bits match at each bit position, with the threshold of 62 drawn as a line"></canvas>
+  </div>
+  <div class="controls">
+    <div class="segs">
+      <div class="seg" id="pol"><button data-v="1" class="on">normal polarity</button><button data-v="-1">inverted</button></div>
+      <div class="seg" id="ord"><button data-v="msb" class="on">read MSB first</button><button data-v="lsb">read LSB first</button></div>
+      <button class="btn" id="again">new noise</button>
+    </div>
+    <div class="ctl"><label for="msg">Message</label><span class="val" id="msg-v"></span>
+      <input type="text" id="msg" maxlength="40" value="USAFA ECE 448: ASCII over PAM." spellcheck="false"></div>
+    <div class="ctl"><label for="snr">SNR at the slicer</label><span class="val" id="snr-v"></span>
+      <input type="range" id="snr" min="0" max="20" step="0.5" value="12"></div>
+  </div>
+  <div class="readouts">
+    <div class="ro" id="ro-ac"><span class="k">access code</span><span class="v" id="o-ac">—</span></div>
+    <div class="ro" id="ro-be"><span class="k">bit errors</span><span class="v" id="o-be">—</span></div>
+    <div class="ro"><span class="k">predicted BER</span><span class="v" id="o-ber">—</span></div>
+  </div>
+  <div class="text" id="out"><span class="k">Received</span></div>
+</div>
+
+<script>
+'use strict';
+// One packet as GNU Radio's header_format_default builds it: the 64-bit
+// default access code, then the payload length in bytes as 16 bits, twice,
+// then the payload, most significant bit first. The slicer input is the
+// symbol (+1 or -1) plus Gaussian noise of variance 1/SNR, which is what the
+// L10 flowgraph's Symbol Sync delivers. LEAD random bits from the previous
+// packet come first, so the search has somewhere to fail.
+const AC = '1010110011011101101001001110001011110010100011000010000011111100';
+const LEAD = 40, TAIL = 24, THRESH = 2, SANS = 'Inter, system-ui, -apple-system, sans-serif';
+const C = { navy:'#004a85', amber:'#8a5a00', grn:'#3f7d34', red:'#b01e24', rule:'#cddce9', ink3:'#5b6573', gray:'#9aa5b1' };
+const $ = id => document.getElementById(id);
+let pol = 1, order = 'msb', seed = 5;
+document.querySelectorAll('#pol button').forEach(b => b.onclick = () => {
+  pol = +b.dataset.v; document.querySelectorAll('#pol button').forEach(x => x.classList.toggle('on', x === b)); update(); });
+document.querySelectorAll('#ord button').forEach(b => b.onclick = () => {
+  order = b.dataset.v; document.querySelectorAll('#ord button').forEach(x => x.classList.toggle('on', x === b)); update(); });
+$('again').onclick = () => { seed++; update(); };
+$('snr').oninput = update; $('msg').oninput = update;
+
+function rng(s0) { let s = s0 >>> 0; return () => { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296; }; }
+function gauss(r) { let u = 0; while (u === 0) u = r(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * r()); }
+function Q(x) { // Q-function, Abramowitz and Stegun 7.1.26 on erfc
+  const z = x / Math.SQRT2, t = 1 / (1 + 0.3275911 * z);
+  const e = t * (0.254829592 + t * (-0.284496736 + t * (1.421413741 + t * (-1.453152027 + t * 1.061405429)))) * Math.exp(-z * z);
+  return 0.5 * e;
+}
+function bytesOf(s) { return Array.from(new TextEncoder().encode(s)); }
+function bitsOf(bytes) { const b = []; for (const v of bytes) for (let i = 7; i >= 0; i--) b.push((v >> i) & 1); return b; }
+
+function simulate() {
+  const text = $('msg').value + '\n', payload = bytesOf(text), n = payload.length;
+  const len16 = []; for (let i = 15; i >= 0; i--) len16.push((n >> i) & 1);
+  const pkt = [...AC].map(Number).concat(len16, len16, bitsOf(payload));
+  const r = rng(seed * 7919), lead = Array.from({ length: LEAD }, () => r() < 0.5 ? 1 : 0),
+        tail = Array.from({ length: TAIL }, () => r() < 0.5 ? 1 : 0);
+  const tx = lead.concat(pkt, tail), snr = 10 ** (+$('snr').value / 10), sigma = 1 / Math.sqrt(snr);
+  const y = tx.map(b => pol * ((b ? 1 : -1) + sigma * gauss(r)));
+  const rx = y.map(v => v > 0 ? 1 : 0);
+  // The search: matching bits at each start position.
+  const match = [];
+  for (let p = 0; p + 64 <= rx.length; p++) { let m = 0; for (let i = 0; i < 64; i++) m += rx[p + i] === +AC[i]; match.push(m); }
+  const found = match.findIndex(m => 64 - m <= THRESH);
+  let out = null, why = '';
+  if (found >= 0) {
+    const h = rx.slice(found + 64, found + 96), l1 = parseInt(h.slice(0, 16).join(''), 2), l2 = parseInt(h.slice(16).join(''), 2);
+    if (l1 !== l2) why = 'header lengths disagree';
+    else if (found + 96 + 8 * l1 > rx.length) why = 'length ' + l1 + ' runs past the data';
+    else {
+      out = [];
+      for (let k = 0; k < l1; k++) {
+        const bb = rx.slice(found + 96 + 8 * k, found + 104 + 8 * k);
+        const v = parseInt((order === 'msb' ? bb : bb.slice().reverse()).join(''), 2);
+        out.push(v);
+      }
+    }
+  }
+  let errs = 0; for (let i = LEAD; i < LEAD + pkt.length; i++) errs += rx[i] !== tx[i];
+  return { text, payload, pkt, tx, y, rx, match, found, out, why, errs, snr };
+}
+
+function setup(cv, aspect, narrowH) {
+  const dpr = window.devicePixelRatio || 1, w = Math.max(200, cv.clientWidth || 300);
+  const narrow = window.matchMedia && window.matchMedia('(max-width:620px)').matches;
+  const h = narrow ? narrowH : Math.round(Math.min(w * aspect, 230));
+  cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); cv.style.height = h + 'px';
+  const bh = cv.offsetHeight - cv.clientHeight; if (bh) cv.style.height = (h + bh) + 'px';
+  const ctx = cv.getContext('2d'); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); return { ctx, w, h };
+}
+function txt(ctx, s, x, y, px, col, align, bold) { ctx.fillStyle = col; ctx.font = (bold ? '700 ' : '') + px + 'px ' + SANS;
+  ctx.textAlign = align || 'left'; ctx.textBaseline = 'middle'; ctx.fillText(s, x, y); }
+
+function colorAt(i, sim) {
+  const k = i - LEAD;
+  if (k < 0 || k >= sim.pkt.length) return C.gray;
+  return k < 64 ? C.amber : k < 96 ? C.grn : C.navy;
+}
+
+function drawSoft(sim) {
+  const { ctx, w, h } = setup($('soft'), 0.6, 150);
+  ctx.clearRect(0, 0, w, h);
+  const mL = 26, mR = 8, top = 22, bot = h - 20, N = sim.y.length, ymax = 3;
+  const X = i => mL + (i + 0.5) / N * (w - mL - mR), Y = v => top + (ymax - Math.max(-ymax, Math.min(ymax, v))) / (2 * ymax) * (bot - top);
+  ctx.strokeStyle = C.rule; ctx.lineWidth = 1;
+  for (const v of [-1, 0, 1]) { ctx.beginPath(); ctx.moveTo(mL, Y(v)); ctx.lineTo(w - mR, Y(v)); ctx.stroke();
+    txt(ctx, v === 0 ? '0' : (v > 0 ? '+1' : '−1'), mL - 4, Y(v), 10, C.ink3, 'right'); }
+  const r = Math.max(1.2, Math.min(2.2, (w - mL - mR) / N * 0.45));
+  for (let i = 0; i < N; i++) {
+    ctx.fillStyle = colorAt(i, sim); ctx.beginPath(); ctx.arc(X(i), Y(sim.y[i]), r, 0, 2 * Math.PI); ctx.fill();
+    if (sim.rx[i] !== sim.tx[i]) { ctx.strokeStyle = C.red; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(X(i), Y(sim.y[i]), r + 3, 0, 2 * Math.PI); ctx.stroke(); }
+  }
+  const lab = [['access code', C.amber], ['header', C.grn], ['payload', C.navy]];
+  let x = mL;
+  ctx.font = '700 10.5px ' + SANS;
+  for (const [s, col] of lab) { txt(ctx, s, x, 10, 10.5, col, 'left', true); x += ctx.measureText(s).width + 12; }
+  txt(ctx, 'slicer input, one dot per bit', mL, bot + 11, 10.5, C.ink3, 'left');
+}
+
+function drawCorr(sim) {
+  const { ctx, w, h } = setup($('corr'), 0.6, 150);
+  ctx.clearRect(0, 0, w, h);
+  const mL = 26, mR = 8, top = 22, bot = h - 20, N = sim.y.length;
+  const X = i => mL + (i + 0.5) / N * (w - mL - mR), Y = m => top + (64 - m) / 64 * (bot - top);
+  ctx.strokeStyle = C.rule; ctx.lineWidth = 1;
+  for (const m of [0, 32, 64]) { ctx.beginPath(); ctx.moveTo(mL, Y(m)); ctx.lineTo(w - mR, Y(m)); ctx.stroke(); txt(ctx, String(m), mL - 4, Y(m), 10, C.ink3, 'right'); }
+  ctx.strokeStyle = C.amber; ctx.setLineDash([5, 4]); ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(mL, Y(64 - THRESH)); ctx.lineTo(w - mR, Y(64 - THRESH)); ctx.stroke(); ctx.setLineDash([]);
+  ctx.strokeStyle = C.navy; ctx.lineWidth = 1.4; ctx.beginPath();
+  sim.match.forEach((m, p) => { p ? ctx.lineTo(X(p), Y(m)) : ctx.moveTo(X(p), Y(m)); }); ctx.stroke();
+  if (sim.found >= 0) {
+    ctx.fillStyle = C.grn; ctx.beginPath(); ctx.arc(X(sim.found), Y(sim.match[sim.found]), 4.5, 0, 2 * Math.PI); ctx.fill();
+  }
+  txt(ctx, 'bits matching the access code', mL, 10, 10.5, C.ink3, 'left', true);
+  txt(ctx, 'threshold: 62 of 64', w - mR, Y(64 - THRESH) + 10, 10, C.amber, 'right');
+  txt(ctx, 'start position (bits)', mL, bot + 11, 10.5, C.ink3, 'left');
+}
+
+function esc(c) { return c === '<' ? '&lt;' : c === '>' ? '&gt;' : c === '&' ? '&amp;' : c; }
+
+function update() {
+  const sim = simulate();
+  $('snr-v').textContent = (+$('snr').value).toFixed(1) + ' dB';
+  $('msg-v').textContent = sim.payload.length + ' bytes, ' + sim.pkt.length + ' bits';
+  const ok = sim.found === LEAD;
+  $('o-ac').textContent = sim.found < 0 ? 'not found' : ok ? 'found at bit ' + sim.found : 'false start ' + sim.found;
+  $('ro-ac').className = 'ro' + (ok ? '' : ' bad');
+  $('o-be').textContent = sim.errs + ' / ' + sim.pkt.length;
+  $('ro-be').className = 'ro' + (sim.errs ? ' bad' : '');
+  const p = Q(Math.sqrt(sim.snr));
+  $('o-ber').textContent = p < 1e-6 ? '< 1e-6' : p.toExponential(1);
+  let html = '<span class="k">Received</span>';
+  if (!sim.out) html += '<span style="color:#5b6573">(' + (sim.found < 0 ? 'no packet found' : sim.why) + ')</span>';
+  else sim.out.forEach((v, k) => {
+    const c = v === 10 ? '' : (v >= 32 && v < 127 ? String.fromCharCode(v) : '?');
+    if (v === 10) return;
+    html += (ok && v === sim.payload[k]) ? esc(c) : '<span class="bad">' + esc(c) + '</span>';
+  });
+  $('out').innerHTML = html;
+  drawSoft(sim); drawCorr(sim);
+}
+
+window.addEventListener('resize', update);
+const q = new URLSearchParams(location.search);
+if (q.get('snr')) $('snr').value = q.get('snr');
+update();
+</script>
+</body>
+</html>

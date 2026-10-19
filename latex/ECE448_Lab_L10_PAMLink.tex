@@ -1,0 +1,511 @@
+\documentclass{exam}
+
+\newif\ifA
+\newif\ifkey
+\newif\ifprintselected   % required by exam_config's \ansbox
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% SET THESE IF VARIABLES
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Lab name -- labs are named by the lesson they belong to, never by a
+% sequential lab number (Neil, 2026-10-12): this is the L10 Lab.
+\def\labLesson{10}
+
+% is this the key or not?
+\ifdefined\iskey
+	\ifnum\iskey=1
+		\keytrue
+	\else
+		\keyfalse
+	\fi
+\else
+	%% Pick one manually
+	\keyfalse % if this is NOT the key
+%	\keytrue     % if this IS the key
+\fi
+
+% set up the header and footer - change for every term
+\ifdefined\thisTermIn
+	\def\thisterm{\thisTermIn}
+\else
+	\def\thisterm{Spring 2027}
+\fi
+%
+\def\thisclass{ECE 448}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% END SET THESE IF VARIABLES
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% packages and shortcuts
+\input{myPackages_gr}
+\usepackage[hidelinks, linkcolor=red]{hyperref}
+\input{myShortcuts}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt}
+
+%% exam class customization
+\input{exam_config}
+\input{ece448_fonts}   % Barlow body text (needs lualatex)
+\printselectedfalse      % full worked solutions in the key, not answers-only
+\CorrectChoiceEmphasis{\color{red}}
+\SolutionEmphasis{\color{red}}
+\renewcommand\questionlabel{\textbf{\thequestion.}}
+\renewcommand{\thepartno}{\alph{partno}}
+\renewcommand{\partlabel}{(\thepartno)}
+
+% Fillable table cell: blank in the student copy, the expected value in red on
+% the KEY. Fixed-width centered columns keep the blank cells writable.
+\newcolumntype{K}[1]{>{\centering\arraybackslash}p{#1}}
+\newcommand{\kv}[1]{\ifkey{\color{red}#1}\fi\rule[-0.10in]{0pt}{0.34in}}
+
+% print the answers if this is the key
+\ifkey
+	\printanswers % if this IS the key
+\else
+	\noprintanswers  %if this is NOT the key
+\fi
+
+% print the header and footer
+% need to print key on top if this is the key
+\ifkey
+	\firstpageheader{}{\color{red}{ KEY}}{}
+	\runningheader{\thisclass\hspace{1pt} -- \thisterm }{L\labLesson\ Lab\hspace{1pt}\color{red}{ KEY}}{\thepage\hspace{1pt} of\hspace{1pt} \numpages}
+	\firstpagefooter{}{}{}
+	\runningfooter{}{}{}
+\else
+	\firstpageheader{}{}{}
+	\runningheader{\thisclass \hspace{1pt} -- \thisterm }{L\labLesson\ Lab\hspace{1pt}}{\thepage\hspace{1pt} of\hspace{1pt} \numpages}
+	\firstpagefooter{}{}{}
+	\runningfooter{}{}{}
+\fi
+
+\runningheadrule
+
+
+\begin{document}
+\pagestyle{headandfoot}   % exam class
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% title block
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{center}
+USAF ACADEMY \\
+DEPARTMENT OF ELECTRICAL AND COMPUTER ENGINEERING \\
+LESSON \labLesson\ LAB - PAM LINK \\
+\textbf{Lab Packet} \\
+\thisterm \\[4mm]
+\end{center}
+
+\vspace{-4pt}
+\textbf{Name:} \rule[-2pt]{2.6in}{0.4pt} \hfill
+\textbf{Section:} \rule[-2pt]{0.9in}{0.4pt} \hfill
+\textbf{Date:} \rule[-2pt]{1.1in}{0.4pt}
+
+\vspace{4pt}
+
+\fullwidth{\textbf{Learning Objective 4.4: } I can implement a PAM link that transmits and
+receives ASCII text end-to-end.}
+
+\vspace{2pt}
+
+This packet is the L\labLesson\ Lab, in three parts, and you turn it in once, complete,
+before Lesson 11. Do \textbf{Part 1} on your own before the lab period: run the link
+flowgraph and make the predictions you will check at the bench. \textbf{Part 2} is
+your own measurements, recorded in class: Questions 3 to 6 on your own laptop, and
+Question 7 at a PlutoSDR station with your team. Do \textbf{Part 3} on your own after
+the lab: compare the measurements with the predictions and answer the analysis
+questions.
+
+\textbf{Grading.} One submission, graded against Objective 4.4 on the course's
+1 / 0 scale, with revision allowed under course policy. Paste screenshots where a
+question asks for one.
+
+\textbf{Transmitting.} In class we transmit only into a cable, into a shielded
+enclosure, or at very low power in an ISM band, and only when the lesson says to.
+Questions 1 to 6 run on your laptop and transmit nothing. Question 7 transmits from a
+PlutoSDR's TX port, through a cable with an inline 30 dB SMA attenuator, to the same
+Pluto's RX port, at 915 MHz. Connect the cable and attenuator before you run the
+flowgraph, and never connect an antenna in this lab. Never set TX attenuation below
+30 dB or change the slider's range; the RX input is rated to only a few dBm.
+
+The flowgraphs are on the L10 lesson page, \texttt{L10-pam-tx.grc} and
+\texttt{L10-pam-link.grc}, and on the L10 Lab page, \texttt{L10-pam-raw.grc} and
+\texttt{L10-pam-pluto.grc}. Every
+number below assumes their settings: \texttt{samp\_rate} = 32 kHz, \texttt{sps} = 8,
+so 4 kbaud, $\alpha = 0.35$, and the default line \texttt{USAFA ECE 448: ASCII over
+PAM.}, 30 characters and a newline, 31 bytes.
+
+\begin{questions}
+
+\fullwidth{\large\textbf{Part 1: Pre-Lab} \normalsize(individual, before the lab period)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{Run the link.} Open \texttt{L10-pam-link.grc} in GRC and run it
+with the sliders at their defaults, a noise amplitude of 0.3 and a clock error of
+500 ppm.
+
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part After about 20 s, record the Lines label.
+		\begin{solution}[0.5in]
+		The label reads about 220 lines, all correct: the link sends 11.6 packets a second, less a second or two while the flowgraph starts.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.6in]{all correct, $\approx 220$}
+	\end{minipage}
+
+	\part Paste a screenshot of the running flowgraph's window.
+		\begin{solution}[1.6in]
+		The window shows an open matched-filter eye, Symbol Sync output in two tight
+		bands at $\pm 1$, and the received line of text.
+		\end{solution}
+
+\end{parts}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\question \textbf{Predictions.} You will check each of these at the bench.
+
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Each line is a packet: a 64-bit access code, a 32-bit header, and the 31
+		bytes of the line. Find the bits per packet, the time per packet, and the number
+		of packets in 30 s.
+		\begin{solution}[1.0in]
+		\eq{ 64 + 32 + 8 \times 31 &= 344\ \text{bits} \\
+			344 / 4000 &= 86\ \text{ms} \\
+			30 / 0.086 &\approx 349 }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		bits = \ansbox[1.0in]{344}
+
+		\vspace{4pt}
+		time = \ansbox[1.0in]{86 ms}
+
+		\vspace{4pt}
+		in 30 s = \ansbox[1.0in]{349}
+	\end{minipage}
+
+	\part Choose a line of text of your own, such as your class year and name. Write
+	it below, count its bytes with the newline, and write the 16-bit length field the
+	header will carry and the 8 bits of its first character.
+		\begin{solution}[0.8in]
+		The answer depends on the line. For \texttt{C1C Jane Doe}, 12 characters and a newline make
+		13 bytes, so the length field is \texttt{0000000000001101}, and `C' is 0x43,
+		\texttt{01000011}.
+		\end{solution}
+
+	\part Predict the SNR at the slicer, $8/\sigma^2$, the bit error rate,
+	$Q(\sqrt{\text{SNR}})$, and the fraction of lines that arrive intact,
+	$(1 - \text{BER})^{280}$, for each noise amplitude.
+	In Python, $Q(x)$ is \texttt{0.5*math.erfc(x/math.sqrt(2))}.
+
+	\begin{center}
+	\renewcommand{\arraystretch}{1.25}
+	\begin{tabular}{| l | K{0.62in} | K{0.62in} | K{0.62in} | K{0.62in} | K{0.62in} | K{0.62in} |}
+	\hline
+	$\sigma$ & $0.6$ & $0.75$ & $0.85$ & $0.95$ & $1.1$ & $1.3$ \\\hline
+	SNR (dB) & \kv{$13.5$} & \kv{$11.5$} & \kv{$10.4$} & \kv{$9.5$} & \kv{$8.2$} & \kv{$6.8$} \\\hline
+	BER & \kv{$1.2\times10^{-6}$} & \kv{$8.1\times10^{-5}$} & \kv{$4.4\times10^{-4}$} & \kv{$1.5\times10^{-3}$} & \kv{$5.1\times10^{-3}$} & \kv{$1.5\times10^{-2}$} \\\hline
+	Lines intact & \kv{100\%} & \kv{98\%} & \kv{89\%} & \kv{67\%} & \kv{24\%} & \kv{1.5\%} \\\hline
+	\end{tabular}
+	\end{center}
+
+		\begin{solution}[0.4in]
+		The 280 bits are the 32 header bits and the 248 payload bits; the access code
+		tolerates 2 errors.
+		\end{solution}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part At a clock error of 10,000 ppm, how many samples does each symbol span at
+		the receiver? Without timing recovery, after how many symbols, and how many
+		milliseconds, would a fixed sampling point slip one whole symbol?
+		\begin{solution}[1.1in]
+		\eq{ 8/1.01 &= 7.92\ \text{samples} \\
+			1 / 0.01 &= 100\ \text{symbols} \\
+			100 / 4000 &= 25\ \text{ms} }
+		That is less than a third of one packet.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		samples = \ansbox[1.0in]{7.92}
+
+		\vspace{4pt}
+		slip in \ansbox[1.0in]{25 ms}
+	\end{minipage}
+
+\end{parts}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\fullwidth{\large\textbf{Part 2: Measurements} \normalsize(in class)}
+
+\question \textbf{Bytes without packets.} Follow the lab page's steps for
+\texttt{L10-pam-raw.grc}, the link with no access code and no header. Each run, the
+receiver starts listening at a random bit.
+
+\begin{parts}
+
+	\part For three runs, record the bit offset at which the Received bytes label reads
+	as text.
+
+	\begin{center}
+	\renewcommand{\arraystretch}{1.25}
+	\begin{tabular}{| l | K{1.1in} | K{1.1in} | K{1.1in} |}
+	\hline
+	Run & 1 & 2 & 3 \\\hline
+	Offset that reads & \kv{varies} & \kv{varies} & \kv{varies} \\\hline
+	\end{tabular}
+	\end{center}
+
+		\begin{solution}[0.9in]
+		Exactly one offset from 0 to 7 reads in each run, and it changes from run to run
+		at random. There are 8 offsets because a byte has 8 bits: every other offset
+		groups the bits across two characters, and most of those bytes are not printable
+		ASCII.
+		\end{solution}
+
+	\part Stop and start \texttt{L10-pam-link.grc} three times. Record how long the first
+	line takes to appear, and explain in words how the receiver finds the byte boundary
+	that you had to find by hand in part (a).
+		\begin{solution}[1.3in]
+		A line appears within a couple of seconds every time, with nothing to adjust.
+		Correlate Access Code - Tag Stream compares every 64-bit window of the received
+		bits with the access code, so wherever the receiver starts listening, it finds the
+		bit where a packet begins, and Repack Bits groups the bytes from that bit. The
+		access code does the job of the bit-offset slider automatically, on every packet.
+		\end{solution}
+
+\end{parts}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\question \textbf{Build the transmitter.} Start GRC with an empty canvas. Do not open
+\texttt{L10-pam-tx.grc}: build the packet transmitter yourself as the lab page lists,
+with your line of text from Question 2(b) in \texttt{msg}.
+
+\begin{parts}
+
+	\part Paste a screenshot of your flowgraph on the GRC canvas. Every connection
+	must be black, not red.
+		\begin{solution}[1.6in]
+		The flowgraph matches the lab page's list: Vector Source, Stream to Tagged Stream, Protocol
+		Formatter, Tagged Stream Mux, Unpack K Bits, Chunks to Symbols, Throttle, and an
+		Interpolating FIR Filter, with a QT GUI Time Sink on the symbols and a QT GUI
+		Frequency Sink on the shaped signal. The byte ports are purple and the float
+		ports orange.
+		\end{solution}
+
+	\part Paste a screenshot of the time sink. Mark where the access code ends, where
+	the header ends, and the bits of your first character, and check the length field
+	against Question 2(b).
+		\begin{solution}[1.6in]
+		The access code takes the first 64 symbols, the header the next 32, and the
+		payload starts at symbol 96. The header shows the length field of Question 2(b)
+		twice; for \texttt{C1C Jane Doe} that is 12 zeros, then \texttt{1101}, twice,
+		and the payload starts \texttt{01000011}.
+		\end{solution}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Read the edges of the shaped signal's spectrum from the frequency sink.
+		\begin{solution}[0.6in]
+		The spectrum ends near $\pm 2.7$ kHz, half of $(1+\alpha)R_s = 5.4$ kHz.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.1in]{$\pm 2.7$ kHz}
+	\end{minipage}
+
+\end{parts}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\question \textbf{Noise.} Run \texttt{L10-pam-link.grc} with the clock error at its
+default, 500 ppm. For each noise amplitude, set the slider, wait about 30 s, and record
+the Lines label. The count restarts each time a slider moves. Sent is the time
+multiplied by 11.6 packets a second.
+
+\begin{parts}
+
+	\part Fill in the table.
+
+	\begin{center}
+	\renewcommand{\arraystretch}{1.25}
+	\begin{tabular}{| l | K{0.6in} | K{0.6in} | K{0.6in} | K{0.6in} | K{0.6in} | K{0.6in} |}
+	\hline
+	$\sigma$ & $0.6$ & $0.75$ & $0.85$ & $0.95$ & $1.1$ & $1.3$ \\\hline
+	Time (s) & & & & & & \\\hline
+	Sent & & & & & & \\\hline
+	Received & \kv{all} & \kv{all} & \kv{$\approx$ 98\%} & \kv{$\approx$ 95\%} & \kv{$\approx$ 83\%} & \kv{$\approx$ 55\%} \\\hline
+	Correct & \kv{all} & \kv{$\approx$ 97\%} & \kv{$\approx$ 87\%} & \kv{$\approx$ 62\%} & \kv{$\approx$ 20\%} & \kv{$\approx$ 1\%} \\\hline
+	\end{tabular}
+	\end{center}
+
+		\begin{solution}[0.7in]
+		Correct is a fraction of sent. The measurements follow Question 2(c), a few
+		percent lower between 8 and 10 dB. Counts vary from run to run because the noise is
+		random. Received exceeds correct because a line with a wrong payload bit still
+		arrives, with a wrong character.
+		\end{solution}
+
+	\part Paste a screenshot at $\sigma = 1.1$ that shows a received line with at least
+	one wrong character. Find the character, write its correct and received bytes in
+	binary, and count the bits that differ.
+		\begin{solution}[1.4in]
+		Answers vary. Most wrong characters differ from the right one in one bit, such as
+		`4', \texttt{00110100}, received as `6', \texttt{00110110}. The Text Sink shows a
+		byte that does not print as `?'.
+		\end{solution}
+
+\end{parts}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\question \textbf{Clock error.} Set the noise amplitude back to 0.3. Set the clock error
+to 0, then raise it through the next four values below, in order, without stopping the
+flowgraph. At each, wait about 20 s, record the Lines label, and note how the eye sink
+looks. Then stop the flowgraph, run it again so the loop locks at the default 500 ppm,
+type 40,000 into the clock-error box in one jump, and record the Lines label after
+20 s in the last column.
+
+\begin{parts}
+
+	\part Fill in the table.
+
+	\begin{center}
+	\renewcommand{\arraystretch}{1.25}
+	\begin{tabular}{| l | K{0.55in} | K{0.55in} | K{0.55in} | K{0.55in} | K{0.55in} | K{0.75in} |}
+	\hline
+	ppm & $0$ & $10{,}000$ & $20{,}000$ & $30{,}000$ & $40{,}000$ & jump to $40{,}000$ \\\hline
+	Lines correct & \kv{all} & \kv{$\approx$ all} & \kv{most} & \kv{most} & \kv{most} & \kv{none} \\\hline
+	Eye sink & \kv{open} & \kv{smeared} & \kv{smeared} & \kv{smeared} & \kv{smeared} & \kv{smeared} \\\hline
+	\end{tabular}
+	\end{center}
+
+		\begin{solution}[0.9in]
+		Raised a step at a time, Symbol Sync stays locked and follows the error; a
+		measured ramp kept more than 95\% of lines correct at every step up to 40,000
+		ppm. The jump from 500 to 40,000 ppm breaks lock, and the loop cannot reacquire
+		at 40,000 ppm, so no line arrives. The eye sink assumes exactly 8 samples per symbol, so it smears
+		even where every line arrives.
+		\end{solution}
+
+	\part Paste a screenshot at 10,000 ppm, and explain how the eye can look smeared
+	while the Symbol Sync output stays at $\pm 1$.
+		\begin{solution}[1.2in]
+		Each symbol spans 7.92 samples, but the eye sink cuts the waveform every 8, so
+		each trace starts a little later in its symbol and the eye slides across the
+		display. Symbol Sync follows the real symbol timing, so its samples stay at the
+		center of each symbol.
+		\end{solution}
+
+\end{parts}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\question \textbf{The link on a PlutoSDR.} At a PlutoSDR station, with your team, follow
+the lab page's steps: connect the Pluto's TX port to its RX port through the 30 dB
+attenuator, check
+the Pluto with \texttt{iio\_info -s}, and run \texttt{L10-pam-pluto.grc}. The
+transmitter and receiver share the Pluto's clock, so there is almost no clock or
+frequency error between them; the noise and the carrier phase come from the hardware.
+
+\begin{parts}
+
+	\part If no line arrives within 5 s, switch Polarity. If neither setting works, raise
+	the TX attenuation by 10 dB and try both again. Once lines arrive, paste a
+	screenshot that shows the constellation, the received line, and the Lines label.
+		\begin{solution}[1.6in]
+		The constellation after carrier recovery shows two clusters on the real axis,
+		symmetric about zero; in simulation their centers fall between about $\pm 0.5$ and
+		$\pm 1.4$, depending on the signal level. In simulation, once one polarity locks,
+		nearly every line arrives correctly.
+		\end{solution}
+
+	\part Stop and start the flowgraph three times. Each time, record which polarity
+	setting delivers lines.
+
+	\begin{center}
+	\renewcommand{\arraystretch}{1.25}
+	\begin{tabular}{| l | K{1.1in} | K{1.1in} | K{1.1in} |}
+	\hline
+	Run & 1 & 2 & 3 \\\hline
+	Polarity that works & \kv{varies} & \kv{varies} & \kv{varies} \\\hline
+	\end{tabular}
+	\end{center}
+
+		\begin{solution}[0.5in]
+		Either setting can be the right one, and it changes from run to run at random.
+		\end{solution}
+
+	\part Stop the flowgraph, put your line from Question 2(b) in \texttt{msg}, run
+	it again, and paste a screenshot of your line arriving.
+		\begin{solution}[1.2in]
+		The Received label shows the team's own line, and the Lines label counts it as
+		correct.
+		\end{solution}
+
+\end{parts}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\fullwidth{\large\textbf{Part 3: Writeup} \normalsize(individual, after the lab)}
+
+\question \textbf{Analysis.}
+
+\begin{parts}
+
+	\part Compare your noise table with Question 2(c). Find the SNR at which your link
+	first lost lines and the SNR at which almost none arrived, and say what SNR a
+	Lesson 2 link budget for this link should deliver at the slicer.
+		\begin{solution}[1.5in]
+		Lines start to fail near 11.5 dB ($\sigma = 0.75$), the link loses about a third of
+		them at 9.5 dB, and almost none arrive at 6.8 dB, so the change takes about 5 dB. Each line needs
+		all 280 header and payload bits right, so a modest rise in the bit error rate
+		loses many lines. A budget should deliver at least 12 dB at the slicer, for
+		99\% of lines, plus a fade margin. Measured lines run a few percent below the
+		prediction because Symbol Sync's sampling instant jitters.
+		\end{solution}
+
+	\part Your link held nearly every line to at least 10,000 ppm. Compare that with two radios
+	whose crystals are accurate to 20 ppm each. Then use Question 2(d) to say what would
+	happen to the link if you replaced Symbol Sync with Keep 1 in N.
+		\begin{solution}[1.5in]
+		Two 20 ppm crystals can differ by 40 ppm, 250 times smaller than 10,000
+		ppm, so clock error does not limit this link. With Keep 1 in N, a 40 ppm error
+		slips the sampling point one whole symbol every $1/(40\times10^{-6}) = 25{,}000$
+		symbols, 6.25 s, and it crosses the zero crossings, where about half the
+		decisions are wrong, every few seconds. Lines would fail in bursts, and at
+		10,000 ppm the sampling point would slip a symbol every 25 ms, so almost no line
+		would arrive.
+		\end{solution}
+
+	\part Explain why the working polarity changed between runs on the Pluto, and
+	propose a change to the receiver that would make the polarity switch unnecessary.
+		\begin{solution}[1.5in]
+		The Costas Loop locks to the carrier's phase, but a 2-PAM signal looks the same
+		rotated by 180$^\circ$, so the loop can lock either way, and it picks one at
+		random each time it starts. Locked upside down, every bit inverts, and the
+		access code never matches. Either of two fixes works: search for both the access code and
+		its inverse, and flip the bits when the inverse matches; or send the data
+		differentially, as a change or no change from one bit to the next, which an
+		inversion does not affect.
+		\end{solution}
+
+\end{parts}
+
+\end{questions}
+
+\vspace{1.0em}
+\noindent\textbf{Documentation:} \rule[-2pt]{0.6\linewidth}{0.4pt}
+
+\end{document}
