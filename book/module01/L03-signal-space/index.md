@@ -102,7 +102,7 @@ The figure draws all five at the same average symbol energy, the same transmitte
 
 The energy of a symbol is its squared distance from the origin, $\vert s\vert^2 = I^2 + Q^2$, and the average over the constellation is the **symbol energy** $E_s$. With $E_s$ fixed, what matters for errors is the **minimum distance** $d_\text{min}$ between neighboring points, because noise causes an error by pushing a sample across the halfway line to a neighbor.
 
-QPSK and 4-PAM both carry two bits per symbol, but QPSK spreads its four points over both axes while 4-PAM crowds them onto one. QPSK's spacing is 1.41 against 0.89 for 4-PAM, which is why radios use QPSK rather than 4-PAM on a carrier. 4-PAM still has its place: it is the baseband signal we build in Lesson 10, where only one axis exists.
+QPSK and 4-PAM both carry two bits per symbol, but QPSK spreads its four points over both axes while 4-PAM crowds them onto one. QPSK's spacing is 1.41 against 0.89 for 4-PAM, which is why radios use QPSK rather than 4-PAM on a carrier. 4-PAM still has its place: Lesson 9 shapes it as a baseband signal, where only one axis exists.
 ::::
 
 ::::{frame} Part 2: Noise and Decisions

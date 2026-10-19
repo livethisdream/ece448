@@ -92,7 +92,7 @@ Same transmitter power for all five; the dashed circle is that power. Point at t
 | 16-QAM | 4 | 0.63 |
 
 Note:
-Unit average symbol energy. QPSK and 4-PAM carry the same two bits, but QPSK uses both axes and spaces its points farther apart. 4-PAM comes back in Lesson 10 as a baseband signal, where only one axis exists.
+Unit average symbol energy. QPSK and 4-PAM carry the same two bits, but QPSK uses both axes and spaces its points farther apart. 4-PAM comes back in Lesson 9 as a baseband signal, where only one axis exists.
 
 ---
 
