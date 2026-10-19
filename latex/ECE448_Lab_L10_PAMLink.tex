@@ -112,8 +112,8 @@ receives ASCII text end-to-end.}
 This packet is the L\labLesson\ Lab, in three parts, and you turn it in once, complete,
 before Lesson 11. Do \textbf{Part 1} on your own before the lab period: run the link
 flowgraph and make the predictions you will check at the bench. \textbf{Part 2} is
-your own measurements, recorded in class: Questions 3 to 5 on your own laptop, and
-Question 6 at a PlutoSDR station with your team. Do \textbf{Part 3} on your own after
+your own measurements, recorded in class: Questions 3 to 6 on your own laptop, and
+Question 7 at a PlutoSDR station with your team. Do \textbf{Part 3} on your own after
 the lab: compare the measurements with the predictions and answer the analysis
 questions.
 
@@ -123,14 +123,15 @@ question asks for one.
 
 \textbf{Transmitting.} In class we transmit only into a cable, into a shielded
 enclosure, or at very low power in an ISM band, and only when the lesson says to.
-Questions 1 to 5 run on your laptop and transmit nothing. Question 6 transmits from a
+Questions 1 to 6 run on your laptop and transmit nothing. Question 7 transmits from a
 PlutoSDR's TX port, through a cable with an inline 30 dB SMA attenuator, to the same
 Pluto's RX port, at 915 MHz. Connect the cable and attenuator before you run the
 flowgraph, and never connect an antenna in this lab. Never set TX attenuation below
 30 dB or change the slider's range; the RX input is rated to only a few dBm.
 
 The flowgraphs are on the L10 lesson page, \texttt{L10-pam-tx.grc} and
-\texttt{L10-pam-link.grc}, and on the L10 Lab page, \texttt{L10-pam-pluto.grc}. Every
+\texttt{L10-pam-link.grc}, and on the L10 Lab page, \texttt{L10-pam-raw.grc} and
+\texttt{L10-pam-pluto.grc}. Every
 number below assumes their settings: \texttt{samp\_rate} = 32 kHz, \texttt{sps} = 8,
 so 4 kbaud, $\alpha = 0.35$, and the default line \texttt{USAFA ECE 448: ASCII over
 PAM.}, 30 characters and a newline, 31 bytes.
@@ -247,6 +248,46 @@ with the sliders at their defaults, a noise amplitude of 0.3 and a clock error o
 \newpage
 \fullwidth{\large\textbf{Part 2: Measurements} \normalsize(in class)}
 
+\question \textbf{Bytes without packets.} Follow the lab page's steps for
+\texttt{L10-pam-raw.grc}, the link with no access code and no header. Each run, the
+receiver starts listening at a random bit.
+
+\begin{parts}
+
+	\part For three runs, record the bit offset at which the Received bytes label reads
+	as text.
+
+	\begin{center}
+	\renewcommand{\arraystretch}{1.25}
+	\begin{tabular}{| l | K{1.1in} | K{1.1in} | K{1.1in} |}
+	\hline
+	Run & 1 & 2 & 3 \\\hline
+	Offset that reads & \kv{varies} & \kv{varies} & \kv{varies} \\\hline
+	\end{tabular}
+	\end{center}
+
+		\begin{solution}[0.9in]
+		Exactly one offset from 0 to 7 reads in each run, and it changes from run to run
+		at random. There are 8 offsets because a byte has 8 bits: every other offset
+		groups the bits across two characters, and most of those bytes are not printable
+		ASCII.
+		\end{solution}
+
+	\part Stop and start \texttt{L10-pam-link.grc} three times. Record how long the first
+	line takes to appear, and explain in words how the receiver finds the byte boundary
+	that you had to find by hand in part (a).
+		\begin{solution}[1.3in]
+		A line appears within a couple of seconds every time, with nothing to adjust.
+		Correlate Access Code - Tag Stream compares every 64-bit window of the received
+		bits with the access code, so wherever the receiver starts listening, it finds the
+		bit where a packet begins, and Repack Bits groups the bytes from that bit. The
+		access code does the job of the bit-offset slider automatically, on every packet.
+		\end{solution}
+
+\end{parts}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
 \question \textbf{Build the transmitter.} Start GRC with an empty canvas. Do not open
 \texttt{L10-pam-tx.grc}: build the packet transmitter yourself as the lab page lists,
 with your line of text from Question 2(b) in \texttt{msg}.
