@@ -1,0 +1,415 @@
+\documentclass{exam}
+
+\newif\ifA
+\newif\ifkey
+\newif\ifprintselected   % required by exam_config's \ansbox
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% SET THESE IF VARIABLES
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Lab name -- labs are named by the lesson they belong to, never by a
+% sequential lab number (Neil, 2026-10-12): this is the L8 Lab.
+\def\labLesson{8}
+
+% is this the key or not?
+\ifdefined\iskey
+	\ifnum\iskey=1
+		\keytrue
+	\else
+		\keyfalse
+	\fi
+\else
+	%% Pick one manually
+	\keyfalse % if this is NOT the key
+%	\keytrue     % if this IS the key
+\fi
+
+% set up the header and footer - change for every term
+\ifdefined\thisTermIn
+	\def\thisterm{\thisTermIn}
+\else
+	\def\thisterm{Spring 2027}
+\fi
+%
+\def\thisclass{ECE 448}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% END SET THESE IF VARIABLES
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% packages and shortcuts
+\input{myPackages_gr}
+\usepackage[hidelinks, linkcolor=red]{hyperref}
+\input{myShortcuts}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt}
+
+%% exam class customization
+\input{exam_config}
+\input{ece448_fonts}   % Barlow body text (needs lualatex)
+\printselectedfalse      % full worked solutions in the key, not answers-only
+\CorrectChoiceEmphasis{\color{red}}
+\SolutionEmphasis{\color{red}}
+\renewcommand\questionlabel{\textbf{\thequestion.}}
+\renewcommand{\thepartno}{\alph{partno}}
+\renewcommand{\partlabel}{(\thepartno)}
+
+% Fillable table cell: blank in the student copy, the expected value in red on
+% the KEY. Fixed-width centered columns keep the blank cells writable.
+\newcolumntype{K}[1]{>{\centering\arraybackslash}p{#1}}
+\newcommand{\kv}[1]{\ifkey{\color{red}#1}\fi\rule[-0.10in]{0pt}{0.34in}}
+
+% print the answers if this is the key
+\ifkey
+	\printanswers % if this IS the key
+\else
+	\noprintanswers  %if this is NOT the key
+\fi
+
+% print the header and footer
+% need to print key on top if this is the key
+\ifkey
+	\firstpageheader{}{\color{red}{ KEY}}{}
+	\runningheader{\thisclass\hspace{1pt} -- \thisterm }{L\labLesson\ Lab\hspace{1pt}\color{red}{ KEY}}{\thepage\hspace{1pt} of\hspace{1pt} \numpages}
+	\firstpagefooter{}{}{}
+	\runningfooter{}{}{}
+\else
+	\firstpageheader{}{}{}
+	\runningheader{\thisclass \hspace{1pt} -- \thisterm }{L\labLesson\ Lab\hspace{1pt}}{\thepage\hspace{1pt} of\hspace{1pt} \numpages}
+	\firstpagefooter{}{}{}
+	\runningfooter{}{}{}
+\fi
+
+\runningheadrule
+
+
+\begin{document}
+\pagestyle{headandfoot}   % exam class
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% title block
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{center}
+USAF ACADEMY \\
+DEPARTMENT OF ELECTRICAL AND COMPUTER ENGINEERING \\
+LESSON \labLesson\ LAB - FSK \\
+\textbf{Lab Packet} \\
+\thisterm \\[4mm]
+\end{center}
+
+\vspace{-4pt}
+\textbf{Name:} \rule[-2pt]{2.6in}{0.4pt} \hfill
+\textbf{Section:} \rule[-2pt]{0.9in}{0.4pt} \hfill
+\textbf{Date:} \rule[-2pt]{1.1in}{0.4pt}
+
+\vspace{4pt}
+
+\fullwidth{\textbf{Learning Objective 4.1: } I can describe FSK modulation and implement
+an FSK transmitter and receiver in GNU Radio.}
+
+\vspace{2pt}
+
+This packet is the L\labLesson\ Lab, in three parts, and you turn it in once, complete,
+before Lesson 9. Do \textbf{Part 1} on your own before the lab period: run the link
+flowgraph and make the predictions you will check at the bench. \textbf{Part 2} is
+your own measurements, on your own laptop, recorded in class. Do \textbf{Part 3} on
+your own after the lab: compare the measurements with the predictions and answer the
+analysis questions.
+
+\textbf{Grading.} One submission, graded against Objective 4.1 on the course's
+1 / 0 scale, with revision allowed under course policy. Paste screenshots where a
+question asks for one.
+
+\textbf{No hardware, no transmitting.} Every flowgraph in this lab runs on your laptop.
+The Channel Model block stands in for the air, and nothing in this lab transmits.
+
+The flowgraphs are on the L8 lesson page: \texttt{L08-fsk-tx.grc} and
+\texttt{L08-fsk-link.grc}. Every number below assumes the flowgraphs' settings:
+$f_s = 32$ kHz, 32 samples per symbol, and a 41-character line of text.
+
+\begin{questions}
+
+\fullwidth{\large\textbf{Part 1: Pre-Lab} \normalsize(individual, before the lab period)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{Run the link.} Open \texttt{L08-fsk-link.grc} in GRC and run it
+with the sliders at their defaults.
+
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part After about 20 s, record the Lines label.
+		\begin{solution}[0.5in]
+		About 45 to 47 lines, all correct, at 0.424 s per line.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.6in]{all correct, $\approx 46$}
+	\end{minipage}
+
+	\part Paste a screenshot of the running flowgraph's window.
+		\begin{solution}[1.6in]
+		The window shows the two tones at $\pm 1$ kHz about 25 dB above the noise, a
+		wide-open eye at $\pm 1$, and the received line of text.
+		\end{solution}
+
+\end{parts}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\question \textbf{Predictions.} You will check each of these at the bench.
+
+\begin{parts}
+
+	\part Fill in the transmitter and receiver settings for each deviation.
+
+	\begin{center}
+	\renewcommand{\arraystretch}{1.25}
+	\begin{tabular}{| l | K{0.82in} | K{0.82in} | K{0.82in} | K{0.82in} | K{0.82in} |}
+	\hline
+	$\Delta f$ & sensitivity $k$ & demod gain $g$ & index $h$ & Carson $B$ & LPF cutoff \\\hline
+	1000 Hz & \kv{0.196} & \kv{5.09} & \kv{2} & \kv{4 kHz} & \kv{2 kHz} \\\hline
+	2000 Hz & \kv{0.393} & \kv{2.55} & \kv{4} & \kv{6 kHz} & \kv{3 kHz} \\\hline
+	\end{tabular}
+	\end{center}
+
+		\begin{solution}[0.9in]
+		$k = 2\pi\Delta f/f_s$, $g = f_s/(2\pi\Delta f)$, $h = 2\Delta f/R_s$ with
+		$R_s = 32000/32 = 1000$ baud, $B = 2(\Delta f + R_s)$, and the cutoff is
+		$\Delta f + R_s$.
+		\end{solution}
+
+	\part With $\Delta f = 1$ kHz, predict the SNR at the demodulator for each noise
+	voltage. The signal has power 1, and noise of voltage $\sigma$ has power
+	$\sigma^2$ over the full 32 kHz.
+
+	\begin{center}
+	\renewcommand{\arraystretch}{1.25}
+	\begin{tabular}{| l | K{0.6in} | K{0.6in} | K{0.6in} | K{0.6in} | K{0.6in} | K{0.6in} |}
+	\hline
+	$\sigma$ & $0.5$ & $0.8$ & $1.0$ & $1.2$ & $1.5$ & $2.0$ \\\hline
+	SNR (dB) & \kv{$15.1$} & \kv{$11.0$} & \kv{$9.0$} & \kv{$7.4$} & \kv{$5.5$} & \kv{$3.0$} \\\hline
+	\end{tabular}
+	\end{center}
+
+		\begin{solution}[0.6in]
+		The filter keeps $4/32$ of the noise, so
+		$\text{SNR} = 1/(\sigma^2 \times 4/32) = 8/\sigma^2$.
+		\end{solution}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Each line is a packet: a 64-bit access code, a 32-bit header, and the 41
+		characters with a newline. Find the bits per packet, the time per packet, and
+		the number of packets in 30 s.
+		\begin{solution}[1.0in]
+		\eq{ 64 + 32 + 8 \times 41 &= 424\ \text{bits} \\
+			424 / 1000 &= 0.424\ \text{s} \\
+			30 / 0.424 &\approx 71 }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		bits = \ansbox[1.0in]{424}
+
+		\vspace{4pt}
+		time = \ansbox[1.0in]{0.424 s}
+
+		\vspace{4pt}
+		in 30 s = \ansbox[1.0in]{71}
+	\end{minipage}
+
+	\part With $\Delta f = 1$ kHz, predict the two demodulator levels for each
+	frequency offset.
+
+	\begin{center}
+	\renewcommand{\arraystretch}{1.25}
+	\begin{tabular}{| l | K{0.75in} | K{0.75in} | K{0.75in} | K{0.75in} | K{0.75in} |}
+	\hline
+	Offset (Hz) & $0$ & $300$ & $600$ & $800$ & $1000$ \\\hline
+	Levels & \kv{$\pm 1$} & \kv{$1.3, -0.7$} & \kv{$1.6, -0.4$} & \kv{$1.8, -0.2$} & \kv{$2.0, 0$} \\\hline
+	\end{tabular}
+	\end{center}
+
+		\begin{solution}[0.5in]
+		An offset moves both tones by $f_\text{off}$, which adds $f_\text{off}/\Delta f$
+		to both levels.
+		\end{solution}
+
+\end{parts}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\fullwidth{\large\textbf{Part 2: Measurements} \normalsize(your own laptop, in class)}
+
+\question \textbf{Build the transmitter.} Start GRC with an empty canvas. Do not open
+\texttt{L08-fsk-tx.grc}: build it yourself as the lab page lists, from a Vector Source
+of message bytes, Unpack K Bits, Chunks to Symbols, Repeat, Frequency Mod, a
+Throttle, and a QT GUI Frequency Sink, with a QT GUI Range named \texttt{dev}.
+
+\begin{parts}
+
+	\part Paste a screenshot of your flowgraph on the GRC canvas. Every connection
+	must be black, not red.
+		\begin{solution}[1.6in]
+		Matches the L8 lesson figure. The byte ports are purple, the float ports from
+		Chunks to Symbols to Frequency Mod are orange, and the complex ports after
+		Frequency Mod are blue.
+		\end{solution}
+
+	\part Run it and record the frequencies of the two spectral peaks at each
+	deviation. Paste a screenshot of the spectrum at 2000 Hz.
+
+	\begin{center}
+	\renewcommand{\arraystretch}{1.25}
+	\begin{tabular}{| l | K{1.4in} | K{1.4in} |}
+	\hline
+	Deviation (Hz) & $1000$ & $2000$ \\\hline
+	Peaks (kHz) & \kv{$-1$ and $+1$} & \kv{$-2$ and $+2$} \\\hline
+	\end{tabular}
+	\end{center}
+
+		\begin{solution}[1.6in]
+		The peaks sit at $\pm\Delta f$. At 2000 Hz the spectrum is visibly wider, about
+		6 kHz between its shoulders, as Carson's rule predicts.
+		\end{solution}
+
+\end{parts}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\question \textbf{Noise.} Run \texttt{L08-fsk-link.grc} with the frequency offset at 0.
+For each noise voltage, set the slider, wait about 30 s, and record the Lines label.
+The count restarts each time a slider moves. Sent is the time divided by your
+packet time from Question 2(c).
+
+\begin{parts}
+
+	\part Fill in the table.
+
+	\begin{center}
+	\renewcommand{\arraystretch}{1.25}
+	\begin{tabular}{| l | K{0.6in} | K{0.6in} | K{0.6in} | K{0.6in} | K{0.6in} | K{0.6in} |}
+	\hline
+	$\sigma$ & $0.5$ & $0.8$ & $1.0$ & $1.2$ & $1.5$ & $2.0$ \\\hline
+	Time (s) & & & & & & \\\hline
+	Sent & & & & & & \\\hline
+	Received & \kv{all} & \kv{all} & \kv{all} & \kv{$\approx$ all} & \kv{$\approx 2/3$} & \kv{few} \\\hline
+	Correct & \kv{all} & \kv{all} & \kv{$\approx$ all} & \kv{$\approx 1/2$} & \kv{$\approx 0$} & \kv{$0$} \\\hline
+	\end{tabular}
+	\end{center}
+
+		\begin{solution}[0.6in]
+		Every line arrives correctly down to about 9 dB. Between 9 and 3 dB the link
+		goes from almost no errors to almost no packets. Counts vary from run to run
+		because the noise is random.
+		\end{solution}
+
+	\part Paste a screenshot of the eye diagram at $\sigma = 1.2$, and describe how it
+	differs from the eye at $\sigma = 0.5$.
+		\begin{solution}[1.6in]
+		The traces wander between the levels and some cross zero in the middle of a
+		bit, so the eye is partly closed. At 0.5 the traces stay tight at $\pm 1$ and
+		the eye is wide open.
+		\end{solution}
+
+\end{parts}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\question \textbf{Frequency offset.} Set the noise voltage back to 0.5. For each
+offset, set the slider, wait about 20 s, and record the two levels of the eye diagram
+and the Lines label.
+
+\begin{parts}
+
+	\part Fill in the table.
+
+	\begin{center}
+	\renewcommand{\arraystretch}{1.25}
+	\begin{tabular}{| l | K{0.75in} | K{0.75in} | K{0.75in} | K{0.75in} | K{0.75in} |}
+	\hline
+	Offset (Hz) & $0$ & $300$ & $600$ & $800$ & $1000$ \\\hline
+	Levels & \kv{$\pm 1$} & \kv{$1.3, -0.7$} & \kv{$1.6, -0.4$} & \kv{$1.8, -0.2$} & \kv{---} \\\hline
+	Lines & \kv{all} & \kv{all} & \kv{all} & \kv{all wrong} & \kv{none} \\\hline
+	\end{tabular}
+	\end{center}
+
+		\begin{solution}[0.6in]
+		The levels match Question 2(d). The link works to 600 Hz. At 800 Hz lines still arrive but every one has
+		errors, because the lower level is near zero and the filter begins to cut off
+		the upper tone. At 1000 Hz no line arrives.
+		\end{solution}
+
+	\part Stop the flowgraph and change the \texttt{dev} variable to 2000; the
+	transmitter, the filter, and the demodulator all follow it. Run it at each setting
+	below for about 20 s and record the Lines label.
+
+	\begin{center}
+	\renewcommand{\arraystretch}{1.25}
+	\begin{tabular}{| l | K{1.5in} | K{1.5in} |}
+	\hline
+	Setting & $\sigma = 1.2$, offset 0 & $\sigma = 0.5$, offset 1200 Hz \\\hline
+	$\Delta f = 1000$ Hz & \kv{$\approx 1/2$ correct} & \kv{none} \\\hline
+	$\Delta f = 2000$ Hz & \kv{most correct} & \kv{$\approx$ all correct} \\\hline
+	\end{tabular}
+	\end{center}
+
+		\begin{solution}[0.6in]
+		Use the $\Delta f = 1000$ Hz row from parts (a) and Question 4. Doubling the
+		deviation doubles the offset the link tolerates and slightly improves the noise
+		result, even though the SNR in the wider 6 kHz bandwidth is 1.8 dB lower.
+		\end{solution}
+
+\end{parts}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\fullwidth{\large\textbf{Part 3: Writeup} \normalsize(individual, after the lab)}
+
+\question \textbf{Analysis.}
+
+\begin{parts}
+
+	\part Find the SNR from Question 2(b) at which your link first lost a line, and
+	the SNR at which it received almost nothing. Explain why the change takes only a
+	few dB, and what that means for the link margin of Lesson 2.
+		\begin{solution}[1.5in]
+		Errors start near 9 dB ($\sigma \approx 1.0$) and packets stop near 3 dB
+		($\sigma = 2.0$), about 6 dB apart. Below about 10 dB the noise begins to swing
+		the phase of the received signal by large amounts, and each large swing makes
+		a spike in the demodulator output; the number of spikes grows rapidly as the
+		SNR falls. A packet also needs every one of its 424 bits right, so a small rise
+		in bit errors loses many packets. A link designed at the threshold fails on the
+		first fade of a few dB, so it needs margin above 9 dB.
+		\end{solution}
+
+	\part Your link tolerated an offset of about 600 Hz. Convert that to parts per
+	million at 915 MHz, and explain what it says about running this link over the air
+	between two SDRs whose crystals are accurate to a few ppm.
+		\begin{solution}[1.3in]
+		\eq{ \dfrac{600}{915\times10^{6}} = 0.66\ \text{ppm} }
+		Two radios with a few ppm of error each can be several kHz apart at 915 MHz, far
+		more than 600 Hz. Over the air this link would need either a much larger
+		deviation, as key fobs use, or a receiver that measures the offset and removes
+		it before the demodulator.
+		\end{solution}
+
+	\part Recommend a deviation of 1000 or 2000 Hz for this link, and justify it from
+	your measurements in Questions 4 and 5. Name what the choice gives up.
+		\begin{solution}[1.3in]
+		2000 Hz: it tolerates twice the offset and did slightly better at
+		$\sigma = 1.2$. It gives up bandwidth, 6 kHz instead of 4 kHz, so fewer such
+		links fit in a band. A cadet who argues for 1000 Hz because the link is
+		cabled and the bandwidth is scarce, with the measurements cited, also meets the
+		objective.
+		\end{solution}
+
+\end{parts}
+
+\end{questions}
+
+\vspace{1.0em}
+\noindent\textbf{Documentation:} \rule[-2pt]{0.6\linewidth}{0.4pt}
+
+\end{document}
