@@ -58,7 +58,7 @@ so change them together with the manifest.
 Lessons move to the 444 format one at a time, in teaching order. A converted
 lesson replaces its generated page with a real frame lesson, following 444's
 `book/module01/L05-field-regions/` as the worked example and 444's budgets
-and checks. L01 is converted. Keep the legacy slide links until the new
+and checks. L1-L3, L5, L6, L8, and L9 are converted. Keep the legacy slide links until the new
 material covers the same ground, then set the lesson's decks to `[]` in the
 manifest. GNU Radio flowgraphs (`.grc`) and example code a cadet runs go with
 the lesson; solutions stay in `ECE448-faculty`.
@@ -90,9 +90,12 @@ ships goes through three steps before it is committed:
    opens without warnings.
 2. **Compile** it: `scripts/verify/check_grc.py`.
 3. **Run** it, if it needs no hardware, with `scripts/grc/grc_shot.py` under
-   `xvfb-run`, and use that screenshot on the page. A flowgraph that needs an
-   SDR is compiled only; say so in the PR. A figure that stands in for a real
-   capture is labeled "Simulated" on the figure itself.
+   `xvfb-run`, and use that screenshot on the page. Pass `--size WxH` for a
+   window with more than one row of plots; the script points ALSA at its null
+   device, so a flowgraph with an Audio Sink runs too. Screenshot GRC's canvas
+   with `scripts/grc/grc_canvas.sh file.grc out.png [WxH]`. A flowgraph that
+   needs an SDR is compiled only; say so in the PR. A figure that stands in
+   for a real capture is labeled "Simulated" on the figure itself.
 
 The GNU Radio bindings are built for `/usr/bin/python3.12`; call `grcc` and the
 scripts through it, not through whatever `python3` is first on `PATH`.
