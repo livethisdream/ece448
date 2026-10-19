@@ -243,7 +243,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [410, 510]
+    coordinate: [410, 545]
     rotation: 0
     state: enabled
 - name: blocks_add_xx_0

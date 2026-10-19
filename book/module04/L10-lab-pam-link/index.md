@@ -40,8 +40,9 @@ Questions 1 to 5 run on your laptop and transmit nothing. Question 6 transmits, 
 ::::{frame} Part 1: Before the Period
 :::{present}
 - `L10-pam-link.grc` runs and shows the received line.
-- Predict the packet's bits and time, and your own line's length field.
-- Predict SNR, BER, and lines intact for six noise amplitudes.
+- Predict one packet's bits and time, and your line's length field.
+- Predict SNR, BER, and lines intact at six noise amplitudes.
+- Predict how fast 10,000 ppm slips a fixed sampling point.
 :::
 
 Do the Pre-Lab before you arrive. Question 1 checks that the link flowgraph opens and runs on your laptop: if GRC reports an error, the L5 lesson page lists the install checks, and EI before the lab is the place to fix it.
@@ -54,9 +55,9 @@ Question 2 asks for predictions from the lesson's formulas: the bits and time in
 | Check | Expected |
 | :-- | :-- |
 | One packet | 344 bits, 86 ms |
-| SNR at $\sigma$ = 1.0 | 9 dB |
-| Lines intact at $\sigma$ = 1.0 | about half |
-| Spectrum edges | $\pm 2.7$ kHz |
+| SNR at $\sigma$ = 0.95 | 9.5 dB |
+| Lines intact at $\sigma$ = 0.95 | about two thirds |
+| Slip at 10,000 ppm | 25 ms |
 :::
 
 These follow from Lesson 10. The packet size is exact: 64 bits of access code, 32 of header, and 8 per byte of the line. The SNR at the slicer is $8/\sigma^2$, and a line arrives intact only when all 280 bits of its header and payload are right. The count of correct lines at each setting is random and changes from run to run, which is why the packet records it over 20 to 30 s rather than predicting it exactly.
@@ -83,10 +84,10 @@ These follow from Lesson 10. The packet size is exact: 64 bits of access code, 3
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto 12px;">
 
 1. Open and run `L10-pam-link.grc`. The Lines label counts the lines received since a slider last moved.
-2. With the clock error at 500 ppm, set the noise amplitude to 0.5, 0.7, 0.8, 0.9, 1.0, and 1.2 in turn. At each, wait about 30 s and record the time and the Lines label for Question 4(a).
-3. At 1.0, wait for a line with a wrong character in the Received label and screenshot it for Question 4(b).
-4. Set the noise back to 0.3. Raise the clock error to 0, 10,000, 20,000, 30,000, and 40,000 ppm in that order, without stopping the flowgraph. At each, wait about 20 s and record the Lines label and the eye's appearance for Question 5(a). Screenshot 10,000 ppm for Question 5(b).
-5. Stop the flowgraph, run it again, and type 40,000 into the clock-error box right away. Record the Lines label after 20 s in the last column of Question 5(a).
+2. With the clock error at 500 ppm, set the noise amplitude to 0.6, 0.75, 0.85, 0.95, 1.1, and 1.3 in turn. At each, wait about 30 s and record the time and the Lines label for Question 4(a).
+3. At 1.1, wait for a line with a wrong character in the Received label and screenshot it for Question 4(b).
+4. Set the noise back to 0.3. Set the clock error to 0, then raise it to 10,000, 20,000, 30,000, and 40,000 ppm in that order, without stopping the flowgraph. At each, wait about 20 s and record the Lines label and the eye's appearance for Question 5(a). Screenshot 10,000 ppm for Question 5(b).
+5. Stop the flowgraph, run it again so the loop locks at the default 500 ppm, and then type 40,000 into the clock-error box in one jump. Record the Lines label after 20 s in the last column of Question 5(a).
 ::::
 
 ::::{frame} If No Text Arrives
@@ -105,21 +106,21 @@ Close the flowgraph and run it again with the sliders at their defaults, a noise
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
-- One Pluto, TX port cabled to RX port, at 915 MHz.
-- The cable goes on before the flowgraph runs; no antennas.
+- We cable one Pluto's TX port to its RX port through a 30 dB attenuator, at 915 MHz.
+- The cable goes on before the flowgraph runs, and we never connect an antenna.
 :::
 
 `L10-pam-pluto.grc` is the Lesson 10 link with the simulated channel replaced by a PlutoSDR. The transmit half raises the 32 kHz baseband stream to 1.024 MS/s and sends it from the Pluto's TX port at 915 MHz; the receive half takes it from the RX port, lowers it to 32 kHz, and runs the same matched filter, Symbol Sync, and access-code search. An **AGC** sets the received level, and a **Costas Loop**, which Lesson 15 explains, locks to the carrier's phase.
 
-In class we transmit only into a cable, into a shielded enclosure, or at very low power in an ISM band, and only when the lesson says to. This question transmits only into the cable between the Pluto's own TX and RX ports. The TX attenuation slider starts at 60 dB and stops at 30 dB, which keeps the signal into the RX port at least 30 dB below the transmitter's full power.
+In class we transmit only into a cable, into a shielded enclosure, or at very low power in an ISM band, and only when the lesson says to. This question transmits only into the cable between the Pluto's own TX and RX ports, through an inline 30 dB SMA attenuator. The TX attenuation slider starts at 60 dB and stops at 30 dB. Never set TX attenuation below 30 dB or change the slider's range; the RX input is rated to only a few dBm, and the transmitter can put out more than that.
 ::::
 
 ::::{frame} PlutoSDR Steps
 :class: read-only
 
-1. With the Pluto unplugged, connect a short SMA cable from its TX port to its RX port. Do not connect an antenna.
+1. With the Pluto unplugged, connect its TX port to its RX port with a short SMA cable and an inline 30 dB SMA attenuator. Do not connect an antenna, and do not connect the cable without the attenuator.
 2. Plug the Pluto into USB and run `iio_info -s` at the radioconda prompt; it should list a PlutoSDR context. The flowgraph uses the Pluto's default address, `ip:192.168.2.1`.
-3. Open and run `L10-pam-pluto.grc`. Within a few seconds the constellation should show two clusters on the horizontal axis, one on each side of zero.
+3. Open and run `L10-pam-pluto.grc`. In simulation, the constellation shows two clusters on the horizontal axis within a few seconds, one on each side of zero. Never set TX attenuation below 30 dB or change the slider's range.
 4. If no line arrives within 5 s, switch Polarity. If neither setting works, raise the TX attenuation by 10 dB and try both again. Screenshot the window once lines arrive, for Question 6(a).
 5. Stop and start the flowgraph three times, and record each time which polarity delivers lines, for Question 6(b).
 6. Stop it, put your line from Question 2(b) in `msg`, and run it again for Question 6(c). Stop the flowgraph and unplug the Pluto before you disconnect the cable.

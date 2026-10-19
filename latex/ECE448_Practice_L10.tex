@@ -144,8 +144,8 @@ most 2 bits differ.
 		threshold 2: \ansbox[1.0in]{$4.0\times10^{-5}$}
 	\end{minipage}
 
-	\part On the PlutoSDR version of the link, no packets arrive, yet the Symbol Sync
-	output is clean and tightly clustered at $\pm 1$. Explain in words what the
+	\part On the PlutoSDR version of the link, no packets arrive, yet the constellation
+	after the Costas Loop shows two tight clusters on the real axis. Explain in words what the
 	correlator sees and why, and what the receiver should change.
 		\begin{solution}[1.2in]
 		The signal arrives inverted: the carrier-recovery loop has locked 180$^\circ$ off, so
@@ -239,13 +239,13 @@ symbol clock by up to 40 ppm. The link runs at 4 kbaud.
 		packets: \ansbox[1.1in]{73}
 	\end{minipage}
 
-	\part The L10 link loses almost no lines up to 5000 ppm with Symbol Sync in the
+	\part The L10 link loses almost no lines up to 10,000 ppm with Symbol Sync in the
 	receiver. Explain why the slip in part (a) does not appear in that link, and why
 	a 40 ppm error is not a concern for it.
 		\begin{solution}[1.1in]
 		Symbol Sync measures the timing error from the samples near each zero crossing and
 		moves its sampling instant to follow the drift, so the sampling point never
-		slips. 40 ppm is more than 100 times smaller than the 5000 ppm the link handles,
+		slips. 40 ppm is 250 times smaller than the 10,000 ppm the link handles,
 		so the loop follows it.
 		\end{solution}
 

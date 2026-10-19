@@ -182,7 +182,7 @@ We measured each row headless, over 3000 packets. The small shortfall comes from
 
 <img src="./img/10-ascii-pam/L10-link-clock.png" alt="The L10 link at a 10,000 ppm clock error: a smeared eye but tight Symbol Sync output and 206 of 208 lines correct" style="max-height:380px; display:block; margin:0 auto;">
 
-Symbol Sync locks cold to about 25,000 ppm; a crystal is off by about 20 ppm.
+Symbol Sync locks cold to about 25,000 ppm; two 20 ppm crystals differ by up to 40 ppm.
 
 Note:
 The eye sink assumes exactly 8 samples per symbol, so it smears at 1%. Symbol Sync tracks the difference. Started cold, the link loses under 1% of lines at 10,000 ppm and a few percent from 15,000 to 25,000 ppm, often fails to lock at 30,000, and never locks at 40,000. Raised a step at a time while locked, it follows 40,000 ppm and beyond.

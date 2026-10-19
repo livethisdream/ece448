@@ -94,14 +94,14 @@ blocks:
     label2: ''
     label3: ''
     label4: ''
-    labels: '[]'
+    labels: '["normal", "inverted"]'
     num_opts: '2'
     option0: '1'
     option1: '-1'
     option2: '2'
     option3: '3'
     option4: '4'
-    options: '[0, 1, 2]'
+    options: '[1, -1]'
     orient: Qt.QHBoxLayout
     type: real
     value: '1'
@@ -366,7 +366,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [8, 840]
+    coordinate: [8, 880]
     rotation: 0
     state: enabled
 - name: blocks_repack_bits_bb_0
@@ -386,7 +386,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [680, 840]
+    coordinate: [960, 880]
     rotation: 0
     state: enabled
 - name: blocks_stream_to_tagged_stream_0
@@ -476,7 +476,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [220, 850]
+    coordinate: [220, 890]
     rotation: 0
     state: enabled
 - name: digital_chunks_to_symbols_xx_0
@@ -515,7 +515,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [400, 830]
+    coordinate: [680, 870]
     rotation: 0
     state: enabled
 - name: digital_costas_loop_cc_0
@@ -621,7 +621,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [880, 840]
+    coordinate: [1160, 880]
     rotation: 0
     state: enabled
 - name: fir_filter_xxx_0
@@ -902,7 +902,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [490, 720]
+    coordinate: [490, 745]
     rotation: 0
     state: enabled
 - name: rational_resampler_xxx_0

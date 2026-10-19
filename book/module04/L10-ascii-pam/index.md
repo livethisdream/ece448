@@ -79,7 +79,7 @@ Lesson 9 built everything between the symbols and the samples. This lesson adds 
 - One bit late, they are 0xAA, 0xA6, 0x82: not text.
 :::
 
-The receiver's slicer outputs one bit per symbol, but nothing in the bit stream marks where a byte begins. A receiver that starts listening in the middle of the message, or that loses a bit to noise, has to guess. The figure shows what a wrong guess does. Grouped from the first bit, the 24 bits read "USA"; grouped from one bit later, they read 0xAA, 0xA6, and 0x82, which are not ASCII characters.
+The receiver's slicer outputs one bit per symbol, but nothing in the bit stream marks where a byte begins. A receiver that starts listening in the middle of the message, or whose timing slips and drops or repeats a bit, has to guess. The figure shows what a wrong guess does. Grouped from the first bit, the 24 bits read "USA"; grouped from one bit later, they read 0xAA, 0xA6, and 0x82, which are not ASCII characters.
 
 The same problem appears with any serial data, and the solution is also the same: the transmitter sends a known pattern before the data, and the receiver looks for that pattern. When it finds the pattern, it knows exactly where the first byte of the data starts.
 ::::
@@ -119,13 +119,13 @@ From Unpack K Bits on, the transmitter is Lesson 9's: 2-PAM levels, a Throttle a
 ::::{frame} One Packet on the Wire
 :::{present}
 <img src="../../viz/img/L10-tx-packet.png"
-     alt="The L10 transmitter running: a time sink triggered on the packet_len tag shows the first 28 ms of one packet, the held bits in red and the RRC-shaped signal in blue; the access code alternates for 16 ms, the header holds at minus 1 from 16 to 18.75 ms, rises for 5 bits, holds low again from 20 to 22.75 ms, rises for 5 bits, and the payload begins at 24 ms with 0 1 0 1 0 1 0 1"
+     alt="The L10 transmitter running: a time sink triggered on the packet_len tag shows the first 28 ms of one packet, the held bits in red and the RRC-shaped signal in blue; the access code's pattern fills the first 16 ms, the header holds at minus 1 from about 15.5 to 18.75 ms, rises for 5 bits, holds low again from 20 to 22.75 ms, rises for 5 bits, and the payload begins at 24 ms with 0 1 0 1 0 1 0 1"
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
-- 0 to 16 ms: the access code.
-- 16 to 24 ms: the length, 31, twice.
-- From 24 ms: 'U', then 'S'.
+- The access code fills the first 16 ms.
+- The header sends the length, 31, twice, from 16 to 24 ms.
+- The payload starts at 24 ms with 'U', then 'S'.
 :::
 
 The time sink triggers on the `packet_len` tag, so every sweep starts at the first bit of a packet and shows its first 112 bits, 28 ms. The first 64 bits are the access code, `10101100 11011101 ...`. The header follows at 16 ms: 31 is `0000000000011111` in 16 bits, so the signal sits at $-1$ for 11 bits and at $+1$ for 5, and then repeats. The payload starts at 24 ms with 'U', 01010101, and 'S', 01010011.
@@ -164,8 +164,8 @@ The share of text grows with the payload, but a longer packet also has more bits
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
-- Matched filter and Symbol Sync: Lesson 9's settings.
-- **Binary Slicer**, then the access-code search, then bytes.
+- The matched filter and Symbol Sync keep Lesson 9's settings.
+- A **Binary Slicer**, the access-code search, and Repack Bits are new.
 :::
 
 The channel is Lesson 9's: a **Fractional Resampler** with ratio $1 + \text{ppm} \times 10^{-6}$ models the receiver's clock error, and a **Noise Source** adds Gaussian noise of a chosen amplitude. The receiver starts with Lesson 9's matched filter, `rx_taps` in a Decimating FIR Filter, and Lesson 9's **Symbol Sync**: Gardner detector, `sps` = 8, loop bandwidth 0.045, one sample out per symbol.
@@ -209,7 +209,7 @@ The left panel shows the slicer input for one packet and the 40 bits before it, 
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
-- SNR at the slicer: $8/\sigma^2$, 9 dB at $\sigma = 1$.
+- The SNR at the slicer is $8/\sigma^2$, which is 9 dB at $\sigma = 1$.
 - At 9 dB, about half the lines arrive intact.
 :::
 
@@ -249,13 +249,13 @@ The measurements follow the prediction closely. The formula assumes perfect timi
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
-- Raised step by step, the link follows 40,000 ppm, 4%.
-- A real crystal is off by about 20 ppm.
+- Raised a step at a time, the link follows 40,000 ppm, a 4% error.
+- Two crystals of 20 ppm each can differ by 40 ppm.
 :::
 
 The clock-error slider sets how far the receiver's sample clock is from the transmitter's. At 10,000 ppm, a 1% error, the eye sink smears across the display, because it assumes exactly 8 samples per symbol and each symbol now spans 1% fewer. Symbol Sync tracks the difference, and its output stays at $\pm 1$: 206 of 208 lines arrive intact.
 
-Locking on is harder than staying locked. Measured over thousands of packets at $\sigma = 0.3$, a link that starts cold loses fewer than 1 line in 100 up to 10,000 ppm and a few percent, up to about 10%, from 15,000 to 25,000 ppm; started at 30,000 ppm it often fails to lock, and at 40,000 ppm it never does. Raised a step at a time while the loop is locked, the same link follows the error to 40,000 ppm and beyond and loses only a few percent of its lines. A crystal oscillator is accurate to about 20 ppm, 500 times smaller than 10,000 ppm, so with Symbol Sync in the receiver, clock error does not limit this link, and noise sets the limit instead.
+Measured over thousands of packets at $\sigma = 0.3$, a link that starts cold loses fewer than 1 line in 100 up to 10,000 ppm and a few percent, up to about 10%, from 15,000 to 25,000 ppm; started at 30,000 ppm it often fails to lock, and at 40,000 ppm it never does. Raised a step at a time while the loop is locked, the same link follows the error to 40,000 ppm and beyond and loses only a few percent of its lines. Two crystals accurate to 20 ppm each can differ by 40 ppm, 250 times smaller than 10,000 ppm, so with Symbol Sync in the receiver, clock error does not limit this link, and noise sets the limit instead.
 ::::
 
 ::::{frame} Mismatched Settings
