@@ -49,19 +49,19 @@ Everything today runs from two flowgraphs with no hardware. Items one and two us
 
 ## A Message on Two Tones
 
-<img src="./img/08-fsk/L08-tx-1k.png" alt="The L8 transmitter running: the bits as a square wave, the transmitted I signal, and a spectrum with two peaks at minus and plus 1 kHz" style="max-height:400px; display:block; margin:0 auto;">
+<img src="./img/08-fsk/L08-tx-1k.png" alt="The L8 transmitter running: the bits as a square wave, I and Q of the transmitted signal, and a spectrum with two peaks at minus and plus 1 kHz" style="max-height:400px; display:block; margin:0 auto;">
 
 A 1 is a tone at $+\Delta f$ and a 0 is a tone at $-\Delta f$; here $\Delta f = 1$ kHz.
 
 Note:
-Run L08-fsk-tx.grc. Point at the two spectral peaks first, then at the time plot. I is a 1 kHz cosine during every bit; what changes at each bit is the direction the signal turns around the circle, which is the complex-tone idea from Lesson 5.
+Run L08-fsk-tx.grc. Point at the two spectral peaks first, then at the time plot. I is the same 1 kHz cosine during every bit, because at h = 2 each bit turns the phase through one full circle. Q is what changes: it flips relative to I when the direction of rotation changes, which is the complex-tone idea from Lesson 5.
 
 ---
 
 ## Where FSK Is Used
 
-- Pagers, weather balloons, and amateur packet radio (APRS)
-- Key fobs and garage-door remotes at 315 and 433 MHz
+- Pagers, weather balloons, and amateur APRS
+- Key fobs and garage-door remotes at 315 and 433.92 MHz
 - Bluetooth and many drone links, as Gaussian FSK (GFSK)
 
 The envelope is constant, so the power amplifier can run at full output.
@@ -101,10 +101,10 @@ Symbol rate, deviation, and modulation index. k is what Frequency Mod calls its 
 
 $$B \approx 2(\Delta f + R_s)$$
 
-At 1000 baud, 1 kHz of deviation takes about 4 kHz and 3 kHz takes about 8 kHz.
+This takes the message bandwidth as $R_s$, a conservative choice. At 1000 baud, 1 kHz of deviation takes about 4 kHz and 3 kHz takes about 8 kHz.
 
 Note:
-Drag the deviation slider live from 1 kHz to 3 kHz. Carson's rule sets the receiver's first filter. Wider deviation separates the tones but lets in more noise.
+Drag the deviation slider live from 1 kHz to 3 kHz. Carson's rule sets the receiver's first filter. Some references write 2Δf + Rs instead, taking the message bandwidth as half the symbol rate. Wider deviation separates the tones but lets in more noise.
 
 ---
 
@@ -155,24 +155,24 @@ The gain is the reciprocal of the transmitter's sensitivity, so the demodulator 
 A moving average, **Symbol Sync**, and a **Binary Slicer** at zero decide each bit.
 
 Note:
-Explain the eye diagram: many two-bit stretches overlaid. The crossings are bit edges; the gap in the middle is the eye opening. Symbol Sync keeps adjusting its timing because the two clocks never match exactly.
+Explain the eye diagram: many two-bit stretches overlaid. The crossings are bit edges; the gap between them is the eye opening. Symbol Sync samples where the moving average peaks, at the end of each bit, and keeps adjusting its timing because the two clocks never match exactly.
 
 ---
 
 ## Packets
 
-- The transmitter adds a 64-bit **access code** and a length to each line.
-- The receiver searches for the access code, allowing 2 bit errors.
+- The transmitter adds a 64-bit **access code** and a 32-bit header to each line.
+- The receiver finds the access code, allowing 2 bit errors, and reads the length.
 - Repack Bits rebuilds the bytes; the Text Sink shows the line.
 
 Note:
-Without the access code the receiver has bits but no idea where a byte starts. Lesson 10 needs the same framing for ASCII over PAM.
+Without the access code the receiver has bits but no idea where a byte starts. The header holds the line's length in bytes twice, and the receiver passes that many bytes on as bits. Lesson 10 needs the same framing for ASCII over PAM.
 
 ---
 
 ## Noise
 
-<img src="./img/08-fsk/L08-link-noisy.png" alt="The L8 link at noise voltage 1.3: a higher noise floor, a partly closed eye, and 7 of 29 lines correct" style="max-height:330px; display:block; margin:0 auto;">
+<img src="./img/08-fsk/L08-link-noisy.png" alt="The L8 link at noise voltage 1.3: a higher noise floor, a mostly open eye with occasional spikes, and 7 of 29 lines correct" style="max-height:330px; display:block; margin:0 auto;">
 
 $$\text{SNR} = \frac{1}{\sigma^2 \times 4/32} = \frac{8}{\sigma^2}$$
 
@@ -201,13 +201,13 @@ Note:
 Tone spacing gives $2\Delta f$; the shortest dwell gives $1/R_s$.
 
 Note:
-This waterfall is simulated. Spacing 40 kHz, so the deviation is 20 kHz; the preamble's shortest dwell is 1 ms, so 1000 baud. To run today's link over the air, replace the Channel Model with a Pluto or HackRF sink and source. Transmit only into a cable, a shielded enclosure, or at very low power in an ISM band, and only when the lesson says to. Nothing today transmits.
+This waterfall is simulated. The tracks are 40 kHz apart, so the deviation is 20 kHz, and the preamble's shortest dwell is 1 ms, so the symbol rate is 1000 baud. On a live waterfall a row often lasts longer than a bit, so measure the dwell in URH or on the Quadrature Demod output. To run today's link over the air, replace the Channel Model with a Pluto or HackRF sink and source. Transmit only into a cable, a shielded enclosure, or at very low power in an ISM band, and only when the lesson says to. Nothing today transmits.
 
 ---
 
 ## Key Point
 
-<div class="callout">FSK sends each bit as one of two tones. The transmitter is a Frequency Mod block; the receiver filters to \(2(\Delta f + R_s)\), demodulates frequency into \(\pm 1\), samples each bit's center, and slices at zero.</div>
+<div class="callout">FSK sends each bit as one of two tones. The transmitter is a Frequency Mod block; the receiver filters to \(2(\Delta f + R_s)\), demodulates frequency into \(\pm 1\), samples each bit at its peak, and slices at zero.</div>
 
 Note:
 Every digital receiver in the rest of the course ends the same way: timing, then a slicer.

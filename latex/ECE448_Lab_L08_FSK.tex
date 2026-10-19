@@ -125,7 +125,7 @@ The Channel Model block stands in for the air, and nothing in this lab transmits
 
 The flowgraphs are on the L8 lesson page: \texttt{L08-fsk-tx.grc} and
 \texttt{L08-fsk-link.grc}. Every number below assumes the flowgraphs' settings:
-$f_s = 32$ kHz, 32 samples per symbol, and a 41-character line of text.
+$f_s = 32$ kHz, 32 samples per symbol, and a line of 40 characters and a newline, 41 bytes.
 
 \begin{questions}
 
@@ -200,7 +200,7 @@ with the sliders at their defaults.
 
 	\begin{minipage}[t]{0.58\linewidth}
 		\part Each line is a packet: a 64-bit access code, a 32-bit header, and the 41
-		characters with a newline. Find the bits per packet, the time per packet, and
+		bytes of the line, its 40 characters and a newline. Find the bits per packet, the time per packet, and
 		the number of packets in 30 s.
 		\begin{solution}[1.0in]
 		\eq{ 64 + 32 + 8 \times 41 &= 424\ \text{bits} \\
@@ -308,9 +308,11 @@ packet time from Question 2(c).
 	\part Paste a screenshot of the eye diagram at $\sigma = 1.2$, and describe how it
 	differs from the eye at $\sigma = 0.5$.
 		\begin{solution}[1.6in]
-		The traces wander between the levels and some cross zero in the middle of a
-		bit, so the eye is partly closed. At 0.5 the traces stay tight at $\pm 1$ and
-		the eye is wide open.
+		The eye is still mostly open, but the traces are thicker, and now and then a
+		sharp spike, an FM click, crosses zero; a spike at a sampling instant is a bit
+		error. A description of a thicker eye with occasional spikes, or of a partly
+		closed eye, is acceptable. At 0.5 the traces stay tight at $\pm 1$ and the eye
+		is wide open.
 		\end{solution}
 
 \end{parts}

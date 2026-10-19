@@ -39,7 +39,7 @@ Lesson 8 · Module 4: Digital Modulation · Dr. Neil Rogers
 ::::{frame} A Message on Two Tones
 :::{present}
 <img src="../../viz/img/L08-tx-1k.png"
-     alt="The L8 transmitter flowgraph running: on the left, the bits of the message as a square wave between minus 1 and plus 1, with the transmitted I signal a 1 kHz cosine whose phase changes direction at each bit boundary; on the right, the spectrum with two peaks at minus 1 kHz and plus 1 kHz"
+     alt="The L8 transmitter flowgraph running: on the left, the bits of the message as a square wave between minus 1 and plus 1, with the transmitted I the same 1 kHz cosine during every bit, and Q a sine that leads or lags I depending on the bit; on the right, the spectrum with two peaks at minus 1 kHz and plus 1 kHz"
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
@@ -49,17 +49,17 @@ Lesson 8 · Module 4: Digital Modulation · Dr. Neil Rogers
 
 Lessons 6 and 7 put an analog message on a carrier. From here on the message is data. **Frequency-shift keying** (FSK) is the simplest way to send it: the transmitter shifts its frequency up by the **deviation** $\Delta f$ for each 1 and down by $\Delta f$ for each 0. The receiver only has to decide, once per bit, which of the two frequencies it heard.
 
-The figure is the first flowgraph of this lesson, running. On the left, the blue trace is the message's bits and the red trace is the real part $I$ of the transmitted complex signal: it oscillates at 1 kHz during every bit, but each 1 turns the signal the opposite way around the circle from each 0, which shows up in $I$ as a change in where the cosine peaks fall. The spectrum on the right shows the two tones, at $-1$ and $+1$ kHz.
+The figure is the first flowgraph of this lesson, running. On the left, the blue trace is the message's bits, and the red and green traces are the real and imaginary parts, $I$ and $Q$, of the transmitted complex signal. $I$ is the same 1 kHz cosine during every bit: at $h = 2$ each bit turns the phase through exactly one full circle, forward for a 1 and backward for a 0, and a cosine cannot tell the two directions apart. $Q$ can. It is a sine that changes sign with the direction of rotation, so it flips relative to $I$ at each change of bit. The spectrum on the right shows the same difference as two tones, at $-1$ and $+1$ kHz, as Lesson 5's complex tone did.
 ::::
 
 ::::{frame} Where FSK Is Used
 :::{present}
-- Pagers, weather balloons, and amateur packet radio (APRS)
-- Car key fobs and garage-door remotes at 315 and 433 MHz
+- Pagers, weather balloons, and amateur APRS
+- Key fobs and garage-door remotes at 315 and 433.92 MHz
 - Bluetooth and many drone links, as Gaussian FSK (GFSK)
 :::
 
-FSK is old, and it is everywhere, because the receiver is simple and the transmitter has a constant envelope: the amplitude never changes, so the power amplifier can run at full output without distorting the signal. POCSAG pagers, the radiosondes on weather balloons, and APRS, the amateur position-reporting network, all use it. So do most of the cheap remotes in the 315 and 433 MHz ISM bands, which Lesson 17 reverse engineers.
+FSK is old, and it is everywhere, because the receiver is simple and the transmitter has a constant envelope: the amplitude never changes, so the power amplifier can run at full output without distorting the signal. POCSAG pagers, the radiosondes on weather balloons, and APRS, which sends audio FSK tones over an FM radio, all use it. So do most key fobs and garage-door remotes, which operate at 315 and 433.92 MHz under FCC Part 15, and which Lesson 17 reverse engineers.
 
 Bluetooth, many drone control links, and many 915 MHz sensor networks use **Gaussian FSK** (GFSK), which smooths each frequency step with a Gaussian filter so the signal takes less bandwidth. The flowgraphs below use plain FSK, but a GFSK receiver uses the same blocks.
 ::::
@@ -67,7 +67,7 @@ Bluetooth, many drone control links, and many 915 MHz sensor networks use **Gaus
 ::::{frame} Part 1: The Transmitter
 :::{present}
 <img src="../../viz/img/L08-grc-tx.png"
-     alt="GNU Radio Companion with the L8 transmitter open: a Vector Source of message bytes feeds Unpack K Bits, Chunks to Symbols, Repeat, and Frequency Mod, then a Throttle into a QT GUI Frequency Sink, with Complex To Real feeding a QT GUI Time Sink"
+     alt="GNU Radio Companion with the L8 transmitter open: a Vector Source of message bytes feeds Unpack K Bits, Chunks to Symbols, Repeat, and Frequency Mod, then a Throttle into a QT GUI Frequency Sink, with Complex To Real and Complex to Imag feeding a QT GUI Time Sink"
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
@@ -77,7 +77,7 @@ Bluetooth, many drone control links, and many 915 MHz sensor networks use **Gaus
 
 The transmitter is five blocks. A **Vector Source** repeats the bytes of a text message, with a newline at the end. **Unpack K Bits** splits each byte into 8 bits, most significant first, and **Chunks to Symbols** maps each bit to a number: 0 to $-1$ and 1 to $+1$. **Repeat** holds each symbol for `sps` samples, the **samples per symbol**, so the stream now runs at `samp_rate`. Finally, **Frequency Mod** sets the frequency of its output in proportion to its input, so $+1$ becomes a tone at $+\Delta f$ and $-1$ a tone at $-\Delta f$.
 
-Frequency Mod is the same block an FM transmitter uses. The only difference between FM and FSK is the message: audio in FM, a square wave of bits in FSK. The block also keeps the phase continuous from one bit to the next, which keeps the spectrum compact; this form is called **continuous-phase FSK**.
+Frequency Mod is the same block an FM transmitter uses. The only difference between FM and FSK is the message: audio in FM, a square wave of bits in FSK. The block also keeps the phase continuous from one bit to the next, which keeps the spectrum compact; we call this form **continuous-phase FSK**.
 ::::
 
 ::::{frame} Three Numbers Set the Signal
@@ -87,7 +87,7 @@ Frequency Mod is the same block an FM transmitter uses. The only difference betw
 - **Modulation index** $h = 2\Delta f / R_s = 2$.
 :::
 
-Three numbers describe an FSK signal. The **symbol rate** is how many symbols the transmitter sends per second, in baud. With one bit per symbol it is also the bit rate, and in a flowgraph it is set by the sample rate and the samples per symbol:
+Three numbers describe an FSK signal. The **symbol rate** is how many symbols the transmitter sends per second, in baud. With one bit per symbol it is also the bit rate, and in a flowgraph the sample rate and the samples per symbol set it:
 
 $$R_s = \frac{f_s}{\text{sps}}$$
 
@@ -101,19 +101,19 @@ which is $2\pi \times 1000 / 32000 = 0.196$ rad per sample here. The **modulatio
 ::::{frame} Bandwidth
 :::{present}
 <img src="../../viz/img/L08-tx-3k.png"
-     alt="The transmitter with the deviation slider at 3000 Hz: the I signal oscillates faster and the spectrum shows the two peaks at minus 3 and plus 3 kHz"
+     alt="The transmitter with the deviation slider at 3000 Hz: I and Q oscillate at 3 kHz and the spectrum shows the two peaks at minus 3 and plus 3 kHz"
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
-- Carson's rule: $B \approx 2(\Delta f + R_s)$.
+- Carson's rule, taking the message bandwidth as $R_s$: $B \approx 2(\Delta f + R_s)$.
 - 1 kHz deviation at 1000 baud takes about 4 kHz.
 :::
 
-Dragging the deviation slider to 3 kHz moves the two peaks to $\pm 3$ kHz. The signal's bandwidth grows with the deviation, and it also grows with the symbol rate, because faster switching between the tones spreads each one. **Carson's rule**, the standard bandwidth estimate for FM, accounts for both:
+Dragging the deviation slider to 3 kHz moves the two peaks to $\pm 3$ kHz. The signal's bandwidth grows with the deviation, and it also grows with the symbol rate, because faster switching between the tones spreads each one. **Carson's rule**, the standard bandwidth estimate for FM, accounts for both, taking the message bandwidth as the symbol rate, a conservative choice:
 
 $$B \approx 2(\Delta f + R_s)$$
 
-At 1 kHz and 1000 baud that is 4 kHz, and at 3 kHz it is 8 kHz. The rule sets the receiver's first filter, which should pass this band and reject everything else. Wider deviation makes the tones easier to tell apart, but every extra hertz of bandwidth also lets in more noise, so the choice of deviation balances the two.
+At 1 kHz and 1000 baud that is 4 kHz, and at 3 kHz it is 8 kHz. Other references take the message bandwidth as half the symbol rate and write $2\Delta f + R_s$, which gives 3 kHz here; the larger estimate leaves the receiver filter some room. The rule sets the receiver's first filter, which should pass this band and reject everything else. Wider deviation makes the tones easier to tell apart, but every extra hertz of bandwidth also lets in more noise, so the choice of deviation balances the two.
 ::::
 
 ::::{frame} FSK Explorer
@@ -144,7 +144,7 @@ The left panel is the spectrum of the received signal, with the Carson bandwidth
 - The **Channel Model** adds the noise and the frequency offset.
 :::
 
-The second flowgraph, `L08-fsk-link.grc`, puts the transmitter, a channel, and a receiver in one file. The **Channel Model** block stands in for the air: it adds complex Gaussian noise of a chosen voltage and shifts the signal by a chosen frequency offset, both on sliders. The receiver then works in three steps. A **Low Pass Filter** with a cutoff of $\Delta f + R_s = 2$ kHz keeps the Carson bandwidth and removes the noise outside it. A **Quadrature Demod** turns the frequency of each sample into a number. The last three blocks find the center of each bit and decide whether it is a 0 or a 1.
+The second flowgraph, `L08-fsk-link.grc`, puts the transmitter, a channel, and a receiver in one file. The **Channel Model** block stands in for the air: it adds complex Gaussian noise of a chosen voltage and shifts the signal by a chosen frequency offset, both on sliders. The receiver then works in three steps. A **Low Pass Filter** with a cutoff of $\Delta f + R_s = 2$ kHz keeps the Carson bandwidth and removes the noise outside it. A **Quadrature Demod** turns the frequency of each sample into a number. The last three blocks find each bit's sampling instant and decide whether it is a 0 or a 1.
 ::::
 
 ::::{frame} The Quadrature Demodulator
@@ -167,13 +167,13 @@ which is $32000 / (2\pi \times 1000) = 5.09$ here, makes the tone at $+\Delta f$
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
-- **Moving Average** over one symbol, then **Symbol Sync** samples each bit's center.
+- **Moving Average** over one symbol, then **Symbol Sync** samples each bit at its peak.
 - **Binary Slicer**: above 0 is a 1, below 0 is a 0.
 :::
 
-A **Moving Average** over `sps` samples averages each bit's demodulator output, which reduces the noise on it. **Symbol Sync** then finds where each bit is fullest and outputs one sample per bit; it adjusts its own timing continuously, because the receiver's clock never quite matches the transmitter's. The **Binary Slicer** decides: a sample above 0 is a 1 and below 0 is a 0.
+A **Moving Average** over `sps` samples averages each bit's demodulator output, which reduces the noise on it. **Symbol Sync** then finds the instant where the moving average's output peaks, at the end of each bit, and outputs one sample there; it adjusts its own timing continuously, because the receiver's clock never quite matches the transmitter's. The **Binary Slicer** decides: a sample above 0 is a 1 and below 0 is a 0.
 
-The **eye diagram** on the right overlays many two-bit stretches of the moving average's output. Where the traces cross are the bit edges, and the wide gap between $+1$ and $-1$ in the middle of each bit is the **eye opening**. A wide-open eye means every decision is easy. With the noise voltage at 0.5, all 21 lines in the first 10 s arrive intact.
+The **eye diagram** on the right overlays many two-bit stretches of the moving average's output. Where the traces cross are the bit edges, and the wide gap between $+1$ and $-1$ between the crossings is the **eye opening**. A wide-open eye means every decision is easy. With the noise voltage at 0.5, all 21 lines in the first 10 s arrive intact.
 ::::
 
 ::::{frame} Part 3: Packets
@@ -184,13 +184,13 @@ The **eye diagram** on the right overlays many two-bit stretches of the moving a
 
 The slicer outputs a stream of bits, but nothing in that stream says where one byte ends and the next begins. The transmitter solves this by sending each line of text as a **packet**. A **Protocol Formatter** builds a header for each line: a 64-bit **access code**, a fixed pattern the receiver knows in advance, then the line's length. A **Tagged Stream Mux** puts the header in front of the line.
 
-At the receiver, **Correlate Access Code - Tag Stream** compares the incoming bits with the access code and, when at most 2 bits differ, reads the length and passes that many bits on. **Repack Bits** packs them back into bytes, and a small Python block, the **Text Sink**, shows the latest line and counts how many matched the message since a slider last moved. Lesson 10 needs the same framing to send ASCII over PAM.
+At the receiver, **Correlate Access Code - Tag Stream** compares the incoming bits with the access code and, when at most 2 bits differ, reads the 32-bit header, which holds the line's length in bytes twice, and passes that many bytes on as bits. **Repack Bits** packs them back into bytes, and a small Python block, the **Text Sink**, shows the latest line and counts how many matched the message since a slider last moved. Lesson 10 needs the same framing to send ASCII over PAM.
 ::::
 
 ::::{frame} Noise
 :::{present}
 <img src="../../viz/img/L08-link-noisy.png"
-     alt="The L8 link at noise voltage 1.3: the noise floor is about 8 dB higher, the eye diagram is partly closed with traces wandering between the levels, and the labels show a line with two wrong characters and 7 correct of 29 received in 13 s"
+     alt="The L8 link at noise voltage 1.3: the noise floor is about 8 dB higher, the eye diagram is still mostly open, with a few traces spiking across zero, and the labels show a line with two wrong characters and 7 correct of 29 received in 13 s"
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
@@ -202,7 +202,7 @@ The Channel Model's signal has power 1, and noise of voltage $\sigma$ has power 
 
 $$\text{SNR} = \frac{1}{\sigma^2 \times 4/32} = \frac{8}{\sigma^2}$$
 
-At 0.5 V that is 32, or 15 dB, and every line arrives. At 1.0 V it is 9 dB and an occasional character goes wrong. At 1.3 V it is 6.7 dB, the eye is partly closed, and only 7 of 29 lines arrive without an error. By 2 V the receiver almost never finds the access code. The change from no errors to no packets happens within about 6 dB, which is typical of an FM-type demodulator, and it is why Lesson 2's link margin matters: a link designed right at 9 dB fails on the first fade.
+At 0.5 V that is 32, or 15 dB, and every line arrives. At 1.0 V it is 9 dB and an occasional character goes wrong. At 1.3 V it is 6.7 dB. The eye is still mostly open, but now and then the noise swings the phase far enough to make a spike, an FM click, in the demodulator output, and a spike that crosses zero at a sampling instant is a bit error. Only 7 of 29 lines arrive without an error. By 2 V the receiver almost never finds the access code. The change from no errors to no packets happens within about 6 dB, which is typical of an FM-type demodulator, and it is why Lesson 2's link margin matters: a link designed right at 9 dB fails on the first fade.
 ::::
 
 ::::{frame} Frequency Offset
@@ -229,10 +229,10 @@ Once the offset approaches the deviation, the lower level approaches zero, and t
 :::
 :::{present}
 - Tone spacing gives $2\Delta f$; the shortest dwell gives $1/R_s$.
-- To transmit, follow the course rule: cable, shielded box, or low-power ISM.
+- To transmit, use a cable, a shielded box, or low power in an ISM band, and only when the lesson says to; nothing in L8 transmits.
 :::
 
-On a real SDR an FSK signal is easy to recognize on the waterfall: two tracks side by side, with the signal jumping between them. The figure is a simulation of a 433.92 MHz remote, the kind Lesson 17 decodes. The tracks are 40 kHz apart, so $\Delta f = 20$ kHz, and the shortest stay on one track, in the alternating preamble, is 1 ms, so the symbol rate is 1000 baud. Those two numbers are all we need to set the receiver's filter, gain, and samples per symbol.
+On a real SDR an FSK signal is easy to recognize on the waterfall: two tracks side by side, with the signal jumping between them. The figure is a simulation of a 433.92 MHz remote, the kind Lesson 17 decodes. The tracks are 40 kHz apart, so $\Delta f = 20$ kHz, and the shortest stay on one track, in the alternating preamble, is 1 ms, so the symbol rate is 1000 baud. A live waterfall row often lasts longer than one bit, so in practice we measure the dwell on a spectrogram in URH or on the Quadrature Demod output. Those two numbers are all we need to set the receiver's filter, gain, and samples per symbol.
 
 The link of this lesson runs over the air by replacing the Throttle and Channel Model with a PlutoSDR or HackRF sink on one side and a source on the other, with a resampler to raise the 32 kHz stream to a rate the radio supports. In class we transmit only into a cable, into a shielded enclosure, or at very low power in an ISM band, and only when the lesson says to. Nothing in this lesson or its lab transmits.
 ::::
@@ -240,7 +240,7 @@ The link of this lesson runs over the air by replacing the Throttle and Channel 
 ::::{frame} Key Point
 :::{present}
 :class: callout
-FSK sends each bit as one of two tones. The transmitter is a Frequency Mod block; the receiver filters to $2(\Delta f + R_s)$, demodulates frequency into $\pm 1$, samples each bit's center, and slices at zero.
+FSK sends each bit as one of two tones. The transmitter is a Frequency Mod block; the receiver filters to $2(\Delta f + R_s)$, demodulates frequency into $\pm 1$, samples each bit at its peak, and slices at zero.
 :::
 ::::
 

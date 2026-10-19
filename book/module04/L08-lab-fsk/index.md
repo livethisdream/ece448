@@ -105,7 +105,7 @@ Close the flowgraph and run it again with the sliders at their defaults, a noise
 - Choose 1 or 2 kHz of deviation, and justify it.
 :::
 
-The Writeup is three questions. The first connects your noise table to Lesson 2's link margin: the change from clean text to no text happens within a few dB, so a link designed right at its threshold fails on the first fade. The second turns your offset limit into parts per million, the unit in which crystal oscillators are specified, and asks whether this link would work between two real radios. The third asks you to choose a deviation from your own measurements and to say what the choice gives up.
+The Writeup is three questions. The first connects your noise table to Lesson 2's link margin: the change from clean text to no text happens within a few dB, so a link designed right at its threshold fails on the first fade. The second turns your offset limit into parts per million, the unit in which manufacturers specify crystal oscillators, and asks whether this link would work between two real radios. The third asks you to choose a deviation from your own measurements and to say what the choice gives up.
 ::::
 
 ::::{frame} Lab Packet

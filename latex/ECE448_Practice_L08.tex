@@ -182,9 +182,9 @@ the full 32 kHz.
 
 \newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\question \textbf{An FSK remote on a waterfall.} An RTL-SDR waterfall shows a burst
-with two tracks, at 433.900 and 433.940 MHz. In the alternating preamble, the signal
-stays on each track for 0.417 ms.
+\question \textbf{An FSK remote on a spectrogram.} An RTL-SDR capture, viewed as a
+spectrogram in URH, shows a burst with two tracks, at 433.900 and 433.940 MHz. In the
+alternating preamble, the signal stays on each track for 0.417 ms.
 \begin{parts}
 
 	\begin{minipage}[t]{0.58\linewidth}
@@ -223,7 +223,7 @@ stays on each track for 0.417 ms.
 	L8 link if that link ran at 433.92 MHz.
 		\begin{solution}[1.1in]
 		The remote tolerates about 10 kHz, so 4.3 kHz is well inside its limit; the
-		large deviation is what makes a cheap crystal acceptable. The L8 link tolerates
+		large deviation is what makes a crystal with a 10 ppm tolerance acceptable. The L8 link tolerates
 		about 600 Hz, so a 4.3 kHz offset pushes both of its tones far off the
 		receiver's filter and the link fails.
 		\end{solution}

@@ -119,6 +119,22 @@ blocks:
     coordinate: [735, 196]
     rotation: 0
     state: enabled
+- name: blocks_complex_to_imag_0
+  id: blocks_complex_to_imag
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [900, 380]
+    rotation: 0
+    state: enabled
 - name: blocks_complex_to_real_0
   id: blocks_complex_to_real
   parameters:
@@ -132,7 +148,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [900, 330]
+    coordinate: [900, 300]
     rotation: 0
     state: enabled
 - name: blocks_repeat_0
@@ -359,7 +375,7 @@ blocks:
     label1: '"bits (NRZ)"'
     label10: Signal 10
     label2: '"I"'
-    label3: Signal 3
+    label3: '"Q"'
     label4: Signal 4
     label5: Signal 5
     label6: Signal 6
@@ -377,8 +393,8 @@ blocks:
     marker7: '-1'
     marker8: '-1'
     marker9: '-1'
-    name: '"Bits and transmitted I"'
-    nconnections: '2'
+    name: '"Bits, I, and Q"'
+    nconnections: '3'
     size: '256'
     srate: samp_rate
     stemplot: 'False'
@@ -424,9 +440,11 @@ blocks:
 
 connections:
 - [analog_frequency_modulator_fc_0, '0', blocks_throttle2_0, '0']
+- [blocks_complex_to_imag_0, '0', qtgui_time_sink_x_0, '2']
 - [blocks_complex_to_real_0, '0', qtgui_time_sink_x_0, '1']
 - [blocks_repeat_0, '0', analog_frequency_modulator_fc_0, '0']
 - [blocks_repeat_0, '0', qtgui_time_sink_x_0, '0']
+- [blocks_throttle2_0, '0', blocks_complex_to_imag_0, '0']
 - [blocks_throttle2_0, '0', blocks_complex_to_real_0, '0']
 - [blocks_throttle2_0, '0', qtgui_freq_sink_x_0, '0']
 - [blocks_unpack_k_bits_bb_0, '0', digital_chunks_to_symbols_xx_0, '0']
