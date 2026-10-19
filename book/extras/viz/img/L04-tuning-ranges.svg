@@ -1,0 +1,226 @@
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="573.391146pt" height="244.645388pt" viewBox="0 0 573.391146 244.645388" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:date>2026-10-19T19:25:12.692953</dc:date>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.11.2, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 244.645388 
+L 573.391146 244.645388 
+L 573.391146 0 
+L 0 0 
+L 0 244.645388 
+z
+" style="fill: none"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 53.627883 207.32367 
+L 522.347883 207.32367 
+L 522.347883 24.37167 
+L 53.627883 24.37167 
+L 53.627883 207.32367 
+z
+" style="fill: none"/>
+   </g>
+   <g id="line2d_1">
+    <path d="M 309.610436 207.32367 
+L 309.610436 24.37167 
+" clip-path="url(#p6ad3b03e33)" style="fill: none; stroke-dasharray: 3,3; stroke-dashoffset: 0; stroke: #b01e24"/>
+   </g>
+   <g id="line2d_2">
+    <path d="M 328.291124 207.32367 
+L 328.291124 24.37167 
+" clip-path="url(#p6ad3b03e33)" style="fill: none; stroke-dasharray: 3,3; stroke-dashoffset: 0; stroke: #b01e24"/>
+   </g>
+   <g id="line2d_3">
+    <path d="M 364.909408 207.32367 
+L 364.909408 24.37167 
+" clip-path="url(#p6ad3b03e33)" style="fill: none; stroke-dasharray: 3,3; stroke-dashoffset: 0; stroke: #b01e24"/>
+   </g>
+   <g id="line2d_4">
+    <path d="M 399.141969 207.32367 
+L 399.141969 24.37167 
+" clip-path="url(#p6ad3b03e33)" style="fill: none; stroke-dasharray: 3,3; stroke-dashoffset: 0; stroke: #b01e24"/>
+   </g>
+   <g id="line2d_5">
+    <path d="M 412.831838 207.32367 
+L 412.831838 24.37167 
+" clip-path="url(#p6ad3b03e33)" style="fill: none; stroke-dasharray: 3,3; stroke-dashoffset: 0; stroke: #b01e24"/>
+   </g>
+   <g id="line2d_6">
+    <path d="M 429.091062 207.32367 
+L 429.091062 24.37167 
+" clip-path="url(#p6ad3b03e33)" style="fill: none; stroke-dasharray: 3,3; stroke-dashoffset: 0; stroke: #b01e24"/>
+   </g>
+   <g id="patch_3">
+    <path d="M 113.444199 93.79084 
+L 417.076013 93.79084 
+L 417.076013 74.640724 
+L 113.444199 74.640724 
+z
+" clip-path="url(#p6ad3b03e33)" style="fill: #0067b9; opacity: 0.9"/>
+   </g>
+   <g id="patch_4">
+    <path d="M 139.205685 127.987475 
+L 462.531566 127.987475 
+L 462.531566 108.837359 
+L 139.205685 108.837359 
+z
+" clip-path="url(#p6ad3b03e33)" style="fill: #0067b9; opacity: 0.9"/>
+   </g>
+   <g id="patch_5">
+    <path d="M 354.167143 162.184111 
+L 445.555698 162.184111 
+L 445.555698 143.033995 
+L 354.167143 143.033995 
+z
+" clip-path="url(#p6ad3b03e33)" style="fill: #0067b9; opacity: 0.9"/>
+   </g>
+   <g id="patch_6">
+    <path d="M 481.516894 196.380746 
+L 483.330228 196.380746 
+L 483.330228 177.23063 
+L 481.516894 177.23063 
+z
+" clip-path="url(#p6ad3b03e33)" style="fill: #8a5a00; opacity: 0.9"/>
+   </g>
+   <g id="matplotlib.axis_1">
+    <g id="xtick_1">
+     <g id="line2d_7">
+      <defs>
+       <path id="m0e0ff9523d" d="M 0 0 
+L 0 3.5 
+" style="stroke: #5b6573; stroke-width: 0.8"/>
+      </defs>
+      <g>
+       <use xlink:href="#m0e0ff9523d" x="53.627883" y="207.32367" style="fill: #5b6573; stroke: #5b6573; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_1">
+      <text style="font-size: 11px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #5b6573" x="53.627883" y="222.681951" transform="rotate(-0 53.627883 222.681951)">100 kHz</text>
+     </g>
+    </g>
+    <g id="xtick_2">
+     <g id="line2d_8">
+      <g>
+       <use xlink:href="#m0e0ff9523d" x="139.205685" y="207.32367" style="fill: #5b6573; stroke: #5b6573; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_2">
+      <text style="font-size: 11px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #5b6573" x="139.205685" y="222.681092" transform="rotate(-0 139.205685 222.681092)">1 MHz</text>
+     </g>
+    </g>
+    <g id="xtick_3">
+     <g id="line2d_9">
+      <g>
+       <use xlink:href="#m0e0ff9523d" x="224.783487" y="207.32367" style="fill: #5b6573; stroke: #5b6573; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_3">
+      <text style="font-size: 11px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #5b6573" x="224.783487" y="222.681092" transform="rotate(-0 224.783487 222.681092)">10 MHz</text>
+     </g>
+    </g>
+    <g id="xtick_4">
+     <g id="line2d_10">
+      <g>
+       <use xlink:href="#m0e0ff9523d" x="310.361289" y="207.32367" style="fill: #5b6573; stroke: #5b6573; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_4">
+      <text style="font-size: 11px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #5b6573" x="310.361289" y="222.681092" transform="rotate(-0 310.361289 222.681092)">100 MHz</text>
+     </g>
+    </g>
+    <g id="xtick_5">
+     <g id="line2d_11">
+      <g>
+       <use xlink:href="#m0e0ff9523d" x="395.939092" y="207.32367" style="fill: #5b6573; stroke: #5b6573; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_5">
+      <text style="font-size: 11px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #5b6573" x="395.939092" y="222.681092" transform="rotate(-0 395.939092 222.681092)">1 GHz</text>
+     </g>
+    </g>
+    <g id="xtick_6">
+     <g id="line2d_12">
+      <g>
+       <use xlink:href="#m0e0ff9523d" x="481.516894" y="207.32367" style="fill: #5b6573; stroke: #5b6573; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_6">
+      <text style="font-size: 11px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #5b6573" x="481.516894" y="222.681092" transform="rotate(-0 481.516894 222.681092)">10 GHz</text>
+     </g>
+    </g>
+    <g id="text_7">
+     <text style="font-size: 11px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #15202b" x="287.987883" y="237.68281" transform="rotate(-0 287.987883 237.68281)">tuning range (log scale)</text>
+    </g>
+   </g>
+   <g id="matplotlib.axis_2"/>
+   <g id="patch_7">
+    <path d="M 53.627883 207.32367 
+L 522.347883 207.32367 
+" style="fill: none; stroke: #5b6573; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="text_8">
+    <text style="font-weight: 700; font-size: 11px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: end; fill: #15202b" x="108.309531" y="87.073633" transform="rotate(-0 108.309531 87.073633)">RTL-SDR Blog V4</text>
+   </g>
+   <g id="text_9">
+    <text style="font-size: 10px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: start; fill: #5b6573" x="422.210681" y="86.813829" transform="rotate(-0 422.210681 86.813829)">receive</text>
+   </g>
+   <g id="text_10">
+    <text style="font-weight: 700; font-size: 11px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: end; fill: #15202b" x="134.071017" y="121.270269" transform="rotate(-0 134.071017 121.270269)">HackRF One</text>
+   </g>
+   <g id="text_11">
+    <text style="font-size: 10px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: start; fill: #5b6573" x="467.666234" y="121.010464" transform="rotate(-0 467.666234 121.010464)">half duplex</text>
+   </g>
+   <g id="text_12">
+    <text style="font-weight: 700; font-size: 11px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: end; fill: #15202b" x="349.032474" y="155.466904" transform="rotate(-0 349.032474 155.466904)">PlutoSDR</text>
+   </g>
+   <g id="text_13">
+    <text style="font-size: 10px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: start; fill: #5b6573" x="450.690366" y="155.2071" transform="rotate(-0 450.690366 155.2071)">full duplex</text>
+   </g>
+   <g id="text_14">
+    <text style="font-weight: 700; font-size: 11px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: end; fill: #15202b" x="476.382226" y="189.66311" transform="rotate(-0 476.382226 189.66311)">ADALM-PHASER</text>
+   </g>
+   <g id="text_15">
+    <text style="font-size: 10px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: start; fill: #5b6573" x="488.464896" y="189.403735" transform="rotate(-0 488.464896 189.403735)">8-element array</text>
+   </g>
+   <g id="text_16">
+    <text style="font-size: 9.5px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; fill: #b01e24" transform="translate(304.332987 61.987969) rotate(-90)">FM</text>
+   </g>
+   <g id="text_17">
+    <text style="font-size: 9.5px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; fill: #b01e24" transform="translate(323.013674 61.987969) rotate(-90)">AIS</text>
+   </g>
+   <g id="text_18">
+    <text style="font-size: 9.5px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; fill: #b01e24" transform="translate(359.631958 61.987969) rotate(-90)">433.92</text>
+   </g>
+   <g id="text_19">
+    <text style="font-size: 9.5px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; fill: #b01e24" transform="translate(393.86452 61.987969) rotate(-90)">ADS-B</text>
+   </g>
+   <g id="text_20">
+    <text style="font-size: 9.5px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; fill: #b01e24" transform="translate(407.554388 61.987969) rotate(-90)">GPS L1</text>
+   </g>
+   <g id="text_21">
+    <text style="font-size: 9.5px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; fill: #b01e24" transform="translate(423.813612 61.987969) rotate(-90)">2.4 GHz ISM</text>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="p6ad3b03e33">
+   <rect x="53.627883" y="24.37167" width="468.72" height="182.952"/>
+  </clipPath>
+ </defs>
+</svg>
