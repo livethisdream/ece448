@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AM explorer — DSB-AM, DSB-SC, and SSB in time and frequency</title>
+<style>
+  :root { --navy:#004a85; --mid:#0067b9; --edge:#cddce9; --edge2:#b9d2e5; --bg:#f5f9fc;
+          --ink:#15202b; --ink3:#5b6573;
+          --amber:#8a5a00; --red:#b01e24; --grn:#3f7d34; }
+  html,body { margin:0; padding:0; font-family:'Inter',system-ui,-apple-system,sans-serif; color:var(--ink); background:#fff; }
+  .app { display:flex; flex-direction:column; gap:8px; padding:12px; }
+  .plots { display:grid; grid-template-columns:minmax(0,1.15fr) minmax(0,1fr); gap:10px; }
+  @media (max-width:620px) { .plots { grid-template-columns:1fr; } }
+  canvas { display:block; box-sizing:border-box; width:100%; height:auto; background:#fff; border:1px solid var(--edge); border-radius:6px; }
+  .controls { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:8px 16px; align-items:center;
+              padding:8px 12px; background:var(--bg); border:1px solid var(--edge); border-radius:6px; }
+  @media (max-width:620px) { .controls { grid-template-columns:1fr; } }
+  .ctl { display:grid; grid-template-columns:auto 1fr; column-gap:8px; row-gap:2px; align-items:center; min-width:0; }
+  .ctl label { font-size:10.5px; text-transform:uppercase; letter-spacing:0.05em; color:var(--ink3); font-weight:700; white-space:nowrap; }
+  .ctl .val { color:var(--navy); font-size:12px; font-weight:600; font-variant-numeric:tabular-nums; text-align:right; white-space:nowrap; }
+  .ctl input[type=range]{ grid-column:1 / span 2; width:100%; margin:0; accent-color:var(--mid); }
+  .ctl.off { opacity:0.4; }
+  .seg { display:flex; gap:4px; flex-wrap:wrap; }
+  .seg.right { justify-content:flex-end; }
+  @media (max-width:620px) { .seg.right { justify-content:flex-start; } }
+  .seg button { font:inherit; font-size:11.5px; font-weight:600; color:var(--navy); background:#fff; border:1px solid var(--edge2); border-radius:14px; padding:3px 10px; cursor:pointer; }
+  .seg button.on { background:var(--navy); color:#fff; border-color:var(--navy); }
+  .readouts { display:grid; gap:6px; grid-template-columns:repeat(3,minmax(0,1fr)); }
+  .ro { display:flex; flex-direction:column; align-items:center; gap:2px; padding:5px 4px 6px; min-width:0;
+        border:1px solid var(--edge2); border-radius:6px; background:#eef4fa; }
+  .ro .k { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:var(--ink3); white-space:nowrap; }
+  .ro .v { font-size:14px; font-weight:700; white-space:nowrap; font-variant-numeric:tabular-nums; color:var(--navy); }
+  .ro.bad .v { color:var(--red); }
+  .ro.good .v { color:var(--grn); }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="plots">
+    <canvas id="time" aria-label="The modulated signal over 2 ms, with its envelope and the message"></canvas>
+    <canvas id="spec" aria-label="The spectrum of the modulated signal around the 10 kHz carrier"></canvas>
+  </div>
+  <div class="controls">
+    <div class="seg" id="mode"><button data-m="am" class="on">DSB-AM</button><button data-m="sc">DSB-SC</button><button data-m="usb">USB</button><button data-m="lsb">LSB</button></div>
+    <div class="seg right" id="msg"><button data-x="two" class="on">two tones</button><button data-x="one">one tone</button></div>
+    <div class="ctl" id="m-ctl"><label for="m">Modulation index m</label><span class="val" id="m-v"></span>
+      <input type="range" id="m" min="0" max="1.5" step="0.05" value="0.5"></div>
+  </div>
+  <div class="readouts">
+    <div class="ro"><span class="k">bandwidth</span><span class="v" id="o-bw">—</span></div>
+    <div class="ro"><span class="k">power in sidebands</span><span class="v" id="o-eff">—</span></div>
+    <div class="ro" id="ro-env"><span class="k">envelope detector</span><span class="v" id="o-env">—</span></div>
+  </div>
+</div>
+
+<script>
+'use strict';
+// The L6 flowgraphs' numbers: a 10 kHz carrier, and a message of one tone
+// (1 kHz) or two (1 kHz at 0.6 and 2.5 kHz at 0.4, peak 1). Frequencies in kHz,
+// time in ms.
+const FC = 10, SANS = 'Inter, system-ui, -apple-system, sans-serif';
+const C = { navy:'#004a85', mid:'#0067b9', red:'#b01e24', amber:'#8a5a00', rule:'#cddce9', ink:'#15202b', ink3:'#5b6573', grn:'#3f7d34' };
+const MSG = { two: [[1, 0.6], [2.5, 0.4]], one: [[1, 1]] };
+const mEl = document.getElementById('m');
+let mode = 'am', msg = 'two';
+function seg(id, key, set) {
+  document.querySelectorAll('#' + id + ' button').forEach(b => b.onclick = () => {
+    set(b.dataset[key]); document.querySelectorAll('#' + id + ' button').forEach(x => x.classList.toggle('on', x === b)); update(); });
+}
+seg('mode', 'm', v => mode = v);
+seg('msg', 'x', v => msg = v);
+mEl.oninput = update;
+
+// The message, its Hilbert transform (each cosine becomes a sine), and the
+// modulated signal with its envelope.
+const x  = t => MSG[msg].reduce((s, [f, a]) => s + a*Math.cos(2*Math.PI*f*t), 0);
+const xh = t => MSG[msg].reduce((s, [f, a]) => s + a*Math.sin(2*Math.PI*f*t), 0);
+function sig(t) {
+  const m = +mEl.value, c = Math.cos(2*Math.PI*FC*t), s = Math.sin(2*Math.PI*FC*t);
+  if (mode === 'am') return { y: (1 + m*x(t))*c, env: Math.abs(1 + m*x(t)), ref: 1 + m*x(t) };
+  if (mode === 'sc') return { y: x(t)*c, env: Math.abs(x(t)), ref: x(t) };
+  const sgn = mode === 'usb' ? 1 : -1;
+  return { y: x(t)*c - sgn*xh(t)*s, env: Math.hypot(x(t), xh(t)), ref: x(t) };
+}
+// One-sided spectral lines: [frequency, amplitude].
+function lines() {
+  const m = +mEl.value, L = [];
+  if (mode === 'am') L.push([FC, 1, 'carrier']);
+  for (const [f, a] of MSG[msg]) {
+    const k = mode === 'am' ? m*a/2 : mode === 'sc' ? a/2 : a;
+    if (mode !== 'lsb') L.push([FC + f, k]);
+    if (mode !== 'usb') L.push([FC - f, k]);
+  }
+  return L;
+}
+
+function setup(cv, aspect, narrowH){
+  const dpr = window.devicePixelRatio || 1, w = Math.max(200, cv.clientWidth || 300);
+  const narrow = window.matchMedia && window.matchMedia('(max-width:620px)').matches;
+  const h = narrow ? narrowH : Math.round(Math.min(w * aspect, 250));
+  cv.width = Math.round(w*dpr); cv.height = Math.round(h*dpr); cv.style.height = h + 'px';
+  const bh = cv.offsetHeight - cv.clientHeight; if (bh) cv.style.height = (h + bh) + 'px';
+  const ctx = cv.getContext('2d'); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); return { ctx, w, h };
+}
+function txt(ctx, s, x, y, px, col, align, bold){ ctx.fillStyle = col; ctx.font = (bold?'700 ':'') + px + 'px ' + SANS;
+  ctx.textAlign = align || 'left'; ctx.textBaseline = 'middle'; ctx.fillText(s, x, y); }
+
+function drawTime() {
+  const cv = document.getElementById('time'), { ctx, w, h } = setup(cv, 0.6, 170);
+  ctx.clearRect(0, 0, w, h);
+  const T = 2, mL = 10, mR = 10, top = 26, bot = h - 22, N = 1400;
+  const ymax = mode === 'am' ? 1 + Math.max(1, +mEl.value) : 1.25;
+  const X = t => mL + t / T * (w - mL - mR), Y = v => (top + bot)/2 - v / ymax * (bot - top)/2;
+  ctx.strokeStyle = C.rule; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(mL, Y(0)); ctx.lineTo(w - mR, Y(0)); ctx.stroke();
+  function trace(fn, col, lw, dash) {
+    ctx.strokeStyle = col; ctx.lineWidth = lw; ctx.setLineDash(dash || []); ctx.beginPath();
+    for (let i = 0; i <= N; i++) { const t = T*i/N, v = fn(t); i ? ctx.lineTo(X(t), Y(v)) : ctx.moveTo(X(t), Y(v)); }
+    ctx.stroke(); ctx.setLineDash([]);
+  }
+  trace(t => sig(t).y, C.mid, 0.9);
+  trace(t => sig(t).env, C.red, 2);
+  trace(t => sig(t).ref, C.amber, 1.6, [5, 4]);
+  txt(ctx, 'signal', mL + 2, 12, 11, C.mid, 'left', true);
+  txt(ctx, 'envelope', mL + 52, 12, 11, C.red, 'left', true);
+  txt(ctx, mode === 'am' ? '1 + m·x(t)' : 'x(t)', mL + 120, 12, 11, C.amber, 'left', true);
+  txt(ctx, '0', X(0), h - 10, 11, C.ink3, 'left');
+  txt(ctx, '2 ms', X(T), h - 10, 11, C.ink3, 'right');
+}
+
+function drawSpec() {
+  const cv = document.getElementById('spec'), { ctx, w, h } = setup(cv, 0.72, 170);
+  ctx.clearRect(0, 0, w, h);
+  const mL = 12, mR = 12, y0 = h - 34, top = 30, f0 = 6, f1 = 14;
+  const X = f => mL + (f - f0) / (f1 - f0) * (w - mL - mR), A = a => y0 - Math.min(a, 1.05) / 1.05 * (y0 - top);
+  ctx.strokeStyle = C.ink3; ctx.lineWidth = 1.2;
+  ctx.beginPath(); ctx.moveTo(mL, y0); ctx.lineTo(w - mR, y0); ctx.stroke();
+  for (let f = f0; f <= f1; f += 2) {
+    ctx.beginPath(); ctx.moveTo(X(f), y0); ctx.lineTo(X(f), y0 + 5); ctx.stroke();
+    txt(ctx, String(f), X(f), y0 + 15, 11, C.ink3, 'center');
+  }
+  txt(ctx, 'kHz', w - mR, y0 + 27, 10.5, C.ink3, 'right');
+  // the band the signal occupies
+  const L = lines(), fs = L.map(l => l[0]), lo = Math.min(...fs), hi = Math.max(...fs);
+  ctx.fillStyle = '#eef4fa'; ctx.fillRect(X(lo) - 3, top - 10, X(hi) - X(lo) + 6, y0 - top + 10);
+  ctx.strokeStyle = C.rule; ctx.setLineDash([3, 3]);
+  ctx.beginPath(); ctx.moveTo(X(FC), y0); ctx.lineTo(X(FC), top - 10); ctx.stroke(); ctx.setLineDash([]);
+  for (const [f, a, lab] of L) {
+    ctx.strokeStyle = lab ? C.amber : C.navy; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.moveTo(X(f), y0); ctx.lineTo(X(f), A(a)); ctx.stroke();
+    ctx.fillStyle = ctx.strokeStyle; ctx.beginPath(); ctx.arc(X(f), A(a), 3, 0, 2*Math.PI); ctx.fill();
+  }
+  if (mode !== 'am') txt(ctx, 'no carrier', X(FC), top - 18, 11, C.ink3, 'center');
+  else txt(ctx, 'carrier', X(FC), A(1) - 10, 11, C.amber, 'center', true);
+  if (mode === 'usb' || mode === 'lsb') txt(ctx, mode === 'usb' ? 'upper sideband' : 'lower sideband', (X(lo) + X(hi))/2, y0 - 10, 10.5, C.ink3, 'center');
+}
+
+function update() {
+  const m = +mEl.value, W = Math.max(...MSG[msg].map(t => t[0]));
+  const px = MSG[msg].reduce((s, [, a]) => s + a*a/2, 0);          // message power
+  document.getElementById('m-v').textContent = m.toFixed(2);
+  document.getElementById('m-ctl').classList.toggle('off', mode !== 'am');
+  mEl.disabled = mode !== 'am';
+  const ssb = mode === 'usb' || mode === 'lsb';
+  document.getElementById('o-bw').textContent = (ssb ? W : 2*W).toFixed(1) + ' kHz';
+  const eff = mode === 'am' ? m*m*px / (1 + m*m*px) : 1;
+  document.getElementById('o-eff').textContent = Math.round(100*eff) + '%';
+  // The envelope follows the message only for DSB-AM with m <= 1 (one-tone SSB
+  // has a constant envelope, which carries no message either).
+  let ok, say;
+  if (mode === 'am') { ok = m <= 1 + 1e-9 && m > 0; say = m === 0 ? 'no message' : ok ? 'follows message' : 'overmodulated'; }
+  else if (mode === 'sc') { ok = false; say = 'sees |x(t)|'; }
+  else { ok = false; say = msg === 'one' ? 'constant' : 'not the message'; }
+  document.getElementById('o-env').textContent = say;
+  document.getElementById('ro-env').className = 'ro ' + (ok ? 'good' : 'bad');
+  drawTime(); drawSpec();
+}
+
+window.addEventListener('resize', update);
+const q = new URLSearchParams(location.search);
+if (q.get('m')) mEl.value = q.get('m');
+update();
+</script>
+</body>
+</html>

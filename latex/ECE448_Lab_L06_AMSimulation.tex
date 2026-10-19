@@ -1,0 +1,402 @@
+\documentclass{exam}
+
+\newif\ifA
+\newif\ifkey
+\newif\ifprintselected   % required by exam_config's \ansbox
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% SET THESE IF VARIABLES
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Lab name -- labs are named by the lesson they belong to, never by a
+% sequential lab number (Neil, 2026-10-12): this is the L6 Lab.
+\def\labLesson{6}
+
+% is this the key or not?
+\ifdefined\iskey
+	\ifnum\iskey=1
+		\keytrue
+	\else
+		\keyfalse
+	\fi
+\else
+	%% Pick one manually
+	\keyfalse % if this is NOT the key
+%	\keytrue     % if this IS the key
+\fi
+
+% set up the header and footer - change for every term
+\ifdefined\thisTermIn
+	\def\thisterm{\thisTermIn}
+\else
+	\def\thisterm{Spring 2027}
+\fi
+%
+\def\thisclass{ECE 448}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% END SET THESE IF VARIABLES
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% packages and shortcuts
+\input{myPackages_gr}
+\usepackage[hidelinks, linkcolor=red]{hyperref}
+\input{myShortcuts}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt}
+
+%% exam class customization
+\input{exam_config}
+\input{ece448_fonts}   % Barlow body text (needs lualatex)
+\printselectedfalse      % full worked solutions in the key, not answers-only
+\CorrectChoiceEmphasis{\color{red}}
+\SolutionEmphasis{\color{red}}
+\renewcommand\questionlabel{\textbf{\thequestion.}}
+\renewcommand{\thepartno}{\alph{partno}}
+\renewcommand{\partlabel}{(\thepartno)}
+
+% Fillable table cell: blank in the student copy, the expected value in red on
+% the KEY. Fixed-width centered columns keep the blank cells writable.
+\newcolumntype{K}[1]{>{\centering\arraybackslash}p{#1}}
+\newcommand{\kv}[1]{\ifkey{\color{red}#1}\fi\rule[-0.10in]{0pt}{0.34in}}
+
+% print the answers if this is the key
+\ifkey
+	\printanswers % if this IS the key
+\else
+	\noprintanswers  %if this is NOT the key
+\fi
+
+% print the header and footer
+% need to print key on top if this is the key
+\ifkey
+	\firstpageheader{}{\color{red}{ KEY}}{}
+	\runningheader{\thisclass\hspace{1pt} -- \thisterm }{L\labLesson\ Lab\hspace{1pt}\color{red}{ KEY}}{\thepage\hspace{1pt} of\hspace{1pt} \numpages}
+	\firstpagefooter{}{}{}
+	\runningfooter{}{}{}
+\else
+	\firstpageheader{}{}{}
+	\runningheader{\thisclass \hspace{1pt} -- \thisterm }{L\labLesson\ Lab\hspace{1pt}}{\thepage\hspace{1pt} of\hspace{1pt} \numpages}
+	\firstpagefooter{}{}{}
+	\runningfooter{}{}{}
+\fi
+
+\runningheadrule
+
+
+\begin{document}
+\pagestyle{headandfoot}   % exam class
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% title block
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{center}
+USAF ACADEMY \\
+DEPARTMENT OF ELECTRICAL AND COMPUTER ENGINEERING \\
+LESSON \labLesson\ LAB - AM Simulation \\
+\textbf{Lab Packet} \\
+\thisterm \\[4mm]
+\end{center}
+
+\vspace{-4pt}
+\textbf{Name:} \rule[-2pt]{2.6in}{0.4pt} \hfill
+\textbf{Section:} \rule[-2pt]{0.9in}{0.4pt} \hfill
+\textbf{Date:} \rule[-2pt]{1.1in}{0.4pt}
+
+\vspace{4pt}
+
+\fullwidth{\textbf{Learning Objective 3.1: } I can describe DSB-AM, DSB-SC, and SSB
+and identify each on a spectrum.
+\\[2pt]\textbf{Learning Objective 3.2: } I can implement an AM modulator and
+demodulator in GNU Radio and verify demodulated audio against the source.}
+
+\vspace{2pt}
+
+This packet is the L\labLesson\ Lab, in three parts, and you turn it in once, complete,
+before Lesson 7. Do \textbf{Part 1} on your own before the lab period: predict every
+spectral line and receiver effect you will measure. \textbf{Part 2} is your own
+measurements, on your own laptop, recorded in class. Do \textbf{Part 3} on your own
+after the lab: compare the measurements with the predictions and answer the
+analysis questions.
+
+\textbf{Grading.} One submission, graded against Objectives 3.1 and 3.2 on the
+course's 1 / 0 scale, with revision allowed under course policy. Paste screenshots
+where a question asks for one.
+
+\textbf{No hardware.} Every flowgraph in this lab is a simulation. Nothing transmits,
+and you need only your laptop and its speakers or headphones. Start with the volume
+low.
+
+The flowgraphs are on the L6 lesson page: \texttt{L06-dsb-am.grc},
+\texttt{L06-dsb-sc.grc}, and \texttt{L06-ssb.grc}. All three use the same message,
+$x(t) = 0.6\cos(2\pi\cdot 1000\,t) + 0.4\cos(2\pi\cdot 2500\,t)$, on a carrier at
+$f_c = 10$ kHz, sampled at 48 kHz.
+
+\begin{questions}
+
+\fullwidth{\large\textbf{Part 1: Pre-Lab} \normalsize(individual, before the lab period)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{Predictions.} You will check each of these at the bench.
+
+\begin{parts}
+
+	\part For DSB-AM with $m = 0.5$ and a carrier of amplitude 1, predict each line's
+	frequency and its level relative to the carrier.
+
+	\begin{center}
+	\renewcommand{\arraystretch}{1.25}
+	\begin{tabular}{| l | K{0.68in} | K{0.68in} | K{0.68in} | K{0.68in} | K{0.68in} |}
+	\hline
+	Line (kHz) & \kv{$7.5$} & \kv{$9$} & \kv{$10$} & \kv{$11$} & \kv{$12.5$} \\\hline
+	Level (dB) & \kv{$-20.0$} & \kv{$-16.5$} & \kv{$0$} & \kv{$-16.5$} & \kv{$-20.0$} \\\hline
+	\end{tabular}
+	\end{center}
+
+		\begin{solution}[0.9in]
+		Each tone of amplitude $a$ makes sidebands of amplitude $ma/2$ at $f_c \pm f$:
+		\eq{ 20\mylog{\dfrac{0.5 \times 0.6}{2}} &= -16.5\db \text{ at 9 and 11 kHz} \\
+			20\mylog{\dfrac{0.5 \times 0.4}{2}} &= -20.0\db \text{ at 7.5 and 12.5 kHz} }
+		\end{solution}
+
+	\part List the lines you expect for DSB-SC, USB, and LSB.
+		\begin{solution}[0.7in]
+		DSB-SC: 7.5, 9, 11, and 12.5 kHz, with no line at 10 kHz. USB: 11 and 12.5 kHz.
+		LSB: 9 and 7.5 kHz.
+		\end{solution}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Find the smallest $m$ at which this message overmodulates.
+		\begin{solution}[0.8in]
+		The message peaks at $0.6 + 0.4 = 1$ when both cosines reach $-1$ together, so
+		$1 + m\,x(t)$ first reaches zero at $m = 1$.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		$m = $ \ansbox[1.0in]{$1$}
+	\end{minipage}
+
+	\part Predict the DSB-SC coherent receiver's output amplitude, relative to its
+	value with a matched LO, at each LO phase.
+
+	\begin{center}
+	\renewcommand{\arraystretch}{1.25}
+	\begin{tabular}{| l | K{0.68in} | K{0.68in} | K{0.68in} | K{0.68in} |}
+	\hline
+	LO phase & $0^\circ$ & $45^\circ$ & $60^\circ$ & $90^\circ$ \\\hline
+	Predicted & \kv{$1$} & \kv{$0.71$} & \kv{$0.5$} & \kv{$0$} \\\hline
+	\end{tabular}
+	\end{center}
+
+		\begin{solution}[0.4in]
+		The output is $x(t)\cos\phi$.
+		\end{solution}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part The USB receiver's LO sits 200 Hz above the carrier. Predict the two
+		output tones.
+		\begin{solution}[0.7in]
+		Each tone moves down by 200 Hz: $1000 - 200 = 800$ Hz and
+		$2500 - 200 = 2300$ Hz.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.3in]{800 and 2300 Hz}
+	\end{minipage}
+
+\end{parts}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\fullwidth{\large\textbf{Part 2: Measurements} \normalsize(your own laptop, in class)}
+
+\question \textbf{Build the DSB-AM flowgraph.} Start GRC with an empty canvas. Do not
+open \texttt{L06-dsb-am.grc}: build the transmitter and the envelope detector
+yourself, with a \texttt{samp\_rate} of 48000, an \texttt{fc} of 10000, a QT GUI Range
+named \texttt{m} from 0 to 1.5, a frequency sink, a time sink comparing the detector
+output with the delayed envelope, and an Audio Sink.
+
+\begin{parts}
+
+	\part Paste a screenshot of your flowgraph on the GRC canvas. Every connection
+	must be black, not red.
+		\begin{solution}[1.6in]
+		Matches the L6 lesson figure: two Signal Sources, Add, Multiply Const $m$, Add
+		Const 1, Multiply with the carrier, then Abs, the low-pass filter, Multiply Const
+		$\pi/2$, a DC Blocker, and the Audio Sink. Every port is orange (float).
+		\end{solution}
+
+	\part Run it at $m = 0.5$. Read each line's level off the frequency sink and
+	subtract the carrier's level.
+
+	\begin{center}
+	\renewcommand{\arraystretch}{1.25}
+	\begin{tabular}{| l | K{0.68in} | K{0.68in} | K{0.68in} | K{0.68in} | K{0.68in} |}
+	\hline
+	Line (kHz) & $7.5$ & $9$ & $10$ & $11$ & $12.5$ \\\hline
+	Measured (dB) & \kv{$-20$} & \kv{$-16.5$} & \kv{$0$} & \kv{$-16.5$} & \kv{$-20$} \\\hline
+	\end{tabular}
+	\end{center}
+
+		\begin{solution}[0.4in]
+		Within about 1 dB of the predictions in Question 1(a).
+		\end{solution}
+
+	\part Paste a screenshot of the time sink that compares the detector output with
+	the delayed envelope at $m = 0.5$, and state whether they match.
+		\begin{solution}[1.4in]
+		The traces lie on top of each other once the reference is delayed by half the
+		low-pass filter's length (57 samples with a 3 kHz cutoff and a 1 kHz
+		transition).
+		\end{solution}
+
+\end{parts}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\question \textbf{Overmodulation.} Keep your DSB-AM flowgraph running with the audio on.
+
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Raise $m$ in steps of 0.05 and record the first value at which the detector
+		output visibly departs from the envelope.
+		\begin{solution}[0.7in]
+		Just above 1, matching Question 1(c).
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		$m = $ \ansbox[1.0in]{$\approx 1.05$}
+	\end{minipage}
+
+	\part Paste a screenshot at $m = 1.4$ and describe how the audio changes between
+	$m = 0.5$ and $m = 1.4$.
+		\begin{solution}[1.6in]
+		The detector output folds the envelope's negative dips back up. The audio goes
+		from two clean tones to a harsh, buzzy sound with new frequencies in it.
+		\end{solution}
+
+\end{parts}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{DSB-SC.} Open and run \texttt{L06-dsb-sc.grc}.
+
+\begin{parts}
+
+	\part Confirm the lines you predicted in Question 1(b), and state the level of the
+	frequency sink at 10 kHz.
+		\begin{solution}[0.6in]
+		Four lines at 7.5, 9, 11, and 12.5 kHz, and only the noise floor of the plot,
+		about $-100$ dB, at 10 kHz.
+		\end{solution}
+
+	\part Set the LO phase to each value and read the coherent receiver's peak output
+	off the time sink.
+
+	\begin{center}
+	\renewcommand{\arraystretch}{1.25}
+	\begin{tabular}{| l | K{0.68in} | K{0.68in} | K{0.68in} | K{0.68in} |}
+	\hline
+	LO phase & $0^\circ$ & $45^\circ$ & $60^\circ$ & $90^\circ$ \\\hline
+	Peak output & \kv{$1.0$} & \kv{$0.71$} & \kv{$0.5$} & \kv{$0$} \\\hline
+	\end{tabular}
+	\end{center}
+
+		\begin{solution}[0.4in]
+		The peaks follow $\cos\phi$, matching Question 1(d).
+		\end{solution}
+
+	\part Switch Listen To from Coherent to Envelope, and describe the difference.
+		\begin{solution}[0.9in]
+		The coherent receiver plays the two tones cleanly. The envelope detector plays
+		$\vert x(t)\vert$, which sounds distorted in the same way as overmodulated AM.
+		\end{solution}
+
+\end{parts}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\question \textbf{SSB.} Open and run \texttt{L06-ssb.grc}.
+
+\begin{parts}
+
+	\part For each setting of the Sideband menu, record which lines remain and how far
+	below them the suppressed sideband sits.
+
+	\begin{center}
+	\renewcommand{\arraystretch}{1.25}
+	\begin{tabular}{| l | K{1.6in} | K{1.6in} |}
+	\hline
+	Sideband & Lines (kHz) & Suppression (dB) \\\hline
+	USB & \kv{$11$, $12.5$} & \kv{$\approx 60$} \\\hline
+	LSB & \kv{$9$, $7.5$} & \kv{$\approx 60$} \\\hline
+	\end{tabular}
+	\end{center}
+
+		\begin{solution}[0.5in]
+		The suppressed lines sit near $-80$ dB against about $-20$ dB for the kept ones.
+		The 129-tap Hilbert filter sets the suppression.
+		\end{solution}
+
+	\part With USB selected, set the tuning error to $+200$ Hz. Paste the time sink and
+	describe the audio.
+		\begin{solution}[1.4in]
+		The output drifts against the delayed message because each tone has moved down
+		by 200 Hz, to 800 and 2300 Hz. The audio is lower pitched but never fades.
+		\end{solution}
+
+	\part Find the largest tuning error, either sign, at which the two tones still
+	sound like the original to you.
+		\begin{solution}[0.5in]
+		Answers vary; most listeners hear a change beyond about 20 to 50 Hz.
+		\end{solution}
+
+\end{parts}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\fullwidth{\large\textbf{Part 3: Writeup} \normalsize(individual, after the lab)}
+
+\question \textbf{Analysis.}
+
+\begin{parts}
+
+	\part Compare your measured DSB-AM levels in Question 2(b) with the predictions in
+	Question 1(a), and explain any difference larger than 1 dB.
+		\begin{solution}[1.0in]
+		They should agree within about 1 dB. A larger difference usually means a line was
+		read between FFT bins, or the flowgraph's $m$ or tone amplitudes differ from the
+		packet's.
+		\end{solution}
+
+	\part Explain in words why an envelope detector recovers DSB-AM but not DSB-SC, and
+	what the coherent receiver has that the envelope detector does not.
+		\begin{solution}[1.3in]
+		DSB-AM's envelope is $1 + m\,x(t)$, which stays positive for $m \le 1$, so it is a
+		copy of the message. DSB-SC's envelope is $\vert x(t)\vert$, because the message
+		itself goes negative. The coherent receiver has its own copy of the carrier, so
+		multiplying by it shifts the signal back down with its sign intact.
+		\end{solution}
+
+	\part A DSB-SC LO that is off in phase loses volume, while an SSB receiver that is
+	off in frequency changes pitch. Using your measurements, explain which error a
+	voice listener tolerates better, and why SSB receivers have a tuning knob instead
+	of carrier recovery.
+		\begin{solution}[1.3in]
+		A small frequency error in SSB moves every tone by the same amount, and speech
+		stays intelligible within about 100 Hz. A DSB-SC receiver with a frequency error
+		has a phase that drifts continuously, so the output fades in and out as $\cos\phi$
+		passes through zero. The ear does not hear phase, so an SSB operator can tune by
+		ear, while DSB-SC needs the LO locked to the carrier.
+		\end{solution}
+
+\end{parts}
+
+\end{questions}
+
+\vspace{1.0em}
+\noindent\textbf{Documentation:} \rule[-2pt]{0.6\linewidth}{0.4pt}
+
+\end{document}

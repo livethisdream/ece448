@@ -1,0 +1,146 @@
+#!/usr/bin/env python3
+"""L6 figures (AM simulation): real GNU Radio screenshots, cropped.
+
+Every L6 figure comes from the three flowgraphs in book/extras/grc/ running
+under GNU Radio 3.10, none of which needs hardware:
+
+  L06-am-spectrum, L06-am-envelope, L06-am-overmod   L06-dsb-am.grc at m = 0.5 and 1.4
+  L06-sc-spectrum, L06-sc-phi0, L06-sc-phi90         L06-dsb-sc.grc at LO phase 0 and 90
+  L06-ssb-spectra, L06-ssb-mistuned                  L06-ssb.grc, USB and LSB, and 200 Hz off
+  L06-grc-dsb-am, L06-grc-dsb-sc, L06-grc-ssb        the GRC canvas (scripts/grc/grc_canvas.sh)
+
+The running windows are captured the way scripts/grc/grc_shot.py does it, but
+at 1060x900, because each flowgraph has three plots and grc_shot's 1060x560
+window scrolls them. Each flowgraph ends in an Audio Sink; the capture points
+ALSA at its null device so the sink opens in a container with no sound card.
+
+Run it under Xvfb with the GNU Radio Python:
+
+    xvfb-run -a -s "-screen 0 1400x1000x24" /usr/bin/python3.12 scripts/graphics/l06_figures.py
+
+The GRC canvas shots need GRC's window at 1280x820 with its side panels hidden
+(main_window_width/height = 1280/820, console_window_visible,
+blocks_window_visible, and variable_editor_visable = False in the [main]
+section of ~/.gnuradio/grc.conf), then
+
+    xvfb-run -a -s "-screen 0 1280x820x24" scripts/grc/grc_canvas.sh book/extras/grc/L06-ssb.grc grc-ssb.png
+
+and are cropped here with --canvas DIR, where DIR holds grc-dsb-am.png,
+grc-dsb-sc.png, and grc-ssb.png.
+"""
+
+from __future__ import annotations
+
+import argparse
+import os
+import subprocess
+import sys
+import tempfile
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[2]
+OUTS = (ROOT / "book/extras/viz/img", ROOT / "book/extras/slides/img/06-am-simulation")
+W, H = 1060, 900
+
+# Window rows, measured on the 1060x900 captures: the control row, then the
+# frequency sink, then the time sinks. DSB-AM's control row is taller because
+# both of its controls are sliders.
+AM_CTRL, AM_SPEC, AM_TIME = 60, (0, 360), (365, 866)
+CTRL, SPEC, TIME = 40, (0, 445), (445, 866)
+
+# (flowgraph, capture name, variable settings)
+RUNS = [
+    ("L06-dsb-am", "am-m05", {"m": 0.5}),
+    ("L06-dsb-am", "am-m14", {"m": 1.4}),
+    ("L06-dsb-sc", "sc-phi0", {"phi": 0}),
+    ("L06-dsb-sc", "sc-phi90", {"phi": 90}),
+    ("L06-ssb", "ssb-usb", {}),
+    ("L06-ssb", "ssb-lsb", {"sideband": -1}),
+    ("L06-ssb", "ssb-df", {"df": 200}),
+]
+
+SHOT = """
+import sys, importlib.util
+from PyQt5 import Qt
+spec = importlib.util.spec_from_file_location("fg", sys.argv[1]); m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
+cls = [v for v in vars(m).values() if isinstance(v, type) and issubclass(v, Qt.QWidget) and hasattr(v, 'start')][0]
+app = Qt.QApplication(sys.argv[:1]); tb = cls()
+for kv in sys.argv[3:]:
+    k, v = kv.split('=')
+    win = getattr(tb, '_' + k + '_win', None)
+    boxes = win.findChildren(Qt.QDoubleSpinBox) if win is not None else []
+    boxes[0].setValue(float(v)) if boxes else getattr(tb, 'set_' + k)(float(v))
+tb.resize(%d, %d); tb.start(); tb.show()
+def done():
+    tb.grab().save(sys.argv[2]); tb.stop(); tb.wait(); app.quit()
+Qt.QTimer.singleShot(3000, done); app.exec_()
+""" % (W, H)
+
+
+def capture(tmp: Path) -> dict:
+    """Compile each flowgraph, run it headless, and return the captures by name."""
+    (tmp / "shot.py").write_text(SHOT)
+    (tmp / "asound.conf").write_text("pcm.!default { type null }\nctl.!default { type hw card 0 }\n")
+    env = {**os.environ, "ALSA_CONFIG_PATH": str(tmp / "asound.conf")}
+    for fg in sorted({r[0] for r in RUNS}):
+        subprocess.run([sys.executable, "/usr/bin/grcc", "-o", str(tmp), str(ROOT / f"book/extras/grc/{fg}.grc")],
+                       check=True, capture_output=True)
+    from PIL import Image
+    shots = {}
+    for fg, name, sets in RUNS:
+        out = tmp / f"{name}.png"
+        py = tmp / (fg.replace("-", "_") + ".py")
+        subprocess.run([sys.executable, str(tmp / "shot.py"), str(py), str(out)] + [f"{k}={v}" for k, v in sets.items()],
+                       check=True, capture_output=True, env=env)
+        shots[name] = Image.open(out).convert("RGB")
+        print("captured", name)
+    return shots
+
+
+def stack(parts):
+    from PIL import Image
+    o = Image.new("RGB", (max(p.size[0] for p in parts), sum(p.size[1] for p in parts)), (239, 239, 239))
+    y = 0
+    for p in parts:
+        o.paste(p, (0, y))
+        y += p.size[1]
+    return o
+
+
+def save(name, im):
+    for out in OUTS:
+        out.mkdir(parents=True, exist_ok=True)
+        im.save(out / f"{name}.png")
+    print(f"wrote {name}.png")
+
+
+def figures(s):
+    band = lambda im, r: im.crop((0, r[0], W, r[1]))
+    save("L06-am-spectrum", band(s["am-m05"], AM_SPEC))
+    save("L06-am-envelope", stack([band(s["am-m05"], (0, AM_CTRL)), band(s["am-m05"], AM_TIME)]))
+    save("L06-am-overmod", stack([band(s["am-m14"], (0, AM_CTRL)), band(s["am-m14"], AM_TIME)]))
+    save("L06-sc-spectrum", band(s["sc-phi0"], SPEC))
+    for k in ("sc-phi0", "sc-phi90"):
+        save(f"L06-{k}", stack([band(s[k], (0, CTRL)), band(s[k], TIME)]))
+    save("L06-ssb-spectra", stack([band(s["ssb-usb"], SPEC), band(s["ssb-lsb"], SPEC)]))
+    save("L06-ssb-mistuned", stack([band(s["ssb-df"], (0, CTRL)), band(s["ssb-df"], TIME)]))
+
+
+def canvases(src: Path):
+    """Crop GRC canvas captures: drop the menu and toolbar, then trim the blank canvas."""
+    from PIL import Image, ImageOps
+    for n in ("dsb-am", "dsb-sc", "ssb"):
+        g = Image.open(src / f"grc-{n}.png").convert("RGB").crop((0, 66, 1280, 816))
+        bb = ImageOps.invert(g.convert("L")).point(lambda v: 255 if v > 8 else 0).getbbox()
+        save(f"L06-grc-{n}", g.crop((0, 0, min(1280, bb[2] + 8), min(750, bb[3] + 8))))
+
+
+if __name__ == "__main__":
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--canvas", type=Path, help="directory of grc_canvas.sh captures to crop")
+    a = ap.parse_args()
+    if a.canvas:
+        canvases(a.canvas)
+    else:
+        with tempfile.TemporaryDirectory() as t:
+            figures(capture(Path(t)))
