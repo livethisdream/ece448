@@ -194,7 +194,7 @@ The File Sink below is disabled, which GRC draws in gray. Enabling it records ev
 
 The figure is a simulation of what the flowgraph shows, so we know what to look for before the lab; the lab replaces it with the real band. The **frequency display** on top averages the spectrum. US broadcast FM stations sit on the odd tenths of a megahertz from 88.1 to 107.9 MHz, and each occupies about 200 kHz. Their heights differ by tens of dB because the stations are at different distances and powers, which is Lesson 2's link budget in action. The flat region between them is the noise floor.
 
-The **waterfall** below stacks the spectrum over time, newest at the top, with color for power. A steady carrier is a straight vertical line, a station's audio makes its band wander, and a burst transmitter, such as a key fob, appears as short dashes. The thin line exactly at the center frequency is the **DC spike**: a small offset in the receiver's own mixer and converter that looks like a signal at 0 Hz. Every direct-conversion SDR has one, and the fix is to tune a little off a signal of interest rather than directly onto it.
+The **waterfall** below stacks the spectrum over time, newest at the top, with color for power. A steady carrier is a straight vertical line, a station's audio makes its band wander, and a burst transmitter, such as a key fob, appears as short dashes. The thin line exactly at the center frequency is the **DC spike**: a small offset in the receiver's own mixer and converter that looks like a signal at 0 Hz. Many SDRs show one, and the fix is to tune a little off a signal of interest rather than directly onto it.
 ::::
 
 ::::{frame} Setting the Gain

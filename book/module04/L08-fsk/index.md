@@ -153,7 +153,7 @@ The second flowgraph, `L08-fsk-link.grc`, puts the transmitter, a channel, and a
 - A phase step is a frequency: $\pm\Delta f$ gives $\pm 1$ with gain $f_s/(2\pi\Delta f)$.
 :::
 
-The **Quadrature Demod** block is an FM demodulator. A tone at frequency $f$ advances its phase by $2\pi f / f_s$ every sample, so the block multiplies each sample by the conjugate of the one before it and takes the angle of the result, which is that phase step. It then multiplies by its gain. Setting the gain to
+The **Quadrature Demod** block is the FM demodulator from Lesson 7, set here for FSK. A tone at frequency $f$ advances its phase by $2\pi f / f_s$ every sample, so the block multiplies each sample by the conjugate of the one before it and takes the angle of the result, which is that phase step. It then multiplies by its gain. Setting the gain to
 
 $$g = \frac{f_s}{2\pi \Delta f}$$
 
