@@ -79,10 +79,11 @@ $s(t) = \left[1 + m\cos(2\pi f_m t)\right]\cos(2\pi f_c t)$ with $m = 0.8$.
 	\end{minipage}
 
 	\begin{minipage}[t]{0.58\linewidth}
-		\part Find the fraction of the transmitted power in the sidebands.
-		\begin{solution}[1.0in]
-		A tone has $P_x = 1/2$, so
-		\eq{ \eta = \dfrac{m^2/2}{1 + m^2/2} = \dfrac{0.32}{1.32} = 24\% }
+		\part A line's power is proportional to its amplitude squared. Add up the lines
+		to find the fraction of the transmitted power in the sidebands.
+		\begin{solution}[1.2in]
+		The carrier line has amplitude 1 and each sideband 0.4:
+		\eq{ \eta = \dfrac{2(0.4)^2}{1^2 + 2(0.4)^2} = \dfrac{0.32}{1.32} = 24\% }
 		\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
@@ -124,9 +125,12 @@ flowgraph runs at 48 kHz with a 10 kHz carrier and a message up to 2.5 kHz.
 	that works: what must it pass, and what must it stop?
 		\begin{solution}[1.0in]
 		It must pass the envelope, which holds the message up to 2.5 kHz, and stop the
-		rectified carrier, whose lowest component is at $2f_c = 20$ kHz. A 3 kHz cutoff
-		with a 1 kHz transition passes everything below about 2.5 kHz and stops
-		everything above about 3.5 kHz.
+		copies of the envelope that Abs creates. After Abs there is no 10 kHz content:
+		the copies sit at $2f_c = 20$ kHz and its multiples, which fold to 8 kHz and
+		4 kHz at 48 kHz sampling. A 3 kHz cutoff with a 1 kHz transition passes
+		everything up to about 2.5 kHz, with the 2.5 kHz tone at the passband edge
+		($-0.4$ dB), and stops everything above about 3.5 kHz, including both folded
+		copies.
 		\end{solution}
 
 	\part Explain the Multiply Const of $\pi/2$ after the filter.

@@ -5,12 +5,12 @@ Every L6 figure comes from the three flowgraphs in book/extras/grc/ running
 under GNU Radio 3.10, none of which needs hardware:
 
   L06-am-spectrum, L06-am-envelope, L06-am-overmod   L06-dsb-am.grc at m = 0.5 and 1.4
-  L06-sc-spectrum, L06-sc-phi0, L06-sc-phi90         L06-dsb-sc.grc at LO phase 0 and 90
+  L06-sc-spectrum, L06-sc-mixer, L06-sc-phi0/phi90  L06-dsb-sc.grc at LO phase 0 and 90
   L06-ssb-spectra, L06-ssb-mistuned                  L06-ssb.grc, USB and LSB, and 200 Hz off
   L06-grc-dsb-am, L06-grc-ssb                        the GRC canvas (scripts/grc/grc_canvas.sh)
 
 The running windows are captured the way scripts/grc/grc_shot.py does it, but
-at 1060x900, because each flowgraph has three plots and grc_shot's 1060x560
+at 1060x900 (1060x1260 for DSB-SC's four plots), because grc_shot's 1060x560
 window scrolls them. Each flowgraph ends in an Audio Sink; the capture points
 ALSA at its null device so the sink opens in a container with no sound card.
 
@@ -41,12 +41,15 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 OUTS = (ROOT / "book/extras/viz/img", ROOT / "book/extras/slides/img/06-am-simulation")
 W, H = 1060, 900
+# DSB-SC has a fourth row, the receiver mixer's spectrum, so its window is taller.
+HEIGHT = {"L06-dsb-sc": 1260}
 
-# Window rows, measured on the 1060x900 captures: the control row, then the
-# frequency sink, then the time sinks. DSB-AM's control row is taller because
-# both of its controls are sliders.
-AM_CTRL, AM_SPEC, AM_TIME = 60, (0, 360), (365, 866)
-CTRL, SPEC, TIME = 40, (0, 445), (445, 866)
+# Window rows (top, bottom), measured on the captures: the control row, the
+# frequency sink, and the time sinks, plus DSB-SC's mixer spectrum. Each
+# control band keeps a few pixels of margin above the slider labels.
+AM_CTRL, AM_SPEC, AM_TIME = (20, 62), (0, 360), (365, 870)
+CTRL, SPEC, TIME = (12, 58), (0, 445), (445, 870)
+SC_SPEC, SC_TIME, SC_MIX = (0, 432), (432, 862), (862, 1245)
 
 # (flowgraph, capture name, variable settings)
 RUNS = [
@@ -60,7 +63,7 @@ RUNS = [
 ]
 
 SHOT = """
-import sys, importlib.util
+import os, sys, importlib.util
 from PyQt5 import Qt
 spec = importlib.util.spec_from_file_location("fg", sys.argv[1]); m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
 cls = [v for v in vars(m).values() if isinstance(v, type) and issubclass(v, Qt.QWidget) and hasattr(v, 'start')][0]
@@ -70,11 +73,11 @@ for kv in sys.argv[3:]:
     win = getattr(tb, '_' + k + '_win', None)
     boxes = win.findChildren(Qt.QDoubleSpinBox) if win is not None else []
     boxes[0].setValue(float(v)) if boxes else getattr(tb, 'set_' + k)(float(v))
-tb.resize(%d, %d); tb.start(); tb.show()
+tb.resize(%d, int(os.environ['SHOT_H'])); tb.start(); tb.show()
 def done():
     tb.grab().save(sys.argv[2]); tb.stop(); tb.wait(); app.quit()
 Qt.QTimer.singleShot(3000, done); app.exec_()
-""" % (W, H)
+""" % W
 
 
 def capture(tmp: Path) -> dict:
@@ -91,7 +94,7 @@ def capture(tmp: Path) -> dict:
         out = tmp / f"{name}.png"
         py = tmp / (fg.replace("-", "_") + ".py")
         subprocess.run([sys.executable, str(tmp / "shot.py"), str(py), str(out)] + [f"{k}={v}" for k, v in sets.items()],
-                       check=True, capture_output=True, env=env)
+                       check=True, capture_output=True, env={**env, "SHOT_H": str(HEIGHT.get(fg, H))})
         shots[name] = Image.open(out).convert("RGB")
         print("captured", name)
     return shots
@@ -117,13 +120,14 @@ def save(name, im):
 def figures(s):
     band = lambda im, r: im.crop((0, r[0], W, r[1]))
     save("L06-am-spectrum", band(s["am-m05"], AM_SPEC))
-    save("L06-am-envelope", stack([band(s["am-m05"], (0, AM_CTRL)), band(s["am-m05"], AM_TIME)]))
-    save("L06-am-overmod", stack([band(s["am-m14"], (0, AM_CTRL)), band(s["am-m14"], AM_TIME)]))
-    save("L06-sc-spectrum", band(s["sc-phi0"], SPEC))
+    save("L06-am-envelope", stack([band(s["am-m05"], AM_CTRL), band(s["am-m05"], AM_TIME)]))
+    save("L06-am-overmod", stack([band(s["am-m14"], AM_CTRL), band(s["am-m14"], AM_TIME)]))
+    save("L06-sc-spectrum", band(s["sc-phi0"], SC_SPEC))
+    save("L06-sc-mixer", stack([band(s["sc-phi0"], CTRL), band(s["sc-phi0"], SC_MIX)]))
     for k in ("sc-phi0", "sc-phi90"):
-        save(f"L06-{k}", stack([band(s[k], (0, CTRL)), band(s[k], TIME)]))
+        save(f"L06-{k}", stack([band(s[k], CTRL), band(s[k], SC_TIME)]))
     save("L06-ssb-spectra", stack([band(s["ssb-usb"], SPEC), band(s["ssb-lsb"], SPEC)]))
-    save("L06-ssb-mistuned", stack([band(s["ssb-df"], (0, CTRL)), band(s["ssb-df"], TIME)]))
+    save("L06-ssb-mistuned", stack([band(s["ssb-df"], CTRL), band(s["ssb-df"], TIME)]))
 
 
 def canvases(src: Path):
@@ -138,9 +142,15 @@ def canvases(src: Path):
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--canvas", type=Path, help="directory of grc_canvas.sh captures to crop")
+    ap.add_argument("--keep", type=Path, help="also save the uncropped window captures here")
     a = ap.parse_args()
     if a.canvas:
         canvases(a.canvas)
     else:
         with tempfile.TemporaryDirectory() as t:
-            figures(capture(Path(t)))
+            shots = capture(Path(t))
+            if a.keep:
+                a.keep.mkdir(parents=True, exist_ok=True)
+                for name, im in shots.items():
+                    im.save(a.keep / f"{name}.png")
+            figures(shots)

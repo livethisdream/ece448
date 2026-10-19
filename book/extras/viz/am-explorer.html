@@ -74,6 +74,8 @@ mEl.oninput = update;
 
 // The message, its Hilbert transform (each cosine becomes a sine), and the
 // modulated signal with its envelope.
+// The message's most negative value over one 2 ms period (t in ms), found numerically.
+function xmin() { let lo = Infinity; for (let i = 0; i < 4000; i++) lo = Math.min(lo, x(2*i/4000)); return lo; }
 const x  = t => MSG[msg].reduce((s, [f, a]) => s + a*Math.cos(2*Math.PI*f*t), 0);
 const xh = t => MSG[msg].reduce((s, [f, a]) => s + a*Math.sin(2*Math.PI*f*t), 0);
 function sig(t) {
@@ -166,10 +168,12 @@ function update() {
   document.getElementById('o-bw').textContent = (ssb ? W : 2*W).toFixed(1) + ' kHz';
   const eff = mode === 'am' ? m*m*px / (1 + m*m*px) : 1;
   document.getElementById('o-eff').textContent = Math.round(100*eff) + '%';
-  // The envelope follows the message only for DSB-AM with m <= 1 (one-tone SSB
-  // has a constant envelope, which carries no message either).
+  // The envelope follows the message only for DSB-AM while 1 + m*x(t) stays
+  // positive: m <= 1 for one tone, m <= 1.10 for the two-tone message, whose
+  // trough is -0.906. (One-tone SSB has a constant envelope, which carries no
+  // message either.)
   let ok, say;
-  if (mode === 'am') { ok = m <= 1 + 1e-9 && m > 0; say = m === 0 ? 'no message' : ok ? 'follows message' : 'overmodulated'; }
+  if (mode === 'am') { ok = m > 0 && 1 + m*xmin() >= -1e-9; say = m === 0 ? 'no message' : ok ? 'follows message' : 'overmodulated'; }
   else if (mode === 'sc') { ok = false; say = 'sees |x(t)|'; }
   else { ok = false; say = msg === 'one' ? 'constant' : 'not the message'; }
   document.getElementById('o-env').textContent = say;

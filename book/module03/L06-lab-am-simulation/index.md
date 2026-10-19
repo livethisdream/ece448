@@ -38,12 +38,24 @@ Lesson 6 showed all three flowgraphs running. Today you build the DSB-AM flowgra
 Every flowgraph in this lab is a simulation, so you need only your laptop. Bring headphones; the receivers play through the Audio Sink, and thirty laptops playing tones at once make the room hard to work in.
 ::::
 
+::::{frame} Part 1: Before the Period
+:::{present}
+- Predict each DSB-AM line's frequency and level at $m = 0.5$.
+- List the DSB-SC, USB, and LSB lines, and find where this message overmodulates.
+- Predict the coherent output against LO phase, and the mistuned USB tones.
+:::
+
+Do the Pre-Lab before you arrive; the bench time assumes you already know what each measurement should show. The three items on the slide are the packet's Question 1, worked from the Lesson 6 page and its practice set. The overmodulation point needs care: the rule $m \le 1$ is safe for any message, but this message never reaches $-1$, so it overmodulates only at a slightly larger $m$. Bring questions to EI before the lab rather than to the lab itself.
+
+Part 2 checks each prediction against a measurement, and the Writeup asks you to explain any that disagree.
+::::
+
 ::::{frame} Expected Numbers
 :::{present}
 | Check | Expected |
 | :-- | :-- |
 | DSB-AM sidebands, $m = 0.5$ | $-16.5$ and $-20$ dB |
-| Overmodulation starts | $m = 1$ |
+| Overmodulation starts | $m \approx 1.1$ |
 | DSB-SC output at $60°$ | half |
 | USB, 200 Hz high | 800 and 2300 Hz |
 :::
