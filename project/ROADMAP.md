@@ -136,6 +136,27 @@ since they follow this structure. Two changes:
   - Once a lesson is converted, its manifest entry gets `[]` for decks. The
     legacy PDF stays listed on the materials page.
 
+## Lesson threads, first batch (2026-10-19)
+
+- **L6, L8, and L9 done** in three overnight lesson threads (PRs #9, #11,
+  #10), merged together after one Integrator review round. Each thread passed
+  its own checklist, and an independent review still found about a dozen
+  items per lesson, including one real technical error apiece (L6's
+  overmodulation threshold, L8's claim about the I trace, L9's matched-filter
+  gain). **Keep the Integrator review pass for every batch:** a reviewer per
+  lesson recomputes every number and re-runs the flowgraphs before anything
+  merges.
+- **Lab KEYs.** Lesson threads cannot attach `ECE448-faculty`. The Integrator
+  builds each lab's KEY from the reviewed head and opens the faculty PR, which
+  merges with the lesson PR.
+- **Tooling the threads asked for**, now in `scripts/grc/`: `grc_shot.py`
+  takes `--size WxH`, finds a flowgraph's embedded Python blocks, and runs
+  Audio Sinks on ALSA's null device; `grc_canvas.sh` sets GRC's window size
+  in `grc.conf`, because bare Xvfb cannot resize it.
+- L6 and L9 now have `[]` for decks; their legacy PDFs stay on the materials
+  page.
+- **Next batch:** L4, L7, and L10.
+
 ## Lesson threads (from L6 on)
 
 The trial is done. From L6 on, each lesson is its own thread, and this thread

@@ -161,11 +161,11 @@ LESSONS = [
     (2, 4, "L04-sdr-introduction", "SDR Introduction", ["2.1", "2.2"], ["sdr"], "The SDR platforms in this course, what is inside them, and the sample-rate, bandwidth, and dynamic-range trade-offs."),
     (2, 5, "L05-gnu-radio-intro", "GNU Radio Introduction", ["2.3", "2.4"], [], "GNU Radio Companion from install to a running flowgraph, then a real capture in time and frequency."),
 
-    (3, 6, "L06-am-simulation", "AM Simulation", ["3.1", "3.2"], ["am"], "DSB-AM, DSB-SC, and SSB built and demodulated in GNU Radio."),
+    (3, 6, "L06-am-simulation", "AM Simulation", ["3.1", "3.2"], [], "DSB-AM, DSB-SC, and SSB built and demodulated in GNU Radio."),
     (3, 7, "L07-am-fm-receivers", "AM and FM Receivers", ["3.3", "3.4"], ["amfm"], "AM and FM receivers, a live broadcast FM station, and its RDS data."),
 
     (4, 8, "L08-fsk", "FSK", ["4.1"], [], "An FSK transmitter and receiver in GNU Radio."),
-    (4, 9, "L09-pam-theory", "PAM Theory", ["4.2", "4.3"], ["pam"], "Pulse shaping, symbol rate, bandwidth, matched filtering, and timing recovery."),
+    (4, 9, "L09-pam-theory", "PAM Theory", ["4.2", "4.3"], [], "Pulse shaping, symbol rate, bandwidth, matched filtering, and timing recovery."),
     (4, 10, "L10-ascii-pam", "ASCII over PAM", ["4.4"], ["ascii"], "A PAM link that carries ASCII text end to end."),
 
     (5, 11, "L11-custom-blocks", "Out-of-Tree Modules and Custom Blocks", ["5.1", "5.2"], [], "Package a GNU Radio out-of-tree module and write your own Python block."),
