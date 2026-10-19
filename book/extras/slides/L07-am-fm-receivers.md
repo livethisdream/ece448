@@ -235,4 +235,4 @@ ATIS frequencies are in the FAA Chart Supplement and on sectional charts. RDS ne
 - Lesson 8 sends bits as FSK, which is FM with a two-valued message.
 
 Note:
-The pre-lab asks for the decimation chain, the demodulator gain, Carson bandwidths, and RDS timing before the bench.
+The pre-lab asks for the receiver's shift and rates, the demodulator gain, the test file's audio line levels, the RDS name time, the ATIS receiver settings, and the FM threshold before the bench. The bench starts with building the WBFM receiver from an empty canvas.

@@ -29,25 +29,25 @@ L7 Lab · Module 3: Analog Modulation · Dr. Neil Rogers
 ::::{frame} From Lesson to Bench
 :::{present}
 - **Pre-Lab:** predict the receiver settings, RDS timing, and the FM threshold.
-- **Bench:** run the receivers on the test file, your L5 capture, live FM with RDS, and ATIS, and compare AM with FM.
+- **Bench:** build the WBFM receiver, then receive your L5 capture, live FM with RDS, and ATIS, and compare AM with FM.
 - **Writeup:** compare, and explain the differences.
 :::
 
-Lesson 7 ran every receiver on simulated test files. Today you run them on your own L5 capture and on the air. The lab packet has three parts, and you turn it in once, complete, before Lesson 8. **Part 1, the Pre-Lab**, is on your own before the period: the receiver settings for the test file, your capture, and a local ATIS, plus the RDS timing and the FM threshold. **Part 2** is your own measurements in class. **Part 3, the Writeup**, compares the two.
+Lesson 7 ran every receiver on simulated test files. Today you build the WBFM receiver yourself, then run the receivers on your own L5 capture and on the air. The lab packet has three parts, and you turn it in once, complete, before Lesson 8. **Part 1, the Pre-Lab**, is on your own before the period: the receiver settings for the test file, your capture, and a local ATIS, plus the RDS timing and the FM threshold. **Part 2** is your own measurements in class. **Part 3, the Writeup**, compares the two.
 
 Bring your RTL-SDR, its antenna, your `fm_capture.cfile` from the L5 Lab, and headphones.
 ::::
 
 ::::{frame} Part 1: Before the Period
 :::{present}
-- Download the six L7 flowgraphs into one folder with your L5 capture.
-- Run both test transmitters once, and open `L07-rds-rx.grc`.
-- Find a local ATIS frequency.
+- Predict the receiver settings and rates, and the audio line levels.
+- Find the fastest time to an RDS station name.
+- Plan a local ATIS receiver, and predict the FM threshold.
 :::
 
-Do the Pre-Lab before you arrive. Its setup takes a few minutes and some of it needs a network connection, which the lab room may not have. Put the six flowgraphs from the Lesson 7 page in one folder with `fm_capture.cfile`, then run `L07-fm-test-tx.grc` and `L07-am-test-tx.grc` once each; they write the two test files, 76.8 MB each, into that folder and stop on their own. Open `L07-rds-rx.grc` and check that GRC reports no missing blocks. If the RDS blocks are missing, run `conda install gnuradio-rds` from the radioconda prompt and open it again.
+Do the Pre-Lab before you arrive. Question 1 asks for the shift and rates of the FM receiver, the Quadrature Demod gain, the levels of the test file's audio lines, the fastest time to an RDS station name, the AM receiver's settings for a local ATIS, and the C/N at which the 25 kHz FM signal reaches threshold.
 
-Question 1(e) asks for the ATIS frequency of an airport near you. The FAA Chart Supplement and every sectional chart list it.
+The setup also takes a few minutes, and some of it needs a network connection, which the lab room may not have. Put the six flowgraphs from the Lesson 7 page in one folder with `fm_capture.cfile`. Open `L07-rds-rx.grc` first and check that GRC reports no missing blocks: gr-rds comes with radioconda; if GRC reports the RDS blocks missing, run `mamba install gnuradio-rds` from the radioconda prompt. Then run `L07-fm-test-tx.grc`, which also uses an RDS block, and `L07-am-test-tx.grc` once each; they write the two test files, 76.8 MB each, into that folder and stop on their own. For Question 1(e), the FAA Chart Supplement and every sectional chart list an airport's ATIS frequency.
 ::::
 
 ::::{frame} Expected Numbers
@@ -61,16 +61,29 @@ Question 1(e) asks for the ATIS frequency of an airport near you. The FAA Chart 
 | FM threshold, 25 kHz | 17.8 dB in 10 kHz |
 :::
 
-These are the predictions of Question 1 for the parts that do not depend on your location. The test file has no hardware in the way, so its measurements should match within about 1 dB, or within a frequency sink bin. The station name usually takes 1 to 3 s rather than 350 ms, because a station sends other groups between the four that carry the name; the Writeup asks why. Your capture, the live station, and the ATIS depend on your antenna and location, so the packet records them rather than predicting them.
+These are the predictions of Question 1 for the parts that do not depend on your location. The test file has no hardware in the way, so its measurements should match within about 1 dB, or within a frequency sink bin. Question 4(c) asks you to time the station name and explain the difference from 350 ms. Your capture, the live station, and the ATIS depend on your antenna and location, so the packet records them rather than predicting them.
 ::::
 
-::::{frame} Part 2: The Test File and Your Capture
+::::{frame} Part 2: Build the WBFM Receiver
 :class: read-only
 
-1. Open and run `L07-wbfm-rx.grc` on `L07-fm-test.cfile`. Record the audio lines for Question 2(a).
-2. Type 99.5 into Station, listen, and answer Question 2(b).
-3. Stop the flowgraph. Set the File Source's file to `fm_capture.cfile`. Run it, type the center frequency you recorded at into SDR center, and set Station to the station you centered.
-4. Screenshot the demodulated multiplex and mark its parts for Question 3(a). Describe the audio for Question 3(b).
+1. Start GRC and choose File, New, QT GUI. Do not open `L07-wbfm-rx.grc`; build it yourself.
+2. Set `samp_rate` to 2.4e6. Add QT GUI Entries `fc_mhz` (100.0) and `station_mhz` (100.3), and a QT GUI Range `vol` from 0 to 1.
+3. Add a **File Source** on `L07-fm-test.cfile` with Repeat on.
+4. Add a **Low-pass Filter Taps** variable `chan_taps`: cutoff 105 kHz, transition 30 kHz, at `samp_rate`. Use it in a **Frequency Xlating FIR Filter** with decimation 10 and center frequency `(station_mhz - fc_mhz) * 1e6`.
+5. Add a **Quadrature Demod** with the gain from Question 1(b).
+6. Add a **Decimating FIR Filter**, decimation 5, with taps `firdes.low_pass(1, samp_rate/10, 15e3, 3e3)`.
+7. Finish with **FM Deemphasis** at 48 kHz and 75 μs, a Multiply Const `vol`, and an **Audio Sink** at 48 kHz, with a float QT GUI Frequency Sink on the de-emphasis output. Do not add a Throttle.
+8. Screenshot the canvas for Question 2(a). Run it with the volume low, and record the audio lines for Question 2(b).
+9. Type 99.5 into Station, listen, and answer Question 2(c).
+::::
+
+::::{frame} Part 2: Your Capture
+:class: read-only
+
+1. Stop your receiver. Set the File Source's file to `fm_capture.cfile`.
+2. Run it, type the center frequency you recorded at into SDR center, and set Station to the station you centered.
+3. Add a float QT GUI Frequency Sink on the Quadrature Demod output at 240 kHz. Screenshot the demodulated multiplex and mark its parts for Question 3(a). Describe the audio for Question 3(b).
 ::::
 
 ::::{frame} Part 2: Live FM and RDS
@@ -121,7 +134,7 @@ These are the predictions of Question 1 for the parts that do not depend on your
 - Explain why aircraft use AM and broadcasters use wideband FM.
 :::
 
-The Writeup is three questions. The first uses your multiplex screenshot: every part of the multiplex except the mono audio sits above 15 kHz. The second compares your AM and FM table with the threshold you predicted in Question 1(f), and asks why the 5 kHz signal has the higher output SNR at 10 dB C/N and the lower one at 30 dB. The third connects your ATIS and FM listening to the reasons each service chose its modulation.
+The Writeup is three questions. The first uses your multiplex screenshot to explain why a mono receiver plays a stereo station correctly. The second compares your AM and FM table with the threshold you predicted in Question 1(f), and asks why the 5 kHz signal has the higher output SNR at 10 dB C/N and the lower one at 30 dB. The third connects your ATIS and FM listening to the reasons each service chose its modulation.
 ::::
 
 ::::{frame} Lab Packet

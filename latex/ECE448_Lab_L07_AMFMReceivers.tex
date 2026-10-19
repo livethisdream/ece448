@@ -127,12 +127,13 @@ cannot transmit, and nothing in this lab needs a license. Start every receiver w
 the volume low.
 
 \textbf{Files.} Download the six L7 flowgraphs from the L7 lesson page into one
-folder, with your \texttt{fm\_capture.cfile} from the L5 Lab. Before the period, run
-\texttt{L07-fm-test-tx.grc} and \texttt{L07-am-test-tx.grc} once each; they write
-\texttt{L07-fm-test.cfile} and \texttt{L07-am-test.cfile} into that folder and stop
-on their own. Open \texttt{L07-rds-rx.grc} and confirm that GRC shows no missing
-blocks. If it reports the RDS blocks as missing, install gr-rds from the radioconda
-prompt with \texttt{conda install gnuradio-rds} and open it again.
+folder, with your \texttt{fm\_capture.cfile} from the L5 Lab. Open
+\texttt{L07-rds-rx.grc} first and confirm that GRC shows no missing blocks: gr-rds
+comes with radioconda; if GRC reports the RDS blocks missing, run
+\texttt{mamba install gnuradio-rds} from the radioconda prompt. Then, before the
+period, run \texttt{L07-fm-test-tx.grc}, which also uses an RDS block, and
+\texttt{L07-am-test-tx.grc} once each; they write \texttt{L07-fm-test.cfile} and
+\texttt{L07-am-test.cfile} into that folder and stop on their own.
 
 \begin{questions}
 
@@ -245,12 +246,34 @@ prompt with \texttt{conda install gnuradio-rds} and open it again.
 \newpage
 \fullwidth{\large\textbf{Part 2: Measurements} \normalsize(your own laptop and RTL-SDR, in class)}
 
-\question \textbf{The test file.} Open and run \texttt{L07-wbfm-rx.grc} with its File
-Source on \texttt{L07-fm-test.cfile}.
+\question \textbf{Build the WBFM receiver.} Start GRC with an empty canvas. Do not
+open \texttt{L07-wbfm-rx.grc}: build the receiver yourself.
+\begin{itemize}\setlength{\itemsep}{0pt}
+	\item \texttt{samp\_rate} 2.4e6, a QT GUI Entry \texttt{fc\_mhz} (100.0), a QT GUI
+	Entry \texttt{station\_mhz} (100.3), and a QT GUI Range \texttt{vol} from 0 to 1.
+	\item A File Source on \texttt{L07-fm-test.cfile}, repeat on.
+	\item A Frequency Xlating FIR Filter, decimation 10, center frequency
+	\texttt{(station\_mhz - fc\_mhz) * 1e6}, with a Low-pass Filter Taps variable
+	\texttt{chan\_taps}: cutoff 105 kHz, transition 30 kHz, at \texttt{samp\_rate}.
+	\item A Quadrature Demod with the gain of Question 1(b).
+	\item A Decimating FIR Filter, decimation 5, with taps
+	\texttt{firdes.low\_pass(1, samp\_rate/10, 15e3, 3e3)}.
+	\item FM Deemphasis at 48 kHz with $\tau$ = 75~$\mu$s, a Multiply Const
+	\texttt{vol}, an Audio Sink at 48 kHz, and a float QT GUI Frequency Sink on the
+	de-emphasis output. Do not add a Throttle.
+\end{itemize}
 
 \begin{parts}
 
-	\part Read the audio sink. Record the frequency of each line and how far the
+	\part Paste a screenshot of your flowgraph on the GRC canvas. Every connection
+	must be black, not red.
+		\begin{solution}[1.6in]
+		Matches the L7 lesson figure: File Source, Frequency Xlating FIR Filter (complex
+		ports), Quadrature Demod, then float blocks: the decimating audio filter, FM
+		Deemphasis, Multiply Const, and the Audio Sink.
+		\end{solution}
+
+	\part Run it. Read the audio frequency sink, and record the frequency of each line and how far the
 	2.5~kHz line sits below the 1~kHz line.
 		\begin{solution}[0.6in]
 		The sink shows lines at 1 and 2.5 kHz, about 3.5 to 4 dB apart, matching Question 1(c), and
@@ -268,9 +291,10 @@ Source on \texttt{L07-fm-test.cfile}.
 \end{parts}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\question \textbf{Your L5 capture.} Set the File Source to \texttt{fm\_capture.cfile},
-SDR center to the frequency you recorded it at, and Station to the station you
-centered.
+\question \textbf{Your L5 capture.} In your receiver from Question 2, set the File
+Source to \texttt{fm\_capture.cfile}, SDR center to the frequency you recorded it at,
+and Station to the station you centered. Add a float QT GUI Frequency Sink on the
+Quadrature Demod output, with bandwidth \texttt{samp\_rate/10}.
 
 \begin{parts}
 
@@ -426,9 +450,10 @@ and enter the settings of Question 1(e).
 		with a threshold near the predicted 17.8 dB. Wider deviation gives a larger
 		output SNR above threshold, 48.5 against 35.5 dB at 30 dB C/N. It also needs a
 		wider channel, 60 kHz against 20 kHz, which admits 4.8 dB more noise, so the
-		25 kHz signal falls below threshold first. At 10 dB C/N the 5 kHz signal is about 3 dB below its own
-		13 dB threshold, but its narrow channel admits few clicks, so it keeps 5 of its
-		6 dB lead over AM, while the wider deviations collapse.
+		25 kHz signal falls below threshold first. At 10 dB the 5 kHz signal is just under its 13 dB
+		threshold and has lost only about 1 dB of its 6 dB lead, because the threshold is
+		a gradual onset rather than a cliff, while the wider deviations are far below
+		theirs.
 		\end{solution}
 
 	\part Aircraft use AM, and broadcasters use wideband FM. Using your measurements

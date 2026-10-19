@@ -164,8 +164,8 @@ groups of 104 bits.
 	\end{minipage}
 
 	\part The RDS signal is BPSK, a DSB-SC signal. Name the block in
-	\texttt{L07-rds-rx.grc} that recovers its carrier, and explain why the
-	differential coding means the recovered carrier may be $180^\circ$ off.
+	\texttt{L07-rds-rx.grc} that recovers its carrier, and explain why a recovered
+	carrier $180^\circ$ off does no harm, given the differential coding.
 		\begin{solution}[1.1in]
 		The Constellation Receiver locks to the subcarrier's phase. A BPSK loop can lock
 		at either of two phases $180^\circ$ apart, which inverts every bit. The data is
@@ -228,8 +228,9 @@ FM, $\Delta f$ = 50 kHz & 53.2 & 39.5 & 17.3 & 6.4 \\\hline
 		\begin{solution}[1.4in]
 		For 5, 25, and 50 kHz of deviation, the threshold C/N values in 10 kHz are, in dB,
 		\eq{ 10 + 3.0 = 13.0, \quad 10 + 7.8 = 17.8, \quad 10 + 10.4 = 20.4 }
-		The table agrees. The 5 kHz signal keeps a steady 5 to 6 dB lead over AM down to
-		10 dB. The 25 kHz signal leads by 19 to 20 dB down to 20 dB C/N and has lost
+		The table agrees for 25 and 50 kHz. At 10 dB the 5 kHz signal is just under its
+		threshold and has lost only about 1 dB, because the threshold is a gradual onset
+		rather than a cliff. The 25 kHz signal leads by 19 to 20 dB down to 20 dB C/N and has lost
 		about 7 dB of that lead at 15. The 50 kHz signal leads by 24 dB at 30 but only
 		20 dB at 20, already near its 20.4 dB threshold.
 		\end{solution}
@@ -242,9 +243,9 @@ FM, $\Delta f$ = 50 kHz & 53.2 & 39.5 & 17.3 & 6.4 \\\hline
 	\part A link to a distant receiver runs at 10~dB C/N in 10~kHz. Use the table to
 	choose AM or one of the three FM deviations, and explain the choice in words.
 		\begin{solution}[1.1in]
-		Choose FM with 5 kHz deviation, which reaches 14.2 dB. At 10 dB C/N it is about 3 dB below its
-		13 dB threshold, but its narrow channel admits few clicks, so it keeps 5 of its
-		6 dB lead over AM. The wider deviations
+		Choose FM with 5 kHz deviation, which reaches 14.2 dB. At 10 dB the 5 kHz signal is just under its
+		13 dB threshold and has lost only about 1 dB of its lead over AM, because the
+		threshold is a gradual onset rather than a cliff. The wider deviations
 		would be better on a strong link, but their wider channels admit enough noise to
 		push them below threshold here, where they are no better than AM or worse.
 		\end{solution}
@@ -283,12 +284,13 @@ FM, $\Delta f$ = 50 kHz & 53.2 & 39.5 & 17.3 & 6.4 \\\hline
 	\end{minipage}
 
 	\part Lesson 6 detected the envelope with Abs, a low-pass filter, and a gain of
-	$\pi/2$. Explain why this receiver needs only Complex to Mag.
+	$\pi/2$. Explain why Complex to Mag replaces Abs and the $\pi/2$ gain.
 		\begin{solution}[1.0in]
 		After the Frequency Xlating FIR Filter, the station's carrier sits at 0 Hz, and
 		each complex sample is the envelope times a phase factor. Its magnitude is the
 		envelope itself, with no carrier to rectify or average away, so the receiver
-		needs no $\pi/2$ correction.
+		needs no $\pi/2$ correction. The low-pass filter stays, but it now serves only
+		as the audio filter.
 		\end{solution}
 
 	\part Explain why the AM receiver needs an AGC and the FM receiver does not.

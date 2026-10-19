@@ -48,7 +48,7 @@ Lesson 7 · Module 3: Analog Modulation · Dr. Neil Rogers
 - Today we get audio from one of them, and its station name.
 :::
 
-In the L5 Lab you recorded 2 s of the FM band to `fm_capture.cfile`. The figure is a file of the same kind: 2.4 million complex samples per second around 100.0 MHz, holding a station at 100.3 MHz and a weaker one at 99.5 MHz. It came from a GNU Radio flowgraph rather than an antenna, so the figure carries a "Simulated" label, but a receiver cannot tell the difference. The station at 100.3 MHz carries a two-tone message, the L6 message of 1 kHz and 2.5 kHz, and its name, "ECE 448", in RDS data.
+In the L5 Lab you recorded 2 s of the FM band to `fm_capture.cfile`. The figure is a file of the same kind: 2.4 million complex samples per second around 100.0 MHz, holding a station at 100.3 MHz and a weaker one at 99.5 MHz. It came from a GNU Radio flowgraph rather than an antenna, so the figure carries a "Simulated" label. The station at 100.3 MHz carries a two-tone message, the L6 message of 1 kHz and 2.5 kHz, and its name, "ECE 448", in RDS data.
 
 By the end of the lesson we will turn that file into audio, read the station's name out of it, and then point the same flowgraph at the live band. We will also build an AM receiver for the aircraft band and compare AM and FM in the same noise.
 
@@ -159,7 +159,7 @@ The frequency sink above is the multiplex of the test station. It has the two me
 
 A **Decimating FIR Filter** keeps the mono band, 0 to 15 kHz with a 3 kHz transition, and decimates by 5 to the sound card's 48 kHz. Every other part of the multiplex is above 15 kHz, so this one filter removes the pilot, the stereo signal, and RDS.
 
-The transmitter boosts the treble of its audio before modulating, a step called **pre-emphasis**, by up to 17 dB at 15 kHz in the US. The **FM Deemphasis** block applies the opposite filter, set by a 75 μs time constant with its corner at 2.1 kHz, which restores the original audio balance. Because the noise rises with frequency, cutting the treble at the receiver removes noise where the noise is strongest. Europe uses 50 μs, so a European station received with the US setting sounds slightly bright but is otherwise correct.
+The transmitter boosts the treble of its audio before modulating, a step called **pre-emphasis**, by up to 17 dB at 15 kHz in the US. The **FM Deemphasis** block applies the opposite filter, set by a 75 μs time constant with its corner at 2.1 kHz, which restores the original audio balance. Because the noise rises with frequency, cutting the treble at the receiver removes noise where the noise is strongest. Europe uses 50 μs, so a European station received with the US setting sounds slightly dull, about 3 dB short at 15 kHz, but is otherwise correct.
 ::::
 
 ::::{frame} Running the Receiver
@@ -254,7 +254,7 @@ After the filter, the AM station is a complex signal with its carrier at 0 Hz, a
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
 :::
 
-At 30 dB, AM delivers 29.5 dB, close to its C/N, and FM delivers 48.4 dB. Although the FM receiver admits six times as much noise as the AM receiver, its output SNR is about 19 dB higher. The demodulator's output follows how far the frequency swings, and a 25 kHz swing is large next to the small frequency jitter that the noise adds to a strong carrier. The spectrum shows the result: FM's noise floor sits about 20 dB under AM's. Each doubling of the deviation improves FM's output by another 5 to 6 dB, as long as the signal stays above threshold.
+At 30 dB, AM delivers 29.5 dB, close to its C/N, and FM delivers 48.4 dB. Although the FM receiver admits six times as much noise as the AM receiver, its output SNR is about 19 dB higher. The demodulator's output follows how far the frequency swings, and a 25 kHz swing is large next to the small frequency jitter that the noise adds to a strong carrier. The spectrum shows the result: FM's noise floor sits about 20 dB under AM's. Each doubling of the deviation improves FM's output by another 5 to 6 dB, as long as the signal stays above threshold and below the meter's own distortion floor near 57 dB, which holds the 25 to 50 kHz step to 4.7 dB.
 ::::
 
 ::::{frame} The FM Threshold
@@ -274,7 +274,7 @@ At 30 dB, AM delivers 29.5 dB, close to its C/N, and FM delivers 48.4 dB. Althou
 
 FM's advantage holds only while the carrier stays well above the noise in the FM receiver's own bandwidth. Below about 10 dB there, noise occasionally swings the phase through a full turn, and the demodulator turns each slip into a click. That is the **FM threshold**: below it, FM's output falls quickly. The table lists the output SNR in dB that we measured with the flowgraph at three deviations, each the average of about 12 s of meter readings, because near threshold the meters wander by about 1 dB as clicks come and go. At 15 dB, the 25 kHz signal is 7 dB above the noise in its 60 kHz band and has lost about 7 dB of its advantage, and at 10 dB its output SNR is no better than AM's.
 
-Wider deviation raises the output SNR above threshold, 53.2 dB against 48.5 at 30 dB C/N, but it also widens the receiver's filter, which lets in more noise and raises the threshold. At 10 dB, the 50 kHz signal is worse than AM, and the 5 kHz signal, which gains only 6 dB at 30 dB C/N, is the best of the four. That is the relationship the objective asks about: FM uses bandwidth to get a cleaner output, and the improvement lasts only while the signal is strong. Broadcast FM uses it because a broadcast station is strong and has a 200 kHz channel to fill. Aircraft use AM because a weak AM signal stays intelligible, and because two aircraft transmitting at once are both heard, where an FM receiver would lock onto the stronger one.
+Wider deviation raises the output SNR above threshold, 53.2 dB against 48.5 at 30 dB C/N, but it also widens the receiver's filter, which lets in more noise and raises the threshold. At 10 dB, the 50 kHz signal is worse than AM, and the 5 kHz signal, which gains only 6 dB at 30 dB C/N, is the best of the four. FM uses bandwidth to get a cleaner output, and the improvement lasts only while the signal is strong. Broadcast FM uses it because a broadcast station is strong and has a 200 kHz channel to fill. Aircraft use AM because a weak AM signal stays intelligible, and because two aircraft transmitting at once are both heard, where an FM receiver would lock onto the stronger one.
 ::::
 
 ::::{frame} FM Explorer
@@ -323,7 +323,7 @@ RDS needs a stronger signal than the audio does, because its 57 kHz subcarrier s
 - <a class="doc-link" href="../../grc/L07-am-rx.grc" download>L07-am-rx.grc</a>: the AM receiver for the aircraft band.
 - <a class="doc-link" href="../../grc/L07-am-vs-fm.grc" download>L07-am-vs-fm.grc</a>: one tone as AM and as FM in the same noise, with output SNR meters. It needs no hardware.
 
-Put every file in one folder; GRC runs a flowgraph from its own folder, so the receivers find the test files there. Each receiver plays through your laptop's speakers; start with the volume low. If GRC reports the RDS blocks as missing, install gr-rds from the radioconda prompt with `conda install gnuradio-rds`.
+Put every file in one folder; GRC runs a flowgraph from its own folder, so the receivers find the test files there. Each receiver plays through your laptop's speakers; start with the volume low. gr-rds comes with radioconda; if GRC reports the RDS blocks missing, run `mamba install gnuradio-rds` from the radioconda prompt.
 ::::
 
 ::::{frame} Summary
