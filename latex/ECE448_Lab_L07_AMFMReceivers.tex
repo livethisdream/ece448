@@ -1,0 +1,473 @@
+\documentclass{exam}
+
+\newif\ifA
+\newif\ifkey
+\newif\ifprintselected   % required by exam_config's \ansbox
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% SET THESE IF VARIABLES
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Lab name -- labs are named by the lesson they belong to, never by a
+% sequential lab number (Neil, 2026-10-12): this is the L7 Lab.
+\def\labLesson{7}
+
+% is this the key or not?
+\ifdefined\iskey
+	\ifnum\iskey=1
+		\keytrue
+	\else
+		\keyfalse
+	\fi
+\else
+	%% Pick one manually
+	\keyfalse % if this is NOT the key
+%	\keytrue     % if this IS the key
+\fi
+
+% set up the header and footer - change for every term
+\ifdefined\thisTermIn
+	\def\thisterm{\thisTermIn}
+\else
+	\def\thisterm{Spring 2027}
+\fi
+%
+\def\thisclass{ECE 448}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% END SET THESE IF VARIABLES
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% packages and shortcuts
+\input{myPackages_gr}
+\usepackage[hidelinks, linkcolor=red]{hyperref}
+\input{myShortcuts}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt}
+
+%% exam class customization
+\input{exam_config}
+\input{ece448_fonts}   % Barlow body text (needs lualatex)
+\printselectedfalse      % full worked solutions in the key, not answers-only
+\CorrectChoiceEmphasis{\color{red}}
+\SolutionEmphasis{\color{red}}
+\renewcommand\questionlabel{\textbf{\thequestion.}}
+\renewcommand{\thepartno}{\alph{partno}}
+\renewcommand{\partlabel}{(\thepartno)}
+
+% Fillable table cell: blank in the student copy, the expected value in red on
+% the KEY. Fixed-width centered columns keep the blank cells writable.
+\newcolumntype{K}[1]{>{\centering\arraybackslash}p{#1}}
+\newcommand{\kv}[1]{\ifkey{\color{red}#1}\fi\rule[-0.10in]{0pt}{0.34in}}
+
+% print the answers if this is the key
+\ifkey
+	\printanswers % if this IS the key
+\else
+	\noprintanswers  %if this is NOT the key
+\fi
+
+% print the header and footer
+% need to print key on top if this is the key
+\ifkey
+	\firstpageheader{}{\color{red}{ KEY}}{}
+	\runningheader{\thisclass\hspace{1pt} -- \thisterm }{L\labLesson\ Lab\hspace{1pt}\color{red}{ KEY}}{\thepage\hspace{1pt} of\hspace{1pt} \numpages}
+	\firstpagefooter{}{}{}
+	\runningfooter{}{}{}
+\else
+	\firstpageheader{}{}{}
+	\runningheader{\thisclass \hspace{1pt} -- \thisterm }{L\labLesson\ Lab\hspace{1pt}}{\thepage\hspace{1pt} of\hspace{1pt} \numpages}
+	\firstpagefooter{}{}{}
+	\runningfooter{}{}{}
+\fi
+
+\runningheadrule
+
+
+\begin{document}
+\pagestyle{headandfoot}   % exam class
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% title block
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{center}
+USAF ACADEMY \\
+DEPARTMENT OF ELECTRICAL AND COMPUTER ENGINEERING \\
+LESSON \labLesson\ LAB - AM and FM Receivers \\
+\textbf{Lab Packet} \\
+\thisterm \\[4mm]
+\end{center}
+
+\vspace{-4pt}
+\textbf{Name:} \rule[-2pt]{2.6in}{0.4pt} \hfill
+\textbf{Section:} \rule[-2pt]{0.9in}{0.4pt} \hfill
+\textbf{Date:} \rule[-2pt]{1.1in}{0.4pt}
+
+\vspace{4pt}
+
+\fullwidth{\textbf{Learning Objective 3.3: } I can implement an FM receiver in GNU
+Radio, demodulate a live broadcast FM signal, and decode its RDS data.
+\\[2pt]\textbf{Learning Objective 3.4: } I can explain and demonstrate the
+trade-off between bandwidth and noise performance for AM vs.\ FM.}
+
+\vspace{2pt}
+
+This packet is the L\labLesson\ Lab, in three parts, and you turn it in once, complete,
+before Lesson 8. Do \textbf{Part 1} on your own before the lab period: predict the
+receiver settings and the numbers you will measure. \textbf{Part 2} is your own
+measurements, on your own laptop and RTL-SDR, recorded in class. Do \textbf{Part 3} on
+your own after the lab: compare the measurements with the predictions and answer the
+analysis questions.
+
+\textbf{Grading.} We grade one submission against Objectives 3.3 and 3.4 on the
+course's 1 / 0 scale, and you may revise it under course policy. Paste screenshots
+where a question asks for one.
+
+\textbf{Receive only.} Every flowgraph in this lab receives or simulates. The RTL-SDR
+cannot transmit, and nothing in this lab needs a license. Start every receiver with
+the volume low.
+
+\textbf{Files.} Download the six L7 flowgraphs from the L7 lesson page into one
+folder, with your \texttt{fm\_capture.cfile} from the L5 Lab. Open
+\texttt{L07-rds-rx.grc} first and confirm that GRC shows no missing blocks: gr-rds
+comes with radioconda; if GRC reports the RDS blocks missing, run
+\texttt{mamba install gnuradio-rds} from the radioconda prompt. Then, before the
+period, run \texttt{L07-fm-test-tx.grc}, which also uses an RDS block, and
+\texttt{L07-am-test-tx.grc} once each; they write \texttt{L07-fm-test.cfile} and
+\texttt{L07-am-test.cfile} into that folder and stop on their own.
+
+\begin{questions}
+
+\fullwidth{\large\textbf{Part 1: Pre-Lab} \normalsize(individual, before the lab period)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{Predictions.} You will check each of these at the bench.
+
+\begin{parts}
+
+	\part Fill in the receiver settings for the test file and for your own L5
+	capture. The shift is the Frequency Xlating FIR Filter's center frequency.
+
+	\begin{center}
+	\renewcommand{\arraystretch}{1.25}
+	\begin{tabular}{| l | K{1.2in} | K{1.2in} | K{1.2in} |}
+	\hline
+	Recording & SDR center (MHz) & Station (MHz) & Shift (kHz) \\\hline
+	\texttt{L07-fm-test.cfile} & $100.0$ & $100.3$ & \kv{$+300$} \\\hline
+	\texttt{fm\_capture.cfile} & & & \\\hline
+	\end{tabular}
+	\end{center}
+
+		\begin{solution}[0.5in]
+		Shift = station $-$ center. For the L5 capture, answers vary; the shift is
+		usually 100 to 400 kHz, because the L5 Lab centered the station slightly off the
+		DC spike. A shift under about 100 kHz leaves the DC spike inside the channel
+		filter, where it shows up as a tone or hum.
+		\end{solution}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part The FM receiver decimates 2.4~MS/s by 10 and then by 5. Find the two
+		rates, and the Quadrature Demod gain that makes 75~kHz of deviation an output
+		of 1.
+		\begin{solution}[0.9in]
+		The rates are 240 kS/s, then 48 kS/s.
+		\eq{ \dfrac{240\ \text{kHz}}{2\pi \times 75\ \text{kHz}} = 0.509 }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.3in]{240 and 48 kS/s}
+
+		\vspace{4pt}
+		gain = \ansbox[1.0in]{$0.509$}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part The test station's audio is a 1~kHz tone at amplitude 0.6 plus a 2.5~kHz
+		tone at 0.4, with pre-emphasis at the transmitter and de-emphasis at the
+		receiver. Predict how far below the 1~kHz line the 2.5~kHz line sits on the
+		receiver's audio sink.
+		\begin{solution}[1.0in]
+		De-emphasis undoes pre-emphasis, so the levels are the message's:
+		\eq{ 20\mylog{\dfrac{0.4}{0.6}} = -3.5\db }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.0in]{$3.5\db$ below}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part RDS sends 1187.5 bits per second in 104-bit groups, and the station name
+		takes four groups. Find the shortest time from a clean start to a displayed
+		name.
+		\begin{solution}[0.8in]
+		\eq{ 4 \times \dfrac{104}{1187.5} = 4 \times 87.6 = 350\ \text{ms} }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.0in]{350 ms}
+	\end{minipage}
+
+	\part Find the ATIS frequency of an airport near you in the FAA Chart Supplement
+	or on a sectional chart. Choose an SDR center 250~kHz below it, and fill in the AM
+	receiver's settings.
+
+	\begin{center}
+	\renewcommand{\arraystretch}{1.25}
+	\begin{tabular}{| l | K{1.0in} | K{1.0in} | K{1.0in} | K{1.0in} |}
+	\hline
+	Airport & ATIS (MHz) & SDR center (MHz) & Shift (kHz) & Decimation \\\hline
+	& & & \kv{$+250$} & \kv{$50$} \\\hline
+	\end{tabular}
+	\end{center}
+
+		\begin{solution}[0.4in]
+		The decimation is $2.4\ \text{MS/s} \div 48\ \text{kS/s} = 50$ for any station.
+		\end{solution}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part In \texttt{L07-am-vs-fm.grc} the FM channel is $2(25 + 5) = 60$~kHz wide
+		and the AM channel 10~kHz. FM reaches threshold at about 10~dB C/N in its own
+		bandwidth. Predict the C/N in 10~kHz at which the 25~kHz FM signal reaches
+		threshold.
+		\begin{solution}[0.9in]
+		\eq{ 10 + 10\mylog{\dfrac{60}{10}} = 10 + 7.8 = 17.8\db }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.0in]{$17.8\db$}
+	\end{minipage}
+
+\end{parts}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\fullwidth{\large\textbf{Part 2: Measurements} \normalsize(your own laptop and RTL-SDR, in class)}
+
+\question \textbf{Build the WBFM receiver.} Start GRC with an empty canvas. Do not
+open \texttt{L07-wbfm-rx.grc}: build the receiver yourself.
+\begin{itemize}\setlength{\itemsep}{0pt}
+	\item \texttt{samp\_rate} 2.4e6, a QT GUI Entry \texttt{fc\_mhz} (100.0), a QT GUI
+	Entry \texttt{station\_mhz} (100.3), and a QT GUI Range \texttt{vol} from 0 to 1.
+	\item A File Source on \texttt{L07-fm-test.cfile}, repeat on.
+	\item A Frequency Xlating FIR Filter, decimation 10, center frequency
+	\texttt{(station\_mhz - fc\_mhz) * 1e6}, with a Low-pass Filter Taps variable
+	\texttt{chan\_taps}: cutoff 105 kHz, transition 30 kHz, at \texttt{samp\_rate}.
+	\item A Quadrature Demod with the gain of Question 1(b).
+	\item A Decimating FIR Filter, decimation 5, with taps
+	\texttt{firdes.low\_pass(1, samp\_rate/10, 15e3, 3e3)}.
+	\item FM Deemphasis at 48 kHz with $\tau$ = 75~$\mu$s, a Multiply Const
+	\texttt{vol}, an Audio Sink at 48 kHz, and a float QT GUI Frequency Sink on the
+	de-emphasis output. Do not add a Throttle.
+\end{itemize}
+
+\begin{parts}
+
+	\part Paste a screenshot of your flowgraph on the GRC canvas. Every connection
+	must be black, not red.
+		\begin{solution}[1.6in]
+		Matches the L7 lesson figure: File Source, Frequency Xlating FIR Filter (complex
+		ports), Quadrature Demod, then float blocks: the decimating audio filter, FM
+		Deemphasis, Multiply Const, and the Audio Sink.
+		\end{solution}
+
+	\part Run it. Read the audio frequency sink, and record the frequency of each line and how far the
+	2.5~kHz line sits below the 1~kHz line.
+		\begin{solution}[0.6in]
+		The sink shows lines at 1 and 2.5 kHz, about 3.5 to 4 dB apart, matching Question 1(c), and
+		nothing else above the floor.
+		\end{solution}
+
+	\part Type 99.5 into Station. Describe what you hear, and explain why the station
+	at 100.3~MHz disappears.
+		\begin{solution}[0.9in]
+		The audio is a single 600 Hz tone. The Frequency Xlating FIR Filter now shifts 99.5 MHz to
+		0 Hz, and the station at 100.3 MHz lands 800 kHz away, far outside the ±90 kHz
+		passband.
+		\end{solution}
+
+\end{parts}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{Your L5 capture.} In your receiver from Question 2, set the File
+Source to \texttt{fm\_capture.cfile}, SDR center to the frequency you recorded it at,
+and Station to the station you centered. Add a float QT GUI Frequency Sink on the
+Quadrature Demod output, with bandwidth \texttt{samp\_rate/10}.
+
+\begin{parts}
+
+	\part Paste a screenshot of the demodulated multiplex. Mark each part of the
+	broadcast multiplex you can see: mono audio, the 19~kHz pilot, the stereo band
+	from 23 to 53~kHz, and RDS at 57~kHz.
+		\begin{solution}[1.8in]
+		Answers vary. A stereo station shows a sharp pilot line at 19 kHz and the stereo
+		band; most stations also show the RDS hump at 57 kHz. A mono station shows only
+		the audio and possibly RDS.
+		\end{solution}
+
+	\part Describe the audio. Your capture is 2~s long, and the File Source repeats it.
+		\begin{solution}[0.6in]
+		The audio is the station's program in mono, repeating every 2 s.
+		\end{solution}
+
+\end{parts}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\question \textbf{Live FM and RDS.} Open \texttt{L07-rds-rx.grc}. Disable the File
+Source, enable the RTL-SDR Source, and set SDR center about 300~kHz below a strong
+local station and Station to the station. Set RF gain from your L5 Lab gain table.
+
+\begin{parts}
+
+	\part Record what the RDS panel shows. The panel prints the PI code under
+	``Program Type'' and the program type under ``PI''; record each under its correct
+	name.
+
+	\begin{center}
+	\renewcommand{\arraystretch}{1.25}
+	\begin{tabular}{| l | p{3.6in} |}
+	\hline
+	Station (MHz) & \\\hline
+	Station name (PS) & \\\hline
+	PI code (hex) & \\\hline
+	Program type & \\\hline
+	Radiotext & \\\hline
+	\end{tabular}
+	\end{center}
+
+		\begin{solution}[0.3in]
+		Answers vary by station.
+		\end{solution}
+
+	\part Paste a screenshot of the RDS constellation and the panel. Explain what the
+	two clusters show about the receiver.
+		\begin{solution}[1.6in]
+		Two tight clusters at $\pm 1$ show BPSK with its carrier recovered by the
+		Constellation Receiver and its bit timing found by Symbol Sync. A ring or a smear
+		would mean the carrier loop has not locked or the signal is too weak.
+		\end{solution}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Restart the flowgraph and time how long the station name takes to appear.
+		Compare with Question 1(d).
+		\begin{solution}[0.8in]
+		The name usually takes 1 to 3 s, longer than 350 ms, because a station interleaves other group
+		types between the name's four groups, and the decoder first has to find the group
+		boundaries.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.0in]{}
+	\end{minipage}
+
+\end{parts}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{ATIS.} Open \texttt{L07-am-rx.grc}. Check it first on
+\texttt{L07-am-test.cfile}, then disable the File Source, enable the RTL-SDR Source,
+and enter the settings of Question 1(e).
+
+\begin{parts}
+
+	\part Paste a screenshot of the receiver on the live ATIS, and record the
+	information letter and the altimeter setting it broadcasts.
+		\begin{solution}[1.8in]
+		Answers vary. The channel sink shows a carrier line at 0 Hz with voice sidebands
+		within about $\pm 3$ kHz, and the audio sink shows speech.
+		\end{solution}
+
+	\part Lower RF gain until the voice is hard to understand, and describe how the AM
+	audio degrades. You will compare it with FM in Question 6(b).
+		\begin{solution}[1.0in]
+		The AM voice grows gradually noisier under a steady hiss and stays intelligible well
+		after the hiss is obvious. Answers vary with the station's strength.
+		\end{solution}
+
+\end{parts}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\question \textbf{AM and FM in the same noise.} Open and run
+\texttt{L07-am-vs-fm.grc}. It needs no hardware.
+
+\begin{parts}
+
+	\part Read the two output SNR meters at each C/N, with the FM deviation at 25~kHz
+	and then at 5~kHz. Near threshold the meters wander; record the middle of the
+	range you see.
+
+	\begin{center}
+	\renewcommand{\arraystretch}{1.25}
+	\begin{tabular}{| l | K{0.7in} | K{0.7in} | K{0.7in} | K{0.7in} | K{0.7in} |}
+	\hline
+	C/N in 10 kHz (dB) & 30 & 25 & 20 & 15 & 10 \\\hline
+	AM & \kv{$29.5$} & \kv{$24.5$} & \kv{$19.4$} & \kv{$14.4$} & \kv{$9.2$} \\\hline
+	FM, 25 kHz & \kv{$48.5$} & \kv{$44.1$} & \kv{$39.2$} & \kv{$26.1$} & \kv{$9.3$} \\\hline
+	FM, 5 kHz & \kv{$35.5$} & \kv{$30.7$} & \kv{$25.5$} & \kv{$20.5$} & \kv{$14.2$} \\\hline
+	\end{tabular}
+	\end{center}
+
+		\begin{solution}[0.5in]
+		Your readings should fall within about 1 dB of these values; the FM entries near threshold vary the most.
+		\end{solution}
+
+	\part Set the deviation to 25~kHz and Listen To to FM. Lower C/N from 30 to 10~dB
+	and describe the sound at 20, 15, and 10~dB.
+		\begin{solution}[1.0in]
+		The tone is clean at 20 dB. Clicks begin near 15 dB and become frequent at 10 dB, where the
+		tone sounds rough. The clicks are the FM threshold. AM, in Question 5(b), only
+		grew steadily noisier.
+		\end{solution}
+
+\end{parts}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\fullwidth{\large\textbf{Part 3: Writeup} \normalsize(individual, after the lab)}
+
+\question \textbf{Analysis.}
+
+\begin{parts}
+
+	\part Your mono receiver plays a stereo station correctly. Using your multiplex
+	screenshot from Question 3(a), explain why.
+		\begin{solution}[1.1in]
+		The mono audio, the sum of the left and right channels, fills 0 to 15 kHz by
+		itself. The pilot, the stereo difference signal, and RDS all sit above 15 kHz, so
+		the receiver's 15 kHz low-pass filter removes them and plays the sum.
+		\end{solution}
+
+	\part Compare where your 25~kHz FM measurements lost their advantage over AM with
+	your prediction in Question 1(f). Then use your table to explain why the 5~kHz
+	signal has the higher output SNR at 10~dB C/N and the lower one at 30~dB.
+		\begin{solution}[1.6in]
+		The 25 kHz signal leads AM by about 19 to 20 dB down to 20 dB C/N, has lost
+		about 7 dB of that lead at 15 dB, and is no better than AM at 10 dB, consistent
+		with a threshold near the predicted 17.8 dB. Wider deviation gives a larger
+		output SNR above threshold, 48.5 against 35.5 dB at 30 dB C/N. It also needs a
+		wider channel, 60 kHz against 20 kHz, which admits 4.8 dB more noise, so the
+		25 kHz signal falls below threshold first. At 10 dB the 5 kHz signal is just under its 13 dB
+		threshold and has lost only about 1 dB of its 6 dB lead, because the threshold is
+		a gradual onset rather than a cliff, while the wider deviations are far below
+		theirs.
+		\end{solution}
+
+	\part Aircraft use AM, and broadcasters use wideband FM. Using your measurements
+	from Questions 5 and 6, explain one reason for each choice.
+		\begin{solution}[1.2in]
+		Broadcast FM: a broadcast station is strong and has a 200 kHz channel, so it
+		stays far above threshold and the wide deviation gives a much cleaner output than
+		AM. Aircraft AM: a distant aircraft is weak, and an AM signal degrades gradually
+		and stays intelligible where FM would break into clicks. Two aircraft transmitting
+		at once are also both heard on AM.
+		\end{solution}
+
+\end{parts}
+
+\end{questions}
+
+\end{document}
