@@ -56,7 +56,7 @@
 // Frequencies in MHz throughout. Tuning ranges and maximum sample rates are the
 // manufacturers' numbers: RTL-SDR Blog V4 datasheet (2.56 MS/s is its stable
 // rate), Great Scott Gadgets (HackRF One), and Analog Devices (ADALM-PLUTO,
-// whose analog bandwidth is 20 MHz however fast it samples).
+// whose instantaneous bandwidth is 20 MHz however fast it samples).
 const RADIOS = {
   rtl:    { name: 'RTL-SDR', lo: 0.5,  hi: 1766, fsMax: 2.56,  bw: Infinity },
   hackrf: { name: 'HackRF',  lo: 1,    hi: 6000, fsMax: 20,    bw: Infinity },
@@ -72,7 +72,7 @@ function fmStations() {
 const BANDS = {
   fm:   { lo: 87.5, hi: 108.5, step: 0.1, fc: 98.0, sig: fmStations() },
   adsb: { lo: 1080, hi: 1100,  step: 0.1, fc: 1090, sig: [{ f: 1090, w: 2, h: -50, lab: 'ADS-B' }] },
-  ism:  { lo: 2390, hi: 2495,  step: 0.5, fc: 2437, sig: [
+  ism:  { lo: 2390, hi: 2495,  step: 0.5, fc: 2425, sig: [
           { f: 2412, w: 20, h: -55, lab: 'Wi-Fi 1' }, { f: 2437, w: 20, h: -45, lab: 'Wi-Fi 6' },
           { f: 2462, w: 20, h: -62, lab: 'Wi-Fi 11' }, { f: 2402, w: 1, h: -58, lab: 'BLE' },
           { f: 2426, w: 1, h: -64, lab: 'BLE' }, { f: 2480, w: 1, h: -60, lab: 'BLE' } ] },
@@ -82,7 +82,7 @@ const C = { navy:'#004a85', mid:'#0067b9', red:'#b01e24', amber:'#8a5a00', rule:
 const $ = id => document.getElementById(id);
 let band = 'fm', radio = 'rtl';
 const fcByBand = { fm: BANDS.fm.fc, adsb: BANDS.adsb.fc, ism: BANDS.ism.fc };
-const fsByRadio = { rtl: 2.4, hackrf: 20, pluto: 20 };
+const fsByRadio = { rtl: 2.4, hackrf: 2.4, pluto: 20 };
 
 function configure() {
   const B = BANDS[band], R = RADIOS[radio];
@@ -155,7 +155,7 @@ function update() {
   $('ro-span').className = 'ro' + (inRange ? '' : ' bad');
   // GNU Radio carries each complex sample as two 32-bit floats: 8 bytes.
   $('o-rate').textContent = inRange ? (8 * fs).toFixed(1) + ' MB/s' : '—';
-  const seen = inRange ? B.sig.filter(s => s.f - s.w / 2 >= win.lo && s.f + s.w / 2 <= win.hi).length : 0;
+  const seen = inRange ? B.sig.filter(s => s.f - s.w / 2 >= win.lo - 1e-9 && s.f + s.w / 2 <= win.hi + 1e-9).length : 0;
   $('o-sig').textContent = seen + ' of ' + B.sig.length;
   $('ro-sig').className = 'ro' + (seen === 0 ? ' bad' : '');
   draw(win);

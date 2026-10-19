@@ -19,7 +19,7 @@ collaborate).}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \question \textbf{Choosing a radio.} The course SDRs are the RTL-SDR Blog V4
 (0.5 to 1766 MHz, 2.56 MS/s, 8 bits, receive only), the HackRF One (1 to 6000 MHz,
-20 MS/s, 8 bits, half duplex), the PlutoSDR (325 to 3800 MHz, 20 MHz analog bandwidth,
+20 MS/s, 8 bits, half duplex), the PlutoSDR (325 to 3800 MHz, 20 MHz instantaneous bandwidth,
 12 bits, full duplex), and the ADALM-PHASER (10.0 to 10.5 GHz, digitized by a PlutoSDR).
 \begin{parts}
 
@@ -61,8 +61,8 @@ collaborate).}
 
 \newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\question \textbf{The mixer and I and Q.} An RTL-SDR's center frequency, its LO, is
-set to 433.0 MHz, and a key fob transmits at 433.92 MHz.
+\question \textbf{The mixer and I and Q.} We set a PlutoSDR's center frequency, its LO,
+to 433.0 MHz, and a key fob transmits at 433.92 MHz.
 \begin{parts}
 
 	\begin{minipage}[t]{0.58\linewidth}
@@ -83,8 +83,8 @@ set to 433.0 MHz, and a key fob transmits at 433.92 MHz.
 
 	\begin{minipage}[t]{0.58\linewidth}
 		\part With a single real mixer, a second transmitter would also come out at
-		0.92 MHz. Find its frequency, and explain how the SDR's $I$ and $Q$ outputs tell
-		the two apart.
+		0.92 MHz. Find its frequency, and explain how the PlutoSDR's $I$ and $Q$ outputs
+		tell the two apart.
 		\begin{solution}[1.3in]
 		\eq{ 433.0 - 0.92 = 432.08\ \text{MHz} }
 		The second mixer, driven by the LO shifted 90°, gives $Q$. In $I + jQ$ the
@@ -100,7 +100,8 @@ set to 433.0 MHz, and a key fob transmits at 433.92 MHz.
 	\begin{minipage}[t]{0.58\linewidth}
 		\part A superheterodyne receiver, like the ADALM-PHASER, mixes a 10.25 GHz
 		signal to an IF of 2.2 GHz with an LO above the signal. Find the LO frequency,
-		and the other input frequency that also mixes to 2.2 GHz.
+		and the image: the input on the other side of the LO, at $f_{LO} + f_{IF}$,
+		that also mixes to 2.2 GHz.
 		\begin{solution}[1.3in]
 		\eq{ f_{LO} &= 10.25 + 2.2 = 12.45\ \text{GHz} \\ f_\text{image} &= 12.45 + 2.2 = 14.65\ \text{GHz} }
 		A filter ahead of the mixer must remove 14.65 GHz, or a signal there lands on
@@ -112,58 +113,64 @@ set to 433.0 MHz, and a key fob transmits at 433.92 MHz.
 		LO: \ansbox[1.2in]{12.45 GHz}
 
 		\vspace{4pt}
-		other: \ansbox[1.2in]{14.65 GHz}
+		image: \ansbox[1.2in]{14.65 GHz}
 	\end{minipage}
 
 \end{parts}
 
 \newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\question \textbf{Sample rate and data rate.} A team captures one 20 MHz Wi-Fi channel
-centered on 2437 MHz with a HackRF.
+\question \textbf{Sample rate and data rate.} A team captures a 10 MHz-wide test signal
+centered on 2437 MHz with a HackRF. The usable window is somewhat narrower than $f_s$,
+because the radio's filters roll off near its edges.
 \begin{parts}
 
 	\begin{minipage}[t]{0.58\linewidth}
-		\part Find the lowest sample rate that shows the whole channel, and the band the
-		window covers.
-		\begin{solution}[0.9in]
-		Complex samples at $f_s$ show a window $f_s$ wide, so $f_s = 20$ MS/s:
-		\eq{ 2437 \pm 10 = 2427 \text{ to } 2447\ \text{MHz} }
+		\part Find the lowest sample rate whose window just holds the signal. Then
+		choose a rate 25\% higher, to leave margin at the edges, and find the band
+		that window covers.
+		\begin{solution}[1.1in]
+		A complex window is $f_s$ wide, so the signal needs at least 10 MS/s. With
+		25\% margin:
+		\eq{ f_s &= 1.25 \times 10 = 12.5\ \text{MS/s} \\ 2437 \pm 6.25 &= 2430.75 \text{ to } 2443.25\ \text{MHz} }
 		\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
 		\raggedleft \vspace{12pt}
-		rate: \ansbox[1.3in]{20 MS/s}
+		lowest: \ansbox[1.3in]{10 MS/s}
 
 		\vspace{4pt}
-		band: \ansbox[1.3in]{2427 to 2447 MHz}
+		chosen: \ansbox[1.3in]{12.5 MS/s}
+
+		\vspace{4pt}
+		band: \ansbox[1.6in]{2430.75 to 2443.25 MHz}
 	\end{minipage}
 
 	\begin{minipage}[t]{0.58\linewidth}
-		\part GNU Radio stores each complex sample in 8 bytes. Find the data rate
-		through the flowgraph and the size of a 10 s File Sink capture.
+		\part GNU Radio stores each complex sample in 8 bytes. At 12.5 MS/s, find the
+		data rate through the flowgraph and the size of a 10 s File Sink capture.
 		\begin{solution}[0.9in]
-		\eq{ 8 \times 20\times10^{6} &= 160\ \text{MB/s} \\ 10 \times 160 &= 1.6\ \text{GB} }
+		\eq{ 8 \times 12.5\times10^{6} &= 100\ \text{MB/s} \\ 10 \times 100 &= 1\ \text{GB} }
 		\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
 		\raggedleft \vspace{12pt}
-		rate: \ansbox[1.2in]{160 MB/s}
+		rate: \ansbox[1.2in]{100 MB/s}
 
 		\vspace{4pt}
-		file: \ansbox[1.2in]{1.6 GB}
+		file: \ansbox[1.2in]{1 GB}
 	\end{minipage}
 
 	\begin{minipage}[t]{0.58\linewidth}
 		\part The HackRF sends 8-bit $I$ and 8-bit $Q$ over USB. Find the USB data rate
-		at 20 MS/s, and how many times larger the flowgraph's rate is.
+		at 12.5 MS/s, and how many times larger the flowgraph's rate is.
 		\begin{solution}[0.9in]
-		\eq{ 2\ \text{bytes} \times 20\times10^{6} = 40\ \text{MB/s}, \qquad \frac{160}{40} = 4 }
+		\eq{ 2\ \text{bytes} \times 12.5\times10^{6} = 25\ \text{MB/s}, \qquad \frac{100}{25} = 4 }
 		\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
 		\raggedleft \vspace{12pt}
-		USB: \ansbox[1.2in]{40 MB/s}
+		USB: \ansbox[1.2in]{25 MB/s}
 
 		\vspace{4pt}
 		ratio: \ansbox[1.2in]{4}
@@ -173,7 +180,7 @@ centered on 2437 MHz with a HackRF.
 	cannot make this capture.
 		\begin{solution}[0.9in]
 		Its tuning range stops at 1766 MHz, below 2437 MHz. Even inside its range, its
-		2.56 MS/s shows only 2.56 MHz, far less than the 20 MHz channel.
+		2.56 MS/s shows only 2.56 MHz, far less than the 10 MHz signal.
 		\end{solution}
 
 \end{parts}
@@ -223,7 +230,7 @@ interest is 55 dB below it.
 	clipping.
 		\begin{solution}[0.8in]
 		The time sink shows $I$ and $Q$ flattened at $\pm 1$, and the spectrum shows new
-		signals where nothing was transmitted. The strong tone also rises by less than
+		signals where nothing transmits. The strong tone also rises by less than
 		the gain increase.
 		\end{solution}
 
