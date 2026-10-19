@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FSK explorer — deviation, symbol rate, bandwidth, and noise</title>
+<style>
+  :root { --navy:#004a85; --mid:#0067b9; --edge:#cddce9; --edge2:#b9d2e5; --bg:#f5f9fc;
+          --ink:#15202b; --ink3:#5b6573;
+          --amber:#8a5a00; --red:#b01e24; --grn:#3f7d34; }
+  html,body { margin:0; padding:0; font-family:'Inter',system-ui,-apple-system,sans-serif; color:var(--ink); background:#fff; }
+  .app { display:flex; flex-direction:column; gap:8px; padding:12px; }
+  .plots { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:10px; }
+  @media (max-width:620px) { .plots { grid-template-columns:1fr; } }
+  canvas { display:block; box-sizing:border-box; width:100%; height:auto; background:#fff; border:1px solid var(--edge); border-radius:6px; }
+  .controls { display:grid; grid-template-columns:minmax(0,1.2fr) minmax(0,1fr) minmax(0,1.2fr); gap:8px 16px; align-items:center;
+              padding:8px 12px; background:var(--bg); border:1px solid var(--edge); border-radius:6px; }
+  @media (max-width:620px) { .controls { grid-template-columns:1fr; } }
+  .ctl { display:grid; grid-template-columns:auto 1fr; column-gap:8px; row-gap:2px; align-items:center; min-width:0; }
+  .ctl label, .ctl .lab { font-size:10.5px; text-transform:uppercase; letter-spacing:0.05em; color:var(--ink3); font-weight:700; white-space:nowrap; }
+  .ctl .val { color:var(--navy); font-size:12px; font-weight:600; font-variant-numeric:tabular-nums; text-align:right; white-space:nowrap; }
+  .ctl input[type=range]{ grid-column:1 / span 2; width:100%; margin:0; accent-color:var(--mid); }
+  .seg { grid-column:1 / span 2; display:flex; gap:4px; flex-wrap:wrap; }
+  .seg button { font:inherit; font-size:11.5px; font-weight:600; color:var(--navy); background:#fff; border:1px solid var(--edge2); border-radius:14px; padding:3px 10px; cursor:pointer; }
+  .seg button.on { background:var(--navy); color:#fff; border-color:var(--navy); }
+  .readouts { display:grid; gap:6px; grid-template-columns:repeat(4,minmax(0,1fr)); }
+  @media (max-width:430px) { .readouts { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+  .ro { display:flex; flex-direction:column; align-items:center; gap:2px; padding:5px 4px 6px; min-width:0;
+        border:1px solid var(--edge2); border-radius:6px; background:#eef4fa; }
+  .ro .k { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:var(--ink3); white-space:nowrap; }
+  .ro .v { font-size:14px; font-weight:700; white-space:nowrap; font-variant-numeric:tabular-nums; color:var(--navy); }
+  .ro.bad .v { color:var(--red); }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="plots">
+    <canvas id="spec" aria-label="Spectrum of the received FSK signal, with the Carson bandwidth shaded"></canvas>
+    <canvas id="demod" aria-label="Demodulator output for the first sixteen bits, with the sampled decisions marked"></canvas>
+  </div>
+  <div class="controls">
+    <div class="ctl"><label for="dev">Deviation</label><span class="val" id="dev-v"></span>
+      <input type="range" id="dev" min="250" max="4000" step="250" value="1000"></div>
+    <div class="ctl"><span class="lab">Symbol rate</span><span class="val" id="baud-v"></span>
+      <div class="seg" id="baud"><button data-b="500">500</button><button data-b="1000" class="on">1000</button><button data-b="2000">2000</button></div></div>
+    <div class="ctl"><label for="noise">Noise voltage</label><span class="val" id="noise-v"></span>
+      <input type="range" id="noise" min="0" max="2.5" step="0.05" value="0.5"></div>
+  </div>
+  <div class="readouts">
+    <div class="ro"><span class="k">index h</span><span class="v" id="o-h">—</span></div>
+    <div class="ro"><span class="k">Carson BW</span><span class="v" id="o-bw">—</span></div>
+    <div class="ro"><span class="k">SNR in BW</span><span class="v" id="o-snr">—</span></div>
+    <div class="ro" id="ro-e"><span class="k">bit errors</span><span class="v" id="o-e">—</span></div>
+  </div>
+</div>
+
+<script>
+'use strict';
+// The sample rate is the L8 flowgraphs' 32 kHz, and the receiver is theirs:
+// a low-pass filter of half-width deviation + symbol rate, a quadrature
+// demodulator scaled so the two tones come out at +1 and -1, and a one-symbol
+// moving average. The one difference is the clock: here an ideal clock samples
+// each symbol at its end, where the GNU Radio Symbol Sync block has to find it.
+const FS = 32000, NBITS = 1000, SANS = 'Inter, system-ui, -apple-system, sans-serif';
+const C = { navy:'#004a85', mid:'#0067b9', red:'#b01e24', amber:'#8a5a00', rule:'#cddce9', ink:'#15202b', ink3:'#5b6573', band:'#eef4fa' };
+const devEl = document.getElementById('dev'), noiseEl = document.getElementById('noise');
+let baud = 1000;
+document.querySelectorAll('#baud button').forEach(b => b.onclick = () => {
+  baud = +b.dataset.b; document.querySelectorAll('#baud button').forEach(x => x.classList.toggle('on', x === b)); update(); });
+devEl.oninput = update; noiseEl.oninput = update;
+
+// Seeded random numbers, so the same settings always give the same picture.
+function rng(seed){ let a = seed >>> 0; return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a);
+  t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+function gauss(r){ const u = Math.max(r(), 1e-12), v = r(); return Math.sqrt(-2*Math.log(u)) * Math.cos(2*Math.PI*v); }
+
+function simulate(dev, sps, sigma) {
+  const rb = rng(448), rn = rng(8), n = NBITS * sps;
+  const bits = new Int8Array(NBITS); for (let k = 0; k < NBITS; k++) bits[k] = rb() < 0.5 ? 0 : 1;
+  // transmitter: continuous-phase FSK, as GNU Radio's Frequency Mod block makes it
+  const re = new Float64Array(n), im = new Float64Array(n), k0 = 2*Math.PI*dev/FS;
+  let ph = 0;
+  for (let i = 0; i < n; i++) { ph += k0 * (2*bits[(i/sps)|0] - 1); re[i] = Math.cos(ph); im[i] = Math.sin(ph); }
+  // channel: complex noise of total power sigma^2
+  const s = sigma / Math.SQRT2;
+  for (let i = 0; i < n; i++) { re[i] += s*gauss(rn); im[i] += s*gauss(rn); }
+  // receiver low-pass filter, 65-tap Hamming-windowed sinc
+  const L = 65, M = (L-1)/2, fc = (dev + FS/sps) / FS, h = new Float64Array(L);
+  let sum = 0;
+  for (let t = 0; t < L; t++) { const x = t - M; h[t] = (x === 0 ? 2*fc : Math.sin(2*Math.PI*fc*x)/(Math.PI*x)) * (0.54 - 0.46*Math.cos(2*Math.PI*t/(L-1))); sum += h[t]; }
+  for (let t = 0; t < L; t++) h[t] /= sum;
+  const fr = new Float64Array(n), fi = new Float64Array(n);
+  for (let i = 0; i < n; i++) { let a = 0, b = 0; for (let t = 0; t < L && t <= i; t++) { a += h[t]*re[i-t]; b += h[t]*im[i-t]; } fr[i] = a; fi[i] = b; }
+  // quadrature demodulator, then a one-symbol moving average
+  const g = FS / (2*Math.PI*dev), y = new Float64Array(n), ma = new Float64Array(n);
+  for (let i = 1; i < n; i++) y[i] = g * Math.atan2(fi[i]*fr[i-1] - fr[i]*fi[i-1], fr[i]*fr[i-1] + fi[i]*fi[i-1]);
+  let acc = 0;
+  for (let i = 0; i < n; i++) { acc += y[i]; if (i >= sps) acc -= y[i-sps]; ma[i] = acc / sps; }
+  // symbol k ends at (k+1)*sps - 1, plus the filter's M samples of delay
+  const at = k => (k+1)*sps - 1 + M, dec = new Int8Array(NBITS);
+  let errs = 0, counted = 0;
+  for (let k = 0; k < NBITS; k++) { const i = at(k); if (i >= n) { dec[k] = -1; continue; }
+    dec[k] = ma[i] > 0 ? 1 : 0; if (k >= 2) { counted++; errs += dec[k] !== bits[k]; } }
+  return { re, im, bits, ma, dec, errs, counted, at, M };
+}
+
+// Averaged, windowed 512-point FFTs; a unit-power tone peaks at 0 dB.
+function psd(re, im) {
+  const N = 512, w = new Float64Array(N); let ws = 0;
+  for (let i = 0; i < N; i++) { w[i] = 0.5 - 0.5*Math.cos(2*Math.PI*i/N); ws += w[i]; }
+  const P = new Float64Array(N), xr = new Float64Array(N), xi = new Float64Array(N);
+  let segs = 0;
+  for (let s0 = 0; s0 + N <= re.length; s0 += N) {
+    for (let i = 0; i < N; i++) { xr[i] = re[s0+i]*w[i]; xi[i] = im[s0+i]*w[i]; }
+    fft(xr, xi); for (let i = 0; i < N; i++) P[i] += xr[i]*xr[i] + xi[i]*xi[i]; segs++;
+  }
+  const out = new Float64Array(N);
+  for (let i = 0; i < N; i++) out[(i + N/2) % N] = 10*Math.log10(P[i] / segs / (ws*ws) + 1e-12);
+  return out;
+}
+function fft(xr, xi) {
+  const n = xr.length;
+  for (let i = 1, j = 0; i < n; i++) { let b = n >> 1; for (; j & b; b >>= 1) j ^= b; j ^= b;
+    if (i < j) { [xr[i], xr[j]] = [xr[j], xr[i]]; [xi[i], xi[j]] = [xi[j], xi[i]]; } }
+  for (let len = 2; len <= n; len <<= 1) {
+    const a = -2*Math.PI/len, wr = Math.cos(a), wi = Math.sin(a);
+    for (let i = 0; i < n; i += len) { let cr = 1, ci = 0;
+      for (let j = 0; j < len/2; j++) { const p = i+j, q = p+len/2, tr = xr[q]*cr - xi[q]*ci, ti = xr[q]*ci + xi[q]*cr;
+        xr[q] = xr[p]-tr; xi[q] = xi[p]-ti; xr[p] += tr; xi[p] += ti; const t = cr*wr - ci*wi; ci = cr*wi + ci*wr; cr = t; } } }
+}
+
+function setup(cv, aspect, narrowH){
+  const dpr = window.devicePixelRatio || 1, w = Math.max(200, cv.clientWidth || 300);
+  const narrow = window.matchMedia && window.matchMedia('(max-width:620px)').matches;
+  const h = narrow ? narrowH : Math.round(Math.min(w * aspect, 250));
+  cv.width = Math.round(w*dpr); cv.height = Math.round(h*dpr); cv.style.height = h + 'px';
+  const bh = cv.offsetHeight - cv.clientHeight; if (bh) cv.style.height = (h + bh) + 'px';
+  const ctx = cv.getContext('2d'); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); return { ctx, w, h };
+}
+function txt(ctx, s, x, y, px, col, align, bold){ ctx.fillStyle = col; ctx.font = (bold?'700 ':'') + px + 'px ' + SANS;
+  ctx.textAlign = align || 'left'; ctx.textBaseline = 'middle'; ctx.fillText(s, x, y); }
+
+function drawSpec(P, dev) {
+  const cv = document.getElementById('spec'), { ctx, w, h } = setup(cv, 0.68, 172);
+  ctx.clearRect(0, 0, w, h);
+  const mL = 34, mR = 10, top = 22, y0 = h - 30, lo = -70, hi = 0, span = 16000;
+  const X = f => mL + (f + span/2) / span * (w - mL - mR), Y = d => top + (hi - Math.max(lo, Math.min(hi, d))) / (hi - lo) * (y0 - top);
+  const half = dev + baud;
+  ctx.fillStyle = C.band; ctx.fillRect(X(-half), top, X(half) - X(-half), y0 - top);
+  txt(ctx, 'Carson bandwidth', X(0), top - 10, 11, C.ink3, 'center');
+  ctx.strokeStyle = C.rule; ctx.lineWidth = 1;
+  for (let d = lo; d <= hi; d += 20) { ctx.beginPath(); ctx.moveTo(mL, Y(d)); ctx.lineTo(w - mR, Y(d)); ctx.stroke(); txt(ctx, d, mL - 4, Y(d), 10, C.ink3, 'right'); }
+  for (let f = -8000; f <= 8000; f += 4000) txt(ctx, f === 8000 ? '8 kHz' : String(f/1000).replace('-', '−'), f === 8000 ? w - 2 : X(f), y0 + 12, 10.5, C.ink3, f === 8000 ? 'right' : 'center');
+  const N = P.length; ctx.strokeStyle = C.navy; ctx.lineWidth = 1.3; ctx.beginPath();
+  let first = true;
+  for (let i = 0; i < N; i++) { const f = (i - N/2) * FS / N; if (Math.abs(f) > span/2) continue;
+    const x = X(f), y = Y(P[i]); if (first) { ctx.moveTo(x, y); first = false; } else ctx.lineTo(x, y); }
+  ctx.stroke();
+  for (const f of [-dev, dev]) { ctx.strokeStyle = C.amber; ctx.setLineDash([3, 3]); ctx.beginPath(); ctx.moveTo(X(f), top); ctx.lineTo(X(f), y0); ctx.stroke(); ctx.setLineDash([]); }
+  txt(ctx, 'dB', 6, top - 10, 10, C.ink3);
+}
+
+function drawDemod(r, sps) {
+  const cv = document.getElementById('demod'), { ctx, w, h } = setup(cv, 0.68, 172);
+  ctx.clearRect(0, 0, w, h);
+  // Bits 2 to 17, past the filters' start-up. The moving average is drawn
+  // centered, so each sampled decision sits in the middle of its bit.
+  const K = 16, B0 = 2, mL = 26, mR = 10, top = 22, y0 = h - 30, lo = -2, hi = 2, c = sps/2 - 1;
+  const i0 = r.M + B0*sps, i1 = i0 + K*sps, X = i => mL + (i - i0) / (i1 - i0) * (w - mL - mR), Y = v => top + (hi - Math.max(lo, Math.min(hi, v))) / (hi - lo) * (y0 - top);
+  ctx.strokeStyle = C.rule; ctx.lineWidth = 1;
+  for (const v of [-1, 0, 1]) { ctx.beginPath(); ctx.moveTo(mL, Y(v)); ctx.lineTo(w - mR, Y(v)); ctx.stroke(); txt(ctx, v > 0 ? '+1' : String(v).replace('-', '−'), mL - 4, Y(v), 10, C.ink3, 'right'); }
+  // the transmitted bits, as the levels a clean receiver would reach
+  ctx.strokeStyle = '#b9c3cf'; ctx.lineWidth = 2; ctx.beginPath();
+  for (let k = 0; k < K; k++) { const v = 2*r.bits[B0+k] - 1, a = X(i0 + k*sps), b = X(i0 + (k+1)*sps);
+    if (k === 0) ctx.moveTo(a, Y(v)); else ctx.lineTo(a, Y(v)); ctx.lineTo(b, Y(v)); }
+  ctx.stroke();
+  ctx.strokeStyle = C.navy; ctx.lineWidth = 1.4; ctx.beginPath();
+  for (let i = i0; i <= i1 && i + c < r.ma.length; i++) { const x = X(i), y = Y(r.ma[i + c]); if (i === i0) ctx.moveTo(x, y); else ctx.lineTo(x, y); }
+  ctx.stroke();
+  for (let k = 0; k < K; k++) { const j = B0 + k, i = r.at(j); if (i >= r.ma.length) break; const ok = r.dec[j] === r.bits[j];
+    ctx.fillStyle = ok ? C.navy : C.red; ctx.beginPath(); ctx.arc(X(i - c), Y(r.ma[i]), ok ? 3.5 : 5, 0, 2*Math.PI); ctx.fill();
+    txt(ctx, String(r.bits[j]), X(i0 + (k + 0.5)*sps), top - 10, 10.5, ok ? C.ink3 : C.red, 'center', !ok); }
+  txt(ctx, '16 bits, sampled at each center', w - mR, y0 + 12, 10.5, C.ink3, 'right');
+}
+
+function update() {
+  const dev = +devEl.value, sigma = +noiseEl.value, sps = FS / baud, r = simulate(dev, sps, sigma);
+  document.getElementById('dev-v').textContent = dev + ' Hz';
+  document.getElementById('baud-v').textContent = baud + ' baud';
+  document.getElementById('noise-v').textContent = sigma.toFixed(2);
+  const bw = 2*(dev + baud);
+  document.getElementById('o-h').textContent = (2*dev/baud).toFixed(2).replace(/\.?0+$/, '');
+  document.getElementById('o-bw').textContent = (bw/1000).toFixed(1) + ' kHz';
+  document.getElementById('o-snr').textContent = sigma === 0 ? '∞' : (10*Math.log10(FS/(sigma*sigma*bw))).toFixed(1) + ' dB';
+  document.getElementById('o-e').textContent = r.errs + ' / ' + r.counted;
+  document.getElementById('ro-e').className = 'ro' + (r.errs > 0 ? ' bad' : '');
+  drawSpec(psd(r.re, r.im), dev); drawDemod(r, sps);
+}
+
+window.addEventListener('resize', update);
+const q = new URLSearchParams(location.search);
+if (q.get('dev')) devEl.value = q.get('dev');
+if (q.get('noise')) noiseEl.value = q.get('noise');
+update();
+</script>
+</body>
+</html>

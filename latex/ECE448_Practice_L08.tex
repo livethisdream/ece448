@@ -1,0 +1,245 @@
+% !TEX root =./ECE448_Practice_main.tex
+%
+% L8 practice set (FSK). Short by design: the L8 Lab packet carries the
+% hands-on work. Blank copy: \begin{solution}[h] reserves h of work space.
+% SOLUTIONS copy (\iskey=1) prints the red worked solutions.
+
+\fullwidth{\textbf{Learning Objective 4.1: } I can describe FSK modulation and implement
+an FSK transmitter and receiver in GNU Radio.
+\\[4pt]\normalfont\small Show your work. Write a \textbf{Documentation} line at the
+end (\textbf{None} if you did not collaborate).}
+
+\begin{questions}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{Transmitter settings.} A flowgraph samples at $f_s = 48$ kHz and
+sends FSK at 1200 baud with a deviation of $\Delta f = 600$ Hz, one bit per symbol.
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Find the samples per symbol to enter in the Repeat block.
+		\begin{solution}[0.7in]
+		\eq{ \text{sps} = \dfrac{f_s}{R_s} = \dfrac{48000}{1200} = 40 }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.3in]{40}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Find the sensitivity to enter in the Frequency Mod block.
+		\begin{solution}[0.8in]
+		\eq{ k = \dfrac{2\pi \Delta f}{f_s} = \dfrac{2\pi \times 600}{48000} = 0.0785\ \text{rad/sample} }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.3in]{0.0785}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Find the modulation index and estimate the bandwidth with Carson's rule.
+		\begin{solution}[1.0in]
+		\eq{ h &= \dfrac{2\Delta f}{R_s} = \dfrac{1200}{1200} = 1 \\
+			B &\approx 2(\Delta f + R_s) = 2(600 + 1200) = 3.6\ \text{kHz} }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		$h$ = \ansbox[1.0in]{1}
+
+		\vspace{4pt}
+		$B$ = \ansbox[1.0in]{3.6 kHz}
+	\end{minipage}
+
+	\part A classmate builds the same transmitter from two Signal Sources at $+600$
+	and $-600$ Hz and a selector that switches between them at each bit. Explain why
+	Frequency Mod gives a more compact spectrum.
+		\begin{solution}[1.0in]
+		The two sources run independently, so at each switch the phase jumps from
+		wherever one source is to wherever the other is. Those jumps are abrupt
+		changes in the signal, and abrupt changes spread power across a wide band.
+		Frequency Mod adds a phase step every sample, so the phase is continuous
+		across each bit boundary and the spectrum stays compact.
+		\end{solution}
+
+\end{parts}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{Receiver settings.} The receiver for the link of Question 1 follows
+the L8 flowgraph: Low Pass Filter, Quadrature Demod, Moving Average, Symbol Sync,
+and Binary Slicer.
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Find the Quadrature Demod gain that puts the two tones at $+1$ and $-1$.
+		\begin{solution}[0.8in]
+		\eq{ g = \dfrac{f_s}{2\pi\Delta f} = \dfrac{48000}{2\pi \times 600} = 12.7 }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.3in]{12.7}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Find the low-pass filter cutoff that passes the Carson bandwidth.
+		\begin{solution}[0.7in]
+		The filter passes $-f_c$ to $+f_c$, so the cutoff is half of $B$:
+		\eq{ f_c = \Delta f + R_s = 600 + 1200 = 1800\ \text{Hz} }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.3in]{1800 Hz}
+	\end{minipage}
+
+	\part A classmate leaves the Quadrature Demod gain at 1. Find the levels the two
+	tones produce, and explain whether the slicer still decides correctly.
+		\begin{solution}[1.1in]
+		With $g = 1$ the output is the phase step itself,
+		$\pm 2\pi\Delta f/f_s = \pm 0.0785$. The slicer compares with zero, and both
+		levels are still on the correct side of zero, so the bits come out correctly.
+		Only the scale is wrong: the eye diagram and any plot set for $\pm 1$ show a
+		nearly flat line.
+		\end{solution}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part The classmate also sets the filter cutoff to 8 kHz. By how many dB does
+		that lower the SNR at the demodulator?
+		\begin{solution}[0.9in]
+		The filter now passes 16 kHz of noise instead of 3.6 kHz, and the signal is
+		unchanged:
+		\eq{ 10\mylog{\dfrac{16}{3.6}} = 6.5\db }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.3in]{$6.5\db$}
+	\end{minipage}
+
+\end{parts}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{Noise.} The L8 link samples at 32 kHz, sends 1000 baud with
+$\Delta f = 1$ kHz, and filters to the 4 kHz Carson bandwidth. The signal has power
+1, and the Channel Model's noise of voltage $\sigma$ has power $\sigma^2$ spread over
+the full 32 kHz.
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Find the SNR at the demodulator for $\sigma = 0.8$.
+		\begin{solution}[0.9in]
+		\eq{ \text{SNR} = \dfrac{1}{\sigma^2 \times 4/32} = \dfrac{8}{0.64} = 12.5 = 11.0\db }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.3in]{$11.0\db$}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part The text starts to show errors below about 9 dB. Find the largest noise
+		voltage that keeps the SNR at 9 dB.
+		\begin{solution}[0.9in]
+		\eq{ \sigma^2 = \dfrac{8}{10^{0.9}} = 1.01, \qquad \sigma = 1.0 }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.3in]{$\sigma = 1.0$}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part The link doubles its symbol rate to 2000 baud and keeps $\Delta f = 1$ kHz.
+		Find the new Carson bandwidth and the largest noise voltage for 9 dB.
+		\begin{solution}[1.1in]
+		\eq{ B &= 2(1000 + 2000) = 6\ \text{kHz} \\
+			\sigma^2 &= \dfrac{32/6}{10^{0.9}} = 0.67, \qquad \sigma = 0.82 }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		$B$ = \ansbox[1.0in]{6 kHz}
+
+		\vspace{4pt}
+		$\sigma$ = \ansbox[1.0in]{0.82}
+	\end{minipage}
+
+	\part Lesson 2 designs a link with margin above the SNR it needs. Explain, from
+	what the L8 link does between 9 dB and 3 dB, why margin matters for FSK.
+		\begin{solution}[1.0in]
+		The link goes from almost no errors at 9 dB to almost no packets at 3 dB, a
+		range of about 6 dB. A link designed exactly at 9 dB therefore fails completely
+		after a fade of a few dB. Margin keeps the SNR above the threshold when the
+		path loss changes.
+		\end{solution}
+
+\end{parts}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{An FSK remote on a spectrogram.} An RTL-SDR capture, viewed as a
+spectrogram in URH, shows a burst with two tracks, at 433.900 and 433.940 MHz. In the
+alternating preamble, the signal stays on each track for 0.417 ms.
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Find the center frequency, the deviation, and the symbol rate.
+		\begin{solution}[1.1in]
+		\eq{ f_c &= \dfrac{433.900 + 433.940}{2} = 433.920\ \text{MHz} \\
+			\Delta f &= \dfrac{40\ \text{kHz}}{2} = 20\ \text{kHz} \\
+			R_s &= \dfrac{1}{0.417\ \text{ms}} = 2400\ \text{baud} }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		$f_c$ = \ansbox[1.2in]{433.920 MHz}
+
+		\vspace{4pt}
+		$\Delta f$ = \ansbox[1.2in]{20 kHz}
+
+		\vspace{4pt}
+		$R_s$ = \ansbox[1.2in]{2400 baud}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part The remote's crystal is accurate to 10 ppm. Find the largest frequency
+		offset at 433.92 MHz.
+		\begin{solution}[0.7in]
+		\eq{ 10\times10^{-6} \times 433.92\times10^{6} = 4.3\ \text{kHz} }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.3in]{4.3 kHz}
+	\end{minipage}
+
+	\part An FSK receiver tolerates an offset of about half its deviation. Explain
+	whether a 4.3 kHz offset breaks the remote's link, and whether it would break the
+	L8 link if that link ran at 433.92 MHz.
+		\begin{solution}[1.1in]
+		The remote tolerates about 10 kHz, so 4.3 kHz is well inside its limit; the
+		large deviation is what makes a crystal with a 10 ppm tolerance acceptable. The L8 link tolerates
+		about 600 Hz, so a 4.3 kHz offset pushes both of its tones far off the
+		receiver's filter and the link fails.
+		\end{solution}
+
+	\part With a 600 Hz offset the L8 demodulator outputs levels near $+1.6$ and
+	$-0.4$. Name one change to the receiver that would put them back at $\pm 1$.
+		\begin{solution}[0.9in]
+		Subtract the average of the demodulator output, for example with a DC Blocker
+		after the Quadrature Demod, because the offset appears as a constant
+		$f_\text{off}/\Delta f$ added to both levels. Measuring the offset and shifting
+		the signal back in frequency before the filter also works.
+		\end{solution}
+
+\end{parts}
+
+\vspace{1.5em}
+\noindent\textbf{Documentation:} \rule[-2pt]{0.6\linewidth}{0.4pt}
+
+\end{questions}
