@@ -1,0 +1,265 @@
+% !TEX root =./ECE448_Practice_main.tex
+%
+% L10 practice set (ASCII over PAM). Every question is a step in the L10 link:
+% characters to bits, a packet's length and timing, the access-code search,
+% the noise a line of text survives, and the receiver settings that must match
+% the transmitter's. Blank copy: \begin{solution}[h] reserves h of work space.
+% SOLUTIONS copy (\iskey=1) prints the red worked solutions.
+
+\fullwidth{\textbf{Learning Objective 4.4: } I can implement a PAM link that transmits and
+receives ASCII text end-to-end.
+\\[4pt]\normalfont\small Show your work. Write a \textbf{Documentation} line at the
+end (\textbf{None} if you did not collaborate).}
+
+\begin{questions}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{Text to bits and back.} The L10 transmitter sends each byte most
+significant bit first. In ASCII, `H' is 0x48 and `i' is 0x69.
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Write the 16 bits the transmitter sends for ``Hi'', in order.
+		\begin{solution}[0.9in]
+		0x48 is 01001000 and 0x69 is 01101001, so the bits are
+		\texttt{01001000 01101001}.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.6in]{01001000 01101001}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part A receiver's Repack Bits block is set to LSB first by mistake. What byte
+		does it produce from the first 8 bits, and does it print as a letter?
+		\begin{solution}[0.9in]
+		Read in reverse, \texttt{01001000} becomes \texttt{00010010}, which is 0x12. That is a
+		control code, not a printable character, so the line arrives as nonsense.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.1in]{0x12, no}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part A correctly set receiver outputs \texttt{01000111 01001111}. What two
+		characters arrived? (`A' is 0x41, and the capital letters follow in order.)
+		\begin{solution}[0.9in]
+		\texttt{01000111} is 0x47, six after 0x41, which is `G'. \texttt{01001111} is
+		0x4F, fourteen after 0x41, which is `O'. The text is ``GO''.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.1in]{GO}
+	\end{minipage}
+
+\end{parts}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{One packet.} A cadet changes the L10 message to
+\texttt{MAYDAY 41.0N 104.8W}, 19 characters. The Vector Source adds a newline, and the
+packet format is the L10 one: a 64-bit access code, a 32-bit header, then the payload.
+The link runs at 4 kbaud with one bit per symbol.
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part How many bits are in one packet, and how long does it take to send?
+		\begin{solution}[1.1in]
+		The payload is $19 + 1 = 20$ bytes.
+		\eq{ n &= 64 + 32 + 8 \times 20 = 256\ \text{bits} \\
+		T &= \dfrac{256}{4000\ \text{baud}} = 64\ \text{ms} }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		bits: \ansbox[1.1in]{256}
+
+		\vspace{4pt}
+		time: \ansbox[1.1in]{64 ms}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Write the 16-bit length field, which the header sends twice.
+		\begin{solution}[0.8in]
+		The length is 20 bytes, which is \texttt{0000000000010100} in 16 bits.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.6in]{0000000000010100}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part What fraction of the bits on the air are text? If the same packets ran at
+		L9's 9.6 kbaud, how long would one take?
+		\begin{solution}[1.0in]
+		\eq{ \dfrac{160}{256} = 62.5\%, \qquad \dfrac{256}{9600\ \text{baud}} = 26.7\ \text{ms} }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		text: \ansbox[1.1in]{62.5\%}
+
+		\vspace{4pt}
+		time: \ansbox[1.1in]{26.7 ms}
+	\end{minipage}
+
+\end{parts}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{The access-code search.} Correlate Access Code - Tag Stream compares
+the last 64 bits with the access code after every new bit and declares a packet when at
+most 2 bits differ.
+\begin{parts}
+
+	\part While no packet is arriving, the bits are random. About how many of the 64
+	match the access code at a typical position, and why?
+		\begin{solution}[0.8in]
+		About 32. Each random bit matches the code's bit with probability one half, so on
+		average half of the 64 match.
+		\end{solution}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part The link's bit error rate is $10^{-3}$. Find the fraction of packets the
+		receiver misses because of errors in the access code with a threshold of 0, and
+		with a threshold of 2.
+		\begin{solution}[1.4in]
+		With a threshold of 0, one error anywhere in the 64 bits loses the packet:
+		\eq{ 1 - (1 - 10^{-3})^{64} = 6.2\% }
+		With a threshold of 2, it takes 3 or more errors, and the 3-error term dominates:
+		\eq{ \binom{64}{3}(10^{-3})^3 = 41{,}664 \times 10^{-9} = 4.2\times10^{-5} }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		threshold 0: \ansbox[1.0in]{6.2\%}
+
+		\vspace{4pt}
+		threshold 2: \ansbox[1.0in]{$4.2\times10^{-5}$}
+	\end{minipage}
+
+	\part On the PlutoSDR version of the link, no packets arrive, yet the Symbol Sync
+	output is clean and tightly clustered at $\pm 1$. Explain in words what the
+	correlator sees and why, and what the receiver should change.
+		\begin{solution}[1.2in]
+		The signal arrives inverted: the carrier-recovery loop has locked 180$^\circ$ off, so
+		every 1 arrives as a 0. Where the access code passes, every bit differs, so the
+		correlator counts 0 of 64 matches instead of 64, and it never declares a packet.
+		The fix is to flip the polarity, multiplying the samples by $-1$ before the
+		slicer, which is what the lab flowgraph's polarity switch does.
+		\end{solution}
+
+\end{parts}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{How much noise a line survives.} In the L10 link, the SNR at the
+slicer is $8/\sigma^2$ for a noise amplitude $\sigma$, each bit is wrong with probability
+$Q(\sqrt{\text{SNR}})$, and a 31-byte line arrives intact only if all 280 bits of its
+header and payload are right.
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part At $\sigma = 0.9$, find the SNR in dB, the bit error rate, and the
+		fraction of lines that arrive intact. Use $Q(3.14) = 8.4\times10^{-4}$.
+		\begin{solution}[1.3in]
+		\eq{ \text{SNR} &= \dfrac{8}{0.81} = 9.88 = 9.9\db \\
+		\text{BER} &= Q(\sqrt{9.88}) = Q(3.14) = 8.4\times10^{-4} \\
+		P &= (1 - 8.4\times10^{-4})^{280} = 0.79 }
+		About 79\% of the lines arrive intact; the lesson measured 76\%.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		SNR: \ansbox[1.1in]{9.9 dB}
+
+		\vspace{4pt}
+		lines: \ansbox[1.1in]{79\%}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part The link must deliver 99\% of lines. Find the largest bit error rate that
+		allows this, the SNR it needs (use $Q(3.97) = 3.6\times10^{-5}$), and the largest
+		$\sigma$ the link tolerates.
+		\begin{solution}[1.4in]
+		\eq{ \text{BER} &= 1 - 0.99^{1/280} = 3.6\times10^{-5} \\
+		\text{SNR} &= 3.97^2 = 15.8 = 12.0\db \\
+		\sigma &= \sqrt{8/15.8} = 0.71 }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		SNR: \ansbox[1.1in]{12.0 dB}
+
+		\vspace{4pt}
+		$\sigma$: \ansbox[1.1in]{0.71}
+	\end{minipage}
+
+	\part A teammate proposes 200-byte packets to raise the share of text on the air
+	from 72\% to 94\%. In words, explain why the link then needs more SNR for the same
+	99\% of packets, and what a Lesson 2 link budget should do about it.
+		\begin{solution}[1.2in]
+		A packet is lost if any one of its bits is wrong, and a 200-byte packet has
+		1632 header and payload bits instead of 280, so each bit must be about six times
+		more reliable for the packet to arrive as often. That takes about 12.8 dB
+		instead of 12.0 dB. The link budget should target the SNR the longest packet
+		needs, plus the usual fade margin.
+		\end{solution}
+
+\end{parts}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{Clock error.} Two radios each derive their clocks from a crystal
+accurate to 20 ppm, so the receiver's sample clock can differ from the transmitter's
+symbol clock by up to 40 ppm. The link runs at 4 kbaud.
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part A receiver without timing recovery samples at fixed intervals. How many
+		symbols, and how many seconds, until its sampling point slips one whole symbol?
+		How many 344-bit packets is that?
+		\begin{solution}[1.3in]
+		\eq{ N &= \dfrac{1}{40\times10^{-6}} = 25{,}000\ \text{symbols} \\
+		t &= \dfrac{25{,}000}{4000} = 6.25\ \text{s} \\
+		\dfrac{25{,}000}{344} &= 73\ \text{packets} }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		time: \ansbox[1.1in]{6.25 s}
+
+		\vspace{4pt}
+		packets: \ansbox[1.1in]{73}
+	\end{minipage}
+
+	\part The L10 link loses almost no lines up to 5000 ppm with Symbol Sync in the
+	receiver. Explain why the slip in part (a) does not appear in that link, and why
+	a 40 ppm error is not a concern for it.
+		\begin{solution}[1.1in]
+		Symbol Sync measures the timing error from the samples near each zero crossing and
+		moves its sampling instant to follow the drift, so the sampling point never
+		slips. 40 ppm is more than 100 times smaller than the 5000 ppm the link handles,
+		so the loop follows it easily.
+		\end{solution}
+
+	\part In the clock-error screenshot, the eye sink looks smeared while every line
+	arrives. Explain why the eye sink and Symbol Sync disagree.
+		\begin{solution}[1.0in]
+		The eye sink cuts the waveform every 8 samples, the nominal samples per symbol, so
+		when each symbol spans slightly fewer samples, each trace starts a little later in
+		its symbol than the last and the eye drifts across the display. Symbol Sync
+		follows the actual symbol timing, so its samples stay at the eye's center.
+		\end{solution}
+
+\end{parts}
+
+\vspace{1.5em}
+\noindent\textbf{Documentation:} \rule[-2pt]{0.6\linewidth}{0.4pt}
+
+\end{questions}
