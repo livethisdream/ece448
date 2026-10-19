@@ -7,7 +7,7 @@ under GNU Radio 3.10, none of which needs hardware:
   L06-am-spectrum, L06-am-envelope, L06-am-overmod   L06-dsb-am.grc at m = 0.5 and 1.4
   L06-sc-spectrum, L06-sc-phi0, L06-sc-phi90         L06-dsb-sc.grc at LO phase 0 and 90
   L06-ssb-spectra, L06-ssb-mistuned                  L06-ssb.grc, USB and LSB, and 200 Hz off
-  L06-grc-dsb-am, L06-grc-dsb-sc, L06-grc-ssb        the GRC canvas (scripts/grc/grc_canvas.sh)
+  L06-grc-dsb-am, L06-grc-ssb                        the GRC canvas (scripts/grc/grc_canvas.sh)
 
 The running windows are captured the way scripts/grc/grc_shot.py does it, but
 at 1060x900, because each flowgraph has three plots and grc_shot's 1060x560
@@ -25,8 +25,8 @@ section of ~/.gnuradio/grc.conf), then
 
     xvfb-run -a -s "-screen 0 1280x820x24" scripts/grc/grc_canvas.sh book/extras/grc/L06-ssb.grc grc-ssb.png
 
-and are cropped here with --canvas DIR, where DIR holds grc-dsb-am.png,
-grc-dsb-sc.png, and grc-ssb.png.
+and are cropped here with --canvas DIR, where DIR holds grc-dsb-am.png
+and grc-ssb.png.
 """
 
 from __future__ import annotations
@@ -129,7 +129,7 @@ def figures(s):
 def canvases(src: Path):
     """Crop GRC canvas captures: drop the menu and toolbar, then trim the blank canvas."""
     from PIL import Image, ImageOps
-    for n in ("dsb-am", "dsb-sc", "ssb"):
+    for n in ("dsb-am", "ssb"):
         g = Image.open(src / f"grc-{n}.png").convert("RGB").crop((0, 66, 1280, 816))
         bb = ImageOps.invert(g.convert("L")).point(lambda v: 255 if v > 8 else 0).getbbox()
         save(f"L06-grc-{n}", g.crop((0, 0, min(1280, bb[2] + 8), min(750, bb[3] + 8))))
