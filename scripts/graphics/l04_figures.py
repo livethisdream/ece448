@@ -9,8 +9,8 @@
                       quadrature mixer and LO, low-pass filters, two ADCs, and
                       the host running GNU Radio.
   L04-mixer-shift   : a single real mixer moves the band around the LO down
-                      to 0 Hz, and folds the station below the LO onto the
-                      positive axis beside the ones above it.
+                      to 0 Hz, and folds the station 1.4 MHz below the LO onto
+                      the one 1.4 MHz above it.
 
 The GNU Radio screenshots (L04-grc-adc.png, L04-adc-*.png) are not generated
 here: they are taken from book/extras/grc/L04-adc-bits.grc running under Xvfb
@@ -139,26 +139,28 @@ def sdr_chain():
 
 
 def mixer_shift():
-    f = np.linspace(-3.2, 3.2, 1200)
+    f = np.linspace(-3.2, 3.2, 641)
 
     def band(c, w=0.42, h=1.0):
         return h * np.exp(-0.5 * ((f - c) / w) ** 8)
 
     fig, (a1, a2) = plt.subplots(1, 2, figsize=(8.6, 2.6), sharey=True)
+    def fill(ax, y, **kw):
+        # Fill only where the band is drawn, which keeps the SVG small.
+        ax.fill_between(f, y, where=y > 1e-3, **kw)
+
     # Before: three stations around the LO; frequencies relative to 100.0 MHz.
-    a1.fill_between(f, band(0.3, 0.18, 1.0) + band(1.4, 0.18, 0.75), color=MID, alpha=0.85, lw=0)
-    a1.fill_between(f, band(-1.6, 0.18, 0.55), color=AMBER, alpha=0.75, lw=0)
+    fill(a1, band(0.3, 0.18, 1.0) + band(1.4, 0.18, 0.75), color=MID, alpha=0.85, lw=0)
+    fill(a1, band(-1.4, 0.18, 0.55), color=AMBER, alpha=0.75, lw=0)
     a1.axvline(0, color=AMBER, lw=1.8)
     a1.text(0.08, 1.12, "$f_{LO}$ = 100.0 MHz", color=AMBER, fontsize=10.5, ha="left")
     a1.set_xticks([-3, -2, -1, 0, 1, 2, 3], ["97", "98", "99", "100", "101", "102", "103"])
     a1.set_xlabel("frequency at the antenna (MHz)")
     a1.set_title("before the mixer", color=GRAY, fontsize=11, loc="left")
-    # A single real mixer cannot tell +f from -f: the 98.4 MHz station folds to
-    # +1.6 MHz, beside the 101.4 MHz one. Drawn on the positive axis only.
-    above = band(0.3, 0.18, 1.0) + band(1.4, 0.18, 0.75)
-    folded = band(1.6, 0.18, 0.55)
-    a2.fill_between(f, above, where=f >= 0, color=MID, alpha=0.85, lw=0)
-    a2.fill_between(f, folded, where=f >= 0, color=AMBER, alpha=0.75, lw=0)
+    # A single real mixer cannot tell +f from -f: the 98.6 MHz station folds to
+    # +1.4 MHz, exactly on top of the 101.4 MHz one.
+    fill(a2, band(0.3, 0.18, 1.0) + band(1.4, 0.18, 0.75), color=MID, alpha=0.85, lw=0)
+    fill(a2, band(1.4, 0.18, 0.55), color=AMBER, alpha=0.75, lw=0)
     a2.axvline(0, color=AMBER, lw=1.8, ls=(0, (3, 3)))
     a2.set_xlim(-0.4, 3.2)
     a2.set_xticks([0, 1, 2, 3], ["0", "1", "2", "3"])

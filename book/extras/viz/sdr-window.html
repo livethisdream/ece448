@@ -53,14 +53,15 @@
 
 <script>
 'use strict';
-// Frequencies in MHz throughout. Tuning ranges and maximum sample rates are the
+// Frequencies in MHz throughout. Tuning ranges and sample rates are the
 // manufacturers' numbers: RTL-SDR Blog V4 datasheet (2.56 MS/s is its stable
 // rate), Great Scott Gadgets (HackRF One), and Analog Devices (ADALM-PLUTO,
-// whose instantaneous bandwidth is 20 MHz however fast it samples).
+// whose USB 2.0 link streams about 4 MS/s without dropped samples; its
+// 61.44 MS/s converters reach higher rates only in bursts).
 const RADIOS = {
-  rtl:    { name: 'RTL-SDR', lo: 0.5,  hi: 1766, fsMax: 2.56,  bw: Infinity },
-  hackrf: { name: 'HackRF',  lo: 1,    hi: 6000, fsMax: 20,    bw: Infinity },
-  pluto:  { name: 'PlutoSDR', lo: 325, hi: 3800, fsMax: 61.44, bw: 20 },
+  rtl:    { name: 'RTL-SDR', lo: 0.5,  hi: 1766, fsMin: 0.25,  fsMax: 2.56, bw: Infinity },
+  hackrf: { name: 'HackRF',  lo: 1,    hi: 6000, fsMin: 2,     fsMax: 20,   bw: Infinity },
+  pluto:  { name: 'PlutoSDR', lo: 325, hi: 3800, fsMin: 0.521, fsMax: 4,    bw: 20 },
 };
 // The bands are simulated: plausible signals, not a survey of any one place.
 function fmStations() {
@@ -82,12 +83,12 @@ const C = { navy:'#004a85', mid:'#0067b9', red:'#b01e24', amber:'#8a5a00', rule:
 const $ = id => document.getElementById(id);
 let band = 'fm', radio = 'rtl';
 const fcByBand = { fm: BANDS.fm.fc, adsb: BANDS.adsb.fc, ism: BANDS.ism.fc };
-const fsByRadio = { rtl: 2.4, hackrf: 2.4, pluto: 20 };
+const fsByRadio = { rtl: 2.4, hackrf: 2.4, pluto: 4 };
 
 function configure() {
   const B = BANDS[band], R = RADIOS[radio];
   Object.assign($('fc'), { min: B.lo, max: B.hi, step: B.step }); $('fc').value = fcByBand[band];
-  Object.assign($('fs'), { min: 0.25, max: R.fsMax, step: 0.01 }); $('fs').value = fsByRadio[radio];
+  Object.assign($('fs'), { min: R.fsMin, max: R.fsMax, step: 0.01 }); $('fs').value = fsByRadio[radio];
 }
 document.querySelectorAll('#band button').forEach(b => b.onclick = () => {
   band = b.dataset.b; document.querySelectorAll('#band button').forEach(x => x.classList.toggle('on', x === b)); configure(); update(); });
