@@ -118,8 +118,8 @@ measurements, on your own laptop and RTL-SDR, recorded in class. Do \textbf{Part
 your own after the lab: compare the measurements with the predictions and answer the
 analysis questions.
 
-\textbf{Grading.} One submission, graded against Objectives 3.3 and 3.4 on the
-course's 1 / 0 scale, with revision allowed under course policy. Paste screenshots
+\textbf{Grading.} We grade one submission against Objectives 3.3 and 3.4 on the
+course's 1 / 0 scale, and you may revise it under course policy. Paste screenshots
 where a question asks for one.
 
 \textbf{Receive only.} Every flowgraph in this lab receives or simulates. The RTL-SDR
@@ -167,8 +167,8 @@ prompt with \texttt{conda install gnuradio-rds} and open it again.
 		rates, and the Quadrature Demod gain that makes 75~kHz of deviation an output
 		of 1.
 		\begin{solution}[0.9in]
-		240 kS/s, then 48 kS/s.
-		\eq{ \dfrac{240\,000}{2\pi \times 75\,000} = 0.509 }
+		The rates are 240 kS/s, then 48 kS/s.
+		\eq{ \dfrac{240\ \text{kHz}}{2\pi \times 75\ \text{kHz}} = 0.509 }
 		\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
@@ -221,7 +221,7 @@ prompt with \texttt{conda install gnuradio-rds} and open it again.
 	\end{center}
 
 		\begin{solution}[0.4in]
-		The decimation is $2\,400\,000 / 48\,000 = 50$ for any station.
+		The decimation is $2.4\ \text{MS/s} \div 48\ \text{kS/s} = 50$ for any station.
 		\end{solution}
 
 	\begin{minipage}[t]{0.58\linewidth}
@@ -252,14 +252,14 @@ Source on \texttt{L07-fm-test.cfile}.
 	\part Read the audio sink. Record the frequency of each line and how far the
 	2.5~kHz line sits below the 1~kHz line.
 		\begin{solution}[0.6in]
-		Lines at 1 and 2.5 kHz, about 3.5 to 4 dB apart, matching Question 1(c), and
+		The sink shows lines at 1 and 2.5 kHz, about 3.5 to 4 dB apart, matching Question 1(c), and
 		nothing else above the floor.
 		\end{solution}
 
 	\part Drag Station to 99.5~MHz. Describe what you hear, and explain why the station
 	at 100.3~MHz disappears.
 		\begin{solution}[0.9in]
-		A single 600 Hz tone. The Frequency Xlating FIR Filter now shifts 99.5 MHz to
+		The audio is a single 600 Hz tone. The Frequency Xlating FIR Filter now shifts 99.5 MHz to
 		0 Hz, and the station at 100.3 MHz lands 800 kHz away, far outside the ±90 kHz
 		passband.
 		\end{solution}
@@ -284,7 +284,7 @@ centered.
 
 	\part Describe the audio. Your capture is 2~s long, and the File Source repeats it.
 		\begin{solution}[0.6in]
-		The station's program, repeating every 2 s, in mono.
+		The audio is the station's program in mono, repeating every 2 s.
 		\end{solution}
 
 \end{parts}
@@ -329,7 +329,7 @@ local station and Station to the station. Set RF gain from your L5 Lab gain tabl
 		\part Restart the flowgraph and time how long the station name takes to appear.
 		Compare with Question 1(d).
 		\begin{solution}[0.8in]
-		Usually 1 to 3 s: longer than 350 ms, because a station interleaves other group
+		The name usually takes 1 to 3 s, longer than 350 ms, because a station interleaves other group
 		types between the name's four groups, and the decoder first has to find the group
 		boundaries.
 		\end{solution}
@@ -358,7 +358,7 @@ and enter the settings of Question 1(e).
 	\part Lower RF gain until the voice is hard to understand, and describe how the AM
 	audio degrades. You will compare it with FM in Question 6(b).
 		\begin{solution}[1.0in]
-		The AM voice sinks gradually into a steady hiss and stays intelligible well
+		The AM voice grows gradually noisier under a steady hiss and stays intelligible well
 		after the hiss is obvious. Answers vary with the station's strength.
 		\end{solution}
 
@@ -387,13 +387,13 @@ and enter the settings of Question 1(e).
 	\end{center}
 
 		\begin{solution}[0.5in]
-		Within about 1 dB of these values; the FM entries near threshold vary the most.
+		Your readings should fall within about 1 dB of these values; the FM entries near threshold vary the most.
 		\end{solution}
 
 	\part Set the deviation to 25~kHz and Listen To to FM. Lower C/N from 30 to 10~dB
 	and describe the sound at 20, 15, and 10~dB.
 		\begin{solution}[1.0in]
-		Clean at 20 dB. Clicks begin near 15 dB and become frequent at 10 dB, where the
+		The tone is clean at 20 dB. Clicks begin near 15 dB and become frequent at 10 dB, where the
 		tone sounds rough. The clicks are the FM threshold. AM, in Question 5(b), only
 		grew steadily noisier.
 		\end{solution}
@@ -418,7 +418,7 @@ and enter the settings of Question 1(e).
 
 	\part Compare where your 25~kHz FM measurements lost their advantage over AM with
 	your prediction in Question 1(f). Then use your table to explain why the 5~kHz
-	signal beats the 25~kHz signal at 10~dB C/N but loses at 30~dB.
+	signal has the higher output SNR at 10~dB C/N and the lower one at 30~dB.
 		\begin{solution}[1.6in]
 		The 25 kHz signal leads AM by about 19 to 20 dB down to 20 dB C/N, has lost
 		about 7 dB of that lead at 15 dB, and is no better than AM at 10 dB, consistent

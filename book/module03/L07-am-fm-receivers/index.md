@@ -13,7 +13,7 @@ frame_view: true
 
 <div class="title-rule"></div>
 
-A broadcast FM receiver with RDS, an aircraft band AM receiver, and AM and FM in the same noise.
+Today we build a broadcast FM receiver with RDS and an aircraft band AM receiver, and we compare AM and FM in the same noise.
 
 Lesson 7 · Module 3: Analog Modulation · Dr. Neil Rogers
 ::::
@@ -68,7 +68,11 @@ The test file comes from `L07-fm-test-tx.grc`. It builds each station the way a 
 - 15 kHz audio needs 180 kHz; US stations sit 200 kHz apart.
 :::
 
-**Frequency modulation** (FM) leaves the carrier's amplitude alone and moves its frequency instead: the instantaneous frequency is $f_c + \Delta f\,x(t)$, where the message $x(t)$ stays between $-1$ and 1 and the **peak deviation** $\Delta f$ is the farthest the carrier ever moves. Broadcast FM sets $\Delta f$ = 75 kHz and carries audio up to $W$ = 15 kHz, which makes it **wideband FM** (WBFM). Two-way radios use narrowband FM, with $\Delta f$ near 2.5 or 5 kHz.
+**Frequency modulation** (FM) leaves the carrier's amplitude alone and moves its frequency instead. The instantaneous frequency is
+
+$$f(t) = f_c + \Delta f\,x(t)$$
+
+where the message $x(t)$ stays between $-1$ and 1, and the **peak deviation** $\Delta f$ is the farthest the carrier ever moves. Broadcast FM sets $\Delta f$ = 75 kHz and carries audio up to $W$ = 15 kHz, which makes it **wideband FM** (WBFM). Two-way radios use narrowband FM, with $\Delta f$ near 2.5 or 5 kHz.
 
 An FM signal is wider than $2\Delta f$, because the frequency swings at audio rates. **Carson's rule** gives the bandwidth that holds nearly all of the power:
 
@@ -90,7 +94,7 @@ For broadcast audio that is $2(75 + 15)$ = 180 kHz, which fits the 200 kHz spaci
 
 `L07-wbfm-rx.grc` is the whole receiver in six processing blocks. The File Source plays a recording, and the Soapy RTLSDR Source receives live; GRC grays it out because we disabled it. Both feed the same channel filter, so switching from a file to the air means disabling one source and enabling the other. Neither path needs a Throttle: the Audio Sink takes exactly 48,000 samples per second, as in Lesson 6, and that paces the File Source too.
 
-The two variables at the top tie the receiver to the radio. `fc_mhz` is the frequency we tune the SDR to, or the center frequency we recorded the file at, and `station_mhz` is the station we want. The next four frames take the chain apart one block at a time.
+The two variables at the top tie the receiver to the radio. `fc_mhz` is the frequency we tune the SDR to, or the center frequency we recorded the file at, and `station_mhz` is the station we want. The next four frames describe the chain one block at a time.
 ::::
 
 ::::{frame} Channel Filter and Decimation
@@ -117,9 +121,11 @@ $$\begin{aligned}
 - With this gain, 75 kHz of deviation gives an output of 1.
 :::
 
-After the channel filter the station is a complex signal whose phase turns faster or slower as the frequency moves. The **Quadrature Demod** block measures how far the phase turns from one sample to the next, which is the frequency at that instant: a phase step of $2\pi$ per sample would be $f_s$, so a step of $\Delta\phi$ is $f_s\,\Delta\phi / 2\pi$ hertz.
+After the channel filter the station is a complex signal whose phase turns faster or slower as the frequency moves. The **Quadrature Demod** block measures how far the phase turns from one sample to the next, which is the frequency at that instant: a phase step of $2\pi$ per sample would be $f_s$, so a step of $\Delta\phi$ is the frequency
 
-The gain scales that frequency into a convenient number. With the gain above, a carrier 75 kHz above center produces an output of exactly 1, so the output is the transmitted message at its original scale. The block ignores amplitude entirely, which is why an FM receiver needs no AGC, and why a weakening FM station sounds normal until it nears the threshold that ends this lesson.
+$$f = \frac{f_s\,\Delta\phi}{2\pi}$$
+
+The gain scales that frequency into a convenient number. With the gain above, a carrier 75 kHz above center produces an output of exactly 1, so the output is the transmitted message at its original scale. The block ignores amplitude entirely, which is why an FM receiver needs no AGC, and why a weakening FM station sounds normal until its carrier-to-noise ratio falls to the FM threshold, covered later in this lesson.
 ::::
 
 ::::{frame} The Multiplex
@@ -129,7 +135,7 @@ The gain scales that frequency into a convenient number. With the gain above, a 
      style="max-width: 760px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
-- The demodulator's output is the **multiplex**: more than audio.
+- The demodulator's output is the **multiplex**, which carries more than audio.
 - The pilot is at 19 kHz, stereo is DSB-SC at 38 kHz, and RDS is at 57 kHz.
 :::
 
@@ -153,7 +159,7 @@ The frequency sink above is the multiplex of the test station. It has the two me
 
 A **Decimating FIR Filter** keeps the mono band, 0 to 15 kHz with a 3 kHz transition, and decimates by 5 to the sound card's 48 kHz. Every other part of the multiplex is above 15 kHz, so this one filter removes the pilot, the stereo signal, and RDS.
 
-The transmitter boosts the treble of its audio before modulating, a step called **pre-emphasis**, by up to 17 dB at 15 kHz in the US. The **FM Deemphasis** block applies the opposite filter, set by a 75 μs time constant with its corner at 2.1 kHz, which restores the original audio balance. Because the noise rises with frequency, cutting the treble at the receiver removes the most noise exactly where there is the most of it. Europe uses 50 μs, so a European station sounds slightly bright on a US setting, but it plays.
+The transmitter boosts the treble of its audio before modulating, a step called **pre-emphasis**, by up to 17 dB at 15 kHz in the US. The **FM Deemphasis** block applies the opposite filter, set by a 75 μs time constant with its corner at 2.1 kHz, which restores the original audio balance. Because the noise rises with frequency, cutting the treble at the receiver removes noise where the noise is strongest. Europe uses 50 μs, so a European station received with the US setting sounds slightly bright but is otherwise correct.
 ::::
 
 ::::{frame} Running the Receiver
@@ -248,7 +254,7 @@ After the filter, the AM station is a complex signal with its carrier at 0 Hz, a
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
 :::
 
-At 30 dB, AM delivers 29.5 dB, close to its C/N, and FM delivers 48.7 dB, about 19 dB better. The FM receiver lets in six times as much noise, yet its output is cleaner. The demodulator's output follows how far the frequency swings, and a 25 kHz swing is large next to the small frequency jitter that the noise adds to a strong carrier. The spectrum shows the result: FM's noise floor sits about 20 dB under AM's. Each doubling of the deviation improves FM's output by another 5 to 6 dB, as long as the signal stays above threshold.
+At 30 dB, AM delivers 29.5 dB, close to its C/N, and FM delivers 48.7 dB, about 19 dB better. Although the FM receiver admits six times as much noise as the AM receiver, its output SNR is 19 dB higher. The demodulator's output follows how far the frequency swings, and a 25 kHz swing is large next to the small frequency jitter that the noise adds to a strong carrier. The spectrum shows the result: FM's noise floor sits about 20 dB under AM's. Each doubling of the deviation improves FM's output by another 5 to 6 dB, as long as the signal stays above threshold.
 ::::
 
 ::::{frame} The FM Threshold
@@ -266,7 +272,7 @@ At 30 dB, AM delivers 29.5 dB, close to its C/N, and FM delivers 48.7 dB, about 
 | FM, 50 kHz | 53.2 | 39.5 | 17.3 | 6.4 |
 :::
 
-FM's advantage holds only while the carrier stays well above the noise in the FM receiver's own bandwidth. Below about 10 dB there, noise occasionally swings the phase through a full turn, and the demodulator turns each slip into a click. That is the **FM threshold**: below it, FM's output falls quickly. The table is the output SNR in dB, measured with the flowgraph at three deviations, each the average of about 12 s of meter readings, because near threshold the meters wander by about 1 dB as clicks come and go. At 15 dB, the 25 kHz signal is 7 dB above the noise in its 60 kHz band and has lost about 7 dB of its advantage. At 10 dB it is no better than AM.
+FM's advantage holds only while the carrier stays well above the noise in the FM receiver's own bandwidth. Below about 10 dB there, noise occasionally swings the phase through a full turn, and the demodulator turns each slip into a click. That is the **FM threshold**: below it, FM's output falls quickly. The table lists the output SNR in dB that we measured with the flowgraph at three deviations, each the average of about 12 s of meter readings, because near threshold the meters wander by about 1 dB as clicks come and go. At 15 dB, the 25 kHz signal is 7 dB above the noise in its 60 kHz band and has lost about 7 dB of its advantage, and at 10 dB its output SNR is no better than AM's.
 
 Wider deviation raises the output SNR above threshold, 53.2 dB against 48.5 at 30 dB C/N, but it also widens the receiver's filter, which lets in more noise and raises the threshold. At 10 dB, the 50 kHz signal is worse than AM, and the 5 kHz signal, which gains only 6 dB at 30 dB C/N, is the best of the four. That is the relationship the objective asks about: FM uses bandwidth to get a cleaner output, and the improvement lasts only while the signal is strong. Broadcast FM uses it because a broadcast station is strong and has a 200 kHz channel to fill. Aircraft use AM because a weak AM signal stays intelligible, and because two aircraft transmitting at once are both heard, where an FM receiver would lock onto the stronger one.
 ::::
@@ -310,12 +316,12 @@ RDS needs a stronger signal than the audio does, because its 57 kHz subcarrier s
 ::::{frame} Downloads
 :class: read-only doc-links
 
-- <a class="doc-link" href="../../grc/L07-fm-test-tx.grc" download>L07-fm-test-tx.grc</a>: writes `L07-fm-test.cfile`, 4 s (76.8 MB) of a simulated FM band around 100.0 MHz with two stations, one carrying RDS. Needs gr-rds. Run it once; it stops on its own.
+- <a class="doc-link" href="../../grc/L07-fm-test-tx.grc" download>L07-fm-test-tx.grc</a>: writes `L07-fm-test.cfile`, 4 s (76.8 MB) of a simulated FM band around 100.0 MHz with two stations, one carrying RDS. It needs gr-rds. Run it once; it stops on its own.
 - <a class="doc-link" href="../../grc/L07-am-test-tx.grc" download>L07-am-test-tx.grc</a>: writes `L07-am-test.cfile`, 4 s (76.8 MB) of a simulated AM station at 126.2 MHz carrying the L6 two-tone message.
 - <a class="doc-link" href="../../grc/L07-wbfm-rx.grc" download>L07-wbfm-rx.grc</a>: the broadcast FM receiver, playing the test file, your L5 capture, or the RTL-SDR.
-- <a class="doc-link" href="../../grc/L07-rds-rx.grc" download>L07-rds-rx.grc</a>: the same receiver with the RDS decoder. Needs gr-rds.
+- <a class="doc-link" href="../../grc/L07-rds-rx.grc" download>L07-rds-rx.grc</a>: the same receiver with the RDS decoder. It also needs gr-rds.
 - <a class="doc-link" href="../../grc/L07-am-rx.grc" download>L07-am-rx.grc</a>: the AM receiver for the aircraft band.
-- <a class="doc-link" href="../../grc/L07-am-vs-fm.grc" download>L07-am-vs-fm.grc</a>: one tone as AM and as FM in the same noise, with output SNR meters. No hardware needed.
+- <a class="doc-link" href="../../grc/L07-am-vs-fm.grc" download>L07-am-vs-fm.grc</a>: one tone as AM and as FM in the same noise, with output SNR meters. It needs no hardware.
 
 Put every file in one folder; GRC runs a flowgraph from its own folder, so the receivers find the test files there. Each receiver plays through your laptop's speakers; start with the volume low. If GRC reports the RDS blocks as missing, install gr-rds from the radioconda prompt with `conda install gnuradio-rds`.
 ::::

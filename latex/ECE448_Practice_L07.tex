@@ -19,7 +19,7 @@ signal with peak deviation $\Delta f$ and audio bandwidth $W$ as
 \eq{ B \approx 2(\Delta f + W) }
 \begin{parts}
 
-	\part Fill in the table. For the AM row, the same audio rides on DSB-AM.
+	\part Fill in the table. For the AM row, the station sends the same audio as DSB-AM.
 
 	\begin{center}
 	\renewcommand{\arraystretch}{1.25}
@@ -37,13 +37,14 @@ signal with peak deviation $\Delta f$ and audio bandwidth $W$ as
 		Broadcast FM is six times as wide as AM carrying the same audio.
 		\end{solution}
 
-	\part The carrier of an FM station never moves more than 75 kHz from its center.
-	Explain in words why the signal is still wider than 150 kHz.
+	\part Open the FM Explorer on the Lesson 7 page and choose the broadcast preset,
+	75~kHz of deviation with a 15~kHz tone. Read the power inside Carson's band, and
+	explain in words why the signal is wider than $2\Delta f$ = 150~kHz.
 		\begin{solution}[1.0in]
-		The frequency moves at audio rates, up to 15 kHz, and a carrier whose frequency
-		changes that fast is not a single sinusoid at each instant. Its spectrum has lines
-		spaced by the audio frequency that extend past the peak deviation, so the
-		bandwidth is about $2\Delta f$ plus $2W$.
+		Carson's band, 180 kHz, holds 99.4\% of the power. The explorer draws lines
+		every 15 kHz out past $\pm 75$ kHz: the frequency swings at the tone's rate, and
+		that swing adds lines beyond the peak deviation, about one tone frequency on
+		each side.
 		\end{solution}
 
 \end{parts}
@@ -84,7 +85,7 @@ signal with peak deviation $\Delta f$ and audio bandwidth $W$ as
 		\part Find the Quadrature Demod gain that makes 75~kHz of deviation produce an
 		output of 1, and the output when the carrier sits 30~kHz above center.
 		\begin{solution}[1.0in]
-		\eq{ \dfrac{240\,000}{2\pi \times 75\,000} = 0.509 }
+		\eq{ \dfrac{240\ \text{kHz}}{2\pi \times 75\ \text{kHz}} = 0.509 }
 		\eq{ \dfrac{30}{75} = 0.40 }
 		\end{solution}
 	\end{minipage}\hfill%
@@ -132,7 +133,7 @@ groups of 104 bits.
 		\part The RDS branch resamples to 19~kHz. Find the samples per bit, and the time
 		one group takes.
 		\begin{solution}[1.0in]
-		\eq{ \dfrac{19\,000}{1187.5} = 16 }
+		\eq{ \dfrac{19000}{1187.5} = 16 }
 		\eq{ \dfrac{104}{1187.5} = 87.6\ \text{ms} }
 		\end{solution}
 	\end{minipage}\hfill%
@@ -225,8 +226,8 @@ FM, $\Delta f$ = 50 kHz & 53.2 & 39.5 & 17.3 & 6.4 \\\hline
 		about 10~dB. Find the C/N in 10~kHz at which each FM signal reaches threshold, and
 		check each against the table.
 		\begin{solution}[1.4in]
+		For 5, 25, and 50 kHz of deviation, the threshold C/N values in 10 kHz are, in dB,
 		\eq{ 10 + 3.0 = 13.0, \quad 10 + 7.8 = 17.8, \quad 10 + 10.4 = 20.4 }
-		in dB, for 5, 25, and 50 kHz of deviation.
 		The table agrees. The 5 kHz signal keeps a steady 5 to 6 dB lead over AM down to
 		10 dB. The 25 kHz signal leads by 19 to 20 dB down to 20 dB C/N and has lost
 		about 7 dB of that lead at 15. The 50 kHz signal leads by 24 dB at 30 but only
@@ -241,7 +242,7 @@ FM, $\Delta f$ = 50 kHz & 53.2 & 39.5 & 17.3 & 6.4 \\\hline
 	\part A link to a distant receiver runs at 10~dB C/N in 10~kHz. Use the table to
 	choose AM or one of the three FM deviations, and explain the choice in words.
 		\begin{solution}[1.1in]
-		FM with 5 kHz deviation, at 14.2 dB. It is the only signal still above its
+		Choose FM with 5 kHz deviation, which reaches 14.2 dB. It is the only signal still above its
 		threshold at 10 dB C/N, so it keeps its advantage over AM. The wider deviations
 		would be better on a strong link, but their wider channels admit enough noise to
 		push them below threshold here, where they are no better than AM or worse.
@@ -268,7 +269,7 @@ FM, $\Delta f$ = 50 kHz & 53.2 & 39.5 & 17.3 & 6.4 \\\hline
 		decimation that takes it straight to a 48~kHz sound card.
 		\begin{solution}[0.9in]
 		\eq{ 119.25 - 119.0 = 0.25\ \text{MHz} = 250\ \text{kHz} }
-		\eq{ \dfrac{2\,400\,000}{48\,000} = 50 }
+		\eq{ \dfrac{2.4\ \text{MS/s}}{48\ \text{kS/s}} = 50 }
 		\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}

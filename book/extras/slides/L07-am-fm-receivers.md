@@ -26,7 +26,7 @@ Spring 2027 · Dr. Neil Rogers
 - In Lesson 6 we built and received AM, DSB-SC, and SSB in simulation.
 - Today the signal comes from a capture or from the air.
 
-Today: a **broadcast FM receiver** with **RDS**, an **AM receiver** for the aircraft band, and AM and FM in the same noise.
+Today we build a **broadcast FM receiver** with **RDS** and an **AM receiver** for the aircraft band, and we compare AM and FM in the same noise.
 
 Note:
 Before class, run L07-fm-test-tx.grc and L07-am-test-tx.grc once, in the folder that holds the receivers. Each writes 76.8 MB and stops on its own. Have L07-wbfm-rx.grc open with the volume low.
@@ -65,7 +65,7 @@ Narrowband FM on two-way radios uses 2.5 or 5 kHz of deviation. AM carrying the 
 A channel filter, a demodulator, an audio filter, and de-emphasis feed the speaker.
 
 Note:
-We disabled the RTL-SDR Source; switching to live means disabling the File Source and enabling the SDR. No Throttle: the Audio Sink paces the File Source, as in Lesson 6.
+We disabled the RTL-SDR Source; switching to live means disabling the File Source and enabling the SDR. The flowgraph needs no Throttle, because the Audio Sink paces the File Source, as in Lesson 6.
 
 ---
 
@@ -76,7 +76,7 @@ We disabled the RTL-SDR Source; switching to live means disabling the File Sourc
 - Decimating by 10 leaves 240 kS/s.
 
 Note:
-Cutoff 105 kHz, transition 30 kHz: passes 90 kHz, stops beyond 120 kHz, which is also the new Nyquist frequency. The filter removes the station at 99.5. Drag the Station slider to 99.5 to tune it instead.
+The filter has a 105 kHz cutoff and a 30 kHz transition, so it passes 90 kHz and stops everything beyond 120 kHz, which is also the new Nyquist frequency. The filter removes the station at 99.5. Drag the Station slider to 99.5 to tune it instead.
 
 ---
 
@@ -110,7 +110,7 @@ L-R is DSB-SC on 38 kHz, the Lesson 6 signal that needs carrier recovery; the 19
 The noise floor rises with frequency.
 
 Note:
-FM noise at the demodulator output grows with distance from the carrier, so the top of the audio band and RDS receive the most noise. That is the reason for de-emphasis, next.
+FM noise at the demodulator output grows with distance from the carrier, so the top of the audio band and RDS receive the most noise. That rising noise is the reason for de-emphasis, on the next slide.
 
 ---
 
@@ -152,7 +152,7 @@ Note:
 Two clusters show BPSK with its carrier recovered, and the panel shows ECE 448.
 
 Note:
-Open L07-rds-rx.grc. Shift 57 kHz to 0, resample to 19 kHz (16 samples per bit), matched filter, Symbol Sync, Constellation Receiver for the carrier, Differential Decoder, then gr-rds. The panel swaps two labels: the PI code, 1093, appears under Program Type.
+Open L07-rds-rx.grc. It shifts 57 kHz to 0 and resamples to 19 kHz, 16 samples per bit. A matched filter and Symbol Sync find the bits, the Constellation Receiver recovers the carrier, and a Differential Decoder feeds the gr-rds blocks. The panel swaps two labels: the PI code, 1093, appears under Program Type.
 
 ---
 
@@ -174,7 +174,7 @@ Aircraft and ATIS are AM between 118 and 137 MHz. After Complex to Mag it is the
 With the same tone, power, and noise, AM in 10 kHz reaches 29.5 dB and FM in 60 kHz reaches 48.7 dB.
 
 Note:
-L07-am-vs-fm.grc. AM at m = 1, FM at 25 kHz deviation, the same carrier power and noise density. The FM receiver lets in six times the noise and still comes out about 19 dB ahead. Each doubling of deviation adds 5 to 6 dB above threshold.
+L07-am-vs-fm.grc sends AM at m = 1 and FM at 25 kHz deviation with the same carrier power and noise density. The FM receiver admits six times the noise, and its output SNR is still about 19 dB higher. Each doubling of deviation adds 5 to 6 dB above threshold.
 
 ---
 
@@ -205,7 +205,7 @@ Drag C/N down with the audio on FM and listen for the clicks. At 15 dB the 25 kH
 <p class="viz-cue">↗ Interactive on the lesson page</p>
 
 Note:
-The carrier null at beta = 2.4 is how technicians calibrate deviation.
+The carrier line vanishes when the deviation is 2.4 times the tone frequency, and technicians use that null to calibrate deviation.
 
 ---
 

@@ -117,11 +117,11 @@ These are the predictions of Question 1 for the parts that do not depend on your
 ::::{frame} Part 3: After the Lab
 :::{present}
 - Explain why a mono receiver plays a stereo station correctly.
-- Explain where FM lost its advantage, and why 5 kHz beats 25 kHz at 10 dB.
+- Explain where FM lost its advantage, and why 5 kHz gives the higher SNR at 10 dB.
 - Explain why aircraft use AM and broadcasters use wideband FM.
 :::
 
-The Writeup is three questions. The first uses your multiplex screenshot: every part of the multiplex except the mono audio sits above 15 kHz. The second compares your AM and FM table with the threshold you predicted in Question 1(f), and asks why the narrow deviation wins on a weak link and loses on a strong one. The third connects your ATIS and FM listening to the reasons each service chose its modulation.
+The Writeup is three questions. The first uses your multiplex screenshot: every part of the multiplex except the mono audio sits above 15 kHz. The second compares your AM and FM table with the threshold you predicted in Question 1(f), and asks why the 5 kHz signal has the higher output SNR at 10 dB C/N and the lower one at 30 dB. The third connects your ATIS and FM listening to the reasons each service chose its modulation.
 ::::
 
 ::::{frame} Lab Packet
