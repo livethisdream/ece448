@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SDR window — what each course SDR can see of a band at a given center frequency and sample rate</title>
+<style>
+  :root { --navy:#004a85; --mid:#0067b9; --edge:#cddce9; --edge2:#b9d2e5; --bg:#f5f9fc;
+          --ink:#15202b; --ink3:#5b6573;
+          --amber:#8a5a00; --red:#b01e24; --grn:#3f7d34; }
+  html,body { margin:0; padding:0; font-family:'Inter',system-ui,-apple-system,sans-serif; color:var(--ink); background:#fff; }
+  .app { display:flex; flex-direction:column; gap:8px; padding:12px; }
+  canvas { display:block; box-sizing:border-box; width:100%; height:auto; background:#fff; border:1px solid var(--edge); border-radius:6px; }
+  .controls { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px 16px; align-items:center;
+              padding:8px 12px; background:var(--bg); border:1px solid var(--edge); border-radius:6px; }
+  @media (max-width:620px) { .controls { grid-template-columns:1fr; } }
+  .ctl { display:grid; grid-template-columns:auto 1fr; column-gap:8px; row-gap:2px; align-items:center; min-width:0; }
+  .ctl label { font-size:10.5px; text-transform:uppercase; letter-spacing:0.05em; color:var(--ink3); font-weight:700; white-space:nowrap; }
+  .ctl .val { color:var(--navy); font-size:12px; font-weight:600; font-variant-numeric:tabular-nums; text-align:right; white-space:nowrap; }
+  .ctl input[type=range]{ grid-column:1 / span 2; width:100%; margin:0; accent-color:var(--mid); }
+  .ctl input:disabled { opacity:0.4; }
+  .seg { display:flex; gap:4px; flex-wrap:wrap; }
+  .seg button { font:inherit; font-size:11.5px; font-weight:600; color:var(--navy); background:#fff; border:1px solid var(--edge2); border-radius:14px; padding:3px 10px; cursor:pointer; }
+  .seg button.on { background:var(--navy); color:#fff; border-color:var(--navy); }
+  .segs { grid-column:1 / -1; display:flex; justify-content:space-between; gap:8px; flex-wrap:wrap; }
+  .readouts { display:grid; gap:6px; grid-template-columns:repeat(3,minmax(0,1fr)); }
+  .ro { display:flex; flex-direction:column; align-items:center; gap:2px; padding:5px 4px 6px; min-width:0;
+        border:1px solid var(--edge2); border-radius:6px; background:#eef4fa; }
+  .ro .k { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:var(--ink3); white-space:nowrap; }
+  .ro .v { font-size:14px; font-weight:700; white-space:nowrap; font-variant-numeric:tabular-nums; color:var(--navy); }
+  .ro.bad .v { color:var(--red); }
+</style>
+</head>
+<body>
+<div class="app">
+  <canvas id="spec" aria-label="Simulated spectrum of the chosen band, with the part the chosen SDR can see at its center frequency and sample rate shaded"></canvas>
+  <div class="controls">
+    <div class="segs">
+      <div class="seg" id="band"><button data-b="fm" class="on">FM broadcast</button><button data-b="adsb">ADS-B</button><button data-b="ism">2.4 GHz ISM</button></div>
+      <div class="seg" id="radio"><button data-r="rtl" class="on">RTL-SDR</button><button data-r="hackrf">HackRF</button><button data-r="pluto">PlutoSDR</button></div>
+    </div>
+    <div class="ctl"><label for="fc">Center frequency</label><span class="val" id="fc-v"></span>
+      <input type="range" id="fc"></div>
+    <div class="ctl"><label for="fs">Sample rate</label><span class="val" id="fs-v"></span>
+      <input type="range" id="fs"></div>
+  </div>
+  <div class="readouts">
+    <div class="ro" id="ro-span"><span class="k">visible span</span><span class="v" id="o-span">—</span></div>
+    <div class="ro"><span class="k">into GNU Radio</span><span class="v" id="o-rate">—</span></div>
+    <div class="ro" id="ro-sig"><span class="k">signals in view</span><span class="v" id="o-sig">—</span></div>
+  </div>
+</div>
+
+<script>
+'use strict';
+// Frequencies in MHz throughout. Tuning ranges and maximum sample rates are the
+// manufacturers' numbers: RTL-SDR Blog V4 datasheet (2.56 MS/s is its stable
+// rate), Great Scott Gadgets (HackRF One), and Analog Devices (ADALM-PLUTO,
+// whose analog bandwidth is 20 MHz however fast it samples).
+const RADIOS = {
+  rtl:    { name: 'RTL-SDR', lo: 0.5,  hi: 1766, fsMax: 2.56,  bw: Infinity },
+  hackrf: { name: 'HackRF',  lo: 1,    hi: 6000, fsMax: 20,    bw: Infinity },
+  pluto:  { name: 'PlutoSDR', lo: 325, hi: 3800, fsMax: 61.44, bw: 20 },
+};
+// The bands are simulated: plausible signals, not a survey of any one place.
+function fmStations() {
+  const out = [], heights = [-48, -70, -55, -38, -66, -58, -44, -72, -52, -61, -40, -68, -50, -63, -46, -57, -74, -42, -60, -54];
+  let k = 0;
+  for (let f = 88.1; f < 108; f += 1.0) out.push({ f: +f.toFixed(1), w: 0.2, h: heights[k++ % heights.length] });
+  return out;
+}
+const BANDS = {
+  fm:   { lo: 87.5, hi: 108.5, step: 0.1, fc: 98.0, sig: fmStations() },
+  adsb: { lo: 1080, hi: 1100,  step: 0.1, fc: 1090, sig: [{ f: 1090, w: 2, h: -50, lab: 'ADS-B' }] },
+  ism:  { lo: 2390, hi: 2495,  step: 0.5, fc: 2437, sig: [
+          { f: 2412, w: 20, h: -55, lab: 'Wi-Fi 1' }, { f: 2437, w: 20, h: -45, lab: 'Wi-Fi 6' },
+          { f: 2462, w: 20, h: -62, lab: 'Wi-Fi 11' }, { f: 2402, w: 1, h: -58, lab: 'BLE' },
+          { f: 2426, w: 1, h: -64, lab: 'BLE' }, { f: 2480, w: 1, h: -60, lab: 'BLE' } ] },
+};
+const SANS = 'Inter, system-ui, -apple-system, sans-serif';
+const C = { navy:'#004a85', mid:'#0067b9', red:'#b01e24', amber:'#8a5a00', rule:'#cddce9', ink:'#15202b', ink3:'#5b6573', fill:'rgba(0,103,185,0.12)' };
+const $ = id => document.getElementById(id);
+let band = 'fm', radio = 'rtl';
+const fcByBand = { fm: BANDS.fm.fc, adsb: BANDS.adsb.fc, ism: BANDS.ism.fc };
+const fsByRadio = { rtl: 2.4, hackrf: 20, pluto: 20 };
+
+function configure() {
+  const B = BANDS[band], R = RADIOS[radio];
+  Object.assign($('fc'), { min: B.lo, max: B.hi, step: B.step }); $('fc').value = fcByBand[band];
+  Object.assign($('fs'), { min: 0.25, max: R.fsMax, step: 0.01 }); $('fs').value = fsByRadio[radio];
+}
+document.querySelectorAll('#band button').forEach(b => b.onclick = () => {
+  band = b.dataset.b; document.querySelectorAll('#band button').forEach(x => x.classList.toggle('on', x === b)); configure(); update(); });
+document.querySelectorAll('#radio button').forEach(b => b.onclick = () => {
+  radio = b.dataset.r; document.querySelectorAll('#radio button').forEach(x => x.classList.toggle('on', x === b)); configure(); update(); });
+$('fc').oninput = () => { fcByBand[band] = +$('fc').value; update(); };
+$('fs').oninput = () => { fsByRadio[radio] = +$('fs').value; update(); };
+
+function setup(cv, aspect, narrowH) {
+  const dpr = window.devicePixelRatio || 1, w = Math.max(200, cv.clientWidth || 300);
+  const narrow = window.matchMedia && window.matchMedia('(max-width:620px)').matches;
+  const h = narrow ? narrowH : Math.round(Math.min(w * aspect, 280));
+  cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); cv.style.height = h + 'px';
+  const bh = cv.offsetHeight - cv.clientHeight; if (bh) cv.style.height = (h + bh) + 'px';
+  const ctx = cv.getContext('2d'); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); return { ctx, w, h };
+}
+function txt(ctx, s, x, y, px, col, align, bold) { ctx.fillStyle = col; ctx.font = (bold ? '700 ' : '') + px + 'px ' + SANS;
+  ctx.textAlign = align || 'left'; ctx.textBaseline = 'middle'; ctx.fillText(s, x, y); }
+function fmt(f) { return f >= 1000 ? (f / 1000).toFixed(3).replace(/0+$/, '').replace(/\.$/, '') + ' GHz' : (+f.toFixed(2)) + ' MHz'; }
+
+// Spectrum level in dB at frequency f: a flat floor plus each signal as a
+// flat-topped band whose skirts fall off over a few percent of its width.
+function level(B, f) {
+  let p = Math.pow(10, -10);
+  for (const s of B.sig) {
+    const e = Math.min(0.05 * s.w, 0.4), u = (Math.abs(f - s.f) - s.w / 2) / e;
+    p += Math.pow(10, s.h / 10) * Math.exp(-Math.pow(Math.max(u, 0), 2));
+  }
+  return 10 * Math.log10(p);
+}
+
+function draw(win) {
+  const B = BANDS[band], { ctx, w, h } = setup($('spec'), 0.4, 210);
+  ctx.clearRect(0, 0, w, h);
+  const mL = 12, mR = 12, top = 30, bot = h - 26, DBLO = -105, DBHI = -30;
+  const X = f => mL + (f - B.lo) / (B.hi - B.lo) * (w - mL - mR), Y = d => top + (DBHI - d) / (DBHI - DBLO) * (bot - top);
+  if (win) {
+    const a = Math.max(win.lo, B.lo), b = Math.min(win.hi, B.hi);
+    ctx.fillStyle = C.fill; ctx.fillRect(X(a), top - 6, Math.max(1, X(b) - X(a)), bot - top + 6);
+    ctx.strokeStyle = C.mid; ctx.lineWidth = 1.5; ctx.strokeRect(X(a), top - 6, Math.max(1, X(b) - X(a)), bot - top + 6);
+    ctx.setLineDash([4, 4]); ctx.strokeStyle = C.amber; ctx.beginPath(); ctx.moveTo(X(win.fc), top - 6); ctx.lineTo(X(win.fc), bot); ctx.stroke(); ctx.setLineDash([]);
+  }
+  ctx.strokeStyle = C.rule; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(mL, bot); ctx.lineTo(w - mR, bot); ctx.stroke();
+  ctx.strokeStyle = C.navy; ctx.lineWidth = 1.5; ctx.beginPath();
+  for (let i = 0; i <= 900; i++) { const f = B.lo + (B.hi - B.lo) * i / 900, y = Y(level(B, f)); i ? ctx.lineTo(X(f), y) : ctx.moveTo(X(f), y); }
+  ctx.stroke();
+  for (const s of B.sig) if (s.lab) txt(ctx, s.lab, X(s.f), Y(s.h) - 9, 10.5, C.navy, 'center', true);
+  // A few axis labels, at round numbers.
+  const span = B.hi - B.lo, stepT = span > 50 ? 20 : span > 15 ? 5 : 1;
+  for (let f = Math.ceil(B.lo / stepT) * stepT; f <= B.hi; f += stepT) if (f - B.lo > 0.04 * span && B.hi - f > 0.08 * span) txt(ctx, String(f), X(f), bot + 12, 10.5, C.ink3, 'center');
+  txt(ctx, 'MHz', w - mR, bot + 12, 10.5, C.ink3, 'right');
+  txt(ctx, 'Simulated band', mL + 2, 14, 11, C.amber, 'left', true);
+  if (!win) txt(ctx, RADIOS[radio].name + ' cannot tune here', w - mR - 2, 14, 11, C.red, 'right', true);
+  else txt(ctx, 'what the radio sees', w - mR - 2, 14, 11, C.mid, 'right', true);
+}
+
+function update() {
+  const B = BANDS[band], R = RADIOS[radio], fc = +$('fc').value, fs = +$('fs').value;
+  $('fc-v').textContent = fmt(fc);
+  $('fs-v').textContent = fs.toFixed(2) + ' MS/s';
+  const inRange = fc >= R.lo && fc <= R.hi;
+  const span = Math.min(fs, R.bw);
+  const win = inRange ? { lo: fc - span / 2, hi: fc + span / 2, fc } : null;
+  $('o-span').textContent = inRange ? (+span.toFixed(2)) + ' MHz' : 'out of range';
+  $('ro-span').className = 'ro' + (inRange ? '' : ' bad');
+  // GNU Radio carries each complex sample as two 32-bit floats: 8 bytes.
+  $('o-rate').textContent = inRange ? (8 * fs).toFixed(1) + ' MB/s' : '—';
+  const seen = inRange ? B.sig.filter(s => s.f - s.w / 2 >= win.lo && s.f + s.w / 2 <= win.hi).length : 0;
+  $('o-sig').textContent = seen + ' of ' + B.sig.length;
+  $('ro-sig').className = 'ro' + (seen === 0 ? ' bad' : '');
+  draw(win);
+}
+
+window.addEventListener('resize', update);
+const q = new URLSearchParams(location.search);
+if (q.get('band') in BANDS) band = q.get('band');
+if (q.get('radio') in RADIOS) radio = q.get('radio');
+document.querySelectorAll('#band button').forEach(x => x.classList.toggle('on', x.dataset.b === band));
+document.querySelectorAll('#radio button').forEach(x => x.classList.toggle('on', x.dataset.r === radio));
+if (q.get('fc')) fcByBand[band] = +q.get('fc');
+if (q.get('fs')) fsByRadio[radio] = +q.get('fs');
+configure();
+update();
+</script>
+</body>
+</html>
