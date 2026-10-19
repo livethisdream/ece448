@@ -193,7 +193,7 @@ The flowgraph builds both receivers side by side, and its time sink, above, show
 
 The coherent receiver works only if its LO matches the transmitter's carrier in both frequency and phase. With a phase error $\phi$, the output is $x(t)\cos\phi$: a small error lowers the volume, and at $\phi = 90°$ the output vanishes, as the flat red trace shows. A frequency error is worse, because the phase then drifts continuously and the output fades in and out.
 
-In a simulation, both oscillators come from the same `fc` variable, so they match exactly. A real receiver has to recover the carrier's frequency and phase from the signal, and since DSB-SC transmits no carrier, it needs help. FM stereo is a working example: its left-minus-right audio is DSB-SC on a 38 kHz subcarrier, and the station sends a 19 kHz **pilot tone** so receivers can rebuild the 38 kHz LO. Lesson 7 receives it.
+In a simulation, both oscillators come from the same `fc` variable, so they match exactly. A real receiver has to recover the carrier's frequency and phase from the signal, and since DSB-SC transmits no carrier, it needs help. FM stereo is a working example: its left-minus-right audio is DSB-SC on a 38 kHz subcarrier, and the station sends a 19 kHz **pilot tone** so receivers can rebuild the 38 kHz LO. Lesson 7 shows it in the FM multiplex.
 ::::
 
 ::::{frame} Part 3: SSB
@@ -290,7 +290,7 @@ DSB-AM puts most of its power in a carrier so the receiver can be an envelope de
 
 Each of today's signals is on the air. AM broadcast fills 540 to 1700 kHz, and every aircraft and control tower talks in AM between 118 and 137 MHz, including the recorded airport weather broadcasts (ATIS), which make a good first target for Lesson 7's AM receiver. SSB carries long-range HF voice: military and maritime stations use USB, and amateurs use LSB below 10 MHz and USB above it. DSB-SC rides inside every FM stereo broadcast.
 
-An SDR delivers complex samples centered on its tuned frequency, so a signal arrives with its carrier already at 0 Hz. The envelope is then the magnitude of each sample, and the whole envelope detector is one **Complex to Mag** block, which is what GNU Radio's AM Demod block contains. An SSB receiver on an SDR keeps the real part after a frequency shift. Lesson 7 builds both receivers around an RTL-SDR.
+An SDR delivers complex samples centered on its tuned frequency, so a signal arrives with its carrier already at 0 Hz. The envelope is then the magnitude of each sample, and the whole envelope detector is one **Complex to Mag** block, which is what GNU Radio's AM Demod block contains. An SSB receiver on an SDR keeps the real part after a frequency shift. Lesson 7 builds the AM receiver around an RTL-SDR.
 ::::
 
 ::::{frame} Downloads
@@ -328,5 +328,5 @@ Each flowgraph plays its receiver's output through your laptop's speakers; start
 
 Today we built DSB-AM, DSB-SC, and SSB transmitters in GNU Radio, received each one, and compared the output with the message on a time sink and by ear. The L6 Lab is the hands-on version: predict each spectrum, build the DSB-AM flowgraph yourself, measure its sidebands and its overmodulation point, and then measure what LO phase and tuning errors do to the DSB-SC and SSB receivers.
 
-Lesson 7 replaces the simulated transmitter with the air. An RTL-SDR delivers complex samples, the envelope detector becomes a Complex to Mag block, and we receive an aircraft band AM station, then a broadcast FM station with its stereo and RDS data.
+Lesson 7 replaces the simulated transmitter with the air. An RTL-SDR delivers complex samples, the envelope detector becomes a Complex to Mag block, and we receive an aircraft band AM station, then a broadcast FM station with its RDS data.
 ::::
