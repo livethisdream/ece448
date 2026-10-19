@@ -1,0 +1,256 @@
+% !TEX root =./ECE448_Practice_main.tex
+%
+% L9 practice set (PAM Theory). Every question is a choice we make in the L9
+% flowgraphs: a symbol rate, an RRC parameter, a sampling instant, a loop
+% setting. Blank copy: \begin{solution}[h] reserves h of work space. SOLUTIONS
+% copy (\iskey=1) prints the red worked solutions.
+
+\fullwidth{\textbf{Learning Objective 4.2: } I can describe PAM theory and identify the
+pulse-shaping, symbol-rate, and bandwidth trade-offs.
+\\[2pt]\textbf{Learning Objective 4.3: } I can apply matched filtering and symbol-timing
+recovery to a received PAM signal.
+\\[4pt]\normalfont\small Show your work. Write a \textbf{Documentation} line at the
+end (\textbf{None} if you did not collaborate).}
+
+\begin{questions}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{Fitting a channel.} A telemetry link must fit a 25 kHz channel and
+carry at least 32 kb/s. Use RRC pulse shaping, with bandwidth $B = (1+\alpha)R_s$.
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part With 2-PAM and $\alpha = 0.35$, find the largest symbol rate that fits and
+		the bit rate it carries. Does it meet the requirement?
+		\begin{solution}[1.1in]
+		\eq{ R_s = \dfrac{B}{1+\alpha} = \dfrac{25\ \text{kHz}}{1.35} = 18.5\ \text{kbaud} }
+		One bit per symbol gives 18.5 kb/s, which is short of 32 kb/s.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		$R_s$: \ansbox[1.1in]{18.5 kbaud}
+
+		\vspace{4pt}
+		meets it? \ansbox[1.1in]{no}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Switch to 4-PAM at the same $\alpha$. Find the bit rate, and use Lesson 3's
+		curves to state how much more $E_b/N_0$ the link needs for a bit error rate of
+		$10^{-5}$.
+		\begin{solution}[1.1in]
+		\eq{ R_b = 2 \times 18.5 = 37.0\ \text{kb/s} }
+		which meets the requirement. 2-PAM needs 9.6 dB and 4-PAM needs 13.4 dB at
+		$10^{-5}$, so 3.8 dB more.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		$R_b$: \ansbox[1.1in]{37.0 kb/s}
+
+		\vspace{4pt}
+		extra: \ansbox[1.1in]{3.8 dB}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Keep 2-PAM instead and send 32 kbaud. What roll-off would fit 25 kHz?
+		Explain why that answer rules out this option.
+		\begin{solution}[1.1in]
+		\eq{ 1+\alpha = \dfrac{25}{32} = 0.78 \quad\Rightarrow\quad \alpha = -0.22 }
+		The roll-off cannot be negative: the narrowest any pulse can make the signal is
+		$B = R_s = 32$ kHz at $\alpha = 0$, which is wider than the channel.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.3in]{impossible}
+	\end{minipage}
+
+\end{parts}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{Setting up the transmit filter.} A flowgraph runs at
+\texttt{samp\_rate} = 48 kHz and sends 2-PAM at 4.8 kbaud with $\alpha = 0.25$.
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Find the samples per symbol and the occupied bandwidth.
+		\begin{solution}[1.0in]
+		\eq{ \texttt{sps} = \dfrac{48\ \text{kHz}}{4.8\ \text{kbaud}} = 10, \qquad
+		B = 1.25 \times 4.8 = 6.0\ \text{kHz} }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\texttt{sps}: \ansbox[1.0in]{10}
+
+		\vspace{4pt}
+		$B$: \ansbox[1.0in]{6.0 kHz}
+	\end{minipage}
+
+	\part Write the \texttt{firdes.root\_raised\_cosine} call for the transmit taps,
+	with a filter 11 symbols long, and name the block that uses them and its
+	interpolation.
+		\begin{solution}[1.0in]
+		\texttt{firdes.root\_raised\_cosine(10, 48000, 4800, 0.25, 110)}, in that order:
+		gain \texttt{sps}, sample rate, symbol rate, $\alpha$, and \texttt{11*sps} taps.
+		The taps go in an Interpolating FIR Filter with interpolation 10.
+		\end{solution}
+
+	\part A teammate wants 4.4 kbaud at the same sample rate. Explain why the
+	flowgraph cannot do this as built, and give one way to fix it.
+		\begin{solution}[1.0in]
+		$48/4.4 = 10.9$ samples per symbol, and the interpolating filter needs an
+		integer interpolation. Change the sample rate to an integer multiple of the
+		symbol rate, such as $44$ kHz for $\texttt{sps} = 10$, or choose a symbol rate
+		that divides 48 kHz, such as 4 kbaud.
+		\end{solution}
+
+	\part The teammate shortens the filter to \texttt{2*sps} taps to save computation.
+	What happens to the spectrum, and why?
+		\begin{solution}[1.0in]
+		The filter truncates the pulse to two symbols. Cutting the pulse off abruptly in time
+		spreads its spectrum, so the sidelobes outside $\pm B/2$ rise and the signal
+		spills into the neighboring channels, which is the problem RRC shaping exists
+		to solve.
+		\end{solution}
+
+\end{parts}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{Reading an eye.} A QT GUI Eye Sink shows a 2-PAM signal at
+\texttt{sps} = 8 after the receive filter. The eye is widest open 3 samples after the
+start of each symbol period, where the traces cluster at $\pm 0.8$ with a spread of
+$\pm 0.2$ around each level.
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Where should the receiver sample, and what is the eye opening there as a
+		fraction of the ideal gap from $-0.8$ to $+0.8$?
+		\begin{solution}[1.1in]
+		Sample 3 samples into each symbol. The innermost traces are at $0.8 - 0.2 = 0.6$
+		and $-0.6$, so the opening is
+		\eq{ \dfrac{0.6 - (-0.6)}{0.8 - (-0.8)} = \dfrac{1.2}{1.6} = 75\% }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.1in]{75\%}
+	\end{minipage}
+
+	\part For each change below, say how the eye changes: (i) the noise standard deviation doubles;
+	(ii) the receiver drops its filter; (iii) the receiver samples 4 samples away from
+	the best instant.
+		\begin{solution}[1.4in]
+		(i) The traces spread vertically and the opening shrinks; at twice the spread,
+		$\pm 0.4$, it falls to $(0.4 - (-0.4))/1.6 = 50\%$. (ii) Noise across the whole
+		sample bandwidth returns and the single transmit RRC leaves ISI, so the traces
+		miss the levels and the eye nearly closes. (iii) Four samples is half a symbol,
+		so the receiver samples between symbols. Where the symbol repeats, the sample
+		stays near its level, but at a transition it lands near the zero crossing, and
+		about half of those decisions are wrong.
+		\end{solution}
+
+	\part In words, explain why a smaller roll-off makes the receiver more
+	sensitive to timing error.
+		\begin{solution}[1.0in]
+		A smaller $\alpha$ gives a narrower spectrum, which means a longer pulse with
+		larger tails. Away from the symbol instant those tails from many neighbors add
+		up to more ISI, so the eye's waist is narrower and a given timing error closes
+		it more.
+		\end{solution}
+
+\end{parts}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{The matched filter.} The L9 matched-filter flowgraph runs at
+\texttt{samp\_rate} = 32 kHz, \texttt{sps} = 8, and $\alpha = 0.35$.
+\begin{parts}
+
+	\part The transmitter uses an RRC filter. What filter should the receiver use,
+	and why does that choice also give zero ISI?
+		\begin{solution}[1.0in]
+		The same RRC filter. The matched filter is the transmit pulse reversed in
+		time, and an RRC pulse is symmetric, so it is its own match. The two RRC filters
+		in cascade make a raised cosine, which is zero at every other symbol instant.
+		\end{solution}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Before the receive filter, the noise fills the full 32 kHz the samples
+		represent. Afterward, its noise-equivalent bandwidth is about $R_s$.
+		Estimate the noise reduction in dB.
+		\begin{solution}[1.0in]
+		\eq{ 10\log_{10}\dfrac{32\ \text{kHz}}{4\ \text{kHz}} = 10\log_{10} 8 = 9.0\db }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.1in]{$9.0\db$}
+	\end{minipage}
+
+	\part A classmate puts a full raised-cosine filter at the transmitter and no
+	filter at the receiver. The eye at the receiver has zero ISI. Explain what is
+	still wrong with this design.
+		\begin{solution}[1.0in]
+		The receiver passes all the noise across the 32 kHz the samples represent,
+		about 9 dB more than the matched filter would, so the eye is noisier and the
+		error rate is higher at the same transmit power. Zero ISI is necessary but not
+		sufficient; the RRC split gets zero ISI and the best noise rejection together.
+		\end{solution}
+
+\end{parts}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{Timing recovery.} A 2-PAM receiver at 4 kbaud uses Keep 1 in N to
+pick one sample per symbol, starting at the center of the eye. Its sample clock is
+50 ppm fast relative to the transmitter's.
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part How many symbols, and how many seconds, until the sampling point has
+		drifted half a symbol, to the zero crossings?
+		\begin{solution}[1.1in]
+		Each symbol the sampling point moves $50\times10^{-6}$ of a symbol, so
+		\eq{ N &= \dfrac{0.5}{50\times10^{-6}} = 10{,}000\ \text{symbols} \\
+		t &= \dfrac{10{,}000}{4000} = 2.5\ \text{s} }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		symbols: \ansbox[1.1in]{10,000}
+
+		\vspace{4pt}
+		time: \ansbox[1.1in]{2.5 s}
+	\end{minipage}
+
+	\part You replace Keep 1 in N with a Symbol Sync block. A teammate then puts a
+	Keep 1 in N block in front of it to save computation, so Symbol Sync receives one
+	sample per symbol, and sets its samples per symbol to 1. Explain why timing
+	recovery no longer works, and say where the one-sample-per-symbol step belongs.
+		\begin{solution}[1.2in]
+		The Gardner detector needs a sample at each symbol instant and one halfway
+		between, so it needs at least 2 samples per symbol; with 1 it has no midpoint
+		sample and cannot tell early from late.
+		Symbol Sync should receive all 8 samples per symbol from the matched filter;
+		its own output, at 1 sample per symbol, is the one-sample-per-symbol step.
+		\end{solution}
+
+	\part The Symbol Sync output jitters around $\pm 1$ even with little noise. Which
+	parameter should change, in which direction, and what is the trade-off?
+		\begin{solution}[1.0in]
+		Lower the loop bandwidth. A narrower loop averages the timing error over more
+		symbols, so the sampling instant jitters less, but the loop locks more slowly
+		and follows a drifting clock less closely.
+		\end{solution}
+
+\end{parts}
+
+\vspace{1.5em}
+\noindent\textbf{Documentation:} \rule[-2pt]{0.6\linewidth}{0.4pt}
+
+\end{questions}
