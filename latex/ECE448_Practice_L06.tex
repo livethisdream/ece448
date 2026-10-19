@@ -1,0 +1,229 @@
+% !TEX root =./ECE448_Practice_main.tex
+%
+% L6 practice set (AM Simulation). Short by design: the L6 Lab packet carries
+% the hands-on work. Blank copy: \begin{solution}[h] reserves h of work
+% space. SOLUTIONS copy (\iskey=1) prints the red worked solutions.
+
+\fullwidth{\textbf{Learning Objective 3.1: } I can describe DSB-AM, DSB-SC, and SSB
+and identify each on a spectrum.
+\\[2pt]\textbf{Learning Objective 3.2: } I can implement an AM modulator and
+demodulator in GNU Radio and verify demodulated audio against the source.
+\\[4pt]\normalfont\small Show your work. Write a \textbf{Documentation} line at the
+end (\textbf{None} if you did not collaborate).}
+
+\begin{questions}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{Reading a spectrum.} A 1 kHz tone modulates a 100 kHz carrier.
+\begin{parts}
+
+	\part List the frequencies of the spectral lines for DSB-AM, DSB-SC, USB, and LSB.
+
+	\begin{center}
+	\renewcommand{\arraystretch}{1.25}
+	\begin{tabular}{| l | p{1.5in} | p{1.5in} |}
+	\hline
+	Signal & Lines (kHz) & Bandwidth (kHz) \\\hline
+	DSB-AM & & \\\hline
+	DSB-SC & & \\\hline
+	USB & & \\\hline
+	LSB & & \\\hline
+	\end{tabular}
+	\end{center}
+
+		\begin{solution}[0.8in]
+		DSB-AM: 99, 100, and 101 kHz, 2 kHz wide. DSB-SC: 99 and 101 kHz, 2 kHz wide.
+		USB: 101 kHz only, 1 kHz of message bandwidth. LSB: 99 kHz only, 1 kHz of
+		message bandwidth.
+		\end{solution}
+
+	\part A spectrum display shows two lines of equal height at 14.997 and
+	15.003 MHz and nothing between them. Name the modulation, the carrier frequency,
+	and the message tone.
+		\begin{solution}[0.9in]
+		DSB-SC: the lines are symmetric about 15.000 MHz, so that is the carrier, and
+		there is no carrier line. The tone is $15.003 - 15.000 = 3$ kHz.
+		\end{solution}
+
+	\part A waterfall shows a voice signal from 7.1970 to 7.1997 MHz that comes and
+	goes with speech, with no steady line beside it. Voice runs from 300 Hz to 3 kHz.
+	Name the modulation and the frequency a receiver must tune to.
+		\begin{solution}[1.0in]
+		SSB, because it is about 2.7 kHz wide, one-sided, and carrierless. The audio from
+		300 Hz to 3 kHz lies \emph{below} the carrier, so it is LSB with the carrier at
+		\eq{ 7.1970 + 0.0030 = 7.1997 + 0.0003 = 7.2000\ \text{MHz} }
+		LSB below 10 MHz is the amateur convention.
+		\end{solution}
+
+\end{parts}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{DSB-AM.} A transmitter sends
+$s(t) = \left[1 + m\cos(2\pi f_m t)\right]\cos(2\pi f_c t)$ with $m = 0.8$.
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Find the amplitude of each sideband line, and its level in dB relative to
+		the carrier.
+		\begin{solution}[0.9in]
+		\eq{ \dfrac{m}{2} = 0.4, \qquad 20\mylog{0.4} = -8.0\db }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		amplitude = \ansbox[1.0in]{$0.4$}
+
+		\vspace{4pt}
+		level = \ansbox[1.0in]{$-8.0\db$}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part A line's power is proportional to its amplitude squared. Add up the lines
+		to find the fraction of the transmitted power in the sidebands.
+		\begin{solution}[1.2in]
+		The carrier line has amplitude 1 and each sideband 0.4:
+		\eq{ \eta = \dfrac{2(0.4)^2}{1^2 + 2(0.4)^2} = \dfrac{0.32}{1.32} = 24\% }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.0in]{$24\%$}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part A station carries audio up to 5 kHz. Find its bandwidth.
+		\begin{solution}[0.6in]
+		\eq{ 2W = 2 \times 5 = 10\ \text{kHz} }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.0in]{10 kHz}
+	\end{minipage}
+
+	\part The operator raises $m$ to 1.2. Explain in words what an envelope detector
+	now outputs, and why it no longer matches the message.
+		\begin{solution}[1.1in]
+		At the message's troughs, $1 + 1.2\cos(2\pi f_m t)$ goes as low as $-0.2$. The
+		carrier's amplitude cannot be negative, so the envelope is the absolute value,
+		and the detector outputs $\vert 1 + m\cos(2\pi f_m t)\vert$: the troughs fold back
+		up. The audio distorts, and the new frequencies spread the signal outside its
+		channel.
+		\end{solution}
+
+\end{parts}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{The envelope detector flowgraph.} The receiver in
+\texttt{L06-dsb-am.grc} is Abs, then a low-pass filter, then Multiply Const. The
+flowgraph runs at 48 kHz with a 10 kHz carrier and a message up to 2.5 kHz.
+\begin{parts}
+
+	\part The low-pass filter has a 3 kHz cutoff and a 1 kHz transition. Explain why
+	that works: what must it pass, and what must it stop?
+		\begin{solution}[1.0in]
+		It must pass the envelope, which holds the message up to 2.5 kHz, and stop the
+		copies of the envelope that Abs creates. After Abs there is no 10 kHz content:
+		the copies sit at $2f_c = 20$ kHz and its multiples, which fold to 8 kHz and
+		4 kHz at 48 kHz sampling. A 3 kHz cutoff with a 1 kHz transition passes
+		everything up to about 2.5 kHz, with the 2.5 kHz tone at the passband edge
+		($-0.4$ dB), and stops everything above about 3.5 kHz, including both folded
+		copies.
+		\end{solution}
+
+	\part Explain the Multiply Const of $\pi/2$ after the filter.
+		\begin{solution}[0.8in]
+		The average of a rectified cosine is $2/\pi$ of its peak, so the filter outputs
+		$(2/\pi)\left[1 + m\,x(t)\right]$. Multiplying by $\pi/2$ restores the envelope's
+		level so we can compare it with $1 + m\,x(t)$.
+		\end{solution}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part The time sink shows the detector output lagging the envelope by 57 samples.
+		Find the lag in milliseconds, and name the block that causes it.
+		\begin{solution}[1.0in]
+		\eq{ \dfrac{57}{48000} = 1.19\ \text{ms} }
+		The low-pass filter delays its output by half its length. The flowgraph's Delay
+		block delays the reference by the same 57 samples so the traces line up.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.0in]{1.19 ms}
+	\end{minipage}
+
+	\part The flowgraph has an Audio Sink and no Throttle. Explain why.
+		\begin{solution}[0.8in]
+		The sound card takes exactly 48,000 samples per second, so the Audio Sink paces
+		the flowgraph the way an SDR does. A Throttle would add a second clock competing
+		with the sound card's and cause audio dropouts.
+		\end{solution}
+
+\end{parts}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{Coherent and product detectors.}
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part A DSB-SC receiver's LO is $60^\circ$ out of phase with the transmitter's
+		carrier. Find the output's amplitude relative to a matched LO, in dB.
+		\begin{solution}[0.9in]
+		\eq{ \cos 60^\circ = 0.5, \qquad 20\mylog{0.5} = -6.0\db }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.0in]{$-6.0\db$}
+	\end{minipage}
+
+	\part Explain why a DSB-SC receiver on the air needs carrier recovery, and how FM
+	stereo provides it for its DSB-SC subcarrier.
+		\begin{solution}[1.0in]
+		The receiver's LO must match the carrier in frequency and phase, and DSB-SC
+		transmits no carrier to lock to; at $90^\circ$ the output vanishes. FM stereo sends
+		a 19 kHz pilot tone, and the receiver doubles it to rebuild the 38 kHz LO in the
+		right phase.
+		\end{solution}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part A USB signal carries a 1 kHz tone. The product detector's LO sits 150 Hz
+		above the carrier. Find the output tone. Repeat for LSB.
+		\begin{solution}[1.0in]
+		The USB tone is at $f_c + 1000$; mixing with $f_c + 150$ leaves
+		$1000 - 150 = 850$ Hz. The LSB tone is at $f_c - 1000$, which leaves
+		$1000 + 150 = 1150$ Hz.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		USB: \ansbox[1.0in]{850 Hz}
+
+		\vspace{4pt}
+		LSB: \ansbox[1.0in]{1150 Hz}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part The SSB flowgraph's Delay block holds the message back
+		$(129 - 1)/2 + 57$ samples before comparing it with the receiver's output. Find
+		the delay and explain each term.
+		\begin{solution}[1.1in]
+		\eq{ 64 + 57 = 121\ \text{samples} }
+		The 129-tap Hilbert filter delays the message by 64 samples, half its length,
+		and the receiver's low-pass filter adds 57 more.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.0in]{121 samples}
+	\end{minipage}
+
+\end{parts}
+
+\vspace{1.5em}
+\noindent\textbf{Documentation:} \rule[-2pt]{0.6\linewidth}{0.4pt}
+
+\end{questions}
