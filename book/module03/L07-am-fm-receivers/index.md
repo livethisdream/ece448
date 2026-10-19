@@ -53,6 +53,10 @@ In the L5 Lab you recorded 2 s of the FM band to `fm_capture.cfile`. The figure 
 By the end of the lesson we will turn that file into audio, read the station's name out of it, and then point the same flowgraph at the live band. We will also build an AM receiver for the aircraft band and compare AM and FM in the same noise.
 
 :::{depth}
+<img src="../../viz/img/L07-grc-fm-test-tx.png"
+     alt="GNU Radio Companion with L07-fm-test-tx.grc open: two tones, pre-emphasis, and a level for station A's audio; an RDS Encoder, Differential Encoder, Map, Unpack K Bits, Chunks to Symbols, root raised cosine filter, resampler, and a 57 kHz Signal Source for RDS; an Add forming the multiplex, a resampler, a Frequency Mod, and a 300 kHz shift; a second station with a 600 Hz tone shifted to minus 500 kHz; a Noise Source; and an Add, Head, and File Sink"
+     style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
+
 The test file comes from `L07-fm-test-tx.grc`. It builds each station the way a broadcaster does, with pre-emphasis, an RDS encoder from gr-rds, and a 75 kHz peak deviation, then adds noise and writes 4 s of samples, 76.8 MB, to `L07-fm-test.cfile`. Nothing in it transmits: its last block is a File Sink. `L07-am-test-tx.grc` does the same for the AM receiver, with one station at 126.2 MHz. Run both once before class, in the folder that holds the receivers.
 :::
 ::::
@@ -216,6 +220,12 @@ The panel shows "ECE 448" and the test transmitter's radiotext. It also shows th
 
 Aircraft and control towers talk in AM between 118 and 137 MHz, and most airports with a control tower broadcast an **ATIS**, a recorded loop of the current weather and runway in use, continuously on one of those frequencies. That makes ATIS a steady signal to receive, as Lesson 6 suggested. `L07-am-rx.grc` has the same front end as the FM receiver: a File Source or the RTL-SDR, and a Frequency Xlating FIR Filter. This one has a 5 kHz cutoff, which keeps the voice band with room for a small tuning error, and it decimates by 50, from 2.4 MS/s straight to the sound card's 48 kS/s.
 
+:::{depth}
+<img src="../../viz/img/L07-grc-am-rx.png"
+     alt="GNU Radio Companion with L07-am-rx.grc open: a File Source and a disabled Soapy RTLSDR Source feed a Frequency Xlating FIR Filter with decimation 50, then Complex to Mag, a Decimating FIR Filter with the 3 kHz low-pass taps, a DC Blocker, an AGC, a volume Multiply Const, and an Audio Sink"
+     style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
+:::
+
 After the filter, the AM station is a complex signal with its carrier at 0 Hz, and its envelope is the magnitude of each sample. **Complex to Mag** replaces the Abs block of Lesson 6, and the rest is the L6 receiver: the same 3 kHz low-pass taps and a DC Blocker that removes the carrier's constant. An **AGC** block then holds the audio level steady, because a station's strength depends on the aircraft's distance and an AM receiver's output depends on it directly. The figure shows the receiver on `L07-am-test.cfile`, which carries the L6 two-tone message at $m$ = 0.5; the audio repeats every 2 ms, as it did in Lesson 6.
 ::::
 
@@ -231,6 +241,12 @@ After the filter, the AM station is a complex signal with its carrier at 0 Hz, a
 :::
 
 `L07-am-vs-fm.grc` sends one 1 kHz tone two ways with the same carrier power: as AM at $m$ = 1, the best case from Lesson 6, and as FM with 25 kHz deviation. Both go through the same noise, and each receiver filters to its own channel, 10 kHz for AM and $2(25 + 5)$ = 60 kHz for FM by Carson's rule with a 5 kHz audio band. Each output then passes the same 5 kHz audio filter, and a meter built from blocks measures the tone's power against everything else in the audio band: the **output SNR**. The C/N slider sets the carrier-to-noise ratio in 10 kHz, the AM channel.
+
+:::{depth}
+<img src="../../viz/img/L07-grc-am-vs-fm.png"
+     alt="GNU Radio Companion with L07-am-vs-fm.grc open: a 1 kHz Signal Source feeds an AM branch (Add Const 1, a power scale, Float To Complex) and a Frequency Mod; one Noise Source adds to both; the AM receiver is a Decimating FIR Filter, Complex to Mag, DC Blocker, scale, and audio filter; the FM receiver is a channel filter, Quadrature Demod, and audio filter; below, band-pass and band-reject filters, RMS, Log10, and Subtract blocks form the two SNR meters feeding a Number Sink"
+     style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
+:::
 
 At 30 dB, AM delivers 29.5 dB, close to its C/N, and FM delivers 48.7 dB, about 19 dB better. The FM receiver lets in six times as much noise, yet its output is cleaner. The demodulator's output follows how far the frequency swings, and a 25 kHz swing is large next to the small frequency jitter that the noise adds to a strong carrier. The spectrum shows the result: FM's noise floor sits about 20 dB under AM's. Each doubling of the deviation improves FM's output by another 5 to 6 dB, as long as the signal stays above threshold.
 ::::
