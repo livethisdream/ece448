@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PAM eye explorer — pulse shaping, bandwidth, matched filtering, and the eye diagram</title>
+<style>
+  :root { --navy:#004a85; --mid:#0067b9; --edge:#cddce9; --edge2:#b9d2e5; --bg:#f5f9fc;
+          --ink:#15202b; --ink3:#5b6573;
+          --amber:#8a5a00; --red:#b01e24; --grn:#3f7d34; }
+  html,body { margin:0; padding:0; font-family:'Inter',system-ui,-apple-system,sans-serif; color:var(--ink); background:#fff; }
+  .app { display:flex; flex-direction:column; gap:8px; padding:12px; }
+  .plots { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:10px; }
+  @media (max-width:620px) { .plots { grid-template-columns:1fr; } }
+  canvas { display:block; box-sizing:border-box; width:100%; height:auto; background:#fff; border:1px solid var(--edge); border-radius:6px; }
+  .controls { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px 16px; align-items:center;
+              padding:8px 12px; background:var(--bg); border:1px solid var(--edge); border-radius:6px; }
+  @media (max-width:620px) { .controls { grid-template-columns:1fr; } }
+  .ctl { display:grid; grid-template-columns:auto 1fr; column-gap:8px; row-gap:2px; align-items:center; min-width:0; }
+  .ctl label { font-size:10.5px; text-transform:uppercase; letter-spacing:0.05em; color:var(--ink3); font-weight:700; white-space:nowrap; }
+  .ctl .val { color:var(--navy); font-size:12px; font-weight:600; font-variant-numeric:tabular-nums; text-align:right; white-space:nowrap; }
+  .ctl input[type=range]{ grid-column:1 / span 2; width:100%; margin:0; accent-color:var(--mid); }
+  .ctl input:disabled { opacity:0.4; }
+  .seg { display:flex; gap:4px; flex-wrap:wrap; }
+  .seg button { font:inherit; font-size:11.5px; font-weight:600; color:var(--navy); background:#fff; border:1px solid var(--edge2); border-radius:14px; padding:3px 10px; cursor:pointer; }
+  .seg button.on { background:var(--navy); color:#fff; border-color:var(--navy); }
+  .segs { grid-column:1 / -1; display:flex; justify-content:space-between; gap:8px; flex-wrap:wrap; }
+  .readouts { display:grid; gap:6px; grid-template-columns:repeat(3,minmax(0,1fr)); }
+  .ro { display:flex; flex-direction:column; align-items:center; gap:2px; padding:5px 4px 6px; min-width:0;
+        border:1px solid var(--edge2); border-radius:6px; background:#eef4fa; }
+  .ro .k { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:var(--ink3); white-space:nowrap; }
+  .ro .v { font-size:14px; font-weight:700; white-space:nowrap; font-variant-numeric:tabular-nums; color:var(--navy); }
+  .ro.bad .v { color:var(--red); }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="plots">
+    <canvas id="eye" aria-label="Eye diagram: the received waveform overlaid two symbols at a time, with the sampling instant marked"></canvas>
+    <canvas id="spec" aria-label="Spectrum of the transmitted signal in units of the symbol rate, with a rectangular pulse shown in gray for comparison"></canvas>
+  </div>
+  <div class="controls">
+    <div class="segs">
+      <div class="seg" id="pulse"><button data-p="rect">rectangular</button><button data-p="rrc">RRC only</button><button data-p="mf" class="on">RRC + matched</button></div>
+      <div class="seg" id="lev"><button data-m="2" class="on">2-PAM</button><button data-m="4">4-PAM</button></div>
+    </div>
+    <div class="ctl"><label for="a">Roll-off α</label><span class="val" id="a-v"></span>
+      <input type="range" id="a" min="0.1" max="1" step="0.05" value="0.35"></div>
+    <div class="ctl"><label for="snr">Es/N0</label><span class="val" id="snr-v"></span>
+      <input type="range" id="snr" min="0" max="30" step="1" value="20"></div>
+    <div class="ctl"><label for="tau">Sample time</label><span class="val" id="tau-v"></span>
+      <input type="range" id="tau" min="-0.5" max="0.5" step="0.05" value="0"></div>
+  </div>
+  <div class="readouts">
+    <div class="ro"><span class="k">bandwidth</span><span class="v" id="o-bw">—</span></div>
+    <div class="ro" id="ro-eye"><span class="k">eye opening</span><span class="v" id="o-eye">—</span></div>
+    <div class="ro" id="ro-ser"><span class="k">symbol errors</span><span class="v" id="o-ser">—</span></div>
+  </div>
+</div>
+
+<script>
+'use strict';
+// Everything is in units of the symbol period T and the symbol rate Rs = 1/T.
+// SPS samples per symbol, as the L9 flowgraphs use; the pulse spans 2*SPAN
+// symbols, which is what firdes.root_raised_cosine with 11*sps taps gives.
+const SPS = 16, SPAN = 6, NSYM = 1200, SANS = 'Inter, system-ui, -apple-system, sans-serif';
+const C = { navy:'#004a85', mid:'#0067b9', red:'#b01e24', amber:'#8a5a00', rule:'#cddce9', ink:'#15202b', ink3:'#5b6573', gray:'#9aa5b1' };
+const $ = id => document.getElementById(id);
+let pulse = 'mf', M = 2;
+document.querySelectorAll('#pulse button').forEach(b => b.onclick = () => {
+  pulse = b.dataset.p; document.querySelectorAll('#pulse button').forEach(x => x.classList.toggle('on', x === b)); update(); });
+document.querySelectorAll('#lev button').forEach(b => b.onclick = () => {
+  M = +b.dataset.m; document.querySelectorAll('#lev button').forEach(x => x.classList.toggle('on', x === b)); update(); });
+['a', 'snr', 'tau'].forEach(id => $(id).oninput = update);
+
+// A seeded generator, so the same settings always draw the same eye.
+function rng(seed) { let s = seed >>> 0; return () => { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296; }; }
+function gauss(r) { let u = 0; while (u === 0) u = r(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * r()); }
+
+// Root-raised-cosine taps at t = n/SPS symbols, unit energy.
+function rrc(alpha) {
+  const h = [];
+  for (let n = -SPAN * SPS; n <= SPAN * SPS; n++) {
+    const t = n / SPS; let v;
+    if (Math.abs(t) < 1e-9) v = 1 - alpha + 4 * alpha / Math.PI;
+    else if (Math.abs(Math.abs(4 * alpha * t) - 1) < 1e-9)
+      v = alpha / Math.SQRT2 * ((1 + 2 / Math.PI) * Math.sin(Math.PI / (4 * alpha)) + (1 - 2 / Math.PI) * Math.cos(Math.PI / (4 * alpha)));
+    else v = (Math.sin(Math.PI * t * (1 - alpha)) + 4 * alpha * t * Math.cos(Math.PI * t * (1 + alpha))) /
+             (Math.PI * t * (1 - (4 * alpha * t) ** 2));
+    h.push(v);
+  }
+  return norm(h);
+}
+function rect() { return norm(new Array(SPS).fill(1)); }
+function norm(h) { const e = Math.sqrt(h.reduce((s, v) => s + v * v, 0)); return h.map(v => v / e); }
+function conv(x, h) {
+  const y = new Float64Array(x.length + h.length - 1);
+  for (let i = 0; i < x.length; i++) { const xi = x[i]; if (xi === 0) continue; for (let k = 0; k < h.length; k++) y[i + k] += xi * h[k]; }
+  return y;
+}
+
+// Levels with unit average energy: 2-PAM is +-1, 4-PAM is (+-1, +-3)/sqrt(5).
+function levels(m) { return m === 2 ? [-1, 1] : [-3, -1, 1, 3].map(v => v / Math.sqrt(5)); }
+
+function simulate() {
+  const alpha = +$('a').value, esn0 = 10 ** (+$('snr').value / 10), r = rng(7), L = levels(M);
+  const sym = Array.from({ length: NSYM }, () => L[Math.floor(r() * M)]);
+  const up = new Float64Array(NSYM * SPS); sym.forEach((a, k) => up[k * SPS] = a);
+  const h = pulse === 'rect' ? rect() : rrc(alpha);
+  const tx = conv(up, h);
+  // Es = 1 with a unit-energy pulse, so the noise per sample has variance N0/2.
+  const sigma = Math.sqrt(1 / esn0 / 2);
+  const rxNoisy = Float64Array.from(tx, v => v + sigma * gauss(r));
+  let y, yClean, delay;
+  if (pulse === 'mf') {
+    y = conv(rxNoisy, h); yClean = conv(tx, h); delay = h.length - 1;   // RRC * RRC = raised cosine: peak 1 at each symbol
+  } else {
+    // No receive filter: scale so the pulse peak reads as the symbol value.
+    const pk = pulse === 'rect' ? h[0] : h[SPAN * SPS];
+    y = rxNoisy.map(v => v / pk); yClean = Float64Array.from(tx, v => v / pk);
+    delay = pulse === 'rect' ? Math.floor(SPS / 2) : SPAN * SPS;
+  }
+  return { sym, y, yClean, delay, h, L };
+}
+
+function setup(cv, aspect, narrowH) {
+  const dpr = window.devicePixelRatio || 1, w = Math.max(200, cv.clientWidth || 300);
+  const narrow = window.matchMedia && window.matchMedia('(max-width:620px)').matches;
+  const h = narrow ? narrowH : Math.round(Math.min(w * aspect, 270));
+  cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); cv.style.height = h + 'px';
+  const bh = cv.offsetHeight - cv.clientHeight; if (bh) cv.style.height = (h + bh) + 'px';
+  const ctx = cv.getContext('2d'); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); return { ctx, w, h };
+}
+function txt(ctx, s, x, y, px, col, align, bold) { ctx.fillStyle = col; ctx.font = (bold ? '700 ' : '') + px + 'px ' + SANS;
+  ctx.textAlign = align || 'left'; ctx.textBaseline = 'middle'; ctx.fillText(s, x, y); }
+
+function drawEye(sim, tau) {
+  const { ctx, w, h } = setup($('eye'), 0.72, 160);
+  ctx.clearRect(0, 0, w, h);
+  const mL = 30, mR = 10, top = 22, bot = h - 24, ymax = 1.7 * Math.max(...sim.L.map(Math.abs));
+  const X = t => mL + (t + 1) / 2 * (w - mL - mR), Y = v => top + (ymax - v) / (2 * ymax) * (bot - top);
+  ctx.strokeStyle = C.rule; ctx.lineWidth = 1;
+  for (const v of sim.L) { ctx.beginPath(); ctx.moveTo(X(-1), Y(v)); ctx.lineTo(X(1), Y(v)); ctx.stroke(); }
+  for (const t of [-1, 0, 1]) { ctx.beginPath(); ctx.moveTo(X(t), top); ctx.lineTo(X(t), bot); ctx.stroke();
+    txt(ctx, t === 0 ? '0' : (t < 0 ? '−T' : 'T'), X(t), bot + 12, 11, C.ink3, 'center'); }
+  // Overlay 2T-wide traces centered on each symbol instant.
+  ctx.strokeStyle = 'rgba(0,74,133,0.16)'; ctx.lineWidth = 1;
+  for (let k = SPAN + 2; k < Math.min(sim.sym.length - SPAN - 2, 260); k++) {
+    const c = sim.delay + k * SPS; ctx.beginPath();
+    for (let n = -SPS; n <= SPS; n++) { const x = X(n / SPS), y = Y(sim.y[c + n]); n === -SPS ? ctx.moveTo(x, y) : ctx.lineTo(x, y); }
+    ctx.stroke();
+  }
+  ctx.strokeStyle = C.amber; ctx.lineWidth = 2; ctx.setLineDash([5, 4]);
+  ctx.beginPath(); ctx.moveTo(X(tau), top - 6); ctx.lineTo(X(tau), bot); ctx.stroke(); ctx.setLineDash([]);
+  txt(ctx, 'sample here', Math.min(Math.max(X(tau), mL + 34), w - mR - 34), top - 12 + 2, 11, C.amber, 'center', true);
+}
+
+// Averaged periodogram of the transmit waveform, in dB relative to its peak.
+function psd(x) {
+  const N = 256, seg = Math.floor(x.length / N), P = new Float64Array(N);
+  for (let s = 0; s < seg; s++) {
+    for (let k = 0; k < N; k++) {
+      let re = 0, im = 0;
+      for (let n = 0; n < N; n++) { const v = x[s * N + n] * (0.5 - 0.5 * Math.cos(2 * Math.PI * n / N)), a = -2 * Math.PI * k * n / N;
+        re += v * Math.cos(a); im += v * Math.sin(a); }
+      P[k] += re * re + im * im;
+    }
+  }
+  const out = []; let mx = 0; for (let k = 0; k < N; k++) mx = Math.max(mx, P[k]);
+  for (let k = 0; k < N; k++) { const kk = (k + N / 2) % N; out.push({ f: (k - N / 2) / N * SPS, db: 10 * Math.log10(P[kk] / mx + 1e-12) }); }
+  return out;
+}
+let rectPsd = null, psdCache = {};
+function txPsd(alpha) {
+  const key = pulse === 'rect' ? 'rect' : 'rrc' + alpha;
+  if (psdCache[key]) return psdCache[key];
+  const r = rng(11), up = new Float64Array(64 * 256 / 1);
+  for (let k = 0; k < up.length / SPS; k++) up[k * SPS] = r() < 0.5 ? -1 : 1;
+  return (psdCache[key] = psd(conv(up, pulse === 'rect' ? rect() : rrc(alpha)).slice(0, up.length)));
+}
+
+function drawSpec(alpha) {
+  const { ctx, w, h } = setup($('spec'), 0.72, 160);
+  ctx.clearRect(0, 0, w, h);
+  const mL = 34, mR = 10, top = 14, bot = h - 24, F = 3, DB = 60;
+  const X = f => mL + (f + F) / (2 * F) * (w - mL - mR), Y = d => top + (-d) / DB * (bot - top);
+  if (pulse !== 'rect') {
+    ctx.fillStyle = '#eef4fa'; const b = (1 + alpha) / 2; ctx.fillRect(X(-b), top, X(b) - X(-b), bot - top);
+  }
+  ctx.strokeStyle = C.rule; ctx.lineWidth = 1;
+  for (const d of [0, -20, -40, -60]) { ctx.beginPath(); ctx.moveTo(mL, Y(d)); ctx.lineTo(w - mR, Y(d)); ctx.stroke(); txt(ctx, String(d), mL - 4, Y(d), 10.5, C.ink3, 'right'); }
+  for (let f = -F; f <= F; f++) txt(ctx, f === 0 ? '0' : (f < 0 ? '−' : '') + Math.abs(f) + 'Rs', X(f), bot + 12, 10.5, C.ink3, 'center');
+  function trace(p, col, lw) {
+    ctx.strokeStyle = col; ctx.lineWidth = lw; ctx.beginPath(); let first = true;
+    for (const q of p) { if (q.f < -F || q.f > F) continue; const y = Y(Math.max(q.db, -DB)); first ? ctx.moveTo(X(q.f), y) : ctx.lineTo(X(q.f), y); first = false; }
+    ctx.stroke();
+  }
+  if (!rectPsd) { const save = pulse; pulse = 'rect'; rectPsd = txPsd(0); pulse = save; }
+  if (pulse !== 'rect') trace(rectPsd, C.gray, 1.2);
+  trace(txPsd(alpha), C.navy, 1.8);
+  txt(ctx, 'spectrum (dB)', w - mR - 4, top + 8, 11, C.ink3, 'right', true);
+}
+
+function update() {
+  const alpha = +$('a').value, tau = +$('tau').value;
+  $('a-v').textContent = alpha.toFixed(2);
+  $('snr-v').textContent = $('snr').value + ' dB';
+  $('tau-v').textContent = (tau > 0 ? '+' : tau < 0 ? '−' : '') + Math.abs(tau).toFixed(2) + ' T';
+  $('a').disabled = pulse === 'rect';
+  const sim = simulate();
+  // Eye opening from the noiseless waveform at the chosen instant: the worst
+  // gap between adjacent levels, as a fraction of the ideal gap.
+  const off = Math.round(tau * SPS), byLev = sim.L.map(() => [Infinity, -Infinity]);
+  let errs = 0, cnt = 0;
+  for (let k = SPAN + 2; k < sim.sym.length - SPAN - 2; k++) {
+    const i = sim.L.indexOf(sim.sym[k]), n = sim.delay + k * SPS + off, v = sim.yClean[n];
+    byLev[i][0] = Math.min(byLev[i][0], v); byLev[i][1] = Math.max(byLev[i][1], v);
+    // Decide the nearest level from the noisy sample.
+    const yv = sim.y[n]; let best = 0; sim.L.forEach((l, j) => { if (Math.abs(yv - l) < Math.abs(yv - sim.L[best])) best = j; });
+    if (best !== i) errs++; cnt++;
+  }
+  let open = Infinity; const gap = sim.L[1] - sim.L[0];
+  for (let i = 0; i + 1 < sim.L.length; i++) open = Math.min(open, (byLev[i + 1][0] - byLev[i][1]) / gap);
+  $('o-bw').textContent = pulse === 'rect' ? 'sidelobes' : ((1 + alpha).toFixed(2) + ' Rs');
+  $('o-eye').textContent = open <= 0 ? 'closed' : Math.round(100 * open) + '%';
+  $('ro-eye').className = 'ro' + (open < 0.5 ? ' bad' : '');
+  $('o-ser').textContent = errs + ' / ' + cnt;
+  $('ro-ser').className = 'ro' + (errs > 0 ? ' bad' : '');
+  drawEye(sim, tau); drawSpec(alpha);
+}
+
+window.addEventListener('resize', update);
+const q = new URLSearchParams(location.search);
+for (const k of ['a', 'snr', 'tau']) if (q.get(k)) $(k).value = q.get(k);
+update();
+</script>
+</body>
+</html>
