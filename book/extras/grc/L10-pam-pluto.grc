@@ -585,12 +585,12 @@ blocks:
   parameters:
     _source_code: "\"\"\"Text Sink: shows each received packet as a line of text and\
       \ counts the\nlines that match the transmitted message. The counts restart whenever\
-      \ a\nslider moves, because GRC sets `settings` each time noise or foff changes.\n\
-      Function Probes read last_line() and stats() for the QT GUI Labels.\"\"\"\n\n\
-      import time\n\nimport numpy as np\nimport pmt\nfrom gnuradio import gr\n\n\n\
-      class blk(gr.sync_block):\n    def __init__(self, expected='', settings=None):\n\
-      \        gr.sync_block.__init__(self, name='Text Sink', in_sig=[np.uint8], out_sig=None)\n\
-      \        self.expected = expected\n        self.key = pmt.intern('packet_len')\n\
+      \ a\nslider moves, because GRC sets `settings` each time one of\nthe settings\
+      \ it names changes.\nFunction Probes read last_line() and stats() for the QT\
+      \ GUI Labels.\"\"\"\n\nimport time\n\nimport numpy as np\nimport pmt\nfrom gnuradio\
+      \ import gr\n\n\nclass blk(gr.sync_block):\n    def __init__(self, expected='',\
+      \ settings=None):\n        gr.sync_block.__init__(self, name='Text Sink', in_sig=[np.uint8],\
+      \ out_sig=None)\n        self.expected = expected\n        self.key = pmt.intern('packet_len')\n\
       \        self.buf = ''\n        self.line = '(waiting for a packet)'\n     \
       \   self.settings = settings\n\n    @property\n    def settings(self):\n   \
       \     return self._settings\n\n    @settings.setter\n    def settings(self,\

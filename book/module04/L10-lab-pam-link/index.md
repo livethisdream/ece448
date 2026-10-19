@@ -85,7 +85,8 @@ These follow from Lesson 10. The packet size is exact: 64 bits of access code, 3
 1. Open and run `L10-pam-link.grc`. The Lines label counts the lines received since a slider last moved.
 2. With the clock error at 500 ppm, set the noise amplitude to 0.5, 0.7, 0.8, 0.9, 1.0, and 1.2 in turn. At each, wait about 30 s and record the time and the Lines label for Question 4(a).
 3. At 1.0, wait for a line with a wrong character in the Received label and screenshot it for Question 4(b).
-4. Set the noise back to 0.3. Raise the clock error to 0, 5000, 10,000, 20,000, 30,000, and 40,000 ppm in that order, without stopping the flowgraph. At each, wait about 20 s and record the Lines label and the eye's appearance for Question 5(a). Screenshot 10,000 ppm for Question 5(b).
+4. Set the noise back to 0.3. Raise the clock error to 0, 10,000, 20,000, 30,000, and 40,000 ppm in that order, without stopping the flowgraph. At each, wait about 20 s and record the Lines label and the eye's appearance for Question 5(a). Screenshot 10,000 ppm for Question 5(b).
+5. Stop the flowgraph, run it again, and type 40,000 into the clock-error box right away. Record the Lines label after 20 s in the last column of Question 5(a).
 ::::
 
 ::::{frame} If No Text Arrives

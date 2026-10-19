@@ -95,7 +95,7 @@ The link runs at 4 kbaud with one bit per symbol.
 
 	\begin{minipage}[t]{0.58\linewidth}
 		\part What fraction of the bits on the air are text? If the same packets ran at
-		L9's 9.6 kbaud, how long would one take?
+		9.6 kbaud, the rate of L9's channel example, how long would one take?
 		\begin{solution}[1.0in]
 		\eq{ \dfrac{160}{256} = 62.5\%, \qquad \dfrac{256}{9600\ \text{baud}} = 26.7\ \text{ms} }
 		\end{solution}
@@ -132,7 +132,8 @@ most 2 bits differ.
 		With a threshold of 0, one error anywhere in the 64 bits loses the packet:
 		\eq{ 1 - (1 - 10^{-3})^{64} = 6.2\% }
 		With a threshold of 2, it takes 3 or more errors, and the 3-error term dominates:
-		\eq{ \binom{64}{3}(10^{-3})^3 = 41{,}664 \times 10^{-9} = 4.2\times10^{-5} }
+		\eq{ \binom{64}{3}(10^{-3})^3(1-10^{-3})^{61} = 3.9\times10^{-5} }
+		Including 4 or more errors gives $4.0\times10^{-5}$.
 		\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
@@ -140,7 +141,7 @@ most 2 bits differ.
 		threshold 0: \ansbox[1.0in]{6.2\%}
 
 		\vspace{4pt}
-		threshold 2: \ansbox[1.0in]{$4.2\times10^{-5}$}
+		threshold 2: \ansbox[1.0in]{$4.0\times10^{-5}$}
 	\end{minipage}
 
 	\part On the PlutoSDR version of the link, no packets arrive, yet the Symbol Sync

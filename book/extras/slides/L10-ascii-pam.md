@@ -158,7 +158,7 @@ Start at 12 dB, where the search finds the packet at bit 40. Press new noise a f
 $$\text{SNR} = \frac{8}{\sigma^2}, \qquad \text{BER} = Q\left(\sqrt{\text{SNR}}\right)$$
 
 Note:
-The matched filter keeps about an eighth of the noise, Lesson 9's 9 dB. At sigma 1 the SNR is 9 dB and the BER 2.3 times 10 to the minus 3. A line needs all 280 header and payload bits right, so about 52% arrive; the screenshot shows 47%, and the line shown has two wrong characters.
+The matched filter keeps about an eighth of the noise, Lesson 9's 9 dB. At sigma 1 the SNR is 9 dB and the BER 2.3 times 10 to the minus 3. A line needs all 280 header and payload bits right, so about 52% of the lines sent arrive intact. The label counts only lines whose header survived, so it should read about 56%; this run shows 47%, and the line shown has two wrong characters.
 
 ---
 
@@ -182,10 +182,10 @@ We measured each row headless, over 3000 packets. The small shortfall comes from
 
 <img src="./img/10-ascii-pam/L10-link-clock.png" alt="The L10 link at a 10,000 ppm clock error: a smeared eye but tight Symbol Sync output and 206 of 208 lines correct" style="max-height:380px; display:block; margin:0 auto;">
 
-Almost no lines lost to 5000 ppm; a crystal is off by about 20 ppm.
+Symbol Sync locks cold to about 25,000 ppm; a crystal is off by about 20 ppm.
 
 Note:
-The eye sink assumes exactly 8 samples per symbol, so it smears at 1%. Symbol Sync tracks the difference. The link loses about 1% of lines at 10,000 ppm, 6 to 10% from 15,000 to 25,000 ppm, and almost every line by 40,000 ppm.
+The eye sink assumes exactly 8 samples per symbol, so it smears at 1%. Symbol Sync tracks the difference. Started cold, the link loses under 1% of lines at 10,000 ppm and a few percent from 15,000 to 25,000 ppm, often fails to lock at 30,000, and never locks at 40,000. Raised a step at a time while locked, it follows 40,000 ppm and beyond.
 
 ---
 

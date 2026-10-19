@@ -130,7 +130,7 @@ From Unpack K Bits on, the transmitter is Lesson 9's: 2-PAM levels, a Throttle a
 
 The time sink triggers on the `packet_len` tag, so every sweep starts at the first bit of a packet and shows its first 112 bits, 28 ms. The first 64 bits are the access code, `10101100 11011101 ...`. The header follows at 16 ms: 31 is `0000000000011111` in 16 bits, so the signal sits at $-1$ for 11 bits and at $+1$ for 5, and then repeats. The payload starts at 24 ms with 'U', 01010101, and 'S', 01010011.
 
-The blue RRC signal passes through $\pm 1$ in the middle of each bit and overshoots between them, as Lesson 9's transmit eye did. The receiver's matched filter removes that overshoot at the sampling instants.
+The blue RRC signal sits near $\pm 1$ in the middle of each bit but misses it by as much as 0.4, because one RRC filter alone leaves some ISI, as Lesson 9's transmit eye showed. The receiver's matched filter removes that ISI at the sampling instants.
 ::::
 
 ::::{frame} Packet Timing
@@ -170,7 +170,7 @@ The share of text grows with the payload, but a longer packet also has more bits
 
 The channel is Lesson 9's: a **Fractional Resampler** with ratio $1 + \text{ppm} \times 10^{-6}$ models the receiver's clock error, and a **Noise Source** adds Gaussian noise of a chosen amplitude. The receiver starts with Lesson 9's matched filter, `rx_taps` in a Decimating FIR Filter, and Lesson 9's **Symbol Sync**: Gardner detector, `sps` = 8, loop bandwidth 0.045, one sample out per symbol.
 
-Three blocks are new. The **Binary Slicer** outputs a 1 for a sample above zero and a 0 below, the decision Lesson 3 described for 2-PAM. **Correlate Access Code - Tag Stream** finds each packet and passes on its payload bits. **Repack Bits** collects 8 bits at a time, MSB first, back into bytes, and the **Text Sink**, an Embedded Python Block from Lesson 8, displays each line and counts the correct ones.
+Three blocks are new. The **Binary Slicer** outputs a 1 for a sample above zero and a 0 below, the decision Lesson 3 described for BPSK's two levels. **Correlate Access Code - Tag Stream** finds each packet and passes on its payload bits. **Repack Bits** collects 8 bits at a time, MSB first, back into bytes, and the **Text Sink**, an Embedded Python Block from Lesson 8, displays each line and counts the correct ones.
 ::::
 
 ::::{frame} Finding the Access Code
@@ -205,7 +205,7 @@ The left panel shows the slicer input for one packet and the 40 bits before it, 
 ::::{frame} Noise
 :::{present}
 <img src="../../viz/img/L10-link-noisy.png"
-     alt="The L10 link at noise amplitude 1.0: the matched-filter eye is mostly closed, the Symbol Sync output spreads between about minus 1.8 and plus 2, with a few samples near zero; the Received label shows USAFA ECE 648: ASCII over ?AM., and the Lines label reads 94 correct of 198 received in 20 s"
+     alt="The L10 link at noise amplitude 1.0: the matched-filter eye is mostly closed, the Symbol Sync output spreads between about minus 1.9 and plus 1.7, with a few samples near zero; the Received label shows USAFA ECE 648: ASCII over ?AM., and the Lines label reads 94 correct of 198 received in 20 s"
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
@@ -217,11 +217,11 @@ The transmitted signal has power 1, and the noise amplitude $\sigma$ on the slid
 
 $$\text{SNR} = \frac{8}{\sigma^2}$$
 
-and each bit is wrong with probability $Q(\sqrt{\text{SNR}})$, the 2-PAM result of Lesson 3. A line arrives intact only if all 280 bits of its header and payload are right, so the fraction of correct lines is about
+and each bit is wrong with probability $Q(\sqrt{\text{SNR}})$, Lesson 3's result for BPSK, which has the same two levels. A line arrives intact only if all 280 bits of its header and payload are right, so the fraction of correct lines is about
 
 $$P = (1 - \text{BER})^{280}.$$
 
-At $\sigma = 1$ the SNR is 9 dB and the BER is $2.3 \times 10^{-3}$, so we expect 52% of the lines; the screenshot shows 94 of 198, 47%. Each wrong bit in the payload changes one character: in the line shown, one flipped bit turned '4', 00110100, into '6', 00110110, and another turned 'P' into a byte that does not print, and a wrong bit in the header loses the line.
+At $\sigma = 1$ the SNR is 9 dB and the BER is $2.3 \times 10^{-3}$, so we expect 52% of the lines sent to arrive intact. The Lines label counts only the lines whose header survived, about 93% of those sent, so of the lines it counts we expect about 56% to be correct; the screenshot shows 94 of 198, 47%, and the count varies from run to run. Each wrong bit in the payload changes one character: in the line shown, one flipped bit turned '4', 00110100, into '6', 00110110, and another turned 'P' into a byte that does not print, and a wrong bit in the header loses the line.
 ::::
 
 ::::{frame} Noise Sweep
@@ -249,13 +249,13 @@ The measurements follow the prediction closely. The formula assumes perfect timi
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
-- Almost no lines lost up to 5000 ppm, 0.5%.
+- Raised step by step, the link follows 40,000 ppm, 4%.
 - A real crystal is off by about 20 ppm.
 :::
 
 The clock-error slider sets how far the receiver's sample clock is from the transmitter's. At 10,000 ppm, a 1% error, the eye sink smears across the display, because it assumes exactly 8 samples per symbol and each symbol now spans 1% fewer. Symbol Sync tracks the difference, and its output stays at $\pm 1$: 206 of 208 lines arrive intact.
 
-Measured over thousands of packets at $\sigma = 0.3$, the link loses fewer than 1 line in 1000 up to 5000 ppm. At 10,000 ppm it loses about 1%, between 15,000 and 25,000 ppm it loses 6 to 10%, and by 40,000 ppm almost no lines arrive. A crystal oscillator is accurate to about 20 ppm, which is 250 times smaller than 5000 ppm, so with Symbol Sync in the receiver, clock error does not limit this link, and noise sets the limit instead.
+Locking on is harder than staying locked. Measured over thousands of packets at $\sigma = 0.3$, a link that starts cold loses fewer than 1 line in 100 up to 10,000 ppm and a few percent, up to about 10%, from 15,000 to 25,000 ppm; started at 30,000 ppm it often fails to lock, and at 40,000 ppm it never does. Raised a step at a time while the loop is locked, the same link follows the error to 40,000 ppm and beyond and loses only a few percent of its lines. A crystal oscillator is accurate to about 20 ppm, 500 times smaller than 10,000 ppm, so with Symbol Sync in the receiver, clock error does not limit this link, and noise sets the limit instead.
 ::::
 
 ::::{frame} Mismatched Settings
@@ -310,7 +310,7 @@ Open a `.grc` file from GRC's File menu, or run `gnuradio-companion L10-pam-link
 | Our line | 31 bytes with the newline | 344 bits, 86 ms at 4 kbaud |
 | Access-code search | at most 2 of 64 bits wrong | about 32 match by chance |
 | Noise | SNR at the slicer $8/\sigma^2$, BER $Q(\sqrt{\text{SNR}})$ | 99% of lines at 12 dB, half at 9 dB |
-| Clock error | Symbol Sync tracks it | almost no lines lost to 5000 ppm |
+| Clock error | Symbol Sync tracks it | locks from a cold start to about 25,000 ppm |
 | Polarity | an inverted link finds no packets | the Costas Loop can flip it |
 ::::
 

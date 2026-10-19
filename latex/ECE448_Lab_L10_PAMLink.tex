@@ -147,12 +147,12 @@ with the sliders at their defaults, a noise amplitude of 0.3 and a clock error o
 	\begin{minipage}[t]{0.58\linewidth}
 		\part After about 20 s, record the Lines label.
 		\begin{solution}[0.5in]
-		The label reads about 200 lines, all correct, because the link sends 11.6 packets a second.
+		The label reads about 220 lines, all correct: the link sends 11.6 packets a second, less a second or two while the flowgraph starts.
 		\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
 		\raggedleft \vspace{12pt}
-		\ansbox[1.6in]{all correct, $\approx 200$}
+		\ansbox[1.6in]{all correct, $\approx 220$}
 	\end{minipage}
 
 	\part Paste a screenshot of the running flowgraph's window.
@@ -302,7 +302,7 @@ multiplied by 11.6 packets a second.
 	$\sigma$ & $0.5$ & $0.7$ & $0.8$ & $0.9$ & $1.0$ & $1.2$ \\\hline
 	Time (s) & & & & & & \\\hline
 	Sent & & & & & & \\\hline
-	Received & \kv{all} & \kv{all} & \kv{$\approx$ 99\%} & \kv{$\approx$ 97\%} & \kv{$\approx$ 93\%} & \kv{$\approx$ 70\%} \\\hline
+	Received & \kv{all} & \kv{all} & \kv{$\approx$ 99\%} & \kv{$\approx$ 97\%} & \kv{$\approx$ 92\%} & \kv{$\approx$ 70\%} \\\hline
 	Correct & \kv{all} & \kv{$\approx$ 99\%} & \kv{$\approx$ 94\%} & \kv{$\approx$ 76\%} & \kv{$\approx$ 47\%} & \kv{$\approx$ 6\%} \\\hline
 	\end{tabular}
 	\end{center}
@@ -328,8 +328,10 @@ multiplied by 11.6 packets a second.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newpage
 \question \textbf{Clock error.} Set the noise amplitude back to 0.3. Raise the clock
-error through the values below, in order, without stopping the flowgraph. At each,
-wait about 20 s, record the Lines label, and note how the eye sink looks.
+error through the first five values below, in order, without stopping the flowgraph.
+At each, wait about 20 s, record the Lines label, and note how the eye sink looks.
+Then stop the flowgraph, run it again, type 40,000 into the clock-error box right away,
+and record the Lines label after 20 s in the last column.
 
 \begin{parts}
 
@@ -337,19 +339,20 @@ wait about 20 s, record the Lines label, and note how the eye sink looks.
 
 	\begin{center}
 	\renewcommand{\arraystretch}{1.25}
-	\begin{tabular}{| l | K{0.62in} | K{0.62in} | K{0.62in} | K{0.62in} | K{0.62in} | K{0.62in} |}
+	\begin{tabular}{| l | K{0.7in} | K{0.7in} | K{0.7in} | K{0.7in} | K{0.7in} | K{0.9in} |}
 	\hline
-	ppm & $0$ & $5000$ & $10{,}000$ & $20{,}000$ & $30{,}000$ & $40{,}000$ \\\hline
-	Lines correct & \kv{all} & \kv{all} & \kv{$\approx$ 99\%} & \kv{$\approx$ 90--95\%} & \kv{$\approx$ 65--90\%} & \kv{almost none} \\\hline
-	Eye sink & \kv{open} & \kv{drifting} & \kv{smeared} & \kv{smeared} & \kv{smeared} & \kv{smeared} \\\hline
+	ppm & $0$ & $10{,}000$ & $20{,}000$ & $30{,}000$ & $40{,}000$ & restart at $40{,}000$ \\\hline
+	Lines correct & \kv{all} & \kv{$\approx$ all} & \kv{most} & \kv{most} & \kv{most} & \kv{none} \\\hline
+	Eye sink & \kv{open} & \kv{smeared} & \kv{smeared} & \kv{smeared} & \kv{smeared} & \kv{smeared} \\\hline
 	\end{tabular}
 	\end{center}
 
-		\begin{solution}[0.8in]
-		Symbol Sync holds every line to 5000 ppm and most of them to 20,000 ppm. The
-		30,000 ppm result varies from run to run. By 40,000 ppm the loop can no longer
-		follow the drift and almost nothing arrives. The eye sink assumes exactly 8
-		samples per symbol, so it drifts and smears even where every line arrives.
+		\begin{solution}[0.9in]
+		Raised a step at a time, Symbol Sync stays locked and follows the error; we
+		measured 80 to 100\% of lines correct at every step up to 40,000 ppm. After the
+		restart, the loop has to lock on from scratch at 40,000 ppm, and it never does, so
+		no line arrives. The eye sink assumes exactly 8 samples per symbol, so it smears
+		even where every line arrives.
 		\end{solution}
 
 	\part Paste a screenshot at 10,000 ppm, and explain how the eye can look smeared
@@ -425,11 +428,11 @@ error between them; the noise and the carrier phase come from the hardware.
 		prediction because Symbol Sync's sampling instant jitters.
 		\end{solution}
 
-	\part Your link held every line to at least 5000 ppm. Compare that with two radios
+	\part Your link held nearly every line to at least 10,000 ppm. Compare that with two radios
 	whose crystals are accurate to 20 ppm each. Then use Question 2(d) to say what would
 	happen to the link if you replaced Symbol Sync with Keep 1 in N.
 		\begin{solution}[1.5in]
-		Two 20 ppm crystals can differ by 40 ppm, more than 100 times smaller than 5000
+		Two 20 ppm crystals can differ by 40 ppm, 250 times smaller than 10,000
 		ppm, so clock error does not limit this link. With Keep 1 in N, a 40 ppm error
 		slips the sampling point one whole symbol every $1/(40\times10^{-6}) = 25{,}000$
 		symbols, 6.25 s, and it crosses the zero crossings, where about half the
