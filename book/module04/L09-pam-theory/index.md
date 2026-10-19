@@ -37,7 +37,7 @@ Lesson 9 · Module 4: Digital Modulation · Dr. Neil Rogers
 </ol>
 ::::
 
-::::{frame} A PAM Link in One Flowgraph
+::::{frame} The PAM Flowgraph
 :::{present}
 <img src="../../viz/img/L09-grc-matched-filter.png"
      alt="GNU Radio Companion with the L9 matched-filter flowgraph open: a Random Source, Chunks to Symbols, and a Throttle feed an Interpolating FIR Filter with RRC taps; a Fractional Resampler and a Noise Source model the channel; a Decimating FIR Filter is the matched filter, feeding a Keep 1 in N, a Symbol Sync, two eye sinks, and a time sink"
@@ -78,9 +78,9 @@ where $R_b$ is the bit rate. The figure sends the same eight bits both ways: 4-P
 - The signal spills into neighboring channels.
 :::
 
-The waveforms in the last figure use **rectangular pulses**: each level holds for one symbol period $T = 1/R_s$, then jumps. The jumps are the problem. The spectrum of a rectangular pulse is a sinc, with its first nulls at $\pm R_s$ and sidelobes that continue far beyond. The first sidelobe is only 13 dB below the peak, and the sidelobes decay slowly with frequency.
+The waveforms in the last figure use **rectangular pulses**: each level holds for one symbol period $T = 1/R_s$ and then jumps, and those jumps spread the spectrum. The spectrum of a rectangular pulse is a sinc, with its first nulls at $\pm R_s$ and sidelobes that continue far beyond. The first sidelobe is only 13 dB below the peak, and the sidelobes decay slowly with frequency.
 
-A radio channel has a fixed width, set by a regulator or by the neighbors on either side. A rectangular-pulse transmitter puts power well outside its own channel, which interferes with other users and fails the emission limits on any license. The fix is to round off the pulse so that its spectrum ends, and the shape we use for that is the raised cosine.
+A radio channel has a fixed width, set by a regulator or by the neighbors on either side. A rectangular-pulse transmitter puts power well outside its own channel, which interferes with other users and can exceed the emission mask its license sets. The fix is to round off the pulse so that its spectrum ends, and the shape we use for that is the raised cosine.
 ::::
 
 ::::{frame} Raised Cosine and Bandwidth
@@ -194,7 +194,7 @@ The number of levels sets the bit rate in that bandwidth, and more levels need m
 - Sample where the eye is widest open.
 :::
 
-An **eye diagram** cuts the received waveform into pieces two symbols long and draws them all on top of each other. For a raised-cosine signal with no noise, every trace passes exactly through $\pm 1$ at the symbol instant, and the gap between the levels there, the **eye opening**, is as large as it can be. Away from the symbol instant the traces spread out, and they cross zero halfway between symbols.
+An **eye diagram** cuts the received waveform into pieces two symbols long and draws them all on top of each other. For a raised-cosine signal with no noise, every trace passes exactly through $\pm 1$ at the symbol instant, and the gap between the levels there, the **eye opening**, is as large as it can be. Away from the symbol instant the traces spread out. They cross zero halfway between symbols on average, but at $\alpha = 0.35$ the individual crossings spread from about $0.34T$ to $0.66T$, depending on the neighboring symbols.
 
 The eye shows three things at a glance. The height of the opening is the margin against noise, the width is the margin against timing error, and the center is where the receiver should sample. Noise fills in the eye from above and below, ISI makes the traces miss the levels, and a timing error moves the sampling instant off center. GNU Radio draws eyes with the **QT GUI Eye Sink**, which needs only the samples per symbol.
 ::::
@@ -229,13 +229,13 @@ The left panel is the eye of the received signal and the right panel is the tran
 
 The receiver's job at each symbol is to decide which level was sent, and the best it can do is make the signal as large as possible relative to the noise at the sampling instant. The filter that does this is the **matched filter**: a filter whose impulse response is the transmitted pulse, reversed in time. An RRC pulse is symmetric, so the matched filter for RRC shaping is the same RRC filter, which is why the split of the last part works.
 
-The screenshot shows the effect with the noise turned up. Before the filter, the noise occupies the full 32 kHz the samples represent, and the eye is closed. The matched filter keeps only the signal's 5.4 kHz, which removes about 9 dB of noise at 8 samples per symbol, and the eye opens. In GNU Radio the matched filter is a **Decimating FIR Filter** with `rx_taps` from the same `firdes.root_raised_cosine` call, with a gain of 1 and a decimation of 1, so it keeps all 8 samples per symbol for the timing recovery that follows.
+The screenshot shows the effect with the noise turned up. Before the filter, the noise occupies the full 32 kHz the samples represent, and the eye is closed. The matched filter passes only the signal's band. Its noise-equivalent bandwidth is about $R_s = 4$ kHz, so it reduces the noise power by a factor of $32/4 = 8$, which is $10\log_{10}(\texttt{sps}) = 9$ dB, and the eye opens. In GNU Radio the matched filter is a **Decimating FIR Filter** with `rx_taps` from `firdes.root_raised_cosine` with the same parameters as the transmitter except a gain of 1. Its decimation is 1, so it keeps all 8 samples per symbol for the timing recovery that follows.
 ::::
 
 ::::{frame} Part 5: Symbol-Timing Recovery
 :::{present}
 <img src="../../viz/img/L09-timing.png"
-     alt="The L9 matched-filter flowgraph running with noise amplitude 0.3 and a 500 ppm clock error: the matched-filter eye is smeared as the sampling point drifts; the symbols plot shows Keep 1 in N samples in blue scattered between plus and minus 1, and Symbol Sync samples in red clustered tightly at plus and minus 1"
+     alt="The L9 matched-filter flowgraph running with noise amplitude 0.3 and a 500 ppm clock error: the matched-filter eye is open; the symbols plot shows Keep 1 in N samples in blue scattered between plus and minus 1, and Symbol Sync samples in red clustered tightly at plus and minus 1"
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
@@ -258,7 +258,7 @@ The right-hand plot shows the result. The blue samples from Keep 1 in N land whe
 | Output samples/symbol | 1 | one sample per symbol out |
 :::
 
-**Symbol Sync** is a feedback loop. A **timing error detector** (TED) estimates, from the samples around each symbol, whether the current sampling instant is early or late; a loop filter smooths that estimate; and an interpolator computes the signal's value at the corrected instant, which is usually between two input samples. The **Gardner** TED we use compares the sample halfway between two symbols with the two symbol samples on either side: when the timing is right, a transition crosses zero exactly halfway. It needs at least 2 samples per symbol, and it does not need to know which symbols were sent, so it works before any decisions are made.
+**Symbol Sync** is a feedback loop with three parts. The **timing error detector** (TED) estimates whether each sampling instant is early or late; the **Gardner** TED we use bases that estimate on the sample halfway between symbols, where transitions cross zero on average, so it needs at least 2 samples per symbol. The loop filter averages those estimates over many symbols, which also averages out the spread of the individual zero crossings. The interpolator computes the signal's value at the corrected instant, which usually falls between two input samples.
 
 The **loop bandwidth** is the main setting. A larger value tracks a drifting clock faster but lets noise jitter the sampling instant; a smaller value is steadier but slower to lock and to follow a drift. The default of 0.045 works for the flowgraph's 500 ppm error. The block can also apply the matched filter itself, with its "Polyphase Filterbank, Matched Filter" interpolator, but we keep the matched filter as its own block in this lesson so that each idea has its own block.
 ::::

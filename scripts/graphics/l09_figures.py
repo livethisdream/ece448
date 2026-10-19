@@ -8,7 +8,8 @@
   L09-rc-spectrum  : the raised-cosine spectrum for alpha = 0, 0.35, and 1, in
                      units of the symbol rate.
   L09-eye-anatomy  : a noiseless raised-cosine 2-PAM eye with the sampling
-                     instant, the eye opening, and the zero crossings marked.
+                     instant and the eye opening marked. About 70 traces keep the SVG
+                     small enough to inline in the deck.
 
 The GNU Radio screenshots (L09-grc-*.png, L09-pulse-shaping.png,
 L09-matched-filter.png, L09-timing.png) are not generated here: they are taken
@@ -21,6 +22,7 @@ CLAUDE.md, "Flowgraphs").
 from __future__ import annotations
 
 import io
+import re
 from pathlib import Path
 
 import matplotlib
@@ -45,6 +47,8 @@ def write(name, fig):
     fig.savefig(buf, format="svg", transparent=True, bbox_inches="tight", pad_inches=0.06)
     plt.close(fig)
     s = apply_font_stack(buf.getvalue()[buf.getvalue().index("<svg"):])
+    # Path data to 0.1 pt, finer than any screen, keeps the deck DOM small; text is untouched.
+    s = re.sub(r' d="([^"]*)"', lambda m: ' d="' + re.sub(r"(\d+\.\d)\d+", r"\1", m.group(1)) + '"', s)
     for out in OUTS:
         out.mkdir(parents=True, exist_ok=True)
         (out / f"{name}.svg").write_text(s, encoding="utf-8")
@@ -140,7 +144,7 @@ def rc_spectrum():
 
 
 def eye_anatomy():
-    sps, a, n = 32, 0.35, 300
+    sps, a, n = 16, 0.35, 94
     sym = RNG.choice([-1, 1], n)
     tp = np.arange(-8 * sps, 8 * sps + 1) / sps
     h = rc(tp, a)
@@ -151,7 +155,7 @@ def eye_anatomy():
     fig, ax = plt.subplots(figsize=(6.4, 3.8))
     for k in range(12, n - 12):
         c = d + k * sps
-        ax.plot(np.arange(-sps, sps + 1) / sps, y[c - sps:c + sps + 1], color=NAVY, lw=0.8, alpha=0.25)
+        ax.plot(np.arange(-sps, sps + 1) / sps, y[c - sps:c + sps + 1], color=NAVY, lw=0.8, alpha=0.35)
     lo = min(y[d + k * sps] for k in range(12, n - 12) if sym[k] > 0)
     ax.axvline(0, color=AMBER, lw=1.6, ls="--")
     ax.text(0.03, 1.55, "sample here", color=AMBER, fontsize=11, fontweight="bold")

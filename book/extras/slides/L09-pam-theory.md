@@ -46,7 +46,7 @@ Every part adds one block to the flowgraph. Items two, four, and five run live.
 
 ---
 
-## A PAM Link in One Flowgraph
+## The PAM Flowgraph
 
 <img src="./img/09-pam-theory/L09-grc-matched-filter.png" alt="The L9 matched-filter flowgraph in GRC" style="max-height:440px; display:block; margin:0 auto;">
 
@@ -64,7 +64,7 @@ Trace the signal left to right: symbols, transmit filter, channel, matched filte
 $$R_s = \frac{R_b}{\log_2 M}$$
 
 Note:
-Same eight bits both ways. 4-PAM uses half the symbols, each twice as long, Gray coded as in Lesson 3. In GNU Radio the mapping is a Chunks to Symbols block with a table.
+The same eight bits go out both ways. 4-PAM uses half as many symbols, each twice as long, Gray coded as in Lesson 3. In GNU Radio, a Chunks to Symbols block does the mapping from a table.
 
 ---
 
@@ -75,7 +75,7 @@ Same eight bits both ways. 4-PAM uses half the symbols, each twice as long, Gray
 - The signal spills into neighboring channels.
 
 Note:
-The jumps between levels are what spread the spectrum. A licensed transmitter has emission limits outside its channel, and a rectangular pulse fails them.
+The jumps between levels are what spread the spectrum. A licensed transmitter has an emission mask outside its channel, and a rectangular pulse can exceed it.
 
 ---
 
@@ -86,7 +86,7 @@ The jumps between levels are what spread the spectrum. A licensed transmitter ha
 $$B = (1+\alpha)R_s$$
 
 Note:
-Alpha zero is the minimum bandwidth but an infinitely long pulse. Alpha one doubles the bandwidth. We use 0.35 all lesson.
+At α = 0 the bandwidth is the minimum, R_s, but the pulse is infinitely long. At α = 1 the bandwidth doubles. We use 0.35 all lesson.
 
 ---
 
@@ -108,7 +108,7 @@ Point at each red dot: the sum passes exactly through the symbol value there. Be
 - The receive half also rejects noise outside the signal band.
 
 Note:
-Consequence worth stating: the transmitted signal alone has some ISI. Only the receive filter's output is ISI-free.
+The transmitted signal alone has some ISI. Only the receive filter's output is ISI-free.
 
 ---
 
@@ -121,7 +121,7 @@ firdes.root_raised_cosine(sps, samp_rate, samp_rate/sps, alpha, 11*sps)
 ```
 
 Note:
-Gain sps, sample rate, symbol rate, alpha, number of taps. The Interpolating FIR Filter inserts sps minus one zeros per symbol and filters. 32 kHz over 8 samples per symbol is 4 kbaud.
+The five arguments are the gain, sps; the sample rate; the symbol rate; alpha; and the number of taps. The Interpolating FIR Filter inserts sps minus one zeros after each symbol and then filters. 32 kHz over 8 samples per symbol gives 4 kbaud.
 
 ---
 
@@ -183,7 +183,7 @@ Switch to rectangular to show the spectrum spreading, then back to RRC plus matc
 The same RRC at the receiver removes about 9 dB of noise at 8 sps.
 
 Note:
-Turn the noise slider up to 0.6 live. The received eye closes; the matched-filter eye stays open. Noise across 32 kHz down to the signal's 5.4 kHz.
+Turn the noise slider up to 0.6 live. The received eye closes, and the matched-filter eye stays open. The filter cuts the noise from the full 32 kHz to the RRC's noise bandwidth of about 4 kHz, which is 9 dB.
 
 ---
 
@@ -208,7 +208,7 @@ The flowgraph exaggerates the error to 500 ppm so the drift shows in seconds. Ev
 | Output samples/symbol | 1 |
 
 Note:
-Gardner compares the midpoint sample with the symbol samples on either side; a transition crosses zero exactly halfway when timing is right. Larger loop bandwidth tracks faster but jitters more.
+Gardner uses the sample halfway between symbols, where transitions cross zero on average, and the loop averages out the spread of the individual crossings. Larger loop bandwidth tracks faster but jitters more.
 
 ---
 

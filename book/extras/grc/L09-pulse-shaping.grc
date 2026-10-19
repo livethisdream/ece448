@@ -148,7 +148,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [416, 184]
+    coordinate: [448, 184]
     rotation: 0
     state: enabled
 - name: digital_chunks_to_symbols_xx_0
@@ -168,7 +168,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [216, 184]
+    coordinate: [264, 184]
     rotation: 0
     state: enabled
 - name: interp_fir_filter_xxx_0

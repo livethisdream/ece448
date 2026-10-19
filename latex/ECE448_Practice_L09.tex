@@ -141,7 +141,7 @@ $\pm 0.2$ around each level.
 		\ansbox[1.1in]{75\%}
 	\end{minipage}
 
-	\part For each change below, say how the eye changes: (i) the noise doubles;
+	\part For each change below, say how the eye changes: (i) the noise standard deviation doubles;
 	(ii) the receiver drops its filter; (iii) the receiver samples 4 samples away from
 	the best instant.
 		\begin{solution}[1.4in]
@@ -149,8 +149,9 @@ $\pm 0.2$ around each level.
 		$\pm 0.4$, it falls to $(0.4 - (-0.4))/1.6 = 50\%$. (ii) Noise across the whole
 		sample bandwidth returns and the single transmit RRC leaves ISI, so the traces
 		miss the levels and the eye nearly closes. (iii) Four samples is half a symbol,
-		so the receiver samples at the zero crossings and the decisions are no better
-		than guesses.
+		so the receiver samples between symbols. Where the symbol repeats, the sample
+		stays near its level, but at a transition it lands near the zero crossing, and
+		about half of those decisions are wrong.
 		\end{solution}
 
 	\part In words, explain why a smaller roll-off makes the receiver more
@@ -180,7 +181,8 @@ $\pm 0.2$ around each level.
 
 	\begin{minipage}[t]{0.58\linewidth}
 		\part Before the receive filter, the noise fills the full 32 kHz the samples
-		represent. Afterward, it occupies about $R_s$. Estimate the noise reduction in dB.
+		represent. Afterward, its noise-equivalent bandwidth is about $R_s$.
+		Estimate the noise reduction in dB.
 		\begin{solution}[1.0in]
 		\eq{ 10\log_{10}\dfrac{32\ \text{kHz}}{4\ \text{kHz}} = 10\log_{10} 8 = 9.0\db }
 		\end{solution}
@@ -226,15 +228,16 @@ pick one sample per symbol, starting at the center of the eye. Its sample clock 
 		time: \ansbox[1.1in]{2.5 s}
 	\end{minipage}
 
-	\part You replace Keep 1 in N with a Symbol Sync block that uses a Gardner timing
-	error detector. Explain, in words, how the Gardner detector tells whether the sampling
-	is early or late, and why it needs at least 2 samples per symbol.
+	\part You replace Keep 1 in N with a Symbol Sync block. A teammate then puts a
+	Keep 1 in N block in front of it to save computation, so Symbol Sync receives one
+	sample per symbol, and sets its samples per symbol to 1. Explain why timing
+	recovery no longer works, and say where the one-sample-per-symbol step belongs.
 		\begin{solution}[1.2in]
-		It looks at the sample halfway between two symbols. When the timing is right, a
-		transition between opposite symbols crosses zero exactly at that midpoint; if
-		the midpoint sample has the sign of the earlier symbol, the sampling is early,
-		and if it has the sign of the later one, it is late. It needs a sample at each
-		symbol instant and one halfway between, which is 2 samples per symbol.
+		The Gardner detector needs a sample at each symbol instant and one halfway
+		between, so it needs at least 2 samples per symbol; with 1 it has no midpoint
+		sample and cannot tell early from late.
+		Symbol Sync should receive all 8 samples per symbol from the matched filter;
+		its own output, at 1 sample per symbol, is the one-sample-per-symbol step.
 		\end{solution}
 
 	\part The Symbol Sync output jitters around $\pm 1$ even with little noise. Which

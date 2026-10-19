@@ -61,8 +61,8 @@
 <script>
 'use strict';
 // Everything is in units of the symbol period T and the symbol rate Rs = 1/T.
-// SPS samples per symbol, as the L9 flowgraphs use; the pulse spans 2*SPAN
-// symbols, which is what firdes.root_raised_cosine with 11*sps taps gives.
+// SPS samples per symbol (16, twice the L9 flowgraphs' 8, for smoother traces);
+// the RRC pulse spans 2*SPAN = 12 symbols, close to the flowgraphs' 11*sps taps.
 const SPS = 16, SPAN = 6, NSYM = 1200, SANS = 'Inter, system-ui, -apple-system, sans-serif';
 const C = { navy:'#004a85', mid:'#0067b9', red:'#b01e24', amber:'#8a5a00', rule:'#cddce9', ink:'#15202b', ink3:'#5b6573', gray:'#9aa5b1' };
 const $ = id => document.getElementById(id);
