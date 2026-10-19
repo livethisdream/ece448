@@ -86,7 +86,7 @@ Nothing in the bit stream marks a byte boundary. The fix is a known pattern in f
 - 64-bit **access code**, then the length twice, then the text
 
 Note:
-Same format as the L8 link. 96 bits of overhead on 248 bits of text: 344 bits, 86 ms, 11.6 packets a second, 72% text. A 200-byte payload raises the text share to 94%.
+The packet uses the same format as the L8 link. The access code and header add 96 bits to the 248 bits of text, so a packet is 344 bits and lasts 86 ms. The link sends 11.6 packets a second, and 72% of the bits are text. A 200-byte payload raises the text share to 94%.
 
 ---
 
@@ -120,7 +120,7 @@ The time sink triggers on the packet_len tag. 31 in 16 bits is eleven zeros and 
 - New: Binary Slicer, Correlate Access Code, Repack Bits
 
 Note:
-The channel is a Fractional Resampler for the clock error and a Noise Source. Binary Slicer: above zero is a 1. Repack Bits packs 8 bits into a byte, MSB first. The Text Sink is the Embedded Python Block from Lesson 8.
+The channel is a Fractional Resampler for the clock error and a Noise Source. The Binary Slicer outputs a 1 for any sample above zero. Repack Bits packs 8 bits into a byte, MSB first. The Text Sink is the Embedded Python Block from Lesson 8.
 
 ---
 
@@ -147,7 +147,7 @@ The two copies of the length must agree, or the block drops the packet. 64 rando
 <p class="viz-cue">↗ Interactive on the lesson page</p>
 
 Note:
-Start at 12 dB, where the packet is found at bit 40. Press new noise a few times near 8 dB to show the header check failing.
+Start at 12 dB, where the search finds the packet at bit 40. Press new noise a few times near 8 dB to show the header check failing.
 
 ---
 
@@ -174,7 +174,7 @@ The matched filter keeps about an eighth of the noise, Lesson 9's 9 dB. At sigma
 99% of lines at 12 dB, almost none at 6 dB.
 
 Note:
-3000 packets per row, measured headless. The small shortfall comes from Symbol Sync's timing jitter; with perfect timing the same filters match the formula. Design the link budget for at least 12 dB at the slicer plus a fade margin.
+We measured each row headless, over 3000 packets. The small shortfall comes from Symbol Sync's timing jitter; with perfect timing the same filters match the formula. Design the link budget for at least 12 dB at the slicer plus a fade margin.
 
 ---
 
@@ -185,11 +185,11 @@ Note:
 Almost no lines lost to 5000 ppm; a crystal is off by about 20 ppm.
 
 Note:
-The eye sink assumes exactly 8 samples per symbol, so it smears at 1%. Symbol Sync tracks it. About 1% of lines lost at 10,000 ppm, 6 to 10% from 15,000 to 25,000, and almost every line by 40,000.
+The eye sink assumes exactly 8 samples per symbol, so it smears at 1%. Symbol Sync tracks the difference. The link loses about 1% of lines at 10,000 ppm, 6 to 10% from 15,000 to 25,000 ppm, and almost every line by 40,000 ppm.
 
 ---
 
-## When the Two Ends Disagree
+## Mismatched Settings
 
 | Receiver setting | Result |
 | :-- | :-- |
@@ -212,7 +212,7 @@ Read LSB first, 'U' 01010101 becomes 10101010, 0xAA. The polarity case happens o
 Nothing in L10 transmits; the L10 Lab transmits into a cable.
 
 Note:
-In class we transmit only into a cable, into a shielded enclosure, or at very low power in an ISM band, and only when the lesson says to. The Costas loop is Lesson 15; today it is one block that can lock upside down, which inverts every bit.
+In class we transmit only into a cable, into a shielded enclosure, or at very low power in an ISM band, and only when the lesson says to. The Costas Loop is Lesson 15; today it is one block that can lock upside down, which inverts every bit.
 
 ---
 

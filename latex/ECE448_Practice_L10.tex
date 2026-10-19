@@ -120,7 +120,7 @@ most 2 bits differ.
 	\part While no packet is arriving, the bits are random. About how many of the 64
 	match the access code at a typical position, and why?
 		\begin{solution}[0.8in]
-		About 32. Each random bit matches the code's bit with probability one half, so on
+		About 32 bits match. Each random bit matches the code's bit with probability one half, so on
 		average half of the 64 match.
 		\end{solution}
 
@@ -204,7 +204,7 @@ header and payload are right.
 	from 72\% to 94\%. In words, explain why the link then needs more SNR for the same
 	99\% of packets, and what a Lesson 2 link budget should do about it.
 		\begin{solution}[1.2in]
-		A packet is lost if any one of its bits is wrong, and a 200-byte packet has
+		The receiver loses a packet if any one of its bits is wrong, and a 200-byte packet has
 		1632 header and payload bits instead of 280, so each bit must be about six times
 		more reliable for the packet to arrive as often. That takes about 12.8 dB
 		instead of 12.0 dB. The link budget should target the SNR the longest packet
@@ -245,7 +245,7 @@ symbol clock by up to 40 ppm. The link runs at 4 kbaud.
 		Symbol Sync measures the timing error from the samples near each zero crossing and
 		moves its sampling instant to follow the drift, so the sampling point never
 		slips. 40 ppm is more than 100 times smaller than the 5000 ppm the link handles,
-		so the loop follows it easily.
+		so the loop follows it.
 		\end{solution}
 
 	\part In the clock-error screenshot, the eye sink looks smeared while every line

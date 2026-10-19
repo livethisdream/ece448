@@ -147,7 +147,7 @@ with the sliders at their defaults, a noise amplitude of 0.3 and a clock error o
 	\begin{minipage}[t]{0.58\linewidth}
 		\part After about 20 s, record the Lines label.
 		\begin{solution}[0.5in]
-		About 200 lines, all correct; the link sends 11.6 packets a second.
+		The label reads about 200 lines, all correct, because the link sends 11.6 packets a second.
 		\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
@@ -194,7 +194,7 @@ with the sliders at their defaults, a noise amplitude of 0.3 and a clock error o
 	it below, count its bytes with the newline, and write the 16-bit length field the
 	header will carry and the 8 bits of its first character.
 		\begin{solution}[0.8in]
-		Depends on the line. For \texttt{C1C Jane Doe}, 12 characters and a newline make
+		The answer depends on the line. For \texttt{C1C Jane Doe}, 12 characters and a newline make
 		13 bytes, so the length field is \texttt{0000000000001101}, and `C' is 0x43,
 		\texttt{01000011}.
 		\end{solution}
@@ -254,7 +254,7 @@ with your line of text from Question 2(b) in \texttt{msg}.
 	\part Paste a screenshot of your flowgraph on the GRC canvas. Every connection
 	must be black, not red.
 		\begin{solution}[1.6in]
-		Matches the lab page's list: Vector Source, Stream to Tagged Stream, Protocol
+		The flowgraph matches the lab page's list: Vector Source, Stream to Tagged Stream, Protocol
 		Formatter, Tagged Stream Mux, Unpack K Bits, Chunks to Symbols, Throttle, and an
 		Interpolating FIR Filter, with a QT GUI Time Sink on the symbols and a QT GUI
 		Frequency Sink on the shaped signal. The byte ports are purple and the float
@@ -417,7 +417,7 @@ error between them; the noise and the carrier phase come from the hardware.
 	first lost lines and the SNR at which almost none arrived, and say what SNR a
 	Lesson 2 link budget for this link should deliver at the slicer.
 		\begin{solution}[1.5in]
-		Lines start to fail near 12 dB ($\sigma = 0.7$), half are lost at 9 dB, and
+		Lines start to fail near 12 dB ($\sigma = 0.7$), the link loses half of them at 9 dB, and
 		almost none arrive at 7.4 dB, so the change takes about 5 dB. Each line needs
 		all 280 header and payload bits right, so a modest rise in the bit error rate
 		loses many lines. A budget should deliver at least 12 dB at the slicer, for
@@ -444,7 +444,7 @@ error between them; the noise and the carrier phase come from the hardware.
 		The Costas Loop locks to the carrier's phase, but a 2-PAM signal looks the same
 		rotated by 180$^\circ$, so the loop can lock either way, and it picks one at
 		random each time it starts. Locked upside down, every bit inverts, and the
-		access code never matches. Acceptable fixes: search for both the access code and
+		access code never matches. Either of two fixes works: search for both the access code and
 		its inverse, and flip the bits when the inverse matches; or send the data
 		differentially, as a change or no change from one bit to the next, which an
 		inversion does not affect.

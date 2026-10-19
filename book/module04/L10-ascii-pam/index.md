@@ -65,7 +65,7 @@ Lesson 9 built everything between the symbols and the samples. This lesson adds 
 
 **ASCII** assigns each letter, digit, and punctuation mark a number from 0 to 127, and a computer stores each one in a byte. The figure starts with 'U', which is 0x55, or 01010101 in binary. In GNU Radio, the Python expression `list(msg.encode()) + [10]` in a **Vector Source** turns the message into its bytes and adds a newline, byte 10, to mark the end of the line.
 
-**Unpack K Bits** with K = 8 splits each byte into 8 bits, most significant bit (MSB) first, and **Chunks to Symbols** maps each bit to a level, 0 to $-1$ and 1 to $+1$, exactly as in Lesson 9. Our message, `USAFA ECE 448: ASCII over PAM.`, is 30 characters, so with the newline it is 31 bytes, or 248 bits. At 4 kbaud that is 62 ms of signal.
+**Unpack K Bits** with K = 8 splits each byte into 8 bits, most significant bit (MSB) first, and **Chunks to Symbols** maps each bit to a level, 0 to $-1$ and 1 to $+1$, as in Lesson 9. Our message, `USAFA ECE 448: ASCII over PAM.`, is 30 characters, so with the newline it is 31 bytes, or 248 bits. At 4 kbaud that is 62 ms of signal.
 ::::
 
 ::::{frame} Where Does a Byte Start?
@@ -76,10 +76,10 @@ Lesson 9 built everything between the symbols and the samples. This lesson adds 
 :::
 :::{present}
 - Read from the right bit, the bytes are 'U', 'S', 'A'.
-- One bit late, they are 0xAA, 0xA6, 0x82: not text at all.
+- One bit late, they are 0xAA, 0xA6, 0x82: not text.
 :::
 
-The receiver's slicer outputs one bit per symbol, but nothing in the bit stream marks where a byte begins. A receiver that starts listening in the middle of the message, or that loses a bit to noise, has to guess. The figure shows what a wrong guess does. Grouped from the first bit, the 24 bits read "USA"; grouped from one bit later, they read 0xAA, 0xA6, and 0x82, which are not ASCII characters at all.
+The receiver's slicer outputs one bit per symbol, but nothing in the bit stream marks where a byte begins. A receiver that starts listening in the middle of the message, or that loses a bit to noise, has to guess. The figure shows what a wrong guess does. Grouped from the first bit, the 24 bits read "USA"; grouped from one bit later, they read 0xAA, 0xA6, and 0x82, which are not ASCII characters.
 
 The same problem appears with any serial data, and the solution is also the same: the transmitter sends a known pattern before the data, and the receiver looks for that pattern. When it finds the pattern, it knows exactly where the first byte of the data starts.
 ::::
@@ -154,7 +154,7 @@ T &= \frac{344}{4000\text{ baud}} = 86 \text{ ms}.
 | 31 bytes (our line) | 344 | 86 ms | 11.6 | 72% |
 | 200 bytes | 1696 | 424 ms | 2.36 | 94% |
 
-The share of text grows with the payload, but a longer packet also has more bits that can go wrong, and the line counts as correct only if every bit is right. The noise part below measures how much that matters.
+The share of text grows with the payload, but a longer packet also has more bits that can go wrong, and the line counts as correct only if every bit is right. The Noise frame below shows that a 31-byte line needs about 12 dB at the slicer for 99% of lines to arrive.
 ::::
 
 ::::{frame} Part 3: The Receiver
@@ -217,7 +217,11 @@ The transmitted signal has power 1, and the noise amplitude $\sigma$ on the slid
 
 $$\text{SNR} = \frac{8}{\sigma^2}$$
 
-and each bit is wrong with probability $Q(\sqrt{\text{SNR}})$, the 2-PAM result of Lesson 3. A line arrives intact only if all 280 bits of its header and payload are right, so the fraction of correct lines is about $(1 - \text{BER})^{280}$. At $\sigma = 1$ the SNR is 9 dB and the BER is $2.3 \times 10^{-3}$, so we expect 52% of the lines; the screenshot shows 94 of 198, 47%. Each wrong bit in the payload changes one character: in the line shown, one flipped bit turned '4', 00110100, into '6', 00110110, and another turned 'P' into a byte that does not print. A wrong bit in the header loses the whole line.
+and each bit is wrong with probability $Q(\sqrt{\text{SNR}})$, the 2-PAM result of Lesson 3. A line arrives intact only if all 280 bits of its header and payload are right, so the fraction of correct lines is about
+
+$$P = (1 - \text{BER})^{280}.$$
+
+At $\sigma = 1$ the SNR is 9 dB and the BER is $2.3 \times 10^{-3}$, so we expect 52% of the lines; the screenshot shows 94 of 198, 47%. Each wrong bit in the payload changes one character: in the line shown, one flipped bit turned '4', 00110100, into '6', 00110110, and another turned 'P' into a byte that does not print, and a wrong bit in the header loses the line.
 ::::
 
 ::::{frame} Noise Sweep
@@ -251,10 +255,10 @@ The measurements follow the prediction closely. The formula assumes perfect timi
 
 The clock-error slider sets how far the receiver's sample clock is from the transmitter's. At 10,000 ppm, a 1% error, the eye sink smears across the display, because it assumes exactly 8 samples per symbol and each symbol now spans 1% fewer. Symbol Sync tracks the difference, and its output stays at $\pm 1$: 206 of 208 lines arrive intact.
 
-Measured over thousands of packets at $\sigma = 0.3$, the link loses fewer than 1 line in 1000 up to 5000 ppm. At 10,000 ppm it loses about 1%, between 15,000 and 25,000 ppm it loses 6 to 10%, and by 40,000 ppm almost no lines arrive. A crystal oscillator is accurate to about 20 ppm, which is 250 times smaller than 5000 ppm, so with Symbol Sync in the receiver, clock error does not limit this link; noise does.
+Measured over thousands of packets at $\sigma = 0.3$, the link loses fewer than 1 line in 1000 up to 5000 ppm. At 10,000 ppm it loses about 1%, between 15,000 and 25,000 ppm it loses 6 to 10%, and by 40,000 ppm almost no lines arrive. A crystal oscillator is accurate to about 20 ppm, which is 250 times smaller than 5000 ppm, so with Symbol Sync in the receiver, clock error does not limit this link, and noise sets the limit instead.
 ::::
 
-::::{frame} When the Two Ends Disagree
+::::{frame} Mismatched Settings
 :::{present}
 | Receiver setting | Result |
 | :-- | :-- |
@@ -270,7 +274,7 @@ Every setting at the transmitter has a partner at the receiver, and the link wor
 ::::{frame} PAM Text on a Real Radio
 :::{present}
 - Replace the Noise Source and resampler with one PlutoSDR and a cable.
-- Carrier recovery and a polarity switch are the only new blocks.
+- Resamplers, an AGC, carrier recovery, and a polarity switch are the new blocks.
 - Nothing in L10 transmits; the L10 Lab transmits into a cable.
 :::
 
@@ -307,7 +311,7 @@ Open a `.grc` file from GRC's File menu, or run `gnuradio-companion L10-pam-link
 | Access-code search | at most 2 of 64 bits wrong | about 32 match by chance |
 | Noise | SNR at the slicer $8/\sigma^2$, BER $Q(\sqrt{\text{SNR}})$ | 99% of lines at 12 dB, half at 9 dB |
 | Clock error | Symbol Sync tracks it | almost no lines lost to 5000 ppm |
-| Polarity | an inverted link finds no packets | the Costas loop can flip it |
+| Polarity | an inverted link finds no packets | the Costas Loop can flip it |
 ::::
 
 ::::{frame} Practice
