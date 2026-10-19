@@ -376,11 +376,14 @@ error between them; the noise and the carrier phase come from the hardware.
 
 \begin{parts}
 
-	\part If no line arrives within 5 s, switch Polarity. Once lines arrive, paste a
+	\part If no line arrives within 5 s, switch Polarity. If neither setting works, raise
+	the TX attenuation by 10 dB and try both again. Once lines arrive, paste a
 	screenshot that shows the constellation, the received line, and the Lines label.
 		\begin{solution}[1.6in]
-		The constellation after carrier recovery shows two tight clusters on the real
-		axis, near $-1$ and $+1$, and every line arrives correctly.
+		The constellation after carrier recovery shows two clusters on the real axis,
+		symmetric about zero; in simulation their centers fall between about $\pm 0.5$ and
+		$\pm 1.4$, depending on the signal level. Once one polarity locks, nearly every
+		line arrives correctly.
 		\end{solution}
 
 	\part Stop and start the flowgraph three times. Each time, record which polarity

@@ -119,8 +119,8 @@ In class we transmit only into a cable, into a shielded enclosure, or at very lo
 
 1. With the Pluto unplugged, connect a short SMA cable from its TX port to its RX port. Do not connect an antenna.
 2. Plug the Pluto into USB and run `iio_info -s` at the radioconda prompt; it should list a PlutoSDR context. The flowgraph uses the Pluto's default address, `ip:192.168.2.1`.
-3. Open and run `L10-pam-pluto.grc`. Within a few seconds the constellation should show two clusters on the horizontal axis.
-4. If no line arrives within 5 s, switch Polarity. Screenshot the window once lines arrive, for Question 6(a).
+3. Open and run `L10-pam-pluto.grc`. Within a few seconds the constellation should show two clusters on the horizontal axis, one on each side of zero.
+4. If no line arrives within 5 s, switch Polarity. If neither setting works, raise the TX attenuation by 10 dB and try both again. Screenshot the window once lines arrive, for Question 6(a).
 5. Stop and start the flowgraph three times, and record each time which polarity delivers lines, for Question 6(b).
 6. Stop it, put your line from Question 2(b) in `msg`, and run it again for Question 6(c). Stop the flowgraph and unplug the Pluto before you disconnect the cable.
 ::::

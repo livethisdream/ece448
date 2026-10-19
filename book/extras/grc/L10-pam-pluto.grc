@@ -285,14 +285,14 @@ blocks:
     affinity: ''
     alias: ''
     attack_rate: 1e-3
-    comment: ''
+    comment: 'Reference 0.5: at high SNR AGC3 overshoots'
     decay_rate: 1e-4
     gain: '1.0'
     iir_update_decim: '1'
     max_gain: '65536'
     maxoutbuf: '0'
     minoutbuf: '0'
-    reference: '1.0'
+    reference: '0.5'
     type: complex
   states:
     bus_sink: false
