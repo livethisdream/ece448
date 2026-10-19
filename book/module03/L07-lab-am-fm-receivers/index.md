@@ -68,7 +68,7 @@ These are the predictions of Question 1 for the parts that do not depend on your
 :class: read-only
 
 1. Open and run `L07-wbfm-rx.grc` on `L07-fm-test.cfile`. Record the audio lines for Question 2(a).
-2. Drag Station to 99.5 MHz, listen, and answer Question 2(b).
+2. Type 99.5 into Station, listen, and answer Question 2(b).
 3. Stop the flowgraph. Set the File Source's file to `fm_capture.cfile`. Run it, type the center frequency you recorded at into SDR center, and set Station to the station you centered.
 4. Screenshot the demodulated multiplex and mark its parts for Question 3(a). Describe the audio for Question 3(b).
 ::::

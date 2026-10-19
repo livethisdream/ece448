@@ -76,7 +76,7 @@ We disabled the RTL-SDR Source; switching to live means disabling the File Sourc
 - Decimating by 10 leaves 240 kS/s.
 
 Note:
-The filter has a 105 kHz cutoff and a 30 kHz transition, so it passes 90 kHz and stops everything beyond 120 kHz, which is also the new Nyquist frequency. The filter removes the station at 99.5. Drag the Station slider to 99.5 to tune it instead.
+The filter has a 105 kHz cutoff and a 30 kHz transition, so it passes 90 kHz and is 28 dB down by 120 kHz, the new Nyquist frequency. The filter removes the station at 99.5. Type 99.5 into Station to tune it instead.
 
 ---
 
@@ -99,7 +99,7 @@ The block ignores amplitude, so an FM receiver needs no AGC.
 The demodulator's output carries mono audio, the stereo pilot and difference signal, and RDS.
 
 Note:
-L-R is DSB-SC on 38 kHz, the Lesson 6 signal that needs carrier recovery; the 19 kHz pilot lets the receiver rebuild 38 kHz by doubling it. RDS sits at 57 kHz, three times the pilot. The test station is mono, so it has no pilot.
+L-R is DSB-SC on 38 kHz, the Lesson 6 signal that needs carrier recovery; the 19 kHz pilot lets the receiver rebuild 38 kHz by doubling it. RDS sits at 57 kHz, three times the pilot. The test station is mono, so it has no pilot; its RDS stereo flag is only a data bit.
 
 ---
 
@@ -130,7 +130,7 @@ US pre-emphasis boosts 15 kHz by about 17 dB; the de-emphasis corner is 2.1 kHz.
 <img src="./img/07-am-fm-receivers/L07-wbfm-rx.png" alt="Simulated: the WBFM receiver window, received band, multiplex, and audio with lines at 1 and 2.5 kHz" style="max-height:420px; display:block; margin:0 auto;">
 
 Note:
-Play the audio. The audio sink shows exactly the two message tones. Drag Station to 99.5 and the 600 Hz tone plays. Then show how to point the File Source at fm_capture.cfile and type its center frequency.
+Play the audio. The audio sink shows exactly the two message tones. Type 99.5 into Station and the 600 Hz tone plays. Then show how to point the File Source at fm_capture.cfile and type its center frequency.
 
 ---
 
@@ -169,12 +169,12 @@ Aircraft and ATIS are AM between 118 and 137 MHz. After Complex to Mag it is the
 
 ## AM and FM in the Same Noise
 
-<img src="./img/07-am-fm-receivers/L07-amfm-30.png" alt="At C/N 30 dB: AM output SNR 29.5 dB, FM 48.7 dB" style="max-height:340px; display:block; margin:0 auto;">
+<img src="./img/07-am-fm-receivers/L07-amfm-30.png" alt="At C/N 30 dB: AM output SNR 29.5 dB, FM 48.4 dB" style="max-height:340px; display:block; margin:0 auto;">
 
-With the same tone, power, and noise, AM in 10 kHz reaches 29.5 dB and FM in 60 kHz reaches 48.7 dB.
+With the same tone, power, and noise, AM in 10 kHz reaches 29.5 dB and FM in 60 kHz reaches 48.4 dB.
 
 Note:
-L07-am-vs-fm.grc sends AM at m = 1 and FM at 25 kHz deviation with the same carrier power and noise density. The FM receiver admits six times the noise, and its output SNR is still about 19 dB higher. Each doubling of deviation adds 5 to 6 dB above threshold.
+L07-am-vs-fm.grc sends AM at m = 1 and FM at 25 kHz deviation with the same transmitted power and noise density. The FM receiver admits six times the noise, and its output SNR is still about 19 dB higher. Each doubling of deviation adds 5 to 6 dB above threshold.
 
 ---
 
@@ -200,7 +200,7 @@ Drag C/N down with the audio on FM and listen for the clicks. At 15 dB the 25 kH
 
 - The lines fall off just outside Carson's band.
 - At $\Delta f$ = 2.4 kHz on a 1 kHz tone, the carrier vanishes.
-- Carson's band always holds at least 96% of the power.
+- Carson's band holds about 96% of the power or more.
 
 <p class="viz-cue">↗ Interactive on the lesson page</p>
 

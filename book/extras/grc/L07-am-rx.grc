@@ -121,19 +121,14 @@ blocks:
     rotation: 0
     state: enabled
 - name: station_mhz
-  id: variable_qtgui_range
+  id: variable_qtgui_entry
   parameters:
     comment: ''
+    entry_signal: editingFinished
     gui_hint: 0,1,1,1
-    label: Station (MHz)
-    min_len: '200'
-    orient: QtCore.Qt.Horizontal
-    rangeType: float
-    start: fc_mhz - 1.1
-    step: '0.005'
-    stop: fc_mhz + 1.1
+    label: '"Station (MHz)"'
+    type: real
     value: '126.2'
-    widget: counter_slider
   states:
     bus_sink: false
     bus_source: false

@@ -13,7 +13,7 @@ frame_view: true
 
 <div class="title-rule"></div>
 
-Today we build a broadcast FM receiver with RDS and an aircraft band AM receiver, and we compare AM and FM in the same noise.
+We build FM and AM receivers and compare the two in noise.
 
 Lesson 7 · Module 3: Analog Modulation · Dr. Neil Rogers
 ::::
@@ -57,7 +57,7 @@ By the end of the lesson we will turn that file into audio, read the station's n
      alt="GNU Radio Companion with L07-fm-test-tx.grc open: two tones, pre-emphasis, and a level for station A's audio; an RDS Encoder, Differential Encoder, Map, Unpack K Bits, Chunks to Symbols, root raised cosine filter, resampler, and a 57 kHz Signal Source for RDS; an Add forming the multiplex, a resampler, a Frequency Mod, and a 300 kHz shift; a second station with a 600 Hz tone shifted to minus 500 kHz; a Noise Source; and an Add, Head, and File Sink"
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
 
-The test file comes from `L07-fm-test-tx.grc`. It builds each station the way a broadcaster does, with pre-emphasis, an RDS encoder from gr-rds, and a 75 kHz peak deviation, then adds noise and writes 4 s of samples, 76.8 MB, to `L07-fm-test.cfile`. Nothing in it transmits: its last block is a File Sink. `L07-am-test-tx.grc` does the same for the AM receiver, with one station at 126.2 MHz. Run both once before class, in the folder that holds the receivers.
+The test file comes from `L07-fm-test-tx.grc`. It builds each station the way a broadcaster does, with pre-emphasis, an RDS encoder from gr-rds, and levels set for 75 kHz of deviation, about 71 kHz at the peaks of this audio, then adds noise and writes 4 s of samples, 76.8 MB, to `L07-fm-test.cfile`. Nothing in it transmits: its last block is a File Sink. `L07-am-test-tx.grc` does the same for the AM receiver, with one station at 126.2 MHz. Run both once before class, in the folder that holds the receivers.
 :::
 ::::
 
@@ -104,9 +104,9 @@ The two variables at the top tie the receiver to the radio. `fc_mhz` is the freq
 - Decimating by 10 leaves 240 kS/s.
 :::
 
-The station sits 300 kHz above the center of the capture, and everything else in the 2.4 MHz is something we do not want. The **Frequency Xlating FIR Filter** does three jobs in one block. It multiplies by a complex tone at $-300$ kHz, which moves the station to 0 Hz, the same frequency shift as Lesson 6's coherent receiver. It applies a low-pass filter, here a 105 kHz cutoff with a 30 kHz transition, which passes ±90 kHz and stops everything beyond ±120 kHz, including the station at 99.5 MHz. Then it keeps every tenth sample.
+The station sits 300 kHz above the center of the capture, and everything else in the 2.4 MHz is something we do not want. The **Frequency Xlating FIR Filter** does three jobs in one block. It multiplies by a complex tone at $-300$ kHz, which moves the station to 0 Hz, the same frequency shift as Lesson 6's coherent receiver. It applies a low-pass filter, here a 105 kHz cutoff with a 30 kHz transition, which passes ±90 kHz and is 28 dB down by ±120 kHz, far enough to remove the station at 99.5 MHz. Then it keeps every tenth sample.
 
-Decimating by 10 leaves 240,000 samples per second. That rate holds the ±120 kHz the filter passes without aliasing, and it holds the whole demodulated signal of the next frames, which reaches 59.4 kHz. Its center frequency is the expression `(station_mhz - fc_mhz) * 1e6`, so dragging the Station slider to 99.5 tunes the other station.
+Decimating by 10 leaves 240,000 samples per second. That rate holds everything the filter passes, and it holds the whole demodulated signal of the next frames, which reaches 59.4 kHz. Its center frequency is the expression `(station_mhz - fc_mhz) * 1e6`, so typing 99.5 into Station tunes the other station.
 ::::
 
 ::::{frame} The Quadrature Demodulator
@@ -125,7 +125,7 @@ After the channel filter the station is a complex signal whose phase turns faste
 
 $$f = \frac{f_s\,\Delta\phi}{2\pi}$$
 
-The gain scales that frequency into a convenient number. With the gain above, a carrier 75 kHz above center produces an output of exactly 1, so the output is the transmitted message at its original scale. The block ignores amplitude entirely, which is why an FM receiver needs no AGC, and why a weakening FM station sounds normal until its carrier-to-noise ratio falls to the FM threshold, covered later in this lesson.
+The gain scales that frequency into a convenient number. With the gain above, a carrier 75 kHz above center produces an output of exactly 1, so the output is the transmitted message at its original scale. The block ignores amplitude entirely, which is why an FM receiver needs no AGC, and why a weakening FM station keeps its volume and degrades slowly until its carrier-to-noise ratio falls to the FM threshold, covered later in this lesson.
 ::::
 
 ::::{frame} The Multiplex
@@ -146,7 +146,7 @@ The demodulator does not output audio; it outputs whatever the station put on it
      alt="A frequency sink labeled Simulated: L7 test file, showing the demodulated multiplex from 0 to 120 kHz: lines at 1 and 2.5 kHz, a noise floor that rises from minus 100 dB at 5 kHz to minus 80 dB at 60 kHz, and the RDS signal as two humps at 56 and 58 kHz"
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
 
-The frequency sink above is the multiplex of the test station. It has the two message tones and RDS, and no pilot or stereo, because the test station is mono. Notice that the noise floor rises with frequency: FM noise at the demodulator's output grows with distance from the carrier, so the top of the audio band, the stereo signal, and RDS all receive more noise than the bottom of the audio. A live stereo station shows the pilot line and the stereo band on the same display.
+The frequency sink above is the multiplex of the test station. It has the two message tones and RDS, and no pilot or stereo, because the test station is mono. Its RDS data still sets the stereo flag on the panel of a later frame; that flag is a bit the encoder sends, not a property of the audio. Notice that the noise floor rises with frequency: FM noise at the demodulator's output grows with distance from the carrier, so the top of the audio band, the stereo signal, and RDS all receive more noise than the bottom of the audio. A live stereo station shows the pilot line and the stereo band on the same display.
 :::
 ::::
 
@@ -170,10 +170,10 @@ The transmitter boosts the treble of its audio before modulating, a step called 
 :::
 :::{present}
 - The audio shows the two tones at 1 and 2.5 kHz.
-- Dragging Station to 99.5 plays a 600 Hz tone.
+- Setting Station to 99.5 plays a 600 Hz tone.
 :::
 
-The figure is the receiver running on the test file. The bottom right sink is the audio after de-emphasis, with the 1 kHz and 2.5 kHz tones of the message and nothing else above the floor, which is the check that the receiver works: the demodulated audio matches what the test transmitter sent. Drag the Station slider to 99.5 and the audio changes to the second station's single 600 Hz tone.
+The figure is the receiver running on the test file. The bottom right sink is the audio after de-emphasis, with the 1 kHz and 2.5 kHz tones of the message and nothing else above the floor, which is the check that the receiver works: the demodulated audio matches what the test transmitter sent. Type 99.5 into Station and the audio changes to the second station's single 600 Hz tone.
 
 To use your own L5 capture, set the File Source's file to `fm_capture.cfile`, type the center frequency you recorded at into SDR center, and set Station to the station you centered. To receive live, disable the File Source, enable the RTL-SDR Source, and run it again. A real station's audio sink will show music or speech rather than two lines.
 ::::
@@ -224,7 +224,7 @@ The panel shows "ECE 448" and the test transmitter's radiotext. It also shows th
 - **Complex to Mag** is the envelope detector.
 :::
 
-Aircraft and control towers talk in AM between 118 and 137 MHz, and most airports with a control tower broadcast an **ATIS**, a recorded loop of the current weather and runway in use, continuously on one of those frequencies. That makes ATIS a steady signal to receive, as Lesson 6 suggested. `L07-am-rx.grc` has the same front end as the FM receiver: a File Source or the RTL-SDR, and a Frequency Xlating FIR Filter. This one has a 5 kHz cutoff, which keeps the voice band with room for a small tuning error, and it decimates by 50, from 2.4 MS/s straight to the sound card's 48 kS/s.
+Aircraft and control towers talk in AM between 118 and 137 MHz, and most airports with a control tower broadcast an **ATIS**, a recorded loop of the current weather and runway in use, continuously on one of those frequencies. That makes ATIS a steady signal to receive, as Lesson 6 suggested. `L07-am-rx.grc` has the same front end as the FM receiver: a File Source or the RTL-SDR, and a Frequency Xlating FIR Filter. This one cuts off around 5 kHz, just above the 3 kHz voice band, and it decimates by 50, from 2.4 MS/s straight to the sound card's 48 kS/s.
 
 :::{depth}
 <img src="../../viz/img/L07-grc-am-rx.png"
@@ -238,15 +238,15 @@ After the filter, the AM station is a complex signal with its carrier at 0 Hz, a
 ::::{frame} AM and FM in the Same Noise
 :::{present}
 <img src="../../viz/img/L07-amfm-30.png"
-     alt="L07-am-vs-fm.grc at C/N 30 dB and 25 kHz deviation: output SNR meters read 29.5 dB for AM and 48.7 dB for FM; the outputs' spectrum shows the 1 kHz tone with the AM noise floor near minus 64 dB and the FM floor near minus 85 dB rising toward 5 kHz; the time sink shows both outputs as clean 1 kHz sine waves"
+     alt="L07-am-vs-fm.grc at C/N 30 dB and 25 kHz deviation: output SNR meters read 29.5 dB for AM and 48.4 dB for FM; the outputs' spectrum shows the 1 kHz tone with the AM noise floor near minus 64 dB and the FM floor near minus 85 dB rising toward 5 kHz; the time sink shows both outputs as clean 1 kHz sine waves"
      style="max-width: 760px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
 - Both carry the same tone at the same power in the same noise.
-- AM in 10 kHz reaches 29.5 dB, and FM in 60 kHz reaches 48.7 dB.
+- AM in 10 kHz reaches 29.5 dB, and FM in 60 kHz reaches 48.4 dB.
 :::
 
-`L07-am-vs-fm.grc` sends one 1 kHz tone two ways with the same carrier power: as AM at $m$ = 1, the best case from Lesson 6, and as FM with 25 kHz deviation. Both go through the same noise, and each receiver filters to its own channel, 10 kHz for AM and $2(25 + 5)$ = 60 kHz for FM by Carson's rule with a 5 kHz audio band. Each output then passes the same 5 kHz audio filter, and a meter built from blocks measures the tone's power against everything else in the audio band: the **output SNR**. The C/N slider sets the carrier-to-noise ratio in 10 kHz, the AM channel.
+`L07-am-vs-fm.grc` sends one 1 kHz tone two ways with the same transmitted power: as AM at $m$ = 1, the best case from Lesson 6, and as FM with 25 kHz deviation. Both go through the same noise, and each receiver filters to its own channel, 10 kHz for AM and $2(25 + 5)$ = 60 kHz for FM by Carson's rule with a 5 kHz audio band. Each output then passes the same 5 kHz audio filter, and a meter built from blocks measures the tone's power against everything else in the audio band: the **output SNR**. The C/N slider sets the carrier-to-noise ratio in 10 kHz, the AM channel.
 
 :::{depth}
 <img src="../../viz/img/L07-grc-am-vs-fm.png"
@@ -254,13 +254,13 @@ After the filter, the AM station is a complex signal with its carrier at 0 Hz, a
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
 :::
 
-At 30 dB, AM delivers 29.5 dB, close to its C/N, and FM delivers 48.7 dB, about 19 dB better. Although the FM receiver admits six times as much noise as the AM receiver, its output SNR is 19 dB higher. The demodulator's output follows how far the frequency swings, and a 25 kHz swing is large next to the small frequency jitter that the noise adds to a strong carrier. The spectrum shows the result: FM's noise floor sits about 20 dB under AM's. Each doubling of the deviation improves FM's output by another 5 to 6 dB, as long as the signal stays above threshold.
+At 30 dB, AM delivers 29.5 dB, close to its C/N, and FM delivers 48.4 dB. Although the FM receiver admits six times as much noise as the AM receiver, its output SNR is about 19 dB higher. The demodulator's output follows how far the frequency swings, and a 25 kHz swing is large next to the small frequency jitter that the noise adds to a strong carrier. The spectrum shows the result: FM's noise floor sits about 20 dB under AM's. Each doubling of the deviation improves FM's output by another 5 to 6 dB, as long as the signal stays above threshold.
 ::::
 
 ::::{frame} The FM Threshold
 :::{present}
 <img src="../../viz/img/L07-amfm-15.png"
-     alt="L07-am-vs-fm.grc at C/N 15 dB: output SNR meters read 14.4 dB for AM and 25.3 dB for FM; FM's noise floor is now flat near minus 63 dB and only about 12 dB under AM's"
+     alt="L07-am-vs-fm.grc at C/N 15 dB: output SNR meters read 14.3 dB for AM and 25.8 dB for FM; FM's noise floor is now flat near minus 63 dB and only about 12 dB under AM's"
      style="max-width: 760px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
@@ -281,7 +281,7 @@ Wider deviation raises the output SNR above threshold, 53.2 dB against 48.5 at 3
 :class: viz-frame
 
 :::{depth}
-The left panel shows the spectral lines of a carrier frequency modulated by one tone, with Carson's band shaded; the right panel shows how much of the power falls inside a band of each width. Start with the L7 flowgraph preset and notice that the lines stop just outside Carson's band. Set the deviation to 2.4 kHz with a 1 kHz tone and watch the carrier line vanish, which is how technicians calibrate a transmitter's deviation. Whatever the settings, Carson's band holds at least 96% of the power.
+The left panel shows the spectral lines of a carrier frequency modulated by one tone, with Carson's band shaded; the right panel shows how much of the power falls inside a band of each width. Start with the L7 flowgraph preset and notice that the lines stop just outside Carson's band. Set the deviation to 2.4 kHz with a 1 kHz tone and watch the carrier line vanish, which is how technicians calibrate a transmitter's deviation. Whatever the settings, Carson's band holds about 96% of the power or more.
 :::
 
 :::{present}
@@ -308,7 +308,7 @@ FM spreads the message over a wider channel, and above threshold its receiver re
 - Receiving is unrestricted, and the RTL-SDR receives only.
 :::
 
-On the air, the receivers need three settings from Lesson 5. Tune the SDR a few hundred kilohertz away from the station, so the RTL-SDR's DC spike at the center stays out of the channel filter, and give the Station slider the station's real frequency. Set the RF gain slider to the highest gain in your L5 Lab gain table at which no new signals appeared between stations. For ATIS, look up the airport's frequency in the FAA Chart Supplement or on a sectional chart, and expect a weaker signal than broadcast FM, because aircraft band stations are lower in power and need line of sight.
+On the air, the receivers need three settings from Lesson 5. Tune the SDR a few hundred kilohertz away from the station, so the RTL-SDR's DC spike at the center stays out of the channel filter, and type the station's real frequency into Station. A shift under about 100 kHz leaves the DC spike inside the channel, where it shows up as a tone or hum. Set the RF gain slider to the highest gain in your L5 Lab gain table at which no new signals appeared between stations. For ATIS, look up the airport's frequency in the FAA Chart Supplement or on a sectional chart, and expect a weaker signal than broadcast FM, because aircraft band stations are lower in power and need line of sight.
 
 RDS needs a stronger signal than the audio does, because its 57 kHz subcarrier sits where the multiplex noise is highest. If the station name never appears, raise the gain or choose a stronger station before changing the flowgraph. As Lesson 2 said, receiving is unrestricted and transmitting is not; the RTL-SDR receives only, and nothing in this lesson transmits.
 ::::

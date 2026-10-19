@@ -159,7 +159,8 @@ prompt with \texttt{conda install gnuradio-rds} and open it again.
 		\begin{solution}[0.5in]
 		Shift = station $-$ center. For the L5 capture, answers vary; the shift is
 		usually 100 to 400 kHz, because the L5 Lab centered the station slightly off the
-		DC spike.
+		DC spike. A shift under about 100 kHz leaves the DC spike inside the channel
+		filter, where it shows up as a tone or hum.
 		\end{solution}
 
 	\begin{minipage}[t]{0.58\linewidth}
@@ -256,7 +257,7 @@ Source on \texttt{L07-fm-test.cfile}.
 		nothing else above the floor.
 		\end{solution}
 
-	\part Drag Station to 99.5~MHz. Describe what you hear, and explain why the station
+	\part Type 99.5 into Station. Describe what you hear, and explain why the station
 	at 100.3~MHz disappears.
 		\begin{solution}[0.9in]
 		The audio is a single 600 Hz tone. The Frequency Xlating FIR Filter now shifts 99.5 MHz to
@@ -425,8 +426,9 @@ and enter the settings of Question 1(e).
 		with a threshold near the predicted 17.8 dB. Wider deviation gives a larger
 		output SNR above threshold, 48.5 against 35.5 dB at 30 dB C/N. It also needs a
 		wider channel, 60 kHz against 20 kHz, which admits 4.8 dB more noise, so the
-		25 kHz signal falls below threshold first. The 5 kHz signal is still above its
-		threshold at 10 dB and keeps its 5 dB lead over AM.
+		25 kHz signal falls below threshold first. At 10 dB C/N the 5 kHz signal is about 3 dB below its own
+		13 dB threshold, but its narrow channel admits few clicks, so it keeps 5 of its
+		6 dB lead over AM, while the wider deviations collapse.
 		\end{solution}
 
 	\part Aircraft use AM, and broadcasters use wideband FM. Using your measurements
