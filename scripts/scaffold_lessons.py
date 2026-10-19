@@ -158,11 +158,11 @@ LESSONS = [
     (1, 2, "L02-noise-figure-link-budget", "Noise Figure and Link Budget", ["1.1", "1.2"], [], "Cascade noise figure through a receiver and predict the SNR a link delivers."),
     (1, 3, "L03-signal-space", "Signal Space", ["1.3"], [], "Basis functions, constellations, and decision regions: the picture every digital receiver works from."),
 
-    (2, 4, "L04-sdr-introduction", "SDR Introduction", ["2.1", "2.2"], ["sdr"], "The SDR platforms in this course, what is inside them, and the sample-rate, bandwidth, and dynamic-range trade-offs."),
+    (2, 4, "L04-sdr-introduction", "SDR Introduction", ["2.1", "2.2"], [], "The SDR platforms in this course, what is inside them, and the sample-rate, bandwidth, and dynamic-range trade-offs."),
     (2, 5, "L05-gnu-radio-intro", "GNU Radio Introduction", ["2.3", "2.4"], [], "GNU Radio Companion from install to a running flowgraph, then a real capture in time and frequency."),
 
     (3, 6, "L06-am-simulation", "AM Simulation", ["3.1", "3.2"], [], "DSB-AM, DSB-SC, and SSB built and demodulated in GNU Radio."),
-    (3, 7, "L07-am-fm-receivers", "AM and FM Receivers", ["3.3", "3.4"], ["amfm"], "AM and FM receivers, a live broadcast FM station, and its RDS data."),
+    (3, 7, "L07-am-fm-receivers", "AM and FM Receivers", ["3.3", "3.4"], [], "AM and FM receivers, a live broadcast FM station, and its RDS data."),
 
     (4, 8, "L08-fsk", "FSK", ["4.1"], [], "An FSK transmitter and receiver in GNU Radio."),
     (4, 9, "L09-pam-theory", "PAM Theory", ["4.2", "4.3"], [], "Pulse shaping, symbol rate, bandwidth, matched filtering, and timing recovery."),
