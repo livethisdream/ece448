@@ -155,7 +155,25 @@ since they follow this structure. Two changes:
   in `grc.conf`, because bare Xvfb cannot resize it.
 - L6 and L9 now have `[]` for decks; their legacy PDFs stay on the materials
   page.
-- **Next batch:** L4, L7, and L10.
+
+## Lesson threads, second batch (2026-10-19)
+
+- **L4, L7, and L10 done** (PRs #13, #14, #16). The threads now ran their own
+  reviewer before opening a PR, and the Integrator review still found real
+  errors: L4 quoted the PlutoSDR's burst rate as a streaming rate and claimed
+  one receiver chain for all four radios; L7 had the de-emphasis mismatch
+  backwards and no build-it-yourself part in its lab; L10 cabled the
+  PlutoSDR's TX straight to its RX with no attenuator and leaked its pre-lab
+  answers onto the lesson page. Keep both review passes.
+- **Lab rules from this batch:** every lab has a build-from-an-empty-canvas
+  part; the lesson page never prints the numbers its lab asks cadets to
+  predict; any TX-to-RX cable carries an inline attenuator; anything only
+  simulated says so.
+- **Bench checks for Neil** before the labs run: the L7 receivers on a live
+  station, and the L10 PlutoSDR cable link across 30-89 dB TX attenuation,
+  including whether zero-IF DC tracking biases long runs of zeros.
+- **gr-rds** is in the session hook; L7's RDS flowgraphs need it.
+- **Next batch:** L11, L12, L13.
 
 ## Lesson threads (from L6 on)
 

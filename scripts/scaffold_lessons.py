@@ -166,7 +166,7 @@ LESSONS = [
 
     (4, 8, "L08-fsk", "FSK", ["4.1"], [], "An FSK transmitter and receiver in GNU Radio."),
     (4, 9, "L09-pam-theory", "PAM Theory", ["4.2", "4.3"], [], "Pulse shaping, symbol rate, bandwidth, matched filtering, and timing recovery."),
-    (4, 10, "L10-ascii-pam", "ASCII over PAM", ["4.4"], ["ascii"], "A PAM link that carries ASCII text end to end."),
+    (4, 10, "L10-ascii-pam", "ASCII over PAM", ["4.4"], [], "A PAM link that carries ASCII text end to end."),
 
     (5, 11, "L11-custom-blocks", "Out-of-Tree Modules and Custom Blocks", ["5.1", "5.2"], [], "Package a GNU Radio out-of-tree module and write your own Python block."),
 
