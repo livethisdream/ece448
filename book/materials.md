@@ -18,7 +18,7 @@ work through alongside the in-class flowgraphs.
 - **GNU Radio** with **GNU Radio Companion (GRC)**: install instructions are posted with L5.
 - **RTL-SDR**: introductory receive-only SDR (25 MHz–1.75 GHz).
 - **HackRF One**: half-duplex Tx/Rx SDR (1 MHz–6 GHz).
-- **PlutoSDR / ADALM-PLUTO**: full-duplex Tx/Rx SDR (325 MHz–3.8 GHz, extendable).
+- **PlutoSDR / ADALM-PLUTO**: full-duplex Tx/Rx SDR (325 MHz–3.8 GHz).
 - **ADALM-PHASER**: phased-array SDR platform, shared with ECE 444.
 - **Directional antennas** (Yagi and log-periodic): for the midterm fox hunt.
 

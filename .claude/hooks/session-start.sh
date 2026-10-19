@@ -83,7 +83,7 @@ fi
 # the course version. Its bindings are built for /usr/bin/python3.12, which the
 # scripts call explicitly. The GTK and X tools let scripts/grc/grc_canvas.sh
 # screenshot GRC itself.
-GR_PKGS=(gnuradio gnuradio-dev python3-pyqt5 xvfb gir1.2-gtk-3.0 python3-gi-cairo x11-apps imagemagick xdotool)
+GR_PKGS=(gnuradio gnuradio-dev gr-rds python3-pyqt5 xvfb gir1.2-gtk-3.0 python3-gi-cairo x11-apps imagemagick xdotool)
 if command -v grcc >/dev/null 2>&1 && command -v xvfb-run >/dev/null 2>&1; then
   log "GNU Radio present, skipping apt install"
 else
