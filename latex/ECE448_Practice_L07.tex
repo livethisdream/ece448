@@ -1,0 +1,304 @@
+% !TEX root =./ECE448_Practice_main.tex
+%
+% L7 practice set (AM and FM Receivers). Short by design: the L7 Lab packet
+% carries the hands-on work. Blank copy: \begin{solution}[h] reserves h of work
+% space. SOLUTIONS copy (\iskey=1) prints the red worked solutions.
+
+\fullwidth{\textbf{Learning Objective 3.3: } I can implement an FM receiver in GNU
+Radio, demodulate a live broadcast FM signal, and decode its RDS data.
+\\[2pt]\textbf{Learning Objective 3.4: } I can explain and demonstrate the
+trade-off between bandwidth and noise performance for AM vs.\ FM.
+\\[4pt]\normalfont\small Show your work. Write a \textbf{Documentation} line at the
+end (\textbf{None} if you did not collaborate).}
+
+\begin{questions}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{FM bandwidth.} Carson's rule estimates the bandwidth of an FM
+signal with peak deviation $\Delta f$ and audio bandwidth $W$ as
+\eq{ B \approx 2(\Delta f + W) }
+\begin{parts}
+
+	\part Fill in the table. For the AM row, the same audio rides on DSB-AM.
+
+	\begin{center}
+	\renewcommand{\arraystretch}{1.25}
+	\begin{tabular}{| l | c | c | p{1.4in} |}
+	\hline
+	Service & $\Delta f$ (kHz) & $W$ (kHz) & Bandwidth (kHz) \\\hline
+	Broadcast FM, mono & 75 & 15 & \\\hline
+	Two-way radio, NBFM & 5 & 3 & \\\hline
+	AM, broadcast audio & -- & 15 & \\\hline
+	\end{tabular}
+	\end{center}
+
+		\begin{solution}[0.9in]
+		Broadcast FM: $2(75 + 15) = 180$ kHz. NBFM: $2(5 + 3) = 16$ kHz. AM: $2W = 30$ kHz.
+		Broadcast FM is six times as wide as AM carrying the same audio.
+		\end{solution}
+
+	\part The carrier of an FM station never moves more than 75 kHz from its center.
+	Explain in words why the signal is still wider than 150 kHz.
+		\begin{solution}[1.0in]
+		The frequency moves at audio rates, up to 15 kHz, and a carrier whose frequency
+		changes that fast is not a single sinusoid at each instant. Its spectrum has lines
+		spaced by the audio frequency that extend past the peak deviation, so the
+		bandwidth is about $2\Delta f$ plus $2W$.
+		\end{solution}
+
+\end{parts}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{The WBFM receiver.} An RTL-SDR records 2.4~MS/s centered on
+98.8~MHz, and the station we want is at 99.1~MHz. The receiver is
+\texttt{L07-wbfm-rx.grc}.
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Find the center frequency of the Frequency Xlating FIR Filter, and the
+		sample rate after it decimates by 10.
+		\begin{solution}[0.9in]
+		\eq{ 99.1 - 98.8 = 0.3\ \text{MHz} = 300\ \text{kHz} }
+		\eq{ \dfrac{2.4\ \text{MS/s}}{10} = 240\ \text{kS/s} }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		shift = \ansbox[1.0in]{300 kHz}
+
+		\vspace{4pt}
+		rate = \ansbox[1.0in]{240 kS/s}
+	\end{minipage}
+
+	\part A classmate decimates by 20 instead. Explain what goes wrong, using the
+	channel filter's ±90~kHz passband and the 57~kHz RDS subcarrier.
+		\begin{solution}[1.0in]
+		At 120 kS/s the flowgraph can hold only $-60$ to $+60$ kHz. The station's
+		±90 kHz no longer fits, so its outer parts alias into the band, and after
+		demodulation the RDS signal, which reaches 59.4 kHz, sits at the edge of the
+		Nyquist frequency with no room for a filter.
+		\end{solution}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Find the Quadrature Demod gain that makes 75~kHz of deviation produce an
+		output of 1, and the output when the carrier sits 30~kHz above center.
+		\begin{solution}[1.0in]
+		\eq{ \dfrac{240\,000}{2\pi \times 75\,000} = 0.509 }
+		\eq{ \dfrac{30}{75} = 0.40 }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		gain = \ansbox[1.0in]{$0.509$}
+
+		\vspace{4pt}
+		output = \ansbox[1.0in]{$0.40$}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Find the decimation from the demodulator to a 48~kHz sound card, and the
+		corner frequency of a 75~$\mu$s de-emphasis filter.
+		\begin{solution}[1.0in]
+		\eq{ \dfrac{240}{48} = 5 }
+		\eq{ f = \dfrac{1}{2\pi(75\times10^{-6})} = 2.12\ \text{kHz} }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		decimation = \ansbox[1.0in]{5}
+
+		\vspace{4pt}
+		corner = \ansbox[1.0in]{2.12 kHz}
+	\end{minipage}
+
+	\part Explain why the flowgraph needs no Throttle, whether it plays a file or
+	receives from the RTL-SDR.
+		\begin{solution}[0.8in]
+		The Audio Sink takes exactly 48,000 samples per second, so it paces a File
+		Source. With the RTL-SDR, the radio's own clock sets the pace. A Throttle would
+		add a second clock and cause dropouts.
+		\end{solution}
+
+\end{parts}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{RDS.} RDS sends 1187.5 bits per second on a 57~kHz subcarrier, in
+groups of 104 bits.
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part The RDS branch resamples to 19~kHz. Find the samples per bit, and the time
+		one group takes.
+		\begin{solution}[1.0in]
+		\eq{ \dfrac{19\,000}{1187.5} = 16 }
+		\eq{ \dfrac{104}{1187.5} = 87.6\ \text{ms} }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.0in]{16 samples}
+
+		\vspace{4pt}
+		\ansbox[1.0in]{87.6 ms}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part The station name is eight characters, sent two per group. Radiotext is up
+		to 64 characters, sent four per group. Find the shortest time to receive each,
+		if the station sent nothing else.
+		\begin{solution}[1.1in]
+		\eq{ 4 \times 87.6 = 350\ \text{ms} }
+		\eq{ 16 \times 87.6 = 1.40\ \text{s} }
+		A station interleaves other group types, so a real receiver takes longer.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		name = \ansbox[1.0in]{350 ms}
+
+		\vspace{4pt}
+		text = \ansbox[1.0in]{1.40 s}
+	\end{minipage}
+
+	\part The RDS signal is BPSK, a DSB-SC signal. Name the block in
+	\texttt{L07-rds-rx.grc} that recovers its carrier, and explain why the
+	differential coding means the recovered carrier may be $180^\circ$ off.
+		\begin{solution}[1.1in]
+		The Constellation Receiver locks to the subcarrier's phase. A BPSK loop can lock
+		at either of two phases $180^\circ$ apart, which inverts every bit. The data is
+		differentially coded, so the Differential Decoder reads only whether each bit
+		changed from the last, and inverting every bit leaves those changes the same.
+		\end{solution}
+
+	\part A station's audio is clear, but the station name never appears. Explain why
+	RDS needs a stronger signal than the audio does.
+		\begin{solution}[0.9in]
+		The noise at the FM demodulator's output rises with frequency, so the 57 kHz
+		subcarrier sees much more noise than the audio below 15 kHz, which de-emphasis
+		also cleans up.
+		\end{solution}
+
+\end{parts}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{AM and FM in the same noise.} \texttt{L07-am-vs-fm.grc} sends a
+1~kHz tone as AM at $m = 1$ in a 10~kHz channel and as FM in a $2(\Delta f + 5)$~kHz
+channel, with the same carrier power and the same noise. It measured these output
+SNRs in dB:
+
+\begin{center}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{| l | c | c | c | c |}
+\hline
+C/N in 10 kHz (dB) & 30 & 20 & 15 & 10 \\\hline
+AM & 29.5 & 19.4 & 14.4 & 9.2 \\\hline
+FM, $\Delta f$ = 5 kHz & 35.5 & 25.5 & 20.5 & 14.2 \\\hline
+FM, $\Delta f$ = 25 kHz & 48.5 & 39.2 & 26.1 & 9.3 \\\hline
+FM, $\Delta f$ = 50 kHz & 53.2 & 39.5 & 17.3 & 6.4 \\\hline
+\end{tabular}
+\end{center}
+
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Find each FM channel's bandwidth, and how many dB more noise it admits than
+		the 10~kHz AM channel.
+		\begin{solution}[1.2in]
+		5 kHz: $2(5 + 5) = 20$ kHz, $10\mylog{2} = 3.0\db$.
+		25 kHz: $2(25 + 5) = 60$ kHz, $10\mylog{6} = 7.8\db$.
+		50 kHz: $2(50 + 5) = 110$ kHz, $10\mylog{11} = 10.4\db$.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.3in]{20, 60, 110 kHz}
+
+		\vspace{4pt}
+		\ansbox[1.3in]{3.0, 7.8, 10.4 dB}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part An FM receiver reaches threshold when its C/N in its own bandwidth falls to
+		about 10~dB. Find the C/N in 10~kHz at which each FM signal reaches threshold, and
+		check each against the table.
+		\begin{solution}[1.4in]
+		\eq{ 10 + 3.0 = 13.0, \quad 10 + 7.8 = 17.8, \quad 10 + 10.4 = 20.4 }
+		in dB, for 5, 25, and 50 kHz of deviation.
+		The table agrees. The 5 kHz signal keeps a steady 5 to 6 dB lead over AM down to
+		10 dB. The 25 kHz signal leads by 19 to 20 dB down to 20 dB C/N and has lost
+		about 7 dB of that lead at 15. The 50 kHz signal leads by 24 dB at 30 but only
+		20 dB at 20, already near its 20.4 dB threshold.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.3in]{13.0, 17.8, 20.4 dB}
+	\end{minipage}
+
+	\part A link to a distant receiver runs at 10~dB C/N in 10~kHz. Use the table to
+	choose AM or one of the three FM deviations, and explain the choice in words.
+		\begin{solution}[1.1in]
+		FM with 5 kHz deviation, at 14.2 dB. It is the only signal still above its
+		threshold at 10 dB C/N, so it keeps its advantage over AM. The wider deviations
+		would be better on a strong link, but their wider channels admit enough noise to
+		push them below threshold here, where they are no better than AM or worse.
+		\end{solution}
+
+	\part Above threshold, each doubling of the deviation improves FM's output by about
+	6~dB. Check that rule against the 30~dB column from 25 to 50~kHz.
+		\begin{solution}[0.8in]
+		$53.2 - 48.5 = 4.7$ dB for one doubling: close to 6 dB, and short of it because
+		at 30 dB C/N the 50 kHz signal is under 10 dB above its own threshold.
+		\end{solution}
+
+\end{parts}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{An AM receiver for ATIS.} An airport broadcasts its ATIS on
+119.25~MHz. The RTL-SDR runs at 2.4~MS/s centered on 119.0~MHz, and the receiver is
+\texttt{L07-am-rx.grc}.
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Find the Frequency Xlating FIR Filter's center frequency, and the
+		decimation that takes it straight to a 48~kHz sound card.
+		\begin{solution}[0.9in]
+		\eq{ 119.25 - 119.0 = 0.25\ \text{MHz} = 250\ \text{kHz} }
+		\eq{ \dfrac{2\,400\,000}{48\,000} = 50 }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		shift = \ansbox[1.0in]{250 kHz}
+
+		\vspace{4pt}
+		decimation = \ansbox[1.0in]{50}
+	\end{minipage}
+
+	\part Lesson 6 detected the envelope with Abs, a low-pass filter, and a gain of
+	$\pi/2$. Explain why this receiver needs only Complex to Mag.
+		\begin{solution}[1.0in]
+		After the Frequency Xlating FIR Filter, the station's carrier sits at 0 Hz, and
+		each complex sample is the envelope times a phase factor. Its magnitude is the
+		envelope itself, with no carrier to rectify or average away, so the receiver
+		needs no $\pi/2$ correction.
+		\end{solution}
+
+	\part Explain why the AM receiver needs an AGC and the FM receiver does not.
+		\begin{solution}[1.0in]
+		An envelope detector's output is proportional to the received amplitude, which
+		changes with an aircraft's distance, so the AGC holds the audio level steady. The
+		Quadrature Demod measures only how fast the phase turns, so the FM receiver's
+		output does not depend on the signal's strength.
+		\end{solution}
+
+\end{parts}
+
+\vspace{1.5em}
+\noindent\textbf{Documentation:} \rule[-2pt]{0.6\linewidth}{0.4pt}
+
+\end{questions}
