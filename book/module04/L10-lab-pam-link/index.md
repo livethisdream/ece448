@@ -138,7 +138,7 @@ Close the flowgraph and run it again with the sliders at their defaults, a noise
 
 `L10-pam-pluto.grc` is the Lesson 10 link with the simulated channel replaced by a PlutoSDR. The transmit half raises the 32 kHz baseband stream to 1.024 MS/s and sends it from the Pluto's TX port at 915 MHz; the receive half takes it from the RX port, lowers it to 32 kHz, and runs the same matched filter, Symbol Sync, and access-code search. An **AGC** sets the received level, and a **Costas Loop**, which Lesson 15 explains, locks to the carrier's phase.
 
-In class we transmit only into a cable, into a shielded enclosure, or at very low power in an ISM band, and only when the lesson says to. This question transmits only into the cable between the Pluto's own TX and RX ports, through an inline 30 dB SMA attenuator. The TX attenuation slider starts at 60 dB and stops at 30 dB. Never set TX attenuation below 30 dB or change the slider's range; the RX input is rated to only a few dBm, and the transmitter can put out more than that.
+In class we transmit only into a cable, into a shielded enclosure, or at very low power in an ISM band, and only when the lesson says to. This question transmits only into the cable between the Pluto's own TX and RX ports, through an inline 30 dB SMA attenuator. The TX attenuation slider opens at 60 dB and cannot go below 30 dB. Never set TX attenuation below 30 dB or change the slider's range; the RX input is rated to only a few dBm, and the transmitter can put out more than that.
 ::::
 
 ::::{frame} PlutoSDR Steps
