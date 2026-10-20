@@ -133,7 +133,7 @@ is 1 unit, a dah 3, the gap inside a letter 1, the gap between letters 3, and th
 after a word 7.
 
 \textbf{Two routes.} On Linux or macOS with \texttt{gnuradio-build-deps} installed, you
-build real modules. On a Windows laptop without Visual Studio Build Tools, take the
+build real modules. On a Windows laptop, take the
 Embedded Python Block route the lab page describes: put the same code in Embedded Python
 Blocks, and build the two modules on a teammate's Linux or macOS laptop for Questions 3(a)
 and 5.
@@ -155,8 +155,8 @@ and 5.
 		\begin{solution}[0.9in]
 		Radioconda installs GNU Radio 3.10 with \texttt{gr\_modtool} on every platform.
 		\texttt{cmake} runs only after \texttt{conda install -c conda-forge
-		gnuradio-build-deps}. Linux and macOS take the module route; Windows without
-		Visual Studio Build Tools takes the Embedded Python Block route.
+		gnuradio-build-deps}. Linux and macOS take the module route; Windows takes the
+		Embedded Python Block route.
 		\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
@@ -207,7 +207,7 @@ and 5.
 		\begin{solution}[1.2in]
 		\eq{ N = 32:&\quad 10\log_{10}(1 \pm 0.177) = +0.71,\ -0.85\db \\
 		N = 128:&\quad 10\log_{10}(1 \pm 0.088) = +0.37,\ -0.40\db \\
-		2.1 - (-1.9) &= 4.0\db }
+		2.15 - (-1.94) &= 4.1\db }
 		\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
@@ -218,7 +218,7 @@ and 5.
 		$N=128$: \ansbox[1.0in]{$\approx \pm 0.4$ dB}
 
 		\vspace{4pt}
-		gap: \ansbox[1.0in]{4.0 dB}
+		gap: \ansbox[1.0in]{4.1 dB}
 	\end{minipage}
 
 	\part At 15 words per minute, predict the length of a dit, a dah, the gap inside a
@@ -239,24 +239,25 @@ and 5.
 		\end{solution}
 
 	\begin{minipage}[t]{0.58\linewidth}
-		\part Averaging 32 samples, how long does one detector output last, and how many
-		outputs is a dit? Averaging 128? How many marks (key-downs) does one sending of
-		``ECE'' hold, and how many arrive in 30 s?
+		\part Averaging 32 samples, how many detector outputs is a dit? Averaging 128, how
+		long does one output last, and how many outputs is a dit? How many marks (key-downs)
+		does one sending of ``ECE'' hold, and how many arrive in 30 s?
 		\begin{solution}[1.2in]
 		$32/32{,}000 = 1$ ms, so a dit is 80 outputs; $128/32{,}000 = 4$ ms, so a dit is
 		20 outputs. ECE is a dit, then dah dit dah dit, then a dit: 6 marks in 26 units,
-		2.08 s, so 30 s holds $30/2.08 \times 6 \approx 86$ marks.
+		2.08 s. In 30 s the flowgraph sends 14 whole sendings, 84 marks, and 4 more marks of
+		the 15th, so the count reads about 87 to 88.
 		\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
 		\raggedleft \vspace{12pt}
-		$N=32$: \ansbox[1.0in]{1 ms, 80}
+		$N=32$: \ansbox[1.0in]{80}
 
 		\vspace{4pt}
 		$N=128$: \ansbox[1.0in]{4 ms, 20}
 
 		\vspace{4pt}
-		marks: \ansbox[1.0in]{6; $\approx 86$}
+		marks: \ansbox[1.0in]{6; 87--88}
 	\end{minipage}
 
 \end{parts}
@@ -410,16 +411,17 @@ through Function Probes.
 	\part With 32 samples averaged, choose the best threshold and hysteresis you can
 	find. Record them, then restart the flowgraph and record the mark count after 30 s.
 		\begin{solution}[1.0in]
-		Near a threshold of 0 to 0.5 dB and 2 dB of hysteresis, the count runs a few
-		marks high, about 92 for 86 sent, because the noise now and then makes a mark of
-		1 to 3 ms in a gap. The 4 dB gap is only about five times the 0.77 dB spread.
+		The best settings sit near a threshold of $+0.5$ dB with 2 dB of hysteresis, and
+		even there the count runs a few marks high, about 89 to 95 for 87 to 88 sent, because
+		the noise now and then makes a mark of 1 to 3 ms in a gap. At a threshold of 0 dB the
+		count rises to about 130. The 4 dB gap is only about five times the 0.77 dB spread.
 		\end{solution}
 
 	\part Stop the flowgraph, set \texttt{decim} to 128, and repeat. Record your settings,
 	the count after 30 s, and the dit length the Key Timer reports.
 		\begin{solution}[1.0in]
 		With a threshold of 0.5 to 1 dB and 1.5 to 2 dB of hysteresis the count matches the
-		marks sent, about 86, and the dit reads 80 ms, sometimes 84 ms, one 4 ms output
+		marks sent, 87 to 88, and the dit reads 80 ms, sometimes 84 ms, one 4 ms output
 		long.
 		\end{solution}
 

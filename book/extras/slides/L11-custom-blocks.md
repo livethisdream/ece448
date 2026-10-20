@@ -189,7 +189,7 @@ Search the library for Energy Detector, under ECE 448. The rest of the flowgraph
 The floor sits at $-10.5$ dB, on the threshold.
 
 Note:
-Move the noise slider to 0.3 and the hysteresis to 0 live. Then add 3 dB of hysteresis with the threshold left at minus 10: the key turns on and never turns off. The threshold must move up before hysteresis can help.
+Move the noise slider to 0.3 and the hysteresis to 0 live. Then add 3 dB of hysteresis with the threshold left at minus 10: the key turns on and rarely turns off. The threshold must move up before hysteresis can help.
 
 ---
 
@@ -209,7 +209,7 @@ Carrier on: 10 log10 of 1.09, plus 0.4 dB. Carrier off: minus 10.5 dB. On level 
 <iframe src="../viz/energy-detector.html" width="100%" height="510" style="border:1px solid #cddce9; border-radius:6px;" title="Energy detector explorer"></iframe>
 
 Note:
-Start at the chatter case. Raise the threshold, add hysteresis, then change the samples averaged: 8 gives a ragged floor and 0.25 ms outputs, 128 a smooth floor and 4 ms outputs.
+Start at the chatter case. Raise the threshold, add hysteresis, then change the samples averaged: 8 gives a ragged floor and 0.25 ms outputs, 64 a smoother floor and 2 ms outputs.
 
 ---
 
@@ -227,7 +227,7 @@ macOS also needs xcode-select --install; we did not test a Mac or the Windows Bu
 
 ## OOK on an RTL-SDR
 
-<img src="./img/11-custom-blocks/L11-grc-ook.png" alt="The L11 RTL-SDR flowgraph in GRC: RTL-SDR source near 433.92 MHz, frequency shift and decimate to 128 kHz, Energy Detector averaging 4 samples, time and frequency sinks" style="max-height:400px; display:block; margin:0 auto;">
+<img src="./img/11-custom-blocks/L11-grc-ook.png" alt="The L11 RTL-SDR flowgraph in GRC: RTL-SDR source near 433.92 MHz, frequency shift and decimate to 128 kHz, Energy Detector averaging 4 samples, the key scaled onto the power plot, time and frequency sinks" style="max-height:400px; display:block; margin:0 auto;">
 
 The same block keys on a 433.92 MHz remote. The flowgraph only receives.
 

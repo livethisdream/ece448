@@ -53,11 +53,10 @@ At the radioconda prompt, run `gnuradio-config-info --version`, `gr_modtool --he
 | Laptop | Route |
 | :-- | :-- |
 | Linux or macOS | build both modules with CMake |
-| Windows with Visual Studio Build Tools | build both modules with CMake |
-| Windows without them | Embedded Python Blocks; build the modules on a teammate's Linux or macOS laptop |
+| Windows | Embedded Python Blocks; build the modules on a teammate's Linux or macOS laptop |
 :::
 
-A Python-only module still runs CMake, and CMake needs a C++ compiler, which Windows radioconda does not provide. On a Windows laptop without Microsoft's Visual Studio Build Tools, use `L11-keyed-carrier-epy.grc` for the Energy Detector, and write the Key Timer in an Embedded Python Block: GRC's **Python Block**, with the class renamed `blk`. The code is the same in both routes. Questions 3(a) and 5 still need a real module and `ctest`, so build those on a teammate's Linux or macOS laptop.
+A Python-only module still runs CMake, and CMake needs a C++ compiler, which Windows radioconda does not provide. A Windows build with Microsoft's Visual Studio Build Tools needs different commands and install paths, and the course has not tested it, so on Windows use `L11-keyed-carrier-epy.grc` for the Energy Detector, and write the Key Timer in an Embedded Python Block: GRC's **Python Block**, with the class renamed `blk`. The code is the same in both routes. Questions 3(a) and 5 still need a real module and `ctest`, so build those on a teammate's Linux or macOS laptop.
 ::::
 
 ::::{frame} Part 2: Build and Test gr-ece448

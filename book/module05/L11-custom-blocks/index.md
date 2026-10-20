@@ -87,7 +87,7 @@ gr_modtool add -t decimator -l python energy_detector
 :::
 :::{present}
 - The block, its GRC file, and its test are three files.
-- The C++ folders stay empty in a Python-only module.
+- The C++ folders hold no block code in a Python-only module.
 :::
 
 `gr_modtool add` writes three files and edits two more. `energy_detector.py` is the block, `qa_energy_detector.py` is its unit test, and `ece448_energy_detector.block.yml` tells GRC how to draw it. It adds an import line to `__init__.py`, so `from gnuradio import ece448` finds the block, and it lists the test in `python/ece448/CMakeLists.txt`.
@@ -224,7 +224,7 @@ Once installed, the Energy Detector is an ordinary block: you search for it in G
 - Hysteresis alone cannot fix a threshold in the wrong place.
 :::
 
-At a noise amplitude of 0.3, the noise floor is $20\log_{10} 0.3 = -10.5$ dB, right at the $-10$ dB threshold. With no hysteresis, every averaged output that crosses the line flips the key, so the key **chatters** through every gap, and a Morse decoder downstream would read each flip as a dit. Adding 3 dB of hysteresis with the threshold where it is makes things worse: the key turns on and then never falls below $-13$ dB, so it stays on for the whole sending, and the threshold must move up before hysteresis can help.
+At a noise amplitude of 0.3, the noise floor is $20\log_{10} 0.3 = -10.5$ dB, right at the $-10$ dB threshold. With no hysteresis, every averaged output that crosses the line flips the key, so the key **chatters** through every gap, and a Morse decoder downstream would read each flip as a dit. Adding 3 dB of hysteresis with the threshold where it is makes things worse: the key turns on and then rarely falls below $-13$ dB, so it stays on nearly all the time, and the threshold must move up before hysteresis can help.
 ::::
 
 ::::{frame} Setting the Levels
@@ -249,7 +249,7 @@ which is $+0.4$ dB at $\sigma = 0.3$, and with it off the power is about $-10.5$
 :class: viz-frame
 
 :::{depth}
-The top panel is the detector's power output for one sending of "ECE", and the bottom panel compares the key with the keying the flowgraph sent, shaded red where they differ. It starts where the chatter screenshot did: noise amplitude 0.3, threshold $-10$ dB, no hysteresis. Raise the threshold to $-5$ dB and add 3 dB of hysteresis, and the key changes 11 times, as the keying does. Then change the samples averaged. Averaging 8 samples gives a ragged floor and a 0.25 ms output; averaging 128 gives a smooth floor and a 4 ms output, and a dit is still 15 outputs long.
+The top panel is the detector's power output for one sending of "ECE", and the bottom panel compares the key with the keying the flowgraph sent, shaded red where they differ. It starts where the chatter screenshot did: noise amplitude 0.3, threshold $-10$ dB, no hysteresis. Raise the threshold to $-5$ dB and add 3 dB of hysteresis, and the key changes 11 times, as the keying does. Then change the samples averaged. Averaging 8 samples gives a ragged floor and a 0.25 ms output; averaging 64 gives a smoother floor and a 2 ms output, and a dit is still 30 outputs long.
 :::
 
 :::{present}
@@ -275,7 +275,7 @@ $$10\log_{10}\left(1 \pm \frac{1}{\sqrt N}\right)\ \text{dB},$$
 
 which for $N = 8$ is $+1.3$ dB and $-1.9$ dB. Four times as many samples halves the spread.
 
-Averaging more samples takes more time: each output covers $N/f_s$ seconds, and an edge in the keying can land anywhere inside one output. At 32 kHz, $N = 32$ gives 1 ms outputs. A dit at 20 words per minute is 60 ms, so it spans 60 outputs, and even $N = 128$, 4 ms, leaves 15 outputs per dit. A faster signal needs a shorter average: the 433 MHz remotes below send pulses a few hundred microseconds long, so their flowgraph averages 4 samples at 128 kHz, about 31 $\mu$s per output.
+Averaging more samples takes more time: each output covers $N/f_s$ seconds, and an edge in the keying can land anywhere inside one output. At 32 kHz, $N = 32$ gives 1 ms outputs. A dit at 20 words per minute is 60 ms, so it spans 60 outputs, and even $N = 64$, 2 ms, leaves 30 outputs per dit. A faster signal needs a shorter average: the 433 MHz remotes below send pulses a few hundred microseconds long, so their flowgraph averages 4 samples at 128 kHz, about 31 $\mu$s per output.
 ::::
 
 ::::{frame} On Your Laptop
@@ -285,7 +285,7 @@ Averaging more samples takes more time: each output covers $N/f_s$ seconds, and 
 - On Windows, the fallback is an Embedded Python Block.
 :::
 
-Radioconda installs GNU Radio from conda-forge, and its `gnuradio-core` package includes `gr_modtool` on Linux, macOS, and Windows, where it is `gr_modtool.exe`. Radioconda has no CMake and no compiler, and a module's top-level `CMakeLists.txt` declares C and C++, so CMake stops at that line without a compiler, even when the module has no C++. The package `gnuradio-build-deps`, installed with `conda install -c conda-forge gnuradio-build-deps`, adds CMake, Ninja, and a compiler. On Linux that compiler is complete. On macOS the conda compiler does not include Apple's SDK, which `xcode-select --install` provides; this route is untested on a Mac. On Windows the compiler package only locates an existing Visual Studio 2022 installation, so a Windows laptop also needs Microsoft's Visual Studio Build Tools, a large separate install; this route is also untested.
+Radioconda installs GNU Radio from conda-forge, and its `gnuradio-core` package includes `gr_modtool` on Linux, macOS, and Windows, where it is `gr_modtool.exe`. Radioconda has no CMake and no compiler, and the `project()` line of a module's top-level `CMakeLists.txt` declares C and C++, so CMake stops at that line without a compiler, even when the module has no C++. The package `gnuradio-build-deps`, installed with `conda install -c conda-forge gnuradio-build-deps`, adds CMake, Ninja, and a compiler. On Linux that compiler is complete. On macOS the conda compiler does not include Apple's SDK, which `xcode-select --install` provides; this route is untested on a Mac. On Windows the compiler package only locates an existing Visual Studio 2022 installation, so a Windows laptop also needs Microsoft's Visual Studio Build Tools, a large separate install; this route is also untested.
 
 A Windows laptop without them can still run the block. `L11-keyed-carrier-epy.grc` has the same `energy_detector` class pasted into an Embedded Python Block, renamed `blk`, and runs identically. The block's code, its tests, and its YAML file move into a module unchanged on any Linux or macOS machine, such as a teammate's in the lab.
 ::::
@@ -293,7 +293,7 @@ A Windows laptop without them can still run the block. `L11-keyed-carrier-epy.gr
 ::::{frame} OOK on an RTL-SDR
 :::{present}
 <img src="../../viz/img/L11-grc-ook.png"
-     alt="The L11 RTL-SDR flowgraph in GNU Radio Companion: a Soapy RTLSDR Source at 1.024 MS/s tuned to 433.72 MHz, a Frequency Xlating FIR Filter that shifts 200 kHz and decimates by 8 to 128 kHz, the Energy Detector averaging 4 samples, a time sink of power, key, and threshold, and a frequency sink"
+     alt="The L11 RTL-SDR flowgraph in GNU Radio Companion: a Soapy RTLSDR Source at 1.024 MS/s tuned to 433.72 MHz, a Frequency Xlating FIR Filter that shifts 200 kHz and decimates by 8 to 128 kHz, the Energy Detector averaging 4 samples, a Multiply Const of 20 and an Add Const of minus 60 that draw the key at minus 60 dB when off and minus 40 dB when on, a time sink of power, key, and threshold, and a frequency sink"
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
@@ -301,7 +301,7 @@ A Windows laptop without them can still run the block. `L11-keyed-carrier-epy.gr
 - The same block keys on their bursts; this flowgraph only receives.
 :::
 
-On-off keying sends a 1 as a burst of carrier and a 0 as silence, the same signal as today's keyed tone, only faster. Car and garage remotes, doorbells, and weather sensors in the 433.92 MHz ISM band commonly use it. `L11-ook-rtlsdr.grc` tunes an RTL-SDR 200 kHz below 433.92 MHz to keep the radio's DC spike off the signal, shifts the signal to 0 Hz and decimates to 128 kHz, and runs the Energy Detector with $N = 4$. Set the threshold halfway between the floor and the burst level on the power plot, press a remote nearby, and the key traces its bursts; the flowgraph only receives. This page has not run it, because it needs an RTL-SDR and a remote, so the figure shows the flowgraph in GRC, not a capture.
+On-off keying sends a 1 as a burst of carrier and a 0 as silence, the same signal as today's keyed tone, only faster. Car and garage remotes, doorbells, and weather sensors in the 433.92 MHz ISM band commonly use it. `L11-ook-rtlsdr.grc` tunes an RTL-SDR 200 kHz below 433.92 MHz to keep the radio's DC spike off the signal, shifts the signal to 0 Hz and decimates to 128 kHz, and runs the Energy Detector with $N = 4$. The time sink draws the key at $-60$ dB when it is off and $-40$ dB when it is on, so it shares the power plot's axis. Set the threshold halfway between the floor and the burst level on the power plot, press a remote nearby, and the key traces its bursts; the flowgraph only receives. This page has not run it, because it needs an RTL-SDR and a remote, so the figure shows the flowgraph in GRC, not a capture.
 ::::
 
 ::::{frame} Key Point
