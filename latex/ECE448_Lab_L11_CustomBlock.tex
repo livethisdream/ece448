@@ -1,0 +1,473 @@
+\documentclass{exam}
+
+\newif\ifA
+\newif\ifkey
+\newif\ifprintselected   % required by exam_config's \ansbox
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% SET THESE IF VARIABLES
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Lab name -- labs are named by the lesson they belong to, never by a
+% sequential lab number (Neil, 2026-10-12): this is the L11 Lab.
+\def\labLesson{11}
+
+% is this the key or not?
+\ifdefined\iskey
+	\ifnum\iskey=1
+		\keytrue
+	\else
+		\keyfalse
+	\fi
+\else
+	%% Pick one manually
+	\keyfalse % if this is NOT the key
+%	\keytrue     % if this IS the key
+\fi
+
+% set up the header and footer - change for every term
+\ifdefined\thisTermIn
+	\def\thisterm{\thisTermIn}
+\else
+	\def\thisterm{Spring 2027}
+\fi
+%
+\def\thisclass{ECE 448}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% END SET THESE IF VARIABLES
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% packages and shortcuts
+\input{myPackages_gr}
+\usepackage[hidelinks, linkcolor=red]{hyperref}
+\input{myShortcuts}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt}
+
+%% exam class customization
+\input{exam_config}
+\input{ece448_fonts}   % Barlow body text (needs lualatex)
+\printselectedfalse      % full worked solutions in the key, not answers-only
+\CorrectChoiceEmphasis{\color{red}}
+\SolutionEmphasis{\color{red}}
+\renewcommand\questionlabel{\textbf{\thequestion.}}
+\renewcommand{\thepartno}{\alph{partno}}
+\renewcommand{\partlabel}{(\thepartno)}
+
+% Fillable table cell: blank in the student copy, the expected value in red on
+% the KEY. Fixed-width centered columns keep the blank cells writable.
+\newcolumntype{K}[1]{>{\centering\arraybackslash}p{#1}}
+\newcommand{\kv}[1]{\ifkey{\color{red}#1}\fi\rule[-0.10in]{0pt}{0.34in}}
+
+% print the answers if this is the key
+\ifkey
+	\printanswers % if this IS the key
+\else
+	\noprintanswers  %if this is NOT the key
+\fi
+
+% print the header and footer
+% need to print key on top if this is the key
+\ifkey
+	\firstpageheader{}{\color{red}{ KEY}}{}
+	\runningheader{\thisclass\hspace{1pt} -- \thisterm }{L\labLesson\ Lab\hspace{1pt}\color{red}{ KEY}}{\thepage\hspace{1pt} of\hspace{1pt} \numpages}
+	\firstpagefooter{}{}{}
+	\runningfooter{}{}{}
+\else
+	\firstpageheader{}{}{}
+	\runningheader{\thisclass \hspace{1pt} -- \thisterm }{L\labLesson\ Lab\hspace{1pt}}{\thepage\hspace{1pt} of\hspace{1pt} \numpages}
+	\firstpagefooter{}{}{}
+	\runningfooter{}{}{}
+\fi
+
+\runningheadrule
+
+
+\begin{document}
+\pagestyle{headandfoot}   % exam class
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% title block
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{center}
+USAF ACADEMY \\
+DEPARTMENT OF ELECTRICAL AND COMPUTER ENGINEERING \\
+LESSON \labLesson\ LAB - CUSTOM BLOCK \\
+\textbf{Lab Packet} \\
+\thisterm \\[4mm]
+\end{center}
+
+\vspace{-4pt}
+\textbf{Name:} \rule[-2pt]{2.6in}{0.4pt} \hfill
+\textbf{Section:} \rule[-2pt]{0.9in}{0.4pt} \hfill
+\textbf{Date:} \rule[-2pt]{1.1in}{0.4pt}
+
+\vspace{4pt}
+
+\fullwidth{\textbf{Learning Objective 5.1: } I can create a GNU Radio out-of-tree (OOT) module
+and add a custom Python block to it.
+\\[2pt]\textbf{Learning Objective 5.2: } I can implement a custom signal-processing block from
+scratch and integrate it into a GNU Radio flowgraph.}
+
+\vspace{2pt}
+
+This packet is the L\labLesson\ Lab, in three parts, and you turn it in once, complete,
+before the midterm. Do \textbf{Part 1} on your own before the lab period: check your
+laptop's tools and make the predictions you will check at the bench. \textbf{Part 2} is
+your own work in class: build and test the course module, set the Energy Detector's
+levels, and then write a block of your own, the \textbf{Key Timer}, in a module of your
+own. Do \textbf{Part 3} on your own after the lab.
+
+\textbf{Grading.} One submission, graded against Objectives 5.1 and 5.2 on the course's
+1 / 0 scale, with revision allowed under course policy. Paste screenshots and code where
+a question asks for them.
+
+Nothing in this lab transmits: every flowgraph is a simulation on your laptop.
+
+The files are on the L11 lesson page: \texttt{L11-gr-ece448.zip},
+\texttt{L11-keyed-carrier.grc}, and \texttt{L11-keyed-carrier-epy.grc}. Every number
+below assumes the flowgraph's settings: \texttt{samp\_rate} = 32 kHz, a tone of
+amplitude 1, Morse ``ECE'' repeating, and GNU Radio's Noise Source, whose power is
+$\sigma^2$ at amplitude $\sigma$. One Morse unit lasts $1.2/\text{WPM}$ seconds: a dit
+is 1 unit, a dah 3, the gap inside a letter 1, the gap between letters 3, and the gap
+after a word 7.
+
+\textbf{Routes.} On Linux with \texttt{gnuradio-build-deps} installed, you build real
+modules; macOS should work the same way, but the course has not tested it. On Windows,
+first install WSL2 with Ubuntu 24.04 and follow the lab page's Ubuntu steps inside it.
+Without WSL2, take the Embedded Python Block route the lab page describes, and as a last
+resort build the two modules on a teammate's laptop for Questions 3(a) and 5.
+
+\begin{questions}
+
+\fullwidth{\large\textbf{Part 1: Pre-Lab} \normalsize(individual, before the lab period)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{Your tools.} At the radioconda prompt, run
+\texttt{gnuradio-config-info --version}, \texttt{gr\_modtool --help}, and
+\texttt{cmake --version}.
+
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Record your operating system, your GNU Radio version, and whether
+		\texttt{gr\_modtool} and \texttt{cmake} run. Name the route you will take.
+		\begin{solution}[0.9in]
+		Radioconda installs GNU Radio 3.10 with \texttt{gr\_modtool} on every platform.
+		\texttt{cmake} runs only after \texttt{conda install -c conda-forge
+		gnuradio-build-deps}. Linux and macOS take the module route; Windows takes WSL2 with
+		Ubuntu, or else the Embedded Python Block route.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.6in]{3.10.x; route}
+	\end{minipage}
+
+	\part Open and run \texttt{L11-keyed-carrier-epy.grc}, which needs nothing installed.
+	Paste a screenshot of its window at the default settings.
+		\begin{solution}[1.5in]
+		The power steps between about 0 dB and $-20$ dB in the pattern of ECE, and the
+		detected key matches the sent keying.
+		\end{solution}
+
+\end{parts}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\question \textbf{Predictions.} You will check each of these at the bench.
+
+\begin{parts}
+
+	\part The bench uses a noise amplitude of 0.5. Predict the Energy Detector's power
+	output with the carrier off and on, and a threshold halfway between them in dB.
+	Repeat for a noise amplitude of 0.8.
+
+	\begin{center}
+	\renewcommand{\arraystretch}{1.25}
+	\begin{tabular}{| l | K{1.1in} | K{1.1in} | K{1.1in} |}
+	\hline
+	$\sigma$ & Carrier off (dB) & Carrier on (dB) & Threshold (dB) \\\hline
+	0.5 & \kv{$-6.0$} & \kv{$+1.0$} & \kv{$-2.5$} \\\hline
+	0.8 & \kv{$-1.9$} & \kv{$+2.1$} & \kv{$+0.1$} \\\hline
+	\end{tabular}
+	\end{center}
+
+		\begin{solution}[0.6in]
+		Off: $20\log_{10}\sigma$. On: $10\log_{10}(1 + \sigma^2)$, which is
+		$10\log_{10} 1.25 = 0.97$ dB and $10\log_{10} 1.64 = 2.15$ dB.
+		\end{solution}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Averaging $N$ samples divides the floor's spread by $\sqrt N$, so one standard
+		deviation above and below the floor is
+		\[ 10\log_{10}\left(1 \pm \tfrac{1}{\sqrt N}\right)\ \text{dB}. \]
+		Find it for $N = 32$ and $N = 128$, and the gap between the two levels at
+		$\sigma = 0.8$.
+		\begin{solution}[1.2in]
+		\eq{ N = 32:&\quad 10\log_{10}(1 \pm 0.177) = +0.71,\ -0.85\db \\
+		N = 128:&\quad 10\log_{10}(1 \pm 0.088) = +0.37,\ -0.40\db \\
+		2.15 - (-1.94) &= 4.1\db }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		$N=32$: \ansbox[1.0in]{$\approx \pm 0.8$ dB}
+
+		\vspace{4pt}
+		$N=128$: \ansbox[1.0in]{$\approx \pm 0.4$ dB}
+
+		\vspace{4pt}
+		gap: \ansbox[1.0in]{4.1 dB}
+	\end{minipage}
+
+	\part At 15 words per minute, predict the length of a dit, a dah, the gap inside a
+	letter, the gap between letters, and the gap after the word, and the number of
+	samples in one unit at 32 kHz.
+
+	\begin{center}
+	\renewcommand{\arraystretch}{1.25}
+	\begin{tabular}{| K{0.62in} | K{0.62in} | K{0.75in} | K{0.75in} | K{0.75in} | K{0.75in} |}
+	\hline
+	Dit & Dah & Inside a letter & Between letters & After the word & Samples per unit \\\hline
+	\kv{80 ms} & \kv{240 ms} & \kv{80 ms} & \kv{240 ms} & \kv{560 ms} & \kv{2560} \\\hline
+	\end{tabular}
+	\end{center}
+
+		\begin{solution}[0.4in]
+		One unit is $1.2/15 = 80$ ms, and $0.080 \times 32{,}000 = 2560$ samples.
+		\end{solution}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Averaging 32 samples, how many detector outputs is a dit? Averaging 128, how
+		long does one output last, and how many outputs is a dit? How many marks (key-downs)
+		does one sending of ``ECE'' hold, and how many arrive in 30 s?
+		\begin{solution}[1.2in]
+		$32/32{,}000 = 1$ ms, so a dit is 80 outputs; $128/32{,}000 = 4$ ms, so a dit is
+		20 outputs. ECE is a dit, then dah dit dah dit, then a dit: 6 marks in 26 units,
+		2.08 s. In 30 s the flowgraph sends 14 whole sendings, 84 marks, and the Key Timer counts a
+		mark when it ends, so it adds 3 completed marks of the 15th (the 4th is still down):
+		87, or 88 if read a moment late.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		$N=32$: \ansbox[1.0in]{80}
+
+		\vspace{4pt}
+		$N=128$: \ansbox[1.0in]{4 ms, 20}
+
+		\vspace{4pt}
+		marks: \ansbox[1.0in]{6; 87--88}
+	\end{minipage}
+
+\end{parts}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\fullwidth{\large\textbf{Part 2: At the Bench} \normalsize(in class)}
+
+\question \textbf{Build and test gr-ece448.} Follow the lab page's steps.
+
+\begin{parts}
+
+	\part Paste the output of \texttt{ctest}, and the \texttt{gr\_python\_install} line
+	of \texttt{python/ece448/CMakeLists.txt}.
+		\begin{solution}[1.2in]
+		\texttt{ctest} reports that 100\% of tests passed, 0 failed out of 1: the one test
+		file holds the four test methods of \texttt{qa\_energy\_detector.py}. The line reads\\
+		\texttt{gr\_python\_install(FILES \_\_init\_\_.py energy\_detector.py}\\
+		\texttt{\ \ DESTINATION ...)}.
+		\end{solution}
+
+	\part Open \texttt{L11-keyed-carrier.grc}, which uses the installed block, and run it.
+	Paste a screenshot of the Energy Detector's properties dialog.
+		\begin{solution}[1.3in]
+		The dialog shows Samples Averaged 32, Threshold (dB) \texttt{threshold}, and
+		Hysteresis (dB) \texttt{hyst}. On the Embedded Python Block route, the dialog of
+		the Embedded Python Block shows the same three parameters, and part (a) comes from
+		the lab machine.
+		\end{solution}
+
+\end{parts}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{Set the levels.} In the running flowgraph, set the noise amplitude to
+0.5. Then stop it, set \texttt{wpm} to 15 and both Time Sinks' Number of Points to one sending of ECE at
+1 kHz, from your Question 2(d) answer, and run it again.
+
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Read the floor and the carrier-on level from the power plot, and compare
+		them with Question 2(a).
+		\begin{solution}[0.8in]
+		The floor sits near $-6$ dB with about $\pm 0.8$ dB of spread, and the carrier
+		near $+1$ dB, as predicted.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		off: \ansbox[1.0in]{$\approx -6$ dB}
+
+		\vspace{4pt}
+		on: \ansbox[1.0in]{$\approx +1$ dB}
+	\end{minipage}
+
+	\part Set the threshold to the floor's level with no hysteresis, and describe the
+	key. Then choose your own threshold and hysteresis so that the key follows the
+	keying for at least 20 s. Record your settings and paste a screenshot.
+		\begin{solution}[1.3in]
+		At $-6$ dB and no hysteresis the key chatters through every gap. A threshold of
+		$-2.5$ dB with 1 to 3 dB of hysteresis gives a key that matches the keying: the
+		on level sits 3.5 dB above the floor and the off level stays above it.
+		\end{solution}
+
+\end{parts}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\question \textbf{Write the Key Timer.} Make a module of your own and write a block in it
+from the template, as the lab page lists. The block is a sink with one float input, the
+Energy Detector's key, and one parameter, \texttt{rate}, the key's sample rate. It
+counts how many samples each mark and each space lasts and keeps the length of the last
+mark and the last space, in ms, and the number of marks so far. Three methods,
+\texttt{last\_mark()}, \texttt{last\_space()}, and \texttt{mark\_count()}, return them.
+
+\begin{parts}
+
+	\part Paste your \texttt{key\_timer.py}.
+		\begin{solution}[2.4in]
+		A \texttt{gr.sync\_block} with \texttt{in\_sig=[numpy.float32]} and
+		\texttt{out\_sig=None}. \texttt{work()} loops over the input, compares each value
+		(as 0 or 1) with the stored state, and increments a counter while they match. On a
+		change, it converts the count to milliseconds,
+		\[ t = \frac{1000 \times \text{count}}{\text{rate}}, \]
+		stores it
+		as the last mark if the state was 1 (and adds one to the mark count) or as the last
+		space if it was 0, then stores the new state and restarts the count at 1. The state
+		and the count are attributes of \texttt{self}, so a mark that spans two calls to
+		\texttt{work()} still gets the right length. \texttt{work()} returns the number of inputs.
+		Grade against the faculty reference.
+		\end{solution}
+
+	\part Paste your \texttt{qa\_key\_timer.py} test and the output of \texttt{ctest}. The
+	test must feed a known key, such as five 0s, three 1s, two 0s, one 1, and four 0s at
+	a rate of 1000, and check all three methods.
+		\begin{solution}[1.4in]
+		For that key the block reports 2 marks, a last mark of 1 ms, and a last space of
+		2 ms. The 2 ms space replaces the first space, 5 ms, and the final 4 ms space never
+		ends, so the block does not count it. \texttt{ctest} reports the test passed.
+		\end{solution}
+
+	\part Paste your \texttt{grc/*.block.yml}, and the \texttt{gr\_python\_install}
+	line, which must list \texttt{key\_timer.py}.
+		\begin{solution}[1.2in]
+		The file has \texttt{make: <module>.key\_timer(\$\{rate\})}, one parameter \texttt{rate} of type
+		\texttt{real}, one \texttt{float} input, no outputs. On GNU Radio 3.10.9 the
+		install line needs \texttt{key\_timer.py} added by hand.
+		\end{solution}
+
+\end{parts}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\question \textbf{Time the Morse.} Save a copy of \texttt{L11-keyed-carrier.grc} with your
+settings from Question 4, add your Key Timer on the Energy Detector's key output with
+\texttt{rate} = \texttt{samp\_rate / decim}, and show its three values on QT GUI Labels
+through Function Probes.
+
+\begin{parts}
+
+	\part Watch the labels for a few sendings and record the mark and space lengths you
+	see. Compare them with Question 2(c).
+
+	\begin{center}
+	\renewcommand{\arraystretch}{1.25}
+	\begin{tabular}{| l | K{0.72in} | K{0.72in} | K{0.72in} | K{0.72in} | K{0.72in} |}
+	\hline
+	& Dit & Dah & Inside a letter & Between letters & After the word \\\hline
+	Measured (ms) & \kv{80--82} & \kv{240--242} & \kv{78--80} & \kv{238--240} & \kv{558--560} \\\hline
+	\end{tabular}
+	\end{center}
+
+		\begin{solution}[0.5in]
+		Each length falls within 1 or 2 ms of 80, 240, 80, 240, and 560 ms.
+		\end{solution}
+
+	\part Paste a screenshot of your flowgraph's canvas and of its running window.
+		\begin{solution}[1.6in]
+		The Key Timer connects to the Energy Detector's key output, and the labels read, for
+		example, 80.0 ms and 240.0 ms.
+		\end{solution}
+
+\end{parts}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\question \textbf{A noisier signal.} Set the noise amplitude to 0.8.
+
+\begin{parts}
+
+	\part With 32 samples averaged, choose the best threshold and hysteresis you can
+	find. Record them, then restart the flowgraph and record the mark count after 30 s.
+		\begin{solution}[1.0in]
+		The best settings sit near a threshold of $+0.5$ dB with 2 dB of hysteresis, and
+		even there the count runs a few marks high, about 89 to 95 for 87 to 88 sent, because
+		the noise now and then makes a mark of 1 to 3 ms in a gap. At a threshold of 0 dB the
+		count rises to about 130. The 4 dB gap is only about five times the 0.77 dB spread.
+		\end{solution}
+
+	\part Stop the flowgraph, set \texttt{decim} to 128, and repeat. Record your settings,
+	the count after 30 s, and the dit length the Key Timer reports.
+		\begin{solution}[1.0in]
+		With a threshold of 0.5 to 1 dB and 1.5 to 2 dB of hysteresis the count matches the
+		marks sent, 87 to 88, and the dit reads 80 ms, sometimes 84 ms, one 4 ms output
+		long.
+		\end{solution}
+
+\end{parts}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\fullwidth{\large\textbf{Part 3: Writeup} \normalsize(individual, after the lab)}
+
+\question \textbf{Hysteresis and timing.} With $\sigma = 0.5$, a $-2.5$ dB threshold, and
+3 dB of hysteresis, some dits read 81 or 82 ms; with no hysteresis, they read 80 ms.
+Explain why, and what Question 7 says about choosing $N$.
+		\begin{solution}[1.5in]
+		With 3 dB of hysteresis the off level is $-5.5$ dB, only 0.5 dB above the $-6$ dB
+		floor, so after the carrier stops, the averaged noise can stay above the off level
+		for an output or two and the key turns off late. A larger $N$ shrinks the floor's
+		spread by $\sqrt N$, which lets the levels sit further from the noise, but each
+		output then lasts longer, $N/f_s$, so the edges move in larger steps: averaging
+		more samples gives a cleaner key with coarser edge timing.
+		\end{solution}
+
+\question \textbf{Module or Embedded Python Block?} Lesson 12 builds a Morse decoder that
+uses the Energy Detector and your Key Timer. Explain which of the two should live in an
+OOT module and why, and what the unit test caught or would catch that watching the
+flowgraph would not.
+		\begin{solution}[1.5in]
+		Both belong in a module: every CW flowgraph in Lesson 12 and later needs them, and a module keeps one
+		tested copy of the code. The unit test checks exact values, such as a mark that
+		spans two calls to \texttt{work()} or a final space that never ends, which a label
+		updating four times a second cannot show.
+		\end{solution}
+
+\question \textbf{From timing to letters.} The Key Timer reports the dit and dah lengths you measured in
+Question 6(a). Propose a rule a decoder can use to tell a dit from a dah, and a rule to tell
+the end of a letter from the gap inside one, that still works at 20 WPM.
+		\begin{solution}[1.5in]
+		Measure the unit from the shortest common mark, then call a mark longer than 2 units
+		a dah and a shorter one a dit; call a space longer than 2 units the end of a letter,
+		and longer than 5 units the end of a word. Because the rule uses the measured unit,
+		60 ms at 20 WPM, it does not depend on the sending speed.
+		\end{solution}
+
+\vspace{1.5em}
+\noindent\textbf{Documentation:} \rule[-2pt]{0.6\linewidth}{0.4pt}
+
+\end{questions}
+
+\end{document}

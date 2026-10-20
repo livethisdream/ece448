@@ -1,0 +1,270 @@
+% !TEX root =./ECE448_Practice_main.tex
+%
+% L11 practice set (out-of-tree modules and custom blocks). The questions follow
+% the lesson: which file of a module does which job, which block type fits a job,
+% the Energy Detector's levels and output rate, its hysteresis on a short power
+% sequence, and the expected outputs a unit test checks. Blank copy:
+% \begin{solution}[h] reserves h of work space. SOLUTIONS copy (\iskey=1) prints
+% the red worked solutions.
+
+\fullwidth{\textbf{Learning Objective 5.1: } I can create a GNU Radio out-of-tree (OOT) module
+and add a custom Python block to it.
+\\[2pt]\textbf{Learning Objective 5.2: } I can implement a custom signal-processing block from
+scratch and integrate it into a GNU Radio flowgraph.
+\\[4pt]\normalfont\small Show your work. Write a \textbf{Documentation} line at the
+end (\textbf{None} if you did not collaborate).}
+
+\begin{questions}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{The files of a module.} A cadet runs \texttt{gr\_modtool newmod beacon}
+and then \texttt{gr\_modtool add -t sync -l python tone\_finder} in the new directory.
+\begin{parts}
+
+	\part Name the file the cadet edits for each job: (i) the signal processing,
+	(ii) the label and parameters GRC shows, and (iii) the unit test that
+	\texttt{ctest} runs.
+		\begin{solution}[1.0in]
+		(i) the block's \texttt{work()}: \texttt{python/beacon/tone\_finder.py}\\
+		(ii) GRC's view: \texttt{grc/beacon\_tone\_finder.block.yml}\\
+		(iii) the test: \texttt{python/beacon/qa\_tone\_finder.py}
+		\end{solution}
+
+	\part The cadet builds and installs the module with GNU Radio 3.10.9.
+	\texttt{ctest} passes, but a flowgraph that uses the block stops with
+	\begin{center}\small\texttt{ModuleNotFoundError: No module named 'gnuradio.beacon.tone\_finder'}\end{center}
+	Explain the cause and the fix.
+		\begin{solution}[1.2in]
+		On 3.10.9, \texttt{gr\_modtool add} does not add \texttt{tone\_finder.py} to the
+		\texttt{gr\_python\_install(FILES ...)} line of \texttt{python/beacon/CMakeLists.txt}.
+		\texttt{ctest} passes because it runs from the build directory's copy of the
+		whole \texttt{python/} folder, but the install copies only \texttt{\_\_init\_\_.py}.
+		Add \texttt{tone\_finder.py} to that line, then build and install again.
+		\end{solution}
+
+	\part After a correct install, GRC's block library still has no
+	\texttt{tone\_finder}. Give two possible causes.
+		\begin{solution}[1.0in]
+		GRC was open during the install and has not reloaded its library: restart it.
+		Or the cadet installed the module under a different prefix from the GNU Radio that GRC
+		runs, for example without setting \texttt{CMAKE\_INSTALL\_PREFIX} to the radioconda
+		environment, so the YAML file is not in that environment's
+		\texttt{share/gnuradio/grc/blocks}.
+		\end{solution}
+
+\end{parts}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{Choosing a block type.} For each block below, choose sync,
+decimator, interpolator, or general, and give the ratio of outputs to inputs.
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part A block that converts each float sample to dB.
+		\begin{solution}[0.5in]
+		The block makes one output per input, so it is a sync block, 1:1.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.4in]{sync}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part A block that outputs the peak magnitude of each run of 100 complex samples.
+		\begin{solution}[0.5in]
+		The block makes one output per 100 inputs, so it is a decimator with decim = 100.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.4in]{decimator, 100}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part A block that holds each bit for 8 samples.
+		\begin{solution}[0.5in]
+		The block makes eight outputs per input, so it is an interpolator with interp = 8; Repeat does this job.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.4in]{interpolator, 8}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part A squelch that passes only the samples whose power is above a threshold
+		and drops the rest.
+		\begin{solution}[0.7in]
+		The number of outputs per input depends on the signal, so the block must report
+		what it consumed and produced each call: general.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.4in]{general}
+	\end{minipage}
+
+	\part The Energy Detector could have been a general block. Explain in words what code a
+	decimator lets the programmer leave out.
+		\begin{solution}[1.0in]
+		As a decimator, the block tells GNU Radio its fixed ratio once, and the scheduler
+		then hands \texttt{work()} exactly $n \times N$ inputs for $n$ outputs and consumes
+		them itself. A general block would have to write a \texttt{forecast()} function and
+		call \texttt{consume()} with the number of inputs used on every call.
+		\end{solution}
+
+\end{parts}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{Levels.} A cadet runs the Energy Detector on a keyed tone of amplitude 1
+at 48 kHz, with GNU Radio's Noise Source at amplitude 0.25, and averages 64 samples.
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Find the power output, in dB, with the carrier off and with it on.
+		\begin{solution}[1.1in]
+		\eq{ P_\text{off} &= 20\log_{10} 0.25 = -12.0\db \\
+		P_\text{on} &= 10\log_{10}(1 + 0.25^2) = 10\log_{10} 1.0625 = 0.26\db }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		off: \ansbox[1.1in]{$-12.0$ dB}
+
+		\vspace{4pt}
+		on: \ansbox[1.1in]{$+0.26$ dB}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Choose a threshold halfway between the two levels in dB.
+		\begin{solution}[0.6in]
+		\eq{ \dfrac{-12.0 + 0.26}{2} = -5.9\db }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.1in]{$-5.9$ dB}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part How long does each output cover, and how many outputs does the block make
+		per second?
+		\begin{solution}[0.8in]
+		\eq{ T &= \dfrac{64}{48{,}000} = 1.33\ \text{ms} \\
+		\dfrac{48{,}000}{64} &= 750\ \text{outputs per second} }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.1in]{1.33 ms, 750/s}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Averaging $N$ samples divides the spread of the noise power by $\sqrt N$.
+		Find the floor's spread as a fraction of its mean, and in dB above and below it.
+		\begin{solution}[1.0in]
+		\eq{ \dfrac{1}{\sqrt{64}} &= 0.125 \\
+		10\log_{10} 1.125 &= +0.51\db, \quad 10\log_{10} 0.875 = -0.58\db }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.1in]{about $\pm 0.5$ dB}
+	\end{minipage}
+
+	\part Suggest a hysteresis and explain the choice in words.
+		\begin{solution}[0.9in]
+		A hysteresis of about 2 to 3 dB works. That is a few times the floor's spread, so noise near the threshold
+		cannot turn the key back off, and the off level, $-8$ to $-9$ dB, still sits
+		3 dB or more above the floor.
+		\end{solution}
+
+\end{parts}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{Hysteresis by hand.} The Energy Detector, with its key starting at 0,
+receives these ten power values in dB:
+\begin{center}
+$-25,\ -14,\ -16,\ -14,\ -16,\ -14,\ -21,\ -16,\ -14,\ -22$
+\end{center}
+\begin{parts}
+
+	\part Write the ten key outputs for a threshold of $-15$ dB and a hysteresis of
+	4 dB, and count the times the key changes.
+		\begin{solution}[1.0in]
+		The key turns on above $-15$ dB and off below $-19$ dB, so it reads
+		\texttt{0 1 1 1 1 1 0 0 1 0}, with 4 changes.
+		\end{solution}
+
+	\part Repeat for a hysteresis of 0 dB.
+		\begin{solution}[0.8in]
+		The key turns on above $-15$ dB and off below $-15$ dB, so it reads
+		\texttt{0 1 0 1 0 1 0 0 1 0}, with 8 changes.
+		\end{solution}
+
+	\part The values $-14$ and $-16$ dB are noise on a carrier that stays on. Explain in
+	words which key is correct, and what a Morse decoder would make of the other.
+		\begin{solution}[1.0in]
+		The key with 4 dB of hysteresis is correct: it stays on from the first $-14$ dB
+		until the power drops to $-21$ dB, when the carrier goes off. Without hysteresis, the
+		key flips at every dip below $-15$ dB, and a decoder would read one long
+		element as three short ones.
+		\end{solution}
+
+\end{parts}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{A unit test.} A test feeds the Energy Detector, with 4 samples averaged,
+a threshold of $-10$ dB, and a hysteresis of 3 dB, these twelve complex samples:
+\begin{center}
+$1,\ 1,\ 1,\ 1,\ \ 0.1,\ 0.1,\ 0.1,\ 0.1,\ \ 1,\ 1,\ 0,\ 0$
+\end{center}
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part How many outputs does each port make? Give the power outputs in dB.
+		\begin{solution}[1.2in]
+		Twelve inputs at 4 per output give 3 outputs.
+		\eq{ P_1 &= 10\log_{10} 1 = 0\db \\
+		P_2 &= 10\log_{10} 0.01 = -20\db \\
+		P_3 &= 10\log_{10} \tfrac{1 + 1 + 0 + 0}{4} = -3.0\db }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.4in]{0, $-20$, $-3.0$ dB}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Give the three key outputs.
+		\begin{solution}[0.6in]
+		The first output, 0 dB, is above $-10$ dB, so the key turns on; $-20$ dB is below $-13$ dB, so it turns off; $-3$ dB is above $-10$ dB, so it turns on again.
+		The key is 1, 0, 1.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.4in]{1, 0, 1}
+	\end{minipage}
+
+	\part The last output averages a run where the carrier switched off halfway through.
+	Explain in words what that does to the timing of a key edge, and how the number of
+	samples averaged sets the size of the effect.
+		\begin{solution}[1.0in]
+		The block sees only the average of each run, so an edge inside a run moves to the
+		run's boundary, and the run reads 3 dB down if the carrier was on for half of it.
+		The key's edges are therefore uncertain by up to one output, $N/f_s$ seconds:
+		averaging more samples smooths the floor but blurs the timing.
+		\end{solution}
+
+\end{parts}
+
+\vspace{1.5em}
+\noindent\textbf{Documentation:} \rule[-2pt]{0.6\linewidth}{0.4pt}
+
+\end{questions}
