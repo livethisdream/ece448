@@ -25,7 +25,7 @@ Spring 2027 · Dr. Neil Rogers
 - Lesson 8: the Text Sink, a Python block inside one `.grc` file
 - Lesson 10: the same block, pasted into a second flowgraph
 
-Today: a block of our own, installed like a stock block.
+Today we write a block of our own and install it like a stock block.
 
 Note:
 Have GRC open with L11-keyed-carrier.grc, and a terminal at the radioconda prompt in the unzipped gr-ece448 directory. The build runs live in part 3.
@@ -197,7 +197,7 @@ Move the noise slider to 0.3 and the hysteresis to 0 live. Then add 3 dB of hyst
 
 <img src="./img/11-custom-blocks/L11-keyed-fixed.png" alt="With the threshold at minus 5 dB and 3 dB of hysteresis, both levels sit between the floor and the carrier and the key follows the keying" style="max-height:420px; display:block; margin:0 auto;">
 
-Threshold halfway between floor and signal; hysteresis above the spread.
+Set the threshold halfway between the floor and the signal, and the hysteresis above the floor's spread.
 
 Note:
 Carrier on: 10 log10 of 1.09, plus 0.4 dB. Carrier off: minus 10.5 dB. On level minus 5, off level minus 8. Hysteresis should be a few times the floor's spread, which shrinks as the square root of N.
@@ -218,7 +218,7 @@ Start at the chatter case. Raise the threshold, add hysteresis, then change the 
 - Every radioconda install has `gr_modtool`
 - CMake needs a C++ compiler, even for a Python-only module
 - `conda install -c conda-forge gnuradio-build-deps`
-- Windows: Visual Studio Build Tools, or an Embedded Python Block
+- Windows: Visual Studio 2022 Build Tools, WSL2 Ubuntu, or an Embedded Python Block
 
 Note:
 macOS also needs xcode-select --install; we did not test a Mac or the Windows Build Tools route. L11-keyed-carrier-epy.grc runs the same class in an Embedded Python Block with nothing installed.

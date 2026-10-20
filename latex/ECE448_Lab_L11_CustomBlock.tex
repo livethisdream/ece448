@@ -132,11 +132,11 @@ $\sigma^2$ at amplitude $\sigma$. One Morse unit lasts $1.2/\text{WPM}$ seconds:
 is 1 unit, a dah 3, the gap inside a letter 1, the gap between letters 3, and the gap
 after a word 7.
 
-\textbf{Two routes.} On Linux or macOS with \texttt{gnuradio-build-deps} installed, you
-build real modules. On a Windows laptop, take the
-Embedded Python Block route the lab page describes: put the same code in Embedded Python
-Blocks, and build the two modules on a teammate's Linux or macOS laptop for Questions 3(a)
-and 5.
+\textbf{Routes.} On Linux with \texttt{gnuradio-build-deps} installed, you build real
+modules; macOS should work the same way, but the course has not tested it. On Windows,
+first install WSL2 with Ubuntu 24.04 and follow the lab page's Ubuntu steps inside it.
+Without WSL2, take the Embedded Python Block route the lab page describes, and as a last
+resort build the two modules on a teammate's laptop for Questions 3(a) and 5.
 
 \begin{questions}
 
@@ -155,8 +155,8 @@ and 5.
 		\begin{solution}[0.9in]
 		Radioconda installs GNU Radio 3.10 with \texttt{gr\_modtool} on every platform.
 		\texttt{cmake} runs only after \texttt{conda install -c conda-forge
-		gnuradio-build-deps}. Linux and macOS take the module route; Windows takes the
-		Embedded Python Block route.
+		gnuradio-build-deps}. Linux and macOS take the module route; Windows takes WSL2 with
+		Ubuntu, or else the Embedded Python Block route.
 		\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
@@ -245,8 +245,9 @@ and 5.
 		\begin{solution}[1.2in]
 		$32/32{,}000 = 1$ ms, so a dit is 80 outputs; $128/32{,}000 = 4$ ms, so a dit is
 		20 outputs. ECE is a dit, then dah dit dah dit, then a dit: 6 marks in 26 units,
-		2.08 s. In 30 s the flowgraph sends 14 whole sendings, 84 marks, and 4 more marks of
-		the 15th, so the count reads about 87 to 88.
+		2.08 s. In 30 s the flowgraph sends 14 whole sendings, 84 marks, and the Key Timer counts a
+		mark when it ends, so it adds 3 completed marks of the 15th (the 4th is still down):
+		87, or 88 if read a moment late.
 		\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
@@ -292,8 +293,8 @@ and 5.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \question \textbf{Set the levels.} In the running flowgraph, set the noise amplitude to
-0.5. Then stop it, set \texttt{wpm} to 15 and the two time sinks to 2080 points, one
-sending, and run it again.
+0.5. Then stop it, set \texttt{wpm} to 15 and both Time Sinks' Number of Points to one sending of ECE at
+1 kHz, from your Question 2(d) answer, and run it again.
 
 \begin{parts}
 
@@ -337,7 +338,7 @@ mark and the last space, in ms, and the number of marks so far. Three methods,
 
 	\part Paste your \texttt{key\_timer.py}.
 		\begin{solution}[2.4in]
-		A \texttt{gr.sync\_block} with \texttt{in\_sig=[np.float32]} and
+		A \texttt{gr.sync\_block} with \texttt{in\_sig=[numpy.float32]} and
 		\texttt{out\_sig=None}. \texttt{work()} loops over the input, compares each value
 		(as 0 or 1) with the stored state, and increments a counter while they match. On a
 		change, it converts the count to milliseconds,
@@ -454,8 +455,8 @@ flowgraph would not.
 		updating four times a second cannot show.
 		\end{solution}
 
-\question \textbf{From timing to letters.} The Key Timer reports marks of 80 and 240 ms at
-15 WPM. Propose a rule a decoder can use to tell a dit from a dah, and a rule to tell
+\question \textbf{From timing to letters.} The Key Timer reports the dit and dah lengths you measured in
+Question 6(a). Propose a rule a decoder can use to tell a dit from a dah, and a rule to tell
 the end of a letter from the gap inside one, that still works at 20 WPM.
 		\begin{solution}[1.5in]
 		Measure the unit from the shortest common mark, then call a mark longer than 2 units

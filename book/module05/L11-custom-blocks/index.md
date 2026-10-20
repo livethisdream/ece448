@@ -90,7 +90,7 @@ gr_modtool add -t decimator -l python energy_detector
 - The C++ folders hold no block code in a Python-only module.
 :::
 
-`gr_modtool add` writes three files and edits two more. `energy_detector.py` is the block, `qa_energy_detector.py` is its unit test, and `ece448_energy_detector.block.yml` tells GRC how to draw it. It adds an import line to `__init__.py`, so `from gnuradio import ece448` finds the block, and it lists the test in `python/ece448/CMakeLists.txt`.
+`gr_modtool add` writes three files and edits three more. `energy_detector.py` is the block, `qa_energy_detector.py` is its unit test, and `ece448_energy_detector.block.yml` tells GRC how to draw it. It adds an import line to `__init__.py`, so `from gnuradio import ece448` finds the block, it lists the test in `python/ece448/CMakeLists.txt`, and it adds the YAML file to `grc/CMakeLists.txt`, which installs it.
 
 On GNU Radio 3.10.9, Ubuntu 24.04's version, `gr_modtool` misses one edit: it does not add `energy_detector.py` to the `gr_python_install(FILES ...)` line in that `CMakeLists.txt`, so the module installs without its block. Radioconda's 3.10.12 makes the edit. On either version, check that the line reads `FILES __init__.py energy_detector.py` before building.
 ::::
@@ -282,12 +282,12 @@ Averaging more samples takes more time: each output covers $N/f_s$ seconds, and 
 :::{present}
 - Every radioconda install has `gr_modtool`.
 - CMake needs a C++ compiler, even for a Python-only module.
-- On Windows, the fallback is an Embedded Python Block.
+- On Windows, the fallbacks are WSL2 with Ubuntu, then an Embedded Python Block.
 :::
 
-Radioconda installs GNU Radio from conda-forge, and its `gnuradio-core` package includes `gr_modtool` on Linux, macOS, and Windows, where it is `gr_modtool.exe`. Radioconda has no CMake and no compiler, and the `project()` line of a module's top-level `CMakeLists.txt` declares C and C++, so CMake stops at that line without a compiler, even when the module has no C++. The package `gnuradio-build-deps`, installed with `conda install -c conda-forge gnuradio-build-deps`, adds CMake, Ninja, and a compiler. On Linux that compiler is complete. On macOS the conda compiler does not include Apple's SDK, which `xcode-select --install` provides; this route is untested on a Mac. On Windows the compiler package only locates an existing Visual Studio 2022 installation, so a Windows laptop also needs Microsoft's Visual Studio Build Tools, a large separate install; this route is also untested.
+Radioconda installs GNU Radio from conda-forge, and its `gnuradio-core` package includes `gr_modtool` on Linux, macOS, and Windows, where it is `gr_modtool.exe`. Radioconda has no CMake and no compiler, and the `project()` line of a module's top-level `CMakeLists.txt` declares C and C++, so CMake stops at that line without a compiler, even when the module has no C++. The package `gnuradio-build-deps`, installed with `conda install -c conda-forge gnuradio-build-deps`, adds CMake, Ninja, and a compiler. On Linux that compiler is complete. On macOS the conda compiler does not include Apple's SDK, which `xcode-select --install` provides; we have not tested this route on a Mac. On Windows, conda-forge's `gnuradio-build-deps` pulls in `vs2022_win-64`, which only locates an existing Visual Studio 2022 installation, so a Windows laptop also needs Microsoft's Visual Studio 2022 Build Tools, a large separate install; we have not tested this route either.
 
-A Windows laptop without them can still run the block. `L11-keyed-carrier-epy.grc` has the same `energy_detector` class pasted into an Embedded Python Block, renamed `blk`, and runs identically. The block's code, its tests, and its YAML file move into a module unchanged on any Linux or macOS machine, such as a teammate's in the lab.
+A Windows laptop without them has two other routes. The first is WSL2 with Ubuntu 24.04: inside it, `sudo apt install gnuradio-dev cmake g++` installs GNU Radio 3.10.9 and a compiler, the module builds exactly as on Ubuntu, and WSLg runs GRC in a window; we have tested the Ubuntu 24.04 route but not WSL itself. The second needs nothing installed: `L11-keyed-carrier-epy.grc` has the same `energy_detector` class pasted into an Embedded Python Block, renamed `blk`, and runs identically. The block's code, its tests, and its YAML file move into a module unchanged on any Linux or macOS machine, such as a teammate's in the lab.
 ::::
 
 ::::{frame} OOK on an RTL-SDR
@@ -298,10 +298,10 @@ A Windows laptop without them can still run the block. `L11-keyed-carrier-epy.gr
 :::
 :::{present}
 - Many 433.92 MHz remotes and sensors use on-off keying (OOK).
-- The same block keys on their bursts; this flowgraph only receives.
+- The same block keys on their bursts.
 :::
 
-On-off keying sends a 1 as a burst of carrier and a 0 as silence, the same signal as today's keyed tone, only faster. Car and garage remotes, doorbells, and weather sensors in the 433.92 MHz ISM band commonly use it. `L11-ook-rtlsdr.grc` tunes an RTL-SDR 200 kHz below 433.92 MHz to keep the radio's DC spike off the signal, shifts the signal to 0 Hz and decimates to 128 kHz, and runs the Energy Detector with $N = 4$. The time sink draws the key at $-60$ dB when it is off and $-40$ dB when it is on, so it shares the power plot's axis. Set the threshold halfway between the floor and the burst level on the power plot, press a remote nearby, and the key traces its bursts; the flowgraph only receives. This page has not run it, because it needs an RTL-SDR and a remote, so the figure shows the flowgraph in GRC, not a capture.
+On-off keying sends a 1 as a burst of carrier and a 0 as silence, the same signal as today's keyed tone, only faster. Weather sensors, doorbells, and some remotes in the US use on-off keying at 433.92 MHz, as low-power unlicensed devices under FCC Part 15. `L11-ook-rtlsdr.grc` tunes an RTL-SDR 200 kHz below 433.92 MHz to keep the radio's DC spike off the signal, shifts the signal to 0 Hz and decimates to 128 kHz, and runs the Energy Detector with $N = 4$. The time sink draws the key at $-60$ dB when it is off and $-40$ dB when it is on, so it shares the power plot's axis. Set the threshold halfway between the floor and the burst level on the power plot, press a remote nearby, and the key traces its bursts. The flowgraph only receives. This page has not run it, because it needs an RTL-SDR and a remote, so the figure shows the flowgraph in GRC, not a capture.
 ::::
 
 ::::{frame} Key Point
@@ -334,7 +334,7 @@ Unzip the module, then follow its `README.md` from the radioconda prompt. Open a
 | Build | CMake, `ctest`, install | install into the radioconda environment |
 | Energy Detector | average power in dB, keyed with hysteresis | floor near $20\log_{10}\sigma$ dB |
 | Levels | threshold halfway, hysteresis above the spread | spread shrinks as $\sqrt N$ |
-| Windows | CMake needs Visual Studio Build Tools | fallback: Embedded Python Block |
+| Windows | CMake needs Visual Studio 2022 Build Tools | fallbacks: WSL2 Ubuntu, then an Embedded Python Block |
 ::::
 
 ::::{frame} Practice

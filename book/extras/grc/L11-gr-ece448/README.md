@@ -45,8 +45,14 @@ sudo make install
 
 ## Windows
 
-A Python-only module still runs CMake, and CMake needs a C++ compiler, which
-on Windows is Microsoft's Visual Studio 2022 Build Tools. Without them, paste
-`python/ece448/energy_detector.py` into an Embedded Python Block, renaming the
-class `blk`, as `L11-keyed-carrier-epy.grc` does. The Lesson 11 page has the
-details.
+A Python-only module still runs CMake, and CMake needs a C++ compiler. On
+Windows, conda-forge's `gnuradio-build-deps` finds the compiler only in an
+existing Visual Studio 2022 Build Tools install, which this course has not
+tested. Use one of these instead, in this order:
+
+1. WSL2 with Ubuntu 24.04: inside it, follow the Ubuntu steps above. WSLg
+   opens GRC in a window.
+2. Paste `python/ece448/energy_detector.py` into an Embedded Python Block,
+   renaming the class `blk`, as `L11-keyed-carrier-epy.grc` does.
+
+The Lesson 11 page has the details.

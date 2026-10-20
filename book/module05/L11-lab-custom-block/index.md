@@ -52,11 +52,13 @@ At the radioconda prompt, run `gnuradio-config-info --version`, `gr_modtool --he
 :::{present}
 | Laptop | Route |
 | :-- | :-- |
-| Linux or macOS | build both modules with CMake |
-| Windows | Embedded Python Blocks; build the modules on a teammate's Linux or macOS laptop |
+| Linux | build both modules with CMake |
+| macOS | the same, untested on a Mac |
+| Windows | WSL2 with Ubuntu 24.04, then build both modules |
+| Windows, no WSL2 | Embedded Python Blocks |
 :::
 
-A Python-only module still runs CMake, and CMake needs a C++ compiler, which Windows radioconda does not provide. A Windows build with Microsoft's Visual Studio Build Tools needs different commands and install paths, and the course has not tested it, so on Windows use `L11-keyed-carrier-epy.grc` for the Energy Detector, and write the Key Timer in an Embedded Python Block: GRC's **Python Block**, with the class renamed `blk`. The code is the same in both routes. Questions 3(a) and 5 still need a real module and `ctest`, so build those on a teammate's Linux or macOS laptop.
+A Python-only module still runs CMake, and CMake needs a C++ compiler, which radioconda does not include, and which `gnuradio-build-deps` cannot supply by itself on Windows. On Windows, install WSL2 with Ubuntu 24.04, run `sudo apt install gnuradio-dev cmake g++` inside it, and follow the Ubuntu steps; WSLg opens GRC in a window. Without WSL2, use `L11-keyed-carrier-epy.grc` for the Energy Detector, and write the Key Timer in an Embedded Python Block: GRC's **Python Block**, with the class renamed `blk`. The code is the same in both routes. Questions 3(a) and 5 still need a real module and `ctest`, so as a last resort build those on a teammate's Linux, macOS, or WSL2 laptop.
 ::::
 
 ::::{frame} Part 2: Build and Test gr-ece448
@@ -74,7 +76,7 @@ A Python-only module still runs CMake, and CMake needs a C++ compiler, which Win
 :class: read-only
 
 1. In the running flowgraph, set the noise amplitude to 0.5.
-2. Stop the flowgraph. Set the variable `wpm` to 15, and both QT GUI Time Sinks to 2080 points, which is one sending of "ECE" at 15 WPM. Run it again.
+2. Stop the flowgraph. Set the variable `wpm` to 15, and set both Time Sinks' Number of Points to one sending of "ECE" at 1 kHz, from your Question 2(d) answer. Run it again.
 3. Read the floor and the carrier-on level from the power plot for Question 4(a).
 4. Set the threshold to the floor's level and the hysteresis to 0, and watch the key.
 5. Choose your own threshold and hysteresis so that the detected key follows the sent keying for at least 20 s. Record them and screenshot the window for Question 4(b). Save this flowgraph under a new name; Question 6 adds to it.
@@ -85,7 +87,7 @@ A Python-only module still runs CMake, and CMake needs a C++ compiler, which Win
 
 1. In a new directory, run `gr_modtool newmod l11lab`, then `cd gr-l11lab`.
 2. Run `gr_modtool add -t sink -l python key_timer`. Give your name as the copyright holder, `rate=1000.0` as the argument list, and answer yes to the Python QA code.
-3. In `python/l11lab/key_timer.py`, set `in_sig=[np.float32]`, and write `__init__()`, `work()`, `last_mark()`, `last_space()`, and `mark_count()` to the specification in the packet's Question 5.
+3. In `python/l11lab/key_timer.py`, set `in_sig=[numpy.float32]` (the template imports `numpy`), and write `__init__()`, `work()`, `last_mark()`, `last_space()`, and `mark_count()` to the specification in the packet's Question 5.
 4. In `python/l11lab/qa_key_timer.py`, replace the template's test with one that feeds a known key from a Vector Source and checks all three methods.
 5. Fill in `grc/l11lab_key_timer.block.yml`: a label, the `make` template, one `real` parameter `rate`, and one `float` input.
 6. Check the `gr_python_install` line lists `key_timer.py`. Then build, run `ctest`, and install, as for `gr-ece448`, and restart GRC.
@@ -100,7 +102,7 @@ A Python-only module still runs CMake, and CMake needs a C++ compiler, which Win
 | Methods | `last_mark()`, `last_space()` in ms; `mark_count()` |
 :::
 
-The Key Timer reads the Energy Detector's key, a stream of 0s and 1s, and counts how many samples each run of 1s, a **mark**, and each run of 0s, a **space**, lasts. When the key changes, it converts the count to milliseconds with `rate` and keeps it as the last mark or the last space. Like the Energy Detector's key state, the count must survive from one call of `work()` to the next, because a 240 ms dah can span many calls.
+The Key Timer reads the Energy Detector's key, a stream of 0s and 1s, and counts how many samples each run of 1s, a **mark**, and each run of 0s, a **space**, lasts. When the key changes, it converts the count to milliseconds with `rate` and keeps it as the last mark or the last space. Like the Energy Detector's key state, the count must survive from one call of `work()` to the next, because a dah can span many calls.
 ::::
 
 ::::{frame} Part 2: Time the Morse
@@ -123,7 +125,7 @@ The Key Timer reads the Energy Detector's key, a stream of 0s and 1s, and counts
 ::::{frame} If the Block Does Not Appear
 :class: read-only
 
-:::{admonition} If GRC has no Energy Detector or Key Timer, or a flowgraph stops with ModuleNotFoundError
+:::{admonition} Troubleshooting a Missing Block
 :class: tip
 CMake prints several warnings marked "for project developers" about policies and an old minimum version; they come from `gr_modtool`'s template and do not stop the build. Restart GRC after every install; it reads its block library only when it starts. Check that you ran CMake with `-DCMAKE_INSTALL_PREFIX=${CONDA_PREFIX}` from the same radioconda prompt that runs GRC. A `ModuleNotFoundError` for your block means the `gr_python_install` line does not list its `.py` file; add it, then build and install again. A flowgraph with red arrows usually has a type mismatch: the Key Timer's input must be `float`, to match the Energy Detector's `key` output.
 :::
