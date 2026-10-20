@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CW keyer explorer — Morse timing, keying edges, and bandwidth</title>
+<style>
+  :root { --navy:#004a85; --mid:#0067b9; --edge:#cddce9; --edge2:#b9d2e5; --bg:#f5f9fc;
+          --ink:#15202b; --ink3:#5b6573; --amber:#8a5a00; --red:#b01e24; --grn:#3f7d34; }
+  html,body { margin:0; padding:0; font-family:'Inter',system-ui,-apple-system,sans-serif; color:var(--ink); background:#fff; }
+  .app { display:flex; flex-direction:column; gap:8px; padding:12px; }
+  .plots { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:10px; }
+  @media (max-width:620px) { .plots { grid-template-columns:1fr; } }
+  canvas { display:block; box-sizing:border-box; width:100%; height:auto; background:#fff; border:1px solid var(--edge); border-radius:6px; }
+  .controls { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px 16px; align-items:center;
+              padding:8px 12px; background:var(--bg); border:1px solid var(--edge); border-radius:6px; }
+  @media (max-width:620px) { .controls { grid-template-columns:1fr; } }
+  .ctl { display:grid; grid-template-columns:auto 1fr; column-gap:8px; row-gap:2px; align-items:center; min-width:0; }
+  .ctl label { font-size:10.5px; text-transform:uppercase; letter-spacing:0.05em; color:var(--ink3); font-weight:700; white-space:nowrap; }
+  .ctl .val { color:var(--navy); font-size:12px; font-weight:600; font-variant-numeric:tabular-nums; text-align:right; white-space:nowrap; }
+  .ctl input[type=range]{ grid-column:1 / span 2; width:100%; margin:0; accent-color:var(--mid); }
+  .ctl input[type=text]{ grid-column:1 / span 2; font:inherit; font-size:12.5px; padding:3px 6px; border:1px solid var(--edge2); border-radius:4px; min-width:0; text-transform:uppercase; }
+  .readouts { display:grid; gap:6px; grid-template-columns:repeat(4,minmax(0,1fr)); }
+  @media (max-width:620px) { .readouts { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+  .ro { display:flex; flex-direction:column; align-items:center; gap:2px; padding:5px 4px 6px; min-width:0;
+        border:1px solid var(--edge2); border-radius:6px; background:#eef4fa; }
+  .ro .k { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:var(--ink3); white-space:nowrap; }
+  .ro .v { font-size:14px; font-weight:700; white-space:nowrap; font-variant-numeric:tabular-nums; color:var(--navy); }
+  .morse { font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:13px; padding:6px 10px; min-height:18px;
+           border:1px solid var(--edge2); border-radius:6px; background:#fff; overflow-wrap:anywhere; }
+  .morse .k { font-family:'Inter',system-ui,sans-serif; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:var(--ink3); margin-right:8px; }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="plots">
+    <canvas id="key" aria-label="The keyed carrier's envelope: the whole message as marks and spaces on top, and the first rising edge enlarged below, hard keying in gray and the shaped edge in blue"></canvas>
+    <canvas id="spec" aria-label="The keyed carrier's spectrum within 1 kHz of the carrier, hard keying in gray and the shaped keying in blue, in dB relative to the carrier"></canvas>
+  </div>
+  <div class="controls">
+    <div class="ctl"><label for="msg">Message</label><span class="val" id="msg-v"></span>
+      <input type="text" id="msg" maxlength="24" value="PARIS" spellcheck="false"></div>
+    <div class="ctl"><label for="wpm">Speed</label><span class="val" id="wpm-v"></span>
+      <input type="range" id="wpm" min="5" max="40" step="1" value="20"></div>
+    <div class="ctl"><label for="rise">Edge time</label><span class="val" id="rise-v"></span>
+      <input type="range" id="rise" min="0" max="10" step="0.5" value="5"></div>
+  </div>
+  <div class="readouts">
+    <div class="ro"><span class="k">dit</span><span class="v" id="o-dit">—</span></div>
+    <div class="ro"><span class="k">message</span><span class="v" id="o-len">—</span></div>
+    <div class="ro"><span class="k">99% bandwidth</span><span class="v" id="o-obw">—</span></div>
+    <div class="ro"><span class="k">1 kHz out, vs hard</span><span class="v" id="o-1k">—</span></div>
+  </div>
+  <div class="morse" id="code"><span class="k">Morse</span></div>
+</div>
+
+<script>
+'use strict';
+// The keyer of L12-cw-tx.grc: PARIS timing (a dit is one unit of 1.2/WPM s,
+// a dah three, gaps of one, three, and seven units), each edge a raised
+// cosine over the edge time. The spectrum is a 2048-point FFT at 8 kHz with
+// a Blackman-Harris window, averaged over the repeating message.
+const MORSE = { A:'.-', B:'-...', C:'-.-.', D:'-..', E:'.', F:'..-.', G:'--.', H:'....', I:'..', J:'.---', K:'-.-',
+  L:'.-..', M:'--', N:'-.', O:'---', P:'.--.', Q:'--.-', R:'.-.', S:'...', T:'-', U:'..-', V:'...-', W:'.--', X:'-..-',
+  Y:'-.--', Z:'--..', '0':'-----', '1':'.----', '2':'..---', '3':'...--', '4':'....-', '5':'.....', '6':'-....',
+  '7':'--...', '8':'---..', '9':'----.', '.':'.-.-.-', ',':'--..--', '?':'..--..', '/':'-..-.', '=':'-...-', '-':'-....-' };
+const FS = 8000, NFFT = 2048, FMAX = 1000, SANS = 'Inter, system-ui, -apple-system, sans-serif';
+const C = { navy:'#004a85', gray:'#9aa5b1', rule:'#cddce9', ink3:'#5b6573', amber:'#8a5a00' };
+const $ = id => document.getElementById(id);
+
+function units(msg) {
+  const u = [];
+  for (const word of msg.toUpperCase().split(/\s+/).filter(Boolean)) {
+    for (const c of word) {
+      for (const s of (MORSE[c] || '')) { for (let i = 0; i < (s === '.' ? 1 : 3); i++) u.push(1); u.push(0); }
+      u.push(0, 0);
+    }
+    u.push(0, 0, 0, 0);
+  }
+  return u.length ? u : [0];
+}
+
+function envelope(u, wpm, riseMs) {
+  const spu = 1.2 / wpm * FS, n = Math.round(u.length * spu), key = new Float64Array(n);
+  for (let i = 0; i < n; i++) key[i] = u[Math.min(u.length - 1, Math.floor(i / spu))];
+  const m = Math.round(riseMs * 1e-3 * FS);
+  if (m < 2) return key;
+  const h = new Float64Array(m); let s = 0;
+  for (let i = 0; i < m; i++) { h[i] = Math.sin(Math.PI * (i + 0.5) / m); s += h[i]; }
+  // Circular filter with a half-sine pulse, centered: raised-cosine edges.
+  const out = new Float64Array(n), off = Math.floor(m / 2);
+  for (let i = 0; i < n; i++) { let a = 0; for (let j = 0; j < m; j++) a += h[j] * key[((i + off - j) % n + n) % n]; out[i] = a / s; }
+  return out;
+}
+
+function fft(re, im) {
+  const n = re.length;
+  for (let i = 1, j = 0; i < n; i++) { let b = n >> 1; for (; j & b; b >>= 1) j ^= b; j ^= b;
+    if (i < j) { [re[i], re[j]] = [re[j], re[i]]; [im[i], im[j]] = [im[j], im[i]]; } }
+  for (let len = 2; len <= n; len <<= 1) {
+    const a = -2 * Math.PI / len, wr = Math.cos(a), wi = Math.sin(a);
+    for (let i = 0; i < n; i += len) { let cr = 1, ci = 0;
+      for (let k = 0; k < len / 2; k++) {
+        const ur = re[i + k], ui = im[i + k], xr = re[i + k + len / 2] * cr - im[i + k + len / 2] * ci, xi = re[i + k + len / 2] * ci + im[i + k + len / 2] * cr;
+        re[i + k] = ur + xr; im[i + k] = ui + xi; re[i + k + len / 2] = ur - xr; im[i + k + len / 2] = ui - xi;
+        const t = cr * wr - ci * wi; ci = cr * wi + ci * wr; cr = t; } } }
+}
+
+const WIN = (() => { const w = new Float64Array(NFFT), a = [0.35875, 0.48829, 0.14128, 0.01168];
+  for (let i = 0; i < NFFT; i++) { const x = 2 * Math.PI * i / (NFFT - 1); w[i] = a[0] - a[1] * Math.cos(x) + a[2] * Math.cos(2 * x) - a[3] * Math.cos(3 * x); } return w; })();
+
+function psd(env) {   // averaged periodogram over the repeating message, two-sided, fftshifted
+  const n = env.length, segs = Math.max(8, Math.min(40, Math.ceil(2 * n / NFFT))), hop = NFFT / 2, p = new Float64Array(NFFT);
+  const re = new Float64Array(NFFT), im = new Float64Array(NFFT);
+  for (let s = 0; s < segs; s++) {
+    for (let i = 0; i < NFFT; i++) { re[i] = env[(s * hop + i) % n] * WIN[i]; im[i] = 0; }
+    fft(re, im);
+    for (let i = 0; i < NFFT; i++) p[i] += re[i] * re[i] + im[i] * im[i];
+  }
+  const out = new Float64Array(NFFT);
+  for (let i = 0; i < NFFT; i++) out[i] = p[(i + NFFT / 2) % NFFT] / segs;
+  return out;   // bin k is frequency (k - NFFT/2) * FS / NFFT
+}
+
+function obw99(p) {
+  let tot = 0; for (const v of p) tot += v;
+  const c = NFFT / 2; let acc = p[c];
+  for (let k = 1; k < NFFT / 2; k++) { acc += p[c + k] + p[c - k]; if (acc >= 0.99 * tot) return 2 * k * FS / NFFT; }
+  return FS;
+}
+function smooth(p, k) { let s = 0, n = 0; for (let i = k - 5; i <= k + 5; i++) { s += p[i]; n++; } return s / n; }
+
+function setup(cv, narrowH) {
+  const dpr = window.devicePixelRatio || 1, w = Math.max(200, cv.clientWidth || 300);
+  const narrow = window.matchMedia && window.matchMedia('(max-width:620px)').matches;
+  const h = narrow ? narrowH : Math.round(Math.min(w * 0.62, 240));
+  cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); cv.style.height = h + 'px';
+  const bh = cv.offsetHeight - cv.clientHeight; if (bh) cv.style.height = (h + bh) + 'px';
+  const ctx = cv.getContext('2d'); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); return { ctx, w, h };
+}
+function txt(ctx, s, x, y, px, col, align, bold) { ctx.fillStyle = col; ctx.font = (bold ? '700 ' : '') + px + 'px ' + SANS;
+  ctx.textAlign = align || 'left'; ctx.textBaseline = 'middle'; ctx.fillText(s, x, y); }
+function trace(ctx, n, X, Y, col, lw) { ctx.strokeStyle = col; ctx.lineWidth = lw; ctx.beginPath();
+  for (let i = 0; i < n; i++) i ? ctx.lineTo(X(i), Y(i)) : ctx.moveTo(X(i), Y(i)); ctx.stroke(); }
+
+function drawKey(hard, shaped, riseMs) {
+  const { ctx, w, h } = setup($('key'), 150);
+  ctx.clearRect(0, 0, w, h);
+  const mL = 12, mR = 10, n = shaped.length;
+  // Top strip: the whole message.
+  const t0 = 20, t1 = Math.round(h * 0.30);
+  txt(ctx, 'whole message, ' + (n / FS).toFixed(2) + ' s', mL, 9, 10.5, C.ink3, 'left', true);
+  const step = Math.max(1, Math.floor(n / (2 * (w - mL - mR))));
+  ctx.strokeStyle = C.navy; ctx.lineWidth = 1.2; ctx.beginPath();
+  for (let i = 0; i < n; i += step) { const x = mL + i / n * (w - mL - mR), y = t1 - shaped[i] * (t1 - t0); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }
+  ctx.stroke();
+  // Bottom: the first rising edge, enlarged.
+  let e = 0; while (e < n && hard[e] < 0.5) e++;
+  const span = Math.max(12, riseMs * 2.4) * 1e-3 * FS, a = Math.round(e - span / 2), m = Math.round(span);
+  const b0 = t1 + 34, b1 = h - 22;
+  txt(ctx, 'first rising edge, ' + (span / FS * 1e3).toFixed(0) + ' ms', mL, t1 + 16, 10.5, C.ink3, 'left', true);
+  ctx.strokeStyle = C.rule; ctx.lineWidth = 1;
+  for (const v of [0, 1]) { const y = b1 - v * (b1 - b0); ctx.beginPath(); ctx.moveTo(mL, y); ctx.lineTo(w - mR, y); ctx.stroke(); }
+  const X = i => mL + i / (m - 1) * (w - mL - mR), at = (arr, i) => arr[((a + i) % n + n) % n];
+  trace(ctx, m, X, i => b1 - at(hard, i) * (b1 - b0), C.gray, 1.6);
+  trace(ctx, m, X, i => b1 - at(shaped, i) * (b1 - b0), C.navy, 2);
+  txt(ctx, 'hard', w - mR, b0 - 8, 10, C.gray, 'right', true);
+  txt(ctx, riseMs > 0 ? riseMs + ' ms raised cosine' : 'same as hard', w - mR - 34, b0 - 8, 10, C.navy, 'right', true);
+  txt(ctx, 'time', mL, h - 9, 10.5, C.ink3, 'left');
+}
+
+function drawSpec(ph, ps) {
+  const { ctx, w, h } = setup($('spec'), 150);
+  ctx.clearRect(0, 0, w, h);
+  const mL = 34, mR = 10, top = 20, bot = h - 22, DB0 = -100;
+  let pk = 0; for (const v of ph) pk = Math.max(pk, v); for (const v of ps) pk = Math.max(pk, v);
+  const kmax = Math.round(FMAX / FS * NFFT), c = NFFT / 2;
+  const X = k => mL + (k + kmax) / (2 * kmax) * (w - mL - mR);
+  const Y = v => { const d = Math.max(DB0, 10 * Math.log10(v / pk + 1e-30)); return top + d / DB0 * (bot - top); };
+  ctx.strokeStyle = C.rule; ctx.lineWidth = 1;
+  for (const d of [0, -20, -40, -60, -80, -100]) { const y = top + d / DB0 * (bot - top);
+    ctx.beginPath(); ctx.moveTo(mL, y); ctx.lineTo(w - mR, y); ctx.stroke(); txt(ctx, String(d), mL - 4, y, 10, C.ink3, 'right'); }
+  for (const f of [-1000, -500, 0, 500, 1000]) txt(ctx, (f < 0 ? '−' : '') + Math.abs(f / 1000), X(f / FS * NFFT), bot + 10, 10, C.ink3,
+    f === -1000 ? 'left' : f === 1000 ? 'right' : 'center');
+  const n = 2 * kmax + 1;
+  trace(ctx, n, i => X(i - kmax), i => Y(ph[c - kmax + i]), C.gray, 1.2);
+  trace(ctx, n, i => X(i - kmax), i => Y(ps[c - kmax + i]), C.navy, 1.4);
+  txt(ctx, 'dB relative to the carrier', mL, 9, 10.5, C.ink3, 'left', true);
+  txt(ctx, 'kHz from the carrier', w - mR, 9, 10.5, C.ink3, 'right');
+}
+
+function update() {
+  const msg = $('msg').value.trim() || 'PARIS', wpm = +$('wpm').value, rise = +$('rise').value;
+  const u = units(msg), unitMs = 1200 / wpm;
+  const hard = envelope(u, wpm, 0), shaped = envelope(u, wpm, rise);
+  const ph = psd(hard), ps = psd(shaped);
+  $('wpm-v').textContent = wpm + ' WPM';
+  $('rise-v').textContent = rise ? rise.toFixed(1) + ' ms' : 'hard';
+  $('msg-v').textContent = u.length + ' units';
+  $('o-dit').textContent = unitMs.toFixed(0) + ' ms';
+  $('o-len').textContent = (u.length * unitMs / 1000).toFixed(2) + ' s';
+  $('o-obw').textContent = obw99(ps).toFixed(0) + ' Hz';
+  const k1 = Math.round(1000 / FS * NFFT), c = NFFT / 2;
+  const d = 10 * Math.log10((smooth(ps, c + k1) + smooth(ps, c - k1)) / (smooth(ph, c + k1) + smooth(ph, c - k1)));
+  $('o-1k').textContent = (Math.abs(d) < 0.05 ? '0' : d.toFixed(0)) + ' dB';
+  $('code').innerHTML = '<span class="k">Morse</span>' + msg.toUpperCase().split(/\s+/).filter(Boolean)
+    .map(wd => [...wd].map(ch => MORSE[ch] || '').filter(Boolean).join(' ')).join(' / ');
+  drawKey(hard, shaped, rise); drawSpec(ph, ps);
+}
+
+$('msg').oninput = update; $('wpm').oninput = update; $('rise').oninput = update;
+window.addEventListener('resize', update);
+const q = new URLSearchParams(location.search);
+for (const k of ['msg', 'wpm', 'rise']) if (q.get(k)) $(k).value = q.get(k);
+update();
+</script>
+</body>
+</html>
