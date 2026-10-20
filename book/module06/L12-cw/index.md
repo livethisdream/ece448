@@ -135,7 +135,7 @@ A receiver tuned to a frequency near a hard-keyed transmitter hears that spread 
 ::::{frame} Bandwidth and Edge Time
 :class: read-only
 
-We measured the keyer's spectrum over 600 characters of random five-letter groups at 20 WPM. The **99% bandwidth** holds 99% of the signal's power, including the carrier. The last two columns compare the spectrum's level with hard keying at the same distance from the carrier.
+We measured the keyer's spectrum over about 700 characters of random five-letter groups at 20 WPM. The **99% bandwidth** holds 99% of the signal's power, including the carrier. The last two columns compare the spectrum's level with hard keying at the same distance from the carrier.
 
 | Edge time | 99% bandwidth | 99.9% bandwidth | 1 kHz away, vs hard | 2 kHz away, vs hard |
 | :-: | :-: | :-: | :-: | :-: |

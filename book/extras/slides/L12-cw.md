@@ -127,7 +127,7 @@ A receiver tuned near a hard-keyed transmitter hears a click at every edge. The 
 | 5 ms | 87 Hz | 247 Hz | −40 dB |
 | 10 ms | 64 Hz | 150 Hz | −52 dB |
 
-20 WPM, measured over 600 characters.
+20 WPM, measured over about 700 characters.
 
 Note:
 The edge has to stay well under a dit. At 40 WPM a dit is 30 ms, and 5 ms edges still leave 25 ms at full power.
