@@ -24,7 +24,7 @@ Spring 2027 · Dr. Neil Rogers
 
 - Lesson 7: an FM receiver turns a channel into audio
 - Lesson 12: CW, one tone switched on and off
-- Today: a digit as a pair of tones, decoded from audio
+- Today we decode digits sent as pairs of tones.
 
 Note:
 Open L13-dtmf-rx.grc, L13-dtmf-keypad.grc, and L13-dtmf-link.grc before class, with the WAV files in the same folder.
@@ -48,7 +48,7 @@ Parts 1 and 2 are the signal, parts 3 and 4 the receiver. Part 5 runs live with 
 
 <img src="./img/13-dtmf/L13-rx-capture.png" alt="The L13 receiver decoding 7195550148 from the synthetic capture, with the row and column Goertzel bins" style="max-height:440px; display:block; margin:0 auto;">
 
-Each digit lights one row bin and one column bin.
+Each digit raises one row bin and one column bin. The capture is simulated.
 
 Note:
 Run L13-dtmf-rx.grc live. The capture is synthetic: L13-dtmf-capture.grc dialed it with 50 ms tones and gaps, -2 dB of twist, and 20 dB SNR. Row peaks reach 0.15, half the 0.3 amplitude; column peaks 0.12.
@@ -98,7 +98,7 @@ Run it and hold Press. The receiver works in frequency because the digit is obvi
 | Twist (column − row) | −8 to +4 dB | |
 
 Note:
-ITU-T Q.24 and the Bell System rules. Auto-dialers typically send 50 ms on and 50 ms off, 10 digits a second. The 23 ms reject rule keeps speech from looking like a digit. Lines lose more at high frequencies, so the column tone usually arrives weaker, which the standard calls normal twist.
+The rules come from ITU-T Q.24 and the Bell System. Auto-dialers typically send 50 ms on and 50 ms off, 10 digits a second. The 23 ms reject rule keeps speech from looking like a digit. Lines lose more at high frequencies, so the column tone usually arrives weaker, which the standard calls normal twist.
 
 ---
 
@@ -106,14 +106,14 @@ ITU-T Q.24 and the Bell System rules. Auto-dialers typically send 50 ms on and 5
 
 <div class="fig" data-inline-svg="./fig/L13-capture.svg" style="max-width:720px; margin:0 auto;"></div>
 
-50 ms tones, 50 ms gaps, −2 dB twist, 20 dB SNR · simulated
+The simulated capture uses 50 ms tones and gaps, −2 dB twist, and 20 dB SNR.
 
 Note:
-L13-dtmf-capture.grc: the DTMF Dialer Embedded Python Block, a Noise Source, a Head, and a Wav File Sink. One dialing plus a 500 ms pause, 1.5 s at 8 kHz. SNR is tone power over noise power across 0 to 4 kHz, during a tone. The three 5s are separate because a gap separates them.
+L13-dtmf-capture.grc chains the DTMF Dialer Embedded Python Block, a Noise Source, a Head, and a Wav File Sink. It writes one dialing and a 500 ms pause, 1.5 s at 8 kHz. SNR is tone power over noise power across 0 to 4 kHz, during a tone. The three 5s are separate because a gap separates them.
 
 ---
 
-## Telling 697 Hz from 770 Hz
+## Separating Neighboring Tones
 
 - Eight band-pass filters, each followed by an energy detector
 - Each must reject a neighbor 73 Hz away
@@ -130,10 +130,10 @@ $$k = \frac{f N}{f_s}, \qquad c = 2\cos\left(\frac{2\pi k}{N}\right)$$
 
 $$q_n = c q_{n-1} - q_{n-2} + x_n$$
 
-$N = 205$ at 8 kHz: 25.6 ms blocks, bins 39.0 Hz apart.
+With $N = 205$ at 8 kHz, blocks last 25.6 ms and bins sit 39.0 Hz apart.
 
 Note:
-One DFT bin from one recursion, one multiply per sample. For 697 Hz, k = 17.86; for 1209 Hz, k = 30.98. The power after the last sample comes from the last two values of q.
+The Goertzel recursion computes one DFT bin with one multiply per sample. For 697 Hz, k = 17.86; for 1209 Hz, k = 30.98. The power after the last sample comes from the last two values of q.
 
 ---
 
@@ -186,7 +186,7 @@ Start at key 5, N 205, 20 dB. Raise twist past +6 dB to show test 3. The explore
 
 ---
 
-## Testing the Decoder: Noise
+## Decoder Performance in Noise
 
 <img src="./img/13-dtmf/L13-link-noisy.png" alt="The link flowgraph at 1 dB SNR with 16 of 26 numbers correct" style="max-height:380px; display:block; margin:0 auto;">
 
@@ -216,7 +216,7 @@ Rounded, the 770 Hz bin sits at 780.5 Hz and the 1336 Hz bin at 1326.8 Hz. A 1.5
 ## DTMF on a Real Radio
 
 - Repeaters and remote sites take DTMF over FM.
-- RTL-SDR, FM receiver, resample to 8 kHz, DTMF Decoder.
+- An RTL-SDR and an FM receiver can feed 8 kHz audio to the decoder.
 - The L13 Lab decodes a phone through the laptop microphone.
 
 Note:
@@ -229,14 +229,14 @@ Nothing in this lesson transmits. In class we transmit only into a cable, into a
 <div class="callout">Each DTMF key is one row tone plus one column tone. Goertzel bins of 205 samples at 8 kHz separate tones 73 Hz apart, and a digit counts when one row bin and one column bin dominate for three blocks.</div>
 
 Note:
-Every tone-based signaling system in the course decodes the same way: measure a few known frequencies over a block, and decide.
+Every tone-based signaling system in the course decodes the same way: it measures the power at a few known frequencies over a block and applies decision rules to those powers.
 
 ---
 
 ## Looking Ahead
 
-- L13 Lab: build the keypad, decode an unknown capture, find the decoder's limits, decode a phone
-- Lesson 14: HD Radio beside an FM station
+- The L13 Lab builds the keypad, decodes an unknown capture, measures the limits, and decodes a phone.
+- Lesson 14 receives HD Radio beside an FM station.
 
 Note:
 Before the lab, run the receiver on L13-capture.wav and be able to find k for any tone.

@@ -296,7 +296,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [700, 100]
+    coordinate: [420, 110]
     rotation: 0
     state: enabled
 - name: g1209
@@ -785,7 +785,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [420, 100]
+    coordinate: [420, 935]
     rotation: 0
     state: enabled
 

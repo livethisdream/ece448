@@ -262,11 +262,10 @@ about 2 dB, measured across the whole 0 to 4 kHz band.
 	\part At 0 dB SNR the bins still see the tones about 20 dB above their noise, yet the
 	decoder fails. Explain in words which test stops it.
 		\begin{solution}[1.1in]
-		Test 1. At 0 dB, half of each block's energy is noise spread across the band, so
+		Test 1, the share test that rejects speech, stops it. At 0 dB, half of each block's energy is noise spread across the band, so
 		the two tones can hold at most about half of it, and less in the blocks at a tone's
 		start and end, which are only partly filled. When a block's two-bin share falls
-		below 35\%, the run of three blocks breaks and the digit is lost. The bins can still
-		see the tones; the share test, which exists to reject speech, is what fails.
+		below 35\%, the run of three blocks breaks and the digit is lost.
 		\end{solution}
 
 \end{parts}

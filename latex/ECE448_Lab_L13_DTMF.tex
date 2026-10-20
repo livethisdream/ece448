@@ -233,7 +233,7 @@ blocks in a row agree.
 		L13 decoder accept it? Repeat with the two amplitudes swapped.
 		\begin{solution}[1.2in]
 		\eq{ 20\log_{10}(0.10/0.25) = -7.96\ \text{dB} }
-		Inside the standard's $-8$ dB, and inside the decoder's $-10$ dB, so it is accepted.
+		Inside the standard's $-8$ dB, and inside the decoder's $-10$ dB, so the decoder accepts it.
 		Swapped, the twist is $+7.96$ dB, beyond the standard's $+4$ dB and the decoder's
 		$+6$ dB, so the decoder rejects it.
 		\end{solution}
@@ -308,7 +308,7 @@ blocks in a row agree.
 		\begin{solution}[1.0in]
 		The row peaks reach about 0.15 and the column peaks about 0.084.
 		\eq{ 20\log_{10}(0.084/0.15) \approx -5\ \text{dB} }
-		The capture was made with $-5$ dB of twist.
+		\texttt{L13-dtmf-capture.grc} dialed it with $-5$ dB of twist.
 		\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
@@ -492,8 +492,8 @@ $N$ & Setting & Correct \\\hline
 		Answers vary. The phone's bins are lower and rougher, with more twist and more
 		energy outside the eight bins. Reasonable changes: require an absolute level as
 		well as the 35\% share, so quiet background sounds cannot trigger a digit;
-		require four blocks instead of three for more protection against speech, at the
-		cost of the shortest tones; or band-pass the audio to 600 to 1700 Hz first.
+		require four blocks instead of three for more protection against speech, although
+		the decoder then misses the shortest tones; or band-pass the audio to 600 to 1700 Hz first.
 		\end{solution}
 
 \end{parts}

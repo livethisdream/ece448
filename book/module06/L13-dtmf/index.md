@@ -39,7 +39,7 @@ Lesson 13 · Module 6: Waveform Applications & RF Reverse Engineering · Dr. Nei
 ::::{frame} A Phone Number in Sound
 :::{present}
 <img src="../../viz/img/L13-rx-capture.png"
-     alt="The L13 receiver flowgraph running on L13-capture.wav: the Digits label reads 7195550148; two time sinks show the Goertzel bin outputs over 3 s, row bins on the left and column bins on the right, with one row peak near 0.15 and one column peak near 0.12 for each of the ten digits in each of two dialings; a spectrum plot below shows the current digit's two tones"
+     alt="The L13 receiver flowgraph running on the synthetic capture L13-capture.wav, labeled Simulated capture in its corner: the Digits label reads 7195550148; two time sinks show the Goertzel bin outputs over 3 s, row bins on the left and column bins on the right, with one row peak near 0.15 and one column peak near 0.12 for each of the ten digits in each of two dialings; a spectrum plot below shows the current digit's two tones"
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
@@ -47,7 +47,7 @@ Lesson 13 · Module 6: Waveform Applications & RF Reverse Engineering · Dr. Nei
 - The receiver measures eight frequencies and reads the digits.
 :::
 
-The figure is today's receiver, `L13-dtmf-rx.grc`, decoding a capture of the number 719-555-0148. The two plots in the middle are the receiver's eight detectors, four for the keypad's rows and four for its columns. Each digit lights exactly one row detector and one column detector for 50 ms, and the receiver turns that pair into a digit.
+The figure is today's receiver, `L13-dtmf-rx.grc`, decoding a capture of the number 719-555-0148. The two plots in the middle are the receiver's eight detectors, four for the keypad's rows and four for its columns. Each digit raises exactly one row detector and one column detector for 50 ms, and the receiver turns that pair into a digit.
 
 This is **dual-tone multi-frequency** signaling, DTMF, the sound a telephone keypad makes. It still carries phone menus, voicemail codes, and door-entry systems, and two-way radios send it over FM to key repeaters and trigger remote equipment. Lesson 12 decoded one tone switched on and off; DTMF carries a digit in the frequencies of two tones. The capture is synthetic: `L13-dtmf-capture.grc` dialed it and added noise, as a later frame shows.
 ::::
@@ -63,7 +63,7 @@ This is **dual-tone multi-frequency** signaling, DTMF, the sound a telephone key
 - Each key is one row tone plus one column tone.
 :::
 
-A key sends the tone of its row and the tone of its column together. The '5' key, for example, sends 770 Hz and 1336 Hz. Eight frequencies give 16 keys. Telephones use the first three columns; the fourth column, A to D, was used on the military's AUTOVON network to set call precedence, and radio systems still use it for control codes.
+A key sends the tone of its row and the tone of its column together. The '5' key, for example, sends 770 Hz and 1336 Hz. Eight frequencies give 16 keys. Telephones use the first three columns; the military's AUTOVON network used the fourth column, A to D, to set call precedence, and radio systems still use it for control codes.
 
 The frequencies are not round numbers on purpose. Each tone is about 10.5% above the one before it in its group, so the eight are spread evenly on a log scale, and no row tone's second harmonic lands on a column tone. The closest pair is 697 and 770 Hz, 73 Hz apart, and that spacing sets how sharp the receiver's filters must be.
 ::::
@@ -87,11 +87,11 @@ Everything runs at 8 kHz, the telephone sample rate. Laptop sound cards do not a
 ::::{frame} Two Tones, One Key
 :::{present}
 <img src="../../viz/img/L13-keypad-run.png"
-     alt="The L13 keypad flowgraph running with key 5 pressed: the waveform plot shows 20 ms of a beating two-tone signal between about plus and minus 0.55, and the spectrum shows two lines, at 770 Hz and 1336 Hz"
+     alt="The L13 keypad flowgraph running with key 5 pressed: the waveform plot shows 20 ms of a beating two-tone signal between about plus and minus 0.6, the sum of the two 0.3 amplitudes, and the spectrum shows two lines, at 770 Hz and 1336 Hz"
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
-- Key '5': lines at 770 and 1336 Hz.
+- Key '5' puts lines at 770 and 1336 Hz.
 - In time, the two tones beat; in frequency, they separate.
 :::
 
@@ -121,7 +121,7 @@ Telephone standards (ITU-T Q.24 and the Bell System rules it draws on) tell a re
 :::
 :::{present}
 - `L13-dtmf-capture.grc` dials a number and writes a WAV file.
-- Ours: 50 ms tones, 50 ms gaps, −2 dB twist, 20 dB SNR.
+- Our capture uses 50 ms tones and gaps, −2 dB twist, and 20 dB SNR.
 :::
 
 A phone recording would be ideal, but we made the capture instead, so every setting is known. `L13-dtmf-capture.grc` uses an Embedded Python Block, the **DTMF Dialer**, which sends a string of digits with a chosen tone length, gap, and twist. A Noise Source adds Gaussian noise, a Head block stops after one dialing and a 500 ms pause, and a Wav File Sink writes `L13-capture.wav`: 1.5 s at 8 kHz, 16 bits.
@@ -129,7 +129,7 @@ A phone recording would be ideal, but we made the capture instead, so every sett
 The spectrogram shows the result. Each digit is two short marks, one in the row band and one in the column band, and reading the grid by eye already gives 7195550148. The three 5s are three separate digits because a 50 ms gap separates them. The **SNR** setting is the tone power divided by the noise power across the whole 0 to 4 kHz band, during a tone.
 ::::
 
-::::{frame} Telling 697 Hz from 770 Hz
+::::{frame} Separating Neighboring Tones
 :::{present}
 - A detector for each tone is a band-pass filter, then an energy measurement.
 - Each filter must reject a neighbor 73 Hz away.
@@ -138,7 +138,7 @@ The spectrogram shows the result. Each digit is two short marks, one in the row 
 
 The direct way to decode DTMF is a bank of eight band-pass filters, one per tone, each followed by an energy detector: square the output and average it. The digit is the strongest row filter and the strongest column filter. The design problem is the filter width. The 697 Hz filter must pass 697 Hz, plus the 1.5% error, and reject 770 Hz, only 73 Hz away.
 
-A filter's bandwidth and the time it needs are tied together: to separate two tones $\Delta f$ apart, a filter must watch the signal for roughly $1/\Delta f$ or longer, about 14 ms for 73 Hz. A 40 ms tone leaves room for that, but not much more. Practical receivers use a block of about 25 ms, which leaves a margin for the tone's start and end.
+A filter's bandwidth and the time it needs are tied together: to separate two tones $\Delta f$ apart, a filter must watch the signal for roughly $1/\Delta f$ or longer, about 14 ms for 73 Hz. A 40 ms tone allows a block of about 25 ms, which leaves a margin for the tone's start and end, and practical receivers use that length.
 ::::
 
 ::::{frame} The Goertzel Bin
@@ -147,8 +147,8 @@ $$k = \frac{f N}{f_s}, \qquad c = 2\cos\left(\frac{2\pi k}{N}\right)$$
 
 $$q_n = c\,q_{n-1} - q_{n-2} + x_n$$
 
-- One bin: one tone's energy over a block of $N$ samples.
-- $N = 205$ at 8 kHz: a 25.6 ms block, bins 39.0 Hz apart.
+- One bin measures one tone's energy over a block of $N$ samples.
+- With $N = 205$ at 8 kHz, a block lasts 25.6 ms and bins sit 39.0 Hz apart.
 :::
 
 The **Goertzel algorithm** builds exactly that filter. It computes one bin of a DFT of an $N$-sample block, at bin number $k$, with the recursion above: one multiply and two adds per sample. After the last sample, the bin's power is
@@ -158,7 +158,14 @@ $$\begin{aligned}
 &- c\,q_{N-1}\,q_{N-2}.
 \end{aligned}$$
 
-Eight bins cost far less than an FFT of the whole band. The classic choice is $N = 205$ at $f_s = 8$ kHz, so the bin for 697 Hz is $k = 697 \times 205 / 8000 = 17.86$, and for 1209 Hz, $k = 30.98$. The bins of a 205-sample DFT sit $8000/205 = 39.0$ Hz apart, and the block lasts 25.6 ms.
+Eight bins need far fewer operations than an FFT of the whole band. The classic choice is $N = 205$ at $f_s = 8$ kHz, which puts the bins for 697 Hz and 1209 Hz at
+
+$$\begin{aligned}
+k_{697} &= \frac{697 \times 205}{8000} = 17.86, \\
+k_{1209} &= \frac{1209 \times 205}{8000} = 30.98.
+\end{aligned}$$
+
+The bins of a 205-sample DFT sit $f_s/N = 39.0$ Hz apart, and the block lasts $N/f_s = 25.6$ ms.
 ::::
 
 ::::{frame} Bins Against Tone Spacing
@@ -172,7 +179,7 @@ Eight bins cost far less than an FFT of the whole band. The classic choice is $N
 - A neighbor tone lands at least 19 dB down.
 :::
 
-Each Goertzel bin is a band-pass filter read once per block. Its response falls to its first nulls $f_s/N = 39$ Hz either side of the tone, so the main lobe is 78 Hz wide, about as wide as the 73 Hz spacing. A neighboring row tone falls on the far side of a bin's first null, 19 to 26 dB below the bin's own tone, so the right bin wins every time.
+Each Goertzel bin is a band-pass filter read once per block. Its response falls to its first nulls $f_s/N = 39$ Hz either side of the tone, so the main lobe is 78 Hz wide, about as wide as the 73 Hz spacing. A neighboring row tone falls on the far side of a bin's first null, 19 to 26 dB below the bin's own tone, so the correct bin always measures the higher power.
 
 A longer block narrows the bins but needs a longer tone, and a 410-sample block lasts longer than a 50 ms tone. A shorter block responds faster but widens the bins until neighbors leak in. The L13 Lab measures both. The classic integer-bin decoder also rounds $k$ to the nearest whole number, which moves the 697 Hz bin to 702.4 Hz; our decoder uses $k$ unrounded, and a later frame shows why.
 ::::
@@ -188,7 +195,7 @@ A longer block narrows the bins but needs a longer tone, and a 410-sample block 
 - The **DTMF Decoder** block makes the decisions.
 :::
 
-`L13-dtmf-rx.grc` reads a WAV file at 8 kHz. Eight stock **Goertzel** blocks, one per tone with length 205, each output one complex value per block, the bin divided by $N$; a **Complex to Mag** turns it into half the tone's amplitude, which is why the row bins in the opening figure peak at 0.15 for a 0.3 tone. Those are the eight traces you watch.
+`L13-dtmf-rx.grc` reads a WAV file at 8 kHz. Eight stock **Goertzel** blocks, one per tone with length 205, each output one complex value per block, the bin divided by $N$; a **Complex to Mag** turns it into half the tone's amplitude, which is why the row bins in the opening figure peak at 0.15 for a 0.3 tone.
 
 The **DTMF Decoder** is an Embedded Python Block that runs the same eight Goertzel bins itself, on a block of 205 samples every 102 samples, so the blocks overlap by half. It applies the decision rules on the next frame and reports each number it hears to the Digits and Numbers labels.
 ::::
@@ -223,7 +230,7 @@ The left panel shows the response of all eight Goertzel bins for the block lengt
 :::
 ::::
 
-::::{frame} Testing the Decoder: Noise
+::::{frame} Decoder Performance in Noise
 :::{present}
 <img src="../../viz/img/L13-link-noisy.png"
      alt="The L13 link flowgraph at an SNR of 1 dB, twist 0 dB, 50 ms tones and gaps, and no frequency error: the Numbers label reads 16 correct of 26 decoded in 39 s, and the spectrum shows noise across 0 to 4 kHz"
@@ -236,7 +243,7 @@ The left panel shows the response of all eight Goertzel bins for the block lengt
 
 `L13-dtmf-link.grc` puts the dialer, a noise source, and the decoder in one flowgraph, with sliders for the SNR, twist, tone and gap lengths, and frequency error, and it counts the numbers decoded correctly since a setting last changed. At 1 dB SNR the screenshot shows 16 of 26 correct.
 
-The decoder holds up in noise because each bin is only 39 Hz wide, so it sees about a hundredth of the noise in the 4 kHz band, 20 dB less. The limit near 1 dB comes from test 1: at 0 dB half of each block's energy is noise, so the two tones cannot hold much more than half of it, and the blocks at a tone's start and end hold less, below 35%.
+The decoder tolerates low SNR because each bin is only 39 Hz wide, so it sees about a hundredth of the noise in the 4 kHz band, 20 dB less. The limit near 1 dB comes from test 1: at 0 dB half of each block's energy is noise, so the two tones cannot hold much more than half of it, and the blocks at a tone's start and end hold less, below 35%.
 ::::
 
 ::::{frame} Noise and Frequency-Error Sweeps
@@ -279,7 +286,7 @@ The Goertzel recursion does not need an integer $k$; the power formula still giv
 - The L13 Lab decodes a phone keypad through the laptop's microphone.
 :::
 
-On the air, DTMF rides on narrowband FM. Amateur repeaters accept DTMF commands, and many handheld radios have a DTMF keypad. To decode it from an SDR, tune an RTL-SDR to the channel, demodulate it with an FM receiver like Lesson 7's, with its channel filter narrowed to the 12.5 kHz channel, resample the audio to 8 kHz, and connect the audio to the DTMF Decoder block in place of the Wav File Source.
+On the air, radios send DTMF over narrowband FM. Amateur repeaters accept DTMF commands, and many handheld radios have a DTMF keypad. To decode it from an SDR, tune an RTL-SDR to the channel, demodulate it with an FM receiver like Lesson 7's, with its channel filter narrowed to the 12.5 kHz channel, resample the audio to 8 kHz, and connect the audio to the DTMF Decoder block in place of the Wav File Source.
 
 Nothing in this lesson transmits, and decoding is receive-only. In class we transmit only into a cable, into a shielded enclosure, or at very low power in an ISM band, and only when the lesson says to. The L13 Lab uses a real acoustic signal instead: `L13-dtmf-mic.grc` decodes a phone's keypad tones from the laptop's microphone.
 ::::
@@ -334,5 +341,5 @@ Put the files in one folder; the receiver opens the WAV file by name from that f
 
 The L13 Lab is the hands-on version of this lesson. You build the keypad from an empty canvas, decode a second capture whose number you do not know, measure the decoder's twist and timing limits and how they change with the block length, and decode the keypad tones of a real phone through the laptop's microphone.
 
-Lesson 14 moves from audio back to RF with HD Radio, the digital broadcast that rides on either side of many FM stations.
+Lesson 14 moves from audio back to RF with HD Radio, the digital broadcast that sits on either side of many FM stations.
 ::::

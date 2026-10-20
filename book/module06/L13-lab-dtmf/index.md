@@ -32,7 +32,7 @@ L13 Lab · Module 6: Waveform Applications & RF Reverse Engineering · Dr. Neil 
 - **Writeup:** compare the limits with the standard and explain them.
 :::
 
-Lesson 13 decoded a synthetic capture of a phone number. Today you build the keypad from an empty canvas, decode a second capture whose number you do not know, and measure where the decoder stops working as the twist, the tone length, and the block length change. Then you decode a real signal: a phone's keypad through your laptop's microphone. The lab packet has three parts, and you turn it in once, complete, before Lesson 14. **Part 1, the Pre-Lab**, is on your own before the period. **Part 2** is your own measurements in class. **Part 3, the Writeup**, explains them.
+Lesson 13 decoded a synthetic capture of a phone number. Today you build the keypad from an empty canvas, decode a second capture whose number you do not know, and measure where the decoder stops working as the twist, the tone length, and the block length change. Then you decode a real signal: a phone's keypad through your laptop's microphone. The lab packet has three parts, and you turn it in once, complete, before Lesson 14. You do **Part 1, the Pre-Lab**, on your own before the period, record **Part 2**'s measurements in class, and explain them in **Part 3, the Writeup**.
 
 Nothing in this lab transmits. Bring a phone whose keypad plays tones, and headphones if you want to listen without disturbing the room.
 ::::
@@ -63,7 +63,7 @@ Question 2 asks for predictions from the lesson: the two tones of each key in a 
 The receiver should decode every repetition of the lesson's capture with no wrong digits. Your keypad should put two lines on the spectrum exactly at the grid's frequencies, within the frequency sink's resolution. The lab capture is harder than the lesson's, with more noise, more twist, and shorter tones, but the decoder should still read every repetition the same way.
 ::::
 
-::::{frame} Part 2: Build the Keypad
+::::{frame} Part 2: Keypad Build
 :class: read-only
 
 1. Start GRC and choose File, New, QT GUI. Do not open `L13-dtmf-keypad.grc`; build it yourself.
@@ -76,7 +76,7 @@ The receiver should decode every repetition of the lesson's capture with no wron
 8. Run it. Hold Press on three keys of your choice and screenshot the spectrum for one, for Question 3(a). Read both peaks for each key for Question 3(b), and listen with the volume low.
 ::::
 
-::::{frame} Part 2: Decode the Lab Capture
+::::{frame} Part 2: The Lab Capture
 :class: read-only
 
 1. Open `L13-dtmf-rx.grc` and run it. Type `L13-lab-capture.wav` into Capture file and press Enter; the counts start over.
@@ -85,7 +85,7 @@ The receiver should decode every repetition of the lesson's capture with no wron
 4. Read the time from one dialing to the next in the time sinks, count the digits, and estimate the time per digit, tone plus gap, for Question 4(c).
 ::::
 
-::::{frame} Part 2: Find the Decoder's Limits
+::::{frame} Part 2: Decoder Limits
 :class: read-only
 
 <img src="../../viz/img/L13-grc-link.png"
@@ -93,7 +93,7 @@ The receiver should decode every repetition of the lesson's capture with no wron
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto 12px;">
 
 1. Open and run `L13-dtmf-link.grc`. The Numbers label counts the dialings decoded correctly since a setting last changed; each dialing of the default number takes 1.5 s.
-2. Type `123A456B789C*0#D` into Number and press Enter, so that every key is tested. Set the twist to each value in the Question 5(a) table, wait about 30 s, and record the Numbers label.
+2. Type `123A456B789C*0#D` into Number and press Enter, so that the link tests every key. Set the twist to each value in the Question 5(a) table, wait about 30 s, and record the Numbers label.
 3. Set the twist back to 0 and the number back to `7195550148`. Set Gap to 60 ms, set Tone to each value in Question 5(b), wait about 30 s at each, and record the Numbers label.
 4. Set Tone back to 60 ms, set Gap to each value in Question 5(c), and record the Numbers label.
 ::::
@@ -110,7 +110,7 @@ The receiver should decode every repetition of the lesson's capture with no wron
 ::::{frame} Part 2: A Real Phone
 :::{present}
 <img src="../../viz/img/L13-rx-capture.png"
-     alt="The L13 receiver running on the lesson's synthetic capture, for comparison: the Digits label reads 7195550148, and the row and column Goertzel bins show one peak each per digit"
+     alt="The L13 receiver running on the lesson's synthetic capture, labeled Simulated capture, for comparison: the Digits label reads 7195550148, and the row and column Goertzel bins show one peak each per digit"
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
@@ -125,7 +125,7 @@ The receiver should decode every repetition of the lesson's capture with no wron
 3. Press keys as fast as you can, and record what the decoder misses for Question 7(b). Then talk, whistle, or play music near the microphone and record any false digits for Question 7(c).
 ::::
 
-::::{frame} If No Digits Appear
+::::{frame} No Digits?
 :class: read-only
 
 :::{admonition} If the Digits label stays at "(listening)"
@@ -137,7 +137,7 @@ For the receiver, check that the WAV files are in the same folder as the flowgra
 ::::{frame} Part 3: After the Lab
 :::{present}
 - Compare the decoder's measured limits with the standard's rules.
-- Explain what the block length trades.
+- Explain what a shorter and a longer block gain and lose.
 - Compare the phone with the synthetic captures.
 :::
 
@@ -159,5 +159,5 @@ The Writeup is three questions. The first compares the twist, tone-length, and g
 - Lesson 17 takes an unknown signal from the spectrum to its bits.
 :::
 
-Keep your keypad flowgraph and your tables. Lesson 14 returns to RF with HD Radio, the digital signal that rides beside many FM stations. Lesson 17, on RF reverse engineering, starts where this lab's capture did: a recording of a signal whose content you do not know, which you identify by its spectrum and its timing before you decode it.
+Keep your keypad flowgraph and your tables. Lesson 14 returns to RF with HD Radio, the digital signal that sits beside many FM stations. Lesson 17, on RF reverse engineering, starts where this lab's capture did: a recording of a signal whose content you do not know, which you identify by its spectrum and its timing before you decode it.
 ::::
