@@ -59,7 +59,7 @@ Question 2 asks for predictions from the lesson: the dit, dah, and gap lengths a
 5. Add a **Moving Average**: type float, length 40, scale `1/40`. It averages the last 5 ms, which turns every edge into a 5 ms ramp. Connect the Throttle's output to its input. Its output is your shaped envelope.
 6. Add a **QT GUI Time Sink**: type float, 2 inputs, 32000 points, sample rate `samp_rate`. Connect the Throttle to input 0 and the Moving Average to input 1.
 7. Add a **QT GUI Frequency Sink**: type float, 2 inputs, FFT size 8192, bandwidth `samp_rate`, Y min $-140$, and Average left at None. Connect it the same way. Every arrow must be black.
-8. Run it. Screenshot the canvas for Question 3(a). Drag a box on the time sink to zoom in on one dit, measure its length, and screenshot it for Question 3(b). Read the tops of the two spectra 1 kHz and 2 kHz from 0 Hz, where a carrier would sit, for Question 3(c).
+8. Run it. Screenshot the canvas for Question 3(a). Drag a box on the time sink to zoom in on one dit, measure its length, and screenshot it for Question 3(b). Read the highest peak of each spectrum within 100 Hz of 1 kHz and of 2 kHz from 0 Hz, where a carrier would sit, for Question 3(c); the Moving Average has nulls exactly at multiples of 200 Hz.
 ::::
 
 ::::{frame} Part 2: The Receiver in Noise
@@ -108,6 +108,16 @@ Close the flowgraph and run it again with the sliders at their defaults, where e
 `L12-cw-pluto.grc` is the Lesson 12 link with the simulated channel replaced by a PlutoSDR. The transmit half raises the 32 kHz stream to 1.024 MS/s and sends the keyed carrier from the Pluto's TX port at 915 MHz plus 5 kHz; the receive half takes it from the RX port, lowers it to 32 kHz, and runs the same receiver. The received level depends on the cable, the attenuator, and the gain, so the envelope plot scales itself and shows the threshold as a red line instead of the key. You type the message into the Message box. We have run this flowgraph only in simulation, with a model of the cable in place of the radio, so your bench is its first run on hardware.
 
 In class we transmit only into a cable, into a shielded enclosure, or at very low power in an ISM band, and only when the lesson says to. This question transmits only into the cable between the Pluto's own TX and RX ports, through an inline 30 dB SMA attenuator. The TX attenuation slider opens at 60 dB and cannot go below 30 dB. Never set TX attenuation below 30 dB or change the slider's range; the RX input is rated to only a few dBm, and the transmitter can put out more than that.
+::::
+
+::::{frame} What Success Looks Like
+:class: read-only
+
+<img src="../../viz/img/L12-pluto-sim.png"
+     alt="L12-cw-pluto.grc run in simulation, labeled SIMULATED on the figure, with a cable model in place of the PlutoSDR: at 60 dB TX attenuation and 40 dB RX gain the waterfall shows the keyed carrier at plus 5 kHz, the autoscaled envelope sits near 0.32 during marks and near 0 between them with the red threshold line at 0.25, and the Received label reads USAFA ECE 448 repeatedly"
+     style="max-width: 820px; width: 100%; display: block; margin: 0 auto 12px;">
+
+The figure is the PlutoSDR flowgraph run in simulation, with the Pluto Sink and Source replaced by a model of the cable, so its levels are not the Pluto's. On the bench, look for the same three things: the keyed carrier on the waterfall at +5 kHz, the red threshold line halfway between the envelope's space and mark levels, and the message in the Received label.
 ::::
 
 ::::{frame} PlutoSDR Steps

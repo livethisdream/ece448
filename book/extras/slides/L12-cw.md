@@ -53,7 +53,7 @@ Parts 1 and 2 are the transmitter, parts 3 and 4 the receiver. Part 5 runs live 
 A keyed carrier at +5 kHz, its envelope, and the decoded text.
 
 Note:
-Run L12-cw-link.grc live with the audio on. Each dash of color on the waterfall is one key-down. The blue envelope sits near 0.65 for a mark, and the red key follows it.
+Run L12-cw-link.grc live with the audio on. Each dash of color on the waterfall is one key-down. The blue envelope sits near 0.64 for a mark, and the red key follows it.
 
 ---
 
@@ -122,7 +122,7 @@ A receiver tuned near a hard-keyed transmitter hears a click at every edge.
 
 | Edge time | 99% bandwidth | 99.9% bandwidth | 1 kHz away, vs hard |
 | :-: | :-: | :-: | :-: |
-| hard | 183 Hz | 1.8 kHz | 0 dB |
+| hard | 183 Hz | 1.7 kHz | 0 dB |
 | 1 ms | 150 Hz | 676 Hz | −10 dB |
 | 5 ms | 87 Hz | 247 Hz | −40 dB |
 | 10 ms | 64 Hz | 150 Hz | −52 dB |
@@ -139,7 +139,7 @@ The edge has to stay well under a dit. At 40 WPM a dit is 30 ms, and 5 ms edges 
 ## CW Keyer Explorer
 
 - Drag the edge time to 0: the skirts rise 40 dB at 1 kHz.
-- Raise the speed: the 99% bandwidth grows with the WPM.
+- Raise the speed: the 99% bandwidth grows, fastest with hard keying.
 - Type your own message and read its length.
 
 <p class="viz-cue">↗ Interactive on the lesson page</p>
@@ -201,10 +201,10 @@ Each boundary sits between two values a perfect sender produces. A pattern not i
 
 $$\text{SNR} = \frac{32{,}000}{\sigma^2 B}$$
 
-At $\sigma$ = 6 and 200 Hz: 6.5 dB, about 6 characters in 100 wrong.
+At $\sigma$ = 6 and 200 Hz: 6.5 dB, about 8 characters in 100 wrong.
 
 Note:
-The noise is spread over 32 kHz and the CW filter passes B of it. For 200 Hz the SNR is 160 over sigma squared: 6.5 dB at sigma 6, where 6.3% of characters came out wrong.
+The noise is spread over 32 kHz and the CW filter passes B of it. For 200 Hz the SNR is 160 over sigma squared: 6.5 dB at sigma 6, where 8.2% of characters came out wrong, averaged over four runs.
 
 ---
 
@@ -212,15 +212,15 @@ The noise is spread over 32 kHz and the CW filter passes B of it. For 200 Hz the
 
 | $\sigma$ | SNR in 200 Hz | 50 Hz | 200 Hz | 1 kHz |
 | :-: | :-: | :-: | :-: | :-: |
-| 4 | 10.0 dB | 0% | 0% | 2.5% |
-| 5 | 8.1 dB | 0% | 1.2% | 16% |
-| 6 | 6.5 dB | 0.2% | 6.3% | 40% |
-| 7 | 5.1 dB | 1.0% | 22% | 69% |
+| 4 | 10.0 dB | 0% | 0% | 1.4% |
+| 5 | 8.1 dB | 0% | 1.6% | 15% |
+| 6 | 6.5 dB | 0.3% | 8.2% | 40% |
+| 7 | 5.1 dB | 1.7% | 24% | 67% |
 
 A narrower filter passes less noise but needs more accurate tuning.
 
 Note:
-A narrower filter passes less noise, which is Lesson 2's point. Its limit is tuning: the tone must stay inside the filter. At 40 WPM the 50 Hz filter still got 99.7% right at sigma 5.5.
+A narrower filter passes less noise, which is Lesson 2's point. Its limit is tuning: the tone must stay inside the filter. At 40 WPM the 50 Hz filter still got about 99% right at sigma 5.5.
 
 ---
 

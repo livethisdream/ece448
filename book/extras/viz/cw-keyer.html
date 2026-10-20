@@ -122,10 +122,19 @@ function psd(env) {   // averaged periodogram over the repeating message, two-si
   return out;   // bin k is frequency (k - NFFT/2) * FS / NFFT
 }
 
-function obw99(p) {
-  let tot = 0; for (const v of p) tot += v;
-  const c = NFFT / 2; let acc = p[c];
-  for (let k = 1; k < NFFT / 2; k++) { acc += p[c + k] + p[c - k]; if (acc >= 0.99 * tot) return 2 * k * FS / NFFT; }
+function obw99(env, spu) {
+  // One FFT of a single repeat, shifted to start inside the closing word gap
+  // so the zero padding adds no edge: the fraction of its energy within +-B
+  // matches the line spectrum of the repeating message.
+  const n = env.length, shift = Math.round(3 * spu);
+  let N = 1; while (N < 2 * n) N <<= 1;
+  const re = new Float64Array(N), im = new Float64Array(N);
+  for (let i = 0; i < n; i++) re[i] = env[(i - shift + n) % n];
+  fft(re, im);
+  let tot = 0; const p = new Float64Array(N / 2);
+  for (let k = 0; k < N; k++) tot += re[k] * re[k] + im[k] * im[k];
+  let acc = re[0] * re[0];
+  for (let k = 1; k < N / 2; k++) { acc += 2 * (re[k] * re[k] + im[k] * im[k]); if (acc >= 0.99 * tot) return 2 * k * FS / N; }
   return FS;
 }
 function smooth(p, k) { let s = 0, n = 0; for (let i = k - 5; i <= k + 5; i++) { s += p[i]; n++; } return s / n; }
@@ -199,7 +208,7 @@ function update() {
   $('msg-v').textContent = u.length + ' units';
   $('o-dit').textContent = unitMs.toFixed(0) + ' ms';
   $('o-len').textContent = (u.length * unitMs / 1000).toFixed(2) + ' s';
-  $('o-obw').textContent = obw99(ps).toFixed(0) + ' Hz';
+  $('o-obw').textContent = obw99(shaped, 1.2 / wpm * FS).toFixed(0) + ' Hz';
   const k1 = Math.round(1000 / FS * NFFT), c = NFFT / 2;
   const d = 10 * Math.log10((smooth(ps, c + k1) + smooth(ps, c - k1)) / (smooth(ph, c + k1) + smooth(ph, c - k1)));
   $('o-1k').textContent = (Math.abs(d) < 0.05 ? '0' : d.toFixed(0)) + ' dB';

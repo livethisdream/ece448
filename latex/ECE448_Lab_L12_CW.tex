@@ -164,7 +164,7 @@ with every slider at its default.
 
 	\part Paste a screenshot of the running flowgraph's window.
 		\begin{solution}[1.6in]
-		The waterfall shows the keyed carrier at +5 kHz, the envelope sits near 0.65 during
+		The waterfall shows the keyed carrier at +5 kHz, the envelope sits near 0.64 during
 		marks and near 0.04 between them, and the key trace follows the marks.
 		\end{solution}
 
@@ -289,8 +289,8 @@ list from Question 2(b) in the Vector Source.
 		\ansbox[1.1in]{92 ms}
 	\end{minipage}
 
-	\part Read the tops of the hard and shaped spectra 1 kHz and 2 kHz from 0 Hz,
-	where the carrier would sit. How far below hard keying is your ramp at each? Lesson 12's 5 ms raised
+	\part Read the highest peak of the hard and shaped spectra within 100 Hz of 1 kHz and of
+	2 kHz from 0 Hz, where the carrier would sit. How far below hard keying is your ramp at each? Lesson 12's 5 ms raised
 	cosine was 40 dB and 52 dB below; explain the difference.
 
 	\begin{center}
@@ -329,16 +329,16 @@ message, and count the wrong, missing, and extra characters among those 39.
 	\hline
 	$\sigma$ & $4.5$ & $5.5$ & $6.5$ & $6.5$ & $6.5$ \\\hline
 	Filter width & 200 Hz & 200 Hz & 200 Hz & 1000 Hz & 50 Hz \\\hline
-	Space level & \kv{$0.20$} & \kv{$0.24$} & \kv{$0.28$} & \kv{$0.61$} & \kv{$0.14$} \\\hline
-	Mark level & \kv{$0.65$} & \kv{$0.66$} & \kv{$0.67$} & \kv{$0.85$} & \kv{$0.62$} \\\hline
-	Threshold & \kv{$0.42$} & \kv{$0.45$} & \kv{$0.48$} & \kv{$0.73$} & \kv{$0.38$} \\\hline
-	Wrong of 39 & \kv{0} & \kv{0 to 2} & \kv{$\approx 3$} & \kv{$\approx 18$} & \kv{0} \\\hline
+	Space level & \kv{$0.19$} & \kv{$0.24$} & \kv{$0.28$} & \kv{$0.62$} & \kv{$0.14$} \\\hline
+	Mark level & \kv{$0.67$} & \kv{$0.68$} & \kv{$0.69$} & \kv{$0.86$} & \kv{$0.64$} \\\hline
+	Threshold & \kv{$0.43$} & \kv{$0.46$} & \kv{$0.48$} & \kv{$0.74$} & \kv{$0.39$} \\\hline
+	Wrong of 39 & \kv{0} & \kv{1 to 3} & \kv{$\approx 5$} & \kv{$\approx 21$} & \kv{0 or 1} \\\hline
 	\end{tabular}
 	\end{center}
 
 		\begin{solution}[0.8in]
-		We measured about 220 characters per setting, and the wrong characters were 0\%, 1.8\%,
-		7.6\%, 45\%, and 0\%. Counts over 39 characters vary from run to run because the
+		Averaged over four runs of 600 characters, the wrong characters were 0.2\%, 4.3\%,
+		14\%, 55\%, and 0.8\%. Counts over 39 characters vary from run to run because the
 		noise is random. The space level rises with the noise and with the filter width,
 		so the threshold has to move with it.
 		\end{solution}
@@ -374,7 +374,7 @@ amplitude at 1, the 200 Hz filter, and the threshold at 0.3.
 		\begin{solution}[1.2in]
 		At 10 WPM every dit lasts 2 decoder units, so the decoder reads every mark as a dah
 		and prints Ts and Ms. At 12 WPM each letter gap lasts exactly 5 units and reads as a
-		word gap, so the letters come out separated by spaces, \texttt{U S A F A}. From 13 to
+		word gap, so most letters come out separated by spaces, as in \texttt{US A F A}. From 13 to
 		27 WPM the text is correct. At 28 WPM each word gap lasts exactly 5 units, and the
 		words run together; at 30 WPM the letter gaps also fall to the 2-unit boundary, the
 		letters merge, and the decoder prints \#.
@@ -462,8 +462,8 @@ unplug the Pluto before you disconnect the cable.
 	move as the noise rose, and say what SNR a Lesson 2 link budget for this link
 	should deliver in the CW filter.
 		\begin{solution}[1.5in]
-		The link copied without errors at 9.0 dB ($\sigma = 4.5$), lost a character or
-		two at 7.2 dB, and lost about 1 in 13 at 5.8 dB. Noise passing the filter raises
+		The link copied without errors at 9.0 dB ($\sigma = 4.5$), lost about 1 in 25 at
+		7.2 dB, and lost about 1 in 7 at 5.8 dB. Noise passing the filter raises
 		the envelope during the spaces, from about 0.04 at $\sigma = 1$ to 0.28 at
 		$\sigma = 6.5$, so a fixed threshold of 0.3 lets noise peaks through as dits; the
 		threshold must sit halfway between the space and mark levels. A budget should
@@ -476,7 +476,8 @@ unplug the Pluto before you disconnect the cable.
 		\begin{solution}[1.5in]
 		The signal is only about 100 Hz wide, so a wider filter adds noise without adding
 		signal: the 1000 Hz filter passed five times the noise of the 200 Hz filter and lost
-		almost half the characters, while the 50 Hz filter passed a quarter of it and lost none. The tone must stay
+		more than half the characters, while the 50 Hz filter passed a quarter of it and lost
+		under 1\%. The tone must stay
 		inside the filter: the 200 Hz filter decoded out to 80 Hz of tuning error and
 		failed at 100 Hz, so a 50 Hz filter would need the receiver within about 25 Hz of
 		the carrier, and transmitter drift would matter four times as much.
@@ -489,8 +490,8 @@ unplug the Pluto before you disconnect the cable.
 		The prediction was $12 < W \le 28$, and the link decoded from 13 to 27 WPM.
 		At the slow end the letter-gap window failed first, as letter gaps reached the
 		5-unit word boundary; at the fast end the word gaps fell to that same boundary.
-		The two edge speeds fail in practice because the filters lengthen each mark and
-		shorten each space slightly. A decoder can measure the sender's speed instead of
+		At both edge speeds a gap lands exactly on the 5-unit boundary, and the noise's
+		jitter of a few hundredths of a unit pushes it to either side, so the text breaks up. A decoder can measure the sender's speed instead of
 		assuming it: keep a running average of the short marks, take it as the dit
 		length, and set the 2- and 5-unit boundaries from that.
 		\end{solution}

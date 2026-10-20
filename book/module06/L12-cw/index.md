@@ -39,7 +39,7 @@ Lesson 12 · Module 6: Waveform Applications & RF Reverse Engineering · Dr. Nei
 ::::{frame} Morse Code on an SDR
 :::{present}
 <img src="../../viz/img/L12-link-clean.png"
-     alt="The L12 link flowgraph running at noise amplitude 1 with a 200 Hz CW filter and a threshold of 0.3: the waterfall shows the keyed carrier as a broken vertical line at plus 5 kHz, the envelope sits near 0.65 during each mark and near 0.04 between them with the red key trace on top of it, and the Received label reads USAFA ECE 448 three times"
+     alt="The L12 link flowgraph running at noise amplitude 1 with a 200 Hz CW filter and a threshold of 0.3: the waterfall shows the keyed carrier as a broken vertical line at plus 5 kHz, the envelope sits near 0.64 during each mark and near 0.04 between them with the red key trace on top of it, and the Received label reads USAFA ECE 448 three times"
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
@@ -135,24 +135,24 @@ A receiver tuned to a frequency near a hard-keyed transmitter hears that spread 
 ::::{frame} Bandwidth and Edge Time
 :class: read-only
 
-We measured the keyer's spectrum over about 700 characters of random five-letter groups at 20 WPM. The **99% bandwidth** holds 99% of the signal's power, including the carrier. The last two columns compare the spectrum's level with hard keying at the same distance from the carrier.
+We measured the keyer's spectrum at the flowgraph's 8 kHz rate, over about 700 characters of random five-letter groups at 20 WPM. The **99% bandwidth** holds 99% of the signal's power, including the carrier. The last two columns compare the spectrum's level with hard keying at the same distance from the carrier.
 
 | Edge time | 99% bandwidth | 99.9% bandwidth | 1 kHz away, vs hard | 2 kHz away, vs hard |
 | :-: | :-: | :-: | :-: | :-: |
-| 0 (hard) | 183 Hz | 1.8 kHz | 0 dB | 0 dB |
-| 1 ms | 150 Hz | 676 Hz | $-10$ dB | $-24$ dB |
-| 2 ms | 121 Hz | 450 Hz | $-24$ dB | $-36$ dB |
-| 5 ms | 87 Hz | 247 Hz | $-40$ dB | $-52$ dB |
+| 0 (hard) | 183 Hz | 1.7 kHz | 0 dB | 0 dB |
+| 1 ms | 150 Hz | 676 Hz | $-10$ dB | $-25$ dB |
+| 2 ms | 121 Hz | 450 Hz | $-24$ dB | $-37$ dB |
+| 5 ms | 87 Hz | 247 Hz | $-40$ dB | $-53$ dB |
 | 10 ms | 64 Hz | 150 Hz | $-52$ dB | $-65$ dB |
 
-Each doubling of the edge time cuts the energy far from the carrier by roughly another 12 dB, and the 99.9% bandwidth shrinks from 1.8 kHz to 247 Hz with 5 ms edges. The edge time has a limit, though: it has to stay well under a dit, or the dits lose their flat tops and the receiver cannot tell them apart. At 40 WPM a dit lasts 30 ms, and 5 ms edges still leave 25 ms of it at full power.
+Each doubling of the edge time cuts the energy far from the carrier by roughly another 12 dB, and the 99.9% bandwidth shrinks from 1.7 kHz to 247 Hz with 5 ms edges. The edge time has a limit, though: it has to stay well under a dit, or the dits lose their flat tops and the receiver cannot tell them apart. At 40 WPM a dit lasts 30 ms, and 5 ms edges still leave 25 ms of it at full power.
 ::::
 
 ::::{frame} CW Keyer Explorer
 :class: viz-frame
 
 :::{depth}
-The left panel shows the whole message as marks and spaces, and below it the first key-down edge enlarged, hard keying in gray and the shaped edge in blue. The right panel shows the spectrum within 1 kHz of the carrier. Start with PARIS at 20 WPM: the readouts give a 60 ms dit and a 3.00 s message. Drag the edge time from 5 ms to 0 and watch the blue spectrum rise until it overlaps the gray one, with the skirts rising 40 dB at 1 kHz. Then raise the speed: the dits get shorter, the spectrum widens, and the 99% bandwidth grows in proportion to the WPM.
+The left panel shows the whole message as marks and spaces, and below it the first key-down edge enlarged, hard keying in gray and the shaped edge in blue. The right panel shows the spectrum within 1 kHz of the carrier. Start with PARIS at 20 WPM: the readouts give a 60 ms dit and a 3.00 s message. Drag the edge time from 5 ms to 0 and watch the blue spectrum rise until it overlaps the gray one, with the skirts rising 40 dB at 1 kHz. Then raise the speed: the dits get shorter, the spectrum widens, and the 99% bandwidth grows. It grows almost in proportion to the WPM with hard keying, and more slowly with a fixed 5 ms edge, which limits how far the energy spreads.
 :::
 
 :::{present}
@@ -204,7 +204,7 @@ A tuning error moves the tone. If the receiver tunes 40 Hz below the carrier, th
 - Noise raises the space level, so the threshold has to rise with it.
 :::
 
-After the low-pass filter the envelope sits near 0.65 during a mark, the average of a rectified tone of amplitude 1, and near the noise level during a space. The **Threshold** block outputs 1 when the envelope rises above $1.2 \times$ `thr` and 0 when it falls below $0.8 \times$ `thr`. The gap between the two levels, called **hysteresis**, keeps a noisy envelope that hovers near the threshold from flipping the key back and forth.
+After the low-pass filter the envelope sits near 0.64 during a mark, $2/\pi$, the average of a rectified tone of amplitude 1, and near the noise level during a space. The **Threshold** block outputs 1 when the envelope rises above $1.2 \times$ `thr` and 0 when it falls below $0.8 \times$ `thr`. The gap between the two levels, called **hysteresis**, keeps a noisy envelope that hovers near the threshold from flipping the key back and forth.
 
 At a noise amplitude of 1 the space level is about 0.04, and `thr` = 0.3 works. The figure raises the noise to 6. The space level rises to about 0.26, noise peaks cross the fixed threshold, and the decoder reads them as dits. Moving `thr` to 0.47, halfway between the new space level and the 0.68 mark level, fixes it, as the Noise frame below shows. A real decoder tracks the two levels and moves its threshold automatically; in the lab you set it by eye from the envelope plot.
 ::::
@@ -228,19 +228,19 @@ The windows are wide, so the decoder accepts the uneven timing of a human operat
 ::::{frame} Noise
 :::{present}
 <img src="../../viz/img/L12-link-noisy.png"
-     alt="The L12 link at noise amplitude 6 with a 200 Hz CW filter and the threshold raised to 0.47: noise fills the waterfall and hides the carrier, the envelope swings widely but stays higher during the marks, the key trace follows the marks with a few extra pulses, and the Received label reads U A ECE 448 USAFA ECE EU4# USAFA ECE 448, with a few wrong letters"
+     alt="The L12 link at noise amplitude 6 with a 200 Hz CW filter and the threshold raised to 0.47: noise fills the waterfall and hides the carrier, the envelope swings widely but stays higher during the marks, the key trace follows the marks with a few extra pulses, and the Received label reads USAFA ECE 448 USAFA ECE 448 USAFS ECE 447, with two wrong characters"
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
 - SNR in the CW filter: $160/\sigma^2$ for 200 Hz.
-- At 6.5 dB, about 6 characters in 100 come out wrong.
+- At 6.5 dB, about 8 characters in 100 come out wrong.
 :::
 
 The keyed carrier has power 1 while the key is down, and the noise amplitude $\sigma$ is the standard deviation of the complex noise per sample, spread evenly over 32 kHz. A CW filter of width $B$ passes only $B/32{,}000$ of the noise power, so the SNR inside the filter is
 
 $$\text{SNR} = \frac{32{,}000}{\sigma^2 B},$$
 
-which is $160/\sigma^2$ for the 200 Hz filter. At $\sigma = 6$ that is 4.4, or 6.5 dB. The noise now reaches the top of the waterfall's color scale and hides the carrier there, but the CW filter still separates the carrier from most of the noise. With the threshold at 0.47, the receiver in the figure copies most of the message, and each wrong letter comes from a dit lost in the noise or a noise burst read as an extra dit. We measured 600 characters at this setting, and 6.3% of them were wrong.
+which is $160/\sigma^2$ for the 200 Hz filter. At $\sigma = 6$ that is 4.4, or 6.5 dB. The noise now reaches the top of the waterfall's color scale and hides the carrier there, but the CW filter still separates the carrier from most of the noise. With the threshold at 0.47, the receiver in the figure copies most of the message, and each wrong letter comes from a dit lost in the noise or a noise burst read as an extra dit. Over four runs of 600 characters at this setting, 8.2% of them were wrong, and single runs ranged from 7% to 10%.
 ::::
 
 ::::{frame} Filter Width
@@ -255,25 +255,25 @@ which is $160/\sigma^2$ for the 200 Hz filter. At $\sigma = 6$ that is 4.4, or 6
 - A narrower filter needs more accurate tuning.
 :::
 
-The figure keeps the noise amplitude at 6 and widens the CW filter to 1 kHz. Five times as much noise reaches the envelope detector, the space level rises to about 0.57, and even with the threshold moved to 0.70, the gap between the two levels is too small for clean decisions. The signal itself is only about 100 Hz wide, so a 1 kHz filter passes mostly noise. Narrowing the filter to 50 Hz goes the other way: at the same noise amplitude, only 1 character in 500 was wrong.
+The figure keeps the noise amplitude at 6 and widens the CW filter to 1 kHz. Five times as much noise reaches the envelope detector, the space level rises to about 0.57, and even with the threshold moved to 0.70, the gap between the two levels is too small for clean decisions. The signal itself is only about 100 Hz wide, so a 1 kHz filter passes mostly noise. Narrowing the filter to 50 Hz goes the other way: at the same noise amplitude, only 3 characters in 1000 were wrong.
 
-A narrow filter has two limits. The tone must stay inside it, so a narrower filter needs more accurate tuning and a more stable transmitter. And the filter's own response slows the envelope's edges, which matters only at speeds well above ours: at 40 WPM and $\sigma = 5.5$, the 50 Hz filter still got 99.7% of the characters right.
+A narrow filter has two limits. The tone must stay inside it, so a narrower filter needs more accurate tuning and a more stable transmitter. And the filter's own response slows the envelope's edges, which matters only at speeds well above ours: at 40 WPM and $\sigma = 5.5$, the 50 Hz filter still got about 99% of the characters right.
 ::::
 
 ::::{frame} Noise Sweep
 :class: read-only
 
-We measured the link with the flowgraph's blocks running headless, without the Throttle, decoding 600 characters of random five-letter groups at 20 WPM at each setting. At each one we set the threshold halfway between the measured space and mark levels and counted the wrong characters, including those missing or added.
+We measured the link with the flowgraph's blocks running headless, without the Throttle, decoding four runs of 600 characters of random five-letter groups at 20 WPM at each setting, and the table gives the average; single runs vary by about a quarter of the value. At each one we set the threshold halfway between the measured space and mark levels and counted the wrong characters, including those missing or added.
 
 | $\sigma$ | SNR in 200 Hz | 50 Hz filter | 200 Hz filter | 1 kHz filter |
 | :-: | :-: | :-: | :-: | :-: |
 | 3 | 12.5 dB | 0% | 0% | 0% |
-| 4 | 10.0 dB | 0% | 0% | 2.5% |
-| 5 | 8.1 dB | 0% | 1.2% | 16% |
-| 6 | 6.5 dB | 0.2% | 6.3% | 40% |
-| 7 | 5.1 dB | 1.0% | 22% | 69% |
+| 4 | 10.0 dB | 0% | 0% | 1.4% |
+| 5 | 8.1 dB | 0% | 1.6% | 15% |
+| 6 | 6.5 dB | 0.3% | 8.2% | 40% |
+| 7 | 5.1 dB | 1.7% | 24% | 67% |
 
-The 200 Hz filter decodes without errors down to 10 dB in its own bandwidth and loses about a fifth of the characters at 5 dB. Each narrower filter keeps the error rate at zero up to a higher noise amplitude, which is the point of Lesson 2: the noise that reaches the detector is proportional to the bandwidth. The threshold matters as much as the filter. Left at 0.3, the 200 Hz receiver lost 21% of the characters at $\sigma = 5$ and 77% at $\sigma = 6$.
+The 200 Hz filter decodes without errors down to 10 dB in its own bandwidth and loses about a quarter of the characters at 5 dB. Each narrower filter keeps the error rate at zero up to a higher noise amplitude, which is the point of Lesson 2: the noise that reaches the detector is proportional to the bandwidth. The threshold matters as much as the filter. Left at 0.3, the 200 Hz receiver lost about 21% of the characters at $\sigma = 5$ and about 77% at $\sigma = 6$.
 ::::
 
 ::::{frame} CW on a Real Radio
