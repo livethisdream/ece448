@@ -58,7 +58,7 @@ so change them together with the manifest.
 Lessons move to the 444 format one at a time, in teaching order. A converted
 lesson replaces its generated page with a real frame lesson, following 444's
 `book/module01/L05-field-regions/` as the worked example and 444's budgets
-and checks. L1-L10 are converted. Keep the legacy slide links until the new
+and checks. L1-L13 are converted. Keep the legacy slide links until the new
 material covers the same ground, then set the lesson's decks to `[]` in the
 manifest. GNU Radio flowgraphs (`.grc`) and example code a cadet runs go with
 the lesson; solutions stay in `ECE448-faculty`.

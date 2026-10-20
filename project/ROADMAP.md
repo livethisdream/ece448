@@ -173,7 +173,27 @@ since they follow this structure. Two changes:
   station, and the L10 PlutoSDR cable link across 30-89 dB TX attenuation,
   including whether zero-IF DC tracking biases long runs of zeros.
 - **gr-rds** is in the session hook; L7's RDS flowgraphs need it.
-- **Next batch:** L11, L12, L13.
+
+## Lesson threads, third batch (2026-10-20)
+
+- **L11, L12, and L13 done** (PRs #18, #20, #19). Each thread ran two or three
+  reviewers of its own, and the Integrator review still found blocking items:
+  L11 called 433.92 MHz an ISM band and printed Pre-Lab answers; L12's
+  PlutoSDR path would have reached the receiver about 40 dB below what its
+  controls could show; L13 shipped a 6.9 MB vector spectrogram and a public
+  script that printed the KEY's tables.
+- **More rules:** a figure with more than a few thousand marks is rasterized
+  (`rasterized=True`, about 150 dpi) and stays under about 100 KB; a
+  downloadable script never prints a lab's answers; a PlutoSDR flowgraph
+  that runs through the 30 dB pad carries an AGC, as L10's and L12's do.
+- **Lab keys and reference code** now live in `ECE448-faculty`:
+  `lab-keys/` for the KEY PDFs and `lab-solutions/` for code a cadet writes
+  (L11's Key Timer) or a full script whose public copy was trimmed (L13).
+- **L11 Windows route:** WSL2 with Ubuntu 24.04 first, then an Embedded
+  Python Block, then a teammate's laptop. Open for Neil.
+- **Bench checks for Neil:** L12's PlutoSDR cable link across 30-89 dB, and
+  L13's microphone flowgraph with a real phone.
+- **Next batch:** L14 to L16.
 
 ## Lesson threads (from L6 on)
 

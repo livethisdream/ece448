@@ -171,7 +171,7 @@ LESSONS = [
     (5, 11, "L11-custom-blocks", "Out-of-Tree Modules and Custom Blocks", ["5.1", "5.2"], [], "Package a GNU Radio out-of-tree module and write your own Python block."),
 
     (6, 12, "L12-cw", "CW", ["6.1"], [], "Send and decode Morse code in GNU Radio."),
-    (6, 13, "L13-dtmf", "DTMF", ["6.2"], ["dtmf"], "Detect DTMF tones in a captured audio signal."),
+    (6, 13, "L13-dtmf", "DTMF", ["6.2"], [], "Detect DTMF tones in a captured audio signal."),
     (6, 14, "L14-hd-radio", "HD Radio", ["6.3"], ["hd", "ref-nrsc"], "How HD Radio hides OFDM sidebands beside an FM station, and how to demodulate them."),
     (6, 15, "L15-mpsk", "mPSK", ["6.4"], ["ref-diff"], "BPSK, QPSK, and 8PSK in GNU Radio, with carrier and symbol-timing recovery."),
     (6, 16, "L16-fhss", "Frequency Hopping", ["6.5"], [], "An FHSS transmitter and receiver that stay on the same hop sequence."),

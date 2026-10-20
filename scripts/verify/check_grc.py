@@ -11,8 +11,14 @@ GNU Radio must be installed (apt install gnuradio on Ubuntu 24.04 gives
 3.10.9). Its Python bindings are built for the system Python, so this calls
 grcc through /usr/bin/python3.12 rather than whatever python3 is first on PATH.
 
+A lesson that ships its own out-of-tree module (L11's gr-ece448) keeps the
+module's block definitions in book/extras/grc/<module>/grc. Every such folder
+goes on GRC_BLOCKS_PATH, so its flowgraphs compile without installing the
+module first.
+
     scripts/verify/check_grc.py
 """
+import os
 import pathlib
 import subprocess
 import sys
@@ -27,10 +33,14 @@ def main() -> int:
     if not files:
         print("no flowgraphs in book/extras/grc")
         return 0
+    oot = [str(d) for d in sorted((ROOT / "book/extras/grc").glob("*/grc")) if d.is_dir()]
+    env = dict(os.environ)
+    if oot:
+        env["GRC_BLOCKS_PATH"] = os.pathsep.join(oot + [env.get("GRC_BLOCKS_PATH", "")]).rstrip(os.pathsep)
     bad = []
     with tempfile.TemporaryDirectory() as out:
         for f in files:
-            r = subprocess.run([PY, "/usr/bin/grcc", "-o", out, str(f)], capture_output=True, text=True)
+            r = subprocess.run([PY, "/usr/bin/grcc", "-o", out, str(f)], capture_output=True, text=True, env=env)
             ok = r.returncode == 0 and "Generating" in r.stdout + r.stderr
             print(f"  {'PASS' if ok else 'FAIL'}  {f.name}")
             if not ok:
