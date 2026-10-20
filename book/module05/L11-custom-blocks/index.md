@@ -40,7 +40,7 @@ Lesson 11 · Module 5: Custom Blocks & Midterm · Dr. Neil Rogers
 ::::{frame} A Keyed Carrier
 :::{present}
 <img src="../../viz/img/L11-keyed-clean.png"
-     alt="The L11 keyed-carrier flowgraph running at noise amplitude 0.1, threshold minus 10 dB, and hysteresis 3 dB: the Power plot steps between 0 dB and about minus 20 dB in the pattern of Morse ECE, with the on level dashed at minus 10 dB and the off level at minus 13 dB; the Key plot shows the detected key, which follows the sent keying exactly"
+     alt="The L11 keyed-carrier flowgraph running at noise amplitude 0.1, threshold minus 10 dB, and hysteresis 3 dB: the Power plot steps between 0 dB and about minus 20 dB in the pattern of Morse ECE, with the on level dashed at minus 10 dB and the off level at minus 13 dB; the Key plot shows the detected key, which follows the keying the flowgraph sent exactly"
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
@@ -48,7 +48,7 @@ Lesson 11 · Module 5: Custom Blocks & Midterm · Dr. Neil Rogers
 - Our own block turns it into a key: 1 while the carrier is on.
 :::
 
-The figure is today's flowgraph, `L11-keyed-carrier.grc`, running. A 1 kHz tone at 32 kHz sampling switches on and off in the pattern of Morse code for "ECE" at 20 words per minute, so each dit lasts 60 ms, and a Noise Source adds Gaussian noise. The top plot is the signal's average power in dB, and the bottom plot compares the key our block makes with the keying that was sent, raised by 1.5 so the two traces do not overlap.
+The figure is today's flowgraph, `L11-keyed-carrier.grc`, running. A 1 kHz tone at 32 kHz sampling switches on and off in the pattern of Morse code for "ECE" at 20 words per minute, so each dit lasts 60 ms, and a Noise Source adds Gaussian noise. The top plot is the signal's average power in dB, and the bottom plot compares the key our block makes with the keying the flowgraph sent, raised by 1.5 so the two traces do not overlap.
 
 No block in GNU Radio's library makes that key directly, so we write one: the **Energy Detector**. It is the first block in a module of our own, `gr-ece448`. Lesson 12 can reuse it to receive CW, and at the end of this lesson the same block keys on the bursts of a 433 MHz remote.
 ::::
@@ -116,7 +116,7 @@ GNU Radio's scheduler calls a block's `work()` function with a buffer of input s
      style="max-width: 760px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
-- One complex input; two float outputs, power in dB and the key.
+- The block takes one complex input and makes two float outputs, power in dB and the key.
 - The key turns on above the threshold and off below threshold minus hysteresis.
 :::
 
@@ -161,7 +161,7 @@ templates:
   - set_threshold_db(${threshold_db})
   - set_hysteresis_db(${hysteresis_db})
 ```
-- Then one entry per parameter, input, and output.
+- The rest of the file has one entry per parameter, input, and output.
 :::
 
 GRC never reads the Python file. It reads `grc/ece448_energy_detector.block.yml`, which names the block, puts it in an "ECE 448" category, and gives the line of Python that GRC writes into the flowgraph's generated script: the `make` template, with each `${...}` replaced by the value in the block's properties dialog. The `callbacks` let GRC call the setters when a slider moves. Below this, the file lists the three parameters with their labels, types, and defaults, the complex input, and the two float outputs, `power` and `key`. The template from `gr_modtool` has placeholders for each, and the download has the finished file.
@@ -187,7 +187,8 @@ def test_002_hysteresis(self):
 :::{present}
 ```
 mkdir build && cd build
-cmake -G Ninja -DCMAKE_INSTALL_PREFIX=${CONDA_PREFIX} ..
+cmake -G Ninja -DCMAKE_INSTALL_PREFIX=${CONDA_PREFIX} \
+      -DCMAKE_PREFIX_PATH=${CONDA_PREFIX} ..
 cmake --build .
 ctest --output-on-failure
 cmake --install .
@@ -195,7 +196,7 @@ cmake --install .
 - `ctest` runs the unit test before we install anything.
 :::
 
-A Python-only module has nothing to compile, but **CMake** still copies its files to the right places, and `ctest` runs its tests against the build directory. `CMAKE_INSTALL_PREFIX=${CONDA_PREFIX}` installs into the radioconda environment, so the block goes where that environment's GNU Radio looks: the Python file under its `site-packages/gnuradio/ece448/`, and the YAML file under `share/gnuradio/grc/blocks/`. We built, tested, and installed the module this way under GNU Radio 3.10.12 from conda-forge on Linux, and with Ubuntu's 3.10.9 and `make` in place of Ninja; `ctest` reported `Ran 4 tests ... OK` on both. Restart GRC after installing so it reloads its block library.
+A Python-only module has nothing to compile, but **CMake** still copies its files to the right places, and `ctest` runs its tests against the build directory. `CMAKE_PREFIX_PATH` tells CMake to find the radioconda environment's GNU Radio, and `CMAKE_INSTALL_PREFIX` installs into the same environment, so the block goes where that GNU Radio looks: the Python file under its `site-packages/gnuradio/ece448/`, and the YAML file under `share/gnuradio/grc/blocks/`. These steps build, test, and install the module under GNU Radio 3.10.12 from conda-forge on Linux, and under Ubuntu's 3.10.9 with `make` in place of Ninja. A passing `ctest` prints `100% tests passed, 0 tests failed out of 1`: its one entry runs the four test methods in `qa_energy_detector.py`. Restart GRC after installing so it reloads its block library.
 ::::
 
 ::::{frame} The Block in GRC
@@ -206,10 +207,10 @@ A Python-only module has nothing to compile, but **CMake** still copies its file
 :::
 :::{present}
 - The installed block sits in the library under **ECE 448**.
-- Its two outputs are labeled `power` and `key`.
+- The block labels its two outputs `power` and `key`.
 :::
 
-Once installed, the Energy Detector is an ordinary block: we search for it in GRC's block library, drag it onto the canvas, and set its three parameters in its properties dialog, here with the sliders `threshold` and `hyst` as values. The rest of the flowgraph builds the test signal. A **Vector Source** holds the Morse pattern, one entry per 60 ms unit, and a **Repeat** holds each entry for 1920 samples; multiplying by a 1 kHz **Signal Source** keys the tone. A **Keep 1 in N** with $N = 32$ brings the sent keying down to the detector's 1 kHz output rate for the comparison plot.
+Once installed, the Energy Detector is an ordinary block: you search for it in GRC's block library, drag it onto the canvas, and set its three parameters in its properties dialog, here with the sliders `threshold` and `hyst` as values. The rest of the flowgraph builds the test signal. A **Vector Source** holds the Morse pattern, one entry per 60 ms unit, and a **Repeat** holds each entry for 1920 samples; multiplying by a 1 kHz **Signal Source** keys the tone. A **Keep 1 in N** with $N = 32$ brings the sent keying down to the detector's 1 kHz output rate for the comparison plot.
 ::::
 
 ::::{frame} Threshold and Hysteresis
@@ -223,7 +224,7 @@ Once installed, the Energy Detector is an ordinary block: we search for it in GR
 - Hysteresis alone cannot fix a threshold in the wrong place.
 :::
 
-At a noise amplitude of 0.3, the noise floor is $20\log_{10} 0.3 = -10.5$ dB, right at the $-10$ dB threshold. With no hysteresis, every noise sample that crosses the line flips the key, so the key **chatters** through every gap, and a Morse decoder downstream would read each flip as a dit. Adding 3 dB of hysteresis with the threshold where it is makes things worse: the key turns on and then never falls below $-13$ dB, so it stays on for the whole sending. The threshold has to move first.
+At a noise amplitude of 0.3, the noise floor is $20\log_{10} 0.3 = -10.5$ dB, right at the $-10$ dB threshold. With no hysteresis, every averaged output that crosses the line flips the key, so the key **chatters** through every gap, and a Morse decoder downstream would read each flip as a dit. Adding 3 dB of hysteresis with the threshold where it is makes things worse: the key turns on and then never falls below $-13$ dB, so it stays on for the whole sending, and the threshold must move up before hysteresis can help.
 ::::
 
 ::::{frame} Setting the Levels
@@ -234,17 +235,21 @@ At a noise amplitude of 0.3, the noise floor is $20\log_{10} 0.3 = -10.5$ dB, ri
 :::
 :::{present}
 - Put both levels between the floor and the signal.
-- Hysteresis then absorbs the noise near the threshold.
+- Hysteresis then keeps noise near the threshold from switching the key.
 :::
 
-With the carrier on, the power is $10\log_{10}(1 + \sigma^2)$, which is $+0.4$ dB at $\sigma = 0.3$, and with it off the power is about $-10.5$ dB. Raising the threshold to $-5$ dB puts the on level at $-5$ dB and the off level at $-8$ dB, both well inside that 11 dB gap, and the key follows the keying exactly. A good rule is to set the threshold about halfway between the floor and the signal in dB, and the hysteresis to a few times the spread of the floor, which the next frame measures.
+With the carrier on, the power is
+
+$$P_\text{on} = 10\log_{10}(1 + \sigma^2)\ \text{dB},$$
+
+which is $+0.4$ dB at $\sigma = 0.3$, and with it off the power is about $-10.5$ dB. Raising the threshold to $-5$ dB puts the on level at $-5$ dB and the off level at $-8$ dB, both well inside that 11 dB gap, and the key follows the keying exactly. A good rule is to set the threshold about halfway between the floor and the signal in dB, and the hysteresis to a few times the spread of the floor, which the frame How Many Samples to Average works out.
 ::::
 
 ::::{frame} Energy Detector Explorer
 :class: viz-frame
 
 :::{depth}
-The top panel is the detector's power output for one sending of "ECE", and the bottom panel compares the key with the keying that was sent, shaded red where they differ. It starts where the chatter screenshot did: noise amplitude 0.3, threshold $-10$ dB, no hysteresis. Raise the threshold to $-5$ dB and add 3 dB of hysteresis, and the key changes 11 times, as the keying does. Then change the samples averaged. Averaging 8 samples gives a ragged floor and a 0.25 ms output; averaging 128 gives a smooth floor and a 4 ms output, and a dit is still 15 outputs long.
+The top panel is the detector's power output for one sending of "ECE", and the bottom panel compares the key with the keying the flowgraph sent, shaded red where they differ. It starts where the chatter screenshot did: noise amplitude 0.3, threshold $-10$ dB, no hysteresis. Raise the threshold to $-5$ dB and add 3 dB of hysteresis, and the key changes 11 times, as the keying does. Then change the samples averaged. Averaging 8 samples gives a ragged floor and a 0.25 ms output; averaging 128 gives a smooth floor and a 4 ms output, and a dit is still 15 outputs long.
 :::
 
 :::{present}
@@ -260,7 +265,15 @@ The top panel is the detector's power output for one sending of "ECE", and the b
 ::::{frame} How Many Samples to Average
 :class: read-only
 
-The noise power in one sample varies as much as its mean, so a single sample of noise tells us little. Averaging $N$ samples divides that spread by $\sqrt N$: the standard deviation of the average is $\sigma^2/\sqrt N$ around its mean of $\sigma^2$. In dB, for $N = 32$ the floor spreads by about $\pm 0.8$ dB, and for $N = 128$ by about $\pm 0.4$ dB.
+The noise power in one sample varies as much as its mean, so a single sample of noise tells us little. Averaging $N$ samples divides that spread by $\sqrt N$, so the average has a mean of $\sigma^2$ and a standard deviation of
+
+$$\sigma_P = \frac{\sigma^2}{\sqrt N}.$$
+
+In dB, one standard deviation above and below the mean is
+
+$$10\log_{10}\left(1 \pm \frac{1}{\sqrt N}\right)\ \text{dB},$$
+
+which for $N = 8$ is $+1.3$ dB and $-1.9$ dB. Four times as many samples halves the spread.
 
 Averaging more samples takes more time: each output covers $N/f_s$ seconds, and an edge in the keying can land anywhere inside one output. At 32 kHz, $N = 32$ gives 1 ms outputs. A dit at 20 words per minute is 60 ms, so it spans 60 outputs, and even $N = 128$, 4 ms, leaves 15 outputs per dit. A faster signal needs a shorter average: the 433 MHz remotes below send pulses a few hundred microseconds long, so their flowgraph averages 4 samples at 128 kHz, about 31 $\mu$s per output.
 ::::
@@ -272,9 +285,9 @@ Averaging more samples takes more time: each output covers $N/f_s$ seconds, and 
 - On Windows, the fallback is an Embedded Python Block.
 :::
 
-We checked the conda-forge packages that radioconda installs. `gnuradio-core` includes `gr_modtool` on Linux, macOS, and Windows, where it is `gr_modtool.exe`. Radioconda has no CMake and no compiler, and a module's top-level `CMakeLists.txt` declares C and C++, so CMake stops at its first line without a compiler, even when the module has no C++; we confirmed that failure on Linux. The package `gnuradio-build-deps`, installed with `conda install -c conda-forge gnuradio-build-deps`, adds CMake, Ninja, and a compiler. On Linux that compiler is complete. On macOS the conda compiler does not include Apple's SDK, which `xcode-select --install` provides; we did not test a Mac. On Windows the compiler package only locates an existing Visual Studio 2022 installation, so a Windows laptop also needs Microsoft's Visual Studio Build Tools, a large separate install that we did not test.
+Radioconda installs GNU Radio from conda-forge, and its `gnuradio-core` package includes `gr_modtool` on Linux, macOS, and Windows, where it is `gr_modtool.exe`. Radioconda has no CMake and no compiler, and a module's top-level `CMakeLists.txt` declares C and C++, so CMake stops at that line without a compiler, even when the module has no C++. The package `gnuradio-build-deps`, installed with `conda install -c conda-forge gnuradio-build-deps`, adds CMake, Ninja, and a compiler. On Linux that compiler is complete. On macOS the conda compiler does not include Apple's SDK, which `xcode-select --install` provides; this route is untested on a Mac. On Windows the compiler package only locates an existing Visual Studio 2022 installation, so a Windows laptop also needs Microsoft's Visual Studio Build Tools, a large separate install; this route is also untested.
 
-A Windows laptop without them can still run the block. `L11-keyed-carrier-epy.grc` has the same `energy_detector` class pasted into an Embedded Python Block, renamed `blk`, and runs identically. The block's code, its tests, and its YAML file move into a module unchanged on any Linux or macOS machine, including the lab's.
+A Windows laptop without them can still run the block. `L11-keyed-carrier-epy.grc` has the same `energy_detector` class pasted into an Embedded Python Block, renamed `blk`, and runs identically. The block's code, its tests, and its YAML file move into a module unchanged on any Linux or macOS machine, such as a teammate's in the lab.
 ::::
 
 ::::{frame} OOK on an RTL-SDR
@@ -288,7 +301,7 @@ A Windows laptop without them can still run the block. `L11-keyed-carrier-epy.gr
 - The same block keys on their bursts; this flowgraph only receives.
 :::
 
-On-off keying sends a 1 as a burst of carrier and a 0 as silence, the same signal as today's keyed tone, only faster. Car and garage remotes, doorbells, and weather sensors in the 433.92 MHz ISM band commonly use it. `L11-ook-rtlsdr.grc` tunes an RTL-SDR 200 kHz below 433.92 MHz to keep the radio's DC spike off the signal, shifts the signal to 0 Hz and decimates to 128 kHz, and runs the Energy Detector with $N = 4$. Set the threshold about 10 dB above the floor on the power plot, press a remote nearby, and the key traces its bursts. The flowgraph only receives. We did not run it for this page, because it needs an RTL-SDR and a remote, so the figure shows the flowgraph in GRC, not a capture.
+On-off keying sends a 1 as a burst of carrier and a 0 as silence, the same signal as today's keyed tone, only faster. Car and garage remotes, doorbells, and weather sensors in the 433.92 MHz ISM band commonly use it. `L11-ook-rtlsdr.grc` tunes an RTL-SDR 200 kHz below 433.92 MHz to keep the radio's DC spike off the signal, shifts the signal to 0 Hz and decimates to 128 kHz, and runs the Energy Detector with $N = 4$. Set the threshold halfway between the floor and the burst level on the power plot, press a remote nearby, and the key traces its bursts; the flowgraph only receives. This page has not run it, because it needs an RTL-SDR and a remote, so the figure shows the flowgraph in GRC, not a capture.
 ::::
 
 ::::{frame} Key Point

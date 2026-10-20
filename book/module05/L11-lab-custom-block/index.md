@@ -30,10 +30,10 @@ L11 Lab · Module 5: Custom Blocks & Midterm · Dr. Neil Rogers
 :::{present}
 - **Pre-Lab:** check your tools and predict the levels and the Morse timing.
 - **Bench:** build `gr-ece448`, set the levels, then write and time your own Key Timer.
-- **Writeup:** hysteresis and timing, and what a decoder needs.
+- **Writeup:** explain hysteresis and timing, and what a Morse decoder needs.
 :::
 
-Lesson 11 packaged the Energy Detector in an out-of-tree module. Today you build and test that module on your own laptop, set the detector's levels for a noisier signal than the lesson used, and then make a module of your own from an empty `gr_modtool` template and write a second block in it, the **Key Timer**, which measures how long each key-down and key-up lasts. Lesson 12 needs those lengths to decode Morse.
+Lesson 11 packaged the Energy Detector in an out-of-tree module. Today you build and test that module on your own laptop, set the detector's levels for a noisier signal than the lesson used, and then make a module of your own from an empty `gr_modtool` template and write a second block in it, the **Key Timer**, which measures how long each key-down and key-up lasts, the lengths Lesson 12's Morse decoder needs.
 
 The lab packet has three parts, and you turn it in once, complete, before the midterm. **Part 1, the Pre-Lab**, is on your own before the period. **Part 2** is your own work in class, and **Part 3, the Writeup**, explains it. Nothing in this lab transmits: every flowgraph is a simulation on your laptop.
 ::::
@@ -132,7 +132,7 @@ CMake prints several warnings marked "for project developers" about policies and
 
 ::::{frame} Part 3: After the Lab
 :::{present}
-- Explain why hysteresis can lengthen a mark, and how $N$ trades noise for timing.
+- Explain why hysteresis can lengthen a mark, and how a larger $N$ lowers the floor's spread but coarsens the timing.
 - Decide which blocks belong in a module.
 - Propose a rule that tells a dit from a dah at any speed.
 :::

@@ -122,7 +122,7 @@ own. Do \textbf{Part 3} on your own after the lab.
 1 / 0 scale, with revision allowed under course policy. Paste screenshots and code where
 a question asks for them.
 
-\textbf{Nothing in this lab transmits.} Every flowgraph is a simulation on your laptop.
+Nothing in this lab transmits: every flowgraph is a simulation on your laptop.
 
 The files are on the L11 lesson page: \texttt{L11-gr-ece448.zip},
 \texttt{L11-keyed-carrier.grc}, and \texttt{L11-keyed-carrier-epy.grc}. Every number
@@ -199,21 +199,23 @@ and 5.
 		\end{solution}
 
 	\begin{minipage}[t]{0.58\linewidth}
-		\part The floor spreads by about $\pm 4.3/\sqrt N$ dB when the detector averages $N$
-		samples. Find the spread for $N = 32$ and $N = 128$, and the gap between the two
-		levels at $\sigma = 0.8$.
-		\begin{solution}[1.0in]
-		\eq{ 4.3/\sqrt{32} &= 0.77\db \\
-		4.3/\sqrt{128} &= 0.38\db \\
+		\part Averaging $N$ samples divides the floor's spread by $\sqrt N$, so one standard
+		deviation above and below the floor is
+		\[ 10\log_{10}\left(1 \pm \tfrac{1}{\sqrt N}\right)\ \text{dB}. \]
+		Find it for $N = 32$ and $N = 128$, and the gap between the two levels at
+		$\sigma = 0.8$.
+		\begin{solution}[1.2in]
+		\eq{ N = 32:&\quad 10\log_{10}(1 \pm 0.177) = +0.71,\ -0.85\db \\
+		N = 128:&\quad 10\log_{10}(1 \pm 0.088) = +0.37,\ -0.40\db \\
 		2.1 - (-1.9) &= 4.0\db }
 		\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
 		\raggedleft \vspace{12pt}
-		$N=32$: \ansbox[1.0in]{$\pm 0.77$ dB}
+		$N=32$: \ansbox[1.0in]{$\approx \pm 0.8$ dB}
 
 		\vspace{4pt}
-		$N=128$: \ansbox[1.0in]{$\pm 0.38$ dB}
+		$N=128$: \ansbox[1.0in]{$\approx \pm 0.4$ dB}
 
 		\vspace{4pt}
 		gap: \ansbox[1.0in]{4.0 dB}
@@ -312,7 +314,7 @@ sending, and run it again.
 
 	\part Set the threshold to the floor's level with no hysteresis, and describe the
 	key. Then choose your own threshold and hysteresis so that the key follows the
-	keying. Record your settings and paste a screenshot.
+	keying for at least 20 s. Record your settings and paste a screenshot.
 		\begin{solution}[1.3in]
 		At $-6$ dB and no hysteresis the key chatters through every gap. A threshold of
 		$-2.5$ dB with 1 to 3 dB of hysteresis gives a key that matches the keying: the
@@ -337,11 +339,13 @@ mark and the last space, in ms, and the number of marks so far. Three methods,
 		A \texttt{gr.sync\_block} with \texttt{in\_sig=[np.float32]} and
 		\texttt{out\_sig=None}. \texttt{work()} loops over the input, compares each value
 		(as 0 or 1) with the stored state, and increments a counter while they match. On a
-		change, it converts the count to ms, $1000 \cdot \text{count}/\text{rate}$, stores it
+		change, it converts the count to milliseconds,
+		\[ t = \frac{1000 \times \text{count}}{\text{rate}}, \]
+		stores it
 		as the last mark if the state was 1 (and adds one to the mark count) or as the last
 		space if it was 0, then stores the new state and restarts the count at 1. The state
 		and the count are attributes of \texttt{self}, so a mark that spans two calls to
-		\texttt{work()} is timed correctly. \texttt{work()} returns the number of inputs.
+		\texttt{work()} still gets the right length. \texttt{work()} returns the number of inputs.
 		Grade against the faculty reference.
 		\end{solution}
 
@@ -349,15 +353,15 @@ mark and the last space, in ms, and the number of marks so far. Three methods,
 	test must feed a known key, such as five 0s, three 1s, two 0s, one 1, and four 0s at
 	a rate of 1000, and check all three methods.
 		\begin{solution}[1.4in]
-		For that key: 2 marks, a last mark of 1 ms, and a last space of 2 ms. The first
-		space, 5 ms, is overwritten, and the final 4 ms space never ends, so it is not
-		counted. \texttt{ctest} reports the test passed.
+		For that key the block reports 2 marks, a last mark of 1 ms, and a last space of
+		2 ms. The 2 ms space replaces the first space, 5 ms, and the final 4 ms space never
+		ends, so the block does not count it. \texttt{ctest} reports the test passed.
 		\end{solution}
 
 	\part Paste your \texttt{grc/*.block.yml}, and the \texttt{gr\_python\_install}
 	line, which must list \texttt{key\_timer.py}.
 		\begin{solution}[1.2in]
-		\texttt{make: <module>.key\_timer(\$\{rate\})}, one parameter \texttt{rate} of type
+		The file has \texttt{make: <module>.key\_timer(\$\{rate\})}, one parameter \texttt{rate} of type
 		\texttt{real}, one \texttt{float} input, no outputs. On GNU Radio 3.10.9 the
 		install line needs \texttt{key\_timer.py} added by hand.
 		\end{solution}
@@ -378,20 +382,20 @@ through Function Probes.
 
 	\begin{center}
 	\renewcommand{\arraystretch}{1.25}
-	\begin{tabular}{| l | K{0.95in} | K{0.95in} | K{0.95in} | K{0.95in} |}
+	\begin{tabular}{| l | K{0.8in} | K{0.8in} | K{0.8in} | K{0.8in} | K{0.8in} |}
 	\hline
-	& Dit & Dah & Between letters & After the word \\\hline
-	Measured (ms) & \kv{80--82} & \kv{240--242} & \kv{238--240} & \kv{558--560} \\\hline
+	& Dit & Dah & Inside a letter & Between letters & After the word \\\hline
+	Measured (ms) & \kv{80--82} & \kv{240--242} & \kv{78--80} & \kv{238--240} & \kv{558--560} \\\hline
 	\end{tabular}
 	\end{center}
 
 		\begin{solution}[0.5in]
-		Within 1 or 2 ms of 80, 240, 240, and 560 ms.
+		Each length falls within 1 or 2 ms of 80, 240, 80, 240, and 560 ms.
 		\end{solution}
 
 	\part Paste a screenshot of your flowgraph's canvas and of its running window.
 		\begin{solution}[1.6in]
-		The Key Timer hangs off the Energy Detector's key output, and the labels read, for
+		The Key Timer connects to the Energy Detector's key output, and the labels read, for
 		example, 80.0 ms and 240.0 ms.
 		\end{solution}
 
@@ -434,7 +438,7 @@ Explain why, and what Question 7 says about choosing $N$.
 		for an output or two and the key turns off late. A larger $N$ shrinks the floor's
 		spread by $\sqrt N$, which lets the levels sit further from the noise, but each
 		output then lasts longer, $N/f_s$, so the edges move in larger steps: averaging
-		trades timing resolution for a cleaner key.
+		more samples gives a cleaner key with coarser edge timing.
 		\end{solution}
 
 \question \textbf{Module or Embedded Python Block?} Lesson 12 builds a Morse decoder that
@@ -442,7 +446,7 @@ uses the Energy Detector and your Key Timer. Explain which of the two should liv
 OOT module and why, and what the unit test caught or would catch that watching the
 flowgraph would not.
 		\begin{solution}[1.5in]
-		Both: every CW flowgraph in Lesson 12 and later needs them, and a module keeps one
+		Both belong in a module: every CW flowgraph in Lesson 12 and later needs them, and a module keeps one
 		tested copy of the code. The unit test checks exact values, such as a mark that
 		spans two calls to \texttt{work()} or a final space that never ends, which a label
 		updating four times a second cannot show.

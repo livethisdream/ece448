@@ -34,14 +34,14 @@ Have GRC open with L11-keyed-carrier.grc, and a terminal at the radioconda promp
 
 ## Today's Plan
 
-1. Make a module with gr_modtool
+1. Make the module with gr_modtool
 2. Write the Energy Detector: work() and its YAML file
 3. Test, build, and install it
-4. Set the threshold and hysteresis
-5. On a laptop, and on an RTL-SDR
+
+Then we set its levels and use it on a laptop and an RTL-SDR.
 
 Note:
-Parts 1 to 3 are LO 5.1, the packaging. Parts 2 and 4 are LO 5.2, the block itself.
+Parts 1 and 3 are LO 5.1, the packaging. Part 2 and the levels are LO 5.2, the block itself.
 
 ---
 
@@ -149,6 +149,7 @@ templates:
   make: ece448.energy_detector(${decim}, ${threshold_db}, ${hysteresis_db})
   callbacks:
   - set_threshold_db(${threshold_db})
+  - set_hysteresis_db(${hysteresis_db})
 ```
 
 Note:
@@ -160,14 +161,15 @@ GRC reads only this file, never the Python. Below this come the parameters, the 
 
 ```
 mkdir build && cd build
-cmake -G Ninja -DCMAKE_INSTALL_PREFIX=${CONDA_PREFIX} ..
+cmake -G Ninja -DCMAKE_INSTALL_PREFIX=${CONDA_PREFIX} \
+      -DCMAKE_PREFIX_PATH=${CONDA_PREFIX} ..
 cmake --build .
 ctest --output-on-failure
 cmake --install .
 ```
 
 Note:
-Run it live. ctest runs the four tests in qa_energy_detector.py and prints Ran 4 tests, OK. Restart GRC so it reloads its block library.
+Run it live. ctest runs the four test methods in qa_energy_detector.py as one entry and prints 100% tests passed, 0 tests failed out of 1. Restart GRC so it reloads its block library.
 
 ---
 
@@ -187,7 +189,7 @@ Search the library for Energy Detector, under ECE 448. The rest of the flowgraph
 The floor sits at $-10.5$ dB, on the threshold.
 
 Note:
-Move the noise slider to 0.3 and the hysteresis to 0 live. Then add 3 dB of hysteresis with the threshold left at minus 10: the key turns on and never turns off. The threshold has to move first.
+Move the noise slider to 0.3 and the hysteresis to 0 live. Then add 3 dB of hysteresis with the threshold left at minus 10: the key turns on and never turns off. The threshold must move up before hysteresis can help.
 
 ---
 
@@ -198,7 +200,7 @@ Move the noise slider to 0.3 and the hysteresis to 0 live. Then add 3 dB of hyst
 Threshold halfway between floor and signal; hysteresis above the spread.
 
 Note:
-Carrier on: 10 log10 of 1.09, plus 0.4 dB. Carrier off: minus 10.5 dB. On level minus 5, off level minus 8. The floor spreads by about plus or minus 0.8 dB at N = 32.
+Carrier on: 10 log10 of 1.09, plus 0.4 dB. Carrier off: minus 10.5 dB. On level minus 5, off level minus 8. Hysteresis should be a few times the floor's spread, which shrinks as the square root of N.
 
 ---
 
@@ -227,7 +229,7 @@ macOS also needs xcode-select --install; we did not test a Mac or the Windows Bu
 
 <img src="./img/11-custom-blocks/L11-grc-ook.png" alt="The L11 RTL-SDR flowgraph in GRC: RTL-SDR source near 433.92 MHz, frequency shift and decimate to 128 kHz, Energy Detector averaging 4 samples, time and frequency sinks" style="max-height:400px; display:block; margin:0 auto;">
 
-The same block keys on a 433.92 MHz remote. Receive only.
+The same block keys on a 433.92 MHz remote. The flowgraph only receives.
 
 Note:
 Tuned 200 kHz low to keep the DC spike off the signal. N = 4 at 128 kHz is about 31 microseconds per output, short enough for pulses a few hundred microseconds long. Not run for the page: it needs an RTL-SDR and a remote.

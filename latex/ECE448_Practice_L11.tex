@@ -43,10 +43,10 @@ and then \texttt{gr\_modtool add -t sync -l python tone\_finder} in the new dire
 		\end{solution}
 
 	\part After a correct install, GRC's block library still has no
-	\texttt{tone\_finder}. Give two causes worth checking.
+	\texttt{tone\_finder}. Give two possible causes.
 		\begin{solution}[1.0in]
 		GRC was open during the install and has not reloaded its library: restart it.
-		Or the module was installed under a different prefix from the GNU Radio that GRC
+		Or the cadet installed the module under a different prefix from the GNU Radio that GRC
 		runs, for example without \texttt{-DCMAKE\_INSTALL\_PREFIX=\$CONDA\_PREFIX}, so the
 		YAML file is not in that environment's \texttt{share/gnuradio/grc/blocks}.
 		\end{solution}
@@ -62,7 +62,7 @@ decimator, interpolator, or general, and give the ratio of outputs to inputs.
 	\begin{minipage}[t]{0.58\linewidth}
 		\part A block that converts each float sample to dB.
 		\begin{solution}[0.5in]
-		One output per input: sync, 1:1.
+		The block makes one output per input, so it is a sync block, 1:1.
 		\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
@@ -73,7 +73,7 @@ decimator, interpolator, or general, and give the ratio of outputs to inputs.
 	\begin{minipage}[t]{0.58\linewidth}
 		\part A block that outputs the peak magnitude of each run of 100 complex samples.
 		\begin{solution}[0.5in]
-		One output per 100 inputs: decimator, decim = 100.
+		The block makes one output per 100 inputs, so it is a decimator with decim = 100.
 		\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
@@ -84,7 +84,7 @@ decimator, interpolator, or general, and give the ratio of outputs to inputs.
 	\begin{minipage}[t]{0.58\linewidth}
 		\part A block that holds each bit for 8 samples.
 		\begin{solution}[0.5in]
-		Eight outputs per input: interpolator, interp = 8. (Repeat does this job.)
+		The block makes eight outputs per input, so it is an interpolator with interp = 8; Repeat does this job.
 		\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
@@ -105,8 +105,8 @@ decimator, interpolator, or general, and give the ratio of outputs to inputs.
 		\ansbox[1.4in]{general}
 	\end{minipage}
 
-	\part The Energy Detector could have been a general block. Explain in words what a
-	decimator saves the programmer.
+	\part The Energy Detector could have been a general block. Explain in words what code a
+	decimator lets the programmer leave out.
 		\begin{solution}[1.0in]
 		As a decimator, the block tells GNU Radio its fixed ratio once, and the scheduler
 		then hands \texttt{work()} exactly $n \times N$ inputs for $n$ outputs and consumes
@@ -176,7 +176,7 @@ at 48 kHz, with GNU Radio's Noise Source at amplitude 0.25, and averages 64 samp
 
 	\part Suggest a hysteresis and explain the choice in words.
 		\begin{solution}[0.9in]
-		About 2 to 3 dB. That is a few times the floor's spread, so noise near the threshold
+		A hysteresis of about 2 to 3 dB works. That is a few times the floor's spread, so noise near the threshold
 		cannot turn the key back off, and the off level, $-8$ to $-9$ dB, still sits
 		3 dB or more above the floor.
 		\end{solution}
@@ -195,13 +195,13 @@ $-25,\ -14,\ -16,\ -14,\ -16,\ -14,\ -21,\ -16,\ -14,\ -22$
 	\part Write the ten key outputs for a threshold of $-15$ dB and a hysteresis of
 	4 dB, and count the times the key changes.
 		\begin{solution}[1.0in]
-		On above $-15$ dB, off below $-19$ dB:
+		The key turns on above $-15$ dB and off below $-19$ dB, so it reads
 		\texttt{0 1 1 1 1 1 0 0 1 0}, with 4 changes.
 		\end{solution}
 
 	\part Repeat for a hysteresis of 0 dB.
 		\begin{solution}[0.8in]
-		On above $-15$ dB, off below $-15$ dB:
+		The key turns on above $-15$ dB and off below $-15$ dB, so it reads
 		\texttt{0 1 0 1 0 1 0 0 1 0}, with 8 changes.
 		\end{solution}
 
@@ -242,7 +242,7 @@ $1,\ 1,\ 1,\ 1,\ \ 0.1,\ 0.1,\ 0.1,\ 0.1,\ \ 1,\ 1,\ 0,\ 0$
 	\begin{minipage}[t]{0.58\linewidth}
 		\part Give the three key outputs.
 		\begin{solution}[0.6in]
-		0 dB is above $-10$: on. $-20$ dB is below $-13$: off. $-3$ dB is above $-10$: on.
+		The first output, 0 dB, is above $-10$ dB, so the key turns on; $-20$ dB is below $-13$ dB, so it turns off; $-3$ dB is above $-10$ dB, so it turns on again.
 		The key is 1, 0, 1.
 		\end{solution}
 	\end{minipage}\hfill%
