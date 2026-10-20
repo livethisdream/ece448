@@ -119,7 +119,7 @@ The top keyer switches between 0 and 1 in one sample, which is **hard keying**. 
 ::::{frame} Key Clicks
 :::{present}
 <img src="../../viz/img/L12-tx-clicks.png"
-     alt="The L12 keyer running at 20 WPM: the time sink shows one key-down edge, the hard-keyed trace jumping from 0 to 1 at once and the shaped trace rising over 5 ms; the frequency sink shows the hard-keyed spectrum falling only to about minus 75 dB at plus and minus 4 kHz while the shaped spectrum falls below minus 120 dB beyond about 2 kHz from the carrier"
+     alt="The L12 keyer running at 20 WPM: the time sink shows one key-down edge, the hard-keyed trace jumping from 0 to 1 at once and the shaped trace rising over 5 ms; the frequency sink shows the hard-keyed spectrum falling only to about minus 70 dB at plus and minus 4 kHz while the shaped spectrum falls below minus 120 dB beyond about 2 kHz from the carrier"
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
@@ -190,7 +190,7 @@ The rest of the receiver works at audio rates. The product detector makes the ca
 
 After the Xlating filter the carrier sits at 0 Hz, which the ear cannot hear. The receiver multiplies it by a complex tone at 700 Hz, the **beat frequency oscillator** (BFO), which moves the carrier up to 700 Hz, and **Complex To Real** keeps the real part. That is the product detector of Lesson 6, used here with an offset so that the output is a tone instead of the envelope. The key-down periods become bursts of a 700 Hz tone, which is the sound most CW operators choose.
 
-A tuning error moves the tone. If the receiver tunes 40 Hz below the carrier, the carrier lands at +40 Hz after the Xlating filter and the tone comes out at 740 Hz. The CW filter is centered on 700 Hz, so the tone has to stay inside it: with a 50 Hz filter, the receiver must tune within 25 Hz of the carrier. The Xlating filter's ±600 Hz passband also matters here, because it removes a signal 1.4 kHz below the carrier that would otherwise come out at the same 700 Hz.
+A tuning error moves the tone. If the receiver tunes 40 Hz below the carrier, the carrier lands at +40 Hz after the Xlating filter and the tone comes out at 740 Hz. The CW filter is centered on 700 Hz, so the tone has to stay inside it, and a narrower filter leaves less room for a tuning error. The Xlating filter's ±600 Hz passband also matters here, because it removes a signal 1.4 kHz below the carrier that would otherwise come out at the same 700 Hz.
 ::::
 
 ::::{frame} Envelope and Threshold
@@ -257,7 +257,7 @@ which is $160/\sigma^2$ for the 200 Hz filter. At $\sigma = 6$ that is 4.4, or 6
 
 The figure keeps the noise amplitude at 6 and widens the CW filter to 1 kHz. Five times as much noise reaches the envelope detector, the space level rises to about 0.57, and even with the threshold moved to 0.70, the gap between the two levels is too small for clean decisions. The signal itself is only about 100 Hz wide, so a 1 kHz filter passes mostly noise. Narrowing the filter to 50 Hz goes the other way: at the same noise amplitude, only 1 character in 500 was wrong.
 
-A narrow filter has two limits. The tone must stay inside it, so the receiver's tuning and the transmitter's frequency drift both have to stay within half the filter width. And the filter's own response slows the envelope's edges, which matters only at speeds well above ours: at 40 WPM and $\sigma = 5.5$, the 50 Hz filter still got 99.7% of the characters right.
+A narrow filter has two limits. The tone must stay inside it, so a narrower filter needs more accurate tuning and a more stable transmitter. And the filter's own response slows the envelope's edges, which matters only at speeds well above ours: at 40 WPM and $\sigma = 5.5$, the 50 Hz filter still got 99.7% of the characters right.
 ::::
 
 ::::{frame} Noise Sweep

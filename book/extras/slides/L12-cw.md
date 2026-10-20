@@ -169,7 +169,7 @@ The Xlating filter moves the 5 kHz carrier to 0 Hz, keeps plus and minus 600 Hz,
 The tone has to stay inside the CW filter.
 
 Note:
-Tuned 40 Hz low, the tone comes out at 740 Hz. With a 50 Hz filter the tuning must be within 25 Hz. The Xlating filter's 600 Hz limit also keeps a signal 1.4 kHz below the carrier from landing on the same tone.
+Tuned 40 Hz low, the tone comes out at 740 Hz, and a narrower filter leaves less room for that error. The Xlating filter's 600 Hz limit also keeps a signal 1.4 kHz below the carrier from landing on the same tone.
 
 ---
 
@@ -217,10 +217,10 @@ The noise is spread over 32 kHz and the CW filter passes B of it. For 200 Hz the
 | 6 | 6.5 dB | 0.2% | 6.3% | 40% |
 | 7 | 5.1 dB | 1.0% | 22% | 69% |
 
-A narrower filter passes less noise; the tone must stay within half its width.
+A narrower filter passes less noise but needs more accurate tuning.
 
 Note:
-A narrower filter passes less noise, which is Lesson 2's point. Its limit is tuning: the tone must stay within half the filter width. At 40 WPM the 50 Hz filter still got 99.7% right at sigma 5.5.
+A narrower filter passes less noise, which is Lesson 2's point. Its limit is tuning: the tone must stay inside the filter. At 40 WPM the 50 Hz filter still got 99.7% right at sigma 5.5.
 
 ---
 

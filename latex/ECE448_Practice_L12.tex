@@ -192,10 +192,10 @@ filter is a band-pass centered on 700 Hz. The noise has amplitude $\sigma$, spre
 
 	\begin{minipage}[t]{0.58\linewidth}
 		\part A cadet tunes the receiver 120 Hz above the carrier. What pitch does the tone
-		have, and does it pass a 200 Hz CW filter? A 1 kHz filter?
+		have, and does it pass a 150 Hz CW filter? A 1 kHz filter?
 		\begin{solution}[1.2in]
 		Tuned 120 Hz high, the carrier lands at $-120$ Hz, so the tone is
-		$700 - 120 = 580$ Hz. The 200 Hz filter passes 600 to 800 Hz, so the tone falls
+		$700 - 120 = 580$ Hz. The 150 Hz filter passes 625 to 775 Hz, so the tone falls
 		outside it and the decoder loses the signal. The 1 kHz filter passes 200 to
 		1200 Hz, so the tone gets through.
 		\end{solution}
@@ -205,7 +205,7 @@ filter is a band-pass centered on 700 Hz. The noise has amplitude $\sigma$, spre
 		tone: \ansbox[1.0in]{580 Hz}
 
 		\vspace{4pt}
-		200 Hz: \ansbox[1.0in]{no}
+		150 Hz: \ansbox[1.0in]{no}
 
 		\vspace{4pt}
 		1 kHz: \ansbox[1.0in]{yes}
@@ -228,13 +228,13 @@ filter is a band-pass centered on 700 Hz. The noise has amplitude $\sigma$, spre
 
 	\part Lesson 12's 200 Hz filter decoded without errors down to 10 dB. Explain in
 	words why the 50 Hz filter in part (b) is the better choice in this noise, and what
-	the receiver gives up by using it.
+	limits its use.
 		\begin{solution}[1.2in]
 		The signal is only about 100 Hz wide, so most of what a wider filter passes is
 		noise. Cutting the width by four cuts the noise by four, 6 dB, which brings the SNR
-		to the 10 dB where the 200 Hz filter decoded cleanly. What the receiver gives up is tuning range: the
-		tone must stay inside the narrow filter, so the receiver must tune within 25 Hz of the
-		carrier, a quarter of the 200 Hz filter's range, and transmitter drift matters four times as much.
+		to the 10 dB where the 200 Hz filter decoded cleanly. Its limit is tuning: the tone
+		must stay inside the narrow filter, so the receiver must tune within 25 Hz of the
+		carrier, and a transmitter that drifts by more than that leaves the filter.
 		\end{solution}
 
 \end{parts}

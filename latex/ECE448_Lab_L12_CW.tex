@@ -289,8 +289,8 @@ list from Question 2(b) in the Vector Source.
 		\ansbox[1.1in]{92 ms}
 	\end{minipage}
 
-	\part Read the tops of the hard and shaped spectra 1 kHz and 2 kHz from the
-	carrier. How far below hard keying is your ramp at each? Lesson 12's 5 ms raised
+	\part Read the tops of the hard and shaped spectra 1 kHz and 2 kHz from 0 Hz,
+	where the carrier would sit. How far below hard keying is your ramp at each? Lesson 12's 5 ms raised
 	cosine was 40 dB and 52 dB below; explain the difference.
 
 	\begin{center}
@@ -407,7 +407,8 @@ amplitude at 1, the 200 Hz filter, and the threshold at 0.3.
 lab page's steps: connect the Pluto's TX port to its RX port through the 30 dB
 attenuator, check the Pluto with \texttt{iio\_info -s}, and run
 \texttt{L12-cw-pluto.grc}. The transmitter and receiver share the Pluto's clock, so
-the carrier arrives at +5 kHz without a frequency error.
+the carrier should arrive close to +5 kHz. When you finish, stop the flowgraph and
+unplug the Pluto before you disconnect the cable.
 
 \begin{parts}
 
