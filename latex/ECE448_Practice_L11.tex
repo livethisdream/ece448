@@ -47,8 +47,9 @@ and then \texttt{gr\_modtool add -t sync -l python tone\_finder} in the new dire
 		\begin{solution}[1.0in]
 		GRC was open during the install and has not reloaded its library: restart it.
 		Or the cadet installed the module under a different prefix from the GNU Radio that GRC
-		runs, for example without \texttt{-DCMAKE\_INSTALL\_PREFIX=\$CONDA\_PREFIX}, so the
-		YAML file is not in that environment's \texttt{share/gnuradio/grc/blocks}.
+		runs, for example without setting \texttt{CMAKE\_INSTALL\_PREFIX} to the radioconda
+		environment, so the YAML file is not in that environment's
+		\texttt{share/gnuradio/grc/blocks}.
 		\end{solution}
 
 \end{parts}
