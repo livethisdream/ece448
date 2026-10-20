@@ -227,7 +227,7 @@ A narrower filter passes less noise, which is Lesson 2's point. Its limit is tun
 ## CW on a Real Radio
 
 - L12 Lab: one PlutoSDR, TX port to RX port, 30 dB attenuator
-- Set the threshold from the envelope plot
+- An AGC restores the envelope level; check the threshold line
 - Nothing in L12 transmits over the air
 
 Note:

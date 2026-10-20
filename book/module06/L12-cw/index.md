@@ -39,7 +39,7 @@ Lesson 12 · Module 6: Waveform Applications & RF Reverse Engineering · Dr. Nei
 ::::{frame} Morse Code on an SDR
 :::{present}
 <img src="../../viz/img/L12-link-clean.png"
-     alt="The L12 link flowgraph running at noise amplitude 1 with a 200 Hz CW filter and a threshold of 0.3: the waterfall shows the keyed carrier as a broken vertical line at plus 5 kHz, the envelope sits near 0.64 during each mark and near 0.04 between them with the red key trace on top of it, and the Received label reads USAFA ECE 448 three times"
+     alt="The L12 link flowgraph running at noise amplitude 1 with a 200 Hz CW filter and a threshold of 0.3: the waterfall shows the keyed carrier as a broken vertical line at plus 5 kHz, the envelope sits near 0.64 during each mark and near 0.04 between them with the red key trace on top of it, and the Received label reads USAFA ECE 448 four times"
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
@@ -72,7 +72,7 @@ Lesson 2 showed that a narrower bandwidth lowers the noise floor, and CW is one 
 :::
 :::{present}
 - A dah lasts three dits.
-- Gaps: 1 unit in a letter, 3 between letters, 7 between words.
+- The key stays up 1 unit inside a letter, 3 between letters, and 7 between words.
 :::
 
 Morse code measures everything in one time **unit**, the length of a dit. A dah lasts 3 units. The key stays up for 1 unit between the marks of one letter, for 3 units between letters, and for 7 units between words. The receiver needs nothing else: it can tell a dit from a dah and a letter gap from a word gap by comparing lengths, without knowing any absolute time.
@@ -216,23 +216,23 @@ At a noise amplitude of 1 the space level is about 0.04, and `thr` = 0.3 works. 
      style="max-width: 760px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
-- Marks: under 2 units is a dit, longer is a dah.
+- A mark under 2 units is a dit, and a longer one is a dah.
 - Spaces: 2 units end a letter, and 5 end a word.
 :::
 
 The **CW Decoder** measures how long the key stays at each level and converts the length to units at its own WPM setting. Each boundary sits between two values a perfect sender produces: 2 units lies between a 1-unit dit and a 3-unit dah, and between a 1-unit gap inside a letter and a 3-unit gap between letters, and 5 units lies between 3 and 7. When a space reaches 2 units, the decoder looks up the dots and dashes it has collected and adds the letter to the text, or a # if the pattern is not in the table. A change of level that lasts less than 0.3 unit is noise, and the decoder ignores it.
 
-The windows are wide, so the decoder accepts the uneven timing of a human operator. They also let it copy a sender whose speed differs from its own setting, as long as every mark and space still falls in the right window. A sender that is too slow stretches its letter gaps past 5 units, and one that is too fast shrinks its word gaps below 5; the L12 Lab measures both limits.
+The windows are wide, so the decoder accepts the uneven timing of a human operator. They also let it copy a sender whose speed differs from its own setting, as long as every mark and space still falls in the right window. The L12 Lab measures how far the speed can drift.
 ::::
 
 ::::{frame} Noise
 :::{present}
 <img src="../../viz/img/L12-link-noisy.png"
-     alt="The L12 link at noise amplitude 6 with a 200 Hz CW filter and the threshold raised to 0.47: noise fills the waterfall and hides the carrier, the envelope swings widely but stays higher during the marks, the key trace follows the marks with a few extra pulses, and the Received label reads USAFA ECE 448 USAFA ECE 448 USAFS ECE 447, with two wrong characters"
+     alt="The L12 link at noise amplitude 6 with a 200 Hz CW filter and the threshold raised to 0.47: noise fills the waterfall and hides the carrier, the envelope swings widely but stays higher during the marks, the key trace follows the marks with a few extra pulses, and the Received label reads 8 USAFA ECE 448 USAFA ECE 448 USAFA ECE 448 USAFS ECE 447, with two wrong characters"
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
-- SNR in the CW filter: $160/\sigma^2$ for 200 Hz.
+- The SNR in a 200 Hz CW filter is $160/\sigma^2$.
 - At 6.5 dB, about 8 characters in 100 come out wrong.
 :::
 
@@ -240,7 +240,7 @@ The keyed carrier has power 1 while the key is down, and the noise amplitude $\s
 
 $$\text{SNR} = \frac{32{,}000}{\sigma^2 B},$$
 
-which is $160/\sigma^2$ for the 200 Hz filter. At $\sigma = 6$ that is 4.4, or 6.5 dB. The noise now reaches the top of the waterfall's color scale and hides the carrier there, but the CW filter still separates the carrier from most of the noise. With the threshold at 0.47, the receiver in the figure copies most of the message, and each wrong letter comes from a dit lost in the noise or a noise burst read as an extra dit. Over four runs of 600 characters at this setting, 8.2% of them were wrong, and single runs ranged from 7% to 10%.
+which is $160/\sigma^2$ for the 200 Hz filter. At $\sigma = 6$ that is 4.4, or 6.5 dB. The noise now reaches the top of the waterfall's color scale and hides the carrier there, but the CW filter still separates the carrier from most of the noise. With the threshold at 0.47, the receiver in the figure copies most of the message, and each wrong letter comes from a mark that noise splits, shortens, or invents: here a dah broke into two dits (A read as S) and another shrank to a dit (8 read as 7). Over four runs of 600 characters at this setting, 8.2% of them were wrong, and single runs ranged from 7% to 10%.
 ::::
 
 ::::{frame} Filter Width
@@ -279,11 +279,11 @@ The 200 Hz filter decodes without errors down to 10 dB in its own bandwidth and 
 ::::{frame} CW on a Real Radio
 :::{present}
 - The L12 Lab sends CW through one PlutoSDR, TX port to RX port, with a 30 dB attenuator.
-- Only the Pluto blocks change; you set the threshold from the envelope plot.
+- The Pluto blocks and an AGC are the only changes.
 - Nothing in L12 transmits over the air.
 :::
 
-The L12 Lab moves this link onto a PlutoSDR. The transmit half ends at a PlutoSDR Sink at 915 MHz instead of the Noise Source, and the receive half starts at a PlutoSDR Source, with the same Xlating filter, product detector, CW filter, envelope detector, threshold, and decoder. As in L10, a Rational Resampler raises the 32 kHz stream by 32, to 1.024 MS/s, on the way out and lowers it again on the way in. The received level depends on the cable, the attenuator, and the Pluto's gain, so the lab flowgraph plots the threshold on the envelope plot, and you set it halfway between the space and mark levels.
+The L12 Lab moves this link onto a PlutoSDR. The transmit half ends at a PlutoSDR Sink at 915 MHz instead of the Noise Source, and the receive half starts at a PlutoSDR Source, with the same Xlating filter, product detector, CW filter, envelope detector, threshold, and decoder. As in L10, a Rational Resampler raises the 32 kHz stream by 32, to 1.024 MS/s, on the way out and lowers it again on the way in. The received level depends on the cable, the attenuator, and the Pluto's gain, and at the course's settings it is thousands of times smaller than in the simulation, so the lab flowgraph adds an **AGC** after the Xlating filter. It holds the tuned carrier near amplitude 1, which puts the envelope's mark level back near 0.64 at any attenuation, and the envelope plot shows the threshold as a red line so you can check it sits halfway between the space and mark levels.
 
 In class we transmit only into a cable, into a shielded enclosure, or at very low power in an ISM band, and only when the lesson says to. Nothing in this lesson transmits; the L12 Lab transmits from the Pluto's TX port through an inline 30 dB attenuator into its own RX port. We have run the PlutoSDR flowgraph only in simulation, with a model of the cable in place of the radio, so the lab is its first run on hardware.
 ::::

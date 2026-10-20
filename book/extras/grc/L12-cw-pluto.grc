@@ -190,7 +190,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1220, 8]
+    coordinate: [1280, 8]
     rotation: 0
     state: enabled
 - name: rx_text
@@ -206,7 +206,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1060, 8]
+    coordinate: [1120, 8]
     rotation: 0
     state: enabled
 - name: rx_wpm
@@ -251,10 +251,10 @@ blocks:
     min_len: '200'
     orient: QtCore.Qt.Horizontal
     rangeType: float
-    start: '0.001'
-    step: '0.001'
+    start: '0.01'
+    step: '0.01'
     stop: '1'
-    value: '0.1'
+    value: '0.3'
     widget: counter_slider
   states:
     bus_sink: false
@@ -329,6 +329,28 @@ blocks:
     coordinate: [776, 150]
     rotation: 0
     state: enabled
+- name: analog_agc3_xx_0
+  id: analog_agc3_xx
+  parameters:
+    affinity: ''
+    alias: ''
+    attack_rate: '1.0'
+    comment: ''
+    decay_rate: '0.0001'
+    gain: '1.0'
+    iir_update_decim: '1'
+    max_gain: '1000000.0'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    reference: '1.0'
+    type: complex
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [540, 650]
+    rotation: 0
+    state: enabled
 - name: analog_sig_source_x_0
   id: analog_sig_source_x
   parameters:
@@ -372,7 +394,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [8, 920]
+    coordinate: [68, 920]
     rotation: 0
     state: enabled
 - name: analog_sig_source_x_2
@@ -395,7 +417,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1060, 950]
+    coordinate: [1120, 950]
     rotation: 0
     state: enabled
 - name: audio_sink_0
@@ -412,7 +434,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [880, 930]
+    coordinate: [940, 930]
     rotation: 0
     state: enabled
 - name: blocks_abs_xx_0
@@ -429,7 +451,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [770, 830]
+    coordinate: [830, 830]
     rotation: 0
     state: enabled
 - name: blocks_complex_to_real_0
@@ -445,7 +467,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [390, 830]
+    coordinate: [450, 830]
     rotation: 0
     state: enabled
 - name: blocks_float_to_complex_0
@@ -479,7 +501,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [700, 930]
+    coordinate: [760, 930]
     rotation: 0
     state: enabled
 - name: blocks_multiply_xx_0
@@ -515,7 +537,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [260, 820]
+    coordinate: [320, 820]
     rotation: 0
     state: enabled
 - name: blocks_threshold_ff_0
@@ -533,7 +555,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1080, 820]
+    coordinate: [1140, 820]
     rotation: 0
     state: enabled
 - name: epy_block_0
@@ -641,7 +663,7 @@ blocks:
       \        if units >= 5:                       # end of a word\n            \
       \        self.out += ' '\n                    self.word_done = True\n      \
       \  self.out = self.out[-4000:]\n        return len(input_items[0])\n\n    def\
-      \ text(self):\n        return self.out[-44:] or '(listening)'\n\n    def all_text(self):\n\
+      \ text(self):\n        return self.out[-60:] or '(listening)'\n\n    def all_text(self):\n\
       \        return self.out\n"
     affinity: ''
     alias: ''
@@ -675,7 +697,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [540, 820]
+    coordinate: [600, 820]
     rotation: 0
     state: enabled
 - name: fir_filter_xxx_1
@@ -694,7 +716,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [860, 820]
+    coordinate: [920, 820]
     rotation: 0
     state: enabled
 - name: freq_xlating_fir_filter_xxx_0
@@ -714,7 +736,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [40, 800]
+    coordinate: [100, 800]
     rotation: 0
     state: enabled
 - name: iio_pluto_sink_0
@@ -789,7 +811,7 @@ blocks:
     alpha7: '1.0'
     alpha8: '1.0'
     alpha9: '1.0'
-    autoscale: 'True'
+    autoscale: 'False'
     axislabels: 'True'
     color1: blue
     color10: dark blue
@@ -868,7 +890,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1260, 920]
+    coordinate: [1320, 920]
     rotation: 0
     state: enabled
 - name: qtgui_waterfall_sink_x_0
@@ -904,8 +926,8 @@ blocks:
     freqhalf: 'True'
     grid: 'False'
     gui_hint: 2,0,1,1
-    int_max: '0'
-    int_min: '-50'
+    int_max: '-40'
+    int_min: '-120'
     label1: ''
     label10: ''
     label2: ''
@@ -929,7 +951,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1120, 530]
+    coordinate: [1180, 530]
     rotation: 0
     state: enabled
 - name: rational_resampler_xxx_0
@@ -969,11 +991,12 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [330, 530]
+    coordinate: [330, 640]
     rotation: 0
     state: enabled
 
 connections:
+- [analog_agc3_xx_0, '0', blocks_multiply_xx_1, '0']
 - [analog_sig_source_x_0, '0', blocks_multiply_xx_0, '1']
 - [analog_sig_source_x_1, '0', blocks_multiply_xx_1, '1']
 - [analog_sig_source_x_2, '0', qtgui_time_sink_x_0, '1']
@@ -989,7 +1012,7 @@ connections:
 - [fir_filter_xxx_0, '0', blocks_multiply_const_xx_1, '0']
 - [fir_filter_xxx_1, '0', blocks_threshold_ff_0, '0']
 - [fir_filter_xxx_1, '0', qtgui_time_sink_x_0, '0']
-- [freq_xlating_fir_filter_xxx_0, '0', blocks_multiply_xx_1, '0']
+- [freq_xlating_fir_filter_xxx_0, '0', analog_agc3_xx_0, '0']
 - [iio_pluto_source_0, '0', rational_resampler_xxx_1, '0']
 - [rational_resampler_xxx_0, '0', iio_pluto_sink_0, '0']
 - [rational_resampler_xxx_1, '0', freq_xlating_fir_filter_xxx_0, '0']

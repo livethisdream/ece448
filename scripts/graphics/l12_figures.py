@@ -122,8 +122,12 @@ def decoder_windows():
             ax.text(x + 0.09, 0.22, str(x), ha="left", va="center", color=INK, fontsize=9.5)
         for x in sorted({b for _, b, _, _ in spans[:-1]}):
             ax.plot([x, x], [0, 1], color=RED, lw=1.2, ls=(0, (3, 2)))
-    axs[0].text(0, 1.18, "black ticks: what a perfect sender sends; gray: under 0.3 unit, ignored as noise",
-                transform=axs[0].transAxes, ha="left", va="bottom", fontsize=10, color=GRAY)
+    # two-swatch key; the prose explains both
+    k = axs[0]
+    k.plot([0.0, 0.0], [1.22, 1.42], color=INK, lw=2, transform=k.transAxes, clip_on=False)
+    k.text(0.015, 1.32, "perfect sender", transform=k.transAxes, ha="left", va="center", fontsize=10, color=INK)
+    k.add_patch(Rectangle((0.22, 1.24), 0.025, 0.16, transform=k.transAxes, fc=GRAY, alpha=0.25, ec="none", clip_on=False))
+    k.text(0.255, 1.32, "ignored, < 0.3 unit", transform=k.transAxes, ha="left", va="center", fontsize=10, color=INK)
     write("L12-decoder-windows", fig)
 
 

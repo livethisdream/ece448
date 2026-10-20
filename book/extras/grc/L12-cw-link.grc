@@ -162,7 +162,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1220, 8]
+    coordinate: [1280, 8]
     rotation: 0
     state: enabled
 - name: rx_text
@@ -178,7 +178,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1060, 8]
+    coordinate: [1120, 8]
     rotation: 0
     state: enabled
 - name: rx_wpm
@@ -351,7 +351,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [8, 740]
+    coordinate: [68, 740]
     rotation: 0
     state: enabled
 - name: audio_sink_0
@@ -368,7 +368,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [880, 750]
+    coordinate: [940, 750]
     rotation: 0
     state: enabled
 - name: blocks_abs_xx_0
@@ -385,7 +385,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [770, 650]
+    coordinate: [830, 650]
     rotation: 0
     state: enabled
 - name: blocks_add_xx_0
@@ -419,7 +419,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [390, 650]
+    coordinate: [450, 650]
     rotation: 0
     state: enabled
 - name: blocks_float_to_complex_0
@@ -453,7 +453,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [700, 750]
+    coordinate: [760, 750]
     rotation: 0
     state: enabled
 - name: blocks_multiply_xx_0
@@ -489,7 +489,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [260, 640]
+    coordinate: [320, 640]
     rotation: 0
     state: enabled
 - name: blocks_threshold_ff_0
@@ -507,7 +507,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1080, 640]
+    coordinate: [1140, 640]
     rotation: 0
     state: enabled
 - name: blocks_throttle2_0
@@ -636,7 +636,7 @@ blocks:
       \        if units >= 5:                       # end of a word\n            \
       \        self.out += ' '\n                    self.word_done = True\n      \
       \  self.out = self.out[-4000:]\n        return len(input_items[0])\n\n    def\
-      \ text(self):\n        return self.out[-44:] or '(listening)'\n\n    def all_text(self):\n\
+      \ text(self):\n        return self.out[-60:] or '(listening)'\n\n    def all_text(self):\n\
       \        return self.out\n"
     affinity: ''
     alias: ''
@@ -670,7 +670,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [540, 640]
+    coordinate: [600, 640]
     rotation: 0
     state: enabled
 - name: fir_filter_xxx_1
@@ -689,7 +689,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [860, 640]
+    coordinate: [920, 640]
     rotation: 0
     state: enabled
 - name: freq_xlating_fir_filter_xxx_0
@@ -709,7 +709,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [40, 620]
+    coordinate: [100, 620]
     rotation: 0
     state: enabled
 - name: qtgui_time_sink_x_0
@@ -806,7 +806,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1260, 740]
+    coordinate: [1320, 740]
     rotation: 0
     state: enabled
 - name: qtgui_waterfall_sink_x_0
@@ -867,7 +867,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1120, 350]
+    coordinate: [1180, 350]
     rotation: 0
     state: enabled
 

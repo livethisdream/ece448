@@ -291,7 +291,7 @@ list from Question 2(b) in the Vector Source.
 
 	\part Read the highest peak of the hard and shaped spectra within 100 Hz of 1 kHz and of
 	2 kHz from 0 Hz, where the carrier would sit. How far below hard keying is your ramp at each? Lesson 12's 5 ms raised
-	cosine was 40 dB and 52 dB below; explain the difference.
+	cosine was 40 dB and 53 dB below; explain the difference.
 
 	\begin{center}
 	\renewcommand{\arraystretch}{1.25}
@@ -307,7 +307,7 @@ list from Question 2(b) in the Vector Source.
 		The ramp is about 23 to 26 dB below hard keying 1 kHz away and 29 to 31 dB below
 		2 kHz away. A straight ramp still has a sharp corner where it starts and where
 		it ends, and those corners spread energy farther than the smooth start and end
-		of a raised cosine of the same length, which is 15 to 22 dB lower.
+		of a raised cosine of the same length, which is 15 to 23 dB lower.
 		\end{solution}
 
 \end{parts}
@@ -346,8 +346,10 @@ message, and count the wrong, missing, and extra characters among those 39.
 	\part Paste a screenshot at $\sigma = 6.5$ with the 200 Hz filter, and mark one wrong
 	character in the Received label.
 		\begin{solution}[1.4in]
-		Answers vary. Most errors are a dit lost in the noise, such as F read as R or as
-		an unknown pattern \#, or a noise burst read as an extra dit, such as an extra E.
+		Answers vary. Each error comes from a mark that noise splits, shortens, or invents,
+		or from a lost dit: a dah broken into two dits turns A into S; a dah shrunk to a dit
+		turns 8 into 7; a lost dit turns F into R or into an unknown pattern \#; and a noise
+		burst adds an extra E.
 		\end{solution}
 
 \end{parts}
@@ -416,9 +418,9 @@ unplug the Pluto before you disconnect the cable.
 	waterfall, the envelope with the threshold line halfway between the space and mark
 	levels, and the Received label.
 		\begin{solution}[1.5in]
-		The waterfall shows the keyed carrier at +5 kHz. The envelope plot scales itself to
-		the received level, the red threshold line sits halfway between the space and mark
-		levels, and the message decodes without errors.
+		The waterfall shows the keyed carrier at +5 kHz. The AGC holds the envelope's mark level
+		near 0.6, the red threshold line sits halfway between the space and mark levels, and
+		the message decodes without errors.
 		\end{solution}
 
 	\part Record your teammate's message as decoded, and check it with them.
@@ -427,8 +429,9 @@ unplug the Pluto before you disconnect the cable.
 		as capitals and skips any character that is not in its Morse table, such as @.
 		\end{solution}
 
-	\part Record the mark level and whether the text decodes at each TX attenuation.
-	Explain how much the mark level should change for each 10 dB step.
+	\part Record the mark and space levels and whether the text decodes at each TX
+	attenuation. Explain why the mark level hardly changes while the received power falls
+	by 10 dB a step, and what does change.
 
 	\begin{center}
 	\renewcommand{\arraystretch}{1.25}
@@ -436,15 +439,18 @@ unplug the Pluto before you disconnect the cable.
 	\hline
 	TX attenuation (dB) & 60 & 70 & 80 & 89 \\\hline
 	Mark level & & & & \\\hline
+	Space level & & & & \\\hline
 	Decodes? & & & & \\\hline
 	\end{tabular}
 	\end{center}
 
 		\begin{solution}[1.0in]
-		The envelope follows the received amplitude, so each 10 dB step should divide the
-		mark level by $10^{10/20} = 3.16$ until it nears the space level, where the
-		threshold can no longer separate them. The levels, and whether the text still
-		decodes at 89 dB, depend on the hardware.
+		Each 10 dB step divides the received amplitude by $10^{10/20} = 3.16$, and the AGC
+		raises its gain by the same factor, so the mark level stays near 0.6. The noise
+		does not fall with the signal, so the AGC raises it too, and the space level climbs
+		as the SNR drops. With estimated Pluto levels, a simulation decoded at every step,
+		with the space level rising from about 0.04 to 0.05; the real levels, and whether
+		the text still decodes at 89 dB, depend on the hardware.
 		\end{solution}
 
 \end{parts}
