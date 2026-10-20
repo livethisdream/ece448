@@ -1,0 +1,823 @@
+options:
+  parameters:
+    author: ECE 448
+    catch_exceptions: 'True'
+    category: '[GRC Hier Blocks]'
+    cmake_opt: ''
+    comment: ''
+    copyright: ''
+    description: 'L13: decodes DTMF from the laptop''s microphone. Hold a phone''s
+      keypad near the microphone and press keys.'
+    gen_cmake: 'On'
+    gen_linking: dynamic
+    generate_options: qt_gui
+    hier_block_src_path: '.:'
+    id: L13_dtmf_mic
+    max_nouts: '0'
+    output_language: python
+    placement: (0,0)
+    qt_qss_theme: ''
+    realtime_scheduling: ''
+    run: 'True'
+    run_command: '{python} -u {filename}'
+    run_options: prompt
+    sizing_mode: fixed
+    thread_safe_setters: ''
+    title: L13 - DTMF from a Microphone
+    window_size: (1100,760)
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [8, 8]
+    rotation: 0
+    state: enabled
+
+blocks:
+- name: N
+  id: variable
+  parameters:
+    comment: ''
+    value: '205'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [200, 92]
+    rotation: 0
+    state: enabled
+- name: digits_lbl
+  id: variable_qtgui_label
+  parameters:
+    comment: ''
+    formatter: 'lambda x: '':  '' + x'
+    gui_hint: 0,0,1,1
+    label: Digits
+    type: string
+    value: rx_digits
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1200, 12]
+    rotation: 0
+    state: enabled
+- name: rx_digits
+  id: variable_function_probe
+  parameters:
+    block_id: dtmf_decoder
+    comment: ''
+    function_args: ''
+    function_name: digits
+    poll_rate: '4'
+    value: '''(listening)'''
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1000, 12]
+    rotation: 0
+    state: enabled
+- name: rx_stats
+  id: variable_function_probe
+  parameters:
+    block_id: dtmf_decoder
+    comment: ''
+    function_args: ''
+    function_name: stats
+    poll_rate: '4'
+    value: ''''''
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1000, 112]
+    rotation: 0
+    state: enabled
+- name: samp_rate
+  id: variable
+  parameters:
+    comment: ''
+    value: '8000'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [200, 12]
+    rotation: 0
+    state: enabled
+- name: stats_lbl
+  id: variable_qtgui_label
+  parameters:
+    comment: ''
+    formatter: 'lambda x: '':  '' + x'
+    gui_hint: 0,1,1,1
+    label: Numbers
+    type: string
+    value: rx_stats
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1200, 112]
+    rotation: 0
+    state: enabled
+- name: cols
+  id: qtgui_time_sink_x
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha1: '1.0'
+    alpha10: '1.0'
+    alpha2: '1.0'
+    alpha3: '1.0'
+    alpha4: '1.0'
+    alpha5: '1.0'
+    alpha6: '1.0'
+    alpha7: '1.0'
+    alpha8: '1.0'
+    alpha9: '1.0'
+    autoscale: 'False'
+    axislabels: 'True'
+    color1: blue
+    color10: dark blue
+    color2: red
+    color3: green
+    color4: black
+    color5: cyan
+    color6: magenta
+    color7: yellow
+    color8: dark red
+    color9: dark green
+    comment: ''
+    ctrlpanel: 'False'
+    entags: 'True'
+    grid: 'True'
+    gui_hint: 2,1,1,1
+    label1: 1209 Hz
+    label10: Signal 10
+    label2: 1336 Hz
+    label3: 1477 Hz
+    label4: 1633 Hz
+    label5: Signal 5
+    label6: Signal 6
+    label7: Signal 7
+    label8: Signal 8
+    label9: Signal 9
+    legend: 'True'
+    marker1: '-1'
+    marker10: '-1'
+    marker2: '-1'
+    marker3: '-1'
+    marker4: '-1'
+    marker5: '-1'
+    marker6: '-1'
+    marker7: '-1'
+    marker8: '-1'
+    marker9: '-1'
+    name: '"Column bins (Goertzel, |X|/N)"'
+    nconnections: '4'
+    size: '117'
+    srate: samp_rate / N
+    stemplot: 'False'
+    style1: '1'
+    style10: '1'
+    style2: '1'
+    style3: '1'
+    style4: '1'
+    style5: '1'
+    style6: '1'
+    style7: '1'
+    style8: '1'
+    style9: '1'
+    tr_chan: '0'
+    tr_delay: '0'
+    tr_level: '0.0'
+    tr_mode: qtgui.TRIG_MODE_FREE
+    tr_slope: qtgui.TRIG_SLOPE_POS
+    tr_tag: '""'
+    type: float
+    update_time: '0.10'
+    width1: '2'
+    width10: '1'
+    width2: '2'
+    width3: '2'
+    width4: '2'
+    width5: '1'
+    width6: '1'
+    width7: '1'
+    width8: '1'
+    width9: '1'
+    ylabel: Amplitude / 2
+    ymax: '0.2'
+    ymin: '0'
+    yunit: '""'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [840, 680]
+    rotation: 0
+    state: enabled
+- name: dtmf_decoder
+  id: epy_block
+  parameters:
+    N: N
+    _source_code: "\"\"\"DTMF Decoder: a Goertzel bin at each of the eight DTMF frequencies,\
+      \ read\nonce per block of N samples, with a new block every N/2 samples.\n\n\
+      A block holds a digit when the strongest row bin and the strongest column bin\n\
+      carry at least `share` of the block's energy, each is at least 6 dB above the\n\
+      other three bins in its group, and the column tone is no more than 6 dB above\n\
+      or 10 dB below the row tone (the twist limits, 2 dB outside the standard's\n\
+      +4 and -8 dB). A digit is reported when three blocks in a row hold it, and\n\
+      again only after a block that does not.\nA pause of 200 ms or more ends a number.\n\
+      Function Probes read digits() and stats() for the QT GUI Labels.\"\"\"\n\nimport\
+      \ time\n\nimport numpy as np\nfrom gnuradio import gr\n\nROWS = (697, 770, 852,\
+      \ 941)\nCOLS = (1209, 1336, 1477, 1633)\nKEYS = ('123A', '456B', '789C', '*0#D')\n\
+      \n\nclass blk(gr.sync_block):\n    def __init__(self, samp_rate=8000, N=205,\
+      \ share=0.35, round_k=False,\n                 expected='', settings=None):\n\
+      \        gr.sync_block.__init__(self, name='DTMF Decoder', in_sig=[np.float32],\
+      \ out_sig=None)\n        self.fs = samp_rate\n        self.N = int(N)\n    \
+      \    self.share = share\n        self.round_k = round_k\n        self.expected\
+      \ = expected\n        self.settings = settings\n\n    @property\n    def settings(self):\n\
+      \        return self._settings\n\n    @settings.setter\n    def settings(self,\
+      \ value):\n        # GRC sets this whenever a setting it names changes; start\
+      \ the counts over.\n        self._settings = value\n        k = np.array(ROWS\
+      \ + COLS) * self.N / self.fs       # bin number of each tone\n        if self.round_k:\n\
+      \            k = np.round(k)\n        self.coef = 2 * np.cos(2 * np.pi * k /\
+      \ self.N)\n        self.hop = self.N // 2\n        self.buf = np.zeros(0, dtype=np.float32)\n\
+      \        self.prev = self.held = None\n        self.run = 0\n        self.quiet\
+      \ = 0\n        self.number = ''\n        self.shown = '(listening)'\n      \
+      \  self.good = self.total = 0\n        self.t0 = time.monotonic()\n\n    def\
+      \ goertzel(self, x):\n        q1 = np.zeros(8)\n        q2 = np.zeros(8)\n \
+      \       for v in x:\n            q1, q2 = self.coef * q1 - q2 + v, q1\n    \
+      \    return q1 * q1 + q2 * q2 - self.coef * q1 * q2      # |X(k)|^2 for each\
+      \ tone\n\n    def decide(self, x):\n        energy = np.dot(x, x)\n        if\
+      \ energy < 1e-8:\n            return None\n        p = self.goertzel(x) * 2\
+      \ / (self.N * energy)          # a lone tone gives 1\n        lo, hi = p[:4],\
+      \ p[4:]\n        r, c = int(np.argmax(lo)), int(np.argmax(hi))\n        if lo[r]\
+      \ + hi[c] < self.share:\n            return None                           \
+      \            # not enough energy in two tones\n        if np.sort(lo)[-2] *\
+      \ 4 > lo[r] or np.sort(hi)[-2] * 4 > hi[c]:\n            return None       \
+      \                                # no clear winner (6 dB)\n        if hi[c]\
+      \ > lo[r] * 10 ** 0.6 or lo[r] > hi[c] * 10 ** 1.0:\n            return None\
+      \                                       # twist: +6 dB / -10 dB\n        return\
+      \ KEYS[r][c]\n\n    def work(self, input_items, output_items):\n        self.buf\
+      \ = np.concatenate((self.buf, input_items[0]))\n        while len(self.buf)\
+      \ >= self.N:\n            d = self.decide(self.buf[:self.N].astype(np.float64))\n\
+      \            self.buf = self.buf[self.hop:]\n            self.run = self.run\
+      \ + 1 if d is not None and d == self.prev else int(d is not None)\n        \
+      \    if d != self.held:\n                self.held = None\n            if d\
+      \ is not None and self.run >= 3 and self.held is None:\n                self.number\
+      \ += d\n                self.held = d\n            self.quiet = 0 if d is not\
+      \ None else self.quiet + 1\n            if self.number and self.quiet * self.hop\
+      \ >= 0.2 * self.fs:\n                self.finish()\n            self.prev =\
+      \ d\n        return len(input_items[0])\n\n    def finish(self):\n        self.shown\
+      \ = self.number\n        self.total += 1\n        self.good += self.number ==\
+      \ self.expected\n        self.number = ''\n\n    def digits(self):\n       \
+      \ return self.number or self.shown\n\n    def stats(self):\n        t = time.monotonic()\
+      \ - self.t0\n        if not self.expected:\n            return f'{self.total}\
+      \ decoded in {t:.0f} s'\n        return f'{self.good} correct of {self.total}\
+      \ decoded in {t:.0f} s'\n"
+    affinity: ''
+    alias: ''
+    comment: ''
+    expected: ''''''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    round_k: 'False'
+    samp_rate: samp_rate
+    settings: None
+    share: '0.35'
+  states:
+    _io_cache: ('DTMF Decoder', 'blk', [('samp_rate', '8000'), ('N', '205'), ('share',
+      '0.35'), ('round_k', 'False'), ('expected', "''"), ('settings', 'None')], [('0',
+      'float', 1)], [], '', ['N', 'expected', 'round_k', 'settings', 'share'])
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [700, 100]
+    rotation: 0
+    state: enabled
+- name: g1209
+  id: goertzel_fc
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    freq: '1209'
+    len: N
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    rate: samp_rate
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [420, 586]
+    rotation: 0
+    state: enabled
+- name: g1336
+  id: goertzel_fc
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    freq: '1336'
+    len: N
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    rate: samp_rate
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [420, 670]
+    rotation: 0
+    state: enabled
+- name: g1477
+  id: goertzel_fc
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    freq: '1477'
+    len: N
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    rate: samp_rate
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [420, 754]
+    rotation: 0
+    state: enabled
+- name: g1633
+  id: goertzel_fc
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    freq: '1633'
+    len: N
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    rate: samp_rate
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [420, 838]
+    rotation: 0
+    state: enabled
+- name: g697
+  id: goertzel_fc
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    freq: '697'
+    len: N
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    rate: samp_rate
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [420, 250]
+    rotation: 0
+    state: enabled
+- name: g770
+  id: goertzel_fc
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    freq: '770'
+    len: N
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    rate: samp_rate
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [420, 334]
+    rotation: 0
+    state: enabled
+- name: g852
+  id: goertzel_fc
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    freq: '852'
+    len: N
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    rate: samp_rate
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [420, 418]
+    rotation: 0
+    state: enabled
+- name: g941
+  id: goertzel_fc
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    freq: '941'
+    len: N
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    rate: samp_rate
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [420, 502]
+    rotation: 0
+    state: enabled
+- name: m1209
+  id: blocks_complex_to_mag
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [620, 606]
+    rotation: 0
+    state: enabled
+- name: m1336
+  id: blocks_complex_to_mag
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [620, 690]
+    rotation: 0
+    state: enabled
+- name: m1477
+  id: blocks_complex_to_mag
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [620, 774]
+    rotation: 0
+    state: enabled
+- name: m1633
+  id: blocks_complex_to_mag
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [620, 858]
+    rotation: 0
+    state: enabled
+- name: m697
+  id: blocks_complex_to_mag
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [620, 270]
+    rotation: 0
+    state: enabled
+- name: m770
+  id: blocks_complex_to_mag
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [620, 354]
+    rotation: 0
+    state: enabled
+- name: m852
+  id: blocks_complex_to_mag
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [620, 438]
+    rotation: 0
+    state: enabled
+- name: m941
+  id: blocks_complex_to_mag
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [620, 522]
+    rotation: 0
+    state: enabled
+- name: mic
+  id: audio_source
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    device_name: ''''''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_outputs: '1'
+    ok_to_block: 'True'
+    samp_rate: '48000'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [20, 300]
+    rotation: 0
+    state: enabled
+- name: resamp
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    decim: '6'
+    fbw: '0'
+    interp: '1'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    taps: '[]'
+    type: fff
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [200, 284]
+    rotation: 0
+    state: enabled
+- name: rows
+  id: qtgui_time_sink_x
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha1: '1.0'
+    alpha10: '1.0'
+    alpha2: '1.0'
+    alpha3: '1.0'
+    alpha4: '1.0'
+    alpha5: '1.0'
+    alpha6: '1.0'
+    alpha7: '1.0'
+    alpha8: '1.0'
+    alpha9: '1.0'
+    autoscale: 'False'
+    axislabels: 'True'
+    color1: blue
+    color10: dark blue
+    color2: red
+    color3: green
+    color4: black
+    color5: cyan
+    color6: magenta
+    color7: yellow
+    color8: dark red
+    color9: dark green
+    comment: ''
+    ctrlpanel: 'False'
+    entags: 'True'
+    grid: 'True'
+    gui_hint: 2,0,1,1
+    label1: 697 Hz
+    label10: Signal 10
+    label2: 770 Hz
+    label3: 852 Hz
+    label4: 941 Hz
+    label5: Signal 5
+    label6: Signal 6
+    label7: Signal 7
+    label8: Signal 8
+    label9: Signal 9
+    legend: 'True'
+    marker1: '-1'
+    marker10: '-1'
+    marker2: '-1'
+    marker3: '-1'
+    marker4: '-1'
+    marker5: '-1'
+    marker6: '-1'
+    marker7: '-1'
+    marker8: '-1'
+    marker9: '-1'
+    name: '"Row bins (Goertzel, |X|/N)"'
+    nconnections: '4'
+    size: '117'
+    srate: samp_rate / N
+    stemplot: 'False'
+    style1: '1'
+    style10: '1'
+    style2: '1'
+    style3: '1'
+    style4: '1'
+    style5: '1'
+    style6: '1'
+    style7: '1'
+    style8: '1'
+    style9: '1'
+    tr_chan: '0'
+    tr_delay: '0'
+    tr_level: '0.0'
+    tr_mode: qtgui.TRIG_MODE_FREE
+    tr_slope: qtgui.TRIG_SLOPE_POS
+    tr_tag: '""'
+    type: float
+    update_time: '0.10'
+    width1: '2'
+    width10: '1'
+    width2: '2'
+    width3: '2'
+    width4: '2'
+    width5: '1'
+    width6: '1'
+    width7: '1'
+    width8: '1'
+    width9: '1'
+    ylabel: Amplitude / 2
+    ymax: '0.2'
+    ymin: '0'
+    yunit: '""'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [840, 340]
+    rotation: 0
+    state: enabled
+- name: wf
+  id: qtgui_freq_sink_x
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha1: '1.0'
+    alpha10: '1.0'
+    alpha2: '1.0'
+    alpha3: '1.0'
+    alpha4: '1.0'
+    alpha5: '1.0'
+    alpha6: '1.0'
+    alpha7: '1.0'
+    alpha8: '1.0'
+    alpha9: '1.0'
+    autoscale: 'False'
+    average: '1.0'
+    axislabels: 'True'
+    bw: samp_rate
+    color1: '"blue"'
+    color10: '"dark blue"'
+    color2: '"red"'
+    color3: '"green"'
+    color4: '"black"'
+    color5: '"cyan"'
+    color6: '"magenta"'
+    color7: '"yellow"'
+    color8: '"dark red"'
+    color9: '"dark green"'
+    comment: ''
+    ctrlpanel: 'False'
+    fc: '0'
+    fftsize: '256'
+    freqhalf: 'False'
+    grid: 'False'
+    gui_hint: 3,0,1,2
+    label: Relative Gain
+    label1: Audio
+    label10: ''''''
+    label2: ''''''
+    label3: ''''''
+    label4: ''''''
+    label5: ''''''
+    label6: ''''''
+    label7: ''''''
+    label8: ''''''
+    label9: ''''''
+    legend: 'True'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    name: '"Spectrum"'
+    nconnections: '1'
+    norm_window: 'False'
+    showports: 'False'
+    tr_chan: '0'
+    tr_level: '0.0'
+    tr_mode: qtgui.TRIG_MODE_FREE
+    tr_tag: '""'
+    type: float
+    units: dB
+    update_time: '0.10'
+    width1: '1'
+    width10: '1'
+    width2: '1'
+    width3: '1'
+    width4: '1'
+    width5: '1'
+    width6: '1'
+    width7: '1'
+    width8: '1'
+    width9: '1'
+    wintype: window.WIN_BLACKMAN_hARRIS
+    ymax: '0'
+    ymin: '-80'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [420, 100]
+    rotation: 0
+    state: enabled
+
+connections:
+- [g1209, '0', m1209, '0']
+- [g1336, '0', m1336, '0']
+- [g1477, '0', m1477, '0']
+- [g1633, '0', m1633, '0']
+- [g697, '0', m697, '0']
+- [g770, '0', m770, '0']
+- [g852, '0', m852, '0']
+- [g941, '0', m941, '0']
+- [m1209, '0', cols, '0']
+- [m1336, '0', cols, '1']
+- [m1477, '0', cols, '2']
+- [m1633, '0', cols, '3']
+- [m697, '0', rows, '0']
+- [m770, '0', rows, '1']
+- [m852, '0', rows, '2']
+- [m941, '0', rows, '3']
+- [mic, '0', resamp, '0']
+- [resamp, '0', dtmf_decoder, '0']
+- [resamp, '0', g1209, '0']
+- [resamp, '0', g1336, '0']
+- [resamp, '0', g1477, '0']
+- [resamp, '0', g1633, '0']
+- [resamp, '0', g697, '0']
+- [resamp, '0', g770, '0']
+- [resamp, '0', g852, '0']
+- [resamp, '0', g941, '0']
+- [resamp, '0', wf, '0']
+
+metadata:
+  file_format: 1
+  grc_version: 3.10.9.2

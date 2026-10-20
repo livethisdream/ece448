@@ -1,0 +1,506 @@
+\documentclass{exam}
+
+\newif\ifA
+\newif\ifkey
+\newif\ifprintselected   % required by exam_config's \ansbox
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% SET THESE IF VARIABLES
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Lab name -- labs are named by the lesson they belong to, never by a
+% sequential lab number (Neil, 2026-10-12): this is the L13 Lab.
+\def\labLesson{13}
+
+% is this the key or not?
+\ifdefined\iskey
+	\ifnum\iskey=1
+		\keytrue
+	\else
+		\keyfalse
+	\fi
+\else
+	%% Pick one manually
+	\keyfalse % if this is NOT the key
+%	\keytrue     % if this IS the key
+\fi
+
+% set up the header and footer - change for every term
+\ifdefined\thisTermIn
+	\def\thisterm{\thisTermIn}
+\else
+	\def\thisterm{Spring 2027}
+\fi
+%
+\def\thisclass{ECE 448}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% END SET THESE IF VARIABLES
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% packages and shortcuts
+\input{myPackages_gr}
+\usepackage[hidelinks, linkcolor=red]{hyperref}
+\input{myShortcuts}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt}
+
+%% exam class customization
+\input{exam_config}
+\input{ece448_fonts}   % Barlow body text (needs lualatex)
+\printselectedfalse      % full worked solutions in the key, not answers-only
+\CorrectChoiceEmphasis{\color{red}}
+\SolutionEmphasis{\color{red}}
+\renewcommand\questionlabel{\textbf{\thequestion.}}
+\renewcommand{\thepartno}{\alph{partno}}
+\renewcommand{\partlabel}{(\thepartno)}
+
+% Fillable table cell: blank in the student copy, the expected value in red on
+% the KEY. Fixed-width centered columns keep the blank cells writable.
+\newcolumntype{K}[1]{>{\centering\arraybackslash}p{#1}}
+\newcommand{\kv}[1]{\ifkey{\color{red}#1}\fi\rule[-0.10in]{0pt}{0.34in}}
+
+% print the answers if this is the key
+\ifkey
+	\printanswers % if this IS the key
+\else
+	\noprintanswers  %if this is NOT the key
+\fi
+
+% print the header and footer
+% need to print key on top if this is the key
+\ifkey
+	\firstpageheader{}{\color{red}{ KEY}}{}
+	\runningheader{\thisclass\hspace{1pt} -- \thisterm }{L\labLesson\ Lab\hspace{1pt}\color{red}{ KEY}}{\thepage\hspace{1pt} of\hspace{1pt} \numpages}
+	\firstpagefooter{}{}{}
+	\runningfooter{}{}{}
+\else
+	\firstpageheader{}{}{}
+	\runningheader{\thisclass \hspace{1pt} -- \thisterm }{L\labLesson\ Lab\hspace{1pt}}{\thepage\hspace{1pt} of\hspace{1pt} \numpages}
+	\firstpagefooter{}{}{}
+	\runningfooter{}{}{}
+\fi
+
+\runningheadrule
+
+
+
+
+\begin{document}
+\pagestyle{headandfoot}   % exam class
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% title block
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{center}
+USAF ACADEMY \\
+DEPARTMENT OF ELECTRICAL AND COMPUTER ENGINEERING \\
+LESSON \labLesson\ LAB - DTMF \\
+\textbf{Lab Packet} \\
+\thisterm \\[4mm]
+\end{center}
+
+\vspace{-4pt}
+\textbf{Name:} \rule[-2pt]{2.6in}{0.4pt} \hfill
+\textbf{Section:} \rule[-2pt]{0.9in}{0.4pt} \hfill
+\textbf{Date:} \rule[-2pt]{1.1in}{0.4pt}
+
+\vspace{4pt}
+
+\fullwidth{\textbf{Learning Objective 6.2: } I can decode DTMF tones from a captured audio
+signal.}
+
+\vspace{2pt}
+
+This packet is the L\labLesson\ Lab, in three parts, and you turn it in once, complete,
+before Lesson 14. Do \textbf{Part 1} on your own before the lab period: run the receiver
+and make the predictions you will check at the bench. \textbf{Part 2} is your own
+measurements, recorded in class on your own laptop. Do \textbf{Part 3} on your own after
+the lab: compare the measurements with the predictions and the standard, and answer the
+analysis questions.
+
+\textbf{Grading.} One submission, graded against Objective 6.2 on the course's
+1 / 0 scale, with revision allowed under course policy. Paste screenshots where a
+question asks for one.
+
+\textbf{Transmitting.} Nothing in this lab transmits. Question 7 uses your phone's
+speaker and your laptop's microphone.
+
+The flowgraphs are on the L13 lesson page, \texttt{L13-dtmf-rx.grc},
+\texttt{L13-dtmf-link.grc}, and \texttt{L13-dtmf-keypad.grc}, and on the L13 Lab page,
+\texttt{L13-dtmf-mic.grc}, with the captures \texttt{L13-capture.wav} and
+\texttt{L13-lab-capture.wav}. Both captures are synthetic: \texttt{L13-dtmf-capture.grc}
+dialed them and added noise. Every number below assumes the flowgraphs' settings:
+$f_s = 8$ kHz, Goertzel blocks of $N = 205$ samples unless a question changes $N$, and the
+decoder's rules from the lesson: the best row and column bins hold 35\% of a block's
+energy, each beats its group by 6 dB, the twist is within $-10$ to $+6$ dB, and three
+blocks in a row agree.
+
+\begin{center}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{| c | c | c | c | c |}
+\hline
+ & 1209 Hz & 1336 Hz & 1477 Hz & 1633 Hz \\\hline
+697 Hz & 1 & 2 & 3 & A \\\hline
+770 Hz & 4 & 5 & 6 & B \\\hline
+852 Hz & 7 & 8 & 9 & C \\\hline
+941 Hz & * & 0 & \# & D \\\hline
+\end{tabular}
+\end{center}
+
+\begin{questions}
+
+\fullwidth{\large\textbf{Part 1: Pre-Lab} \normalsize(individual, before the lab period)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{Run the receiver.} Put every L13 file in one folder. Open
+\texttt{L13-dtmf-rx.grc} in GRC and run it on \texttt{L13-capture.wav}, the default.
+
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part After about 10 s, record the Digits and Numbers labels.
+		\begin{solution}[0.5in]
+		Digits reads 7195550148, and Numbers counts one dialing every 1.5 s, about 6 in 10 s.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.6in]{7195550148}
+	\end{minipage}
+
+	\part Paste a screenshot of the running flowgraph's window.
+		\begin{solution}[1.6in]
+		The row bins show ten peaks near 0.15 per dialing and the column bins ten peaks
+		near 0.12, one row and one column per digit.
+		\end{solution}
+
+\end{parts}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\question \textbf{Predictions.} You will check each of these at the bench.
+
+\begin{parts}
+
+	\part Choose a number of at least seven digits that ends in \#, such as a voicemail
+	code. Write each key's row and column frequency.
+		\begin{solution}[0.8in]
+		The answer depends on the number. For \texttt{2486100\#}: 2 is 697 + 1336 Hz, 4 is
+		770 + 1209 Hz, 8 is 852 + 1336 Hz, 6 is 770 + 1477 Hz, 1 is 697 + 1209 Hz, 0 is
+		941 + 1336 Hz, and \# is 941 + 1477 Hz.
+		\end{solution}
+
+	\part Lesson 13 found $k$ for 697 and 1209 Hz at $N = 205$ and $f_s = 8$ kHz. Find $k$
+	for the other six tones, round it to the nearest integer, and find the frequency of the
+	rounded bin, $k f_s / N$, and its error from the tone.
+
+	\begin{center}
+	\renewcommand{\arraystretch}{1.25}
+	\begin{tabular}{| l | K{0.58in} | K{0.58in} | K{0.58in} | K{0.58in} | K{0.58in} | K{0.58in} |}
+	\hline
+	Tone & 770 & 852 & 941 & 1336 & 1477 & 1633 \\\hline
+	$k$ & \kv{19.73} & \kv{21.83} & \kv{24.11} & \kv{34.23} & \kv{37.85} & \kv{41.85} \\\hline
+	Bin (Hz) & \kv{780.5} & \kv{858.5} & \kv{936.6} & \kv{1326.8} & \kv{1482.9} & \kv{1639.0} \\\hline
+	Error (Hz) & \kv{+10.5} & \kv{+6.5} & \kv{$-4.4$} & \kv{$-9.2$} & \kv{+5.9} & \kv{+6.0} \\\hline
+	\end{tabular}
+	\end{center}
+
+		\begin{solution}[0.4in]
+		The 770 Hz bin is off by the most, 1.4\% of its tone, nearly the whole 1.5\% the
+		standard allows a tone to be off.
+		\end{solution}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Find the block time $N/f_s$ and the bin spacing $f_s/N$ for $N = 102$ and
+		$N = 410$. For each, say whether a 50 ms tone can fill a whole block.
+		\begin{solution}[1.2in]
+		\eq{ N = 102:&\ 12.75\ \text{ms},\ 78.4\ \text{Hz} \\
+			N = 410:&\ 51.25\ \text{ms},\ 19.5\ \text{Hz} }
+		A 50 ms tone fills several 12.75 ms blocks, but no 51.25 ms block.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		102: \ansbox[1.3in]{12.75 ms, 78.4 Hz}
+
+		\vspace{4pt}
+		410: \ansbox[1.3in]{51.25 ms, 19.5 Hz}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part A signal has a row tone of amplitude 0.25 and a column tone of 0.10. Find
+		its twist in dB. Does the standard require a receiver to accept it, and does the
+		L13 decoder accept it? Repeat with the two amplitudes swapped.
+		\begin{solution}[1.2in]
+		\eq{ 20\log_{10}(0.10/0.25) = -7.96\ \text{dB} }
+		Inside the standard's $-8$ dB, and inside the decoder's $-10$ dB, so it is accepted.
+		Swapped, the twist is $+7.96$ dB, beyond the standard's $+4$ dB and the decoder's
+		$+6$ dB, so the decoder rejects it.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		twist \ansbox[1.1in]{$-7.96$ dB}
+
+		\vspace{4pt}
+		swapped \ansbox[1.1in]{rejected}
+	\end{minipage}
+
+\end{parts}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\fullwidth{\large\textbf{Part 2: Measurements} \normalsize(in class)}
+
+\question \textbf{Build the keypad.} Start GRC with an empty canvas. Do not open
+\texttt{L13-dtmf-keypad.grc}: build the keypad yourself as the lab page lists.
+
+\begin{parts}
+
+	\part Paste a screenshot of your flowgraph on the GRC canvas and of its spectrum with
+	one key held. Every connection must be black, not red.
+		\begin{solution}[1.6in]
+		The flowgraph matches the lab page: a Chooser, a Push Button, two Variables, two
+		float Signal Sources, Add, Multiply Const, a Rational Resampler up by 6, an Audio
+		Sink at 48 kHz, and a frequency sink and a time sink. The spectrum shows two lines.
+		\end{solution}
+
+	\part For three keys, read both spectrum peaks and compare them with the grid.
+
+	\begin{center}
+	\renewcommand{\arraystretch}{1.25}
+	\begin{tabular}{| l | K{1.1in} | K{1.1in} | K{1.1in} |}
+	\hline
+	Key & & & \\\hline
+	Row peak (Hz) & & & \\\hline
+	Column peak (Hz) & & & \\\hline
+	\end{tabular}
+	\end{center}
+
+		\begin{solution}[0.5in]
+		Each peak falls on the grid's frequency within the sink's 3.9 Hz bin spacing,
+		8000/2048.
+		\end{solution}
+
+\end{parts}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\question \textbf{Decode the lab capture.} Run \texttt{L13-dtmf-rx.grc} on
+\texttt{L13-lab-capture.wav}, as the lab page lists.
+
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Record the number and paste a screenshot.
+		\begin{solution}[1.2in]
+		The number is \texttt{7195550186*2701\#}, 16 keys: a phone number, then an
+		extension after the star, ended by the pound key. Every dialing decodes the same.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.6in]{7195550186*2701\#}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Read the row and column peak heights and find the twist.
+		\begin{solution}[1.0in]
+		The row peaks reach about 0.15 and the column peaks about 0.084.
+		\eq{ 20\log_{10}(0.084/0.15) \approx -5\ \text{dB} }
+		The capture was made with $-5$ dB of twist.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		row \ansbox[1.0in]{0.15}
+
+		\vspace{4pt}
+		column \ansbox[1.0in]{0.084}
+
+		\vspace{4pt}
+		twist \ansbox[1.0in]{$-5$ dB}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Find the time from one dialing to the next and estimate the time per key,
+		tone plus gap.
+		\begin{solution}[1.0in]
+		Dialings repeat every 1.94 s. The capture holds 16 keys and a 500 ms pause, so
+		\eq{ (1.94 - 0.5)/16 = 90\ \text{ms} }
+		per key: 45 ms of tone and 45 ms of gap.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		period \ansbox[1.0in]{1.94 s}
+
+		\vspace{4pt}
+		per key \ansbox[1.0in]{90 ms}
+	\end{minipage}
+
+\end{parts}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\question \textbf{The decoder's limits.} Run \texttt{L13-dtmf-link.grc} as the lab page
+lists. At each setting, wait about 30 s and record the Numbers label as correct of
+decoded.
+
+\begin{parts}
+
+	\part Twist, with all 16 keys as the number:
+
+	\begin{center}
+	\renewcommand{\arraystretch}{1.25}
+	\begin{tabular}{| l | K{0.42in} | K{0.42in} | K{0.42in} | K{0.42in} | K{0.42in} | K{0.42in} | K{0.42in} | K{0.42in} |}
+	\hline
+	Twist (dB) & $-11$ & $-10$ & $-9$ & $-8$ & $+4$ & $+5$ & $+6$ & $+7$ \\\hline
+	Correct & \kv{none} & \kv{none} & \kv{all} & \kv{all} & \kv{all} & \kv{all} & \kv{none} & \kv{none} \\\hline
+	\end{tabular}
+	\end{center}
+
+		\begin{solution}[0.4in]
+		A headless sweep of 40 dialings per setting gave 40 of 40 from $-9$ to $+5$ dB and 0 of 40 outside it.
+		\end{solution}
+
+	\part Tone length, with 60 ms gaps:
+
+	\begin{center}
+	\renewcommand{\arraystretch}{1.25}
+	\begin{tabular}{| l | K{0.62in} | K{0.62in} | K{0.62in} | K{0.62in} | K{0.62in} | K{0.62in} |}
+	\hline
+	Tone (ms) & 25 & 28 & 30 & 33 & 35 & 40 \\\hline
+	Correct & \kv{none} & \kv{none} & \kv{about half} & \kv{almost all} & \kv{all} & \kv{all} \\\hline
+	\end{tabular}
+	\end{center}
+
+		\begin{solution}[0.4in]
+		The headless sweep gave 0, 0, 20, 39, 40, and 40 of 40.
+		\end{solution}
+
+	\part Gap length, with 60 ms tones:
+
+	\begin{center}
+	\renewcommand{\arraystretch}{1.25}
+	\begin{tabular}{| l | K{0.62in} | K{0.62in} | K{0.62in} | K{0.62in} | K{0.62in} | K{0.62in} |}
+	\hline
+	Gap (ms) & 10 & 15 & 20 & 25 & 30 & 40 \\\hline
+	Correct & \kv{about 1/3} & \kv{about 3/4} & \kv{most} & \kv{all} & \kv{all} & \kv{all} \\\hline
+	\end{tabular}
+	\end{center}
+
+		\begin{solution}[0.6in]
+		The headless sweep gave 14, 29, 37, 40, 40, and 40 of 40. A short gap fails
+		by merging a repeated digit, such as the 555, into one.
+		\end{solution}
+
+\end{parts}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\question \textbf{Block length.} Change the Variable \texttt{N} in
+\texttt{L13-dtmf-link.grc} as the lab page lists, and record the Numbers label.
+
+\begin{center}
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{| l | l | K{1.3in} |}
+\hline
+$N$ & Setting & Correct \\\hline
+102 & 20 ms tones, 60 ms gaps & \kv{none} \\\hline
+102 & 25 ms tones, 60 ms gaps & \kv{all} \\\hline
+102 & 30 ms tones, 60 ms gaps & \kv{all} \\\hline
+102 & 50 ms tones, 1.5\% error & \kv{all} \\\hline
+102 & 50 ms tones, 2.5\% error & \kv{all} \\\hline
+102 & 50 ms tones, 3.5\% error & \kv{none} \\\hline
+410 & 50 ms tones and gaps & \kv{none} \\\hline
+410 & 100 ms tones, 0.5\% error & \kv{all} \\\hline
+410 & 100 ms tones, 1.0\% error & \kv{none} \\\hline
+\end{tabular}
+\end{center}
+
+	\begin{solution}[0.8in]
+	The headless sweep gave 0, 40, 40, 40, 40, 0, 0, 40, and 0 of 40. With $N = 102$ the
+	decoder accepts 25 ms tones, close to the 23 ms the standard says to reject, and a
+	2.5\% error. With $N = 410$ no block fits inside a 50 ms tone, and with long tones the
+	19.5 Hz bins reject a 1\% error, which the standard says to accept.
+	\end{solution}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\question \textbf{A real phone.} Run \texttt{L13-dtmf-mic.grc} as the lab page lists.
+
+\begin{parts}
+
+	\part Record the number you pressed and the Digits label, and paste a screenshot of the
+	window while you press one key.
+		\begin{solution}[1.5in]
+		Answers vary. With the phone close and keys pressed slowly, the decoder reads
+		every key. The bins rise and fall less cleanly than in the synthetic captures,
+		because the room adds echo and noise, and the phone and microphone do not pass
+		every frequency equally, which adds twist.
+		\end{solution}
+
+	\part Press keys as fast as you can. What does the decoder miss?
+		\begin{solution}[0.9in]
+		Answers vary. Most phones play a tone for as long as a key is held, so
+		fast presses make short tones and short gaps; a tone shorter than about 33 ms is
+		missed, and a repeated key with a gap shorter than about 20 ms counts once.
+		\end{solution}
+
+	\part Talk, whistle, or play music near the microphone. Record any false digits.
+		\begin{solution}[0.9in]
+		Answers vary; speech should produce few or none. A whistle is one tone, so it
+		fails the test that needs one row and one column tone. Music with two steady
+		notes near a row and a column frequency can produce a false digit.
+		\end{solution}
+
+\end{parts}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\fullwidth{\large\textbf{Part 3: Writeup} \normalsize(individual, after the lab)}
+
+\question \textbf{Analysis.}
+
+\begin{parts}
+
+	\part Compare the twist, tone, and gap limits you measured in Question 5 with the
+	standard's rules from the lesson. Does the decoder meet each rule?
+		\begin{solution}[1.5in]
+		Twist: the standard requires $-8$ to $+4$ dB, and the decoder accepted $-9$ to
+		$+5$ dB, so it meets the rule with about 1 dB to spare. Tone: it must accept 40 ms
+		and reject anything under 23 ms; the decoder accepted every 35 ms tone and none
+		at 28 ms, so it meets both. Gap: it must work with 40 ms gaps; the decoder needed
+		only about 25 ms, so it meets that too.
+		\end{solution}
+
+	\part Use Question 6 to explain what a shorter and a longer Goertzel block gain and
+	lose, and why $N = 205$ is the usual choice at 8 kHz.
+		\begin{solution}[1.5in]
+		A short block responds quickly, so it catches short tones, but its bins are wide,
+		78 Hz at $N = 102$, so it accepts tones too far off frequency and short bursts the
+		standard says to reject. A long block has narrow bins, 19.5 Hz at $N = 410$, but
+		lasts 51 ms, longer than a legal tone, and rejects tones the standard allows to
+		be 1.5\% off. $N = 205$ gives 39 Hz bins and a 25.6 ms block, which meets the
+		timing and frequency rules at once.
+		\end{solution}
+
+	\part Compare the phone with the synthetic captures, and propose one change to the
+	decoder for a noisy room.
+		\begin{solution}[1.5in]
+		Answers vary. The phone's bins are lower and rougher, with more twist and more
+		energy outside the eight bins. Reasonable changes: require an absolute level as
+		well as the 35\% share, so quiet background sounds cannot trigger a digit;
+		require four blocks instead of three for more protection against speech, at the
+		cost of the shortest tones; or band-pass the audio to 600 to 1700 Hz first.
+		\end{solution}
+
+\end{parts}
+
+\end{questions}
+
+\vspace{1.0em}
+\noindent\textbf{Documentation:} \rule[-2pt]{0.6\linewidth}{0.4pt}
+
+\end{document}

@@ -13,7 +13,7 @@ frame_view: true
 
 <div class="title-rule"></div>
 
-Decode DTMF tones from a capture.
+Build a DTMF keypad, decode a capture whose number you do not know, find where the decoder fails, and decode a real phone.
 
 L13 Lab · Module 6: Waveform Applications & RF Reverse Engineering · Dr. Neil Rogers
 ::::
@@ -25,10 +25,139 @@ L13 Lab · Module 6: Waveform Applications & RF Reverse Engineering · Dr. Neil 
 </ol>
 ::::
 
-::::{frame} Lab Packet
+::::{frame} From Lesson to Bench
+:::{present}
+- **Pre-Lab:** run the receiver and predict tones, bins, block times, and twist.
+- **Bench:** build the keypad, decode an unknown capture, find the decoder's limits, and decode a phone.
+- **Writeup:** compare the limits with the standard and explain them.
+:::
+
+Lesson 13 decoded a synthetic capture of a phone number. Today you build the keypad from an empty canvas, decode a second capture whose number you do not know, and measure where the decoder stops working as the twist, the tone length, and the block length change. Then you decode a real signal: a phone's keypad through your laptop's microphone. The lab packet has three parts, and you turn it in once, complete, before Lesson 14. **Part 1, the Pre-Lab**, is on your own before the period. **Part 2** is your own measurements in class. **Part 3, the Writeup**, explains them.
+
+Nothing in this lab transmits. Bring a phone whose keypad plays tones, and headphones if you want to listen without disturbing the room.
+::::
+
+::::{frame} Part 1: Before the Period
+:::{present}
+- `L13-dtmf-rx.grc` decodes `L13-capture.wav`.
+- Predict the tones of a number of your own.
+- Predict the bins at N = 205, and the block times at N = 102 and 410.
+- Predict a signal's twist, and whether the decoder accepts it.
+:::
+
+Do the Pre-Lab before you arrive. Put every file from the Lesson 13 and L13 Lab pages in one folder. Question 1 checks that the receiver opens, runs, and reads 7195550148 from `L13-capture.wav`; if GRC reports an error, the L5 lesson page lists the install checks.
+
+Question 2 asks for predictions from the lesson: the two tones of each key in a number you choose, the bin number $k$ and the rounded bin's frequency for the six tones the lesson did not work, the block time and bin spacing at two other block lengths, and the twist of a signal with given tone amplitudes. Part 2 checks each one.
+::::
+
+::::{frame} Expected Numbers
+:::{present}
+| Check | Expected |
+| :-- | :-- |
+| `L13-capture.wav` | 7195550148, every 1.5 s |
+| Key '9' | 852 Hz and 1477 Hz |
+| Bin at N = 205 | $k = fN/f_s$, 39.0 Hz apart |
+| Repeated digits | each one counts |
+:::
+
+The receiver should decode every repetition of the lesson's capture with no wrong digits. Your keypad should put two lines on the spectrum exactly at the grid's frequencies, within the frequency sink's resolution. The lab capture is harder than the lesson's, with more noise, more twist, and shorter tones, but the decoder should still read every repetition the same way.
+::::
+
+::::{frame} Part 2: Build the Keypad
 :class: read-only
 
-One packet, one submission: Part 1 Pre-Lab before the period, Part 2 on the
-bench in class, Part 3 Writeup after. The Spring 2027 packet will be posted here
-before the lab.
+1. Start GRC and choose File, New, QT GUI. Do not open `L13-dtmf-keypad.grc`; build it yourself.
+2. Set `samp_rate` to 8000. Add a **QT GUI Chooser** with ID `key`: type Integer, Num Options List, options `list(range(16))`, labels `['1', '2', '3', 'A', '4', '5', '6', 'B', '7', '8', '9', 'C', '*', '0', '#', 'D']`, widget Radio Buttons, orientation Horizontal.
+3. Add a **QT GUI Push Button** with ID `press`: type Integer, pressed 1, released 0.
+4. Add Variables `row_f` = `[697, 770, 852, 941][key // 4]` and `col_f` = `[1209, 1336, 1477, 1633][key % 4]`.
+5. Add two **Signal Sources**: type float, waveform Sine, amplitude 0.3, frequencies `row_f` and `col_f`. Add them with an **Add** block, then a **Multiply Const** with constant `press`.
+6. Add a **Rational Resampler** (float, interpolation 6, decimation 1) and an **Audio Sink** at 48000.
+7. On the Multiply Const output, add a **QT GUI Frequency Sink** (float, FFT size 2048, bandwidth `samp_rate`) and a **QT GUI Time Sink** (float, 160 points). Do not add a Throttle; the Audio Sink sets the rate. Every arrow must be black.
+8. Run it. Hold Press on three keys of your choice and screenshot the spectrum for one, for Question 3(a). Read both peaks for each key for Question 3(b), and listen with the volume low.
+::::
+
+::::{frame} Part 2: Decode the Lab Capture
+:class: read-only
+
+1. Open `L13-dtmf-rx.grc` and run it. Type `L13-lab-capture.wav` into Capture file and press Enter; the counts start over.
+2. Wait for the Numbers label to count at least five, and record the number in the Digits label for Question 4(a). Screenshot the window.
+3. Read the height of the row peaks and of the column peaks in the two time sinks, and find the twist in dB for Question 4(b). Each peak is half the tone's amplitude.
+4. Read the time from one dialing to the next in the time sinks, count the digits, and estimate the time per digit, tone plus gap, for Question 4(c).
+::::
+
+::::{frame} Part 2: Find the Decoder's Limits
+:class: read-only
+
+<img src="../../viz/img/L13-grc-link.png"
+     alt="The L13 link flowgraph in GNU Radio Companion: a QT GUI Entry for the number, a Round k check box, and sliders for SNR, twist, tone, gap, and frequency error; the DTMF Dialer and a Noise Source feed an Add, a Throttle, the DTMF Decoder, and a frequency sink; two Function Probes feed the Digits and Numbers labels"
+     style="max-width: 820px; width: 100%; display: block; margin: 0 auto 12px;">
+
+1. Open and run `L13-dtmf-link.grc`. The Numbers label counts the dialings decoded correctly since a setting last changed; each dialing of the default number takes 1.5 s.
+2. Type `123A456B789C*0#D` into Number and press Enter, so that every key is tested. Set the twist to each value in the Question 5(a) table, wait about 30 s, and record the Numbers label.
+3. Set the twist back to 0 and the number back to `7195550148`. Set Gap to 60 ms, set Tone to each value in Question 5(b), wait about 30 s at each, and record the Numbers label.
+4. Set Tone back to 60 ms, set Gap to each value in Question 5(c), and record the Numbers label.
+::::
+
+::::{frame} Part 2: Block Length
+:class: read-only
+
+1. Stop the link flowgraph. Double-click the Variable `N` and change it from 205 to 102. Run it.
+2. Repeat the tone-length test of Question 5(b) with 60 ms gaps, then, with 50 ms tones and gaps, set the frequency error to 1.5%, 2.5%, and 3.5%. Record each Numbers label in the Question 6 table.
+3. Stop it, set `N` to 410, and run it again. Record the Numbers label at the default 50 ms tones and gaps. Then set Tone and Gap to 100 ms and record it at frequency errors of 0.5% and 1.0%.
+4. Stop it and set `N` back to 205.
+::::
+
+::::{frame} Part 2: A Real Phone
+:::{present}
+<img src="../../viz/img/L13-rx-capture.png"
+     alt="The L13 receiver running on the lesson's synthetic capture, for comparison: the Digits label reads 7195550148, and the row and column Goertzel bins show one peak each per digit"
+     style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
+:::
+:::{present}
+- `L13-dtmf-mic.grc` is the receiver with the microphone in place of the WAV file.
+- The figure shows the synthetic capture; your phone's bins will look rougher.
+:::
+
+`L13-dtmf-mic.grc` takes the laptop's microphone at 48 kHz, lowers the rate by 6 to 8 kHz with a Rational Resampler, and runs the same eight Goertzel bins and DTMF Decoder as the receiver. We could not test it with a real microphone before the lab, so expect to adjust it. Most phones play DTMF tones from the dialer's keypad; turn on keypad tones in the phone's sound settings if yours is silent.
+
+1. Open and run `L13-dtmf-mic.grc`. Hold the phone's speaker about 10 cm from the laptop's microphone, open the dialer, and press keys slowly.
+2. Type a number of at least seven digits, pause for a second, and record the Digits label for Question 7(a). Screenshot the window with the bins.
+3. Press keys as fast as you can, and record what the decoder misses for Question 7(b). Then talk, whistle, or play music near the microphone and record any false digits for Question 7(c).
+::::
+
+::::{frame} If No Digits Appear
+:class: read-only
+
+:::{admonition} If the Digits label stays at "(listening)"
+:class: tip
+For the receiver, check that the WAV files are in the same folder as the flowgraph, and that the Capture file box holds the name exactly. For the microphone, check that the bins in the time sinks rise when you press a key: if they stay near 0, the operating system has not given GRC the microphone, or the input level is too low, so raise it in the sound settings. If the bins rise but no digit appears, raise the phone's volume, and hold each key for at least a quarter of a second. For your own keypad, check that `row_f` and `col_f` use `//` and `%`, not `/`.
+:::
+::::
+
+::::{frame} Part 3: After the Lab
+:::{present}
+- Compare the decoder's measured limits with the standard's rules.
+- Explain what the block length trades.
+- Compare the phone with the synthetic captures.
+:::
+
+The Writeup is three questions. The first compares the twist, tone-length, and gap limits you measured with the rules of the lesson's table, and says whether the decoder meets each one. The second uses your Question 6 measurements to explain what a shorter and a longer Goertzel block gain and lose. The third compares the real phone with the synthetic captures and proposes one change to the decoder for a noisy room.
+::::
+
+::::{frame} Lab Packet
+:class: read-only doc-links
+
+- <a class="doc-link" href="../../labs/ECE448_Lab_L13_DTMF_blank.pdf" target="_blank" rel="noopener">L13 Lab packet (PDF)</a>
+- <a class="doc-link" href="../../grc/L13-lab-capture.wav" download>L13-lab-capture.wav</a>: the lab's synthetic capture, a number you decode in Question 4. 1.94 s at 8 kHz.
+- <a class="doc-link" href="../../grc/L13-dtmf-mic.grc" download>L13-dtmf-mic.grc</a>: the receiver on the laptop's microphone. Needs a microphone.
+- The Lesson 13 page has `L13-dtmf-rx.grc`, `L13-dtmf-link.grc`, `L13-capture.wav`, and the keypad flowgraph to check your build against after Question 3.
+::::
+
+::::{frame} Looking Ahead
+:::{present}
+- Lesson 14 receives HD Radio beside an FM station.
+- Lesson 17 takes an unknown signal from the spectrum to its bits.
+:::
+
+Keep your keypad flowgraph and your tables. Lesson 14 returns to RF with HD Radio, the digital signal that rides beside many FM stations. Lesson 17, on RF reverse engineering, starts where this lab's capture did: a recording of a signal whose content you do not know, which you identify by its spectrum and its timing before you decode it.
 ::::

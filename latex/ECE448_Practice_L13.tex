@@ -1,0 +1,274 @@
+% !TEX root =./ECE448_Practice_main.tex
+%
+% L13 practice set (DTMF). Every question is a step in the L13 receiver:
+% reading the keypad grid, the timing rules, a Goertzel design at a block
+% length other than the lesson's, twist, and the decoder's decision rules.
+% Blank copy: \begin{solution}[h] reserves h of work space.
+% SOLUTIONS copy (\iskey=1) prints the red worked solutions.
+
+\fullwidth{\textbf{Learning Objective 6.2: } I can decode DTMF tones from a captured audio
+signal.
+\\[4pt]\normalfont\small Show your work. Write a \textbf{Documentation} line at the
+end (\textbf{None} if you did not collaborate). The keypad grid: rows 697, 770, 852, and
+941 Hz carry 1 2 3 A, 4 5 6 B, 7 8 9 C, and * 0 \# D; columns are 1209, 1336, 1477, and
+1633 Hz, left to right.}
+
+\begin{questions}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{Reading the grid.}
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Which two tones does the `8' key send? The `\#' key?
+		\begin{solution}[0.7in]
+		`8' is row 3 and column 2: 852 Hz and 1336 Hz. `\#' is row 4 and column 3: 941 Hz
+		and 1477 Hz.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		8: \ansbox[1.3in]{852, 1336 Hz}
+
+		\vspace{4pt}
+		\#: \ansbox[1.3in]{941, 1477 Hz}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part A receiver's bins show 941 Hz and 1209 Hz in one digit and 770 Hz and
+		1633 Hz in the next. Which two keys were pressed?
+		\begin{solution}[0.7in]
+		941 and 1209 Hz is row 4, column 1: `*'. 770 and 1633 Hz is row 2, column 4: `B'.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.1in]{*, B}
+	\end{minipage}
+
+	\part In one block, the 697 Hz and 770 Hz bins are both strong and about equal, and so
+	is the 1336 Hz bin. Which test of the L13 decoder rejects the block, and what could
+	cause a signal like that?
+		\begin{solution}[0.9in]
+		Test 2: the best row bin must beat the other three row bins by 6 dB, and here two row
+		bins are equal. A keypad never sends two row tones at once, so the signal is something
+		else: two keys pressed together, or speech or music with energy near both
+		frequencies.
+		\end{solution}
+
+\end{parts}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{Timing.} An auto-dialer sends each digit as 70 ms of tone followed by
+30 ms of silence.
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part How many digits a second does it send, and how long does an 11-digit number
+		take, from the first tone to the end of the last one?
+		\begin{solution}[0.9in]
+		Each digit takes $70 + 30 = 100$ ms, so 10 digits a second.
+		\eq{ 11 \times 100 - 30 = 1070\ \text{ms} }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		rate: \ansbox[1.1in]{10 per s}
+
+		\vspace{4pt}
+		time: \ansbox[1.1in]{1.07 s}
+	\end{minipage}
+
+	\part Does this dialer meet the standard's timing rules from Lesson 13? If not, which
+	rule does it break, and what can go wrong at a receiver built only to the standard?
+		\begin{solution}[1.0in]
+		The 70 ms tones meet the 40 ms minimum, but the 30 ms gaps are shorter than the
+		40 ms a receiver must handle. A receiver built only to the standard may not see a gap
+		that short, so a repeated digit such as the two 0s in 2004 can merge into one.
+		\end{solution}
+
+\end{parts}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{A shorter Goertzel block.} A designer tries Goertzel blocks of $N = 136$
+samples at $f_s = 8$ kHz instead of the lesson's 205.
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Find the block time and the spacing of the bins.
+		\begin{solution}[0.8in]
+		\eq{ N / f_s &= 136 / 8000 = 17\ \text{ms} \\
+			f_s / N &= 8000 / 136 = 58.8\ \text{Hz} }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		block: \ansbox[1.1in]{17 ms}
+
+		\vspace{4pt}
+		spacing: \ansbox[1.1in]{58.8 Hz}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Find $k$ for 852 Hz. Round it to an integer and find the frequency of that
+		bin and its error from 852 Hz, in Hz and in percent.
+		\begin{solution}[1.1in]
+		\eq{ k &= 852 \times 136 / 8000 = 14.48 \\
+			14 \times 58.8 &= 823.5\ \text{Hz} }
+		The rounded bin is 28.5 Hz low, 3.3\% of 852 Hz.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		$k$: \ansbox[1.1in]{14.48}
+
+		\vspace{4pt}
+		bin: \ansbox[1.1in]{823.5 Hz}
+
+		\vspace{4pt}
+		error: \ansbox[1.1in]{$-3.3\%$}
+	\end{minipage}
+
+	\part Explain why that rounding is a problem for a DTMF receiver, and what the L13
+	decoder does instead.
+		\begin{solution}[1.0in]
+		The bin is centered 3.3\% below the tone before the tone has any error of its own,
+		which is almost the 3.5\% at which a receiver should reject a tone, and the 852 Hz
+		tone loses about 3.7 dB at that bin. A tone 1.5\% low would sit even farther
+		away. The L13 decoder uses $k = 14.48$ unrounded: the Goertzel recursion works
+		for any $k$, so the bin sits exactly on 852 Hz.
+		\end{solution}
+
+	\part With bins 58.8 Hz apart, is the 73 Hz spacing of 697 and 770 Hz past the first
+	null of each bin's response? What does that mean for the 6 dB test?
+		\begin{solution}[0.9in]
+		Yes. The first nulls are 58.8 Hz either side of the bin, so a tone 73 Hz away falls in
+		the first sidelobe, about 15 dB down. The right bin still wins by much more than 6 dB,
+		so the shorter block can separate the rows, with less margin than $N = 205$ gives.
+		\end{solution}
+
+\end{parts}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{Twist.} A capture of the `9' key has a row tone of amplitude 0.20 and a
+column tone of amplitude 0.12.
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Find the twist in dB. Does the standard require a receiver to accept it?
+		\begin{solution}[0.9in]
+		\eq{ 20\log_{10}(0.12 / 0.20) = -4.4\ \text{dB} }
+		The column tone is 4.4 dB weaker, within the 8 dB a receiver must accept.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.1in]{$-4.4$ dB, yes}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part In \texttt{L13-dtmf-rx.grc}, each stock Goertzel block feeds a Complex to Mag,
+		which shows half a tone's amplitude. What heights do the 852 Hz and 1477 Hz traces
+		reach?
+		\begin{solution}[0.7in]
+		The 852 Hz trace reaches 0.10 and the 1477 Hz trace 0.06.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		852: \ansbox[1.0in]{0.10}
+
+		\vspace{4pt}
+		1477: \ansbox[1.0in]{0.06}
+	\end{minipage}
+
+	\part Telephone lines lose more at high frequencies, so many phones send the column
+	tone about 2 dB above the row tone. If the line loses 6 dB more at the column tone
+	than at the row tone, what twist arrives? Name the case the standard calls this.
+		\begin{solution}[0.8in]
+		$+2 - 6 = -4$ dB: the column tone arrives 4 dB weaker than the row tone. This is the
+		usual case, which the standard calls normal twist, and receivers accept up to 8 dB
+		of it.
+		\end{solution}
+
+\end{parts}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{The decision rules.} The L13 decoder scales each bin's power so that a
+lone tone gives 1, and the eight values below are one block's shares of its energy.
+
+\begin{center}
+\renewcommand{\arraystretch}{1.2}\setlength{\tabcolsep}{4pt}\small
+\begin{tabular}{| l | c | c | c | c | c | c | c | c |}
+\hline
+Bin (Hz) & 697 & 770 & 852 & 941 & 1209 & 1336 & 1477 & 1633 \\\hline
+Block A & 0.02 & 0.41 & 0.03 & 0.01 & 0.01 & 0.02 & 0.38 & 0.02 \\\hline
+Block B & 0.12 & 0.10 & 0.02 & 0.01 & 0.03 & 0.30 & 0.02 & 0.01 \\\hline
+\end{tabular}
+\end{center}
+
+\begin{parts}
+
+	\part Apply the three tests to block A: the two-bin share, each winner's margin over
+	the rest of its group, and the twist. Which digit does block A hold?
+		\begin{solution}[1.3in]
+		The best row bin is 770 Hz and the best column bin is 1477 Hz.
+		\eq{ 0.41 + 0.38 &= 0.79 \ge 0.35 \\
+			10\log_{10}(0.41/0.03) &= 11.4\ \text{dB} \ge 6 \\
+			10\log_{10}(0.38/0.02) &= 12.8\ \text{dB} \ge 6 \\
+			10\log_{10}(0.38/0.41) &= -0.3\ \text{dB} }
+		The twist is inside $-10$ to $+6$ dB, so block A holds `6'.
+		\end{solution}
+
+	\part Which test does block B fail?
+		\begin{solution}[0.9in]
+		The share is $0.12 + 0.30 = 0.42$, enough, but the best row bin beats the next by only
+		\eq{ 10\log_{10}(0.12/0.10) = 0.8\ \text{dB}, }
+		far short of 6 dB, so block B fails test 2 and holds no digit.
+		\end{solution}
+
+	\part Block A alone does not produce a digit. What else must happen before the decoder
+	reports `6', and what does that requirement reject?
+		\begin{solution}[0.9in]
+		Three blocks in a row, each starting 102 samples after the last, must all hold `6'.
+		That spans about 51 ms of signal, so short bursts of speech or noise that happen to
+		pass the tests in one block do not count as digits.
+		\end{solution}
+
+\end{parts}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{Noise.} The L13 decoder reads every number correctly down to an SNR of
+about 2 dB, measured across the whole 0 to 4 kHz band.
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part With $N = 205$, the bins are 39.0 Hz apart. About how much less noise does one
+		bin see than the whole 4 kHz band? Give the answer in dB.
+		\begin{solution}[0.9in]
+		\eq{ 10\log_{10}(4000 / 39.0) = 20.1\ \text{dB} }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.1in]{about 20 dB}
+	\end{minipage}
+
+	\part At 0 dB SNR the bins still see the tones about 20 dB above their noise, yet the
+	decoder fails. Explain in words which test stops it.
+		\begin{solution}[1.1in]
+		Test 1. At 0 dB, half of each block's energy is noise spread across the band, so
+		the two tones can hold at most about half of it, and less in the blocks at a tone's
+		start and end, which are only partly filled. When a block's two-bin share falls
+		below 35\%, the run of three blocks breaks and the digit is lost. The bins can still
+		see the tones; the share test, which exists to reject speech, is what fails.
+		\end{solution}
+
+\end{parts}
+
+\end{questions}
