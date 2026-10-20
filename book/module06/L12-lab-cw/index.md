@@ -101,8 +101,8 @@ Close the flowgraph and run it again with the sliders at their defaults, where e
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
-- We cable one Pluto's TX port to its RX port through a 30 dB attenuator, at 915 MHz.
-- The cable goes on before the flowgraph runs, and we never connect an antenna.
+- You cable one Pluto's TX port to its RX port through a 30 dB attenuator, at 915 MHz.
+- Connect the cable before the flowgraph runs, and never connect an antenna.
 :::
 
 `L12-cw-pluto.grc` is the Lesson 12 link with the simulated channel replaced by a PlutoSDR. The transmit half raises the 32 kHz stream to 1.024 MS/s and sends the keyed carrier from the Pluto's TX port at 915 MHz plus 5 kHz; the receive half takes it from the RX port, lowers it to 32 kHz, and runs the same receiver. The received level depends on the cable, the attenuator, and the gain, so the envelope plot scales itself and shows the threshold as a red line instead of the key. You type the message into the Message box. We have run this flowgraph only in simulation, with a model of the cable in place of the radio, so your bench is its first run on hardware.
@@ -124,7 +124,7 @@ In class we transmit only into a cable, into a shielded enclosure, or at very lo
 ::::{frame} Part 3: After the Lab
 :::{present}
 - Compare the noise table with your predictions, and explain the threshold.
-- Compare the 50 Hz, 200 Hz, and 1 kHz filters, and what each gives up.
+- Compare the 50 Hz, 200 Hz, and 1 kHz filters, and the tuning each requires.
 - Compare the speed limits with your prediction, and propose a better decoder.
 :::
 

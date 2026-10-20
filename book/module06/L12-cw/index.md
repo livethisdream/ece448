@@ -52,7 +52,7 @@ The figure is today's flowgraph, `L12-cw-link.grc`, running. A keyer turns the l
 Lesson 11 showed how to write a custom block. The keyer and the decoder in this flowgraph are two Embedded Python Blocks, and everything between them is standard GNU Radio.
 ::::
 
-::::{frame} CW Is On-Off Keying
+::::{frame} CW and On-Off Keying
 :::{present}
 - **CW** keys a carrier on for a mark and off for a space.
 - It is Lesson 6's AM with a message of 0 and 1.
@@ -61,7 +61,7 @@ Lesson 11 showed how to write a custom block. The keyer and the decoder in this 
 
 **CW**, for continuous wave, is the oldest radio modulation still in use. The transmitter keys a carrier on and off: on for a **mark**, a dot or a dash, and off for a **space**. In the terms of Lesson 6, it is AM whose message is 0 or 1, so the receiver only has to recover the envelope and decide whether the carrier is there.
 
-Lesson 2 showed that a narrower bandwidth lowers the noise floor, and CW is one of the narrowest signals in use, about 100 Hz wide at ordinary speeds. That is why it survives on little power. Amateur operators still use it: most U.S. amateur HF bands set aside their lowest segments, such as 7.000 to 7.125 MHz in the 40 m band, for CW and data, with no voice. Aircraft navigation beacons such as VORs and NDBs still identify themselves with a two- or three-letter Morse code identifier, and pilots check it before they use the beacon.
+Lesson 2 showed that a narrower bandwidth lowers the noise floor, and CW is one of the narrowest signals in use, about 100 Hz wide at ordinary speeds, so a CW receiver can use a narrow filter and copy a weak signal. Amateur operators still use it: most U.S. amateur HF bands set aside their lowest segments, such as 7.000 to 7.125 MHz in the 40 m band, for CW and data, with no voice. Aircraft navigation beacons such as VORs and NDBs still identify themselves with a two- or three-letter Morse code identifier, and pilots check it before they use the beacon.
 ::::
 
 ::::{frame} Morse Timing
@@ -97,7 +97,7 @@ At 20 WPM a dit lasts 60 ms, a dah 180 ms, and PARIS 3.0 s, which is 20 words in
 | 30 WPM | 40 ms | 120 ms | 0.28 s | 5.04 s |
 | 40 WPM | 30 ms | 90 ms | 0.21 s | 3.78 s |
 
-Our line, `USAFA ECE 448`, is 126 units long with its final word gap, so the link sends it once every 7.56 s at 20 WPM. A word of real text is not exactly 50 units, since E is one unit long and 0 is nineteen, but PARIS is close to the average word of English text.
+Our line, `USAFA ECE 448`, is 126 units long with its final word gap, so the link sends it once every 7.56 s at 20 WPM. A word of real text is not exactly 50 units, since E is 1 unit long and 0 is 19, but PARIS is close to the average word of English text.
 ::::
 
 ::::{frame} The Keyer in GNU Radio
@@ -127,7 +127,7 @@ The top keyer switches between 0 and 1 in one sample, which is **hard keying**. 
 - A 5 ms edge puts it 40 dB lower 1 kHz away.
 :::
 
-The time sink triggers on each key-down and shows 10 ms before it and 30 ms after. Both traces reach 1 within 5 ms, and in time they look almost the same. In frequency they do not. The hard-keyed spectrum, in blue, falls slowly on both sides of the carrier and is still above $-80$ dB at the edges of the plot, 4 kHz away. The shaped spectrum, in red, falls much faster and is below $-120$ dB beyond about 2 kHz from the carrier. Both traces are combs of narrow peaks with nulls every 16.7 Hz, because every mark and every space is a whole number of 60 ms units.
+The time sink triggers on each key-down and shows 10 ms before it and 30 ms after. Both traces reach 1 within 5 ms and look almost the same in time, but their spectra differ. The hard-keyed spectrum, in blue, falls slowly on both sides of the carrier and is still above $-80$ dB at the edges of the plot, 4 kHz away. The shaped spectrum, in red, falls much faster and is below $-120$ dB beyond about 2 kHz from the carrier.
 
 A receiver tuned to a frequency near a hard-keyed transmitter hears that spread as a click at every edge, and operators call it a **key click**. Shaping the edges removes the clicks without changing what the receiver decodes, so CW transmitters shape their keying, typically with edges of a few milliseconds.
 ::::
@@ -152,7 +152,7 @@ Each doubling of the edge time cuts the energy far from the carrier by roughly a
 :class: viz-frame
 
 :::{depth}
-The left panel shows the whole message as marks and spaces, and below it the first key-down edge enlarged, hard keying in gray and the shaped edge in blue. The right panel shows the spectrum within 1 kHz of the carrier. Start with PARIS at 20 WPM: the readouts give a 60 ms dit and a 3.00 s message. Drag the edge time from 5 ms to 0 and watch the gray and blue spectra become one, with the skirts rising 40 dB at 1 kHz. Then raise the speed: the dits get shorter, the spectrum widens, and the 99% bandwidth grows in proportion to the WPM.
+The left panel shows the whole message as marks and spaces, and below it the first key-down edge enlarged, hard keying in gray and the shaped edge in blue. The right panel shows the spectrum within 1 kHz of the carrier. Start with PARIS at 20 WPM: the readouts give a 60 ms dit and a 3.00 s message. Drag the edge time from 5 ms to 0 and watch the blue spectrum rise until it overlaps the gray one, with the skirts rising 40 dB at 1 kHz. Then raise the speed: the dits get shorter, the spectrum widens, and the 99% bandwidth grows in proportion to the WPM.
 :::
 
 :::{present}
@@ -190,7 +190,7 @@ The rest of the receiver works at audio rates. The product detector makes the ca
 
 After the Xlating filter the carrier sits at 0 Hz, which the ear cannot hear. The receiver multiplies it by a complex tone at 700 Hz, the **beat frequency oscillator** (BFO), which moves the carrier up to 700 Hz, and **Complex To Real** keeps the real part. That is the product detector of Lesson 6, used here with an offset so that the output is a tone instead of the envelope. The key-down periods become bursts of a 700 Hz tone, which is the sound most CW operators choose.
 
-A tuning error moves the tone. If the receiver tunes 40 Hz below the carrier, the carrier lands at +40 Hz after the Xlating filter and the tone comes out at 740 Hz. The CW filter is centered on 700 Hz, so the tone has to stay inside it: with a 50 Hz filter, the receiver must tune within 25 Hz of the carrier. The Xlating filter's ±600 Hz also matters here, because a signal 1.4 kHz below the carrier would otherwise come out at the same 700 Hz.
+A tuning error moves the tone. If the receiver tunes 40 Hz below the carrier, the carrier lands at +40 Hz after the Xlating filter and the tone comes out at 740 Hz. The CW filter is centered on 700 Hz, so the tone has to stay inside it: with a 50 Hz filter, the receiver must tune within 25 Hz of the carrier. The Xlating filter's ±600 Hz passband also matters here, because it removes a signal 1.4 kHz below the carrier that would otherwise come out at the same 700 Hz.
 ::::
 
 ::::{frame} Envelope and Threshold
@@ -222,7 +222,7 @@ At a noise amplitude of 1 the space level is about 0.04, and `thr` = 0.3 works. 
 
 The **CW Decoder** measures how long the key stays at each level and converts the length to units at its own WPM setting. Each boundary sits between two values a perfect sender produces: 2 units lies between a 1-unit dit and a 3-unit dah, and between a 1-unit gap inside a letter and a 3-unit gap between letters, and 5 units lies between 3 and 7. When a space reaches 2 units, the decoder looks up the dots and dashes it has collected and adds the letter to the text, or a # if the pattern is not in the table. A change of level that lasts less than 0.3 unit is noise, and the decoder ignores it.
 
-The windows are wide, so the decoder accepts the uneven timing of a human operator. They also let it copy a sender whose speed differs from its own setting, as long as every mark and space still falls in the right window. The L12 Lab finds how far the two speeds can differ.
+The windows are wide, so the decoder accepts the uneven timing of a human operator. They also let it copy a sender whose speed differs from its own setting, as long as every mark and space still falls in the right window. A sender that is too slow stretches its letter gaps past 5 units, and one that is too fast shrinks its word gaps below 5; the L12 Lab measures both limits.
 ::::
 
 ::::{frame} Noise
@@ -240,7 +240,7 @@ The keyed carrier has power 1 while the key is down, and the noise amplitude $\s
 
 $$\text{SNR} = \frac{32{,}000}{\sigma^2 B},$$
 
-which is $160/\sigma^2$ for the 200 Hz filter. At $\sigma = 6$ that is 4.4, or 6.5 dB. The noise now reaches the top of the waterfall's color scale and hides the carrier there, but the CW filter still pulls the carrier out. With the threshold at 0.47, the receiver in the figure copies most of the message, and each wrong letter comes from a dit lost in the noise or a noise burst read as an extra dit. Measured over 600 characters, 6.3% of them were wrong at this setting.
+which is $160/\sigma^2$ for the 200 Hz filter. At $\sigma = 6$ that is 4.4, or 6.5 dB. The noise now reaches the top of the waterfall's color scale and hides the carrier there, but the CW filter still separates the carrier from most of the noise. With the threshold at 0.47, the receiver in the figure copies most of the message, and each wrong letter comes from a dit lost in the noise or a noise burst read as an extra dit. We measured 600 characters at this setting, and 6.3% of them were wrong.
 ::::
 
 ::::{frame} Filter Width
@@ -273,7 +273,7 @@ We measured the link with the flowgraph's blocks running headless, without the T
 | 6 | 6.5 dB | 0.2% | 6.3% | 40% |
 | 7 | 5.1 dB | 1.0% | 22% | 69% |
 
-The 200 Hz filter decodes without errors down to 10 dB in its own bandwidth and loses about a fifth of the characters at 5 dB. Each narrower filter pushes the errors further down the table, to higher noise amplitudes, which is the point of Lesson 2: the noise that reaches the detector is proportional to the bandwidth. The threshold matters as much as the filter. Left at 0.3, the 200 Hz receiver lost 21% of the characters at $\sigma = 5$ and 77% at $\sigma = 6$.
+The 200 Hz filter decodes without errors down to 10 dB in its own bandwidth and loses about a fifth of the characters at 5 dB. Each narrower filter keeps the error rate at zero up to a higher noise amplitude, which is the point of Lesson 2: the noise that reaches the detector is proportional to the bandwidth. The threshold matters as much as the filter. Left at 0.3, the 200 Hz receiver lost 21% of the characters at $\sigma = 5$ and 77% at $\sigma = 6$.
 ::::
 
 ::::{frame} CW on a Real Radio

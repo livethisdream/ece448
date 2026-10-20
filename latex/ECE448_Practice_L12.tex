@@ -93,8 +93,8 @@ and then the key stays up for 700 ms.
 	\begin{minipage}[t]{0.58\linewidth}
 		\part Find the decoder's boundaries in milliseconds, and decode the text.
 		\begin{solution}[1.5in]
-		A mark or a space of $2 \times 80 = 160$ ms is the dit--dah and in-letter--letter
-		boundary, $5 \times 80 = 400$ ms ends a word, and $0.3 \times 80 = 24$ ms is the
+		A length of $2 \times 80 = 160$ ms separates a dit from a dah, and a gap inside a
+		letter from a gap between letters; $5 \times 80 = 400$ ms ends a word, and $0.3 \times 80 = 24$ ms is the
 		noise limit. The marks of 230, 255, and 245 ms are dahs, and the 260 ms space
 		ends the letter: \texttt{---} is O. Then 240, 75, and 250 ms read \texttt{-.-},
 		which is K, and the 700 ms space ends the word. The text is OK.
@@ -168,13 +168,13 @@ $-10$ dB for 1 ms edges, $-24$ dB for 2 ms, $-40$ dB for 5 ms, and $-52$ dB for 
 		full: \ansbox[1.0in]{10 ms}
 	\end{minipage}
 
-	\part In words, explain who a hard-keyed transmitter bothers and why, and why the
+	\part In words, explain which receivers a hard-keyed transmitter interferes with, and why, and why the
 	operator in part (b) should choose a shorter edge.
 		\begin{solution}[1.2in]
 		Hard keying spreads energy kilohertz away from the carrier, so a receiver tuned to
 		another station nearby hears a click at every edge of the hard-keyed signal. The
 		station itself decodes the same either way. At 60 WPM a 10 ms edge leaves only
-		10 ms of each 20 ms dit at full power, so the dits turn into rounded bumps and a
+		10 ms of each 20 ms dit at full power, so the dits lose their flat tops and a
 		receiver in noise has less of each mark to detect. A 5 ms edge keeps
 		15 ms of each dit at full power and still keeps the clicks well down.
 		\end{solution}
@@ -187,7 +187,7 @@ $-10$ dB for 1 ms edges, $-24$ dB for 2 ms, $-40$ dB for 5 ms, and $-52$ dB for 
 tuned frequency to 0 Hz, multiplies by a 700 Hz BFO, and keeps the real part. Its CW
 filter is a band-pass centered on 700 Hz. The noise has amplitude $\sigma$, spread over
 32 kHz, and the keyed carrier has power 1, so the SNR in a filter of width $B$ is
-$32{,}000/(\sigma^2 B)$.
+\[ \text{SNR} = \frac{32{,}000}{\sigma^2 B}. \]
 \begin{parts}
 
 	\begin{minipage}[t]{0.58\linewidth}

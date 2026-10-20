@@ -57,7 +57,7 @@ Run L12-cw-link.grc live with the audio on. Each dash of color on the waterfall 
 
 ---
 
-## CW Is On-Off Keying
+## CW and On-Off Keying
 
 - A carrier on for a **mark**, off for a **space**
 - Lesson 6's AM with a message of 0 or 1
@@ -114,7 +114,7 @@ The Morse Keyer is an Embedded Python Block. It outputs 1 while the key is down 
 The edges look alike in time; 1 kHz away, the shaped one is 40 dB lower.
 
 Note:
-A receiver tuned near a hard-keyed transmitter hears a click at every edge. The comb in both spectra has nulls every 16.7 Hz because every mark and space is a whole number of 60 ms units.
+A receiver tuned near a hard-keyed transmitter hears a click at every edge.
 
 ---
 
@@ -188,7 +188,7 @@ The Threshold block switches up at 1.2 times thr and down at 0.8 times thr; that
 
 <div class="fig" data-inline-svg="./fig/L12-decoder-windows.svg" style="max-width:720px; margin:0 auto;"></div>
 
-Marks: 2 units. Spaces: 2 and 5 units. Under 0.3 unit is noise.
+Marks under 2 units are dits; a 2-unit space ends a letter, a 5-unit space a word.
 
 Note:
 Each boundary sits between two values a perfect sender produces. A pattern not in the table comes out as a #. The lab finds how far the sender's speed can drift from the decoder's.
@@ -200,6 +200,8 @@ Each boundary sits between two values a perfect sender produces. A pattern not i
 <img src="./img/12-cw/L12-link-noisy.png" alt="At noise amplitude 6 with the threshold at 0.47, the decoded text has a few wrong letters" style="max-height:340px; display:block; margin:0 auto;">
 
 $$\text{SNR} = \frac{32{,}000}{\sigma^2 B}$$
+
+At $\sigma$ = 6 and 200 Hz: 6.5 dB, about 6 characters in 100 wrong.
 
 Note:
 The noise is spread over 32 kHz and the CW filter passes B of it. For 200 Hz the SNR is 160 over sigma squared: 6.5 dB at sigma 6, where 6.3% of characters came out wrong.
@@ -215,7 +217,7 @@ The noise is spread over 32 kHz and the CW filter passes B of it. For 200 Hz the
 | 6 | 6.5 dB | 0.2% | 6.3% | 40% |
 | 7 | 5.1 dB | 1.0% | 22% | 69% |
 
-Characters wrong, threshold halfway, 600 characters each.
+A narrower filter passes less noise; the tone must stay within half its width.
 
 Note:
 A narrower filter passes less noise, which is Lesson 2's point. Its limit is tuning: the tone must stay within half the filter width. At 40 WPM the 50 Hz filter still got 99.7% right at sigma 5.5.

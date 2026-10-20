@@ -117,8 +117,8 @@ Question 6 at a PlutoSDR station with your team. Do \textbf{Part 3} on your own 
 the lab: compare the measurements with the predictions and answer the analysis
 questions.
 
-\textbf{Grading.} One submission, graded against Objective 6.1 on the course's
-1 / 0 scale, with revision allowed under course policy. Paste screenshots where a
+\textbf{Grading.} You submit the packet once, we grade it against Objective 6.1 on
+the course's 1 / 0 scale, and you may revise it under course policy. Paste screenshots where a
 question asks for one.
 
 \textbf{Transmitting.} In class we transmit only into a cable, into a shielded
@@ -127,16 +127,17 @@ Questions 1 to 5 run on your laptop and transmit nothing. Question 6 transmits f
 PlutoSDR's TX port, through a cable with an inline 30 dB SMA attenuator, to the same
 Pluto's RX port, at 915 MHz. Connect the cable and attenuator before you run the
 flowgraph, and never connect an antenna in this lab. Never set TX attenuation below
-30 dB or change the slider's range; the RX input is rated to only a few dBm. The
-PlutoSDR flowgraph has been run only in simulation so far, so Question 6 is its first
-run on hardware.
+30 dB or change the slider's range; the RX input is rated to only a few dBm. We have
+run the PlutoSDR flowgraph only in simulation, so Question 6 is its first run on
+hardware.
 
 The flowgraphs are on the L12 lesson page, \texttt{L12-cw-tx.grc} and
 \texttt{L12-cw-link.grc}, and on the L12 Lab page, \texttt{L12-cw-pluto.grc}. Every
 number below assumes their settings: the keyed carrier at 5 kHz in a 32 kHz band,
 noise spread evenly over that band, a 700 Hz BFO, 5 ms edges, and the default message
 \texttt{USAFA ECE 448}. The SNR in a CW filter of width $B$ at noise amplitude $\sigma$
-is $32{,}000/(\sigma^2 B)$.
+is
+\[ \text{SNR} = \frac{32{,}000}{\sigma^2 B}. \]
 
 \begin{questions}
 
@@ -203,8 +204,8 @@ with every slider at its default.
 		The answer depends on the initials. For JD, J is \texttt{.---} and D is
 		\texttt{-..}, so the list is
 		\begin{center}\texttt{[1,0,1,1,1,0,1,1,1,0,1,1,1, 0,0,0, 1,1,1,0,1,0,1, 0,0,0,0,0,0,0]}\end{center}
-		13 units for J, a 3-unit gap, 7 units for D, and the 7-unit word gap, 30 units in
-		all, or $30 \times 92.3\ \text{ms} = 2.77$ s.
+		J takes 13 units, the letter gap 3, D 7, and the word gap 7, for 30 units in all,
+		or $30 \times 92.3\ \text{ms} = 2.77$ s.
 		\end{solution}
 
 	\part Predict the SNR in the CW filter at each setting you will measure in
@@ -236,14 +237,15 @@ with every slider at its default.
 			7d \ge 300\ \text{ms} &\Rightarrow d \ge 42.9\ \text{ms},\ W \le 28 }
 		The other windows allow a wider range. Below 12 WPM every letter gap reads as a
 		word gap; above 28 WPM the word gaps read as letter gaps. Both limits sit on a
-		boundary, so expect trouble at exactly 12 and 28 WPM.
+		boundary, so the decoder may fail at exactly 12 and 28 WPM, where a gap falls on
+		the 5-unit boundary.
 		\end{solution}
 
 	\begin{minipage}[t]{0.58\linewidth}
 		\part The CW filter is 200 Hz wide and centered on the 700 Hz tone. How far can
 		you tune the receiver from the carrier before the tone leaves the filter?
 		\begin{solution}[0.6in]
-		Half the filter width, 100 Hz either way: the tone moves from 700 Hz to
+		You can tune half the filter width, 100 Hz, either way: the tone moves from 700 Hz to
 		$700 \pm 100$ Hz, the edges of the filter.
 		\end{solution}
 	\end{minipage}\hfill%
@@ -335,7 +337,7 @@ message, and count the wrong, missing, and extra characters among those 39.
 	\end{center}
 
 		\begin{solution}[0.8in]
-		Measured over about 220 characters per setting, the wrong characters were 0\%, 1.8\%,
+		We measured about 220 characters per setting, and the wrong characters were 0\%, 1.8\%,
 		7.6\%, 45\%, and 0\%. Counts over 39 characters vary from run to run because the
 		noise is random. The space level rises with the noise and with the filter width,
 		so the threshold has to move with it.
@@ -472,8 +474,8 @@ the carrier arrives at +5 kHz without a frequency error.
 	up.
 		\begin{solution}[1.5in]
 		The signal is only about 100 Hz wide, so a wider filter adds noise without adding
-		signal: 1000 Hz passed five times the noise of 200 Hz and lost almost half the
-		characters, while 50 Hz passed a quarter of it and lost none. The tone must stay
+		signal: the 1000 Hz filter passed five times the noise of the 200 Hz filter and lost
+		almost half the characters, while the 50 Hz filter passed a quarter of it and lost none. The tone must stay
 		inside the filter: the 200 Hz filter decoded out to 80 Hz of tuning error and
 		failed at 100 Hz, so a 50 Hz filter would need the receiver within about 25 Hz of
 		the carrier, and transmitter drift would matter four times as much.
