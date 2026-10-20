@@ -22,8 +22,8 @@ Spring 2027 · Dr. Neil Rogers
 
 ## Where We Were
 
-- Lesson 7: an FM receiver turns a channel into audio
-- Lesson 12: CW, one tone switched on and off
+- Lesson 7 turned an FM channel into audio.
+- Lesson 12 decoded CW, one tone switched on and off.
 - Today we decode digits sent as pairs of tones.
 
 Note:
@@ -141,7 +141,7 @@ The Goertzel recursion computes one DFT bin with one multiply per sample. For 69
 
 <div class="fig" data-inline-svg="./fig/L13-goertzel.svg" style="max-width:720px; margin:0 auto;"></div>
 
-Nulls 39 Hz either side; a neighbor lands 19 to 26 dB down.
+Each bin has nulls 39 Hz either side, and a neighbor lands 19 to 26 dB down.
 
 Note:
 Each bin is a band-pass filter read once per block. A longer block narrows the bins but outlasts a short tone; a shorter one widens them. The lab measures both. The classic decoder rounds k, which moves the 697 Hz bin to 702.4 Hz.
@@ -163,7 +163,7 @@ Each stock Goertzel block outputs the bin divided by N once per block; Complex t
 
 1. Best row and column bins hold 35% of the block's energy.
 2. Each beats its group's other bins by 6 dB.
-3. Twist within −10 to +6 dB.
+3. Twist is within −10 to +6 dB.
 4. Three blocks in a row agree.
 
 Note:

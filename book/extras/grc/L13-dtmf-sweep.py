@@ -4,11 +4,11 @@
 Runs the DTMF Dialer and DTMF Decoder blocks from L13-dtmf-link.grc headless,
 with no Throttle and no noise except in the snr table, and counts how many
 dialings of a number the decoder gets exactly right as one setting at a time
-moves away from a clean signal. Each
-setting is the same as the slider of that name in L13-dtmf-link.grc.
+moves away from a clean signal. Each setting is the same as the slider of that
+name in L13-dtmf-link.grc.
 
-    python L13-dtmf-sweep.py            # every table, about two minutes
-    python L13-dtmf-sweep.py snr        # one table: snr, twist, tone, gap, offset
+    python L13-dtmf-sweep.py            # both tables on the lesson page, about a minute
+    python L13-dtmf-sweep.py snr        # one table: snr or offset
 
 Put it in the same folder as L13-dtmf-link.grc. Run it from the radioconda
 prompt, where GNU Radio's Python is the first python on the path.
@@ -76,9 +76,6 @@ def table(name, values, **fixed):
 
 TABLES = {
     'snr': lambda: table('snr_db', [6, 4, 3, 2, 1, 0, -1], number=PHONE),
-    'twist': lambda: table('twist_db', [-11, -10, -9, -8, 4, 5, 6, 7], number=ALL16),
-    'tone': lambda: table('tone_ms', [20, 25, 28, 30, 33, 35, 40], number=PHONE, gap_ms=60),
-    'gap': lambda: table('gap_ms', [10, 15, 20, 25, 30, 40], number=PHONE, tone_ms=60),
     'offset': lambda: (table('offset_pct', [-3.5, -2.5, -2.0, -1.5, -1.0, 1.0, 1.5, 2.0, 2.5, 3.5], number=ALL16),
                        table('offset_pct', [-1.5, -1.0, -0.5, 0.5, 1.0, 1.5], number=ALL16, round_k=True)),
 }

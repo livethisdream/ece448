@@ -252,8 +252,9 @@ blocks in a row agree.
 \newpage
 \fullwidth{\large\textbf{Part 2: Measurements} \normalsize(in class)}
 
-\question \textbf{Build the keypad.} Start GRC with an empty canvas. Do not open
-\texttt{L13-dtmf-keypad.grc}: build the keypad yourself as the lab page lists.
+\question \textbf{Build the keypad and its bins.} Start GRC with an empty canvas. Do not open
+\texttt{L13-dtmf-keypad.grc}: build the keypad yourself as the lab page lists, then add the
+receiver's eight Goertzel bins.
 
 \begin{parts}
 
@@ -280,6 +281,24 @@ blocks in a row agree.
 		\begin{solution}[0.5in]
 		Each peak falls on the grid's frequency within the sink's 3.9 Hz bin spacing,
 		8000/2048.
+		\end{solution}
+
+	\part Add the eight Goertzel bins and the DTMF Decoder to your keypad, as the lab page
+	lists. Hold one key and paste a screenshot of both time sinks. Which traces rise, and how
+	high?
+		\begin{solution}[1.4in]
+		Exactly one row trace and one column trace rise, the key's two tones, and each peaks
+		near 0.15: the Goertzel block's output divided by $N$ is half the tone's amplitude, 0.3.
+		The other six traces stay near 0, at least 19 dB lower in power. The first point of a
+		press can be lower, because the block that holds the start of the tone is only partly
+		filled.
+		\end{solution}
+
+	\part Press each key of your Question 2(a) number. Record the keys the decoder reports,
+	and say whether they match.
+		\begin{solution}[0.7in]
+		Every key held for more than about 50 ms decodes correctly. Each key appears about
+		0.2 s after release, as its own number, because a 200 ms pause ends a number.
 		\end{solution}
 
 \end{parts}
@@ -482,7 +501,7 @@ $N$ & Setting & Correct \\\hline
 		A short block responds quickly, so it catches short tones, but its bins are wide,
 		78 Hz at $N = 102$, so it accepts tones farther off frequency, and it accepts some
 		22 ms bursts that the standard says to reject. A long block has narrow bins, 19.5 Hz at $N = 410$, but
-		lasts 51 ms, longer than a legal tone, and rejects tones the standard allows to
+		lasts 51 ms, longer than the 40 ms tone the standard requires a receiver to accept, and rejects tones the standard allows to
 		be 1.5\% off. $N = 205$ gives 39 Hz bins and a 25.6 ms block, which meets the
 		timing and frequency rules at once.
 		\end{solution}

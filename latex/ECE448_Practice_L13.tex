@@ -136,8 +136,8 @@ samples at $f_s = 8$ kHz instead of the lesson's 205.
 		\begin{solution}[1.0in]
 		The bin is centered 3.3\% below the tone before the tone has any error of its own,
 		which is almost the 3.5\% at which a receiver should reject a tone, and the 852 Hz
-		tone loses about 3.7 dB at that bin. A tone 1.5\% low would sit even farther
-		away. The L13 decoder uses $k = 14.48$ unrounded: the Goertzel recursion works
+		tone loses about 3.7 dB at that bin. A tone 1.5\% high, 864.8 Hz, sits 41 Hz from the bin, 0.70 of a bin
+		spacing, and loses about 9 dB. The L13 decoder uses $k = 14.48$ unrounded: the Goertzel recursion works
 		for any $k$, so the bin sits exactly on 852 Hz.
 		\end{solution}
 

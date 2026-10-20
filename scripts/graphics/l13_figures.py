@@ -48,7 +48,7 @@ FS, N = 8000, 205
 
 def write(name, fig):
     buf = io.StringIO()
-    fig.savefig(buf, format="svg", transparent=True, bbox_inches="tight", pad_inches=0.06)
+    fig.savefig(buf, format="svg", transparent=True, bbox_inches="tight", pad_inches=0.06, dpi=150)
     plt.close(fig)
     s = apply_font_stack(buf.getvalue()[buf.getvalue().index("<svg"):])
     s = re.sub(r' d="([^"]*)"', lambda m: ' d="' + re.sub(r"(\d+\.\d)\d+", r"\1", m.group(1)) + '"', s)
@@ -114,14 +114,16 @@ def capture():
     s = 20 * np.log10(np.abs(np.fft.rfft(frames, axis=1)) + 1e-6)
     t = (np.arange(len(frames)) * hop + nfft / 2) / FS
     fr = np.fft.rfftfreq(nfft, 1 / FS)
+    vmax = s.max()
+    keep_t, keep_f = t <= 1.05, (fr >= 500) & (fr <= 1800)
+    t, fr, s = t[keep_t], fr[keep_f], s[keep_t][:, keep_f]
     fig, ax = plt.subplots(figsize=(8.4, 3.6))
-    ax.pcolormesh(t, fr, s.T, shading="auto", cmap="Blues", vmin=s.max() - 50, vmax=s.max())
+    # rasterized: a vector mesh of every time-frequency cell is several megabytes
+    ax.pcolormesh(t, fr, s.T, shading="auto", cmap="Blues", vmin=vmax - 50, vmax=vmax, rasterized=True)
     ax.set_ylim(500, 1800)
     ax.set_xlim(0, 1.05)
     ax.set_xlabel("time (s)")
     ax.set_ylabel("frequency (Hz)")
-    for f in ROWS + COLS:
-        ax.axhline(f, color=RULE, lw=0.6, zorder=0)
     for k, d in enumerate("7195550148"):
         ax.text(0.025 + 0.1 * k, 1745, d, ha="center", va="center", color=RED, fontsize=12, fontweight="bold")
     ax.text(1.04, 560, "Simulated capture", ha="right", va="center", color=GRAY, fontsize=10, style="italic")

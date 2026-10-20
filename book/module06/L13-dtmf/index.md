@@ -260,7 +260,7 @@ We ran the dialer and decoder blocks headless with `L13-dtmf-sweep.py`, 40 diali
 | $k$ unrounded | 40/40 | 40/40 | 0/40 | 0/40 | 0/40 |
 | $k$ rounded | 40/40 | 0/40 | | | |
 
-With $k$ unrounded, the decoder meets both frequency rules: it accepts every tone within ±1.5% and rejects every tone 2% or more off, inside the 3.5% the standard allows. The two frequency sweeps use no noise. The noise sweep shows no false digits either; ten minutes of noise alone at three levels produced none.
+With $k$ unrounded, the decoder meets both frequency rules: it accepts every tone within ±1.5% and rejects every tone 2% or more off, which the standard permits, since it requires acceptance only within 1.5% and rejection at 3.5%. The two frequency sweeps use no noise. The noise sweep shows no false digits either; ten minutes of noise alone at three levels produced none.
 ::::
 
 ::::{frame} Frequency Error and Rounding k
@@ -288,7 +288,7 @@ The Goertzel recursion does not need an integer $k$; the power formula still giv
 
 On the air, radios send DTMF over narrowband FM. Amateur repeaters accept DTMF commands, and many handheld radios have a DTMF keypad. To decode it from an SDR, tune an RTL-SDR to the channel, demodulate it with an FM receiver like Lesson 7's, with its channel filter narrowed to the 12.5 kHz channel, resample the audio to 8 kHz, and connect the audio to the DTMF Decoder block in place of the Wav File Source.
 
-Nothing in this lesson transmits, and decoding is receive-only. In class we transmit only into a cable, into a shielded enclosure, or at very low power in an ISM band, and only when the lesson says to. The L13 Lab uses a real acoustic signal instead: `L13-dtmf-mic.grc` decodes a phone's keypad tones from the laptop's microphone.
+Nothing in this lesson transmits, and decoding is receive-only. In class we transmit only into a cable, into a shielded enclosure, or at very low power in an ISM band, and only when the lesson says to. The L13 Lab uses a real acoustic signal instead: `L13-dtmf-mic.grc` decodes a phone's keypad tones from the laptop's microphone. It is compiled only and not yet tested with a real microphone.
 ::::
 
 ::::{frame} Key Point
@@ -306,7 +306,7 @@ Each DTMF key is one row tone plus one column tone. Goertzel bins of 205 samples
 - <a class="doc-link" href="../../grc/L13-capture.wav" download>L13-capture.wav</a>: the synthetic capture of 719-555-0148, 1.5 s at 8 kHz.
 - <a class="doc-link" href="../../grc/L13-dtmf-rx.grc" download>L13-dtmf-rx.grc</a>: the receiver, with the eight Goertzel bins and the DTMF Decoder. No hardware needed.
 - <a class="doc-link" href="../../grc/L13-dtmf-link.grc" download>L13-dtmf-link.grc</a>: dialer, noisy channel, and decoder, with sliders. No hardware needed.
-- <a class="doc-link" href="../../grc/L13-dtmf-sweep.py" download>L13-dtmf-sweep.py</a>: the sweeps on this page, run headless. Put it beside `L13-dtmf-link.grc`.
+- <a class="doc-link" href="../../grc/L13-dtmf-sweep.py" download>L13-dtmf-sweep.py</a>: the noise and frequency-error sweeps on this page, run headless. Put it beside `L13-dtmf-link.grc`.
 
 Put the files in one folder; the receiver opens the WAV file by name from that folder. Open a `.grc` file from GRC's File menu, or run `gnuradio-companion L13-dtmf-rx.grc` from the radioconda prompt. The DTMF Dialer and DTMF Decoder are Embedded Python Blocks, saved inside the `.grc` files.
 ::::
