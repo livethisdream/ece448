@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Energy detector explorer — averaging, threshold, and hysteresis on a keyed carrier</title>
+<style>
+  :root { --navy:#004a85; --mid:#0067b9; --edge:#cddce9; --edge2:#b9d2e5; --bg:#f5f9fc;
+          --ink:#15202b; --ink3:#5b6573;
+          --amber:#8a5a00; --red:#b01e24; --grn:#3f7d34; }
+  html,body { margin:0; padding:0; font-family:'Inter',system-ui,-apple-system,sans-serif; color:var(--ink); background:#fff; }
+  .app { display:flex; flex-direction:column; gap:8px; padding:12px; }
+  canvas { display:block; box-sizing:border-box; width:100%; height:auto; background:#fff; border:1px solid var(--edge); border-radius:6px; }
+  .controls { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px 16px; align-items:center;
+              padding:8px 12px; background:var(--bg); border:1px solid var(--edge); border-radius:6px; }
+  @media (max-width:620px) { .controls { grid-template-columns:1fr; } }
+  .ctl { display:grid; grid-template-columns:auto 1fr; column-gap:8px; row-gap:2px; align-items:center; min-width:0; }
+  .ctl label { font-size:10.5px; text-transform:uppercase; letter-spacing:0.05em; color:var(--ink3); font-weight:700; white-space:nowrap; }
+  .ctl .val { color:var(--navy); font-size:12px; font-weight:600; font-variant-numeric:tabular-nums; text-align:right; white-space:nowrap; }
+  .ctl input[type=range]{ grid-column:1 / span 2; width:100%; margin:0; accent-color:var(--mid); }
+  .seg { display:flex; gap:4px; flex-wrap:wrap; align-items:center; }
+  .seg .lab { font-size:10.5px; text-transform:uppercase; letter-spacing:0.05em; color:var(--ink3); font-weight:700; margin-right:4px; }
+  .seg button, .btn { font:inherit; font-size:11.5px; font-weight:600; color:var(--navy); background:#fff; border:1px solid var(--edge2); border-radius:14px; padding:3px 10px; cursor:pointer; }
+  .seg button.on { background:var(--navy); color:#fff; border-color:var(--navy); }
+  .segs { grid-column:1 / -1; display:flex; justify-content:space-between; gap:8px; flex-wrap:wrap; }
+  .readouts { display:grid; gap:6px; grid-template-columns:repeat(3,minmax(0,1fr)); }
+  .ro { display:flex; flex-direction:column; align-items:center; gap:2px; padding:5px 4px 6px; min-width:0;
+        border:1px solid var(--edge2); border-radius:6px; background:#eef4fa; }
+  .ro .k { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:var(--ink3); white-space:nowrap; }
+  .ro .v { font-size:14px; font-weight:700; white-space:nowrap; font-variant-numeric:tabular-nums; color:var(--navy); }
+  .ro.bad .v { color:var(--red); }
+</style>
+</head>
+<body>
+<div class="app">
+  <canvas id="pw" aria-label="The Energy Detector's power output in dB over one sending of Morse ECE, with the on level and the off level drawn as dashed lines"></canvas>
+  <canvas id="key" aria-label="The key the detector makes, below the keying that was sent, over the same time"></canvas>
+  <div class="controls">
+    <div class="segs">
+      <div class="seg" id="nav"><span class="lab">Samples averaged</span><button data-v="8">8</button><button data-v="16">16</button><button data-v="32" class="on">32</button><button data-v="64">64</button><button data-v="128">128</button></div>
+      <button class="btn" id="again">new noise</button>
+    </div>
+    <div class="ctl"><label for="sig">Noise amplitude</label><span class="val" id="sig-v"></span>
+      <input type="range" id="sig" min="0" max="1.5" step="0.01" value="0.3"></div>
+    <div class="ctl"><label for="thr">Threshold</label><span class="val" id="thr-v"></span>
+      <input type="range" id="thr" min="-30" max="10" step="0.5" value="-10"></div>
+    <div class="ctl"><label for="hys">Hysteresis</label><span class="val" id="hys-v"></span>
+      <input type="range" id="hys" min="0" max="10" step="0.5" value="0"></div>
+  </div>
+  <div class="readouts">
+    <div class="ro" id="ro-tr"><span class="k">key changes</span><span class="v" id="o-tr">—</span></div>
+    <div class="ro" id="ro-wr"><span class="k">outputs wrong</span><span class="v" id="o-wr">—</span></div>
+    <div class="ro"><span class="k">one output</span><span class="v" id="o-dt">—</span></div>
+  </div>
+</div>
+
+<script>
+'use strict';
+// The L11 flowgraph, L11-keyed-carrier.grc: Morse ECE at 20 WPM (60 ms a
+// unit) keys a tone of amplitude 1, so power 0 dB, at 32 kHz, and complex
+// Gaussian noise of total power sigma^2 is added, as GNU Radio's Noise Source
+// does. The Energy Detector averages |x|^2 over each run of N samples, takes
+// 10 log10, and keys on above the threshold and off below the threshold
+// minus the hysteresis. The key starts off, as the block's does.
+const FS = 32000, UNIT = 1920, SANS = 'Inter, system-ui, -apple-system, sans-serif';
+const ECE = [1,0,0,0, 1,1,1,0,1,0,1,1,1,0,1,0,0,0, 1,0,0,0,0,0,0,0];
+const C = { navy:'#004a85', amber:'#8a5a00', grn:'#3f7d34', red:'#b01e24', rule:'#cddce9', ink3:'#5b6573', ink:'#15202b' };
+const $ = id => document.getElementById(id);
+let N = 32, seed = 3;
+document.querySelectorAll('#nav button').forEach(b => b.onclick = () => {
+  N = +b.dataset.v; document.querySelectorAll('#nav button').forEach(x => x.classList.toggle('on', x === b)); update(); });
+$('again').onclick = () => { seed++; update(); };
+['sig', 'thr', 'hys'].forEach(id => $(id).oninput = update);
+
+function rng(s0) { let s = s0 >>> 0; return () => { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296; }; }
+function gauss(r) { let u = 0; while (u === 0) u = r(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * r()); }
+
+function simulate() {
+  const sigma = +$('sig').value, thr = +$('thr').value, hys = +$('hys').value;
+  const r = rng(seed * 7919 + 17), s = sigma / Math.SQRT2;
+  const total = ECE.length * UNIT, nout = Math.floor(total / N);
+  const pdb = new Float64Array(nout), key = new Uint8Array(nout), sent = new Uint8Array(nout);
+  let k = 0;
+  for (let i = 0; i < nout; i++) {
+    let acc = 0;
+    for (let j = 0; j < N; j++) {
+      const g = ECE[Math.floor((i * N + j) / UNIT)];
+      const re = g + s * gauss(r), im = s * gauss(r);
+      acc += re * re + im * im;
+    }
+    const p = 10 * Math.log10(acc / N + 1e-12);
+    if (!k && p > thr) k = 1; else if (k && p < thr - hys) k = 0;
+    pdb[i] = p; key[i] = k; sent[i] = ECE[Math.floor(i * N / UNIT)];
+  }
+  let tr = 0, trs = 0, wrong = 0;
+  for (let i = 1; i < nout; i++) { tr += key[i] !== key[i - 1]; trs += sent[i] !== sent[i - 1]; }
+  for (let i = 0; i < nout; i++) wrong += key[i] !== sent[i];
+  return { pdb, key, sent, nout, thr, hys, sigma, tr, trs, wrong };
+}
+
+function setup(cv, aspect, narrowH) {
+  const dpr = window.devicePixelRatio || 1, w = Math.max(200, cv.clientWidth || 300);
+  const narrow = window.matchMedia && window.matchMedia('(max-width:620px)').matches;
+  const h = narrow ? narrowH : Math.round(Math.min(w * aspect, 170));
+  cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); cv.style.height = h + 'px';
+  const bh = cv.offsetHeight - cv.clientHeight; if (bh) cv.style.height = (h + bh) + 'px';
+  const ctx = cv.getContext('2d'); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); return { ctx, w, h };
+}
+function txt(ctx, s, x, y, px, col, align, bold) { ctx.fillStyle = col; ctx.font = (bold ? '700 ' : '') + px + 'px ' + SANS;
+  ctx.textAlign = align || 'left'; ctx.textBaseline = 'middle'; ctx.fillText(s, x, y); }
+function hline(ctx, x0, x1, y, col, dash) { ctx.strokeStyle = col; ctx.lineWidth = dash ? 1.5 : 1; ctx.setLineDash(dash ? [5, 4] : []);
+  ctx.beginPath(); ctx.moveTo(x0, y); ctx.lineTo(x1, y); ctx.stroke(); ctx.setLineDash([]); }
+function trace(ctx, n, X, Y, v, col, step, lw) {
+  ctx.strokeStyle = col; ctx.lineWidth = lw; ctx.beginPath();
+  for (let i = 0; i < n; i++) {
+    if (step) { if (i) ctx.lineTo(X(i), Y(v[i - 1])); else ctx.moveTo(X(0), Y(v[0])); ctx.lineTo(X(i), Y(v[i])); }
+    else if (i) ctx.lineTo(X(i + 0.5), Y(v[i])); else ctx.moveTo(X(0.5), Y(v[0]));
+  }
+  if (step) ctx.lineTo(X(n), Y(v[n - 1]));
+  ctx.stroke();
+}
+
+function drawPower(sim) {
+  const { ctx, w, h } = setup($('pw'), 0.3, 150);
+  ctx.clearRect(0, 0, w, h);
+  const mL = 34, mR = 8, top = 22, bot = h - 20, lo = -40, hi = 10;
+  const X = i => mL + i / sim.nout * (w - mL - mR), Y = v => top + (hi - Math.max(lo, Math.min(hi, v))) / (hi - lo) * (bot - top);
+  for (const v of [-40, -30, -20, -10, 0, 10]) { hline(ctx, mL, w - mR, Y(v), C.rule); txt(ctx, String(v), mL - 4, Y(v), 10, C.ink3, 'right'); }
+  trace(ctx, sim.nout, X, Y, sim.pdb, C.navy, false, 1.2);
+  hline(ctx, mL, w - mR, Y(sim.thr), C.grn, true);
+  if (sim.hys > 0) hline(ctx, mL, w - mR, Y(sim.thr - sim.hys), C.red, true);
+  txt(ctx, 'power (dB)', mL, 10, 10.5, C.ink3, 'left', true);
+  txt(ctx, 'on level', w - mR - (sim.hys > 0 ? 70 : 0), 10, 10.5, C.grn, 'right', true);
+  if (sim.hys > 0) txt(ctx, 'off level', w - mR, 10, 10.5, C.red, 'right', true);
+  txt(ctx, 'time: one sending of ECE, 1560 ms', mL, bot + 11, 10.5, C.ink3, 'left');
+}
+
+function drawKey(sim) {
+  const { ctx, w, h } = setup($('key'), 0.2, 110);
+  ctx.clearRect(0, 0, w, h);
+  const mL = 34, mR = 8, top = 22, bot = h - 8;
+  const X = i => mL + i / sim.nout * (w - mL - mR);
+  const band = (bot - top) / 2;
+  const Ys = v => top + band * 0.15 + (1 - v) * band * 0.6, Yk = v => top + band + band * 0.15 + (1 - v) * band * 0.6;
+  txt(ctx, 'sent', mL - 4, Ys(0.5), 10, C.ink3, 'right');
+  txt(ctx, 'key', mL - 4, Yk(0.5), 10, C.ink3, 'right');
+  trace(ctx, sim.nout, X, Ys, sim.sent, C.ink, true, 1.5);
+  trace(ctx, sim.nout, X, Yk, sim.key, C.navy, true, 1.5);
+  ctx.fillStyle = 'rgba(176,30,36,0.18)';
+  for (let i = 0; i < sim.nout; i++) if (sim.key[i] !== sim.sent[i]) ctx.fillRect(X(i), top + band, Math.max(1, X(i + 1) - X(i)), band);
+  txt(ctx, 'keying sent, and the key the detector makes (red where they differ)', mL, 10, 10.5, C.ink3, 'left', true);
+}
+
+function update() {
+  const sim = simulate();
+  $('sig-v').textContent = sim.sigma.toFixed(2);
+  $('thr-v').textContent = sim.thr.toFixed(1) + ' dB';
+  $('hys-v').textContent = sim.hys.toFixed(1) + ' dB';
+  $('o-tr').textContent = sim.tr + ' (sent ' + sim.trs + ')';
+  $('ro-tr').className = 'ro' + (sim.tr !== sim.trs ? ' bad' : '');
+  $('o-wr').textContent = sim.wrong + ' of ' + sim.nout;
+  $('ro-wr').className = 'ro' + (sim.wrong ? ' bad' : '');
+  $('o-dt').textContent = (1000 * N / FS).toFixed(2).replace(/\.?0+$/, '') + ' ms';
+  drawPower(sim); drawKey(sim);
+}
+
+window.addEventListener('resize', update);
+const q = new URLSearchParams(location.search);
+for (const id of ['sig', 'thr', 'hys']) if (q.get(id)) $(id).value = q.get(id);
+update();
+</script>
+</body>
+</html>
