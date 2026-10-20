@@ -167,7 +167,7 @@ Each stock Goertzel block outputs the bin divided by N once per block; Complex t
 4. Three blocks in a row agree.
 
 Note:
-Test 1 rejects noise and speech, test 2 a second tone in a group, test 3 excessive twist; the limits sit 2 dB outside the standard's because measured powers vary by about a decibel from block to block. Three overlapping blocks span about 51 ms. A block without the digit must come before it counts again, so 555 reads as three digits.
+Test 1 rejects noise and speech, test 2 a second tone in a group, test 3 excessive twist; the limits sit 2 dB outside the standard's because measured powers vary by about a decibel from block to block. The blocks start 102 samples apart, so a tone must outlast about one 25.6 ms block, which rejects bursts under 23 ms. A block without the digit must come before it counts again, so 555 reads as three digits.
 
 ---
 
@@ -188,7 +188,7 @@ Start at key 5, N 205, 20 dB. Raise twist past +6 dB to show test 3. The explore
 
 ## Decoder Performance in Noise
 
-<img src="./img/13-dtmf/L13-link-noisy.png" alt="The link flowgraph at 1 dB SNR with 16 of 26 numbers correct" style="max-height:380px; display:block; margin:0 auto;">
+<img src="./img/13-dtmf/L13-link-noisy.png" alt="The link flowgraph at 1 dB SNR with 15 of 26 numbers correct" style="max-height:380px; display:block; margin:0 auto;">
 
 | SNR | 3 dB | 2 dB | 1 dB | 0 dB |
 | :-- | :-: | :-: | :-: | :-: |
@@ -201,7 +201,7 @@ Each bin sees about 20 dB less noise than the 4 kHz band. The limit comes from t
 
 ## Frequency Error and Rounding k
 
-<img src="./img/13-dtmf/L13-link-roundk.png" alt="The link with k rounded and a 1.5% frequency error: 0 of 16 numbers correct" style="max-height:340px; display:block; margin:0 auto;">
+<img src="./img/13-dtmf/L13-link-roundk.png" alt="The link with k rounded and a 1.5% frequency error: 0 of 15 numbers correct" style="max-height:340px; display:block; margin:0 auto;">
 
 | Error | ±1.0% | ±1.5% | ±2.0% |
 | :-- | :-: | :-: | :-: |
@@ -209,7 +209,7 @@ Each bin sees about 20 dB less noise than the 4 kHz band. The limit comes from t
 | $k$ rounded | 40/40 | 0/40 | |
 
 Note:
-Rounded, the 770 Hz bin sits at 780.5 Hz and the 1336 Hz bin at 1326.8 Hz. A 1.5% error adds 12 to 20 Hz more. Unrounded k removes the rounding error; the recursion works for any k.
+Rounded, the 697 Hz bin sits at 702.4 Hz, and some bins move by up to 10 Hz. A 1.5% error adds 10 to 25 Hz more. Unrounded k removes the rounding error; the recursion works for any k.
 
 ---
 

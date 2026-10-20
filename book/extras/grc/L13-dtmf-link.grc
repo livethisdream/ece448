@@ -291,7 +291,7 @@ blocks:
     affinity: ''
     alias: ''
     comment: ''
-    maxoutbuf: '0'
+    maxoutbuf: '1024'
     minoutbuf: '0'
     num_inputs: '2'
     type: float
@@ -345,7 +345,7 @@ blocks:
     digits: number
     gap_ms: gap_ms
     level: level
-    maxoutbuf: '0'
+    maxoutbuf: '1024'
     minoutbuf: '0'
     offset_pct: offset_pct
     pause_ms: '500'
@@ -374,22 +374,25 @@ blocks:
       other three bins in its group, and the column tone is no more than 6 dB above\n\
       or 10 dB below the row tone (the twist limits, 2 dB outside the standard's\n\
       +4 and -8 dB). A digit is reported when three blocks in a row hold it, and\n\
-      again only after a block that does not.\nA pause of 200 ms or more ends a number.\n\
-      Function Probes read digits() and stats() for the QT GUI Labels.\"\"\"\n\nimport\
-      \ time\n\nimport numpy as np\nfrom gnuradio import gr\n\nROWS = (697, 770, 852,\
-      \ 941)\nCOLS = (1209, 1336, 1477, 1633)\nKEYS = ('123A', '456B', '789C', '*0#D')\n\
-      \n\nclass blk(gr.sync_block):\n    def __init__(self, samp_rate=8000, N=205,\
-      \ share=0.35, round_k=False,\n                 expected='', settings=None):\n\
+      again only after a block that does not.\nA pause of 200 ms or more ends a number.\
+      \ The counts start over when a setting\nchanges, and a number that is not decoded\
+      \ never counts.\nFunction Probes read digits() and stats() for the QT GUI Labels.\"\
+      \"\"\n\nimport time\n\nimport numpy as np\nfrom gnuradio import gr\n\nROWS =\
+      \ (697, 770, 852, 941)\nCOLS = (1209, 1336, 1477, 1633)\nKEYS = ('123A', '456B',\
+      \ '789C', '*0#D')\n\n\nclass blk(gr.sync_block):\n    def __init__(self, samp_rate=8000,\
+      \ N=205, share=0.35, round_k=False,\n                 expected='', settings=None):\n\
       \        gr.sync_block.__init__(self, name='DTMF Decoder', in_sig=[np.float32],\
       \ out_sig=None)\n        self.fs = samp_rate\n        self.N = int(N)\n    \
       \    self.share = share\n        self.round_k = round_k\n        self.expected\
       \ = expected\n        self.settings = settings\n\n    @property\n    def settings(self):\n\
       \        return self._settings\n\n    @settings.setter\n    def settings(self,\
       \ value):\n        # GRC sets this whenever a setting it names changes; start\
-      \ the counts over.\n        self._settings = value\n        k = np.array(ROWS\
-      \ + COLS) * self.N / self.fs       # bin number of each tone\n        if self.round_k:\n\
-      \            k = np.round(k)\n        self.coef = 2 * np.cos(2 * np.pi * k /\
-      \ self.N)\n        self.hop = self.N // 2\n        self.buf = np.zeros(0, dtype=np.float32)\n\
+      \ the counts over,\n        # and drop the first number after a change, which\
+      \ may mix old and new samples.\n        self.discard = hasattr(self, '_settings')\n\
+      \        self._settings = value\n        k = np.array(ROWS + COLS) * self.N\
+      \ / self.fs       # bin number of each tone\n        if self.round_k:\n    \
+      \        k = np.round(k)\n        self.coef = 2 * np.cos(2 * np.pi * k / self.N)\n\
+      \        self.hop = self.N // 2\n        self.buf = np.zeros(0, dtype=np.float32)\n\
       \        self.prev = self.held = None\n        self.run = 0\n        self.quiet\
       \ = 0\n        self.number = ''\n        self.shown = '(listening)'\n      \
       \  self.good = self.total = 0\n        self.t0 = time.monotonic()\n\n    def\
@@ -416,17 +419,18 @@ blocks:
       \ += d\n                self.held = d\n            self.quiet = 0 if d is not\
       \ None else self.quiet + 1\n            if self.number and self.quiet * self.hop\
       \ >= 0.2 * self.fs:\n                self.finish()\n            self.prev =\
-      \ d\n        return len(input_items[0])\n\n    def finish(self):\n        self.shown\
-      \ = self.number\n        self.total += 1\n        self.good += self.number ==\
-      \ self.expected\n        self.number = ''\n\n    def digits(self):\n       \
-      \ return self.number or self.shown\n\n    def stats(self):\n        t = time.monotonic()\
-      \ - self.t0\n        if not self.expected:\n            return f'{self.total}\
-      \ decoded in {t:.0f} s'\n        return f'{self.good} correct of {self.total}\
-      \ decoded in {t:.0f} s'\n"
+      \ d\n        return len(input_items[0])\n\n    def finish(self):\n        if\
+      \ self.discard:\n            self.discard = False\n        else:\n         \
+      \   self.shown = self.number\n            self.total += 1\n            self.good\
+      \ += self.number == str(self.expected).upper()\n        self.number = ''\n\n\
+      \    def digits(self):\n        return self.number or self.shown\n\n    def\
+      \ stats(self):\n        t = time.monotonic() - self.t0\n        if not self.expected:\n\
+      \            return f'{self.total} decoded in {t:.0f} s'\n        return f'{self.good}\
+      \ correct of {self.total} decoded in {t:.0f} s'\n"
     affinity: ''
     alias: ''
     comment: ''
-    expected: number.upper()
+    expected: number
     maxoutbuf: '0'
     minoutbuf: '0'
     round_k: round_k
@@ -450,7 +454,7 @@ blocks:
     alias: ''
     amp: noise_amp
     comment: ''
-    maxoutbuf: '0'
+    maxoutbuf: '1024'
     minoutbuf: '0'
     noise_type: analog.GR_GAUSSIAN
     seed: '0'

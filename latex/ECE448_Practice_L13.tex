@@ -235,7 +235,7 @@ Block B & 0.12 & 0.10 & 0.02 & 0.01 & 0.03 & 0.30 & 0.02 & 0.01 \\\hline
 	reports `6', and what does that requirement reject?
 		\begin{solution}[0.9in]
 		Three blocks in a row, each starting 102 samples after the last, must all hold `6'.
-		That spans about 51 ms of signal, so short bursts of speech or noise that happen to
+		The tone must outlast about one 25.6 ms block, so short bursts of speech or noise that happen to
 		pass the tests in one block do not count as digits.
 		\end{solution}
 
@@ -259,7 +259,7 @@ about 2 dB, measured across the whole 0 to 4 kHz band.
 		\ansbox[1.1in]{about 20 dB}
 	\end{minipage}
 
-	\part At 0 dB SNR the bins still see the tones about 20 dB above their noise, yet the
+	\part At 0 dB SNR each tone, half the signal power, is still about 17 dB above the noise in its bin, yet the
 	decoder fails. Explain in words which test stops it.
 		\begin{solution}[1.1in]
 		Test 1, the share test that rejects speech, stops it. At 0 dB, half of each block's energy is noise spread across the band, so

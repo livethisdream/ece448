@@ -65,7 +65,7 @@ This is **dual-tone multi-frequency** signaling, DTMF, the sound a telephone key
 
 A key sends the tone of its row and the tone of its column together. The '5' key, for example, sends 770 Hz and 1336 Hz. Eight frequencies give 16 keys. Telephones use the first three columns; the military's AUTOVON network used the fourth column, A to D, to set call precedence, and radio systems still use it for control codes.
 
-The frequencies are not round numbers on purpose. Each tone is about 10.5% above the one before it in its group, so the eight are spread evenly on a log scale, and no row tone's second harmonic lands on a column tone. The closest pair is 697 and 770 Hz, 73 Hz apart, and that spacing sets how sharp the receiver's filters must be.
+The frequencies are not round numbers on purpose. Each tone is about 10.5% above the one before it in its group, so the four tones in each group are spread evenly on a log scale, and no row tone's second harmonic lands on a column tone. The closest pair is 697 and 770 Hz, 73 Hz apart, and that spacing sets how sharp the receiver's filters must be.
 ::::
 
 ::::{frame} One Key in GNU Radio
@@ -181,7 +181,7 @@ The bins of a 205-sample DFT sit $f_s/N = 39.0$ Hz apart, and the block lasts $N
 
 Each Goertzel bin is a band-pass filter read once per block. Its response falls to its first nulls $f_s/N = 39$ Hz either side of the tone, so the main lobe is 78 Hz wide, about as wide as the 73 Hz spacing. A neighboring row tone falls on the far side of a bin's first null, 19 to 26 dB below the bin's own tone, so the correct bin always measures the higher power.
 
-A longer block narrows the bins but needs a longer tone, and a 410-sample block lasts longer than a 50 ms tone. A shorter block responds faster but widens the bins until neighbors leak in. The L13 Lab measures both. The classic integer-bin decoder also rounds $k$ to the nearest whole number, which moves the 697 Hz bin to 702.4 Hz; our decoder uses $k$ unrounded, and a later frame shows why.
+A longer block narrows the bins but needs a longer tone. A shorter block responds faster, so it accepts shorter bursts, and its wider bins accept tones farther off frequency. The L13 Lab measures both. The classic integer-bin decoder also rounds $k$ to the nearest whole number, which moves the 697 Hz bin to 702.4 Hz; our decoder uses $k$ unrounded, and a later frame shows why.
 ::::
 
 ::::{frame} The Receiver in GNU Radio
@@ -210,7 +210,7 @@ The **DTMF Decoder** is an Embedded Python Block that runs the same eight Goertz
 
 For each block, the decoder scales each bin's power so that a lone tone gives 1, and picks the strongest row bin and strongest column bin. Test 1 rejects noise and speech, where the energy is spread out. Test 2 rejects a signal with two tones in one group. Test 3 applies the twist limits, set 2 dB outside the standard's −8 and +4 dB, because block-to-block variation in the measured powers is about a decibel.
 
-A digit counts once three overlapping blocks in a row agree on it, which spans about 51 ms of signal; that rejects short bursts. The same digit counts again only after a block that does not show it, which is how 555 reads as three digits. A pause of 200 ms ends the number.
+A digit counts once three overlapping blocks in a row agree on it. The blocks start 102 samples apart, so the tone must last longer than about one 25.6 ms block, which rejects bursts shorter than the standard's 23 ms. The same digit counts again only after a block that does not show it, which is how 555 reads as three digits. A pause of 200 ms ends the number.
 ::::
 
 ::::{frame} DTMF Explorer
@@ -233,7 +233,7 @@ The left panel shows the response of all eight Goertzel bins for the block lengt
 ::::{frame} Decoder Performance in Noise
 :::{present}
 <img src="../../viz/img/L13-link-noisy.png"
-     alt="The L13 link flowgraph at an SNR of 1 dB, twist 0 dB, 50 ms tones and gaps, and no frequency error: the Numbers label reads 16 correct of 26 decoded in 39 s, and the spectrum shows noise across 0 to 4 kHz"
+     alt="The L13 link flowgraph at an SNR of 1 dB, twist 0 dB, 50 ms tones and gaps, and no frequency error: the Numbers label reads 15 correct of 26 decoded in 40 s, and the spectrum shows noise across 0 to 4 kHz"
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
@@ -241,7 +241,7 @@ The left panel shows the response of all eight Goertzel bins for the block lengt
 - At 1 dB, about 60% arrive; at 0 dB, almost none.
 :::
 
-`L13-dtmf-link.grc` puts the dialer, a noise source, and the decoder in one flowgraph, with sliders for the SNR, twist, tone and gap lengths, and frequency error, and it counts the numbers decoded correctly since a setting last changed. At 1 dB SNR the screenshot shows 16 of 26 correct.
+`L13-dtmf-link.grc` puts the dialer, a noise source, and the decoder in one flowgraph, with sliders for the SNR, twist, tone and gap lengths, and frequency error, and it counts the numbers decoded correctly since a setting last changed. At 1 dB SNR the screenshot shows 15 of 26 correct.
 
 The decoder tolerates low SNR because each bin is only 39 Hz wide, so it sees about a hundredth of the noise in the 4 kHz band, 20 dB less. The limit near 1 dB comes from test 1: at 0 dB half of each block's energy is noise, so the two tones cannot hold much more than half of it, and the blocks at a tone's start and end hold less, below 35%.
 ::::
@@ -260,21 +260,21 @@ We ran the dialer and decoder blocks headless with `L13-dtmf-sweep.py`, 40 diali
 | $k$ unrounded | 40/40 | 40/40 | 0/40 | 0/40 | 0/40 |
 | $k$ rounded | 40/40 | 0/40 | | | |
 
-With $k$ unrounded, the decoder meets both frequency rules: it accepts every tone within ±1.5% and rejects every tone 2% or more off, inside the 3.5% the standard allows. The noise sweep shows no false digits either; ten minutes of noise alone at three levels produced none.
+With $k$ unrounded, the decoder meets both frequency rules: it accepts every tone within ±1.5% and rejects every tone 2% or more off, inside the 3.5% the standard allows. The two frequency sweeps use no noise. The noise sweep shows no false digits either; ten minutes of noise alone at three levels produced none.
 ::::
 
 ::::{frame} Frequency Error and Rounding k
 :::{present}
 <img src="../../viz/img/L13-link-roundk.png"
-     alt="The L13 link flowgraph with Round k to an integer checked and a frequency error of 1.5% at an SNR of 20 dB: the Digits label shows only 719, and the Numbers label reads 0 correct of 16 decoded in 25 s"
+     alt="The L13 link flowgraph with Round k to an integer checked and a frequency error of 1.5% at an SNR of 20 dB: the Digits label shows only 71914, and the Numbers label reads 0 correct of 15 decoded in 25 s"
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
 - Rounded $k$ fails at 1.5% error; unrounded $k$ passes.
-- Rounding moves the 770 Hz bin to 780.5 Hz.
+- Rounding moves some bins by up to 10 Hz.
 :::
 
-The link has a check box that rounds $k$ to an integer, as the classic decoder does. Rounded, the 770 Hz bin sits at 780.5 Hz, 10.5 Hz high, and the 1336 Hz bin at 1326.8 Hz, 9.2 Hz low. A tone 1.5% off moves another 12 to 20 Hz, and the two errors can add until the tone sits halfway down its bin's main lobe. Its energy then fails test 1 or its twist fails test 3, and the screenshot shows 0 of 16 numbers correct.
+The link has a check box that rounds $k$ to an integer, as the classic decoder does. Rounding moves the 697 Hz bin to 702.4 Hz, 5.4 Hz high, and moves some other bins by as much as 10 Hz. A tone 1.5% off moves another 10 to 25 Hz, and when the two errors add, the tone sits halfway down its bin's main lobe. Its energy then fails test 1 or its twist fails test 3, and the screenshot shows 0 of 15 numbers correct.
 
 The Goertzel recursion does not need an integer $k$; the power formula still gives the energy at exactly $f$. Using the tone's own frequency removes the rounding error and leaves the whole main lobe for the tone's real error.
 ::::

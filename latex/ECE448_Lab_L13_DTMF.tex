@@ -199,7 +199,7 @@ blocks in a row agree.
 	\begin{tabular}{| l | K{0.58in} | K{0.58in} | K{0.58in} | K{0.58in} | K{0.58in} | K{0.58in} |}
 	\hline
 	Tone & 770 & 852 & 941 & 1336 & 1477 & 1633 \\\hline
-	$k$ & \kv{19.73} & \kv{21.83} & \kv{24.11} & \kv{34.23} & \kv{37.85} & \kv{41.85} \\\hline
+	$k$ & \kv{19.73} & \kv{21.83} & \kv{24.11} & \kv{34.24} & \kv{37.85} & \kv{41.85} \\\hline
 	Bin (Hz) & \kv{780.5} & \kv{858.5} & \kv{936.6} & \kv{1326.8} & \kv{1482.9} & \kv{1639.0} \\\hline
 	Error (Hz) & \kv{+10.5} & \kv{+6.5} & \kv{$-4.4$} & \kv{$-9.2$} & \kv{+5.9} & \kv{+6.0} \\\hline
 	\end{tabular}
@@ -345,7 +345,7 @@ blocks in a row agree.
 \newpage
 \question \textbf{The decoder's limits.} Run \texttt{L13-dtmf-link.grc} as the lab page
 lists. At each setting, wait about 30 s and record the Numbers label as correct of
-decoded.
+decoded. A count of 0 of 0 means that no number decoded.
 
 \begin{parts}
 
@@ -361,7 +361,7 @@ decoded.
 	\end{center}
 
 		\begin{solution}[0.4in]
-		A headless sweep of 40 dialings per setting gave 40 of 40 from $-9$ to $+5$ dB and 0 of 40 outside it.
+		A noiseless headless sweep of 40 dialings per setting gave 40 of 40 from $-9$ to $+5$ dB and 0 of 40 outside it.
 		\end{solution}
 
 	\part Tone length, with 60 ms gaps:
@@ -376,7 +376,7 @@ decoded.
 	\end{center}
 
 		\begin{solution}[0.4in]
-		The headless sweep gave 0, 0, 20, 39, 40, and 40 of 40.
+		A noiseless headless sweep gave 0, 0, 20, 39, 40, and 40 of 40; at 20 dB SNR, 30 ms gave about 17.
 		\end{solution}
 
 	\part Gap length, with 60 ms tones:
@@ -391,7 +391,7 @@ decoded.
 	\end{center}
 
 		\begin{solution}[0.6in]
-		The headless sweep gave 14, 29, 37, 40, 40, and 40 of 40. A short gap fails
+		A noiseless headless sweep gave 14, 29, 37, 40, 40, and 40 of 40. A short gap fails
 		by merging a repeated digit, such as the 555, into one.
 		\end{solution}
 
@@ -407,23 +407,24 @@ decoded.
 \begin{tabular}{| l | l | K{1.3in} |}
 \hline
 $N$ & Setting & Correct \\\hline
-102 & 20 ms tones, 60 ms gaps & \kv{none} \\\hline
+102 & 22 ms tones, 60 ms gaps & \kv{a few} \\\hline
 102 & 25 ms tones, 60 ms gaps & \kv{all} \\\hline
 102 & 30 ms tones, 60 ms gaps & \kv{all} \\\hline
-102 & 50 ms tones, 1.5\% error & \kv{all} \\\hline
-102 & 50 ms tones, 2.5\% error & \kv{all} \\\hline
-102 & 50 ms tones, 3.5\% error & \kv{none} \\\hline
+102 & 50 ms tones, $+1.5$\% error & \kv{all} \\\hline
+102 & 50 ms tones, $+2.5$\% error & \kv{all} \\\hline
+102 & 50 ms tones, $+3.5$\% error & \kv{none} \\\hline
 410 & 50 ms tones and gaps & \kv{none} \\\hline
-410 & 100 ms tones, 0.5\% error & \kv{all} \\\hline
-410 & 100 ms tones, 1.0\% error & \kv{none} \\\hline
+410 & 100 ms tones, $+0.5$\% error & \kv{all} \\\hline
+410 & 100 ms tones, $+1.0$\% error & \kv{none} \\\hline
 \end{tabular}
 \end{center}
 
 	\begin{solution}[0.8in]
-	The headless sweep gave 0, 40, 40, 40, 40, 0, 0, 40, and 0 of 40. With $N = 102$ the
-	decoder accepts 25 ms tones, close to the 23 ms the standard says to reject, and a
-	2.5\% error. With $N = 410$ no block fits inside a 50 ms tone, and with long tones the
-	19.5 Hz bins reject a 1\% error, which the standard says to accept.
+	A noiseless headless sweep gave 7, 40, 40, 40, 40, 0, 0, 40, and 0 of 40. With
+	$N = 102$ the decoder accepts some 22 ms tones, which the standard says to reject, and
+	a $+2.5$\% error, which the standard leaves open. With $N = 410$ no block fits inside a
+	50 ms tone, and with long tones the 19.5 Hz bins reject a 1\% error, which the
+	standard says to accept.
 	\end{solution}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -479,8 +480,8 @@ $N$ & Setting & Correct \\\hline
 	lose, and why $N = 205$ is the usual choice at 8 kHz.
 		\begin{solution}[1.5in]
 		A short block responds quickly, so it catches short tones, but its bins are wide,
-		78 Hz at $N = 102$, so it accepts tones too far off frequency and short bursts the
-		standard says to reject. A long block has narrow bins, 19.5 Hz at $N = 410$, but
+		78 Hz at $N = 102$, so it accepts tones farther off frequency, and it accepts some
+		22 ms bursts that the standard says to reject. A long block has narrow bins, 19.5 Hz at $N = 410$, but
 		lasts 51 ms, longer than a legal tone, and rejects tones the standard allows to
 		be 1.5\% off. $N = 205$ gives 39 Hz bins and a 25.6 ms block, which meets the
 		timing and frequency rules at once.

@@ -79,7 +79,7 @@ The receiver should decode every repetition of the lesson's capture with no wron
 ::::{frame} Part 2: The Lab Capture
 :class: read-only
 
-1. Open `L13-dtmf-rx.grc` and run it. Type `L13-lab-capture.wav` into Capture file and press Enter; the counts start over.
+1. Open `L13-dtmf-rx.grc`. Double-click the Variable `wav`, change its value to `'L13-lab-capture.wav'`, with the quotes, and run it. The Wav File Source reads the file only when the flowgraph starts.
 2. Wait for the Numbers label to count at least five, and record the number in the Digits label for Question 4(a). Screenshot the window.
 3. Read the height of the row peaks and of the column peaks in the two time sinks, and find the twist in dB for Question 4(b). Each peak is half the tone's amplitude.
 4. Read the time from one dialing to the next in the time sinks, count the digits, and estimate the time per digit, tone plus gap, for Question 4(c).
@@ -92,7 +92,7 @@ The receiver should decode every repetition of the lesson's capture with no wron
      alt="The L13 link flowgraph in GNU Radio Companion: a QT GUI Entry for the number, a Round k check box, and sliders for SNR, twist, tone, gap, and frequency error; the DTMF Dialer and a Noise Source feed an Add, a Throttle, the DTMF Decoder, and a frequency sink; two Function Probes feed the Digits and Numbers labels"
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto 12px;">
 
-1. Open and run `L13-dtmf-link.grc`. The Numbers label counts the dialings decoded correctly since a setting last changed; each dialing of the default number takes 1.5 s.
+1. Open and run `L13-dtmf-link.grc`. The Numbers label counts the dialings decoded correctly since a setting last changed, and the dialings that decoded at all; 0 of 0 means none decoded. Each dialing of the default number takes 1.5 s.
 2. Type `123A456B789C*0#D` into Number and press Enter, so that the link tests every key. Set the twist to each value in the Question 5(a) table, wait about 30 s, and record the Numbers label.
 3. Set the twist back to 0 and the number back to `7195550148`. Set Gap to 60 ms, set Tone to each value in Question 5(b), wait about 30 s at each, and record the Numbers label.
 4. Set Tone back to 60 ms, set Gap to each value in Question 5(c), and record the Numbers label.
@@ -102,8 +102,8 @@ The receiver should decode every repetition of the lesson's capture with no wron
 :class: read-only
 
 1. Stop the link flowgraph. Double-click the Variable `N` and change it from 205 to 102. Run it.
-2. Repeat the tone-length test of Question 5(b) with 60 ms gaps, then, with 50 ms tones and gaps, set the frequency error to 1.5%, 2.5%, and 3.5%. Record each Numbers label in the Question 6 table.
-3. Stop it, set `N` to 410, and run it again. Record the Numbers label at the default 50 ms tones and gaps. Then set Tone and Gap to 100 ms and record it at frequency errors of 0.5% and 1.0%.
+2. Set Gap to 60 ms and Tone to 22, 25, and 30 ms. Then, with 50 ms tones and gaps, set the frequency error to +1.5%, +2.5%, and +3.5%. Record each Numbers label in the Question 6 table.
+3. Stop it, set `N` to 410, and run it again. Record the Numbers label at the default 50 ms tones and gaps. Then set Tone and Gap to 100 ms and record it at frequency errors of +0.5% and +1.0%.
 4. Stop it and set `N` back to 205.
 ::::
 
@@ -130,7 +130,7 @@ The receiver should decode every repetition of the lesson's capture with no wron
 
 :::{admonition} If the Digits label stays at "(listening)"
 :class: tip
-For the receiver, check that the WAV files are in the same folder as the flowgraph, and that the Capture file box holds the name exactly. For the microphone, check that the bins in the time sinks rise when you press a key: if they stay near 0, the operating system has not given GRC the microphone, or the input level is too low, so raise it in the sound settings. If the bins rise but no digit appears, raise the phone's volume, and hold each key for at least a quarter of a second. For your own keypad, check that `row_f` and `col_f` use `//` and `%`, not `/`.
+For the receiver, check that the WAV files are in the same folder as the flowgraph, and that the Variable `wav` holds the name exactly, in quotes. For the microphone, check that the bins in the time sinks rise when you press a key: if they stay near 0, the operating system has not given GRC the microphone, or the input level is too low, so raise it in the sound settings. If the bins rise but no digit appears, raise the phone's volume, and hold each key for at least a quarter of a second. For your own keypad, check that `row_f` and `col_f` use `//` and `%`, not `/`.
 :::
 ::::
 

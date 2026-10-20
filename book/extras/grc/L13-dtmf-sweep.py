@@ -2,8 +2,9 @@
 """L13: measure where the DTMF decoder fails.
 
 Runs the DTMF Dialer and DTMF Decoder blocks from L13-dtmf-link.grc headless,
-with no Throttle, and counts how many dialings of a number the decoder gets
-exactly right as one setting at a time moves away from a clean signal. Each
+with no Throttle and no noise except in the snr table, and counts how many
+dialings of a number the decoder gets exactly right as one setting at a time
+moves away from a clean signal. Each
 setting is the same as the slider of that name in L13-dtmf-link.grc.
 
     python L13-dtmf-sweep.py            # every table, about two minutes
@@ -78,7 +79,7 @@ TABLES = {
     'twist': lambda: table('twist_db', [-11, -10, -9, -8, 4, 5, 6, 7], number=ALL16),
     'tone': lambda: table('tone_ms', [20, 25, 28, 30, 33, 35, 40], number=PHONE, gap_ms=60),
     'gap': lambda: table('gap_ms', [10, 15, 20, 25, 30, 40], number=PHONE, tone_ms=60),
-    'offset': lambda: (table('offset_pct', [-3.5, -2.5, -2.0, -1.5, 1.5, 2.0, 2.5, 3.5], number=ALL16),
+    'offset': lambda: (table('offset_pct', [-3.5, -2.5, -2.0, -1.5, -1.0, 1.0, 1.5, 2.0, 2.5, 3.5], number=ALL16),
                        table('offset_pct', [-1.5, -1.0, -0.5, 0.5, 1.0, 1.5], number=ALL16, round_k=True)),
 }
 
