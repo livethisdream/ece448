@@ -27,9 +27,9 @@ L14 Lab · Module 6: Waveform Applications & RF Reverse Engineering · Dr. Neil 
 
 ::::{frame} From Lesson to Bench
 :::{present}
-- **Pre-Lab:** run the sideband finder and predict edges, bins, and power levels.
+- **Pre-Lab:** run the sideband finder and work out two block settings.
 - **Bench:** build a sideband meter, identify a capture's configuration, measure a live station, and decode it.
-- **Writeup:** compare your measurements with the rules.
+- **Writeup:** explain what you saw and what it tells you about each station.
 :::
 
 Lesson 14 found the HD Radio sidebands in a simulated test file and measured them with `L14-hd-find.grc`. Today you build the sideband meter yourself from an empty canvas, use it on a second capture whose configuration you do not know, and then point it at a live station with the RTL-SDR. Last, you decode a live station with nrsc5. The lab packet has three parts, and you turn it in once, complete, before Lesson 15. You do **Part 1, the Pre-Lab**, on your own before the period, record **Part 2**'s measurements in class, and explain them in **Part 3, the Writeup**.
@@ -40,13 +40,13 @@ Nothing in this lab transmits. The RTL-SDR receives only, and both captures came
 ::::{frame} Part 1: Before the Period
 :::{present}
 - Run `L14-hd-test-tx.grc` once, then `L14-hd-find.grc`.
-- Predict the edges of extended hybrid sidebands.
-- Predict bin widths for two FFT sizes, and the levels and watts at −14 dBc.
+- Find the meter's `inner` setting for extended hybrid stations.
+- Find the FFT size that makes each bin one subcarrier at nrsc5's float rate.
 :::
 
 Do the Pre-Lab before you arrive. Put both flowgraphs from the Lesson 14 page in one folder, run `L14-hd-test-tx.grc` once to write `L14-hd-test.cu8`, and then run `L14-hd-find.grc`. Question 1 checks that the meters read what the lesson showed; if GRC reports an error, the L5 lesson page lists the install checks.
 
-Question 2 asks for predictions from the lesson: the inner edge of a sideband when a station adds one, two, or four partitions, and how far a meter set to the hybrid band reads low on such an extended station; the bin width and the number of bins per sideband for two FFT sizes, and the sideband and subcarrier levels, and the total digital power in watts, of a station at −14 dBc, the level the FCC allows by notification. Part 2 uses each one.
+Question 2 asks for two block settings: the value of the meter's `inner` Variable for a station that adds one, two, or four partitions, and the frequency sink's FFT size that puts one subcarrier in each bin for a recording at 744,187.5 samples per second. Part 2 uses the first one.
 ::::
 
 ::::{frame} Expected Numbers
@@ -99,6 +99,7 @@ The figure shows the lesson's simulated test file; a live station's host is roug
 2. Plug in the RTL-SDR and antenna, and run it. Type each strong station's frequency in hertz into Center in turn, and stop at one with two flat shelves beside it.
 3. Raise the gain until the shelves stand at least 10 dB above the floor, but lower it if the floor rises everywhere or copies of other stations appear.
 4. Record the station, its sideband edges, and both meter readings, with a screenshot, for Question 5. If its inner edge is inside 129.4 kHz, set `inner` to match before you read the meters.
+5. Lower the gain in steps and watch the shelves and the readings as the floor rises toward them, for Question 5(c).
 ::::
 
 ::::{frame} Part 2: Decoding with nrsc5
@@ -123,12 +124,12 @@ For a file, check that the file name in the File Source is in quotes, that the f
 
 ::::{frame} Part 3: After the Lab
 :::{present}
-- Compare your live measurement with the FCC power levels and the NRSC-5 asymmetry limit.
+- Compare the live station with the test file and say what each difference means.
 - Explain how the capture's spectrum identified its configuration.
 - Explain why nrsc5 cannot decode the lesson's test file.
 :::
 
-The Writeup is three questions. The first compares the live station's sideband levels with the −20 dBc original level, the −14 and −10 dBc levels the FCC allowed in 2010, and the 10 dB asymmetry limit of NRSC-5, and describes the station's configuration. The second explains how the lab capture's edges and meter readings identified its configuration, and why a station would choose it. The third lists what nrsc5 needs from a signal that the lesson's test file does not provide.
+The Writeup is three questions. The first compares the live station with the lesson's test file, its edges, the height of its shelves, and whether its two sides match, and says what each difference tells you about the station. The second explains how the lab capture's edges and meter readings identified its configuration, and why a station would choose it. The third lists what nrsc5 needs from a signal that the lesson's test file does not provide.
 ::::
 
 ::::{frame} Lab Packet

@@ -1,46 +1,31 @@
 % !TEX root =./ECE448_Practice_main.tex
 %
-% L14 practice set (HD Radio). Every question is a step in finding, measuring,
-% or decoding the hybrid sidebands: locating subcarriers on a real station,
-% choosing an FFT size, the OFDM timing and block parameters, and reading sideband
-% power. The L14 Lab asks for the extended hybrid edges, the FFT sizes 1024 and
-% 8192 at 1,488,375 samples per second, and the -14 dBc case, so none of
-% those appear here.
+% L14 practice set (HD Radio). Every question is about the L14 flowgraphs:
+% reading the sidebands on a display, setting the OFDM blocks, setting the
+% sideband meter, and watching what noise does. No power sums or timing
+% arithmetic (Neil, 2026-10-21). The L14 Lab asks for the meter's inner
+% setting for extended stations and the FFT size at 744,187.5 S/s, so neither
+% appears here.
 % Blank copy: \begin{solution}[h] reserves h of work space.
 % SOLUTIONS copy (\iskey=1) prints the red worked solutions.
 
 \fullwidth{\textbf{Learning Objective 6.3: } I can describe how HD Radio works and
 demodulate an HD Radio signal.
 \\[4pt]\normalfont\small Show your work. Write a \textbf{Documentation} line at the
-end (\textbf{None} if you did not collaborate). Use the hybrid numbers from the lesson:
-subcarrier spacing $\Delta f = 1{,}488{,}375/4096$ Hz, sidebands from subcarrier 356 to 546
-on each side, ten partitions of 19 subcarriers per sideband, and a guard of $7/128$ of the
-useful symbol time.}
+end (\textbf{None} if you did not collaborate). From the lesson: a hybrid station's
+sidebands run from 129.4 to 198.4 kHz on each side of its center, subcarriers 356 to 546,
+spaced 363.4 Hz apart.}
 
 \begin{questions}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\question \textbf{Finding the sidebands.} A hybrid station broadcasts at 98.5 MHz.
+\question \textbf{Reading the display.} You tune \texttt{L14-hd-find.grc} to a station at
+98.5 MHz.
 \begin{parts}
 
 	\begin{minipage}[t]{0.58\linewidth}
-		\part Find the frequency of subcarriers 356, 450, and 546, in kHz from the channel
-		center, to 0.1 kHz.
-		\begin{solution}[0.9in]
-		\eq{ \Delta f &= 1{,}488{,}375/4096 = 363.37\ \text{Hz} \\
-			356\,\Delta f &= 129.4\ \text{kHz} \\
-			450\,\Delta f &= 163.5\ \text{kHz} \\
-			546\,\Delta f &= 198.4\ \text{kHz} }
-		\end{solution}
-	\end{minipage}\hfill%
-	\begin{minipage}[t]{0.37\linewidth}
-		\raggedleft \vspace{12pt}
-		\ansbox[1.6in]{129.4, 163.5, 198.4 kHz}
-	\end{minipage}
-
-	\begin{minipage}[t]{0.58\linewidth}
-		\part Between which two radio frequencies, in MHz, should the upper sideband appear on
-		a spectrum display? The lower sideband?
+		\part Between which two frequencies, in MHz, should the upper sideband appear on the
+		frequency sink? The lower sideband?
 		\begin{solution}[0.8in]
 		Upper: $98.5 + 0.1294 = 98.6294$ MHz to $98.5 + 0.1984 = 98.6984$ MHz. Lower:
 		98.3016 to 98.3706 MHz.
@@ -54,204 +39,130 @@ useful symbol time.}
 		lower \ansbox[1.5in]{98.3016 to 98.3706}
 	\end{minipage}
 
-	\part Counting the partition that starts at subcarrier 356 as the first, which partition
-	holds subcarrier 450? The reference subcarriers are 356, 375, 394, and every 19th after
-	that, up to 546. Is subcarrier 451 a reference subcarrier?
-		\begin{solution}[0.9in]
-		Partition $p$ covers subcarriers $356 + 19(p-1)$ to $356 + 19p - 1$. Since
-		$450 - 356 = 94 = 4 \times 19 + 18$, subcarrier 450 is the last subcarrier of the fifth
-		partition, 432 to 450. Since $451 - 356 = 95 = 5 \times 19$, subcarrier 451 is a
-		reference subcarrier, the first subcarrier of the sixth partition.
-		\end{solution}
-
-\end{parts}
-
-\newpage
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\question \textbf{Choosing an FFT size.} You record the band with an RTL-SDR at
-2.4 MS/s and look at it with a QT GUI Frequency Sink.
-\begin{parts}
-
-	\begin{minipage}[t]{0.58\linewidth}
-		\part Find the bin width and the number of bins one 69,041 Hz sideband spans, for an
-		FFT of 2048 points and of 16384 points.
-		\begin{solution}[1.1in]
-		\eq{ 2048:&\ 2.4\ \text{MHz}/2048 = 1171.9\ \text{Hz} \\
-			&\ 69{,}041/1171.9 = 58.9\ \text{bins} \\
-			16384:&\ 146.5\ \text{Hz},\ 471\ \text{bins} }
-		\end{solution}
-	\end{minipage}\hfill%
-	\begin{minipage}[t]{0.37\linewidth}
-		\raggedleft \vspace{12pt}
-		2048 \ansbox[1.3in]{1171.9 Hz, 59}
-
-		\vspace{4pt}
-		16384 \ansbox[1.3in]{146.5 Hz, 471}
-	\end{minipage}
-
-	\part Which FFT size can locate a sideband's edge to within one 363.4 Hz subcarrier?
-	Which one would you use to find the sidebands quickly on a live band, and why? Why does
-	neither show the subcarriers as separate peaks?
-		\begin{solution}[1.3in]
-		Only 16384: its 146.5 Hz bins are narrower than a subcarrier, while a 2048-point bin is
-		3.2 subcarriers wide. To find the sidebands quickly, the 2048-point FFT is enough: 59
-		bins still draw a clear flat shelf, the display updates and averages faster, and the
-		edges are already within 1.2 kHz. Neither shows separate peaks because the subcarriers
-		are orthogonal: their sinc spectra overlap and add to a flat top, with no dip between
-		neighbors.
-		\end{solution}
-
-\end{parts}
-
-\newpage
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\question \textbf{OFDM timing and block parameters.}
-\begin{parts}
-
-	\begin{minipage}[t]{0.58\linewidth}
-		\part Find the useful symbol time $T_u$, the guard $T_g$, the whole symbol time, and
-		the symbol rate.
-		\begin{solution}[1.2in]
-		\eq{ T_u &= 1/\Delta f = 2.752\ \text{ms} \\
-			T_g &= (7/128)\,T_u = 150.5\ \mu\text{s} \\
-			T_s &= T_u + T_g = 2.902\ \text{ms} \\
-			R_s &= 1/T_s = 344.5\ \text{symbols/s} }
-		\end{solution}
-	\end{minipage}\hfill%
-	\begin{minipage}[t]{0.37\linewidth}
-		\raggedleft \vspace{12pt}
-		$T_u$ \ansbox[1.2in]{2.752 ms}
-
-		\vspace{4pt}
-		$T_g$ \ansbox[1.2in]{150.5 $\mu$s}
-
-		\vspace{4pt}
-		$R_s$ \ansbox[1.2in]{344.5 /s}
-	\end{minipage}
-
-	\begin{minipage}[t]{0.58\linewidth}
-		\part nrsc5 reads complex float recordings at 744,187.5 samples per second. In a GNU
-		Radio OFDM transmitter at that rate, what \texttt{fft\_len} puts one subcarrier in each
-		FFT bin, and what \texttt{cp\_len} gives NRSC-5's guard of $7/128$ of the FFT?
-		\begin{solution}[0.9in]
-		\eq{ \texttt{fft\_len} &= 744{,}187.5/363.37 = 2048 \\
-			\texttt{cp\_len} &= (7/128) \times 2048 = 112 }
-		\end{solution}
-	\end{minipage}\hfill%
-	\begin{minipage}[t]{0.37\linewidth}
-		\raggedleft \vspace{12pt}
-		\texttt{fft\_len} \ansbox[1.1in]{2048}
-
-		\vspace{4pt}
-		\texttt{cp\_len} \ansbox[1.1in]{112}
-	\end{minipage}
-
-	\begin{minipage}[t]{0.58\linewidth}
-		\part At what sample rate would \texttt{fft\_len} = 8192 put one subcarrier in each
-		bin, and what \texttt{cp\_len} goes with it? Could the course's RTL-SDRs, which run at
-		2.4 MS/s, record at that rate?
-		\begin{solution}[0.9in]
-		\eq{ 8192 \times 363.37 &= 2{,}976{,}750\ \text{S/s} \\
-			\texttt{cp\_len} &= (7/128) \times 8192 = 448 }
-		No: that is above the 2.4 MS/s the course uses, so the RTL-SDR records at
-		1,488,375 S/s with \texttt{fft\_len} = 4096 instead.
-		\end{solution}
-	\end{minipage}\hfill%
-	\begin{minipage}[t]{0.37\linewidth}
-		\raggedleft \vspace{12pt}
-		rate \ansbox[1.2in]{2,976,750 S/s}
-
-		\vspace{4pt}
-		\texttt{cp\_len} \ansbox[1.2in]{448}
-	\end{minipage}
-
-	\begin{minipage}[t]{0.58\linewidth}
-		\part A reflection from a ridge travels 18 km farther than the direct path. Find its
-		delay. Does it fit inside the guard, whose edges NRSC-5 tapers? How many symbols would
-		it span if the sideband were one carrier with a 14.5 $\mu$s symbol?
+	\part On the waterfall, the station at 98.5 MHz shows a rounded band whose width changes
+	from moment to moment, and two straight bands of constant width on either side. Which
+	is the analog host, and which are the HD Radio sidebands? What makes each look the way
+	it does?
 		\begin{solution}[1.0in]
-		\eq{ \tau = 18\ \text{km}/(3\times10^8\ \text{m/s}) = 60\ \mu\text{s} }
-		It fits in the first half of the 150.5 $\mu$s guard, clear of the tapered edge. On
-		one carrier it would span $60/14.5 \approx 4$ symbols.
+		The rounded band of changing width is the analog FM host: its width follows the audio,
+		because louder audio swings the frequency farther. The straight bands are the
+		sidebands: every subcarrier carries the same power all the time and the subcarriers
+		stop at fixed numbers, so the shelves are flat, sharp-edged, and constant in width.
 		\end{solution}
-	\end{minipage}\hfill%
-	\begin{minipage}[t]{0.37\linewidth}
-		\raggedleft \vspace{12pt}
-		$\tau$ \ansbox[1.1in]{60 $\mu$s}
 
-		\vspace{4pt}
-		symbols \ansbox[1.1in]{about 4}
-	\end{minipage}
+	\part A second station shows shelves that start much closer to its host, about
+	102 kHz out, and end at 198.4 kHz. A third shows a rounded host and nothing beside it.
+	Name the mode of each.
+		\begin{solution}[0.8in]
+		The second is extended hybrid: it has added partitions on the inside edge of each
+		sideband. The third is an analog-only station with no HD Radio.
+		\end{solution}
 
 \end{parts}
 
 \newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\question \textbf{Sideband power.} An FM station's analog signal is 6 kW effective
-radiated power.
+\question \textbf{Setting the OFDM blocks.} You adapt \texttt{L14-hd-test-tx.grc}, which
+runs at 1,488,375 samples per second with \texttt{fft\_len} = 4096 and \texttt{cp\_len} =
+224, to a different sample rate.
 \begin{parts}
 
 	\begin{minipage}[t]{0.58\linewidth}
-		\part At $-20$ dBc, find the total digital power in watts, the power of each sideband
-		in watts and in dBc, and the power of each of the 382 subcarriers in dBc.
-		\begin{solution}[1.1in]
-		\eq{ 6000 \times 10^{-2} &= 60\ \text{W total, 30 W per sideband} \\
-			-20 - 10\log_{10}2 &= -23.0\ \text{dBc} \\
-			-20 - 10\log_{10}382 &= -45.8\ \text{dBc} }
-		\end{solution}
-	\end{minipage}\hfill%
-	\begin{minipage}[t]{0.37\linewidth}
-		\raggedleft \vspace{12pt}
-		total \ansbox[1.2in]{60 W}
-
-		\vspace{4pt}
-		sideband \ansbox[1.2in]{30 W, $-23.0$ dBc}
-
-		\vspace{4pt}
-		subcarrier \ansbox[1.2in]{$-45.8$ dBc}
-	\end{minipage}
-
-	\begin{minipage}[t]{0.58\linewidth}
-		\part The station raises its digital power to $-10$ dBc total. Repeat (a).
+		\part At 2,976,750 samples per second, what \texttt{fft\_len} keeps each FFT bin one
+		363.4 Hz subcarrier, and what \texttt{cp\_len} keeps the guard the same length in
+		time?
 		\begin{solution}[0.9in]
-		600 W total and 300 W per sideband, which is $-13.0$ dBc each and $-35.8$ dBc per
-		subcarrier.
+		The rate doubles, so both double:
+		\eq{ \texttt{fft\_len} &= 2{,}976{,}750/363.4 = 8192 \\
+			\texttt{cp\_len} &= 2 \times 224 = 448 }
 		\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
 		\raggedleft \vspace{12pt}
-		\ansbox[1.6in]{600 W, $-13.0$, $-35.8$ dBc}
+		\texttt{fft\_len} \ansbox[1.1in]{8192}
+
+		\vspace{4pt}
+		\texttt{cp\_len} \ansbox[1.1in]{448}
 	\end{minipage}
 
-	\begin{minipage}[t]{0.58\linewidth}
-		\part The L14 meters read $-26.5$ dBc for the upper sideband and $-23.1$ dBc for the
-		lower on another station. Find the total digital power in dBc, and say what the
-		difference between the two tells you.
-		\begin{solution}[1.0in]
-		\eq{ 10\log_{10}\left(10^{-2.65} + 10^{-2.31}\right) = -21.5\ \text{dBc} }
-		The sidebands differ by 3.4 dB, so the station runs asymmetric sidebands, most likely
-		to protect a neighbor above it.
+	\part The OFDM Carrier Allocator's occupied carriers for the upper sideband are
+	\texttt{list(range(356, 547))}. To build an extended hybrid station, which number do you
+	change, in which direction, and what changes on the frequency sink?
+		\begin{solution}[0.8in]
+		Lower the first number, 356, by 19 for each added partition, and change the lower
+		sideband's list to match. On the frequency sink each shelf grows toward the host,
+		while its outer edge stays at 198.4 kHz.
 		\end{solution}
-	\end{minipage}\hfill%
-	\begin{minipage}[t]{0.37\linewidth}
-		\raggedleft \vspace{12pt}
-		\ansbox[1.2in]{$-21.5$ dBc}
-	\end{minipage}
 
-	\part On a weak station the shelves stand only 10 dB above the noise floor. Does the
-	meter read the sideband high or low, and by about how much? Why does the frequency sink
-	show the shelves about 25 dB under the host's peak when each sideband is $-23$ dBc?
-		\begin{solution}[1.3in]
-		High: the meter adds the noise in the band to the sideband's power, and noise 10 dB
-		down adds 10\%, which is
-		\eq{ 10\log_{10}1.1 = 0.41\ \text{dB} }
-		The frequency sink shows power per bin, not power per band. The host's power is
-		concentrated in the bins near its center, while each sideband spreads its power evenly
-		over 191 bins, so the host's peak bin is higher relative to a sideband bin than the
-		host's total power is relative to the sideband's total.
+	\part You set the OFDM Cyclic Prefixer's rolloff from 112 to 0. What do you expect to
+	see at the edges of the shelves, and why does it matter to a neighboring station?
+		\begin{solution}[0.9in]
+		The rolloff smooths the change from one symbol to the next. Without it, each symbol
+		starts and stops abruptly, which spreads power outside the sideband, so the shelves'
+		edges slope down slowly instead of dropping sharply. That spread power lands in the
+		neighboring channel.
+		\end{solution}
+
+\end{parts}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{Setting the meter.} The sideband meter in \texttt{L14-hd-find.grc} uses a
+Frequency Xlating FFT Filter, Complex to Mag\^{}2, a Moving Average of \texttt{avg\_len}
+samples (0.2 s), Keep 1 in N, and Log10 for each band.
+\begin{parts}
+
+	\part You shorten the Moving Average to 0.02 s. What changes in the readings, and what
+	stays the same?
+		\begin{solution}[0.8in]
+		The readings jump around more from one update to the next, because each one averages
+		fewer samples of a noise-like signal. Their average value stays the same.
+		\end{solution}
+
+	\part You type \texttt{sb\_center} into the lower sideband's filter instead of
+	\texttt{-sb\_center}. What do the two readings show?
+		\begin{solution}[0.6in]
+		Both meters then measure the upper sideband, so both read the upper sideband's level,
+		and the lower sideband is not measured at all.
+		\end{solution}
+
+	\part On an extended hybrid station, you leave \texttt{inner} at 356. Does the meter read
+	high or low, and what setting fixes it?
+		\begin{solution}[0.6in]
+		Low: the filter leaves out the added partitions inside 356. Setting \texttt{inner} to
+		the inner edge you see on the display includes them.
+		\end{solution}
+
+\end{parts}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{What noise does.} In \texttt{L14-hd-test-tx.grc} you raise the Variable
+\texttt{noise\_amp}, run it again, and play the new file in the sideband finder.
+\begin{parts}
+
+	\part Describe what happens to the floor, the shelves, and the host on the frequency
+	sink as \texttt{noise\_amp} goes up.
+		\begin{solution}[0.9in]
+		The floor rises. The host stays well above it, but the shelves, which are much weaker,
+		sink toward the floor; their edges blur, and eventually the shelves disappear into it.
+		\end{solution}
+
+	\part What happens to the two meter readings, and why?
+		\begin{solution}[0.9in]
+		They read higher than the level the sidebands were built with. Each meter measures
+		all the power in its band, and the noise in that band adds to the sideband's power,
+		so the reading rises as the floor comes up to the shelves.
+		\end{solution}
+
+	\part On a real station, what would you expect nrsc5, and a car radio, to do as the
+	shelves sink into the floor?
+		\begin{solution}[0.9in]
+		nrsc5 would report errors and then lose the digital audio, which stops abruptly rather
+		than getting gradually noisier. A car radio would blend back to the analog program,
+		which is still well above the noise.
 		\end{solution}
 
 \end{parts}
 
 \end{questions}
-

@@ -184,73 +184,38 @@ station adding one, two, or four partitions inside subcarrier 356 on each side.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newpage
-\question \textbf{Predictions.} You will use each of these at the bench.
+\question \textbf{Block settings.} You will use each of these at the bench.
 
 \begin{parts}
 
-	\part A station adds one, two, or four partitions inside subcarrier 356 on each side.
-	For each, find the new inner subcarrier number, its frequency from the channel center,
-	and the number of subcarriers in one sideband. Every subcarrier carries the same power,
-	and a meter set to the hybrid band, subcarriers 356 to 546, measures only part of the
-	sideband; find how many dB low it reads.
+	\part The sideband meter takes its band from the Variables \texttt{inner} and
+	\texttt{outer}, in subcarrier numbers. A station adds one, two, or four partitions of 19
+	subcarriers inside subcarrier 356 on each side. What value of \texttt{inner} covers each?
 
 	\begin{center}
 	\renewcommand{\arraystretch}{1.25}
 	\begin{tabular}{| l | K{1.0in} | K{1.0in} | K{1.0in} |}
 	\hline
 	Added partitions & 1 & 2 & 4 \\\hline
-	Inner subcarrier & \kv{337} & \kv{318} & \kv{280} \\\hline
-	Inner edge (kHz) & \kv{122.5} & \kv{115.6} & \kv{101.7} \\\hline
-	Subcarriers per side & \kv{210} & \kv{229} & \kv{267} \\\hline
-	Hybrid meter reads low (dB) & \kv{0.41} & \kv{0.79} & \kv{1.45} \\\hline
-	\end{tabular}
-	\end{center}
-
-		\begin{solution}[0.5in]
-		Each partition is 19 subcarriers, so the inner edge moves to $356 - 19n$, and the
-		sideband gains $19n$ subcarriers over its 191. With four partitions the digital
-		signal starts 101.7 kHz from center. The hybrid meter sees 191 of them, so it reads
-		$10\log_{10}(N/191)$ low, where $N$ is the number of subcarriers per side.
-		\end{solution}
-
-	\part Find the frequency sink's bin width, the number of bins one 69,041 Hz sideband
-	spans, and the number of subcarriers per bin, for an FFT of 1024 points and of 8192
-	points at 1,488,375 samples per second.
-
-	\begin{center}
-	\renewcommand{\arraystretch}{1.25}
-	\begin{tabular}{| l | K{1.1in} | K{1.1in} | K{1.3in} |}
-	\hline
-	FFT size & Bin width (Hz) & Bins per sideband & Subcarriers per bin \\\hline
-	1024 & \kv{1453.5} & \kv{47.5} & \kv{4} \\\hline
-	8192 & \kv{181.7} & \kv{380} & \kv{0.5} \\\hline
+	\texttt{inner} & \kv{337} & \kv{318} & \kv{280} \\\hline
 	\end{tabular}
 	\end{center}
 
 		\begin{solution}[0.4in]
-		$1{,}488{,}375/N$; with 8192 points each subcarrier spans two bins, so an edge can be
-		read to within about one subcarrier.
+		Each partition is 19 subcarriers, so \texttt{inner} moves to $356 - 19n$.
 		\end{solution}
 
 	\begin{minipage}[t]{0.58\linewidth}
-		\part A hybrid station runs its digital signal at $-14$ dBc, the level the FCC allows by notification, with equal
-		sidebands. Find each sideband's level and each subcarrier's level in dBc. If its analog
-		signal is 6 kW, how many watts is the digital signal in total?
-		\begin{solution}[1.2in]
-		\eq{ -14 - 10\log_{10} 2 &= -17.0\ \text{dBc} \\
-			-14 - 10\log_{10} 382 &= -39.8\ \text{dBc} \\
-			6000 \times 10^{-1.4} &= 239\ \text{W} }
+		\part nrsc5 also records complex float files at 744,187.5 samples per second. What
+		FFT size in the frequency sink makes each bin exactly one 363.4 Hz subcarrier at that
+		rate?
+		\begin{solution}[0.6in]
+		\eq{ 744{,}187.5/363.4 = 2048 }
 		\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
 		\raggedleft \vspace{12pt}
-		sideband \ansbox[1.1in]{$-17.0$ dBc}
-
-		\vspace{4pt}
-		subcarrier \ansbox[1.1in]{$-39.8$ dBc}
-
-		\vspace{4pt}
-		total \ansbox[1.1in]{239 W}
+		\ansbox[1.1in]{2048}
 	\end{minipage}
 
 \end{parts}
@@ -333,16 +298,14 @@ station adding one, two, or four partitions inside subcarrier 356 on each side.
 		\end{solution}
 
 	\begin{minipage}[t]{0.58\linewidth}
-		\part Find the total digital power in dBc, and the difference between the sidebands.
+		\part Which sideband is stronger, and by how many dB? What does that tell you about
+		the station?
 		\begin{solution}[1.0in]
 		\capSolTotal
 		\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
 		\raggedleft \vspace{12pt}
-		total \ansbox[1.1in]{\capTotal}
-
-		\vspace{4pt}
 		difference \ansbox[1.1in]{\capDiff}
 	\end{minipage}
 
@@ -375,11 +338,13 @@ station with HD Radio, as the lab page lists.
 		\end{solution}
 
 	\begin{minipage}[t]{0.58\linewidth}
-		\part Record both meter readings and the total digital power in dBc.
+		\part Record both meter readings. Then lower the gain in steps and record what happens
+		to the shelves and the readings as the floor rises toward them.
 		\begin{solution}[0.9in]
-		Answers vary, between about $-23$ dBc per sideband for a station at the original
-		$-20$ dBc and $-17$ dBc for one at $-14$ dBc. A weak station reads high, by 0.4 dB
-		when the shelves stand only 10 dB above the floor.
+		Answers vary; a station at the original level reads about $-23$ dBc per sideband,
+		and a stronger one reads higher. As the floor rises toward the shelves, the noise in
+		each band adds to the reading, so the meter reads high, and the shelves' edges blur
+		into the floor.
 		\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
@@ -388,9 +353,6 @@ station with HD Radio, as the lab page lists.
 
 		\vspace{4pt}
 		lower \ansbox[1.1in]{}
-
-		\vspace{4pt}
-		total \ansbox[1.1in]{}
 	\end{minipage}
 
 \end{parts}
@@ -444,15 +406,15 @@ this course.
 
 \begin{parts}
 
-	\part Compare the live station's sideband levels with the original $-20$ dBc, the
-	$-14$ and $-10$ dBc levels the FCC allowed in 2010, and the NRSC-5 limit of 10 dB on
-	asymmetry. How is the station configured?
+	\part Compare the live station with the lesson's test file: where its shelves sit,
+	how high they stand, and whether the two sides match. What does each difference tell
+	you about how the station runs its HD Radio signal?
 		\begin{solution}[1.5in]
-		Answers vary. A total near $-20$ dBc means the original level; near $-14$ dBc, the
-		increase the FCC allows by notification since 2010, and above that, a level up to
-		$-10$ dBc that needs FCC approval. Equal sidebands within about 1 dB are symmetric; a
-		larger difference, up to 10 dB, means the station lowered one side, usually to
-		protect a neighbor on that side.
+		Answers vary. Edges at 129.4 and 198.4 kHz mean hybrid; an inner edge closer to the
+		host means extended hybrid. Shelves higher than the test file's mean the station runs
+		its digital signal stronger than the original level, as many now do. Sidebands within
+		about 1 dB of each other are symmetric; a larger difference means the station lowered
+		one side, usually to protect a neighbor on that side.
 		\end{solution}
 
 	\part Explain how the lab capture's edges and meter readings identified its

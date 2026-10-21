@@ -52,67 +52,89 @@ In Lesson 7 an FM station was one rounded hump about 200 kHz wide. Many US stati
 The figure comes from a test file rather than an antenna, so it carries a "Simulated" label. Today we find those shelves, measure how strong they are, and see why they are built from hundreds of narrow carriers. Then we decode a real one with **nrsc5**, an open-source HD Radio receiver for the RTL-SDR.
 ::::
 
-::::{frame} The Hybrid Signal
+::::{frame} HD Radio Modes
 :::{present}
 <img src="../../viz/img/L14-hybrid.svg"
      alt="The hybrid HD Radio layout: the analog FM host at the channel center, and an OFDM sideband of ten partitions on each side, from 129.4 to 198.4 kHz, marked as subcarriers 356 to 546, each 69 kHz wide"
      style="max-width: 760px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
-- The analog FM **host** stays in the center, unchanged.
-- The digital **sidebands** run from 129.4 to 198.4 kHz on each side.
+- **Hybrid:** the analog FM host plus a digital sideband on each side.
+- **Extended hybrid** narrows the analog room and widens the sidebands inward.
+- **All digital** drops the analog host.
 :::
 
-A station running HD Radio alongside its analog signal transmits the **hybrid** waveform. The analog FM signal is the same one Lesson 7 received, and every FM radio still plays it. The digital signal sits in two **sidebands**, one on each side of the channel center, starting 129.4 kHz out, beyond where nearly all of the FM signal's power lies. The standard that defines the signal is **NRSC-5**, and the iBiquity design it describes is the one US stations use.
+HD Radio carries a station's program digitally alongside, or in place of, the analog signal. Nearly every US station that uses it transmits the **hybrid** waveform in the figure: the analog FM signal Lesson 7 received stays in the center, where every FM radio still plays it, and the digital signal sits in two **sidebands**, one on each side, from 129.4 to 198.4 kHz from the channel center. An **extended hybrid** station limits its analog signal to about 100 kHz each side and adds digital carriers on the inside edge of each sideband, and an **all-digital** station drops the analog signal entirely. The standard that defines all three is **NRSC-5**.
 
-The digital signal carries the station's main program, called HD1, as compressed audio, and a station can split its capacity to add HD2 and HD3 programs that have no analog version. The digital audio reaches the receiver several seconds after the analog audio, because the codec and the interleaving that protects it against fades both add delay, so the station delays its analog audio by the same amount. A receiver plays the analog program first and blends to the digital program once it has decoded it. When the digital signal fades, the receiver blends back to analog.
+The digital signal carries the main program, called HD1, and a station can add HD2, HD3, and more programs that have no analog version. A receiver plays the analog program first and blends to the digital one once it has decoded it, and blends back to analog when the digital signal fades.
 ::::
 
-::::{frame} Subcarriers and Partitions
+::::{frame} What Is in the Spectrum
+:::{present}
+| Part | Where | Modulation |
+| :-- | :-- | :-- |
+| Analog host | 0 to about ±100 kHz | FM |
+| Inside the host | 0 to 57 kHz after demodulation | audio, pilot, stereo DSB-SC, RBDS BPSK |
+| Digital sidebands | ±129.4 to ±198.4 kHz | OFDM, QPSK on each subcarrier |
+:::
+
+Each part of an HD Radio station's spectrum uses a different modulation. The host is analog FM, and Lesson 7's demodulator turned it into the **multiplex**: mono audio up to 15 kHz, the 19 kHz stereo pilot, the stereo difference signal as DSB-SC around 38 kHz, and **RBDS**, the US name for RDS, as differentially encoded BPSK at 1187.5 bits per second on 57 kHz, carrying the station name, the time, and text. gr-rds decoded it in Lesson 7.
+
+:::{depth}
+<img src="../../viz/img/L07-fm-multiplex.svg"
+     alt="The FM broadcast baseband from 0 to 60 kHz: L plus R mono audio from 0 to 15 kHz, a pilot line at 19 kHz, the L minus R stereo signal as two sidebands from 23 to 53 kHz around a missing carrier at 38 kHz, and RDS at 57 kHz"
+     style="max-width: 760px; width: 100%; display: block; margin: 0 auto;">
+
+The multiplex from Lesson 7, which the analog host carries. The HD Radio sidebands are not in it: they sit outside the host on the radio-frequency spectrum, and an FM demodulator never sees them.
+:::
+
+The digital sidebands sit outside the host, and each one is **OFDM**, a block of many narrow carriers, each carrying QPSK. The next frames describe that block, and the rest of the lesson finds it, measures it, and decodes it.
+::::
+
+::::{frame} The Digital Sidebands
 :::{present}
 $$\Delta f = \frac{1{,}488{,}375}{4096} = 363.4\ \text{Hz}$$
 :::
 :::{present}
-- Each sideband is 191 **subcarriers**, numbered 356 to 546.
-- Subcarrier $k$ sits at $k\,\Delta f$ from the channel center.
-- 10 **partitions** of 19 hold 18 data and 1 reference subcarrier each.
+- Each sideband is many narrow **subcarriers**, 363.4 Hz apart.
+- They come in **partitions** of 18 data subcarriers and 1 reference.
+- The sidebands are far weaker than the host, about 1% of its power.
 :::
 
-Each sideband is not one carrier but 191 narrow ones, called **subcarriers**, spaced 363.4 Hz apart. NRSC-5 numbers them from the channel center, so subcarrier $k$ sits at $k\,\Delta f$, and the upper sideband runs from subcarrier 356 to 546:
+Each sideband is not one carrier but 191 narrow ones, called **subcarriers**, spaced 363.4 Hz apart. NRSC-5 numbers them from the channel center, so subcarrier $k$ sits at $k \times 363.4$ Hz; the upper sideband runs from subcarrier 356, at 129.4 kHz, to 546, at 198.4 kHz, and the lower sideband is its mirror image. We use those numbers as block settings: the sideband meter later in the lesson takes its band from Variables named `inner` and `outer`.
 
-$$\begin{aligned}
-356 \times 363.4\ \text{Hz} &= 129.4\ \text{kHz} \\
-546 \times 363.4\ \text{Hz} &= 198.4\ \text{kHz}
-\end{aligned}$$
-
-The lower sideband is the mirror image, $-356$ to $-546$. Subcarriers 356 to 545 form ten **frequency partitions** of 19 subcarriers, each with 18 data subcarriers and one **reference subcarrier** that the receiver uses to find the timing, frequency, and phase, and subcarrier 546 is one more reference at the outer edge. A station can also add one, two, or four partitions inside subcarrier 356 on each side, a mode called **extended hybrid**, which narrows the room left for the analog signal in exchange for more data.
+The subcarriers come in **frequency partitions** of 19: 18 carry data, and one **reference subcarrier**, at 356, 375, 394, and every 19th after that up to 546, carries known symbols that the receiver uses to find the timing, frequency, and phase. An extended hybrid station adds partitions inside subcarrier 356. The sidebands are much weaker than the host, about 1% of its power, so that they do not disturb analog radios or the neighboring stations; the meters in this lesson read each sideband's power relative to the host, in **dBc**.
 ::::
 
-::::{frame} Why OFDM
+::::{frame} The OFDM Concept
 :::{present}
-$$\begin{aligned}
-T_u &= \frac{4096}{f_s} = 2.752\ \text{ms} = \frac{1}{\Delta f} \\
-T_g &= \frac{224}{f_s} = 150.5\ \mu\text{s}
-\end{aligned}$$
-:::
-:::{present}
-- One 69 kHz carrier would send a symbol every 15 μs; echoes last longer.
-- OFDM sends 191 slow carriers instead, each with a 2.902 ms symbol.
-- A 4096-point FFT separates the subcarriers, and a 224-sample guard absorbs echoes.
+- **OFDM** sends data on many closely spaced subcarriers at once.
+- Their spectra overlap, but each one is zero at its neighbors' centers.
+- An FFT separates them again at the receiver.
 :::
 
-Many narrow carriers sent side by side is **orthogonal frequency-division multiplexing** (OFDM), and HD Radio uses it because of **multipath**. A car radio receives the transmitter directly and also by reflections from buildings and hills, which arrive tens of microseconds later. If one carrier filled the 69 kHz sideband, each symbol would last about 15 μs, so an echo 50 μs late would overlap parts of the next four symbols, and the receiver would need a complex equalizer to undo it. OFDM divides the sideband among 191 subcarriers, each sending its own QPSK symbols at only 344.5 symbols per second, so a 50 μs echo overlaps only the first 2% of a symbol.
+**Orthogonal frequency-division multiplexing** (OFDM) divides a wide channel among many slow subcarriers instead of one fast carrier. Each subcarrier is narrow, so the echoes that a car radio receives from buildings and hills blur only the edge of each long symbol instead of several short ones. The subcarriers are spaced so closely that their spectra overlap, but each one passes through zero at the center of every other one. That property is **orthogonality**, the O in OFDM, and it lets the receiver separate them with an FFT. The explorer two frames ahead shows it.
+::::
 
-In a flowgraph, OFDM comes down to two block parameters. At $f_s$ = 1,488,375 samples per second, an FFT of `fft_len` = 4096 points lasts the **useful time** $T_u$ = 2.752 ms, and its bins are exactly the 363.4 Hz subcarrier spacing, so one inverse FFT builds every subcarrier of a symbol at once and one forward FFT separates them again; the subcarriers are **orthogonal**, which the explorer in the next frame shows. A **guard interval** of `cp_len` = 224 samples, 7/128 of 4096, or 150.5 μs, goes in front of each symbol, which makes each symbol 2.902 ms long. NRSC-5 tapers the symbol edges, so the guard absorbs echoes somewhat shorter than 150.5 μs, which is still tens of kilometers of extra path. The same design puts OFDM in Wi-Fi, LTE, and digital TV, and Lesson 20 returns to it.
+::::{frame} OFDM in GNU Radio
+:::{present}
+- Each subcarrier carries one I/Q point per symbol: BPSK, QPSK, or QAM.
+- An inverse FFT of `fft_len` points builds a whole symbol at once.
+- A **guard interval** of `cp_len` samples goes in front of each symbol.
+:::
+
+Each subcarrier carries one constellation point per OFDM symbol, so a symbol is a list of I/Q points, one per subcarrier: QPSK points on HD Radio's data subcarriers. GNU Radio's **OFDM Carrier Allocator** places the points on the subcarriers we list, a reverse **FFT** turns the whole list into one symbol of time samples, and the **OFDM Cyclic Prefixer** copies the end of each symbol in front of it as a **guard interval**, which gives echoes time to die out before the receiver's FFT starts.
+
+For HD Radio at 1,488,375 samples per second, `fft_len` = 4096 makes each FFT bin exactly one 363.4 Hz subcarrier, and `cp_len` = 224 samples is NRSC-5's guard. Symbols follow one another over time, each 4096 + 224 samples long. The receiver runs the same steps backward: drop the guard, take a forward FFT, and read each subcarrier's point.
 ::::
 
 ::::{frame} OFDM Explorer
 :class: viz-frame
 
 :::{depth}
-Each OFDM symbol is a set of tones that last $T_u$, and the spectrum of a tone that lasts $T_u$ is a sinc shape whose nulls are $1/T_u$ apart. With the subcarriers spaced exactly $1/T_u$, every subcarrier's spectrum crosses zero at the center of every other one, so an FFT separates them even though their spectra overlap. That property is **orthogonality**, the O in OFDM.
+Each OFDM symbol is a set of tones that last one FFT length, and the spectrum of a tone that lasts that long is a sinc shape whose nulls fall exactly one subcarrier spacing apart. With the subcarriers at that spacing, every subcarrier's spectrum crosses zero at the center of every other one, which is the orthogonality of the previous frames.
 
-The left panel shows the spectra of five neighboring subcarriers with the HD Radio spacing; the red dots on the dashed line are what the four neighbors add at the center subcarrier's frequency. At spacing 1.00 every red dot sits on zero. Move the spacing away from 1.00 and the dots leave zero, and the leakage readout shows how much the neighbors interfere. The right panel shows two symbols with their guards, an echo of them, and the receiver's FFT window. Drag the echo delay past 150 μs and the end of symbol 1's echo enters symbol 2's window, shown in red. The explorer draws a plain guard; because NRSC-5 tapers the symbol edges, the readout treats an echo in the second half of the guard as marginal.
+The left panel shows the spectra of five neighboring subcarriers with the HD Radio spacing; the red dots on the dashed line are what the four neighbors add at the center subcarrier's frequency. At spacing 1.00 every red dot sits on zero. Move the spacing away from 1.00 and the dots leave zero, and the readout shows the neighbors leaking in. The right panel shows two symbols with their guards, an echo of them, and the receiver's FFT window. Drag the echo delay past the guard and the end of symbol 1's echo enters symbol 2's window, shown in red. NRSC-5 tapers the symbol edges, so the readout treats an echo late in the guard as marginal.
 :::
 
 :::{present}
@@ -123,23 +145,6 @@ The left panel shows the spectra of five neighboring subcarriers with the HD Rad
         title="OFDM explorer: the spectra of five subcarriers against their spacing, and an echo against the guard interval">
 </iframe>
 :::
-::::
-
-::::{frame} How Strong the Sidebands Are
-:::{present}
-- Both sidebands together carry 1% of the host's power: **−20 dBc**.
-- Each sideband is −23 dBc, and each subcarrier is −45.8 dBc.
-- Since 2010 the FCC has allowed −14 dBc, and up to −10 dBc with approval.
-:::
-
-The digital signal is much weaker than the analog one, so that it does not disturb analog receivers or the stations on the neighboring channels. NRSC-5 and the FCC specify its power relative to the analog **host**, in **dBc**, decibels relative to the carrier. As first approved, the two sidebands together carry 1% of the host's power, $-20$ dBc. Each sideband carries half of that, and each of the 382 subcarriers an equal share:
-
-$$\begin{aligned}
--20 - 10\log_{10} 2 &= -23.0\ \text{dBc} \\
--20 - 10\log_{10} 382 &= -45.8\ \text{dBc}
-\end{aligned}$$
-
-In 2010 the FCC allowed stations to raise the digital power to $-14$ dBc by notifying the FCC, and to as much as $-10$ dBc with its approval, and many stations did, to reach farther. NRSC-5 also lets the two sidebands differ by up to 10 dB, which a station uses to protect a neighbor on one side.
 ::::
 
 ::::{frame} The Test Signal
@@ -153,7 +158,7 @@ In 2010 the FCC allowed stations to raise the digital power to $-14$ dBc by noti
 - It writes 4 s in the RTL-SDR's format: 11.9 MB.
 :::
 
-`L14-hd-test-tx.grc` builds a hybrid station the way the previous two frames describe, with GNU Radio's own OFDM blocks. For each sideband, random QPSK symbols fill the subcarriers that the **OFDM Carrier Allocator** lists, a reverse **FFT** of size 4096 at 1,488,375 samples per second turns them into one OFDM symbol, so each FFT bin is exactly one 363.4 Hz subcarrier, and the **OFDM Cyclic Prefixer** adds the 224-sample guard. The flowgraph sets each sideband to $-23$ dBc. The FM host is filtered noise and a 19 kHz pilot, frequency modulated with the broadcast 75 kHz deviation setting, and an analog-only station sits 400 kHz below.
+`L14-hd-test-tx.grc` recreates a hybrid station with the OFDM blocks of the previous frames. For each sideband, random QPSK points fill subcarriers 356 to 546 in the **OFDM Carrier Allocator**, a reverse **FFT** of 4096 points turns them into one symbol, and the **OFDM Cyclic Prefixer** adds the 224-sample guard. A Multiply Const sets each sideband's level, here $-23$ dBc, about the level of a station running the original 1%. The FM host is filtered noise and a 19 kHz pilot, frequency modulated with the broadcast 75 kHz deviation setting, and an analog-only station sits 400 kHz below.
 
 The sidebands carry random symbols, not NRSC-5 data, so nrsc5 cannot decode this file; it is a test signal for finding and measuring the sidebands. It writes `L14-hd-test.cu8`, unsigned 8-bit I and Q at 1,488,375 samples per second, which is the format the RTL-SDR and nrsc5 record. Nothing in it transmits: its last block is a File Sink.
 ::::
@@ -187,7 +192,7 @@ The **QT GUI Frequency Sink** and **Waterfall Sink** use an FFT of 4096 points, 
 
 On the frequency sink, the shelves begin 129.4 kHz from the station, at 100.1706 and 100.4294 MHz, and end at 100.1016 and 100.4984 MHz. Their tops are flat because every subcarrier carries the same power, and their edges are sharp because the subcarriers stop at 356 and 546. The FM host is rounded, and on the waterfall its width changes with the audio, while the shelves stay the same width all the time. That difference is how we recognize HD Radio on a live band: look for two straight, flat bands about 130 to 200 kHz either side of a station.
 
-The shelves sit about 25 dB under the top of the host on the display, a little more than the 23 dB between their powers, because the frequency sink shows power per 363.4 Hz bin. The host concentrates its power in fewer bins near the center, and each sideband spreads its power evenly over 191 bins. To read the power ratio itself, we measure total power in each band.
+The shelves sit about 25 dB under the top of the host on the display. The display shows power in each narrow bin, and the host crowds its power into fewer bins than a sideband does, so the height on the display is not the power ratio. To read that ratio, we measure the total power in each band.
 ::::
 
 ::::{frame} Measuring Sideband Power
@@ -203,7 +208,7 @@ The shelves sit about 25 dB under the top of the host on the display, a little m
 
 A band-power meter is four blocks we have used before. A **Frequency Xlating FFT Filter** moves the band's center to 0 Hz and keeps only the band, $\pm 100$ kHz for the host and $\pm 34.7$ kHz around $\pm 163.9$ kHz for each sideband, and decimates by 6. **Complex to Mag^2** gives each sample's power, a **Moving Average** over 0.2 s averages it, **Keep 1 in N** slows the result to 50 readings a second, and **Log10** with a factor of 10 converts each reading to dB. Subtracting the host's meter from a sideband's meter gives that sideband in dBc.
 
-On the test file the meters read $-23.05$ and $-23.04$ dBc, which matches the $-23$ dBc each sideband was built with. The same flowgraph on the real station recorded in the nrsc5 project's sample file reads about $-24.3$ and $-23.7$ dBc, close to the $-20$ dBc total of the original rule. The Variables `inner` and `outer` set the meters' band by subcarrier number, so the same meters work on an extended hybrid station.
+On the test file the meters read $-23.05$ and $-23.04$ dBc, which matches the level each sideband was built with. The same flowgraph on the real station recorded in the nrsc5 project's sample file reads about $-24.3$ and $-23.7$ dBc, close to the test file. Many stations now run their sidebands stronger, and a station can run one side weaker than the other to protect a neighbor, so the two meters need not agree. The Variables `inner` and `outer` set the meters' band by subcarrier number, so the same meters work on an extended hybrid station.
 ::::
 
 ::::{frame} Decoding with nrsc5
@@ -220,15 +225,15 @@ nrsc5 -r hd.cu8 0            # decode a recording
 - The nrsc5 README documents these commands; we have not yet tested them in this course.
 :::
 
-Finding and measuring the sidebands needs only the spectrum. Decoding them takes the rest of NRSC-5: the receiver synchronizes to the reference subcarriers, demodulates each subcarrier's QPSK, undoes the interleaving and the convolutional code, and decompresses the audio. The open-source **nrsc5** project does all of that from an RTL-SDR or a recording, at 1,488,375 samples per second, the rate of our test file. It plays the chosen program and prints the station's name, the song title and artist, and measures of signal quality as they arrive. A recording that nrsc5 makes with `-w` opens in `L14-hd-find.grc` too.
+Finding and measuring the sidebands needs only the spectrum. Decoding them needs the rest of NRSC-5: the receiver locks onto the reference subcarriers, reads each subcarrier's QPSK point, corrects errors, and decompresses the audio. The open-source **nrsc5** project does all of that from an RTL-SDR or a recording, at 1,488,375 samples per second, the rate of our test file. It plays the chosen program and prints the station's name, the song title and artist, and measures of signal quality as they arrive. A recording that nrsc5 makes with `-w` opens in `L14-hd-find.grc` too.
 
-nrsc5 is a C program, not a GNU Radio block, and it is not part of radioconda, so you install it separately: build it from source on Linux, install it with the project's Homebrew formula on macOS, or use the project's MSYS2 build on Windows. We have not run it in this course yet, so expect the lab's decode step to need some adjustment. The related project gr-nrsc5 is an HD Radio transmitter, not a receiver, and this course does not transmit on the FM band.
+nrsc5 is a C program, not a GNU Radio block, and it is not part of radioconda, so you install it separately: build it from source on Linux, install it with the project's Homebrew formula on macOS, or use the project's MSYS2 build on Windows. We have not run it in this course yet, so expect the lab's decode step to need some adjustment. **NRSC5-DUI** is a graphical front end for nrsc5. The related project gr-nrsc5 is an HD Radio transmitter for GNU Radio, not a receiver, and this course does not transmit on the FM band; gr-rds, from Lesson 7, still decodes the RBDS inside the host.
 ::::
 
 ::::{frame} Key Point
 :::{present}
 :class: callout
-HD Radio adds two OFDM sidebands, 129.4 to 198.4 kHz from the station's center and about 20 dB below the analog host. They appear as flat shelves on a spectrum, band-power meters measure them, and nrsc5 decodes them.
+HD Radio adds two OFDM sidebands, 129.4 to 198.4 kHz from the station's center and much weaker than the analog host. They appear as flat shelves on a spectrum, band-power meters measure them, and nrsc5 decodes them.
 :::
 ::::
 
@@ -239,7 +244,7 @@ HD Radio adds two OFDM sidebands, 129.4 to 198.4 kHz from the station's center a
 - Receiving is unrestricted, and the RTL-SDR receives only.
 :::
 
-To look for HD Radio live, disable the File Source and the six blocks after it in `L14-hd-find.grc`, enable the RTL-SDR Source, and type the station's frequency into Center. Centering on the station puts the RTL-SDR's DC spike on the host, where it does not touch the sidebands or the meters. Set the RF gain from your L5 Lab gain table, and lower it if the floor rises or copies of strong stations appear, because the sidebands are 20 dB or more below the host and an overloaded receiver buries them. Not every station carries HD Radio, so step through the strong stations in the band and watch the waterfall for the two straight bands.
+To look for HD Radio live, disable the File Source and the six blocks after it in `L14-hd-find.grc`, enable the RTL-SDR Source, and type the station's frequency into Center. Centering on the station puts the RTL-SDR's DC spike on the host, where it does not touch the sidebands or the meters. Set the RF gain from your L5 Lab gain table, and lower it if the floor rises or copies of strong stations appear, because the sidebands are far weaker than the host and an overloaded receiver buries them. Not every station carries HD Radio, so step through the strong stations in the band and watch the waterfall for the two straight bands.
 
 A weak sideband measurement reads high, because the band's noise adds to it. Check the floor beside the shelves: the shelves should stand at least 10 dB above it. As in Lesson 7, receiving is unrestricted and transmitting is not; nothing in this lesson transmits.
 ::::
@@ -249,7 +254,8 @@ A weak sideband measurement reads high, because the band's noise adds to it. Che
 
 - <a class="doc-link" href="../../grc/L14-hd-test-tx.grc" download>L14-hd-test-tx.grc</a>: writes `L14-hd-test.cu8`, 4 s (11.9 MB) of a simulated hybrid station at 100.3 MHz, with an analog-only neighbor 400 kHz below. Run it once; it stops on its own.
 - <a class="doc-link" href="../../grc/L14-hd-find.grc" download>L14-hd-find.grc</a>: the spectrum, waterfall, and sideband power meters, playing the test file, an RTL-SDR recording at 1,488,375 samples per second, or the RTL-SDR live.
-- <a class="doc-link" href="../../legacy/refs/nrsc-1011s_hd-radio.pdf" target="_blank" rel="noopener">NRSC-5 Layer 1 FM specification, SY_IDD_1011s (PDF)</a>: Section 3.5 and Table 5-1 give the spacing and subcarriers, and Section 5.3 the 10 dB asymmetry limit; the power levels come from NRSC-5's transmission specification and the FCC's 2010 order.
+- <a class="doc-link" href="../../legacy/L24-hd-radio.pdf" target="_blank" rel="noopener">HD Radio, 2025 slides (PDF)</a>: the topics this lesson follows.
+- <a class="doc-link" href="../../legacy/refs/nrsc-1011s_hd-radio.pdf" target="_blank" rel="noopener">NRSC-5 Layer 1 FM specification, SY_IDD_1011s (PDF)</a>: Section 3.5 and Table 5-1 give the spacing and subcarriers.
 - nrsc5, the receiver, is at <a href="https://github.com/theori-io/nrsc5" target="_blank" rel="noopener">github.com/theori-io/nrsc5</a>, with build instructions for Linux, macOS, and Windows.
 
 Put both flowgraphs in one folder and run the test transmitter first; GRC runs a flowgraph from its own folder, so the finder finds the test file there.
@@ -258,13 +264,13 @@ Put both flowgraphs in one folder and run the test transmitter first; GRC runs a
 ::::{frame} Summary
 :class: read-only
 
-| Quantity | Value | Where it comes from |
+| Part | What to know | In GNU Radio |
 | :-- | :-- | :-- |
-| Subcarrier spacing | $\Delta f$ = 363.4 Hz | 1,488,375 / 4096 |
-| Sideband | subcarriers 356 to 546, 129.4 to 198.4 kHz | $k\,\Delta f$ |
-| Partition | 19 subcarriers: 18 data, 1 reference | 10 per sideband, plus subcarrier 546 |
-| Symbol | $T_u$ = 2.752 ms (4096 samples), $T_g$ = 150.5 μs (224 samples), 2.902 ms total | `fft_len` and `cp_len` at 1,488,375 S/s |
-| Power | −20 dBc total, −23 dBc per sideband; −14 dBc, or −10 dBc with approval, since 2010 | 382 subcarriers |
+| Modes | hybrid, extended hybrid, all digital | the shelves on a waterfall |
+| Host | analog FM with mono, pilot, stereo, RBDS | Lesson 7's receiver and gr-rds |
+| Sidebands | ±129.4 to ±198.4 kHz, subcarriers 356 to 546 | the meter's `inner` and `outer` |
+| Subcarriers | 363.4 Hz apart, partitions of 18 data and 1 reference | `fft_len` = 4096 at 1,488,375 S/s |
+| Guard | a copy of each symbol's end | `cp_len` = 224 |
 | Decoder | nrsc5, RTL-SDR at 1,488,375 samples per second | program 0 is HD1 |
 ::::
 
@@ -281,7 +287,7 @@ Put both flowgraphs in one folder and run the test transmitter first; GRC runs a
 - Lesson 15 recovers the carrier and timing of an mPSK signal.
 :::
 
-Today we found the HD Radio sidebands beside an FM station, measured their power with meters built from familiar blocks, and saw why HD Radio divides its sidebands into hundreds of orthogonal subcarriers. The L14 Lab is the bench version: build the sideband meter yourself, use it on a capture whose configuration you do not know, measure a live station, and decode it with nrsc5.
+Today we found the HD Radio sidebands beside an FM station, measured their power with meters built from familiar blocks, and built an OFDM signal from GNU Radio's own blocks. The L14 Lab is the bench version: build the sideband meter yourself, use it on a capture whose configuration you do not know, measure a live station, and decode it with nrsc5.
 
 Lesson 15 turns to receiver work that nrsc5 performed for us today. Every QPSK subcarrier here needed its phase and timing recovered before the receiver could read its symbols, and Lesson 15 builds that recovery for a single mPSK carrier in GNU Radio.
 ::::
