@@ -141,11 +141,7 @@ The frequency sink shows the same signal as a single spike at $+1$ kHz, about 10
 
 A complex sample stream at rate $f_s$ can represent any frequency from $-f_s/2$ to $+f_s/2$, a band $f_s$ wide. That is twice what real samples at the same rate can show, because real samples cannot tell positive from negative frequencies and so represent only 0 to $f_s/2$. Lesson 4's SDRs all sample complex for that reason: an RTL-SDR at 2.4 MS/s shows 2.4 MHz of spectrum at once.
 
-A tone outside the window does not disappear. Its samples are identical to those of a tone shifted by a whole multiple of $f_s$, so it **aliases** into the window:
-
-$$f_\text{alias} = f - m f_s$$
-
-for whichever integer $m$ lands it between $-f_s/2$ and $+f_s/2$. Dragging the slider to 20 kHz puts the spike at $20 - 32 = -12$ kHz. An SDR's filters remove most out-of-band signals before the converter for exactly this reason, and a strong signal that leaks through anyway appears at a frequency where nothing is transmitting.
+A tone outside the window does not disappear. Its samples are identical to those of a tone $f_s$ higher or lower, so it **aliases** into the window: add or subtract $f_s$ until it lands between $-f_s/2$ and $+f_s/2$. Dragging the slider to 20 kHz puts the spike at $20 - 32 = -12$ kHz. An SDR's filters remove most out-of-band signals before the converter for exactly this reason, and a strong signal that leaks through anyway appears at a frequency where nothing is transmitting.
 ::::
 
 ::::{frame} Sampling Wheel
@@ -201,12 +197,12 @@ The **waterfall** below stacks the spectrum over time, newest at the top, with c
 :::{present}
 - Raise the gain until the noise floor lifts a few dB.
 - Stop before strong stations grow copies elsewhere: that is overload.
-- The RTL-SDR's 8-bit converter spans about 48 dB.
+- No single setting shows a strong local station and a weak distant one well.
 :::
 
 The RF gain sets how loud the signal is when it reaches the analog-to-digital converter, and both extremes hurt. Too little gain leaves weak signals below the converter's own noise, so they never appear. Too much drives strong signals past the top of the converter's range, and the clipping creates false signals, spurs and copies of strong stations at frequencies where nothing transmits. A useful procedure: start low, raise the gain until the noise floor on the display rises by a few dB, which means the antenna's noise now dominates the converter's, and stop there.
 
-The RTL-SDR's converter has 8 bits, and each bit gives about 6 dB of dynamic range, so it spans about 48 dB from its own noise to full scale. A strong local station and a distant weak one can differ by more than that, which is why no single gain setting shows both well and why Lesson 2's noise figure matters most for weak signals.
+The RTL-SDR's converter has only 8 bits, the coarsest of the course radios, so the span from its own noise to full scale is small. A strong local station and a distant weak one can differ by more than that span, which is why no single gain setting shows both well. Lesson 4's quantizer flowgraph showed the same thing with two tones.
 ::::
 
 ::::{frame} Recording IQ
@@ -238,7 +234,7 @@ Because the File Sink writes plain 32-bit floats, NumPy reads a capture in one l
 python L05-psd.py fm_capture.cfile --fs 2.4e6 --fc 100.1e6
 ```
 
-Each FFT bin is $f_s/N$ wide, $2.4\ \text{MHz}/2048 = 1.17$ kHz here, which is the bin width of Lesson 2's "Reading SNR on an SDR."
+Its plot should match the frequency sink: the same stations at the same frequencies, with the DC spike at the center.
 ::::
 
 ::::{frame} Key Point
@@ -267,9 +263,9 @@ Open a `.grc` file from GRC's File menu, or run `gnuradio-companion L05-tone.grc
 | `samp_rate` | the variable every block shares | tone flowgraph: 32 kHz |
 | Throttle | paces a flowgraph with no hardware | never with an SDR |
 | Complex samples | $I + jQ$, 8 bytes each | show $-f_s/2$ to $+f_s/2$ |
-| Aliasing | $f - m f_s$ folds into the window | 20 kHz at 32 kHz appears at $-12$ kHz |
+| Aliasing | a tone outside the window moves by $f_s$ | 20 kHz at 32 kHz appears at $-12$ kHz |
 | DC spike | the receiver's own offset at $f_c$ | tune a little off the signal |
-| RTL-SDR range | 8-bit converter | about 48 dB |
+| Gain | raise until the floor lifts a few dB | stop before spurs appear |
 | IQ file size | $8 f_s$ bytes per second | 19.2 MB/s at 2.4 MS/s |
 ::::
 

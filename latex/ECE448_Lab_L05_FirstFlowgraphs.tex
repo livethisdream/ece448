@@ -113,10 +113,10 @@ and interpret its time- and frequency-domain representations.}
 
 This packet is the L\labLesson\ Lab, in three parts, and you turn it in once, complete,
 before Lesson 6. Do \textbf{Part 1} on your own before the lab period: install
-GNU Radio and make the predictions you will check at the bench. \textbf{Part 2} is
-your own measurements, with your own laptop and RTL-SDR, recorded in class. Do
-\textbf{Part 3} on your own after the lab: compare the measurements with the
-predictions and answer the analysis questions.
+GNU Radio and work out the numbers your block settings fix. \textbf{Part 2} is
+your own measurements and observations, with your own laptop and RTL-SDR,
+recorded in class. Do \textbf{Part 3} on your own after the lab: explain what you
+saw.
 
 \textbf{Grading.} One submission, graded against Objectives 2.3 and 2.4 on the
 course's 1 / 0 scale, with revision allowed under course policy. Paste screenshots
@@ -174,11 +174,11 @@ prompt.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newpage
-\question \textbf{Predictions.} You will check each of these at the bench.
+\question \textbf{Numbers from your settings.} Quick arithmetic from the block settings; you will check each on the screen at the bench.
 
 \begin{parts}
 
-	\part The tone flowgraph samples at $f_s = 32$ kHz. Predict where the frequency
+	\part The tone flowgraph samples at $f_s = 32$ kHz. Work out where the frequency
 	sink shows each tone.
 
 	\begin{center}
@@ -186,7 +186,7 @@ prompt.
 	\begin{tabular}{| l | K{0.68in} | K{0.68in} | K{0.68in} | K{0.68in} | K{0.68in} |}
 	\hline
 	Tone (kHz) & $1$ & $12$ & $20$ & $30$ & $-25$ \\\hline
-	Predicted (kHz) & \kv{$1$} & \kv{$12$} & \kv{$-12$} & \kv{$-2$} & \kv{$7$} \\\hline
+	Expected (kHz) & \kv{$1$} & \kv{$12$} & \kv{$-12$} & \kv{$-2$} & \kv{$7$} \\\hline
 	\end{tabular}
 	\end{center}
 
@@ -198,22 +198,18 @@ prompt.
 
 	\begin{minipage}[t]{0.58\linewidth}
 		\part The FM flowgraph samples at 2.4 MS/s centered on 100.1 MHz. Find the
-		band the display shows and the width of one bin of its 2048-point FFT.
-		\begin{solution}[1.0in]
-		\eq{ 100.1 \pm 1.2 &= 98.9 \text{ to } 101.3\ \text{MHz} \\
-			\dfrac{2.4\times10^{6}}{2048} &= 1.17\ \text{kHz} }
+		band the display shows.
+		\begin{solution}[0.7in]
+		\eq{ 100.1 \pm 1.2 = 98.9 \text{ to } 101.3\ \text{MHz} }
 		\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
 		\raggedleft \vspace{12pt}
 		band = \ansbox[1.5in]{98.9 to 101.3 MHz}
-
-		\vspace{4pt}
-		bin = \ansbox[1.5in]{1.17 kHz}
 	\end{minipage}
 
 	\begin{minipage}[t]{0.58\linewidth}
-		\part Predict the size of a 2 s recording at 2.4 MS/s.
+		\part Find the size of a 2 s recording at 2.4 MS/s.
 		\begin{solution}[0.7in]
 		\eq{ 2 \times 2.4\times10^{6} \times 8\ \text{bytes} = 38.4\ \text{MB} }
 		\end{solution}
@@ -255,7 +251,7 @@ a QT GUI Frequency Sink.
 	\end{center}
 
 		\begin{solution}[0.4in]
-		The measurements match the predictions exactly; aliasing of a computed tone
+		The measurements match Question 2(a) exactly; aliasing of a computed tone
 		is exact.
 		\end{solution}
 
@@ -352,27 +348,25 @@ DC spike and set the gain you chose in Question 4(c).
 
 \begin{parts}
 
-	\part Compare your measured aliases in Question 3(b) with the predictions in
+	\part Compare your measured aliases in Question 3(b) with your answers in
 	Question 2(a). Explain why a 20 kHz tone and a $-12$ kHz tone produce the same
 	samples at 32 kHz.
 		\begin{solution}[1.2in]
-		They match exactly. The samples of $e^{j2\pi f n/f_s}$ depend on $f$ only through
-		$f/f_s$ modulo 1, because adding $f_s$ to $f$ adds a whole turn,
-		$e^{j2\pi n} = 1$, to every sample. $20$ kHz and $-12$ kHz differ by exactly
-		$32$ kHz, so their samples are identical.
+		They match exactly. On the sampling wheel, a tone 32 kHz higher turns one
+		extra whole turn between samples, which lands each sample on the same point.
+		$20$ kHz and $-12$ kHz differ by exactly $32$ kHz, so their samples are
+		identical.
 		\end{solution}
 
-	\part Your strongest station's peak sits some number of dB above the noise floor
-	on the display. Is that the SNR an FM demodulator would see? Explain, and
-	estimate the correction for a 200 kHz station with 1.17 kHz bins.
+	\part Using your table in Question 4(c), describe in words what happened as you
+	raised the gain from 0 to 49 dB: to the noise floor, to how far the strongest
+	station stood above it, and to the space between stations.
 		\begin{solution}[1.5in]
-		No. The display shows the noise in one 1.17 kHz bin, but the demodulator
-		filters to the station's 200 kHz, which lets in
-		$10\mylog{\dfrac{200\ \text{kHz}}{1.17\ \text{kHz}}} = 22.3$ dB more noise. The
-		station's power is already spread over the same 200 kHz, so its level per bin is
-		not the whole signal either. Comparing total power to total power over the
-		200 kHz gives the demodulator's SNR, which Lesson 2's "Reading SNR on an SDR"
-		describes.
+		At low gain the floor stayed put, the converter's own noise, and the station
+		rose with the gain, so it stood out more. Once the floor began to rise, the
+		antenna's noise rose with the station, and the gap stopped growing. At the
+		highest settings false signals appeared between stations: the strong station
+		was overloading the converter.
 		\end{solution}
 
 	\part State the gain you would use to receive weak stations in this room, and

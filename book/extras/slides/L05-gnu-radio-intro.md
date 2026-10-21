@@ -112,9 +112,7 @@ Ask why there is no spike at minus 1 kHz. A complex tone rotates in one directio
 
 <img src="./img/05-gnu-radio/L05-tone-alias.png" alt="A 20 kHz tone at 32 kHz sampling appearing at minus 12 kHz" style="max-height:330px; display:block; margin:0 auto;">
 
-$$f_\text{alias} = f - m f_s$$
-
-At $f_s = 32$ kHz, a 20 kHz tone appears at $-12$ kHz.
+Outside $\pm f_s/2$, a tone moves by $f_s$: at $f_s = 32$ kHz, 20 kHz appears at $-12$ kHz.
 
 Note:
 Drag the slider slowly past 16 kHz on the live flowgraph and let them see the spike jump to the other side. Complex samples show minus fs over two to plus fs over two.
@@ -160,7 +158,7 @@ This figure is simulated; the live display is the real one. Stations are about 2
 
 - Raise the gain until the noise floor lifts a few dB.
 - Stop before strong stations grow copies elsewhere: that is overload.
-- The RTL-SDR's 8-bit converter spans about 48 dB.
+- No single setting shows a strong local station and a weak distant one well.
 
 Note:
 Demo both extremes live: gain at zero hides the weak stations; gain at maximum makes spurs appear between stations. Then find the setting in between.

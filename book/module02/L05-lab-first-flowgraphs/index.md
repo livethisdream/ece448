@@ -28,12 +28,12 @@ L5 Lab · Module 2: SDR & GNU Radio Foundations · Dr. Neil Rogers
 
 ::::{frame} From Lesson to Bench
 :::{present}
-- **Pre-Lab:** install radioconda and predict every number you will measure.
+- **Pre-Lab:** install radioconda and work out the numbers your settings fix.
 - **Bench:** build the tone flowgraph yourself, then receive and record the FM band.
 - **Writeup:** compare, and explain the differences.
 :::
 
-Lesson 5 showed both flowgraphs running. Today you build one from an empty canvas and run the other against real signals. The lab packet has three parts, and you turn it in once, complete, before Lesson 6. **Part 1, the Pre-Lab**, is on your own before the period: install radioconda, confirm it sees your RTL-SDR, and predict the aliases, the display band, the bin width, and the file size. **Part 2** is your own measurements in class. **Part 3, the Writeup**, compares the two.
+Lesson 5 showed both flowgraphs running. Today you build one from an empty canvas and run the other against real signals. The lab packet has three parts, and you turn it in once, complete, before Lesson 6. **Part 1, the Pre-Lab**, is on your own before the period: install radioconda, confirm it sees your RTL-SDR, and work out where the tones will appear, the band the display shows, and the file size. **Part 2** is your own measurements and observations in class. **Part 3, the Writeup**, explains what you saw.
 
 Nothing in this lab transmits. The RTL-SDR is receive-only, and the tone flowgraph never leaves your laptop.
 ::::
@@ -47,7 +47,7 @@ Nothing in this lab transmits. The RTL-SDR is receive-only, and the tone flowgra
 
 Do the Pre-Lab before you arrive; the bench time assumes a working install. The three checks on the slide are the packet's Question 1. If any fails, the L5 lesson page lists the fixes, and the most common one on Windows is the Zadig driver step for the RTL-SDR. Bring the problem to EI before the lab rather than to the lab itself.
 
-Question 2 asks for predictions: where five tones appear at a 32 kHz sample rate, the band and bin width of the FM display, and the size of a 2 s recording. Part 2 checks each one against a measurement.
+Question 2 is quick arithmetic from your block settings: where five tones appear at a 32 kHz sample rate, the band the FM display shows, and the size of a 2 s recording. Part 2 checks each one on the screen.
 ::::
 
 ::::{frame} Expected Numbers
@@ -56,11 +56,10 @@ Question 2 asks for predictions: where five tones appear at a 32 kHz sample rate
 | :-- | :-- |
 | 20 kHz tone at 32 kHz | appears at $-12$ kHz |
 | FM display at 100.1 MHz | 98.9 to 101.3 MHz |
-| FFT bin, 2048 points | 1.17 kHz |
 | 2 s recording | 38.4 MB |
 :::
 
-These are the predictions of Question 2, worked from Lesson 5. The tone aliases are exact, because a computed tone has no noise or hardware in the way; if a measurement disagrees, the flowgraph is built differently from the instructions, most often with a different `samp_rate`. The FM numbers depend only on the center frequency and sample rate you set. Station levels, the noise floor, and the gain where overload starts depend on your antenna and location, so the packet records them rather than predicting them.
+These are the answers to Question 2, worked from Lesson 5. The tone aliases are exact, because a computed tone has no noise or hardware in the way; if a measurement disagrees, the flowgraph is built differently from the instructions, most often with a different `samp_rate`. The FM numbers depend only on the center frequency and sample rate you set. Station levels, the noise floor, and the gain where overload starts depend on your antenna and location, so the packet has you watch and record them instead.
 ::::
 
 ::::{frame} Part 2: Build the Tone Flowgraph
@@ -107,11 +106,11 @@ Do Question 3 on your laptop as written; it needs no hardware. For Questions 4 a
 ::::{frame} Part 3: After the Lab
 :::{present}
 - Explain why 20 kHz and $-12$ kHz give identical samples at 32 kHz.
-- Explain why peak-minus-floor on the display is not the demodulator's SNR.
+- Describe, in words, what raising the gain did to the floor and the stations.
 - Choose and justify a gain for weak stations.
 :::
 
-The Writeup is three questions. The first connects your alias table to the sampling wheel of Lesson 5: adding $f_s$ to a tone's frequency adds a whole turn to every sample. The second connects the FM display to Lesson 2's "Reading SNR on an SDR," because the display shows noise in one 1.17 kHz bin while a demodulator filters to the station's 200 kHz. The third asks you to defend a gain setting from your own gain table.
+The Writeup is three questions. The first connects your alias table to the sampling wheel of Lesson 5: adding $f_s$ to a tone's frequency adds a whole turn to every sample. The second asks what you watched happen as the gain went up: when the floor moved, when the stations stood out more, and when false signals appeared. The third asks you to defend a gain setting from your own gain table.
 ::::
 
 ::::{frame} Lab Packet
