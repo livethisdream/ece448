@@ -155,14 +155,9 @@ The figure sends 600 QPSK symbols at three SNRs. Noise adds a random offset to b
 
 ::::{frame} Try It in GNU Radio
 :::{present}
-<div style="display: flex; flex-wrap: wrap; gap: 12px; justify-content: center;">
-<img src="../../viz/img/L03-grc-snr20.png"
-     alt="The L3 noise flowgraph running with the SNR slider at 20 dB: the constellation sink shows four tight QPSK dots, one per quadrant"
-     style="max-width: 380px; width: 100%;">
-<img src="../../viz/img/L03-grc-snr6.png"
-     alt="The same flowgraph with the SNR slider at 6 dB: four wide QPSK clouds that spread across the axes"
-     style="max-width: 380px; width: 100%;">
-</div>
+<img src="../../viz/img/L03-grc-snr20-snr6.png"
+     alt="The L3 noise flowgraph running in GNU Radio Companion, twice. With the SNR slider at 20 dB the constellation sink shows four tight QPSK dots, one per quadrant; at 6 dB the four clouds are wide and spread across the axes"
+     style="max-width: 640px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
 1. Open `L03-noise-constellation.grc` and run it.
@@ -172,7 +167,7 @@ The figure sends 600 QPSK symbols at three SNRs. Noise adds a random offset to b
 
 This is the same demonstration as the figures, and it needs no SDR: an instructor demo today, and one to repeat after the Lesson 5 install. The flowgraph is adapted from the GNU Radio wiki's *QPSK Mod and Demod* tutorial (its first half, without pulse shaping). A **Random Source** picks symbols 0 to 3, **Chunks to Symbols** maps each one to a QPSK point through a Gray-coded table, and a **Channel Model** adds noise; its noise voltage is set from the SNR slider. A **QT GUI Constellation Sink** plots the result. A Multiply Const block between them rotates every point by the phase offset.
 
-Start at 20 dB, where the four points are tight dots, and drag the slider down. Somewhere below 10 dB the clouds start to reach the axes, which are QPSK's decision boundaries, and at 6 dB, the second screenshot, they run into each other. Then put the SNR back at 20 dB and raise the phase offset toward 45°. Open Chunks to Symbols and read its symbol table: that list of four complex numbers is the constellation, in Gray order.
+Start at 20 dB, where the four points are tight dots, and drag the slider down. Somewhere below 10 dB the clouds start to reach the axes, which are QPSK's decision boundaries, and at 6 dB, the right-hand panel, they run into each other. Then put the SNR back at 20 dB and raise the phase offset toward 45°. Open Chunks to Symbols and read its symbol table: that list of four complex numbers is the constellation, in Gray order.
 ::::
 
 ::::{frame} Constellation Explorer

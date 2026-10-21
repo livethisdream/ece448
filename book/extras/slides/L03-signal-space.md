@@ -131,7 +131,7 @@ QPSK at three SNRs. At 20 dB nothing crosses; at 10 dB a few do; at 4 dB the clo
 
 ## Try It in GNU Radio
 
-<div style="display:flex; gap:16px; justify-content:center;"><img src="./img/03-signal-space/L03-grc-snr20.png" alt="The L3 noise flowgraph at an SNR of 20 dB: four tight QPSK dots" style="max-height:340px;"><img src="./img/03-signal-space/L03-grc-snr6.png" alt="The same flowgraph at 6 dB: four wide QPSK clouds" style="max-height:340px;"></div>
+<img src="./img/03-signal-space/L03-grc-snr20-snr6.png" alt="The L3 noise flowgraph at an SNR of 20 dB, four tight QPSK dots, and at 6 dB, four wide clouds" style="max-height:360px; display:block; margin:0 auto;">
 
 1. Open `L03-noise-constellation.grc` and run it.
 2. Drag the SNR from 20 dB down to 6 dB.
