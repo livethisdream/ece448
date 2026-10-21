@@ -43,13 +43,13 @@ Lesson 15 · Module 6: Waveform Applications & RF Reverse Engineering · Dr. Nei
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
-- The L10 text link now sends two bits per symbol on the phase of a carrier.
-- The receiver has to find the carrier's phase and frequency before it can decide.
+- Run `L15-psk-link.grc` and type 50 into the frequency offset box.
+- Watch the ring before the Costas Loop become four clusters after it.
 :::
 
 The figure is today's flowgraph, `L15-psk-link.grc`, running. It sends the same packets of text as Lesson 10, but each symbol now carries two bits as one of four phases, which is **QPSK**. The channel adds noise, and here its frequency offset slider is set to move the carrier 50 Hz away from where the receiver expects it; the slider opens at 0.
 
-The left plot shows the received symbols after timing recovery. They form a ring, because the frequency offset turns the constellation a little further with every symbol. The middle plot shows the same symbols after **carrier recovery**, which a **Costas Loop** does: the ring becomes four clusters, and the text arrives. Today we build each part of this link, and then turn up the noise and watch what happens to each constellation.
+The left plot shows the received symbols after timing recovery. They form a ring, because the frequency offset turns the constellation a little further with every symbol. The middle plot shows the same symbols after **carrier recovery**, which a **Costas Loop** does: the ring becomes four clusters, and the text arrives. Today we follow the GNU Radio wiki's **Guided Tutorial PSK Demodulation** step by step, with PySDR's Digital Modulation and Synchronization chapters as background: transmit, add a channel, recover the timing, recover the carrier, and decode. Then we turn up the noise and watch what happens to each constellation.
 ::::
 
 ::::{frame} Phase-Shift Keying
@@ -59,8 +59,8 @@ The left plot shows the received symbols after timing recovery. They form a ring
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
-- $M$ phases on a circle carry $k = \log_2 M$ bits per symbol.
-- BPSK, QPSK, and 8PSK carry 1, 2, and 3 bits.
+- Run `L15-psk-tx.grc` and switch the constellation chooser.
+- $M$ phases on a circle carry $k = \log_2 M$ bits: 1, 2, or 3.
 :::
 
 **M-ary phase-shift keying** (mPSK) puts $M$ points on a circle of radius 1. Every point has the same amplitude, so only the phase carries information. Lesson 3 introduced these constellations; here they come from `L15-psk-tx.grc`, with a chooser that switches $M$ while the flowgraph runs.
@@ -68,7 +68,7 @@ The left plot shows the received symbols after timing recovery. They form a ring
 A constellation with $M$ points carries $k = \log_2 M$ bits per symbol. At the same symbol rate, QPSK sends twice as many bits as BPSK, and 8PSK three times as many. The points of QPSK sit at 45° plus multiples of 90°, and those of 8PSK at 22.5° plus multiples of 45°, because those are the positions the Costas Loop's detectors expect.
 ::::
 
-::::{frame} The Transmitter in GNU Radio
+::::{frame} Step 1: The Transmitter
 :::{present}
 <img src="../../viz/img/L15-grc-tx.png"
      alt="The L15 transmitter flowgraph in GNU Radio Companion: a Random Source of values 0 to 7, Chunks to Symbols with the table of points, a Throttle at 4 kHz, and an Interpolating FIR Filter with the RRC taps, feeding a constellation sink, a time sink, and a frequency sink; a QT GUI Chooser sets M"
@@ -79,12 +79,12 @@ A constellation with $M$ points carries $k = \log_2 M$ bits per symbol. At the s
 - Every $M$ fills the same 5.4 kHz band.
 :::
 
-The transmitter is Lesson 9's, with complex points in place of real levels. **Chunks to Symbols** takes a number from 0 to $M - 1$ and outputs that point of the constellation, and the Interpolating FIR Filter shapes it with the same RRC taps as Lesson 9: $\alpha = 0.35$, 8 samples per symbol, and 32 kHz sampling, so 4,000 symbols a second. GNU Radio also has a **Constellation Modulator** block, which packs the bit grouping, the mapping, and the RRC filter into one block; we build the chain from its parts so that each step is visible.
+The transmitter is Lesson 9's, with complex points in place of real levels. **Chunks to Symbols** takes a number from 0 to $M - 1$ and outputs that point of the constellation, and the Interpolating FIR Filter shapes it with the same RRC taps as Lesson 9: $\alpha = 0.35$, 8 samples per symbol, and 32 kHz sampling, so 4,000 symbols a second. The tutorial's first step uses the **Constellation Modulator** block, which packs the bit grouping, the mapping, and the RRC filter into one block; we build the chain from its parts so that the Gray map and the differential encoder of Step 5 are visible.
 
 The spectrum does not change with $M$. The band is $(1 + \alpha) R_s = 1.35 \times 4$ kHz $= 5.4$ kHz wide whether each symbol carries one bit or three. More bits per symbol move more data through the same bandwidth, but the points sit closer together, and the Noise frame below shows what that does.
 ::::
 
-::::{frame} Bits to Points with Gray Coding
+::::{frame} Step 1: Bits to Points
 :::{present}
 <img src="../../viz/img/L15-8psk-map.svg"
      alt="The L15 8PSK constellation: eight points on the unit circle at 22.5 degrees plus multiples of 45, each marked with its phase index 0 to 7 counterclockwise from the first quadrant and with its Gray label: 000, 001, 011, 010, 110, 111, 101, 100"
@@ -115,6 +115,17 @@ At $R_s = 4{,}000$ symbols per second, each modulation fills the same 5.4 kHz an
 QPSK doubles the bit rate of BPSK in the same band, and 8PSK adds another 50%. The spacing column is Lesson 3's, for points on a circle of radius 1: the more points share the circle, the closer together they sit, and the less noise it takes to push a symbol across to a neighbor. The link flowgraph's **Noise amplitude** slider sets the noise the Channel Model adds to each sample, and the same setting affects every $M$ alike, so we can compare them by eye.
 ::::
 
+::::{frame} Step 2: The Channel
+:::{present}
+- Move one Channel Model slider at a time and watch the left plot.
+- Noise spreads the points, a phase rotates them, and an offset spins them into a ring.
+:::
+
+Lesson 3 showed these four problems on a QPSK constellation, and the Channel Model adds all four. A real receiver meets every one of them. The transmitter and receiver oscillators are never exactly equal, so the carrier arrives a few hertz to kilohertz away from where the receiver tunes, and the path length sets an unknown phase. The two sample clocks also differ, which is the clock error Symbol Sync tracked in Lesson 9.
+
+A frequency offset $\Delta f$ turns the constellation by $360° \times \Delta f / R_s$ every symbol. At 50 Hz and 4,000 symbols per second that is 4.5° per symbol, so the points go once around the circle every 80 symbols and land everywhere on the ring, as in the opening figure, and the receiver has to remove that rotation before it decides any symbol.
+::::
+
 ::::{frame} The Receiver
 :::{present}
 <img src="../../viz/img/L15-grc-link.png"
@@ -132,39 +143,27 @@ The top row is the transmitter: the packets of Lessons 8 and 10, Repack Bits, th
 The receiver keeps Lesson 9's matched filter and Symbol Sync with the same settings: Gardner detector, 8 samples per symbol, loop bandwidth 0.045. The **Costas Loop** follows, with its order set to $M$. The **Constellation Decoder** outputs the phase index of the nearest point, and from there the receiver undoes each transmitter step in reverse order and hands the bits to Lesson 8's access-code search and Text Sink.
 ::::
 
-::::{frame} What the Channel Does
-:::{present}
-- Noise spreads each point into a cloud.
-- A fixed phase rotates the constellation.
-- A frequency offset spins it into a ring.
-- A clock error slides the sampling instant.
-:::
 
-Lesson 3 showed these four problems on a QPSK constellation, and the Channel Model adds all four. A real receiver meets every one of them. The transmitter and receiver oscillators are never exactly equal, so the carrier arrives a few hertz to kilohertz away from where the receiver tunes, and the path length sets an unknown phase. The two sample clocks also differ, which is the clock error Symbol Sync tracked in Lesson 9.
-
-A frequency offset $\Delta f$ turns the constellation by $360° \times \Delta f / R_s$ every symbol. At 50 Hz and 4,000 symbols per second that is 4.5° per symbol, so the points go once around the circle every 80 symbols and land everywhere on the ring, as in the opening figure, and the receiver has to remove that rotation before it decides any symbol.
-::::
-
-::::{frame} Order of Recovery
+::::{frame} Step 3: Timing Recovery
 :::{present}
 - Symbol Sync finds the sampling instant with the carrier still spinning.
-- The Costas Loop then works at one sample per symbol.
+- Watch its output: one point per symbol, still turning.
 :::
 
 The receiver recovers the timing first. Gardner's detector compares samples taken half a symbol apart, and a carrier that turns only a few degrees per symbol barely changes that comparison, so Symbol Sync locks with the frequency offset still present. Its output is one sample per symbol at the right instant, which is the ring in the left plot of the opening figure.
 
-The Costas Loop then needs only those samples. Working at the symbol rate, it sees one clean point per symbol and has 8 times fewer samples to process than it would before Symbol Sync. The order matters in the other direction too: a carrier loop placed before timing recovery would see samples taken between symbols, where the points are not on the constellation.
+The Costas Loop then needs only those samples. Working at the symbol rate, it sees one clean point per symbol and has 8 times fewer samples to process than it would before Symbol Sync. The order matters in the other direction too: a carrier loop placed before timing recovery would see samples taken between symbols, where the points are not on the constellation. The tutorial does this step with the **Polyphase Clock Sync** block, which does the same job with a bank of matched filters, and follows it with a **Linear Equalizer** to undo multipath; we keep Lesson 9's Symbol Sync, and our Channel Model has no multipath, so we leave the equalizer out.
 ::::
 
-::::{frame} The Costas Loop
+::::{frame} Step 4: The Costas Loop
 :::{present}
 <img src="../../viz/img/L15-costas.svg"
      alt="Block diagram of the Costas Loop: symbols in are rotated back by the phase estimate and go out; the rotated symbols also go to a phase-error detector of order M, then a loop filter whose state is the frequency estimate, then the phase estimate, which sets the rotation"
      style="max-width: 760px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
-- Rotate each symbol back, measure how far it misses a point, and correct the estimate.
-- The loop tracks both phase and frequency.
+- The loop rotates each symbol back and measures how far it misses a point.
+- Watch the frequency plot settle on the offset.
 :::
 
 The **Costas Loop** keeps an estimate of the carrier's phase and rotates each incoming symbol back by it. A **phase detector** then measures how far the rotated symbol sits from the nearest constellation point, without knowing which point was sent. For BPSK it uses the product $I \times Q$, which is zero on the I axis. For QPSK GNU Radio's detector uses the signs of $I$ and $Q$ to find the nearest point, and for 8PSK it also checks which of $|I|$ and $|Q|$ is larger; that is why the loop needs the order $M$, and why the points have to sit where the detector expects them.
@@ -222,7 +221,7 @@ At 4,000 symbols per second, BPSK pulls in from about 500 Hz and QPSK from about
 The PlutoSDR's own oscillator is accurate to about 25 ppm, so two radios at 915 MHz can differ by up to about 46 kHz, a hundred times the Costas Loop's range. The L15 Lab uses one Pluto, whose transmitter and receiver share the same reference, so its frequency offset is close to zero.
 ::::
 
-::::{frame} Phase Ambiguity
+::::{frame} Step 5: Phase Ambiguity
 :::{present}
 <img src="../../viz/img/L15-link-ambiguity.png"
      alt="The L15 link with QPSK, no frequency offset, differential coding off (diff = 0), and the channel phase at 90 degrees: the Symbol Sync and Costas Loop outputs both show four clean clusters, the frequency estimate sits at 0 Hz, but the Received label still says waiting for a packet and no line has arrived"
@@ -238,7 +237,7 @@ The figure removes the frequency offset, turns the channel phase to 90°, and sw
 This is the **phase ambiguity** that Lesson 10's PlutoSDR link met as a polarity switch. A BPSK loop can lock right side up or upside down. A QPSK loop can lock in 4 positions and an 8PSK loop in 8, so on a real radio, where the channel phase is random, the text would arrive only on the runs that happen to lock in the right one.
 ::::
 
-::::{frame} Differential Coding
+::::{frame} Step 5: Differential Decoding
 :::{present}
 | Index sent | 0 | 1 | 3 | 3 | 2 |
 | :-- | :-: | :-: | :-: | :-: | :-: |
@@ -312,6 +311,8 @@ mPSK sends $\log_2 M$ bits per symbol on the carrier's phase. Symbol Sync recove
 
 - <a class="doc-link" href="../../grc/L15-psk-tx.grc" download>L15-psk-tx.grc</a>: random BPSK, QPSK, or 8PSK symbols shaped by the RRC filter, with the constellation, I and Q, and the spectrum. No hardware needed.
 - <a class="doc-link" href="../../grc/L15-psk-link.grc" download>L15-psk-link.grc</a>: the whole text link, with sliders for the noise amplitude, frequency offset, channel phase, and clock error, a variable that turns differential coding on or off, constellations before and after the Costas Loop, its frequency estimate, and the received text. No hardware needed.
+- <a class="doc-link" href="https://wiki.gnuradio.org/index.php/Guided_Tutorial_PSK_Demodulation" target="_blank" rel="noopener">GNU Radio wiki: Guided Tutorial PSK Demodulation</a>: the tutorial this lesson follows. Its last flowgraph, `mpsk_stage6.grc`, ships with GNU Radio in `share/gnuradio/examples/digital`.
+- <a class="doc-link" href="https://pysdr.org/content/digital_modulation.html" target="_blank" rel="noopener">PySDR: Digital Modulation</a> and <a class="doc-link" href="https://pysdr.org/content/sync.html" target="_blank" rel="noopener">PySDR: Synchronization</a>: background on constellations, timing, and carrier recovery.
 - <a class="doc-link" href="../../legacy/refs/differential-encoding-tutorial.pdf" target="_blank" rel="noopener">Differential encoding tutorial (PDF)</a>
 
 Open a `.grc` file from GRC's File menu, or run `gnuradio-companion L15-psk-link.grc` from the radioconda prompt. To change the constellation in the link, double-click the variable `M`, set it to 2, 4, or 8, and run the flowgraph again; the Costas Loop's order and every table follow it. The variable `diff` works the same way: 1 turns differential coding on and 0 turns it off. The Text Sink is an Embedded Python Block saved inside the `.grc` file. The L15 Lab page has the PlutoSDR version of the link.

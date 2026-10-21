@@ -32,7 +32,7 @@ L15 Lab · Module 6: Waveform Applications & RF Reverse Engineering · Dr. Neil 
 - **Writeup:** explain the losses, the limits, and differential coding.
 :::
 
-Lesson 15 built an mPSK text link with timing and carrier recovery. Today you first build an 8PSK carrier-recovery loop yourself, then raise the noise until each constellation stops delivering text, find the Costas Loop's pull-in range, map its phase ambiguity, and then run QPSK on a PlutoSDR. The lab takes most of the lesson's second period. The lab packet has three parts, and you turn it in once, complete, before Lesson 16. **Part 1, the Pre-Lab**, is on your own before the period: run `L15-psk-link.grc` once and work out the block settings Part 2 needs. **Part 2** is your own measurements in class. **Part 3, the Writeup**, explains them.
+Lesson 15 built an mPSK text link with timing and carrier recovery, following the GNU Radio wiki's Guided Tutorial PSK Demodulation. Today you first build an 8PSK carrier-recovery loop yourself, then raise the noise until each constellation stops delivering text, find the Costas Loop's pull-in range, map its phase ambiguity, and then run QPSK on a PlutoSDR. The lab takes most of the lesson's second period. The lab packet has three parts, and you turn it in once, complete, before Lesson 16. **Part 1, the Pre-Lab**, is on your own before the period: run `L15-psk-link.grc` once and work out the block settings Part 2 needs. **Part 2** is your own measurements in class. **Part 3, the Writeup**, explains them.
 
 Questions 1 to 6 run on your laptop and transmit nothing. Question 7 transmits, into a cable only, as the PlutoSDR frame below describes.
 ::::

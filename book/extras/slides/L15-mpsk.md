@@ -35,15 +35,15 @@ Open L15-psk-tx.grc and L15-psk-link.grc in GRC before class. The link runs in t
 
 ## Today's Plan
 
-1. mPSK constellations and the transmitter
-2. Bits to points: Repack Bits, the Gray map
-3. The receiver: Symbol Sync, then the Costas Loop
-4. Acquisition, pull-in, and false lock
-5. Phase ambiguity and differential coding
+1. Transmit: the constellations, the RRC filter, the Gray map
+2. The channel
+3. Timing recovery: Symbol Sync
+4. Carrier recovery: the Costas Loop, pull-in, false lock
+5. Decoding: phase ambiguity and differential decoding
 6. Noise: which constellation breaks first
 
 Note:
-Parts 1 and 2 are the transmitter, 3 to 5 the receiver. Part 6 turns up the noise and compares BPSK, QPSK, and 8PSK by eye.
+Steps 1 to 5 follow the GNU Radio wiki's Guided Tutorial PSK Demodulation, with PySDR's Digital Modulation and Synchronization chapters as background. Keep GRC open the whole period. Part 6 turns up the noise and compares BPSK, QPSK, and 8PSK by eye.
 
 ---
 
@@ -69,7 +69,7 @@ Switch the chooser in L15-psk-tx.grc. QPSK sits at 45 degrees plus multiples of 
 
 ---
 
-## The Transmitter in GNU Radio
+## Step 1: The Transmitter
 
 <img src="./img/15-mpsk/L15-grc-tx.png" alt="The L15 transmitter in GRC: Random Source, Chunks to Symbols, Throttle, and the RRC Interpolating FIR Filter, with constellation, time, and frequency sinks" style="max-height:330px; display:block; margin:0 auto;">
 
@@ -80,7 +80,7 @@ The band is (1 + alpha) times the symbol rate, 1.35 times 4 kHz, whatever M is. 
 
 ---
 
-## Bits to Points with Gray Coding
+## Step 1: Bits to Points
 
 <div class="fig" data-inline-svg="./fig/L15-8psk-map.svg" style="max-width:360px; margin:0 auto;"></div>
 
@@ -106,18 +106,7 @@ QPSK doubles BPSK's rate in the same band; 8PSK adds half again. The spacing is 
 
 ---
 
-## The Receiver
-
-<img src="./img/15-mpsk/L15-grc-link.png" alt="The L15 link in GRC: packet transmitter, Gray map, differential encoder, Chunks to Symbols, RRC, Channel Model, matched filter, Symbol Sync, Costas Loop, Constellation Decoder, differential decoder, map, access-code search, and Text Sink" style="max-height:400px; display:block; margin:0 auto;">
-
-Matched filter, Symbol Sync, Costas Loop, Constellation Decoder.
-
-Note:
-The Channel Model adds noise, a frequency offset, a fixed phase, and a clock error. Symbol Sync keeps Lesson 9's settings: Gardner, 8 samples per symbol, loop bandwidth 0.045.
-
----
-
-## What the Channel Does
+## Step 2: The Channel
 
 - Noise spreads each point into a cloud.
 - A fixed phase rotates the constellation.
@@ -131,17 +120,28 @@ These are Lesson 3's four problems. Two oscillators are never equal, and the pat
 
 ---
 
-## Order of Recovery
+## The Receiver
+
+<img src="./img/15-mpsk/L15-grc-link.png" alt="The L15 link in GRC: packet transmitter, Gray map, differential encoder, Chunks to Symbols, RRC, Channel Model, matched filter, Symbol Sync, Costas Loop, Constellation Decoder, differential decoder, map, access-code search, and Text Sink" style="max-height:400px; display:block; margin:0 auto;">
+
+Matched filter, Symbol Sync, Costas Loop, Constellation Decoder.
+
+Note:
+The Channel Model adds noise, a frequency offset, a fixed phase, and a clock error. Symbol Sync keeps Lesson 9's settings: Gardner, 8 samples per symbol, loop bandwidth 0.045.
+
+---
+
+## Step 3: Timing Recovery
 
 - Symbol Sync locks with the carrier still spinning.
 - The Costas Loop then works on one sample per symbol.
 
 Note:
-Gardner's detector compares samples half a symbol apart, and a carrier turning a few degrees per symbol barely changes that comparison. A carrier loop placed first would see samples between symbols, which are not on the constellation.
+Gardner's detector compares samples half a symbol apart, and a carrier turning a few degrees per symbol barely changes that comparison. A carrier loop placed first would see samples between symbols, which are not on the constellation. The tutorial uses the Polyphase Clock Sync block and a Linear Equalizer for multipath here; we keep Lesson 9's Symbol Sync, and our channel has no multipath.
 
 ---
 
-## The Costas Loop
+## Step 4: The Costas Loop
 
 <div class="fig" data-inline-svg="./fig/L15-costas.svg" style="max-width:760px; margin:0 auto;"></div>
 
@@ -190,7 +190,7 @@ Lock counts out of six runs and median times to lock. Real receivers remove most
 
 ---
 
-## Phase Ambiguity
+## Step 5: Phase Ambiguity
 
 <img src="./img/15-mpsk/L15-link-ambiguity.png" alt="QPSK with differential coding off and the channel phase at 90 degrees: four clean clusters, but no packet arrives" style="max-height:400px; display:block; margin:0 auto;">
 
@@ -201,7 +201,7 @@ A QPSK constellation turned 90 degrees looks the same, so the loop locks to whic
 
 ---
 
-## Differential Coding
+## Step 5: Differential Decoding
 
 | Index sent | 0 | 1 | 3 | 3 | 2 |
 | :-- | :-: | :-: | :-: | :-: | :-: |
