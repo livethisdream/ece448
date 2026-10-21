@@ -66,7 +66,7 @@ $$s(t) = A_c\left[1 + mx(t)\right]\cos(2\pi f_c t)$$
 - The bandwidth is $2W$, here 5 kHz (7.5 to 12.5 kHz).
 
 Note:
-At m = 0.5 the 1 kHz sidebands are 16.5 dB below the carrier and the 2.5 kHz sidebands 20 dB below. Read them off the frequency sink.
+Drag m on the frequency sink: the sideband lines grow and the carrier stays put. The louder 1 kHz tone makes the taller pair.
 
 ---
 
@@ -99,7 +99,7 @@ The Delay block holds the reference back 57 samples, half the low-pass filter's 
 - Multiply by $\pi/2$, because a rectified cosine averages $2/\pi$ of its peak.
 
 Note:
-This is the crystal-radio receiver in three blocks. After Abs there is no 10 kHz content: the copies sit at 20 kHz and its multiples, which fold to 8 and 4 kHz at 48 kHz sampling. The DC Blocker removes the constant 1 before the speaker.
+This is the crystal-radio receiver in three blocks. The low-pass filter removes everything above the message. The DC Blocker removes the constant 1 before the speaker.
 
 ---
 
@@ -110,7 +110,7 @@ This is the crystal-radio receiver in three blocks. After Abs there is no 10 kHz
 - The output lags by half the taps: 57 samples, or 1.2 ms.
 
 Note:
-Open the Low-pass Filter Taps block and show the four settings. The 2.5 kHz tone sits at the passband edge, 0.4 dB down; the folded copies at 4 and 8 kHz are more than 60 dB down. The Delay block's expression, len(lpf_taps)//2, follows the filter if they change it.
+Open the Low-pass Filter Taps block and show the four settings. The 2.5 kHz tone sits just inside the passband. The Delay block's expression, len(lpf_taps)//2, follows the filter if they change it.
 
 ---
 
@@ -118,21 +118,21 @@ Open the Low-pass Filter Taps block and show the four settings. The 2.5 kHz tone
 
 <img src="./img/06-am-simulation/L06-am-overmod.png" alt="Time sinks at m = 1.4: the envelope dips below zero and the detector output folds the dips back up" style="max-height:400px; display:block; margin:0 auto;">
 
-Past $m \approx 1.1$, this message's envelope goes negative and the detector folds it up.
+Push $m$ too far and the envelope goes negative; the detector folds it up.
 
 Note:
-Drag m slowly from 0.5 to 1.4 with the audio on. m at or below 1 is safe for any message; this one bottoms out at minus 0.91, so it holds until about 1.1, and the distortion is obvious by 1.2. Overmodulation also spreads the spectrum into the neighboring channel.
+Drag m slowly from 0.5 to 1.4 with the audio on and ask the class to call out when the traces split and when they hear it. m at or below 1 is safe for any message; this one never quite reaches minus 1, so it holds a little past 1. Overmodulation also spreads the spectrum into the neighboring channel.
 
 ---
 
-## Where the Power Goes
+## Why Keep the Carrier?
 
-- The sidebands get 33% of the power at best, and 6% here.
-- The carrier carries no information.
-- The carrier makes the receiver simple.
+- The carrier is the tallest line on the spectrum.
+- It carries no information.
+- It makes the receiver simple.
 
 Note:
-Two-thirds of the power, at least, goes into a line that carries no information. A line's power goes as its amplitude squared, so they can add up the lines on the frequency sink. AM broadcasting chose the carrier in 1920 because it made the receiver simple and inexpensive.
+Point at the frequency sink: the biggest line is the one that carries nothing. AM broadcasting kept the carrier in 1920 because it made the receiver simple and inexpensive.
 
 ---
 
@@ -173,7 +173,7 @@ Switch Listen To between Coherent and Envelope. The envelope detector recovers t
 
 <img src="./img/06-am-simulation/L06-sc-phi90.png" alt="DSB-SC coherent receiver at 90 degrees LO phase: the output is zero" style="max-height:330px; display:block; margin:0 auto;">
 
-A phase error $\phi$ scales the output by $\cos\phi$; at $90°$ it is zero.
+A phase error makes the output smaller; at $90°$ it is zero.
 
 Note:
 Drag the LO phase from 0 to 90 with the audio on and let the tones fade out. FM stereo sends a 19 kHz pilot so the receiver can rebuild its 38 kHz LO; that is Lesson 7.
@@ -217,7 +217,7 @@ Drag the tuning error to plus and minus 200 Hz with the audio on. On USB with th
 
 ## AM Explorer
 
-- DSB-AM: raise $m$ past about 1.1 and watch the envelope fold
+- DSB-AM: raise $m$ past 1 and watch the envelope fold
 - DSB-SC: the carrier line disappears
 - USB and LSB: half the bandwidth, and the envelope is not the message
 
@@ -267,4 +267,4 @@ An SDR delivers the signal at complex baseband with the carrier at 0 Hz, so the 
 - Lesson 7: real AM and FM with an RTL-SDR
 
 Note:
-The pre-lab asks them to predict every spectral line and the LO-phase and tuning effects before the bench.
+The pre-lab is block settings and spectrum reading; the bench is where they turn the sliders and record what they see.

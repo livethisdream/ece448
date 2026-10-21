@@ -60,36 +60,25 @@ end (\textbf{None} if you did not collaborate).}
 \newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \question \textbf{DSB-AM.} A transmitter sends
-$s(t) = \left[1 + m\cos(2\pi f_m t)\right]\cos(2\pi f_c t)$ with $m = 0.8$.
+$s(t) = \left[1 + m\cos(2\pi f_m t)\right]\cos(2\pi f_c t)$, with $m$ set by a
+slider.
 \begin{parts}
 
-	\begin{minipage}[t]{0.58\linewidth}
-		\part Find the amplitude of each sideband line, and its level in dB relative to
-		the carrier.
+	\part On the flowgraph's frequency sink you drag $m$ from 0.5 up to 1. Say which
+	lines change and which do not.
 		\begin{solution}[0.9in]
-		\eq{ \dfrac{m}{2} = 0.4, \qquad 20\mylog{0.4} = -8.0\db }
+		The four sideband lines grow, because $m$ scales the message before it reaches
+		the carrier. The carrier line at $f_c$ stays the same height, because it comes from
+		the constant 1, which $m$ does not touch.
 		\end{solution}
-	\end{minipage}\hfill%
-	\begin{minipage}[t]{0.37\linewidth}
-		\raggedleft \vspace{12pt}
-		amplitude = \ansbox[1.0in]{$0.4$}
 
-		\vspace{4pt}
-		level = \ansbox[1.0in]{$-8.0\db$}
-	\end{minipage}
-
-	\begin{minipage}[t]{0.58\linewidth}
-		\part A line's power is proportional to its amplitude squared. Add up the lines
-		to find the fraction of the transmitted power in the sidebands.
-		\begin{solution}[1.2in]
-		The carrier line has amplitude 1 and each sideband 0.4:
-		\eq{ \eta = \dfrac{2(0.4)^2}{1^2 + 2(0.4)^2} = \dfrac{0.32}{1.32} = 24\% }
+	\part The carrier is the tallest line on the display. Explain why it carries no
+	information, and why AM broadcasting keeps it anyway.
+		\begin{solution}[1.0in]
+		The carrier line is the same whatever the message is, so it tells the listener
+		nothing. It is there so the receiver can be an envelope detector, a diode and a
+		capacitor, with no oscillator of its own to match.
 		\end{solution}
-	\end{minipage}\hfill%
-	\begin{minipage}[t]{0.37\linewidth}
-		\raggedleft \vspace{12pt}
-		\ansbox[1.0in]{$24\%$}
-	\end{minipage}
 
 	\begin{minipage}[t]{0.58\linewidth}
 		\part A station carries audio up to 5 kHz. Find its bandwidth.
@@ -125,19 +114,16 @@ flowgraph runs at 48 kHz with a 10 kHz carrier and a message up to 2.5 kHz.
 	that works: what must it pass, and what must it stop?
 		\begin{solution}[1.0in]
 		It must pass the envelope, which holds the message up to 2.5 kHz, and stop the
-		copies of the envelope that Abs creates. After Abs there is no 10 kHz content:
-		the copies sit at $2f_c = 20$ kHz and its multiples, which fold to 8 kHz and
-		4 kHz at 48 kHz sampling. A 3 kHz cutoff with a 1 kHz transition passes
-		everything up to about 2.5 kHz, with the 2.5 kHz tone at the passband edge
-		($-0.4$ dB), and stops everything above about 3.5 kHz, including both folded
-		copies.
+		higher-frequency content that Abs leaves behind. A 3 kHz cutoff with a 1 kHz
+		transition passes everything up to about 2.5 kHz, which keeps both tones, and
+		stops everything above about 3.5 kHz.
 		\end{solution}
 
 	\part Explain the Multiply Const of $\pi/2$ after the filter.
 		\begin{solution}[0.8in]
-		The average of a rectified cosine is $2/\pi$ of its peak, so the filter outputs
-		$(2/\pi)\left[1 + m\,x(t)\right]$. Multiplying by $\pi/2$ restores the envelope's
-		level so we can compare it with $1 + m\,x(t)$.
+		Averaging the rectified carrier leaves $2/\pi$ of its peak, so the filter's
+		output is too small by that factor. Multiplying by $\pi/2$ restores the envelope's
+		level so we can compare it with $1 + m\,x(t)$ on the time sink.
 		\end{solution}
 
 	\begin{minipage}[t]{0.58\linewidth}
@@ -168,17 +154,14 @@ flowgraph runs at 48 kHz with a 10 kHz carrier and a message up to 2.5 kHz.
 \question \textbf{Coherent and product detectors.}
 \begin{parts}
 
-	\begin{minipage}[t]{0.58\linewidth}
-		\part A DSB-SC receiver's LO is $60^\circ$ out of phase with the transmitter's
-		carrier. Find the output's amplitude relative to a matched LO, in dB.
+	\part In \texttt{L06-dsb-sc.grc} you drag the LO phase slider from $0^\circ$ to
+	$90^\circ$ with the audio on. Describe what the coherent receiver's trace on the
+	time sink and the audio do.
 		\begin{solution}[0.9in]
-		\eq{ \cos 60^\circ = 0.5, \qquad 20\mylog{0.5} = -6.0\db }
+		The red trace shrinks toward zero as the phase error grows, and the tones get
+		quieter. At $90^\circ$ the trace is flat at zero and the audio is silent. The pitch
+		never changes; only the level does.
 		\end{solution}
-	\end{minipage}\hfill%
-	\begin{minipage}[t]{0.37\linewidth}
-		\raggedleft \vspace{12pt}
-		\ansbox[1.0in]{$-6.0\db$}
-	\end{minipage}
 
 	\part Explain why a DSB-SC receiver on the air needs carrier recovery, and how FM
 	stereo provides it for its DSB-SC subcarrier.

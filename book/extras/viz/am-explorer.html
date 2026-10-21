@@ -49,7 +49,7 @@
   </div>
   <div class="readouts">
     <div class="ro"><span class="k">bandwidth</span><span class="v" id="o-bw">—</span></div>
-    <div class="ro"><span class="k">power in sidebands</span><span class="v" id="o-eff">—</span></div>
+    <div class="ro"><span class="k">carrier line</span><span class="v" id="o-car">—</span></div>
     <div class="ro" id="ro-env"><span class="k">envelope detector</span><span class="v" id="o-env">—</span></div>
   </div>
 </div>
@@ -160,14 +160,12 @@ function drawSpec() {
 
 function update() {
   const m = +mEl.value, W = Math.max(...MSG[msg].map(t => t[0]));
-  const px = MSG[msg].reduce((s, [, a]) => s + a*a/2, 0);          // message power
   document.getElementById('m-v').textContent = m.toFixed(2);
   document.getElementById('m-ctl').classList.toggle('off', mode !== 'am');
   mEl.disabled = mode !== 'am';
   const ssb = mode === 'usb' || mode === 'lsb';
   document.getElementById('o-bw').textContent = (ssb ? W : 2*W).toFixed(1) + ' kHz';
-  const eff = mode === 'am' ? m*m*px / (1 + m*m*px) : 1;
-  document.getElementById('o-eff').textContent = Math.round(100*eff) + '%';
+  document.getElementById('o-car').textContent = mode === 'am' ? 'yes' : 'none';
   // The envelope follows the message only for DSB-AM while 1 + m*x(t) stays
   // positive: m <= 1 for one tone, m <= 1.10 for the two-tone message, whose
   // trough is -0.906. (One-tone SSB has a constant envelope, which carries no

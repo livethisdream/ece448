@@ -28,39 +28,25 @@ L6 Lab · Module 3: Analog Modulation · Dr. Neil Rogers
 
 ::::{frame} From Lesson to Bench
 :::{present}
-- **Pre-Lab:** predict every spectral line and receiver effect.
-- **Bench:** build DSB-AM yourself, then measure DSB-SC and SSB.
-- **Writeup:** compare, and explain the differences.
+- **Pre-Lab:** list the spectral lines and the block settings.
+- **Bench:** build DSB-AM yourself, then turn the sliders on DSB-SC and SSB.
+- **Writeup:** explain what changed and why, in words.
 :::
 
-Lesson 6 showed all three flowgraphs running. Today you build the DSB-AM flowgraph from an empty canvas and measure the other two. The lab packet has three parts, and you turn it in once, complete, before Lesson 7. **Part 1, the Pre-Lab**, is on your own before the period: predict the DSB-AM sideband levels, the lines of each signal, the overmodulation point, and the effect of LO phase and tuning errors. **Part 2** is your own measurements in class. **Part 3, the Writeup**, compares the two.
+Lesson 6 showed all three flowgraphs running. Today you build the DSB-AM flowgraph from an empty canvas and measure the other two. The lab packet has three parts, and you turn it in once, complete, before Lesson 7. **Part 1, the Pre-Lab**, is on your own before the period: list the lines of each signal and the settings for each block you will build. **Part 2** is your own measurements in class: turn each slider and record what you see and hear. **Part 3, the Writeup**, explains what changed and why.
 
 Every flowgraph in this lab is a simulation, so you need only your laptop. Bring headphones; the receivers play through the Audio Sink, and thirty laptops playing tones at once make the room hard to work in.
 ::::
 
 ::::{frame} Part 1: Before the Period
 :::{present}
-- Predict each DSB-AM line's frequency and level at $m = 0.5$.
-- List the DSB-SC, USB, and LSB lines, and find where this message overmodulates.
-- Predict the coherent output against LO phase, and the mistuned USB tones.
+- List the lines of DSB-AM, DSB-SC, USB, and LSB.
+- Fill in the block settings for your DSB-AM build.
 :::
 
-Do the Pre-Lab before you arrive; the bench time assumes you already know what each measurement should show. The three items on the slide are the packet's Question 1, worked from the Lesson 6 page and its practice set. The overmodulation point needs care: the rule $m \le 1$ is safe for any message, but this message never reaches $-1$, so it overmodulates only at a slightly larger $m$. Bring questions to EI before the lab rather than to the lab itself.
+Do the Pre-Lab before you arrive, so the bench time goes to building and watching. Both items on the slide are the packet's Question 1, worked from the Lesson 6 page: the line list is $f_c$ plus and minus each tone, and the settings table is the values you will type into each block. Bring questions to EI before the lab rather than to the lab itself.
 
-Part 2 checks each prediction against a measurement, and the Writeup asks you to explain any that disagree.
-::::
-
-::::{frame} Expected Numbers
-:::{present}
-| Check | Expected |
-| :-- | :-- |
-| DSB-AM sidebands, $m = 0.5$ | $-16.5$ and $-20$ dB |
-| Overmodulation starts | $m \approx 1.1$ |
-| DSB-SC output at $60°$ | half |
-| USB, 200 Hz high | 800 and 2300 Hz |
-:::
-
-These are the predictions of Question 1, worked from Lesson 6. Every one is exact, because a simulated signal has no noise and no hardware in the way. If a measurement disagrees by more than about 1 dB, the flowgraph is built differently from the instructions, most often with a different `m`, a different tone amplitude, or a frequency sink reading taken between FFT bins. The SSB suppression and the tuning error you can hear depend on the Hilbert filter and on your ears, so the packet records them rather than predicting them.
+Part 2 is where you turn the sliders: $m$, the LO phase, and the tuning error. Record what you see on the sinks and hear on the audio.
 ::::
 
 ::::{frame} Part 2: Build DSB-AM
@@ -74,7 +60,7 @@ These are the predictions of Question 1, worked from Lesson 6. Every one is exac
 6. Build the receiver: **Abs**, a **Low-pass Filter Taps** variable `lpf_taps` (cutoff 3000, transition 1000) used by a **Decimating FIR Filter**, and **Multiply Const** `numpy.pi/2` with an **Import** block for `import numpy`.
 7. Add a **Delay** of `len(lpf_taps)//2` on the output of the Add Const, and a two-input float **QT GUI Time Sink** comparing it with the receiver's output.
 8. Finish with a **DC Blocker**, a volume Multiply Const, and an **Audio Sink** at 48 kHz. Do not add a Throttle.
-9. Run it with the volume low. Screenshot the canvas and the time sink for Question 2, and record the line levels.
+9. Run it with the volume low. Screenshot the canvas and the time sink for Question 2, and record the 9 kHz line against the carrier at each $m$ in the table.
 ::::
 
 ::::{frame} Part 2: Overmodulation and DSB-SC
@@ -105,12 +91,12 @@ An Audio Sink that cannot open your sound card stops the flowgraph with an error
 
 ::::{frame} Part 3: After the Lab
 :::{present}
-- Explain any line level more than 1 dB from its prediction.
+- Describe what $m$ does to the sideband lines and the carrier.
 - Explain why an envelope detector recovers DSB-AM but not DSB-SC.
 - Explain why operators tune SSB by ear while DSB-SC needs carrier recovery.
 :::
 
-The Writeup is three questions. The first checks your DSB-AM measurements against the sideband amplitudes of Lesson 6. The second connects the overmodulation and DSB-SC envelope screenshots: in both, the detector sees the absolute value of something that goes negative. The third compares your LO phase table with your tuning-error measurement, which is the reason the two receivers are built differently on the air.
+The Writeup is three questions. The first explains your $m$ table: which lines moved and which did not. The second connects the overmodulation and DSB-SC envelope screenshots: in both, the detector sees the absolute value of something that goes negative. The third compares your LO phase table with your tuning-error measurement, which is the reason the two receivers are built differently on the air.
 ::::
 
 ::::{frame} Lab Packet
