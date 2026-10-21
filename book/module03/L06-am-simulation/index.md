@@ -209,7 +209,7 @@ Here both oscillators come from the same `fc` variable, so they match. A real DS
 
 The two sidebands are mirror images, so either one alone carries the whole message. **Single sideband** (SSB) sends one: the **upper sideband** (USB) or the **lower sideband** (LSB). It has no carrier and needs half the bandwidth, which is why it is the standard for long-range HF voice.
 
-Open and run `L06-ssb.grc` and switch its Sideband menu; the figure shows both settings. With USB selected, the lines at 11 and 12.5 kHz remain and the lower pair is about 60 dB down. With LSB selected, only the lines at 9 and 7.5 kHz remain. Note that the LSB reverses the message's spectrum: the higher tone is the line farther below the carrier.
+Open and run `L06-ssb.grc` and switch its Sideband menu; the figure shows both settings. With USB selected, the lines at 11 and 12.5 kHz remain and the lower pair sits far below the kept lines. With LSB selected, only the lines at 9 and 7.5 kHz remain. Note that the LSB reverses the message's spectrum: the higher tone is the line farther below the carrier.
 ::::
 
 ::::{frame} The Phasing Method
@@ -224,7 +224,7 @@ $$s(t) = \mathrm{Re}\left\{z(t)\,e^{\pm j2\pi f_c t}\right\}$$
 
 The flowgraph makes SSB by the **phasing method**, as in the GNU Radio wiki's SSB transceiver example. The **Hilbert** block turns the message into a complex signal with only positive frequencies, like Lesson 5's complex tone that turned in one direction.
 
-A Multiply by a complex Signal Source at $+f_c$ moves those frequencies to just above $f_c$, and Complex To Real gives the USB. The Sideband menu just flips the source's frequency to $-f_c$ for LSB. The Hilbert block is a 129-tap filter, and its imperfection is why the unwanted sideband is 60 dB down rather than gone.
+A Multiply by a complex Signal Source at $+f_c$ moves those frequencies to just above $f_c$, and Complex To Real gives the USB. The Sideband menu just flips the source's frequency to $-f_c$ for LSB. The Hilbert block is a 129-tap filter, and its imperfection is why the unwanted sideband sits far below the kept lines rather than gone.
 ::::
 
 ::::{frame} Receiving SSB
@@ -247,7 +247,7 @@ Listen while you drag. The pitch shifts, but the audio never fades, and a voice 
 :class: viz-frame
 
 :::{depth}
-The left panel plots 2 ms of the signal, its envelope in red, and the message in dashed amber; the right panel shows the spectral lines around the 10 kHz carrier. Start with DSB-AM at $m = 0.5$ and notice the envelope follow the message. Raise $m$ past 1 and watch the envelope fold; with two tones it takes a little more. Switch to DSB-SC and the carrier line disappears, while the envelope becomes $\vert x(t)\vert$. Switch to USB or LSB and notice the bandwidth halve, and that the envelope of the two-tone SSB signal is not the message at all, which is why SSB needs a product detector.
+The left panel plots 2 ms of the signal, its envelope in red, and the message in dashed amber; the right panel shows the spectral lines around the 10 kHz carrier. It starts with one tone and DSB-AM at $m = 0.5$; notice the envelope follow the message. Raise $m$ past 1 and watch the envelope fold. Then switch to two tones, the flowgraphs' message, and drag $m$ again. Switch to DSB-SC and the carrier line disappears, while the envelope becomes $\vert x(t)\vert$. Switch to USB or LSB and notice the bandwidth halve, and that the envelope of the two-tone SSB signal is not the message at all, which is why SSB needs a product detector.
 :::
 
 :::{present}

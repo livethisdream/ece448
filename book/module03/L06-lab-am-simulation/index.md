@@ -28,12 +28,12 @@ L6 Lab · Module 3: Analog Modulation · Dr. Neil Rogers
 
 ::::{frame} From Lesson to Bench
 :::{present}
-- **Pre-Lab:** list the spectral lines and the block settings.
+- **Pre-Lab:** list the spectral lines and the message settings for the lab's own message.
 - **Bench:** build DSB-AM yourself, then turn the sliders on DSB-SC and SSB.
 - **Writeup:** explain what changed and why, in words.
 :::
 
-Lesson 6 showed all three flowgraphs running. Today you build the DSB-AM flowgraph from an empty canvas and measure the other two. The lab packet has three parts, and you turn it in once, complete, before Lesson 7. **Part 1, the Pre-Lab**, is on your own before the period: list the lines of each signal and the settings for each block you will build. **Part 2** is your own measurements in class: turn each slider and record what you see and hear. **Part 3, the Writeup**, explains what changed and why.
+Lesson 6 showed all three flowgraphs running. Today you build the DSB-AM flowgraph from an empty canvas and measure the other two. The lab packet has three parts, and you turn it in once, complete, before Lesson 7. The lab uses its own message, not the Lesson 6 one, so your readings are your own. **Part 1, the Pre-Lab**, is on your own before the period: list the lines of each signal and the message settings you will type in. **Part 2** is your own measurements in class: turn each slider and record what you see and hear. **Part 3, the Writeup**, explains what changed and why.
 
 Every flowgraph in this lab is a simulation, so you need only your laptop. Bring headphones; the receivers play through the Audio Sink, and thirty laptops playing tones at once make the room hard to work in.
 ::::
@@ -41,10 +41,10 @@ Every flowgraph in this lab is a simulation, so you need only your laptop. Bring
 ::::{frame} Part 1: Before the Period
 :::{present}
 - List the lines of DSB-AM, DSB-SC, USB, and LSB.
-- Fill in the block settings for your DSB-AM build.
+- Fill in the message Signal Source settings.
 :::
 
-Do the Pre-Lab before you arrive, so the bench time goes to building and watching. Both items on the slide are the packet's Question 1, worked from the Lesson 6 page: the line list is $f_c$ plus and minus each tone, and the settings table is the values you will type into each block. Bring questions to EI before the lab rather than to the lab itself.
+Do the Pre-Lab before you arrive, so the bench time goes to building and watching. Both items on the slide are the packet's Question 1, worked for the lab's message, which the packet describes: the line list is $f_c$ plus and minus each tone, and the settings table is what you will type into the two message Signal Sources, in your build and in each downloaded flowgraph. Bring questions to EI before the lab rather than to the lab itself.
 
 Part 2 is where you turn the sliders: $m$, the LO phase, and the tuning error. Record what you see on the sinks and hear on the audio.
 ::::
@@ -55,28 +55,28 @@ Part 2 is where you turn the sliders: $m$, the LO phase, and the tuning error. R
 1. Start GRC and choose File, New, QT GUI. Do not open `L06-dsb-am.grc`; build it yourself.
 2. Set `samp_rate` to 48000 and add a Variable `fc` of 10000.
 3. Add a **QT GUI Range** with ID `m`, from 0 to 1.5 in steps of 0.05, default 0.5.
-4. Make the message: two float **Signal Sources**, cosine, 1000 Hz at amplitude 0.6 and 2500 Hz at 0.4, into an **Add**.
+4. Make the message: two float **Signal Sources**, cosine, with the settings from your Question 1(c), into an **Add**.
 5. Build the transmitter: **Multiply Const** `m`, **Add Const** 1, and a **Multiply** with a third Signal Source at `fc`. Send it to a float **QT GUI Frequency Sink**.
 6. Build the receiver: **Abs**, a **Low-pass Filter Taps** variable `lpf_taps` (cutoff 3000, transition 1000) used by a **Decimating FIR Filter**, and **Multiply Const** `numpy.pi/2` with an **Import** block for `import numpy`.
 7. Add a **Delay** of `len(lpf_taps)//2` on the output of the Add Const, and a two-input float **QT GUI Time Sink** comparing it with the receiver's output.
 8. Finish with a **DC Blocker**, a volume Multiply Const, and an **Audio Sink** at 48 kHz. Do not add a Throttle.
-9. Run it with the volume low. Screenshot the canvas and the time sink for Question 2, and record the 9 kHz line against the carrier at each $m$ in the table.
+9. Run it with the volume low. Screenshot the canvas and the time sink for Question 2, and record the lower tone's upper sideband line against the carrier at each $m$ in the table.
 ::::
 
 ::::{frame} Part 2: Overmodulation and DSB-SC
 :class: read-only
 
 1. With your DSB-AM flowgraph running and the audio on, raise `m` by 0.05 at a time. Record where the detector output first departs from the envelope, and screenshot $m = 1.4$, for Question 3.
-2. Close it, then open and run `L06-dsb-sc.grc`. Confirm the four lines and the empty 10 kHz for Question 4(a).
-3. Set the LO phase to 0, 45, 60, and 90 degrees. Read the coherent receiver's peak off the time sink at each, for Question 4(b).
+2. Close it, then open `L06-dsb-sc.grc`, set its two message Signal Sources with the settings from your Question 1(c), and run it. Confirm the four lines and the empty carrier frequency for Question 4(a).
+3. Set the LO phase to each value in the packet's table. Read the coherent receiver's peak off the time sink at each, for Question 4(b).
 4. Return the LO phase to 0. Switch Listen To between Coherent and Envelope and describe what you hear for Question 4(c).
 ::::
 
 ::::{frame} Part 2: SSB
 :class: read-only
 
-1. Open and run `L06-ssb.grc`. Read the kept and suppressed lines for USB and for LSB off the frequency sink for Question 5(a).
-2. Select USB and set the tuning error to $+200$ Hz. Screenshot the time sink and describe the audio for Question 5(b).
+1. Open `L06-ssb.grc`, set its two message Signal Sources with the settings from your Question 1(c), and run it. Read the kept and suppressed lines for USB and for LSB off the frequency sink for Question 5(a).
+2. Select LSB and set the tuning error to the value in Question 5(b). Screenshot the time sink and describe the audio for Question 5(b).
 3. Starting from 0, move the tuning error in steps of 10 Hz in each direction until the tones no longer sound like the original. Record the largest error for Question 5(c).
 ::::
 

@@ -176,7 +176,7 @@ Drag the LO phase from 0 to 90 with the audio on and let the tones fade out. FM 
 One sideband carries the whole message, in half the bandwidth.
 
 Note:
-Open L06-ssb.grc and switch the Sideband menu. Point out that the LSB reverses the spectrum: the higher tone is the line farther below the carrier. The suppressed sideband is about 60 dB down.
+Open L06-ssb.grc and switch the Sideband menu. Point out that the LSB reverses the spectrum: the higher tone is the line farther below the carrier. The suppressed sideband sits far below the kept lines.
 
 ---
 

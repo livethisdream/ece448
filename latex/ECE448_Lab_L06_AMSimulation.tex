@@ -129,16 +129,18 @@ and you need only your laptop and its speakers or headphones. Start with the vol
 low.
 
 The flowgraphs are on the L6 lesson page: \texttt{L06-dsb-am.grc},
-\texttt{L06-dsb-sc.grc}, and \texttt{L06-ssb.grc}. All three use the same message,
-$x(t) = 0.6\cos(2\pi\cdot 1000\,t) + 0.4\cos(2\pi\cdot 2500\,t)$, on a carrier at
-$f_c = 10$ kHz, sampled at 48 kHz.
+\texttt{L06-dsb-sc.grc}, and \texttt{L06-ssb.grc}. They run the Lesson 6 message on a
+carrier at $f_c = 10$ kHz, sampled at 48 kHz. \textbf{This lab uses its own message}:
+two cosine tones of equal amplitude, at 1.5 kHz and 2.25 kHz, scaled so that their
+sum peaks at exactly 1, on the same 10 kHz carrier. You set it in your own build and
+in each downloaded flowgraph.
 
 \begin{questions}
 
 \fullwidth{\large\textbf{Part 1: Pre-Lab} \normalsize(individual, before the lab period)}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\question \textbf{Getting ready.} Work these from the L6 lesson page before you build.
+\question \textbf{Getting ready.} Work these for the lab's message before you build.
 
 \begin{parts}
 
@@ -149,7 +151,7 @@ $f_c = 10$ kHz, sampled at 48 kHz.
 	\renewcommand{\arraystretch}{1.25}
 	\begin{tabular}{| l | K{0.68in} | K{0.68in} | K{0.68in} | K{0.68in} | K{0.68in} |}
 	\hline
-	Line (kHz) & \kv{$7.5$} & \kv{$9$} & \kv{$10$} & \kv{$11$} & \kv{$12.5$} \\\hline
+	Line (kHz) & \kv{$7.75$} & \kv{$8.5$} & \kv{$10$} & \kv{$11.5$} & \kv{$12.25$} \\\hline
 	\end{tabular}
 	\end{center}
 
@@ -160,31 +162,29 @@ $f_c = 10$ kHz, sampled at 48 kHz.
 
 	\part List the lines you expect for DSB-SC, USB, and LSB.
 		\begin{solution}[0.7in]
-		DSB-SC: 7.5, 9, 11, and 12.5 kHz, with no line at 10 kHz. USB: 11 and 12.5 kHz.
-		LSB: 9 and 7.5 kHz.
+		DSB-SC: 7.75, 8.5, 11.5, and 12.25 kHz, with no line at 10 kHz. USB: 11.5 and
+		12.25 kHz. LSB: 8.5 and 7.75 kHz.
 		\end{solution}
 
 	\newpage
-	\part Fill in the settings you will type into each block of your DSB-AM build.
+	\part Fill in the settings you will type into the two message Signal Sources, in
+	your build and in each downloaded flowgraph.
 
 	\begin{center}
 	\renewcommand{\arraystretch}{1.25}
 	\begin{tabular}{| l | l | K{1.6in} |}
 	\hline
 	Block & Setting & Value \\\hline
-	Message Signal Source 1 & Frequency, Amplitude & \kvs{1000, 0.6} \\\hline
-	Message Signal Source 2 & Frequency, Amplitude & \kvs{2500, 0.4} \\\hline
-	Carrier Signal Source & Frequency & \kvs{\texttt{fc} (10000)} \\\hline
-	Add Const & Constant & \kvs{1} \\\hline
-	Multiply Const after the filter & Constant & \kvs{\texttt{numpy.pi/2}} \\\hline
-	Delay & Delay & \kvs{\texttt{len(lpf\_taps)//2}} \\\hline
+	Message Signal Source 1 & Frequency (Hz) & \kvs{1500} \\\hline
+	Message Signal Source 1 & Amplitude & \kvs{0.5} \\\hline
+	Message Signal Source 2 & Frequency (Hz) & \kvs{2250} \\\hline
+	Message Signal Source 2 & Amplitude & \kvs{0.5} \\\hline
 	\end{tabular}
 	\end{center}
 
 		\begin{solution}[0.6in]
-		The Add Const supplies the carrier line. The $\pi/2$ restores the level the
-		envelope detector's averaging loses, and the Delay matches the low-pass filter's
-		lag so the time sink's traces line up.
+		Equal amplitudes that sum to a peak of 1 are 0.5 each. Both tones sit below the
+		low-pass filter's 3 kHz cutoff, so the receivers pass them.
 		\end{solution}
 
 \end{parts}
@@ -195,8 +195,9 @@ $f_c = 10$ kHz, sampled at 48 kHz.
 
 \question \textbf{Build the DSB-AM flowgraph.} Start GRC with an empty canvas. Do not
 open \texttt{L06-dsb-am.grc}: build the transmitter and the envelope detector
-yourself, with a \texttt{samp\_rate} of 48000, an \texttt{fc} of 10000, a QT GUI Range
-named \texttt{m} from 0 to 1.5, a frequency sink, a time sink comparing the detector
+yourself, with a \texttt{samp\_rate} of 48000, an \texttt{fc} of 10000, the message
+settings from Question 1(c), a QT GUI Range named \texttt{m} from 0 to 1.5, a frequency
+sink, a time sink comparing the detector
 output with the delayed envelope, and an Audio Sink.
 
 \begin{parts}
@@ -210,21 +211,21 @@ output with the delayed envelope, and an Audio Sink.
 		\end{solution}
 
 	\part Run it and confirm the lines you listed in Question 1(a). Then set $m$ to each
-	value below and read how far the 9 kHz line sits below the carrier on the frequency
-	sink.
+	value below and read how far the line the 1.5 kHz tone makes above the carrier sits
+	below the carrier on the frequency sink.
 
 	\begin{center}
 	\renewcommand{\arraystretch}{1.25}
 	\begin{tabular}{| l | K{0.9in} | K{0.9in} | K{0.9in} |}
 	\hline
 	$m$ & $0.25$ & $0.5$ & $1.0$ \\\hline
-	9 kHz line below carrier (dB) & \kv{$\approx 22$} & \kv{$\approx 16$} & \kv{$\approx 10$} \\\hline
+	Line below carrier (dB) & \kv{$\approx 24$} & \kv{$\approx 18$} & \kv{$\approx 12$} \\\hline
 	\end{tabular}
 	\end{center}
 
 		\begin{solution}[0.5in]
-		The 9 kHz line rose about 6 dB from $m = 0.25$ to $0.5$, and about 6 dB again to
-		$1.0$. The carrier line did not move.
+		The 11.5 kHz line rose about 6 dB from $m = 0.25$ to $0.5$, and about 6 dB again
+		to $1.0$. The carrier line did not move.
 		\end{solution}
 
 	\part Paste a screenshot of the time sink that compares the detector output with
@@ -246,13 +247,13 @@ output with the delayed envelope, and an Audio Sink.
 		\part Raise $m$ in steps of 0.05 and record the first value at which the detector
 		output visibly departs from the envelope.
 		\begin{solution}[0.7in]
-		About 1.10 to 1.15: a little above 1, because this message never quite reaches
-		$-1$.
+		About 1.25. This message's deepest trough is about $-0.82$, well short of $-1$,
+		so the envelope stays positive until $m$ is near $1/0.82 \approx 1.22$.
 		\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
 		\raggedleft \vspace{12pt}
-		$m = $ \ansbox[1.0in]{$\approx 1.15$}
+		$m = $ \ansbox[1.0in]{$\approx 1.25$}
 	\end{minipage}
 
 	\part Paste a screenshot at $m = 1.4$ and describe how the audio changes between
@@ -265,32 +266,34 @@ output with the delayed envelope, and an Audio Sink.
 \end{parts}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\question \textbf{DSB-SC.} Open and run \texttt{L06-dsb-sc.grc}.
+\question \textbf{DSB-SC.} Open \texttt{L06-dsb-sc.grc}, set its two message Signal
+Sources to your Question 1(c) settings, and run it.
 
 \begin{parts}
 
 	\part Confirm the lines you listed in Question 1(b), and state the level of the
-	frequency sink at 10 kHz.
+	frequency sink at the carrier frequency.
 		\begin{solution}[0.6in]
-		Four lines at 7.5, 9, 11, and 12.5 kHz, and only the noise floor of the plot,
-		about $-100$ dB, at 10 kHz.
+		Four lines at 7.75, 8.5, 11.5, and 12.25 kHz, and only the noise floor of the
+		plot, about $-100$ dB, at 10 kHz.
 		\end{solution}
 
-	\part Set the LO phase to each value, read the coherent receiver's peak output off
-	the time sink, and listen to the audio at each.
+	\part With the LO phase at $0^\circ$ the coherent receiver's peak is 1.0. Set the LO
+	phase to each value below, read the peak off the time sink, and listen to the audio
+	at each.
 
 	\begin{center}
 	\renewcommand{\arraystretch}{1.25}
 	\begin{tabular}{| l | K{0.68in} | K{0.68in} | K{0.68in} | K{0.68in} |}
 	\hline
-	LO phase & $0^\circ$ & $45^\circ$ & $60^\circ$ & $90^\circ$ \\\hline
-	Peak output & \kv{$1.0$} & \kv{$0.71$} & \kv{$0.5$} & \kv{$0$} \\\hline
+	LO phase & $30^\circ$ & $45^\circ$ & $60^\circ$ & $75^\circ$ \\\hline
+	Peak output & \kv{$0.87$} & \kv{$0.71$} & \kv{$0.5$} & \kv{$0.26$} \\\hline
 	\end{tabular}
 	\end{center}
 
 		\begin{solution}[0.4in]
-		The peak falls as the phase error grows and reaches zero at $90^\circ$, where the
-		audio goes silent. The pitch never changes.
+		The peak falls as the phase error grows, and the audio gets quieter. By $75^\circ$
+		it is about a quarter of its matched value. The pitch never changes.
 		\end{solution}
 
 	\part Switch Listen To from Coherent to Envelope, and describe the difference.
@@ -303,7 +306,8 @@ output with the delayed envelope, and an Audio Sink.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newpage
-\question \textbf{SSB.} Open and run \texttt{L06-ssb.grc}.
+\question \textbf{SSB.} Open \texttt{L06-ssb.grc}, set its two message Signal Sources
+to your Question 1(c) settings, and run it.
 
 \begin{parts}
 
@@ -315,21 +319,21 @@ output with the delayed envelope, and an Audio Sink.
 	\begin{tabular}{| l | K{1.6in} | K{1.6in} |}
 	\hline
 	Sideband & Lines (kHz) & Suppression (dB) \\\hline
-	USB & \kv{$11$, $12.5$} & \kv{$\approx 60$} \\\hline
-	LSB & \kv{$9$, $7.5$} & \kv{$\approx 60$} \\\hline
+	USB & \kv{$11.5$, $12.25$} & \kv{$\approx 60$} \\\hline
+	LSB & \kv{$8.5$, $7.75$} & \kv{$\approx 60$} \\\hline
 	\end{tabular}
 	\end{center}
 
 		\begin{solution}[0.5in]
-		The suppressed lines sit near $-80$ dB against about $-20$ dB for the kept ones.
-		The 129-tap Hilbert filter sets the suppression.
+		The suppressed lines sit roughly 60 dB below the kept ones; read off the plot, so
+		expect a few dB of spread. The 129-tap Hilbert filter sets the suppression.
 		\end{solution}
 
-	\part With USB selected, set the tuning error to $+200$ Hz. Paste the time sink and
+	\part With LSB selected, set the tuning error to $+120$ Hz. Paste the time sink and
 	describe the audio.
 		\begin{solution}[1.4in]
-		The output drifts against the delayed message because each tone has moved down
-		by 200 Hz, to 800 and 2300 Hz. The audio is lower pitched but never fades.
+		The output drifts against the delayed message because each tone has moved up by
+		120 Hz, to 1620 and 2370 Hz. The audio is higher pitched but never fades.
 		\end{solution}
 
 	\part Find the largest tuning error, either sign, at which you cannot hear any
@@ -375,8 +379,8 @@ output with the delayed envelope, and an Audio Sink.
 		A small frequency error in SSB moves every tone by the same amount. A listener
 		notices the shift at a few tens of hertz, as in Question 5(c), but speech stays
 		intelligible out to an error of about 100 Hz. Question 4(b) shows the DSB-SC output
-		shrinking to zero at $90^\circ$; a frequency error sweeps through those phases, so
-		the audio fades in and out. A listener tolerates the SSB pitch shift better, so an
+		shrinking as the phase error grows, toward zero at $90^\circ$; a frequency error
+		sweeps through every phase, so the audio fades in and out. A listener tolerates the SSB pitch shift better, so an
 		SSB operator can tune by ear, while DSB-SC needs the LO locked to the carrier.
 		\end{solution}
 
