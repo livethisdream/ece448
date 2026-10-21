@@ -35,7 +35,7 @@ L7 Lab · Module 3: Analog Modulation · Dr. Neil Rogers
 
 Lesson 7 ran every receiver on simulated test files. Today you build the WBFM receiver yourself, then run the receivers on your own L5 capture and on the air. The lab packet has three parts, and you turn it in once, complete, before Lesson 8. **Part 1, the Pre-Lab**, is on your own before the period: the receiver settings for the test file, your capture, and a local ATIS. **Part 2** is your own measurements and observations in class. **Part 3, the Writeup**, explains them.
 
-Bring your RTL-SDR, its antenna, your `fm_capture.cfile` from the L5 Lab, and headphones, and have GQRX installed (on Windows, SDR++ or SDR# in its place).
+Bring your RTL-SDR, its antenna, your `fm_capture.cfile` from the L5 Lab, and headphones, and check that GQRX starts. GQRX comes with radioconda; if it does not start on your laptop, SDR++ has the same controls.
 ::::
 
 ::::{frame} Part 1: Before the Period

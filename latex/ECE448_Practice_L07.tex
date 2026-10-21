@@ -172,7 +172,7 @@ meters show each receiver's output SNR.
 
 	\part At 30~dB Input SNR and 25~kHz deviation, the meters read 29.5~dB for AM and
 	48.4~dB for FM. Say which output is cleaner and by about how much, and explain in
-	words how FM wins although its 60~kHz channel lets in six times the noise.
+	words how FM wins although its wider channel lets in more noise.
 		\begin{solution}[1.1in]
 		FM, by about 19 dB. The demodulator's output follows how far the frequency
 		swings, and a 25 kHz swing is large next to the small jitter that the noise adds
@@ -184,7 +184,7 @@ meters show each receiver's output SNR.
 		\begin{solution}[1.1in]
 		The tone stays clean at first. Below about 15 dB, clicks start and get more
 		frequent, and the FM meter falls quickly; near 10 dB it reads about the same as
-		AM's, about 9 dB. That collapse is the FM threshold. AM only hisses more as the
+		AM's, about 9 dB. That collapse is the point where FM breaks into clicks. AM only hisses more as the
 		slider comes down.
 		\end{solution}
 
@@ -198,13 +198,14 @@ meters show each receiver's output SNR.
 		strong.
 		\end{solution}
 
-	\part A link to a distant receiver runs at 10~dB Input SNR. There the meters read
-	9.2~dB for AM and 14.2, 9.3, and 6.4~dB for FM at 5, 25, and 50~kHz of deviation.
-	Choose AM or one of the FM deviations, and explain the choice in words.
-		\begin{solution}[1.0in]
-		FM at 5 kHz, the highest reading. Its narrow channel lets in the least noise, so it
-		has not yet broken into clicks. The wider deviations would be cleaner on a strong
-		link, but here they have broken up and are no better than AM, or worse.
+	\part Set Input SNR to 10~dB and listen to the FM output at 5, 25, and 50~kHz
+	deviation. Say which sounds cleanest and why, in words. Then say which you would
+	choose for a weak link to a distant receiver.
+		\begin{solution}[1.1in]
+		5 kHz sounds cleanest: a steady tone under some hiss, while 25 kHz crackles with
+		clicks and 50 kHz is mostly clicks. The narrow channel lets in the least noise, so
+		at 5 kHz FM has not yet broken up. The wider deviations would sound cleaner on a
+		strong link, but on a weak one the narrow deviation is the better choice.
 		\end{solution}
 
 \end{parts}

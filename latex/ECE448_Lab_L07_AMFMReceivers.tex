@@ -282,7 +282,8 @@ your own flowgraph.
 	\part Open GQRX, choose the RTL-SDR, and click a strong station between 88 and
 	108~MHz. Set the mode to WFM (stereo), open the RDS panel, and turn decoding on.
 	Record the station's frequency and the name GQRX shows, and whether the stereo
-	indicator lights. Then close GQRX. (On Windows, use SDR++ or SDR\# the same way.)
+	indicator lights. Then close GQRX. (GQRX comes with radioconda; if it does not start on your laptop,
+	SDR++ has the same controls.)
 
 	\begin{center}
 	\renewcommand{\arraystretch}{1.25}
@@ -379,7 +380,7 @@ and enter the settings of Question 1(c).
 	\part Set the deviation to 25~kHz and Input SNR to 30~dB. Record the two output
 	SNR meters, and say which output looks cleaner on the frequency sink.
 		\begin{solution}[0.8in]
-		AM reads about 29.5 dB and FM about 48.5 dB. FM's noise floor sits about 20 dB
+		AM reads about 29.5 dB and FM about 48.4 dB. FM's noise floor sits about 20 dB
 		below AM's, so FM is cleaner, although its wider channel lets in more noise.
 		\end{solution}
 
@@ -395,7 +396,7 @@ and enter the settings of Question 1(c).
 	\hline
 	FM deviation & Clicks begin at (dB) & FM meter at 30 dB \\\hline
 	5 kHz & \kv{about 10} & \kv{$35.5$} \\\hline
-	25 kHz & \kv{about 15 to 18} & \kv{$48.5$} \\\hline
+	25 kHz & \kv{about 15 to 18} & \kv{$48.4$} \\\hline
 	50 kHz & \kv{about 20 to 23} & \kv{$53.2$} \\\hline
 	\end{tabular}
 	\end{center}
@@ -403,8 +404,8 @@ and enter the settings of Question 1(c).
 		\begin{solution}[1.0in]
 		Values vary with each listener's ear by a few dB. At 25 kHz the tone is clean at
 		20 dB; clicks begin near 15 dB and become frequent at 10 dB, where the tone sounds
-		rough and the FM meter has dropped to about the AM meter's 9 dB. The clicks are the
-		FM threshold. AM, in Question 5(b), only grew steadily noisier.
+		rough and the FM meter has dropped to about the AM meter's 9 dB. The clicks mark the
+		point where FM breaks up. AM, in Question 5(b), only grew steadily noisier.
 		\end{solution}
 
 \end{parts}

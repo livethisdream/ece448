@@ -118,7 +118,7 @@ FM noise at the demodulator output grows with distance from the carrier, so the 
 - It removes the high-frequency noise along with the boost.
 
 Note:
-US pre-emphasis boosts 15 kHz by about 17 dB; the de-emphasis corner is 2.1 kHz. Europe uses 50 microseconds.
+The transmitter boosts the treble; the receiver cuts it back, and the noise with it. Europe uses 50 microseconds.
 
 ---
 
@@ -171,7 +171,7 @@ Aircraft and ATIS are AM between 118 and 137 MHz. After Complex to Mag it is the
 Same tone, power, and noise: at 30 dB in, the AM meter reads about 29 dB and the FM meter about 48 dB.
 
 Note:
-L07-am-vs-fm.grc sends AM at m = 1 and FM at 25 kHz deviation with the same transmitted power and the same noise. The FM receiver's wider channel lets in six times the noise, and its output is still the cleaner one; FM's noise floor sits about 20 dB under AM's. Drag the deviation up and FM's meter climbs; drag it to 5 kHz and most of the advantage goes away.
+L07-am-vs-fm.grc sends AM at m = 1 and FM at 25 kHz deviation with the same transmitted power and the same noise. The FM receiver's wider channel lets in more noise, and its output is still the cleaner one; FM's noise floor sits about 20 dB under AM's. Drag the deviation up and FM's meter climbs; drag it to 5 kHz and most of the advantage goes away.
 
 ---
 
@@ -183,7 +183,7 @@ L07-am-vs-fm.grc sends AM at m = 1 and FM at 25 kHz deviation with the same tran
 - AM only gets steadily noisier.
 
 Note:
-Drag Input SNR down with the speaker on FM and let them hear the clicks start below about 15 dB. That collapse is the FM threshold. Repeat at 5 kHz and 50 kHz deviation: wider deviation sounds cleaner when the signal is strong and breaks up sooner as the noise rises. Near threshold the live meters wander by about 1 dB.
+Drag Input SNR down with the speaker on FM and let them hear the clicks start below about 15 dB. That is the point where FM breaks into clicks. Repeat at 5 kHz and 50 kHz deviation: wider deviation sounds cleaner when the signal is strong and breaks up sooner as the noise rises. Near that point the live meters wander by about 1 dB.
 
 ---
 
@@ -215,11 +215,11 @@ Broadcast FM is strong and has a 200 kHz channel. Aircraft use AM: a weak AM sig
 
 - SDR Flex: select an FM signal, demodulate it.
 - Live: tune the FM band in GQRX; choose **WFM (stereo)**.
-- Turn on RDS and read the station name.
-- Note the frequency for the GRC receiver.
+- Turn on RDS, read the name, and note the frequency.
+- Then try **NFM** on NOAA weather, 162.400–162.550 MHz.
 
 Note:
-Open SDR Flex (livethisdream.github.io/sdr-flex) on an example capture and demodulate an FM signal; RDS there needs the full server. Then demo live: choose the RTL-SDR in GQRX, click a strong station, set WFM (stereo), open the RDS panel and enable decoding. Write the frequency and name on the board, close GQRX (one program per RTL-SDR; on Windows use SDR++ or SDR# instead), then run L07-rds-rx.grc on that station and check that the names match.
+Open SDR Flex (livethisdream.github.io/sdr-flex) on an example capture and demodulate an FM signal; RDS there needs the full server. Then demo live: choose the RTL-SDR in GQRX, click a strong station, set WFM (stereo), open the RDS panel and enable decoding. Write the frequency and name on the board, close GQRX (one program per RTL-SDR), then run L07-rds-rx.grc on that station and check that the names match. Before closing, switch GQRX to NFM on a NOAA weather channel (162.400 to 162.550 MHz, receive only): about 5 kHz deviation and a channel tens of kHz wide, against 75 kHz and 200 kHz for broadcast. GQRX comes with radioconda; if it does not start on a laptop, SDR++ has the same controls.
 
 ---
 
@@ -240,4 +240,4 @@ ATIS frequencies are in the FAA Chart Supplement and on sectional charts. RDS ne
 - Lesson 8 sends bits as FSK, which is FM with a two-valued message.
 
 Note:
-The pre-lab asks for the receiver's shift and rates, the demodulator gain, and the ATIS receiver settings. At the bench they turn the noise up on AM and FM and record where the clicks start. The bench starts with building the WBFM receiver from an empty canvas.
+The pre-lab asks for the receiver's shift and rates, the demodulator gain, and the ATIS receiver settings. At the bench they turn the noise up on AM and FM and record where the clicks start. The bench starts with building the WBFM receiver from an empty canvas. Extension, from the 2025 course: a dual FM receiver that plays two stations from one capture.

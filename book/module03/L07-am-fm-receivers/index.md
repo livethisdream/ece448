@@ -153,7 +153,7 @@ The frequency sink above is the multiplex of the test station. It has the two me
 
 A **Decimating FIR Filter** keeps the mono band, 0 to 15 kHz with a 3 kHz transition, and decimates by 5 to the sound card's 48 kHz. Every other part of the multiplex is above 15 kHz, so this one filter removes the pilot, the stereo signal, and RDS.
 
-The transmitter boosts the treble of its audio before modulating, a step called **pre-emphasis**, by up to 17 dB at 15 kHz in the US. The **FM Deemphasis** block applies the opposite filter, set by a 75 μs time constant with its corner at 2.1 kHz, which restores the original audio balance. Because the noise rises with frequency, cutting the treble at the receiver removes noise where the noise is strongest. Europe uses 50 μs, so a European station received with the US setting sounds slightly dull, about 3 dB short at 15 kHz, but is otherwise correct.
+The transmitter boosts the treble of its audio before modulating, a step called **pre-emphasis**. The **FM Deemphasis** block applies the opposite filter, set by a 75 μs time constant with its corner at 2.1 kHz, which restores the original audio balance. Because the noise rises with frequency, cutting the treble at the receiver removes noise where the noise is strongest. Europe uses 50 μs, so a European station received with the US setting sounds slightly dull but is otherwise correct.
 ::::
 
 ::::{frame} Running the Receiver
@@ -248,7 +248,7 @@ After the filter, the AM station is a complex signal with its carrier at 0 Hz, a
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
 :::
 
-At 30 dB the FM output is clearly the cleaner one, even though the FM receiver's wider channel lets in six times as much noise. The spectrum shows it: FM's noise floor sits about 20 dB under AM's. Drag the deviation up and FM's meter climbs further; drag it down to 5 kHz and most of the advantage goes away. FM buys a cleaner output with bandwidth.
+At 30 dB the FM output is clearly the cleaner one, even though the FM receiver's wider channel lets in more noise. The spectrum shows it: FM's noise floor sits about 20 dB under AM's. Drag the deviation up and FM's meter climbs further; drag it down to 5 kHz and most of the advantage goes away. FM buys a cleaner output with bandwidth.
 ::::
 
 ::::{frame} Turning the Noise Up
@@ -263,7 +263,7 @@ At 30 dB the FM output is clearly the cleaner one, even though the FM receiver's
 - AM only gets steadily noisier.
 :::
 
-Now drag the Input SNR slider down with the speaker on FM. The FM output stays clean longer than AM's does, and then, below about 15 dB, it starts to crackle with clicks and its meter drops quickly. At 10 dB, shown in the figure, the two meters read about the same, and both tones on the time sink are ragged. That sudden collapse is the **FM threshold**: FM's advantage lasts only while the signal stays well above the noise in its own, wider channel. AM has no threshold; its hiss rises steadily as the slider comes down, and the tone stays recognizable. Repeat the sweep at 5 kHz and 50 kHz deviation: the wider the deviation, the cleaner FM sounds when the signal is strong, and the sooner it breaks up as the noise rises.
+Now drag the Input SNR slider down with the speaker on FM. The FM output stays clean longer than AM's does, and then, below about 15 dB, it starts to crackle with clicks and its meter drops quickly. At 10 dB, shown in the figure, the two meters read about the same, and both tones on the time sink are ragged. That sudden collapse is the point where FM breaks into clicks: FM's advantage lasts only while the signal stays well above the noise in its own, wider channel. AM has no such point; its hiss rises steadily as the slider comes down, and the tone stays recognizable. Repeat the sweep at 5 kHz and 50 kHz deviation: the wider the deviation, the cleaner FM sounds when the signal is strong, and the sooner it breaks up as the noise rises.
 
 That trade is why broadcast FM and aircraft radios chose differently. A broadcast station is strong and has a 200 kHz channel to fill, so it uses FM. Aircraft use AM because a weak AM signal stays intelligible, and because two aircraft transmitting at once are both heard, where an FM receiver would lock onto the stronger one.
 ::::
@@ -296,13 +296,15 @@ FM spreads the message over a wider channel and, while the signal is strong, com
 :::{present}
 - SDR Flex: select an FM signal, demodulate it.
 - Live: tune the FM band in GQRX and choose **WFM (stereo)**.
-- Turn on RDS and read the station name.
-- Note the frequency; the GRC receiver uses it next.
+- Turn on RDS, read the name, and note the frequency.
+- Then try **NFM** on NOAA weather, 162.400–162.550 MHz.
 :::
 
-Before building anything on the air, find the station with a ready-made receiver. In <a href="https://livethisdream.github.io/sdr-flex/" target="_blank" rel="noopener">SDR Flex</a>, drag across an FM signal in an example capture and choose the FM demodulator. Its RDS decoder is an external program that needs the full SDR Flex server, and its browser version has no live radio, so the live station uses the fallback. **GQRX** runs on the same RTL-SDR: choose the RTL-SDR as the input device, start it, and click a strong station on the spectrum or waterfall between 88 and 108 MHz. Set the mode to **WFM (stereo)**; the audio plays, and the stereo indicator lights if the station sends a pilot. Open GQRX's RDS panel and turn decoding on, and within a few seconds it shows the station name.
+Before building anything on the air, find the station with a ready-made receiver. In <a href="https://livethisdream.github.io/sdr-flex/" target="_blank" rel="noopener">SDR Flex</a>, drag across an FM signal in an example capture and choose the FM demodulator. Its RDS decoder is an external program that needs the full SDR Flex server. The browser version has no live radio, so the live station uses GQRX. **GQRX** runs on the same RTL-SDR: choose the RTL-SDR as the input device, start it, and click a strong station on the spectrum or waterfall between 88 and 108 MHz. Set the mode to **WFM (stereo)**; the audio plays, and the stereo indicator lights if the station sends a pilot. Open GQRX's RDS panel and turn decoding on, and within a few seconds it shows the station name.
 
-GQRX runs on Linux and macOS; on Windows, SDR++ or SDR# does the same job with the same WFM mode and an RDS display. Write down the station's frequency and name, and close GQRX, since only one program can use the RTL-SDR at a time. The next step builds the same receiver in GRC on that station, and the name GQRX showed is the check that the RDS flowgraph decodes it correctly.
+GQRX comes with radioconda; if it does not start on your laptop, SDR++ has the same controls. Write down the station's frequency and name, and close GQRX, since only one program can use the RTL-SDR at a time. The next step builds the same receiver in GRC on that station, and the name GQRX showed is the check that the RDS flowgraph decodes it correctly.
+
+While GQRX is open, hear narrowband FM too. Set the mode to **NFM** and tune a NOAA weather radio channel, 162.400 to 162.550 MHz in 25 kHz steps, which broadcasts continuously; this is receive only, like everything in this lesson. The deviation is about 5 kHz instead of 75, so the channel is a few tens of kilohertz wide instead of 200, and the same voice in WFM mode would sound faint and thin.
 ::::
 
 ::::{frame} On the SDR
@@ -365,6 +367,8 @@ Put every file in one folder; GRC runs a flowgraph from its own folder, so the r
 :::
 
 Today we built a broadcast FM receiver, added an RDS decoder to it, built an AM receiver for the aircraft band, and watched what FM's extra bandwidth does as the noise goes up. The L7 Lab is the bench version: play your own L5 capture through the receiver, receive a live station and its RDS name, receive an ATIS broadcast, and turn the noise up on AM and FM yourself.
+
+An extension from the 2025 course: build a dual FM receiver, two Frequency Xlating FIR Filters on one capture, that plays two stations at once.
 
 Lesson 8 moves from analog to digital modulation. Its first signal, frequency-shift keying, is FM with a message that takes only two values, so its receiver uses the same quadrature demodulator as today's.
 ::::
