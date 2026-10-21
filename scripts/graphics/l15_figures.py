@@ -1,22 +1,10 @@
 #!/usr/bin/env python3
 """L15 figures (mPSK).
 
-  L15-ber-measured : bit error rate against Eb/N0, L3's theory curves for
-                     BPSK/QPSK and 8PSK with the L15 link's measured points,
-                     with and without differential coding, at even dB
   L15-8psk-map     : the L15 8PSK constellation: phase index i at 22.5 + 45i
                      degrees, and the Gray label each point carries
   L15-costas       : the Costas Loop as a block diagram: rotate, decide the
                      phase error, filter it, and update the phase estimate
-
-The measured points were taken with the blocks of book/extras/grc/
-L15-psk-link.grc running headless without the Throttle (RRC alpha 0.35, 8
-samples per symbol, Symbol Sync with Gardner at loop bandwidth 0.045, Costas
-Loop at 0.02, 100 ppm left out), each point over 2.9e5 to 1.2e7 bits, aligned
-against the transmitted bits. Without differential coding, a cycle slip of the
-Costas Loop rotates every later decision, so QPSK below 4 dB and 8PSK below
-10 dB measured a third or more of their bits wrong and are left off the plot. The points are typed in below rather than re-measured
-here, so this script needs only matplotlib.
 
 The GNU Radio screenshots (L15-grc-*.png, L15-tx-*.png, L15-link-*.png,
 L15-pluto-sim.png) are not generated here: they are taken from the real
@@ -48,16 +36,6 @@ plt.rcParams.update({"svg.fonttype": "none", "font.family": "sans-serif", "font.
                      "axes.edgecolor": GRAY, "axes.labelcolor": INK, "xtick.color": GRAY, "ytick.color": GRAY,
                      "axes.spines.top": False, "axes.spines.right": False})
 
-# Measured bit error rate of the L15 link, by Eb/N0 in dB (even values only;
-# the L15 Lab measures the odd ones).
-MEASURED = {
-    ("QPSK", False): {4: 1.56e-2, 6: 3.15e-3, 8: 2.74e-4, 10: 7.77e-6},
-    ("QPSK", True): {4: 3.01e-2, 6: 6.14e-3, 8: 6.23e-4, 10: 1.27e-5},
-    ("8PSK", False): {10: 1.41e-3, 12: 1.09e-4, 14: 1.75e-6},
-    ("8PSK", True): {8: 1.56e-2, 10: 2.69e-3, 12: 2.07e-4, 14: 4.18e-6},
-}
-
-
 def write(name, fig):
     buf = io.StringIO()
     fig.savefig(buf, format="svg", transparent=True, bbox_inches="tight", pad_inches=0.06)
@@ -68,57 +46,6 @@ def write(name, fig):
         out.mkdir(parents=True, exist_ok=True)
         (out / f"{name}.svg").write_text(s, encoding="utf-8")
     print(f"wrote {name}.svg")
-
-
-def Q(x):
-    return 0.5 * math.erfc(x / math.sqrt(2))
-
-
-def theory(mod, eb_db):
-    """L3's curves: BPSK and QPSK exact, 8PSK nearest-neighbor with Gray coding."""
-    g = 10 ** (eb_db / 10)
-    if mod == "QPSK":
-        return Q(math.sqrt(2 * g))
-    return 2 / 3 * Q(math.sqrt(6 * g) * math.sin(math.pi / 8))
-
-
-def ebn0_for(points, target):
-    """Eb/N0 where a measured curve crosses target, by log-linear interpolation."""
-    xs = sorted(points)
-    for a, b in zip(xs, xs[1:]):
-        ya, yb = math.log10(points[a]), math.log10(points[b])
-        t = math.log10(target)
-        if ya >= t >= yb:
-            return a + (b - a) * (ya - t) / (ya - yb)
-    return float("nan")
-
-
-def ber_measured():
-    x = np.linspace(0, 16, 400)
-    fig, ax = plt.subplots(figsize=(7.6, 4.6))
-    for mod, col in (("QPSK", NAVY), ("8PSK", AMBER)):
-        lab = "BPSK and QPSK, theory" if mod == "QPSK" else "8PSK, theory"
-        ax.semilogy(x, [theory(mod, v) for v in x], color=col, lw=2, label=lab)
-        for diff, mk in ((False, "o"), (True, "s")):
-            pts = MEASURED[(mod, diff)]
-            ax.semilogy(list(pts), list(pts.values()), mk, color=col, ms=7,
-                        mfc="white" if diff else col, mew=1.8,
-                        label=f"{mod}, simulated link" + (", differential" if diff else ""))
-        for target in (1e-4,):
-            th = next(v for v in np.arange(0, 20, 0.001) if theory(mod, v) <= target)
-            print(f"  {mod} BER {target:.0e}: theory {th:5.2f} dB, measured "
-                  f"{ebn0_for(MEASURED[(mod, False)], target):5.2f} dB, "
-                  f"differential {ebn0_for(MEASURED[(mod, True)], target):5.2f} dB")
-    for (mod, diff), pts in MEASURED.items():
-        for e, b in pts.items():
-            print(f"  {mod:4s} {'diff ' if diff else 'plain'} {e:2d} dB: measured {b:.2e}, theory {theory(mod, e):.2e}, ratio {b / theory(mod, e):.2f}")
-    ax.set_ylim(1e-7, 0.2)
-    ax.set_xlim(0, 16)
-    ax.set_xlabel("Eb/N0 (dB)")
-    ax.set_ylabel("bit error rate")
-    ax.grid(True, which="major", color=RULE, lw=0.8)
-    ax.legend(frameon=False, loc="lower left", fontsize=9.5)
-    write("L15-ber-measured", fig)
 
 
 def map_8psk():
@@ -183,6 +110,5 @@ def costas():
 
 
 if __name__ == "__main__":
-    ber_measured()
     map_8psk()
     costas()

@@ -112,11 +112,10 @@ constellation behavior against theory.}
 
 This packet is the L\labLesson\ Lab, in three parts, and you turn it in once, complete,
 before Lesson 16. Do \textbf{Part 1} on your own before the lab period: run the link
-flowgraph and make the predictions you will check at the bench. \textbf{Part 2} is
+flowgraph and work out the settings you will need at the bench. \textbf{Part 2} is
 your own measurements, recorded in class: Questions 3 to 6 on your own laptop, and
 Question 7 at a PlutoSDR station with your team. Do \textbf{Part 3} on your own after
-the lab: compare the measurements with the predictions and answer the analysis
-questions.
+the lab: explain what you saw and answer the analysis questions.
 
 \textbf{Grading.} You submit the packet once, we grade it against Objective 6.4 on
 the course's 1 / 0 scale, and you may revise it under course policy. Paste screenshots
@@ -136,10 +135,7 @@ The flowgraphs are on the L15 lesson page, \texttt{L15-psk-tx.grc} and
 \texttt{L15-psk-link.grc}, and on the L15 Lab page, \texttt{L15-psk-pluto.grc}. Every
 number below assumes their settings: 4,000 symbols per second, RRC pulses with
 $\alpha = 0.35$ at 8 samples per symbol, Gray-coded points, a Costas Loop bandwidth of
-0.02, and the default message. Lesson 3 gives the bit error rate with ideal
-synchronization:
-\[ P_b^\text{QPSK} = Q\left(\sqrt{\frac{2E_b}{N_0}}\right), \qquad
-   P_b^\text{8PSK} \approx \frac{2}{3}\, Q\left(\sqrt{\frac{6E_b}{N_0}}\,\sin\frac{\pi}{8}\right). \]
+0.02, a default noise amplitude of 0.5, and the default message.
 
 \begin{questions}
 
@@ -155,12 +151,12 @@ with every slider at its default.
 		\part After about 15 s, record the Received label and the Lines label.
 		\begin{solution}[0.7in]
 		The Received label reads \texttt{USAFA ECE 448: ASCII over mPSK.}, and every line
-		is correct with no bit errors, about 21 lines a second.
+		is correct, about 21 lines a second.
 		\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
 		\raggedleft \vspace{12pt}
-		\ansbox[1.4in]{all correct, BER 0}
+		\ansbox[1.4in]{all correct}
 	\end{minipage}
 
 	\part Type 50 into the frequency offset box, wait about 5 s, and paste a screenshot of
@@ -174,76 +170,67 @@ with every slider at its default.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newpage
-\question \textbf{Predictions.} You will check each of these at the bench.
+\question \textbf{Settings.} You will need each of these at the bench.
 
 \begin{parts}
 
-	\part A faster version of the link sends 6,000 symbols per second. Find the bit rate of
-	BPSK, QPSK, and 8PSK, and the $E_s/N_0$ each has at $E_b/N_0 = 9$ dB.
-
-	\begin{center}
-	\renewcommand{\arraystretch}{1.25}
-	\begin{tabular}{| l | K{1.0in} | K{1.0in} | K{1.0in} |}
-	\hline
-	& BPSK & QPSK & 8PSK \\\hline
-	Bit rate & \kv{6 kb/s} & \kv{12 kb/s} & \kv{18 kb/s} \\\hline
-	$E_s/N_0$ at 9 dB & \kv{9.0 dB} & \kv{12.0 dB} & \kv{13.8 dB} \\\hline
-	\end{tabular}
-	\end{center}
-		\begin{solution}[0.5in]
-		The bit rate is $k R_s$, and $E_s/N_0 = E_b/N_0 + 10\log_{10} k$.
+	\begin{minipage}[t]{0.58\linewidth}
+		\part A faster version of the link sends 6,000 symbols per second. Find the bit
+		rate of BPSK, QPSK, and 8PSK.
+		\begin{solution}[0.8in]
+		The bit rate is $k R_s$ with $k = \log_2 M$: 6, 12, and 18 kb/s.
 		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.5in]{6, 12, 18 kb/s}
+	\end{minipage}
 
-	\part Predict the bit error rate from Lesson 3 at each setting you will measure in
-	Question 4. Differential coding roughly doubles it; predict that too.
+	\part Question 3 builds an 8PSK flowgraph whose Chunks to Symbols block needs the
+	eight points. They sit on a circle of radius 1 at $22.5^\circ$ plus multiples of
+	$45^\circ$, numbered counterclockwise. List the angle of each point in degrees.
 
 	\begin{center}
 	\renewcommand{\arraystretch}{1.25}
 	\small\setlength{\tabcolsep}{3pt}
-	\begin{tabular}{| l | K{0.72in} | K{0.72in} | K{0.72in} | K{0.72in} | K{0.72in} | K{0.72in} |}
+	\begin{tabular}{| l | *{8}{K{0.55in} |}}
 	\hline
-	& \multicolumn{3}{c|}{QPSK} & \multicolumn{3}{c|}{8PSK} \\\hline
-	$E_b/N_0$ (dB) & 5 & 7 & 9 & 9 & 11 & 13 \\\hline
-	Theory & \kv{$5.9\times10^{-3}$} & \kv{$7.7\times10^{-4}$} & \kv{$3.4\times10^{-5}$} & \kv{$2.8\times10^{-3}$} & \kv{$2.9\times10^{-4}$} & \kv{$9.4\times10^{-6}$} \\\hline
-	Differential & \kv{$1.2\times10^{-2}$} & \kv{$1.5\times10^{-3}$} & \kv{$6.7\times10^{-5}$} & \kv{$5.5\times10^{-3}$} & \kv{$5.9\times10^{-4}$} & \kv{$1.9\times10^{-5}$} \\\hline
+	Index & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 \\\hline
+	Angle & \kv{$22.5^\circ$} & \kv{$67.5^\circ$} & \kv{$112.5^\circ$} & \kv{$157.5^\circ$} & \kv{$202.5^\circ$} & \kv{$247.5^\circ$} & \kv{$292.5^\circ$} & \kv{$337.5^\circ$} \\\hline
 	\end{tabular}
 	\end{center}
-		\begin{solution}[0.5in]
-		For example, QPSK at 7 dB: $Q(\sqrt{2 \times 5.01}) = Q(3.17) = 7.7 \times 10^{-4}$.
+		\begin{solution}[0.4in]
+		In Python, \texttt{cmath.exp(1j*(math.pi/8 + math.pi/4*i))} for \texttt{i} from 0 to 7.
 		\end{solution}
 
 	\begin{minipage}[t]{0.58\linewidth}
-		\part With differential coding off and no frequency offset, you will step the
-		channel phase through 0, 20, 40, \ldots, 340 degrees, 18 settings, jumping to
-		each from 0. The loop locks to the rotation nearest the received phase. At how
-		many settings should the text arrive for QPSK? For 8PSK?
-		\begin{solution}[1.3in]
-		The text arrives only when the nearest lock rotation is $0^\circ$, which needs the
-		channel phase within $180^\circ/M$ of $0^\circ$: within $45^\circ$ for QPSK, at
-		0, 20, 40, 320, and 340; within $22.5^\circ$ for 8PSK, at 0, 20, and 340.
+		\part The Costas Loop's frequency output is in radians per symbol. Find the constant
+		of the Multiply Const that turns it into hertz at 4,000 symbols per second.
+		\begin{solution}[0.9in]
+		One cycle is $2\pi$ radians, so $f = \omega R_s / 2\pi$:
+		\eq{ \dfrac{4000}{2\pi} &= 636.6 }
 		\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
 		\raggedleft \vspace{12pt}
-		QPSK: \ansbox[1.0in]{5 of 18}
-
-		\vspace{4pt}
-		8PSK: \ansbox[1.0in]{3 of 18}
+		\ansbox[1.0in]{636.6}
 	\end{minipage}
 
 	\begin{minipage}[t]{0.58\linewidth}
-		\part Lesson 15 measured the pull-in range of BPSK and QPSK at 12 dB. Estimate the
-		8PSK loop's pull-in range from that trend, and explain your estimate.
-		\begin{solution}[1.3in]
-		The detector's range is $\pm 180^\circ/M$: $90^\circ$, $45^\circ$, and
-		$22.5^\circ$. BPSK pulled in from about 500 Hz and QPSK from about 375 Hz, so the
-		range shrinks with $M$ but not in proportion. Any estimate from about 150 to
-		250 Hz with that reasoning is reasonable; the measured value is about 175 to 200 Hz.
+		\part Your Question 3 flowgraph adds a 20 Hz frequency offset at 4,000 symbols per
+		second. How far does it turn the constellation each symbol, and how many symbols
+		does one full turn take?
+		\begin{solution}[0.9in]
+		\eq{ 360^\circ \times \dfrac{20}{4000} &= 1.8^\circ \\
+		\dfrac{360^\circ}{1.8^\circ} &= 200\ \text{symbols} }
 		\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
 		\raggedleft \vspace{12pt}
-		\ansbox[1.2in]{150 to 250 Hz}
+		\ansbox[1.0in]{$1.8^\circ$}
+
+		\vspace{4pt}
+		\ansbox[1.0in]{200}
 	\end{minipage}
 
 \end{parts}
@@ -299,53 +286,49 @@ lab page lists, with a 20 Hz frequency offset.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newpage
-\question \textbf{Bit error rate against theory.} Follow the lab page's steps for
-\texttt{L15-psk-link.grc}, with differential coding on, no frequency offset, and
-the channel phase at 0. At each setting, type the $E_b/N_0$ into its box, wait 60 s,
-and record the BER and the number of bits it counted.
+\question \textbf{Noise.} Follow the lab page's steps for \texttt{L15-psk-link.grc}, with
+\texttt{diff} = 1, no frequency offset, and the channel phase at 0. For each
+constellation, raise the noise amplitude by 0.1 at a time from 0.5, wait about 20 s at
+each step, and watch the Costas Loop's output and the Lines label.
 
 \begin{parts}
 
-	\part Fill in the table, and compare each measurement with the differential
-	prediction in Question 2(b).
+	\part Record the noise amplitude at which about half the lines received are correct,
+	and describe the Costas output there.
 
 	\begin{center}
 	\renewcommand{\arraystretch}{1.25}
-	\small\setlength{\tabcolsep}{3pt}
-	\begin{tabular}{| l | K{0.72in} | K{0.72in} | K{0.72in} | K{0.72in} | K{0.72in} | K{0.72in} |}
+	\begin{tabular}{| l | K{1.1in} | K{1.1in} | K{1.1in} |}
 	\hline
-	& \multicolumn{3}{c|}{QPSK} & \multicolumn{3}{c|}{8PSK} \\\hline
-	$E_b/N_0$ (dB) & 5 & 7 & 9 & 9 & 11 & 13 \\\hline
-	BER & \kv{$1.4\times10^{-2}$} & \kv{$1.9\times10^{-3}$} & \kv{$8.1\times10^{-5}$} & \kv{$6.7\times10^{-3}$} & \kv{$7.7\times10^{-4}$} & \kv{$2.6\times10^{-5}$} \\\hline
-	Bits counted & \kv{$2.6\times10^{5}$} & \kv{$3.5\times10^{5}$} & \kv{$3.5\times10^{5}$} & \kv{$4.7\times10^{5}$} & \kv{$5.1\times10^{5}$} & \kv{$5.2\times10^{5}$} \\\hline
+	& BPSK & QPSK & 8PSK \\\hline
+	Noise amplitude & \kv{$\approx 1.3$ to 1.4} & \kv{$\approx 0.9$ to 1.0} & \kv{$\approx 0.5$ to 0.6} \\\hline
 	\end{tabular}
 	\end{center}
-
-		\begin{solution}[0.9in]
-		Each measurement sits about 1.2 to 1.4 times above the differential prediction, the
-		loss from the two loops' jitter. At $10^{-4}$ and below only a few dozen errors are
-		counted in 60 s, and differential coding makes them arrive in pairs, so accept
-		values within 30 to 50\% of these there.
+		\begin{solution}[1.0in]
+		Measured over 30 s runs, half the lines were correct at about 1.35 for BPSK, 0.95
+		for QPSK, and 0.55 for 8PSK; accept values within about 0.1 of these. At each limit
+		the clouds have grown until they touch their neighbors, and some symbols land in
+		a neighbor's region.
 		\end{solution}
 
 	\begin{minipage}[t]{0.58\linewidth}
-		\part Stop the flowgraph, set \texttt{M} back to 4 and \texttt{diff} to 0, and run it
-		again. Set $E_b/N_0$ to 7 dB. Record the BER
-		after 60 s and compare it with the theory value in Question 2(b).
-		\begin{solution}[1.0in]
-		The BER falls to about $1.0 \times 10^{-3}$, about half the differential
-		value and close to the theory's $7.7 \times 10^{-4}$.
+		\part Which constellation stopped delivering text first, and which last?
+		\begin{solution}[0.8in]
+		8PSK first, at the least noise, then QPSK, and BPSK last.
 		\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
 		\raggedleft \vspace{12pt}
-		\ansbox[1.3in]{$\approx 1.0\times10^{-3}$}
+		first: \ansbox[0.9in]{8PSK}
+
+		\vspace{4pt}
+		last: \ansbox[0.9in]{BPSK}
 	\end{minipage}
 
-	\part Paste a screenshot of the window for 8PSK at 11 dB, and mark one wrong
+	\part Paste a screenshot of the window for 8PSK at its limit, and mark one wrong
 	character in the Received label.
 		\begin{solution}[1.4in]
-		Answers vary. The Costas output shows eight clouds that nearly touch. A wrong
+		Answers vary. The Costas output shows eight clouds that run together. A wrong
 		character usually differs from the right one in one or two bits, such as P read as
 		D or T.
 		\end{solution}
@@ -354,8 +337,8 @@ and record the BER and the number of bits it counted.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newpage
-\question \textbf{Carrier recovery.} Follow the lab page's steps at $E_b/N_0 = 12$ dB
-with differential coding on. Before each offset, type 0 into the frequency offset box,
+\question \textbf{Carrier recovery.} Follow the lab page's steps at the default noise
+amplitude of 0.5, with differential coding on. Before each offset, type 0 into the frequency offset box,
 wait until lines arrive, and then type the new offset in one jump. Watch the frequency
 estimate for up to 15 s.
 
@@ -387,14 +370,14 @@ estimate for up to 15 s.
 	\begin{tabular}{| l | K{0.9in} | K{0.9in} | K{0.9in} | K{0.9in} |}
 	\hline
 	Offset (Hz) & 100 & 150 & 200 & 250 \\\hline
-	Locks? & \kv{yes} & \kv{yes} & \kv{usually} & \kv{no} \\\hline
-	Time & \kv{$\approx 2$ s} & \kv{$\approx 4$ s} & \kv{$\approx 11$ s} & \kv{--} \\\hline
+	Locks? & \kv{yes} & \kv{usually} & \kv{sometimes} & \kv{no} \\\hline
+	Time & \kv{$\approx 3$ s} & \kv{$\approx 7$ s} & \kv{$\approx 11$ s} & \kv{--} \\\hline
 	\end{tabular}
 	\end{center}
 		\begin{solution}[0.6in]
-		The 8PSK loop pulls in from about 175 to 200 Hz at 12 dB. At 200 Hz it locked within
-		15 s in about two runs of three, so accept yes or sometimes there; at 225 Hz it locked
-		in about one run of three, and at 250 Hz not at all.
+		The 8PSK loop pulls in from about 150 to 175 Hz at this noise. In six measured runs
+		it locked within 15 s at 150 Hz five times, at 200 Hz twice, and at 250 Hz never, so
+		accept yes or sometimes at 150 and 200 Hz.
 		\end{solution}
 
 \end{parts}
@@ -403,7 +386,7 @@ estimate for up to 15 s.
 \newpage
 \question \textbf{Phase ambiguity.} Follow the lab page's steps: set \texttt{diff} to 0 and run
 the flowgraph again, so that the loop locks with no frequency offset and the channel phase
-at 0, then set $E_b/N_0 = 12$ dB. For each channel phase, type 0 first, wait
+at 0, and leave the noise amplitude at 0.5. For each channel phase, type 0 first, wait
 until lines arrive, and then type the phase in one jump. Mark each setting at which
 the Lines count keeps rising.
 
@@ -422,7 +405,8 @@ the Lines count keeps rising.
 	\end{tabular}
 	\end{center}
 		\begin{solution}[0.5in]
-		QPSK delivers text at 5 settings and 8PSK at 3, as Question 2(c) predicted.
+		QPSK delivers text at 5 settings, those within $45^\circ$ of 0, and 8PSK at 3, those within
+		$22.5^\circ$: the loop locks to the nearest of $M$ rotations, $360^\circ/M$ apart.
 		\end{solution}
 
 	\part Set \texttt{diff} to 1, run the flowgraph again, and repeat three settings that failed. Record
@@ -452,7 +436,7 @@ before you disconnect the cable.
 		\begin{solution}[1.5in]
 		The Symbol Sync output shows four clusters turned by the cable's phase, the
 		Costas output shows them at $45^\circ$ plus multiples of $90^\circ$, the frequency
-		estimate sits near 0 Hz, and the lines arrive with no or few bit errors.
+		estimate sits near 0 Hz, and the lines arrive correct.
 		\end{solution}
 
 	\part With \texttt{diff} = 1, stop and start the flowgraph three times. Then set
@@ -474,25 +458,24 @@ before you disconnect the cable.
 		run in four, since the cable's phase changes from start to start.
 		\end{solution}
 
-	\part With \texttt{diff} = 1, record the BER after 30 s at each TX
-	attenuation, and explain what limits the link at the highest attenuation.
+	\part With \texttt{diff} = 1, wait 30 s at each TX attenuation and record the Lines label.
+	Explain what changes as the attenuation rises.
 
 	\begin{center}
 	\renewcommand{\arraystretch}{1.25}
-	\begin{tabular}{| l | K{0.9in} | K{0.9in} | K{0.9in} |}
+	\begin{tabular}{| l | K{1.1in} | K{1.1in} | K{1.1in} |}
 	\hline
 	TX attenuation (dB) & 70 & 80 & 89 \\\hline
-	BER & & & \\\hline
+	Lines correct of received & & & \\\hline
 	\end{tabular}
 	\end{center}
-		\begin{solution}[1.0in]
-		Each 10 dB step lowers the received signal by 10 dB while the receiver's noise
-		stays the same, so $E_b/N_0$ falls by 10 dB a step; the AGC keeps the
-		constellation the same size, but the clouds grow. With estimated Pluto levels, a
-		simulation had no errors at 70 and 80 dB and a BER of about $10^{-2}$ at 89 dB,
-		about 5 dB of $E_b/N_0$. The real levels depend on the hardware, and a Pluto with
-		a lower noise floor may show no errors even at 89 dB; accept that with the
-		explanation.
+		\begin{solution}[1.2in]
+		Each 10 dB step lowers the received signal while the receiver's own noise stays
+		the same. The AGC keeps the constellation the same size, so the noise clouds grow
+		instead, and once they touch, lines start to fail. With estimated Pluto levels, a
+		simulation delivered every line at 70 and 80 dB and about a quarter of them at
+		89 dB. The real levels depend on the hardware, and a Pluto with a lower noise
+		floor may deliver every line even at 89 dB; accept that with the explanation.
 		\end{solution}
 
 \end{parts}
@@ -505,23 +488,22 @@ before you disconnect the cable.
 
 \begin{parts}
 
-	\part Compare your BER table with Question 2(b). Estimate how many dB of $E_b/N_0$
-	the link loses to its loops and how many to differential coding, and state the
-	$E_b/N_0$ a Lesson 2 link budget should deliver for QPSK at a BER of $10^{-4}$.
+	\part Compare the noise limits in Question 4 for the three constellations. Explain
+	in words why they come in that order, and why a radio that must carry more bits per
+	symbol needs a stronger signal.
 		\begin{solution}[1.5in]
-		The measured points sit about 1.2 to 1.4 times above the differential prediction and
-		about twice the theory with coding off. On a curve that falls a decade every 1 to
-		2 dB, a factor of 2 is about 0.4 dB, so differential coding adds 0.3 to 0.4 dB and
-		the loops about 0.2 to 0.3 dB. The lesson measured 8.9 dB for differential QPSK at
-		$10^{-4}$; a budget should deliver that plus an allowance for the real radio,
-		about 1.4 dB in Lesson 3, plus a fade margin.
+		The noise spreads every point into a cloud of the same size. The points sit 2.00
+		apart for BPSK, 1.41 for QPSK, and 0.77 for 8PSK, so 8PSK's clouds touch their
+		neighbors first and BPSK's last, and the noise limits come in the same order, close
+		to the same ratio. More bits per symbol put more points on the same circle, closer
+		together, so the link tolerates less noise; to keep the clouds apart it needs a
+		stronger signal, which a link budget from Lesson 2 has to supply.
 		\end{solution}
 
-	\part Compare the 8PSK pull-in range with your estimate in Question 2(d), explain
-	why it is smaller than QPSK's, and say what a link between two different Plutos,
+	\part Compare the 8PSK pull-in range with QPSK's, explain why it is smaller, and say what a link between two different Plutos,
 	each accurate to 25 ppm at 915 MHz, would need before its Costas Loop.
 		\begin{solution}[1.5in]
-		The 8PSK loop pulled in from about 175 to 200 Hz against about 375 Hz for QPSK. Its
+		The 8PSK loop pulled in from about 150 to 175 Hz against about 375 Hz for QPSK. Its
 		detector measures an error only up to $22.5^\circ$, so a spinning constellation
 		leaves that range sooner. Two Plutos can be up to $2 \times 25 \times 10^{-6}
 		\times 915\ \text{MHz} \approx 46$ kHz apart, hundreds of times the range, so the
@@ -529,16 +511,17 @@ before you disconnect the cable.
 		block, or a higher symbol rate with the loop scaled to it.
 		\end{solution}
 
-	\part Compare Question 6 with Question 2(c) and Question 7(b). Explain why the
+	\part Compare Question 6 with Question 7(b). Explain why the
 	working settings were where they were, why the Pluto runs behaved as they did, and
-	why a real mPSK link uses differential coding even though it raises the BER.
+	why a real mPSK link uses differential coding even though one wrong symbol then
+	corrupts two.
 		\begin{solution}[1.5in]
 		The loop locks to the rotation nearest the received phase, so with coding off the
 		text arrives only when the phase is within $180^\circ/M$ of $0^\circ$: 5 of 18
 		settings for QPSK and 3 for 8PSK. On the Pluto the phase is random at every
 		start, so about one run in four locks the right way. Differential coding makes
-		every rotation work and limits a cycle slip to one symbol, which matters more than the
-		roughly 0.4 dB it adds.
+		every rotation work and limits a cycle slip to a symbol or two, which matters more
+		than the extra errors it causes in noise.
 		\end{solution}
 
 \end{parts}

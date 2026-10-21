@@ -775,38 +775,32 @@ blocks:
 - name: epy_block_0
   id: epy_block
   parameters:
-    _source_code: "\"\"\"Text Sink: shows each received packet as a line of text,\
-      \ counts the lines\nthat match the transmitted message, and counts the bit errors\
-      \ in every line\nof the right length (the BER). The counts restart whenever\
+    _source_code: "\"\"\"Text Sink: shows each received packet as a line of text and\
+      \ counts the\nlines that match the transmitted message. The counts restart whenever\
       \ a slider moves,\nbecause GRC sets `settings` each time one of the settings\
       \ it names changes.\nFunction Probes read last_line() and stats() for the QT\
       \ GUI Labels.\"\"\"\n\nimport time\n\nimport numpy as np\nimport pmt\nfrom gnuradio\
       \ import gr\n\n\nclass blk(gr.sync_block):\n    def __init__(self, expected='',\
       \ settings=None):\n        gr.sync_block.__init__(self, name='Text Sink', in_sig=[np.uint8],\
-      \ out_sig=None)\n        self.expected = expected\n        self.ref = np.frombuffer((expected\
-      \ + '\\n').encode(), dtype=np.uint8)\n        self.key = pmt.intern('packet_len')\n\
+      \ out_sig=None)\n        self.expected = expected\n        self.key = pmt.intern('packet_len')\n\
       \        self.buf = []\n        self.line = '(waiting for a packet)'\n     \
       \   self.settings = settings\n\n    @property\n    def settings(self):\n   \
       \     return self._settings\n\n    @settings.setter\n    def settings(self,\
       \ value):\n        self._settings = value\n        self.good = 0\n        self.total\
-      \ = 0\n        self.errors = 0\n        self.bits = 0\n        self.t0 = time.monotonic()\n\
-      \n    def work(self, input_items, output_items):\n        data = input_items[0]\n\
-      \        start = self.nitems_read(0)\n        # Each packet starts with a packet_len\
-      \ tag, so a corrupted newline\n        # cannot run two packets together.\n\
-      \        marks = {t.offset - start for t in self.get_tags_in_window(0, 0, len(data),\
-      \ self.key)}\n        for i, b in enumerate(data):\n            if i in marks\
-      \ and self.buf:\n                self.finish()\n            self.buf.append(int(b))\n\
-      \        return len(data)\n\n    def finish(self):\n        rx = np.array(self.buf,\
-      \ dtype=np.uint8)\n        text = ''.join(chr(b) if 32 <= b < 127 or b == 10\
-      \ else '?' for b in rx)\n        self.line = text[:-1] if text.endswith('\\\
-      n') else text\n        self.total += 1\n        self.good += text == self.expected\
-      \ + '\\n'\n        if len(rx) == len(self.ref):\n            self.errors +=\
-      \ int(np.unpackbits(rx ^ self.ref).sum())\n            self.bits += 8 * len(rx)\n\
+      \ = 0\n        self.t0 = time.monotonic()\n\n    def work(self, input_items,\
+      \ output_items):\n        data = input_items[0]\n        start = self.nitems_read(0)\n\
+      \        # Each packet starts with a packet_len tag, so a corrupted newline\n\
+      \        # cannot run two packets together.\n        marks = {t.offset - start\
+      \ for t in self.get_tags_in_window(0, 0, len(data), self.key)}\n        for\
+      \ i, b in enumerate(data):\n            if i in marks and self.buf:\n      \
+      \          self.finish()\n            self.buf.append(int(b))\n        return\
+      \ len(data)\n\n    def finish(self):\n        rx = np.array(self.buf, dtype=np.uint8)\n\
+      \        text = ''.join(chr(b) if 32 <= b < 127 or b == 10 else '?' for b in\
+      \ rx)\n        self.line = text[:-1] if text.endswith('\\n') else text\n   \
+      \     self.total += 1\n        self.good += text == self.expected + '\\n'\n\
       \        self.buf = []\n\n    def last_line(self):\n        return self.line\n\
-      \n    def stats(self):\n        ber = f'{self.errors / self.bits:.1e}' if self.bits\
-      \ else '-'\n        return (f'{self.good} correct of {self.total} received in\
-      \ {time.monotonic() - self.t0:.0f} s;  '\n                f'BER {ber} ({self.errors}\
-      \ errors in {self.bits} bits)')\n"
+      \n    def stats(self):\n        return f'{self.good} correct of {self.total}\
+      \ received in {time.monotonic() - self.t0:.0f} s'\n"
     affinity: ''
     alias: ''
     comment: ''

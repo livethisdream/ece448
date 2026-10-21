@@ -39,7 +39,7 @@ Lesson 15 · Module 6: Waveform Applications & RF Reverse Engineering · Dr. Nei
 ::::{frame} Text over QPSK
 :::{present}
 <img src="../../viz/img/L15-link-clean.png"
-     alt="The L15 link flowgraph running QPSK at an Eb/N0 of 12 dB with a 50 Hz frequency offset: before carrier recovery the Symbol Sync output is a ring, after the Costas Loop it is four tight clusters, the frequency estimate sits at 50 Hz, and the labels read USAFA ECE 448: ASCII over mPSK. and 254 correct of 254 received in 12 s, BER 0 in 65,024 bits"
+     alt="The L15 link flowgraph running QPSK at the default noise amplitude of 0.5 with a 50 Hz frequency offset: before carrier recovery the Symbol Sync output is a ring, after the Costas Loop it is four tight clusters, the frequency estimate sits at 50 Hz, and the labels read USAFA ECE 448: ASCII over mPSK. and 277 correct of 277 received in 13 s"
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
@@ -49,7 +49,7 @@ Lesson 15 · Module 6: Waveform Applications & RF Reverse Engineering · Dr. Nei
 
 The figure is today's flowgraph, `L15-psk-link.grc`, running. It sends the same packets of text as Lesson 10, but each symbol now carries two bits as one of four phases, which is **QPSK**. The channel adds noise, and here its frequency offset slider is set to move the carrier 50 Hz away from where the receiver expects it; the slider opens at 0.
 
-The left plot shows the received symbols after timing recovery. They form a ring, because the frequency offset turns the constellation a little further with every symbol. The middle plot shows the same symbols after **carrier recovery**, which a **Costas Loop** does: the ring becomes four clusters, and the text arrives. Today we build each part of this link and measure it against the bit error rates of Lesson 3.
+The left plot shows the received symbols after timing recovery. They form a ring, because the frequency offset turns the constellation a little further with every symbol. The middle plot shows the same symbols after **carrier recovery**, which a **Costas Loop** does: the ring becomes four clusters, and the text arrives. Today we build each part of this link, and then turn up the noise and watch what happens to each constellation.
 ::::
 
 ::::{frame} Phase-Shift Keying
@@ -81,7 +81,7 @@ A constellation with $M$ points carries $k = \log_2 M$ bits per symbol. At the s
 
 The transmitter is Lesson 9's, with complex points in place of real levels. **Chunks to Symbols** takes a number from 0 to $M - 1$ and outputs that point of the constellation, and the Interpolating FIR Filter shapes it with the same RRC taps as Lesson 9: $\alpha = 0.35$, 8 samples per symbol, and 32 kHz sampling, so 4,000 symbols a second. GNU Radio also has a **Constellation Modulator** block, which packs the bit grouping, the mapping, and the RRC filter into one block; we build the chain from its parts so that each step is visible.
 
-The spectrum does not change with $M$. The band is $(1 + \alpha) R_s = 1.35 \times 4$ kHz $= 5.4$ kHz wide whether each symbol carries one bit or three. More bits per symbol move more data through the same bandwidth, but each extra bit needs more $E_b/N_0$, as Lesson 3 measured.
+The spectrum does not change with $M$. The band is $(1 + \alpha) R_s = 1.35 \times 4$ kHz $= 5.4$ kHz wide whether each symbol carries one bit or three. More bits per symbol move more data through the same bandwidth, but the points sit closer together, and the Noise frame below shows what that does.
 ::::
 
 ::::{frame} Bits to Points with Gray Coding
@@ -106,17 +106,13 @@ The labels follow a **Gray code**, as in Lesson 3, so that the two neighbors of 
 
 At $R_s = 4{,}000$ symbols per second, each modulation fills the same 5.4 kHz and carries $k$ bits per symbol:
 
-| Modulation | $M$ | $k$ | Bit rate | $E_b/N_0$ for BER $10^{-5}$ (Lesson 3) | $E_s/N_0$ for BER $10^{-5}$ |
-| :-- | :-: | :-: | :-: | :-: | :-: |
-| BPSK | 2 | 1 | 4 kb/s | 9.6 dB | 9.6 dB |
-| QPSK | 4 | 2 | 8 kb/s | 9.6 dB | 12.6 dB |
-| 8PSK | 8 | 3 | 12 kb/s | 13.0 dB | 17.7 dB |
+| Modulation | $M$ | $k$ | Bit rate | Spacing of neighboring points (Lesson 3) |
+| :-- | :-: | :-: | :-: | :-: |
+| BPSK | 2 | 1 | 4 kb/s | 2.00 |
+| QPSK | 4 | 2 | 8 kb/s | 1.41 |
+| 8PSK | 8 | 3 | 12 kb/s | 0.77 |
 
-$E_s/N_0$ is $E_b/N_0$ plus $10 \log_{10} k$, which is 3.0 dB for QPSK and 4.8 dB for 8PSK. QPSK doubles the bit rate of BPSK at the same $E_b/N_0$, which is why most links use it in place of BPSK. 8PSK adds another 50% but needs 3.4 dB more $E_b/N_0$ for the same error rate.
-
-The link flowgraph's slider sets $E_b/N_0$ directly. The transmitted signal has power 1 and 8 samples per symbol, so each symbol carries energy 8 and each bit $8/k$, and the flowgraph sets the noise amplitude to
-
-$$\sigma = \sqrt{\frac{8}{k \cdot 10^{(E_b/N_0)/10}}}.$$
+QPSK doubles the bit rate of BPSK in the same band, and 8PSK adds another 50%. The spacing column is Lesson 3's, for points on a circle of radius 1: the more points share the circle, the closer together they sit, and the less noise it takes to push a symbol across to a neighbor. The link flowgraph's **Noise amplitude** slider sets the noise the Channel Model adds to each sample, and the same setting affects every $M$ alike, so we can compare them by eye.
 ::::
 
 ::::{frame} The Receiver
@@ -133,7 +129,7 @@ $$\sigma = \sqrt{\frac{8}{k \cdot 10^{(E_b/N_0)/10}}}.$$
 
 The top row is the transmitter: the packets of Lessons 8 and 10, Repack Bits, the Gray Map, and Chunks to Symbols, with a Differential Encoder that a later frame explains. A **Channel Model** block stands in for the radio path. It adds Gaussian noise, a frequency offset, a fixed phase rotation, and a clock error, each set by a slider.
 
-The receiver keeps Lesson 9's matched filter and Symbol Sync with the same settings: Gardner detector, 8 samples per symbol, loop bandwidth 0.045. The **Costas Loop** follows, with its order set to $M$. The **Constellation Decoder** outputs the phase index of the nearest point, and from there the receiver undoes each transmitter step in reverse order and hands the bits to Lesson 8's access-code search and Text Sink. The Text Sink now also counts the bit errors in every line it receives, which gives the link's bit error rate (BER).
+The receiver keeps Lesson 9's matched filter and Symbol Sync with the same settings: Gardner detector, 8 samples per symbol, loop bandwidth 0.045. The **Costas Loop** follows, with its order set to $M$. The **Constellation Decoder** outputs the phase index of the nearest point, and from there the receiver undoes each transmitter step in reverse order and hands the bits to Lesson 8's access-code search and Text Sink.
 ::::
 
 ::::{frame} What the Channel Does
@@ -179,7 +175,7 @@ A **loop filter** turns the error into two corrections, a small step in phase an
 ::::{frame} Acquisition
 :::{present}
 <img src="../../viz/img/L15-link-acquire.png"
-     alt="The L15 link with QPSK at 12 dB and a 200 Hz frequency offset: the Costas Loop's frequency estimate rises from 0 to 200 Hz in about 0.7 s and stays there, the Costas output shows four clusters, and every line of text arrives"
+     alt="The L15 link with QPSK at noise amplitude 0.5 and a 200 Hz frequency offset: the Costas Loop's frequency estimate rises from 0 to 200 Hz in about 0.7 s and stays there, the Costas output shows four clusters, and 133 of 134 lines arrive"
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
@@ -195,7 +191,7 @@ The time a loop takes to lock is its **acquisition time**, and the range of offs
 ::::{frame} Pull-In Range
 :::{present}
 <img src="../../viz/img/L15-link-nolock.png"
-     alt="The L15 link with QPSK at 12 dB and a 450 Hz frequency offset: the frequency estimate settles at about minus 50 Hz instead of 450 Hz, the Costas output shows eight clusters instead of four, and no packet arrives"
+     alt="The L15 link with QPSK at noise amplitude 0.5 and a 450 Hz frequency offset: the frequency estimate settles at about minus 50 Hz instead of 450 Hz, the Costas output shows eight clusters instead of four, and no packet arrives"
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
@@ -211,18 +207,17 @@ The detector sees the constellation repeat every $360°/M$, so it can only sort 
 ::::{frame} Measured Pull-In
 :class: read-only
 
-We measured the loop with the flowgraph's blocks running headless at $E_b/N_0 = 12$ dB, starting cold six times at each offset with a different channel phase and noise, and counted a lock when the frequency estimate stayed within 10% of the offset to the end of a 15 s run.
+We measured the loop with the flowgraph's blocks running headless at the default noise amplitude of 0.5, starting cold six times at each offset with a different channel phase and noise, and counted a lock when the frequency estimate stayed within 10% of the offset to the end of a 15 s run.
 
 | Offset | BPSK locks | Median time | QPSK locks | Median time |
 | :-: | :-: | :-: | :-: | :-: |
-| 300 Hz | 6 of 6 | 2.9 s | 6 of 6 | 2.0 s |
-| 375 Hz | 6 of 6 | 5.2 s | 6 of 6 | 4.1 s |
-| 400 Hz | 6 of 6 | 5.9 s | 3 of 6 | 3.2 s |
-| 450 Hz | 6 of 6 | 7.6 s | 0 of 6 | – |
-| 500 Hz | 6 of 6 | 10.0 s | 0 of 6 | – |
-| 600 Hz | 0 of 6 | – | 0 of 6 | – |
+| 300 Hz | 6 of 6 | 3.1 s | 6 of 6 | 2.0 s |
+| 400 Hz | 6 of 6 | 5.7 s | 4 of 6 | 3.3 s |
+| 450 Hz | – | – | 0 of 6 | – |
+| 500 Hz | 6 of 6 | 9.4 s | – | – |
+| 600 Hz | 0 of 6 | – | – | – |
 
-At 4,000 symbols per second, BPSK pulls in from about 500 Hz and QPSK from about 375 Hz, roughly a tenth of the symbol rate. The acquisition time grows steeply near the limit. Noise changes the range too: the sign-based QPSK detector gives almost no correction to a fast-turning constellation without noise, and at 20 dB the same loop pulled in reliably only from about 200 Hz.
+At 4,000 symbols per second, BPSK pulls in from about 500 Hz and QPSK from about 375 Hz, roughly a tenth of the symbol rate. The acquisition time grows steeply near the limit. Noise changes the range too: the sign-based QPSK detector gives almost no correction to a fast-turning constellation without noise, and with the noise amplitude at 0.2 the same loop pulled in reliably only from about 200 Hz.
 
 The PlutoSDR's own oscillator is accurate to about 25 ppm, so two radios at 915 MHz can differ by up to about 46 kHz, a hundred times the Costas Loop's range. The L15 Lab uses one Pluto, whose transmitter and receiver share the same reference, so its frequency offset is close to zero.
 ::::
@@ -257,14 +252,14 @@ This is the **phase ambiguity** that Lesson 10's PlutoSDR link met as a polarity
 
 **Differential coding** removes the ambiguity. The **Differential Encoder** adds each new phase index to the last one it sent, mod $M$, so the data rides on the change in phase from one symbol to the next. The **Differential Decoder** subtracts the index before it from each received index, mod $M$. A loop that locked one step off adds 1 to every received index, and the differences do not change. The table shows QPSK: the data 1, 2, 0, 3 arrives as the changes whatever the rotation. The differential-encoding tutorial in the references works the same idea for bits.
 
-Differential coding has one drawback in noise. One wrong decision corrupts two differences, the one into it and the one out of it, so the bit error rate roughly doubles. In the flowgraph the encoder and decoder each sit beside a **Selector**, and the variable `diff`, 1 or 0, picks the coded or the uncoded path at both ends; change it and run the flowgraph again.
+Differential coding has one drawback in noise. One wrong decision corrupts two differences, the one into it and the one out of it, so a noisy link makes about twice as many errors with it as without. It also has a second advantage: noise can make the Costas Loop slip to another rotation now and then, and without differential coding every later decision is then wrong, while with it the slip corrupts only the symbols where it happens. In the flowgraph the encoder and decoder each sit beside a **Selector**, and the variable `diff`, 1 or 0, picks the coded or the uncoded path at both ends; change it and run the flowgraph again.
 ::::
 
 ::::{frame} Carrier Recovery Explorer
 :class: viz-frame
 
 :::{depth}
-The explorer runs GNU Radio's Costas Loop at one sample per symbol for 10 s at 4,000 symbols per second. The left panel shows the loop's output for the last 600 symbols, with the ideal points as amber rings; the right panel shows the frequency estimate, with the true offset dashed. Start with QPSK at 12 dB and 100 Hz: the loop locks within a fraction of a second. Raise the offset in 25 Hz steps until it no longer locks. Then set the offset to 0, turn differential coding off, and step the channel phase: the lock rotation readout jumps in steps of $360°/M$, and the BER is 0 only when the rotation is 0°. With differential coding on, the BER stays low at every phase. Finally, raise $E_b/N_0$ to 30 dB at 300 Hz and press "new noise" a few times: with little noise the QPSK loop often fails to pull in at all.
+The explorer runs GNU Radio's Costas Loop at one sample per symbol for 10 s at 4,000 symbols per second. The left panel shows the loop's output for the last 600 symbols, with the ideal points as amber rings; the right panel shows the frequency estimate, with the true offset dashed. Start with QPSK at noise 0.5 and 100 Hz: the loop locks within a fraction of a second. Raise the offset in 25 Hz steps until it no longer locks. Then set the offset to 0, turn differential coding off, and step the channel phase: the lock rotation readout jumps in steps of $360°/M$, and the data comes out correct only when the rotation is 0°. With differential coding on, the data comes out correct at every phase. Finally, lower the noise amplitude to 0.05 at 300 Hz and press "new noise" a few times: with little noise the QPSK loop often fails to pull in at all.
 :::
 
 :::{present}
@@ -272,46 +267,25 @@ The explorer runs GNU Radio's Costas Loop at one sample per symbol for 10 s at 4
         width="100%" height="450"
         style="border: 1px solid #cddce9; border-radius: 6px;"
         loading="lazy"
-        title="Carrier recovery explorer: the Costas Loop locking to BPSK, QPSK, or 8PSK symbols with a chosen frequency offset, channel phase, and Eb/N0, with its frequency estimate, its lock rotation, and the bit error rate with and without differential coding">
+        title="Carrier recovery explorer: the Costas Loop locking to BPSK, QPSK, or 8PSK symbols with a chosen frequency offset, channel phase, and noise, with its frequency estimate, its lock rotation, and whether the data comes out right with and without differential coding">
 </iframe>
 :::
 ::::
 
-::::{frame} Noise: Measured against Theory
+::::{frame} Noise
 :::{present}
-<img src="../../viz/img/L15-ber-measured.svg"
-     alt="Bit error rate against Eb/N0 from 0 to 16 dB: Lesson 3's theory curves for BPSK and QPSK and for 8PSK, with the L15 link's measured points at even Eb/N0, filled without differential coding and open with it; the filled points sit just above the curves and the open points about twice as high"
-     style="max-width: 760px; width: 100%; display: block; margin: 0 auto;">
+<img src="../../viz/img/L15-noise-compare.png"
+     alt="The Costas Loop output of the L15 link at the same noise amplitude, 0.8, for three runs: BPSK shows two tight, well-separated clouds and 130 of 130 lines correct; QPSK shows four clouds that nearly touch and 217 of 235 lines correct; 8PSK shows eight clouds merged into a ring and 1 of 120 lines correct"
+     style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
-- The link stays within 0.3 dB of Lesson 3's curves at $10^{-4}$.
-- Differential coding adds 0.3 to 0.4 dB.
+- At the same noise, the 8PSK clouds merge first.
+- Points that sit closer together need a quieter channel.
 :::
 
-The figure plots the simulated link's measured bit error rate on Lesson 3's theory curves. The filled points are coherent, with differential coding off and the channel phase at 0°, so the loop locks in the right position; the open points have differential coding on. QPSK falls on the BPSK curve, as Lesson 3 predicted, and 8PSK needs about 3.3 dB more $E_b/N_0$ for a BER of $10^{-4}$.
+The figure runs the link three times with the noise amplitude at 0.8 and no frequency offset, changing only `M`. The noise spreads every point into a cloud of the same size. BPSK's two points are far apart, so its clouds stay separate and every line arrives. QPSK's four clouds nearly touch, and a few lines arrive with a wrong character. 8PSK's eight clouds merge into a ring, the decoder picks the wrong point again and again, and almost no line arrives intact.
 
-The receiver loses a little to its loops. The jitter in Symbol Sync's sampling instant and in the Costas Loop's phase estimate adds about 0.2 dB of loss for QPSK and 0.3 dB for 8PSK at a BER of $10^{-4}$. Differential coding roughly doubles the error rate, which adds another 0.3 to 0.4 dB. At $10^{-4}$ the link needs 8.6 and 8.9 dB for QPSK, coherent and differential, and 12.0 and 12.4 dB for 8PSK. Lesson 3 allowed 1.4 dB for a real demodulator; the simulation uses less than that, and the L15 Lab measures what the PlutoSDR adds.
-::::
-
-::::{frame} Noise Sweep
-:class: read-only
-
-We measured the link with its blocks running headless, without the Throttle, between $3 \times 10^5$ and $1.2 \times 10^7$ bits at each point, and compared the received bits with the transmitted ones, with no clock error. "Coherent" has differential coding off and the channel phase at 0°.
-
-| $E_b/N_0$ | QPSK theory | QPSK coherent | QPSK differential | 8PSK theory | 8PSK coherent | 8PSK differential |
-| :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| 4 dB | $1.25 \times 10^{-2}$ | $1.6 \times 10^{-2}$ | $3.0 \times 10^{-2}$ | | | |
-| 6 dB | $2.39 \times 10^{-3}$ | $3.2 \times 10^{-3}$ | $6.1 \times 10^{-3}$ | | | |
-| 8 dB | $1.91 \times 10^{-4}$ | $2.7 \times 10^{-4}$ | $6.2 \times 10^{-4}$ | $6.2 \times 10^{-3}$ | $7.5 \times 10^{-3}$, then a slip | $1.6 \times 10^{-2}$ |
-| 10 dB | $3.9 \times 10^{-6}$ | $7.8 \times 10^{-6}$ | $1.3 \times 10^{-5}$ | $1.01 \times 10^{-3}$ | $1.4 \times 10^{-3}$ | $2.7 \times 10^{-3}$ |
-| 12 dB | | | | $6.3 \times 10^{-5}$ | $1.1 \times 10^{-4}$ | $2.1 \times 10^{-4}$ |
-| 14 dB | | | | $8.8 \times 10^{-7}$ | $1.8 \times 10^{-6}$ | $4.2 \times 10^{-6}$ |
-
-The theory columns are Lesson 3's: $Q\left(\sqrt{2E_b/N_0}\right)$ for QPSK, and for 8PSK with Gray coding
-
-$$P_b \approx \frac{2}{3} Q\left(\sqrt{\frac{6E_b}{N_0}} \sin\frac{\pi}{8}\right).$$
-
-Below about 4 dB for QPSK and 10 dB for 8PSK, noise makes the Costas Loop slip to another lock position now and then. Without differential coding a slip turns every later decision, and the coherent 8PSK link at 8 dB ran at $7.5 \times 10^{-3}$ for 400,000 symbols, then slipped by 180°, after which two thirds of its bits were wrong; with differential coding a slip corrupts only the symbol where it happens, which is a second reason real mPSK links use it.
+This is the cost of more bits per symbol, seen on the screen: the same channel that carries BPSK cleanly can be too noisy for 8PSK. Try it in `L15-psk-link.grc` by raising the noise amplitude a step at a time and watching the clouds grow and the Received label break up; the L15 Lab records where each constellation stops delivering text.
 ::::
 
 ::::{frame} mPSK on a Real Radio
@@ -337,7 +311,7 @@ mPSK sends $\log_2 M$ bits per symbol on the carrier's phase. Symbol Sync recove
 :class: read-only doc-links
 
 - <a class="doc-link" href="../../grc/L15-psk-tx.grc" download>L15-psk-tx.grc</a>: random BPSK, QPSK, or 8PSK symbols shaped by the RRC filter, with the constellation, I and Q, and the spectrum. No hardware needed.
-- <a class="doc-link" href="../../grc/L15-psk-link.grc" download>L15-psk-link.grc</a>: the whole text link, with sliders for $E_b/N_0$, frequency offset, channel phase, and clock error, a variable that turns differential coding on or off, constellations before and after the Costas Loop, its frequency estimate, the received text, and the BER. No hardware needed.
+- <a class="doc-link" href="../../grc/L15-psk-link.grc" download>L15-psk-link.grc</a>: the whole text link, with sliders for the noise amplitude, frequency offset, channel phase, and clock error, a variable that turns differential coding on or off, constellations before and after the Costas Loop, its frequency estimate, and the received text. No hardware needed.
 - <a class="doc-link" href="../../legacy/refs/differential-encoding-tutorial.pdf" target="_blank" rel="noopener">Differential encoding tutorial (PDF)</a>
 
 Open a `.grc` file from GRC's File menu, or run `gnuradio-companion L15-psk-link.grc` from the radioconda prompt. To change the constellation in the link, double-click the variable `M`, set it to 2, 4, or 8, and run the flowgraph again; the Costas Loop's order and every table follow it. The variable `diff` works the same way: 1 turns differential coding on and 0 turns it off. The Text Sink is an Embedded Python Block saved inside the `.grc` file. The L15 Lab page has the PlutoSDR version of the link.
@@ -353,10 +327,10 @@ Open a `.grc` file from GRC's File menu, or run `gnuradio-companion L15-psk-link
 | Gray map | neighbors differ in one bit | label of index $i$ is $i \oplus (i \gg 1)$ |
 | Receiver order | matched filter, Symbol Sync, Costas Loop, decoder | timing before carrier |
 | Frequency offset | turns the points $360° \Delta f/R_s$ a symbol | 50 Hz is 4.5° a symbol at 4 kbaud |
-| Costas Loop | phase detector of order $M$, loop filter | QPSK pulls in from about 375 Hz at 12 dB |
+| Costas Loop | phase detector of order $M$, loop filter | QPSK pulls in from about 375 Hz at noise 0.5 |
 | Phase ambiguity | the loop can lock in any of $M$ rotations | $360°/M$ apart |
-| Differential coding | data on the change of phase | about twice the BER, 0.3 to 0.4 dB |
-| BER | Lesson 3's curves | within 0.3 dB at $10^{-4}$ |
+| Differential coding | data on the change of phase | about twice as many errors in noise |
+| Noise | spreads each point into a cloud | 8PSK breaks first, BPSK last |
 ::::
 
 ::::{frame} Practice
@@ -368,11 +342,11 @@ Open a `.grc` file from GRC's File menu, or run `gnuradio-companion L15-psk-link
 
 ::::{frame} Looking Ahead
 :::{present}
-- The L15 Lab builds a carrier-recovery loop, measures BER and pull-in, and runs QPSK on a PlutoSDR.
+- The L15 Lab builds a carrier-recovery loop, finds the noise and offset limits, and runs QPSK on a PlutoSDR.
 - Lesson 16 hops the carrier itself from channel to channel.
 :::
 
-The L15 Lab is the hands-on version of this lesson, and it takes most of the second period. You build an 8PSK carrier-recovery flowgraph from an empty canvas, measure the link's bit error rate against Lesson 3's curves, find the 8PSK loop's pull-in range, map the phase ambiguity with differential coding off, and then send your own text through a PlutoSDR and a cable.
+The L15 Lab is the hands-on version of this lesson, and it takes most of the second period. You build an 8PSK carrier-recovery flowgraph from an empty canvas, find the noise at which each constellation stops delivering text, find the 8PSK loop's pull-in range, map the phase ambiguity with differential coding off, and then send your own text through a PlutoSDR and a cable.
 
 Lesson 16 turns to frequency hopping, where the transmitter moves its carrier from channel to channel many times a second and the receiver has to follow it. Lesson 20 returns to constellations with QAM and OFDM.
 ::::

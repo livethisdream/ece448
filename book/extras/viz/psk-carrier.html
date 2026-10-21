@@ -40,8 +40,8 @@
   <div class="controls">
     <div class="ctl"><span class="lab">Constellation</span><span class="val" id="m-v"></span>
       <div class="seg" id="m"><button data-v="2">BPSK</button><button data-v="4" class="on">QPSK</button><button data-v="8">8PSK</button></div></div>
-    <div class="ctl"><label for="eb">Eb/N0</label><span class="val" id="eb-v"></span>
-      <input type="range" id="eb" min="0" max="30" step="1" value="12"></div>
+    <div class="ctl"><label for="nz">Noise amplitude</label><span class="val" id="nz-v"></span>
+      <input type="range" id="nz" min="0" max="1.5" step="0.05" value="0.5"></div>
     <div class="ctl"><label for="f">Frequency offset</label><span class="val" id="f-v"></span>
       <input type="range" id="f" min="0" max="700" step="25" value="100"></div>
     <div class="ctl"><label for="ph">Channel phase</label><span class="val" id="ph-v"></span>
@@ -55,7 +55,7 @@
     <div class="ro"><span class="k">loop frequency</span><span class="v" id="o-f">—</span></div>
     <div class="ro"><span class="k">locked within</span><span class="v" id="o-t">—</span></div>
     <div class="ro"><span class="k">lock rotation</span><span class="v" id="o-rot">—</span></div>
-    <div class="ro"><span class="k">BER, last 5 s</span><span class="v" id="o-ber">—</span></div>
+    <div class="ro"><span class="k">data, last 5 s</span><span class="v" id="o-ber">—</span></div>
   </div>
 </div>
 
@@ -65,7 +65,9 @@
 // per symbol, as in L15-psk-link.grc after Symbol Sync: loop bandwidth 0.02,
 // damping 0.707, the order-2, -4, and -8 phase detectors, the error clipped
 // to +-1. Symbols arrive at 4 kbaud with the chosen frequency offset, channel
-// phase, and Gaussian noise at Eb/N0; the run is 10 s, 40,000 symbols, and
+// phase, and Gaussian noise; the noise amplitude means what it means in
+// L15-psk-link.grc (8 samples a symbol before the matched filter). The run is
+// 10 s, 40,000 symbols, and
 // the loop starts at zero phase and zero frequency. Timing is ideal here, so
 // the numbers come close to the flowgraph's but do not match it exactly.
 const RS = 4000, N = 40000, BW = 0.02, ZETA = Math.SQRT1_2, SANS = 'Inter, system-ui, -apple-system, sans-serif';
@@ -88,10 +90,10 @@ function detector(r, i, m) {
   return Math.abs(r) >= Math.abs(i) ? sr * i - si * r * K : sr * i * K - si * r;
 }
 
-function simulate(m, ebdb, f, phDeg, useDiff, s) {
+function simulate(m, noise, f, phDeg, useDiff, s) {
   const k = Math.log2(m), th0 = m === 2 ? 0 : Math.PI / m, R = rng(s);
   const gray = [...Array(m).keys()].map(i => i ^ (i >> 1)), ungray = gray.map((_, b) => gray.indexOf(b));
-  const sig = Math.sqrt(1 / (k * Math.pow(10, ebdb / 10)) / 2);
+  const sig = noise / 4;   // per I and Q, after the matched filter
   const d = 1 + 2 * ZETA * BW + BW * BW, alpha = 4 * ZETA * BW / d, beta = 4 * BW * BW / d;
   const bits = new Uint8Array(N), freq = new Float32Array(N), outI = new Float32Array(N), outQ = new Float32Array(N), dec = new Uint8Array(N);
   let prevTx = 0, ph = 0, fr = 0;
@@ -179,21 +181,22 @@ function drawFreq(r, f) {
 }
 
 function update() {
-  const eb = +$('eb').value, f = +$('f').value, ph = +$('ph').value;
-  $('m-v').textContent = 'M = ' + M; $('eb-v').textContent = eb + ' dB'; $('f-v').textContent = f + ' Hz'; $('ph-v').textContent = ph + '°';
-  const r = simulate(M, eb, f, ph, diff, seed);
+  const nz = +$('nz').value, f = +$('f').value, ph = +$('ph').value;
+  $('m-v').textContent = 'M = ' + M; $('nz-v').textContent = nz.toFixed(2); $('f-v').textContent = f + ' Hz'; $('ph-v').textContent = ph + '°';
+  const r = simulate(M, nz, f, ph, diff, seed);
   drawIQ(r, M); drawFreq(r, f);
   $('o-f').textContent = r.fEnd.toFixed(0) + ' Hz';
   const t = $('o-t'); t.textContent = r.lockT === null ? 'not locked' : r.lockT.toFixed(1) + ' s'; t.className = 'v ' + (r.lockT === null ? 'bad' : '');
   const ro = $('o-rot'); ro.textContent = r.lockT === null ? '—' : (r.rot > 180 ? '−' + (360 - r.rot).toFixed(0) : (r.rot ? '+' : '') + r.rot.toFixed(0)) + '°'; ro.className = 'v';
-  const b = $('o-ber'); b.textContent = r.ber === 0 ? '0' : r.ber.toExponential(1); b.className = 'v ' + (r.ber > 0.01 ? 'bad' : r.ber === 0 ? 'good' : '');
+  const b = $('o-ber'); const ok = r.ber < 1e-3, bad = r.ber > 0.05;
+  b.textContent = ok ? 'correct' : bad ? 'wrong' : 'some errors'; b.className = 'v ' + (bad ? 'bad' : ok ? 'good' : '');
 }
 
 function seg(id, set) { for (const btn of $(id).querySelectorAll('button')) btn.onclick = () => {
   for (const o of $(id).querySelectorAll('button')) o.classList.toggle('on', o === btn); set(+btn.dataset.v); update(); }; }
 seg('m', v => { M = v; }); seg('diff', v => { diff = v; });
 $('again').onclick = () => { seed++; update(); };
-for (const id of ['eb', 'f', 'ph']) $(id).oninput = update;
+for (const id of ['nz', 'f', 'ph']) $(id).oninput = update;
 window.addEventListener('resize', update);
 update();
 </script>
