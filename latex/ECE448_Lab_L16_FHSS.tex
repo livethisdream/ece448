@@ -58,6 +58,18 @@
 \newcolumntype{K}[1]{>{\centering\arraybackslash}p{#1}}
 \newcommand{\kv}[1]{\ifkey{\color{red}#1}\fi\rule[-0.10in]{0pt}{0.34in}}
 
+% Answers are not in this public file. Every solution, \kv value, and \ansbox
+% value is \keysol{<id>}, defined in the private ECE448-faculty repo at
+% lab-keys/src/ECE448_Lab_L16_FHSS_solutions.tex; build_lab.sh puts that
+% folder on TEXINPUTS (KEYDIR) for the KEY. A KEY build without it stops.
+\long\def\defkeysol#1#2{\expandafter\long\expandafter\def\csname keysol@#1\endcsname{#2}}
+\def\keysol#1{\ifcsname keysol@#1\endcsname\csname keysol@#1\endcsname\fi}
+\ifkey
+	\IfFileExists{ECE448_Lab_L16_FHSS_solutions.tex}%
+		{\input{ECE448_Lab_L16_FHSS_solutions}}%
+		{\errmessage{KEY build needs ECE448_Lab_L16_FHSS_solutions.tex from ECE448-faculty/lab-keys/src (set KEYDIR)}}
+\fi
+
 % print the answers if this is the key
 \ifkey
 	\printanswers % if this IS the key
@@ -151,22 +163,15 @@ with every slider at its default.
 	\begin{minipage}[t]{0.58\linewidth}
 		\part Once the Receiver label reads ``locked,'' wait 30 s and record the Receiver
 		and Packets labels.
-		\begin{solution}[0.7in]
-		The receiver locks within about 2 s, and every packet arrives: about 125 correct of
-		125 sent in 30 s, 100\%.
-		\end{solution}
+		\begin{solution}[0.7in]\keysol{sol1}\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
 		\raggedleft \vspace{12pt}
-		\ansbox[1.4in]{locked, 100\%}
+		\ansbox[1.4in]{\keysol{ans1}}
 	\end{minipage}
 
 	\part Paste a screenshot of the running flowgraph's window.
-		\begin{solution}[1.6in]
-		The received-band waterfall shows dashes stepping among eight channels from $-35$ to
-		$+35$ kHz; the After Hop Sync waterfall shows one steady trace at 0 Hz; the
-		Received label reads \texttt{USAFA ECE 448}.
-		\end{solution}
+		\begin{solution}[1.6in]\keysol{sol2}\end{solution}
 
 \end{parts}
 
@@ -185,36 +190,26 @@ with every slider at its default.
 	\begin{tabular}{| l | K{0.75in} | K{0.75in} | K{0.75in} | K{0.75in} | K{0.85in} |}
 	\hline
 	& Bits per hop & Hop time & Hop rate & Cycle & Samples \\\hline
-	\texttt{guard} = 4 & \kv{272} & \kv{272 ms} & \kv{3.68 /s} & \kv{2.18 s} & \kv{34{,}816} \\\hline
+	\texttt{guard} = 4 & \kv{\keysol{kv1}} & \kv{\keysol{kv2}} & \kv{\keysol{kv3}} & \kv{\keysol{kv4}} & \kv{\keysol{kv5}} \\\hline
 	\end{tabular}
 	\end{center}
 
-		\begin{solution}[0.9in]
-		\eq{ n &= 8 \times (4 + 12 + 14 + 4) = 272\ \text{bits}, \quad T_\text{hop} = 272/1000 = 272\ \text{ms} \\
-		T_\text{cycle} &= 8 \times 272\ \text{ms} = 2.18\ \text{s}, \quad 128{,}000 \times 0.272\ \text{s} = 34{,}816\ \text{samples} }
-		\end{solution}
+		\begin{solution}[0.9in]\keysol{sol3}\end{solution}
 
 	\begin{minipage}[t]{0.58\linewidth}
 		\part With \texttt{guard} = 4, how long does each guard last?
-		\begin{solution}[0.6in]
-		Each guard is $4 \times 8 = 32$ bits, which lasts 32 ms at 1000 baud.
-		\end{solution}
+		\begin{solution}[0.6in]\keysol{sol4}\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
 		\raggedleft \vspace{12pt}
-		\ansbox[1.1in]{32 ms}
+		\ansbox[1.1in]{\keysol{ans2}}
 	\end{minipage}
 
 	\part For the hopper you build in Question 3, choose your own order of the 8
 	channels, using each once, and write the hop frequencies in that order. With
 	\texttt{dwell} = 32{,}000 samples at 128 kHz, find the time on one hop and the time
 	for one cycle.
-		\begin{solution}[1.0in]
-		The answer depends on the order. For 3, 0, 6, 1, 7, 4, 2, 5 the frequencies are
-		$-5$, $-35$, $+25$, $-25$, $+35$, $+5$, $-15$, and $+15$ kHz, from
-		$f_k = 10\ \text{kHz} \times (k - 3.5)$. One hop lasts $32{,}000/128{,}000 = 250$ ms,
-		and a cycle of 8 hops 2.0 s.
-		\end{solution}
+		\begin{solution}[1.0in]\keysol{sol5}\end{solution}
 
 \end{parts}
 
@@ -230,29 +225,14 @@ the lab page lists, with your order from Question 2(c).
 
 	\part Paste a screenshot of your running flowgraph's window with no Delay block.
 	Mark where the jammer appears on each waterfall.
-		\begin{solution}[1.6in]
-		The Transmitted band waterfall shows the carrier stepping through the 8 channels in
-		the chosen order, 250 ms on each, with the jammer as a steady line at $+5$ kHz. The
-		De-hopped waterfall shows the carrier as a steady line at 0 Hz and the jammer as
-		short dashes that move every 250 ms, at $5\ \text{kHz} - f_k$.
-		\end{solution}
+		\begin{solution}[1.6in]\keysol{sol6}\end{solution}
 
 	\part Paste a screenshot with the Delay block set to \texttt{dwell}. Explain what
 	the De-hopped waterfall shows.
-		\begin{solution}[1.4in]
-		The receiver's synthesizer is now one hop late, so on each hop it removes the
-		previous hop's frequency. The carrier appears at $f_k - f_{k-1}$, a different
-		frequency on every hop and never 0 Hz, because consecutive channels always differ.
-		A receiver tuned this way would receive nothing.
-		\end{solution}
+		\begin{solution}[1.4in]\keysol{sol7}\end{solution}
 
 	\part Describe the De-hopped waterfall with the delay at 2000 samples.
-		\begin{solution}[1.0in]
-		2000 samples is 15.6 ms, about 6\% of a hop. The carrier sits at 0 Hz for most of
-		each hop, and for the first 15.6 ms of each hop it jumps to $f_k - f_{k-1}$, which shows
-		as short blips at hop boundaries. A receiver with 16 ms guards would still
-		receive every packet.
-		\end{solution}
+		\begin{solution}[1.0in]\keysol{sol8}\end{solution}
 
 \end{parts}
 
@@ -272,46 +252,29 @@ percent.
 	\hline
 	\texttt{nch} & 8 & 1 & 8 & 2 & 4 \\\hline
 	Jammer & 2, ch 4 & 0.7 & 0.7, ch 4 & 2, ch 1 & 2, ch 1 \\\hline
-	Delivered & \kv{88\%} & \kv{40--46\%} & \kv{$\approx 94\%$} & \kv{50\%} & \kv{75\%} \\\hline
+	Delivered & \kv{\keysol{kv6}} & \kv{\keysol{kv7}} & \kv{\keysol{kv8}} & \kv{\keysol{kv9}} & \kv{\keysol{kv10}} \\\hline
 	\end{tabular}
 	\end{center}
 
-		\begin{solution}[0.9in]
-		Measured headless over 160 to 320 hops: 87.8\%, about 40 to 46\%, 93 to 94\%, 50\%,
-		and 75\%. A 30 s run is only about 125 hops, so a cadet's percentages can differ from
-		these by a few points.
-		\end{solution}
+		\begin{solution}[0.9in]\keysol{sol9}\end{solution}
 
 	\begin{minipage}[t]{0.58\linewidth}
 		\part Compare the two results at jammer amplitude 0.7, and explain in words why the
 		hopping link lost so many fewer packets.
-		\begin{solution}[1.0in]
-		On one channel the link lost about 56\% of its packets; hopping over 8 it lost about
-		6\%. The jammer sits on one channel, so the hopping link meets it on only 1 hop in 8,
-		and loses about half of those hops, as the fixed channel did.
-		\end{solution}
+		\begin{solution}[1.0in]\keysol{sol10}\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
 		\raggedleft \vspace{12pt}
-		\ansbox[1.3in]{about 44\% vs. 94\%}
+		\ansbox[1.3in]{\keysol{ans3}}
 	\end{minipage}
 
 	\part Explain in words why 2 channels lost about half the packets and 4 channels about
 	a quarter.
-		\begin{solution}[0.8in]
-		The sequence visits each channel once per cycle, so the jammed channel carries
-		exactly 1 hop in 2, or 1 in 4, and the jammer, twice the signal's amplitude, takes
-		every one of those hops and none of the others.
-		\end{solution}
+		\begin{solution}[0.8in]\keysol{sol11}\end{solution}
 
 	\part Record the Receiver and Packets labels with the jammer at 3 on channel 7 turned
 	on after the receiver locked, and again set as the slider defaults before the run.
-		\begin{solution}[0.9in]
-		Turned on after lock: the receiver stays locked and about 88\% of packets arrive,
-		7 in 8. Set as the default before the run: the Receiver label stays at ``searching: parked on
-		channel 7'' and no packets arrive, because the jammer already fills the sync
-		channel and Hop Sync never sees the power jump that marks hop 0.
-		\end{solution}
+		\begin{solution}[0.9in]\keysol{sol12}\end{solution}
 
 \end{parts}
 
@@ -323,13 +286,11 @@ percent.
 
 	\begin{minipage}[t]{0.58\linewidth}
 		\part Record the Packets label with the hop offset at $+1$ and at $-1$.
-		\begin{solution}[0.6in]
-		None arrive at either offset: 0\%.
-		\end{solution}
+		\begin{solution}[0.6in]\keysol{sol13}\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
 		\raggedleft \vspace{12pt}
-		\ansbox[1.1in]{0\%, 0\%}
+		\ansbox[1.1in]{\keysol{ans4}}
 	\end{minipage}
 
 	\part With \texttt{guard} = 4, fill in the table, and compare the edges with the guard time from Question 2(b).
@@ -339,28 +300,19 @@ percent.
 	\begin{tabular}{| l | K{0.55in} | K{0.55in} | K{0.55in} | K{0.55in} | K{0.55in} | K{0.65in} |}
 	\hline
 	Timing (ms) & $-24$ & $+24$ & $-30$ & $+30$ & $-36$ & $+36$ \\\hline
-	Delivered & \kv{100\%} & \kv{100\%} & \kv{100\%} & \kv{100\%} & \kv{$\approx 4\%$} & \kv{60--95\%} \\\hline
+	Delivered & \kv{\keysol{kv11}} & \kv{\keysol{kv12}} & \kv{\keysol{kv13}} & \kv{\keysol{kv14}} & \kv{\keysol{kv15}} & \kv{\keysol{kv16}} \\\hline
 	\end{tabular}
 	\end{center}
 
-		\begin{solution}[1.0in]
-		Measured headless, every packet arrived from $-31$ to $+34$ ms, close to the
-		32 ms guard at each end. At $-36$ ms the receiver leaves before the newline ends and
-		almost nothing arrives; at $+36$ ms it misses 4 bits of the access code, and the
-		search, which allows 2 wrong bits, still finds most packets.
-		\end{solution}
+		\begin{solution}[1.0in]\keysol{sol14}\end{solution}
 
 	\begin{minipage}[t]{0.58\linewidth}
 		\part Record the three times from moving the path delay to the first correct packet.
-		\begin{solution}[0.9in]
-		About 2.4 to 4.6 s each: more than 9 hops without a packet before Hop Sync parks,
-		then up to one cycle, 1.92 s, until hop 0 reaches the sync channel, and 0.24 s
-		more for that hop's packet to finish.
-		\end{solution}
+		\begin{solution}[0.9in]\keysol{sol15}\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
 		\raggedleft \vspace{12pt}
-		\ansbox[1.1in]{2.4 to 4.6 s}
+		\ansbox[1.1in]{\keysol{ans5}}
 	\end{minipage}
 
 \end{parts}
@@ -377,20 +329,15 @@ before you disconnect the cable.
 
 	\part Once \texttt{USAFA ECE 448} decodes, paste a screenshot that shows both
 	waterfalls and the Receiver, Packets, and Received labels.
-		\begin{solution}[1.5in]
-		The received band shows the hopping dashes; after Hop Sync the signal is a steady
-		trace at 0 Hz; the Receiver label reads ``locked'' and the message decodes.
-		\end{solution}
+		\begin{solution}[1.5in]\keysol{sol16}\end{solution}
 
 	\begin{minipage}[t]{0.58\linewidth}
 		\part Record the Packets label with the jammer at 2 on channel 4.
-		\begin{solution}[0.6in]
-		About 88\%, 7 in 8, as in simulation.
-		\end{solution}
+		\begin{solution}[0.6in]\keysol{sol17}\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
 		\raggedleft \vspace{12pt}
-		\ansbox[1.1in]{about 88\%}
+		\ansbox[1.1in]{\keysol{ans6}}
 	\end{minipage}
 
 	\part Record the Receiver and Packets labels at each TX attenuation, and explain what
@@ -406,14 +353,7 @@ before you disconnect the cable.
 	\end{tabular}
 	\end{center}
 
-		\begin{solution}[1.0in]
-		The AGC holds the band's level steady, but the noise does not fall with the signal,
-		so as the attenuation rises the AGC raises the noise along with the signal, and on
-		the waterfall the hops sink into the noise until packets fail. In a simulation with estimated
-		Pluto levels, every packet arrived at 60, 70, and 80 dB, and at 89 dB the receiver
-		locked but no packet decoded. The real levels, and where the link fails, depend on
-		the hardware.
-		\end{solution}
+		\begin{solution}[1.0in]\keysol{sol18}\end{solution}
 
 \end{parts}
 
@@ -429,39 +369,17 @@ before you disconnect the cable.
 	and the jammer's amplitude. Use your De-hopped waterfall from Question 3(a) to explain
 	why a jammer stronger than the signal takes only the hops on its own channel, and why
 	raising its power further does not take more.
-		\begin{solution}[1.5in]
-		About 50\%, 75\%, and 88\% arrived with 2, 4, and 8 channels: the jammer took the
-		hops on its own channel, 1 in 2, 1 in 4, or 1 in 8, at any amplitude of 1 or
-		more. After de-hopping, the wanted signal sits at 0 Hz on every hop, but the
-		jammer moves to $f_\text{jam} - f_k$, which lies inside the receiver's $\pm 2$ kHz
-		filter only on the hops tuned to the jammer's channel. On every other hop the filter
-		removes it however strong it is, so more power takes no more hops; it only makes
-		sure the hops on its own channel are lost.
-		\end{solution}
+		\begin{solution}[1.5in]\keysol{sol19}\end{solution}
 
 	\part Compare the timing errors the link tolerated with 2 guard bytes, from the
 	lesson's Timing Error frame, and with 4, from Question 5(b). Explain in words what the
 	extra guard bytes take from each hop, and when they are worth it.
-		\begin{solution}[1.5in]
-		With 2 guard bytes every packet arrived from about $-16$ to $+18$ ms; with 4, from
-		about $-31$ to $+34$ ms, twice as wide. The extra guard bytes carry no data, so each
-		hop is longer for the same payload, the hop rate falls, and the link carries less
-		text per second. They are worth it when the receiver's timing is poor, or when a
-		radio's synthesizer needs time to settle at each hop.
-		\end{solution}
+		\begin{solution}[1.5in]\keysol{sol20}\end{solution}
 
 	\part From Question 4(d), explain why one jammed channel can keep a receiver from
 	ever locking although it takes only 1 hop in 8 from a locked receiver, and propose a
 	change to Hop Sync or to the packet that removes that weakness.
-		\begin{solution}[1.5in]
-		Hop Sync acquires only on the sync channel, by the jump in its power when hop 0
-		arrives. A jammer already there hides that jump, so the receiver waits forever. A
-		receiver already locked keeps hopping on its own sample count; packets on the other
-		channels keep the watchdog from parking it again. Two fixes: put the hop number in every packet's header and let Hop Sync
-		park on any channel, lock on the first packet it decodes there, and read which hop
-		it was; or give the receiver two or more sync channels and have it move to the
-		next when one stays busy, as Bluetooth's inquiry procedure uses 32.
-		\end{solution}
+		\begin{solution}[1.5in]\keysol{sol21}\end{solution}
 
 \end{parts}
 
