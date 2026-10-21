@@ -174,14 +174,15 @@ The left panel plots the tone's last eight samples on the unit circle, one new s
 :::
 ::::
 
-::::{frame} Part 3: Find a Station in GQRX
+::::{frame} Part 3: Find a Station
 :::{present}
-- Run `gqrx`, choose the RTL-SDR, and press the power button.
-- Mode **WFM (stereo)**; click a tall peak in the FM band and listen.
-- Note its frequency: that is the flowgraph's center frequency next.
+- Practice in SDR Flex: select a signal, demodulate it.
+- Live: run `gqrx`, choose the RTL-SDR, press power.
+- Set **WFM (stereo)**; click a tall peak and listen.
+- Note its frequency for the flowgraph.
 :::
 
-Before building a receiver, find a signal with one that already works. **GQRX**, installed with radioconda, is a spectrum, waterfall, and receiver in one window. Start it from the radioconda prompt with `gqrx`, pick the RTL-SDR in the device dialog, set the frequency to about 100 MHz, and press the power button at the top left. Set the mode to WFM (stereo), click on one of the tall bands in the spectrum, and the station plays through the speaker.
+Before building a receiver, find a signal with one that already works. <a href="https://livethisdream.github.io/sdr-flex/" target="_blank" rel="noopener">SDR Flex</a>, in the browser, has the same moves on its example captures: drag across a signal on the waterfall and choose a demodulator, and it builds the GNU Radio flowgraph for you. Its browser version has no live radio, so for the RTL-SDR use the fallback. **GQRX**, installed with radioconda, is a spectrum, waterfall, and receiver in one window. Start it from the radioconda prompt with `gqrx`, pick the RTL-SDR in the device dialog, set the frequency to about 100 MHz, and press the power button at the top left. Set the mode to WFM (stereo), click on one of the tall bands in the spectrum, and the station plays through the speaker.
 
 Write down the frequency of the strongest station you can hear, then quit GQRX; only one program can open the RTL-SDR at a time. The next flowgraph uses that frequency as its center frequency, so the station we just heard is the one we look at in GRC.
 ::::
@@ -292,6 +293,7 @@ Open a `.grc` file from GRC's File menu, or run `gnuradio-companion L05-tone.grc
 
 - <a class="doc-link" href="https://pysdr.org/content/sampling.html" target="_blank" rel="noopener">PySDR: IQ Sampling</a>
 - <a class="doc-link" href="https://pysdr.org/content/frequency_domain.html" target="_blank" rel="noopener">PySDR: Frequency Domain</a>
+- <a class="doc-link" href="https://livethisdream.github.io/sdr-flex/" target="_blank" rel="noopener">SDR Flex</a>, in the browser, and <a class="doc-link" href="https://gqrx.dk/" target="_blank" rel="noopener">GQRX</a>, for finding a station
 ::::
 
 ::::{frame} Summary

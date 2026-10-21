@@ -292,14 +292,15 @@ FM spreads the message over a wider channel and, while the signal is strong, com
 :::
 ::::
 
-::::{frame} Find the Station in GQRX
+::::{frame} Find the Station
 :::{present}
-- Tune the FM band in GQRX and choose **WFM (stereo)**.
+- SDR Flex: select an FM signal, demodulate it.
+- Live: tune the FM band in GQRX and choose **WFM (stereo)**.
 - Turn on RDS and read the station name.
 - Note the frequency; the GRC receiver uses it next.
 :::
 
-Before building anything on the air, find the station with a ready-made receiver. **GQRX** runs on the same RTL-SDR: choose the RTL-SDR as the input device, start it, and click a strong station on the spectrum or waterfall between 88 and 108 MHz. Set the mode to **WFM (stereo)**; the audio plays, and the stereo indicator lights if the station sends a pilot. Open GQRX's RDS panel and turn decoding on, and within a few seconds it shows the station name.
+Before building anything on the air, find the station with a ready-made receiver. In <a href="https://livethisdream.github.io/sdr-flex/" target="_blank" rel="noopener">SDR Flex</a>, drag across an FM signal in an example capture and choose the FM demodulator. Its RDS decoder is an external program that needs the full SDR Flex server, and its browser version has no live radio, so the live station uses the fallback. **GQRX** runs on the same RTL-SDR: choose the RTL-SDR as the input device, start it, and click a strong station on the spectrum or waterfall between 88 and 108 MHz. Set the mode to **WFM (stereo)**; the audio plays, and the stereo indicator lights if the station sends a pilot. Open GQRX's RDS panel and turn decoding on, and within a few seconds it shows the station name.
 
 GQRX runs on Linux and macOS; on Windows, SDR++ or SDR# does the same job with the same WFM mode and an RDS display. Write down the station's frequency and name, and close GQRX, since only one program can use the RTL-SDR at a time. The next step builds the same receiver in GRC on that station, and the name GQRX showed is the check that the RDS flowgraph decodes it correctly.
 ::::
@@ -324,6 +325,7 @@ This lesson follows:
 - <a class="doc-link" href="../../legacy/L08-am-fm-receivers.pdf" target="_blank" rel="noopener">Dr. Rogers's 2025 slides, AM and FM Receivers (PDF)</a>
 - <a class="doc-link" href="https://wiki.gnuradio.org/index.php?title=Simulation_example:_Narrowband_FM_transceiver" target="_blank" rel="noopener">GNU Radio wiki, Simulation example: Narrowband FM transceiver</a>
 - <a class="doc-link" href="https://pysdr.org/content/rds.html" target="_blank" rel="noopener">PySDR, RDS: an end-to-end example</a>
+- <a class="doc-link" href="https://livethisdream.github.io/sdr-flex/" target="_blank" rel="noopener">SDR Flex</a>, for practicing select-and-demodulate on example captures
 - <a class="doc-link" href="https://gqrx.dk/" target="_blank" rel="noopener">GQRX</a>, for finding a station before building a receiver for it
 
 Downloads:

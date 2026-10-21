@@ -211,14 +211,15 @@ Broadcast FM is strong and has a 200 kHz channel. Aircraft use AM: a weak AM sig
 
 ---
 
-## Find the Station in GQRX
+## Find the Station
 
-- Tune the FM band and choose **WFM (stereo)**.
+- SDR Flex: select an FM signal, demodulate it.
+- Live: tune the FM band in GQRX; choose **WFM (stereo)**.
 - Turn on RDS and read the station name.
 - Note the frequency for the GRC receiver.
 
 Note:
-Demo live: choose the RTL-SDR in GQRX, click a strong station, set WFM (stereo), open the RDS panel and enable decoding. Write the frequency and name on the board, close GQRX (one program per RTL-SDR; on Windows use SDR++ or SDR# instead), then run L07-rds-rx.grc on that station and check that the names match.
+Open SDR Flex (livethisdream.github.io/sdr-flex) on an example capture and demodulate an FM signal; RDS there needs the full server. Then demo live: choose the RTL-SDR in GQRX, click a strong station, set WFM (stereo), open the RDS panel and enable decoding. Write the frequency and name on the board, close GQRX (one program per RTL-SDR; on Windows use SDR++ or SDR# instead), then run L07-rds-rx.grc on that station and check that the names match.
 
 ---
 

@@ -279,15 +279,17 @@ Every capture in this course starts with the same three choices. For broadcast F
 The gain comes last, set against the strongest signal in the window, not the one we want. A weak signal next to a strong one is where the extra bits of the PlutoSDR matter, and where an 8-bit radio needs a narrower window or a filter ahead of it to keep the strong signal out. Lesson 5 gives the procedure for setting the gain on a live RTL-SDR.
 ::::
 
-::::{frame} Walkthrough: The FM Band in GQRX
+::::{frame} Walkthrough: Explore a Band
 :::{present}
-1. Open GQRX and pick the RTL-SDR.
-2. Tune to 98 MHz; read the spectrum and waterfall.
+1. SDR Flex: open a capture; select a signal; demodulate.
+2. GQRX, live: tune to 98 MHz; read the waterfall.
 3. Click a station, set WFM, and listen.
 4. Raise the gain until false stations appear; back off.
 :::
 
-Before building a flowgraph for a signal, we find it in a standalone receiver. Plug the RTL-SDR into a USB port, open GQRX, and choose the RTL-SDR in the device dialog at its default rate; SDR++ has the same controls if GQRX is not on your laptop. Set the frequency to 98 MHz and press the power button to start.
+Before building a flowgraph for a signal, we find it in an explore tool. Start with <a href="https://livethisdream.github.io/sdr-flex/" target="_blank" rel="noopener">SDR Flex</a>, Dr. Rogers's own tool, which runs in the browser with nothing to install. It opens on a simulated scene of several signals. Right-click the source chip at the top left to open one of its example captures, drag across a signal on the waterfall to select it, and choose a demodulator. Each of those actions builds a GNU Radio flowgraph behind the scenes.
+
+The browser version plays captures, not a live radio, so for the live band use GQRX, the fallback. Plug the RTL-SDR into a USB port, open GQRX, and choose the RTL-SDR in the device dialog at its default rate; SDR++ has the same controls if GQRX is not on your laptop. Set the frequency to 98 MHz and press the power button to start.
 
 The top plot is the spectrum, 2.4 MHz wide around the center frequency, and the waterfall below it scrolls the same spectrum through time, so a station that stays on the air draws a steady vertical stripe. Each FM station is a stripe about 200 kHz wide. Click the middle of one, set the mode to **WFM (stereo)**, and the station plays. Now raise the gain slider in steps and watch the noise floor and the strongest stations. At first the weak stations rise above the floor; past some setting, new stripes appear where nothing transmits, the clipping of the Too Much Gain frame on a real radio. Back the gain off until they disappear. Use the same steps to find a signal before every lab.
 ::::
@@ -299,6 +301,7 @@ GNU Radio is the course's tool, but every radio in this course also works with s
 
 | Program | What it is for |
 | :-- | :-- |
+| SDR Flex | Dr. Rogers's explore tool: spectrum, waterfall, demodulators, and decoders; runs in a browser |
 | GQRX | a spectrum, waterfall, and AM/FM/SSB receiver for Linux and macOS, built on GNU Radio |
 | SDR++ | a cross-platform spectrum, waterfall, and receiver |
 | SDR# (SDRSharp) | a Windows spectrum, waterfall, and receiver |
@@ -328,6 +331,7 @@ This lesson follows Dr. Rogers's 2025 slides and these pages:
 - <a class="doc-link" href="https://pysdr.org/content/hardware.html" target="_blank" rel="noopener">PySDR, SDR Hardware</a>
 - <a class="doc-link" href="https://pysdr.org/content/sampling.html" target="_blank" rel="noopener">PySDR, IQ Sampling</a>
 - <a class="doc-link" href="https://pysdr.org/content/frequency_domain.html" target="_blank" rel="noopener">PySDR, Frequency Domain</a>
+- <a class="doc-link" href="https://livethisdream.github.io/sdr-flex/" target="_blank" rel="noopener">SDR Flex</a>, in the browser
 - <a class="doc-link" href="https://gqrx.dk/" target="_blank" rel="noopener">GQRX</a>
 ::::
 

@@ -39,7 +39,7 @@ Open GRC on the projector before class with the tone flowgraph loaded. The first
 2. Your first flowgraph: a tone in time and frequency
 3. Variables and sliders; data types and converting them
 4. Complex sampling and aliasing
-5. Find a station in GQRX, then view it in GRC
+5. Find a station (SDR Flex, GQRX), then view it in GRC
 6. Gain, recording IQ, and reading it in Python
 
 Note:
@@ -147,14 +147,15 @@ This is the wagon-wheel effect from movies. Each sample advances more than half 
 
 ---
 
-## Find a Station in GQRX
+## Find a Station
 
-- Run `gqrx`, choose the RTL-SDR, press power.
+- Practice in SDR Flex: select a signal, demodulate it.
+- Live: run `gqrx`, choose the RTL-SDR, press power.
 - Mode **WFM (stereo)**; click a tall peak and listen.
 - Note the frequency; quit GQRX before opening GRC.
 
 Note:
-GQRX first, so they hear the station before they build anything. Only one program can open the RTL-SDR at a time, so quit GQRX before running the flowgraph.
+SDR Flex (livethisdream.github.io/sdr-flex) on an example capture shows the select-and-demodulate moves; its browser version has no live radio, so GQRX does the live part. Explore first, so they hear the station before they build anything. Only one program can open the RTL-SDR at a time, so quit GQRX before running the flowgraph.
 
 ---
 
