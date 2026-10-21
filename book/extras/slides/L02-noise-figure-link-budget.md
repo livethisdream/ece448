@@ -73,7 +73,7 @@ This is the 2003 edition; NTIA posts the current one. Let them look for a minute
 
 <div class="fig" data-inline-svg="./fig/L02-ism-bands.svg" style="max-width:860px; margin:0 auto;"></div>
 
-- The **ISM** bands allow low-power unlicensed use under FCC Part 15.
+- The FCC and NTIA allocate every band. The **ISM** bands allow low-power unlicensed use under FCC Part 15.
 - Receiving is unrestricted; in class we transmit only when the lesson says to.
 
 Note:
@@ -179,7 +179,7 @@ Use linear ratios. All of the gain ahead of a stage divides down its extra noise
 The same three parts give 1.4, 4.2, or 11.0 dB; mount the LNA at the antenna.
 
 Note:
-Read the three rows off the figure; no need to work the arithmetic on the board. Ten dB of noise figure is a factor of 3.2 in range.
+Read the three rows off the figure; no need to work the arithmetic on the board. The 9.6 dB between the best and worst is a factor of 3.0 in range.
 
 ---
 
@@ -187,12 +187,12 @@ Read the three rows off the figure; no need to work the arithmetic on the board.
 
 $$N_\text{floor} = -174 + 10\log_{10}B + \text{NF} \quad \text{(dBm)}$$
 
-- Thermal and shot noise give $kTB$: $-174$ dBm/Hz at 290 K.
+- Thermal noise, $kTB$, is $-174$ dBm/Hz at 290 K.
 - 1 MHz with NF 7 dB gives $-107.0$ dBm.
 - Halving the bandwidth lowers the floor 3 dB.
 
 Note:
-Minus 174 dBm per hertz is the number to remember. Sixty dB for one megahertz takes it to minus 114, and the noise figure adds the rest. Other sources, generation-recombination, temperature fluctuation, and quantum noise, add smaller amounts.
+Minus 174 dBm per hertz is the number to remember. Sixty dB for one megahertz takes it to minus 114, and the noise figure adds the rest. Shot noise and smaller sources, generation-recombination, temperature fluctuation, and quantum noise, add to it; a receiver lumps them into one noise temperature.
 
 ---
 
@@ -254,12 +254,12 @@ Demo live from the lesson page. Start on the drone preset, double the distance, 
 
 ## Reading SNR on an SDR
 
-- The spectrum display reads in dBFS, relative to full scale, not dBm.
-- SNR is a difference, so read the peak and the floor.
-- Each FFT bin holds $f_s/N$ Hz of noise; doubling $N$ lowers the displayed floor 3 dB.
+1. Tune GQRX to a broadcast FM station.
+2. Read the peak and the floor beside it, in dBFS.
+3. Double the FFT size: the floor drops 3 dB, and so does the wide station.
 
 Note:
-Converting dBFS to dBm takes a calibrated source, but an SNR does not need one. The display shows the SNR in one bin. To get the SNR the demodulator sees, scale the floor up to the signal's bandwidth. We will do this on real captures from Lesson 5 on.
+Instructor demo in GQRX; cadets repeat it in GRC from Lesson 5. Converting dBFS to dBm takes a calibrated source, but an SNR does not need one. The wide FM station drops with the floor, so its displayed SNR stays put; a narrow carrier would stay where it was. The display shows SNR per bin.
 
 ---
 

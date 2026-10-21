@@ -72,10 +72,10 @@ A 1 is sent as $+1$ V and a 0 as $-1$ V.
 		\end{solution}
 
 	\part Decide each of these received samples: $+0.83$, $-1.20$, $+0.07$, $-0.31$ V.
-	The bits sent were 1, 0, 0, 0. Which sample was decided wrong, and why?
+	The bits sent were 1, 0, 0, 0. Which sample did the receiver decide wrong, and why?
 		\begin{solution}[1.0in]
 		1, 0, 1, 0. The third sample was sent as $-1$ V, but the noise added more than
-		1 V and carried it past the threshold, so it was decided as a 1.
+		1 V and carried it past the threshold, so the receiver decided it was a 1.
 		\end{solution}
 
 	\part The SDR display shows the SNR falling from 14 dB to 4 dB. Describe what
@@ -84,8 +84,8 @@ A 1 is sent as $+1$ V and a 0 as $-1$ V.
 		\begin{solution}[1.1in]
 		Each point's spread of samples widens until the spreads meet at 0 V, and some
 		samples land on the wrong side. The threshold does not move. On the time sink,
-		the slicer's output, which was a clean copy of the sent bits, now flips to the
-		wrong value now and then.
+		the slicer's output, which was a clean copy of the sent bits, flips to the
+		wrong value from time to time.
 		\end{solution}
 
 	\part Name two changes that would keep more samples on the right side of the
@@ -199,7 +199,7 @@ the same SNR turns a steady trickle of samples red.
 
 \newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\question \textbf{Reading a constellation.} Four QPSK receivers each show one
+\question \textbf{Reading a constellation.} Three QPSK receivers each show one
 problem on a constellation sink. Name the cause of each.
 \begin{parts}
 

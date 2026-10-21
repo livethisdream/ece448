@@ -70,7 +70,7 @@ The chart shows every allocation in the United States, from 3 kHz at the top lef
 
 ::::{frame} Who May Transmit Where
 :::{present}
-- The FCC allocates every band; most require a license.
+- The FCC and NTIA allocate every band; most require a license.
 - The **ISM** bands (915 MHz, 2.4 GHz, 5.8 GHz) allow low-power unlicensed use, which is why Wi-Fi, Bluetooth, and most drones live there.
 - Receiving is unrestricted; transmitting is not.
 :::
@@ -156,7 +156,7 @@ The 6 dB rule also runs in reverse. If a link has 6 dB of margin, it will still 
 - Each cable and connector subtracts its insertion loss.
 :::
 
-An antenna turns the voltages and currents in a circuit into a radiated wave, and back again. A good one does two jobs: it sends energy in the directions we want and suppresses it elsewhere, and it moves as much power as possible between the circuit and space. **Directivity** measures the first, how much stronger the radiation is in the best direction than on average. **Gain** is directivity times efficiency, quoted in dBi against an isotropic antenna, and it is the number that goes in the Friis equation.
+An antenna turns the voltages and currents in a circuit into a radiated wave, and back again, and it comes in many forms: wire dipoles, horns, parabolic dishes, slotted waveguides, and phased arrays. A good one does two jobs: it sends energy in the directions we want and suppresses it elsewhere, and it moves as much power as possible between the circuit and space. **Directivity** measures the first, how much stronger the radiation is in the best direction than on average. **Gain** is directivity times efficiency, quoted in dBi against an isotropic antenna, and it is the number that goes in the Friis equation.
 
 The gain on a datasheet is the peak, along the main beam. The **beamwidth** is the angle between the points where the pattern falls 3 dB below that peak. An antenna pointed away from the other end of the link delivers less: at the edge of the half-power beamwidth, 3 dB less by definition, and in a null almost nothing. A drone that banks, a handheld radio held sideways, or two linear antennas at right angles to each other can each lose several dB, so a budget either assumes the worst orientation or states the one it assumes. Every cable, connector, filter, and switch between the radio and its antenna also subtracts its **insertion loss**; a few meters of thin coax at 2.4 GHz loses a dB or more.
 ::::
@@ -190,18 +190,18 @@ F &= F_1 + \frac{F_2 - 1}{G_1} \\
 
 A receiver is a chain of stages, and the formula on the slide combines their noise factors $F_n$, the noise figures as linear ratios, and their linear gains $G_n$ into the noise factor of the whole chain. Each stage after the first contributes its extra noise divided by all of the gain ahead of it, so behind a 20 dB LNA a stage's noise counts one hundred times less than it would at the antenna. The first stage sets the floor, so it should have a low noise figure and enough gain to make everything after it unimportant.
 
-The figure shows what that means in practice. The same three parts, an LNA with NF 1 dB and 20 dB of gain, 3 dB of coax, and an SDR with NF 8 dB, give a system noise figure of 1.4 dB with the LNA at the antenna, 4.2 dB with the cable ahead of the LNA, and 11.0 dB with no LNA at all. Any loss in front of the first amplifier adds to the noise figure dB for dB, because nothing ahead of it divides it down. Mount the LNA at the antenna.
+The figure shows what that means in practice. The same three parts, an LNA with NF 1 dB and 20 dB of gain, 3 dB of coax, and an SDR with NF 8 dB, give a system noise figure of 1.4 dB with the LNA at the antenna, 4.2 dB with the cable ahead of the LNA, and 11.0 dB with no LNA at all. Any loss in front of the first amplifier adds to the noise figure dB for dB, because nothing ahead of it divides it down, which is why the LNA belongs at the antenna.
 ::::
 
 ::::{frame} Noise Sources and the Noise Floor
 :::{present}
 $$N_\text{floor} = -174 + 10\log_{10}B + \text{NF}$$
 
-- $kTB$ at 290 K is $-174$ dBm in each hertz.
+- Thermal noise, $kTB$ at 290 K, is $-174$ dBm in each hertz.
 - 1 MHz with NF 7 dB gives $-107.0$ dBm.
 :::
 
-Where does the noise come from? Electrons moving at random in every resistor and semiconductor produce **thermal** and **shot noise**, and both deliver a noise power $kTB$ in a bandwidth $B$, where $k = 1.38\times10^{-23}$ J/K is Boltzmann's constant and $T$ is the **noise temperature**. At the standard 290 K that is $-174$ dBm in each hertz, the number to remember. Other sources, such as generation-recombination, temperature-fluctuation, and quantum noise, add smaller amounts.
+Where does the noise come from? Electrons moving at random in every resistor produce **thermal noise**, a noise power $kTB$ in a bandwidth $B$, where $k = 1.38\times10^{-23}$ J/K is Boltzmann's constant and $T$ is the temperature. At the standard 290 K that is $-174$ dBm in each hertz, the number to remember. **Shot noise**, from current flowing through semiconductor junctions, and smaller sources such as generation-recombination, temperature-fluctuation, and quantum noise add to it; a receiver lumps them all into one **noise temperature**, the $T$ that would give the same $kTB$.
 
 The noise a receiver sees grows with the bandwidth it lets through, and its own noise figure adds on top, so its **noise floor** in dBm is the sum on the slide. For the drone link, 1 MHz of bandwidth and a 7 dB noise figure put the floor at $-174 + 60 + 7 = -107.0$ dBm. Narrowing the bandwidth lowers the floor, 3 dB for every halving, which is one reason narrowband signals such as CW reach so far.
 ::::
@@ -268,7 +268,7 @@ The link meets the 10 dB goal. The effective isotropic radiated power, **EIRP**,
 :class: viz-frame
 
 :::{depth}
-The widget starts on the drone link above. The four steps are the transmitter, the EIRP after the transmit antenna, the level after the path, and the receiver input after the remaining losses; the dashed red line is the noise floor and the dotted line is the sensitivity. Drag the distance to 6 km and watch the margin drop by 6.0 dB. Raise the bandwidth to 20 MHz and watch the floor rise by 13 dB, so a wideband link loses range for the same power. Then try the two other presets. The Wi-Fi link loses 10 dB to walls and needs 25 dB of SNR for a fast modulation, so it has little margin even at 50 m. The GPS link arrives about 18 dB *below* the noise floor; a GPS receiver still works because it correlates the signal against a known 1023-chip code, which recovers about 30 dB.
+The widget starts on the drone link above. The four steps are the transmitter, the level after the transmit antenna, the level after the path, and the receiver input after the remaining losses; the dashed red line is the noise floor and the dotted line is the sensitivity. Drag the distance to 6 km and watch the margin drop by 6.0 dB. Raise the bandwidth to 20 MHz and watch the floor rise by 13 dB, so a wideband link loses range for the same power. Then try the two other presets. The Wi-Fi link loses 10 dB to walls and needs 25 dB of SNR for a fast modulation, so it has little margin even at 50 m. The GPS link arrives about 18 dB *below* the noise floor; a GPS receiver still works because it correlates the signal against a known 1023-chip code, which recovers about 30 dB.
 :::
 
 :::{present}
@@ -283,14 +283,14 @@ The widget starts on the drone link above. The four steps are the transmitter, t
 
 ::::{frame} Reading SNR on an SDR
 :::{present}
-1. In GQRX, tune an RTL-SDR to a broadcast FM station.
+1. Tune GQRX to a broadcast FM station.
 2. Read the peak and the floor beside it, in dBFS.
-3. Double the FFT size: the floor drops 3 dB.
+3. Double the FFT size: the floor drops 3 dB, and so does the wide station.
 :::
 
-From here on we read signals off a spectrum display, GQRX's or the GNU Radio frequency sink's, and its vertical axis is in **dBFS**, decibels relative to the full scale of the analog-to-digital converter, not in dBm. Turning dBFS into dBm takes a calibration against a known source, but an SNR does not need one: it is the difference between two levels on the same axis, so the peak minus the floor gives it directly. Try it in GQRX on a strong FM station and on a weak one, and the difference is the link budget of this lesson showing up on the screen.
+From Lesson 5 on we read signals off a spectrum display, and this step is an instructor demo in GQRX with an RTL-SDR; cadets repeat it in GNU Radio's frequency sink once the Lesson 5 install is done. The vertical axis is in **dBFS**, decibels relative to the full scale of the analog-to-digital converter, not in dBm. Turning dBFS into dBm takes a calibration against a known source, but an SNR does not need one: it is the difference between two levels on the same axis, so the peak minus the floor gives it directly. A strong FM station and a weak one show the difference a link budget predicts.
 
-The bandwidth needs one more step. A display with an $N$-point FFT at sample rate $f_s$ splits the band into bins $f_s/N$ wide, and each bin holds only that much of the noise. Change GQRX's FFT size from 4096 to 8192 and watch: the floor drops 3 dB, while a narrow carrier stays where it was. The SNR read off the display is the SNR in one bin, not in the signal's full bandwidth. To find the SNR a demodulator sees, scale the floor to the signal bandwidth $B$ by adding $10\log_{10}(B N/f_s)$ dB to it.
+The bandwidth needs one more step. A display with an $N$-point FFT at sample rate $f_s$ splits the band into bins $f_s/N$ wide, and each bin holds only that much of the noise. Change the FFT size from 4096 to 8192 and the floor drops 3 dB. A 200 kHz FM station spans many bins, so its level drops 3 dB too and the displayed SNR stays the same; a narrow carrier, all in one bin, would stay where it was and its SNR would rise. Either way, the SNR read off the display is per bin. To find the SNR a demodulator sees for a narrow carrier, scale the floor to the signal bandwidth $B$ by adding $10\log_{10}(B N/f_s)$ dB to it, approximately, since the display's window widens each bin a little.
 ::::
 
 ::::{frame} Key Point
@@ -308,7 +308,7 @@ This lesson follows Dr. Rogers's 2025 slides, <a href="../../legacy/L02-noise-fi
 - PySDR, <a href="https://pysdr.org/content/noise.html" target="_blank" rel="noopener">Noise and dB</a>: decibels, noise power, and SNR.
 - PySDR, <a href="https://pysdr.org/content/link_budgets.html" target="_blank" rel="noopener">Link Budgets</a>: path loss, noise figure, and an end-to-end budget.
 
-The hands-on step, reading SNR off a spectrum display, uses GQRX with an RTL-SDR.
+The hands-on step, reading SNR off a spectrum display, is an instructor demo in GQRX with an RTL-SDR, repeated in GNU Radio from Lesson 5.
 ::::
 
 ::::{frame} Summary

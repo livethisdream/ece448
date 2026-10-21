@@ -24,7 +24,7 @@ Spring 2027 · Dr. Neil Rogers
 
 - Lesson 2: a link closes when the received power clears the noise floor by the SNR the receiver needs
 - The SDR display reads that SNR as the peak minus the floor
-- What does the noise actually do to a digital signal?
+- What does the noise do to a digital signal?
 
 Today: **a modulation is a set of points**, and noise decides how often the receiver picks the wrong one.
 
@@ -35,11 +35,11 @@ Open by putting the Lesson 2 ledger back on the screen and pointing at the noise
 
 ## Today's Plan
 
-1. Four ways to carry bits: ASK/PAM, PSK, FSK
+1. Three families: ASK/PAM, PSK, FSK
 2. Binary PAM and the decision threshold
 3. What noise does: antipodal and orthogonal signals
 4. Basis functions and constellation diagrams
-5. Decision regions, and the constellation explorer
+5. Decision regions, in GNU Radio and the constellation explorer
 6. Gray coding, and reading a constellation in GNU Radio
 
 Note:
@@ -47,7 +47,7 @@ The same order as the 2025 slides: binary PAM first, then constellations, then G
 
 ---
 
-## Four Ways to Carry Bits
+## Three Families of Modulation
 
 | Family | What changes per symbol | In this course |
 | :-- | :-- | :-- |
@@ -58,7 +58,7 @@ The same order as the 2025 slides: binary PAM first, then constellations, then G
 $M$ choices per symbol carry $\log_2 M$ bits.
 
 Note:
-Two choices carry one bit, four carry two, eight carry three. "M-ary" just means M choices. Each family gets its own flowgraph later in the course.
+Two choices carry one bit, four carry two, eight carry three. "M-ary" means M choices. Each family gets its own flowgraph later in the course.
 
 ---
 
@@ -129,6 +129,19 @@ QPSK at three SNRs. At 20 dB nothing crosses; at 10 dB a few do; at 4 dB the clo
 
 ---
 
+## Try It in GNU Radio
+
+<img src="./img/03-signal-space/L03-grc-snr6.png" alt="The L3 noise flowgraph at an SNR of 6 dB: four wide QPSK clouds" style="max-height:380px; display:block; margin:0 auto;">
+
+1. Open `L03-noise-constellation.grc` and run it.
+2. Drag the SNR from 20 dB down to 6 dB.
+3. Add a phase offset and watch the clouds rotate.
+
+Note:
+Instructor demo; no SDR needed. Random Source, Chunks to Symbols with a Gray-coded QPSK table, and a Channel Model whose noise voltage comes from the SNR slider. Open Chunks to Symbols and show the symbol table: that list is the constellation.
+
+---
+
 <!-- .slide: class="viz-cue-slide" -->
 
 ## Constellation Explorer
@@ -140,7 +153,7 @@ QPSK at three SNRs. At 20 dB nothing crosses; at 10 dB a few do; at 4 dB the clo
 <p class="viz-cue">↗ Interactive on the lesson page</p>
 
 Note:
-Demo live. Let the class call out what they see as the SNR slider moves. End on the phase offset: at 45 degrees every symbol is in the wrong region with no noise at all, which motivates carrier recovery in Lesson 15.
+Demo live. Let the class call out what they see as the SNR slider moves. End on the phase offset: past 45 degrees every symbol is in the wrong region with no noise at all, which motivates carrier recovery in Lesson 15.
 
 ---
 
@@ -179,7 +192,7 @@ The constellation sink is the first place to look when a receiver fails. Lesson 
 
 ## Key Point
 
-<div class="callout">A modulation is a set of points. Noise turns each point into a cloud, and a sample that lands in a neighbor's region is decided wrong. Points farther apart, or a higher SNR, keep the clouds in their own regions.</div>
+<div class="callout">A modulation is a set of points. Noise turns each point into a cloud, and a sample in a neighbor's region is a wrong decision. Points farther apart, or a higher SNR, keep the clouds in their own regions.</div>
 
 Note:
 If they keep one picture, it is the noise clouds at three SNRs.

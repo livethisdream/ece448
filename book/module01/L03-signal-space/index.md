@@ -36,7 +36,7 @@ Lesson 3 · Module 1: Foundations of Detection & Link Budgets · Dr. Neil Rogers
 </ol>
 ::::
 
-::::{frame} Four Ways to Carry Bits
+::::{frame} Three Families of Modulation
 :::{present}
 | Family | What changes per symbol | In this course |
 | :-- | :-- | :-- |
@@ -78,19 +78,19 @@ The receiver takes one sample in the middle of each pulse. Without noise, every 
 :::
 :::{present}
 - Noise turns each point into a spread of samples.
-- A sample that lands past 0 is decided wrong.
+- The receiver decides a sample past 0 wrong.
 - As the SNR falls, the spreads widen and meet.
 :::
 
 A real receiver adds noise to every sample, the noise floor of Lesson 2, so the received value is $+A$ or $-A$ plus a random offset. The figure shows 1500 received samples at two SNRs, each drawn as a dot at its value; the up-and-down spread only keeps the dots apart. At 14 dB each point becomes a narrow band, and no sample comes anywhere near zero. At 4 dB the bands spread out until their edges meet at the threshold, and every sample that lands on the wrong side, drawn in red, is a wrong bit.
 
-That is the whole story of noise in a digital receiver, and we will see it again on every display in the course. Nothing about the decision changes as the noise goes up; the threshold stays at zero. The samples just stray farther, and more of them stray across. Two things keep them on the right side: a higher SNR, which narrows the bands, and points that sit farther apart, which moves the threshold farther from each one.
+We will see this picture again on every display in the course. Nothing about the decision changes as the noise goes up; the threshold stays at zero. The samples just stray farther, and more of them stray across. Two things keep them on the right side: a higher SNR, which narrows the bands, and points that sit farther apart, which moves the threshold farther from each one.
 ::::
 
 ::::{frame} Antipodal and Orthogonal
 :::{present}
 <img src="../../viz/img/L03-antipodal-orthogonal.svg"
-     alt="Two binary signal sets at the same energy and the same 6 dB SNR. The antipodal set has its points on opposite sides of the origin, with the boundary between them on the vertical axis, and few samples land on the wrong side. The orthogonal set has one point on each axis, closer together, with the boundary on the diagonal, and several times as many samples land on the wrong side"
+     alt="Two binary signal sets at the same energy and the same 6 dB SNR. The antipodal set has its points on opposite sides of the origin, with the boundary between them on the vertical axis, and few samples land on the wrong side. The orthogonal set has one point on each axis, closer together, with the boundary on the diagonal, and 17 of 600 samples land on the wrong side, against 1 for the antipodal set"
      style="max-width: 640px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
@@ -101,7 +101,7 @@ That is the whole story of noise in a digital receiver, and we will see it again
 
 Binary PAM is not the only way to send one bit. Binary FSK sends one of two tones, and the two tones are **orthogonal**: neither looks anything like the other, so each gets its own axis. Drawn at the same energy, the antipodal points sit on opposite sides of the origin, while the orthogonal points sit one on each axis, closer together, with the boundary on the diagonal between them.
 
-The figure sends both through the same 6 dB of noise. The clouds are the same size in both panels, but the orthogonal pair has less room between its points and its boundary, so several times as many samples cross. That is the reason PAM and PSK, which can use antipodal points, get more out of the same transmitter power than FSK does. FSK has its own advantages, and Lesson 8 builds it anyway.
+The figure sends both through the same 6 dB of noise. The clouds are the same size in both panels, but the orthogonal pair has less room between its points and its boundary, so 17 of 600 samples cross against 1 for the antipodal pair. That is the reason PAM and PSK, which can use antipodal points, get more out of the same transmitter power than FSK does. FSK has other strengths, such as a simple receiver that ignores amplitude, and Lesson 8 builds one.
 ::::
 
 ::::{frame} Part 2: Two Basis Functions
@@ -165,7 +165,7 @@ The figure sends 600 QPSK symbols at three SNRs. Noise adds a random offset to b
 3. Add a phase offset and watch the clouds rotate.
 :::
 
-This is the same demonstration as the figures, built from four GNU Radio blocks, and it needs no SDR. A **Random Source** picks symbols 0 to 3, **Chunks to Symbols** maps each one to a QPSK point through a Gray-coded table, and a **Channel Model** adds noise; its noise voltage is set from the SNR slider. A **QT GUI Constellation Sink** plots the result. A Multiply Const block between them rotates every point by the phase offset.
+This is the same demonstration as the figures, and it needs no SDR: an instructor demo today, and one to repeat after the Lesson 5 install. A **Random Source** picks symbols 0 to 3, **Chunks to Symbols** maps each one to a QPSK point through a Gray-coded table, and a **Channel Model** adds noise; its noise voltage is set from the SNR slider. A **QT GUI Constellation Sink** plots the result. A Multiply Const block between them rotates every point by the phase offset.
 
 Start at 20 dB, where the four points are tight dots, and drag the slider down. Somewhere below 10 dB the clouds start to reach the axes, which are QPSK's decision boundaries, and at 6 dB, the screenshot, they run into each other. Then put the SNR back at 20 dB and raise the phase offset toward 45°. Open Chunks to Symbols and read its symbol table: that list of four complex numbers is the constellation, in Gray order.
 ::::
@@ -174,7 +174,7 @@ Start at 20 dB, where the four points are tight dots, and drag the slider down. 
 :class: viz-frame
 
 :::{depth}
-The widget transmits random symbols, adds noise at the chosen SNR, and decides each one by the nearest point. The shaded tiles are the decision regions, and a symbol that lands in the wrong one turns red; the readouts count them. Start on QPSK at 12 dB, then switch to 8-PSK at the same SNR: the points sit closer together, the clouds reach the boundaries, and the red count climbs. Raise the SNR until 8-PSK is as clean as QPSK was. Then try 4-PAM against QPSK at the same SNR. Last, return to QPSK and add a phase offset: the clouds rotate toward the boundaries, and past $45^\circ$ every symbol would land in the wrong region even with no noise at all, which is why the receivers of Lessons 9 and 15 correct the phase before they decide.
+The widget transmits random symbols, adds noise at the chosen SNR, and decides each one by the nearest point. The shaded tiles are the decision regions, and a symbol that lands in the wrong one turns red; the readouts count them. Start on QPSK at 12 dB, then switch to 8-PSK at the same SNR: the points sit closer together, the clouds reach the boundaries, and the red count climbs. Raise the SNR until 8-PSK is as clean as QPSK was. Then try 4-PAM against QPSK at the same SNR. Last, return to QPSK and add a phase offset: the clouds rotate toward the boundaries, and past $45^\circ$ every symbol would land in the wrong region even with no noise at all, which is why the receiver of Lesson 15 corrects the phase before it decides.
 :::
 
 :::{present}
@@ -214,7 +214,7 @@ Try it before looking at the figure: label the eight points of 8-PSK, starting f
 - From Lesson 5 on, the constellation sink is the first place we look.
 :::
 
-GNU Radio's constellation sink plots received samples exactly as in this lesson, and it is the fastest diagnostic a radio engineer has, because each problem leaves its own shape. **Noise** spreads each point into a round cloud, and the cloud's size tells us how good the SNR is. A **phase offset** between the transmitter and receiver oscillators rotates the whole constellation. A **frequency offset** makes that rotation continuous, so the points smear into a ring. A **timing offset**, sampling each symbol off its peak, mixes in neighboring symbols and smears each point into a spread that noise does not explain.
+GNU Radio's constellation sink plots received samples exactly as in this lesson, and it is the first place to look when a receiver fails, because each problem leaves its own shape. **Noise** spreads each point into a round cloud, and the cloud's size tells us how good the SNR is. A **phase offset** between the transmitter and receiver oscillators rotates the whole constellation. A **frequency offset** makes that rotation continuous, so the points smear into a ring. A **timing offset**, sampling each symbol off its peak, mixes in neighboring symbols and smears each point into a spread that noise does not explain.
 
 Lesson 9 recovers symbol timing for PAM, and Lesson 15 recovers carrier phase and frequency for PSK. Each fix shows up on the constellation sink as these shapes collapsing back into tight clouds, and that is how we will check every receiver we build.
 ::::
@@ -222,7 +222,7 @@ Lesson 9 recovers symbol timing for PAM, and Lesson 15 recovers carrier phase an
 ::::{frame} Key Point
 :::{present}
 :class: callout
-A modulation is a set of points. Noise turns each point into a cloud, and a sample that lands in a neighbor's region is decided wrong. Points farther apart, or a higher SNR, keep the clouds in their own regions.
+A modulation is a set of points. Noise turns each point into a cloud, and a sample in a neighbor's region is a wrong decision. Points farther apart, or a higher SNR, keep the clouds in their own regions.
 :::
 ::::
 
