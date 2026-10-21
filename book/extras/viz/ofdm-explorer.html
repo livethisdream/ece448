@@ -29,7 +29,7 @@
         border:1px solid var(--edge2); border-radius:6px; background:#eef4fa; }
   .ro .k { font-size:10.5px; font-weight:700; letter-spacing:0.02em; color:var(--ink3); white-space:nowrap; }
   .ro .v { font-size:14px; font-weight:700; white-space:nowrap; font-variant-numeric:tabular-nums; color:var(--navy); }
-  .ro .v.bad { color:var(--red); } .ro .v.ok { color:var(--grn); }
+  .ro .v.bad { color:var(--red); } .ro .v.ok { color:var(--grn); } .ro .v.warn { color:var(--amber); }
 </style>
 </head>
 <body>
@@ -157,7 +157,9 @@ function update() {
   else { ici.textContent = (10 * Math.log10(p)).toFixed(1) + ' dB'; ici.className = 'v bad'; }
   document.getElementById('o-km').textContent = (tau * 0.2998).toFixed(1) + ' km';
   const isi = document.getElementById('o-isi');
-  if (tau <= TG) { isi.textContent = 'inside, ' + (TG - tau).toFixed(0) + ' μs spare'; isi.className = 'v ok'; }
+  // NRSC-5 tapers the symbol edges, so an echo late in the guard is marginal
+  if (tau <= TG / 2) { isi.textContent = 'inside, ' + (TG - tau).toFixed(0) + ' μs spare'; isi.className = 'v ok'; }
+  else if (tau <= TG) { isi.textContent = 'marginal, ' + (TG - tau).toFixed(0) + ' μs left'; isi.className = 'v warn'; }
   else { isi.textContent = (tau - TG).toFixed(0) + ' μs over'; isi.className = 'v bad'; }
   drawSpec(sp); drawTime(tau);
 }

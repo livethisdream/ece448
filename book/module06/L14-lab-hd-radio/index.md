@@ -41,12 +41,12 @@ Nothing in this lab transmits. The RTL-SDR receives only, and both captures came
 :::{present}
 - Run `L14-hd-test-tx.grc` once, then `L14-hd-find.grc`.
 - Predict the edges of extended hybrid sidebands.
-- Predict bin widths for two FFT sizes, and the levels at −14 dBc.
+- Predict bin widths for two FFT sizes, and the levels and watts at −14 dBc.
 :::
 
 Do the Pre-Lab before you arrive. Put both flowgraphs from the Lesson 14 page in one folder, run `L14-hd-test-tx.grc` once to write `L14-hd-test.cu8`, and then run `L14-hd-find.grc`. Question 1 checks that the meters read what the lesson showed; if GRC reports an error, the L5 lesson page lists the install checks.
 
-Question 2 asks for predictions from the lesson: the inner edge of a sideband when a station adds one, two, or four partitions, the bin width and the number of bins per sideband for two FFT sizes, and the sideband and subcarrier levels of a station at −14 dBc, the level the FCC allows by notification. Part 2 uses each one.
+Question 2 asks for predictions from the lesson: the inner edge of a sideband when a station adds one, two, or four partitions, and how far a meter set to the hybrid band reads low on such an extended station; the bin width and the number of bins per sideband for two FFT sizes, and the sideband and subcarrier levels, and the total digital power in watts, of a station at −14 dBc, the level the FCC allows by notification. Part 2 uses each one.
 ::::
 
 ::::{frame} Expected Numbers
@@ -83,7 +83,7 @@ Your meter should read the lesson's test file within 0.1 dB of the finder's −2
 2. Change the frequency sink's FFT size to 8192 and run it. Drag a box around one edge of a sideband on the frequency sink to zoom in, read the edge's frequency in MHz, and right-click to zoom back out. Do the same for the inner and outer edge of each sideband, and convert each edge to a subcarrier number for Question 4(a).
 3. Record both meter readings with `inner` at 356 for Question 4(b).
 4. Stop it, change `inner` to the subcarrier number you found for the inner edge, run it again, and record both readings.
-5. Look at the station 400 kHz above the center, and say whether it carries HD Radio, for Question 4(d).
+5. Find the other station in the capture, give its offset from the center, and say whether it carries HD Radio, for Question 4(d).
 ::::
 
 ::::{frame} Part 2: A Live Station
@@ -117,7 +117,7 @@ nrsc5 is not part of radioconda. Use a laptop that has nrsc5 installed, your own
 
 :::{admonition} If the meters read below −40 dBc or the shelves never appear
 :class: tip
-For a file, check that the file name in the File Source is in quotes, that the file sits in the same folder as the flowgraph, and that the File Source's type is byte, not complex. If the shelves appear but a meter reads wrong, check the sign of each filter's center frequency and that both Subtract blocks take the host on their second input. For a live station, check that the RTL-SDR Source's sample rate is `samp_rate`, that you have centered on the station, and that the station carries HD Radio at all; many do not. A shelf on only one side means asymmetric sidebands or a neighbor's signal, not an error.
+For a file, check that the file name in the File Source is in quotes, that the file sits in the same folder as the flowgraph, and that the File Source's type is byte, not complex. If the shelves appear but a meter reads wrong, check the sign of each filter's center frequency and that both Subtract blocks take the host on their second input. For a live station, check that the RTL-SDR Source's sample rate is `samp_rate`, that you have centered on the station, and that the station carries HD Radio at all; many do not. Shelves of unequal height can mean asymmetric sidebands (up to 10 dB); a missing shelf usually means a weak signal or a neighbor covering it.
 :::
 ::::
 
@@ -135,7 +135,7 @@ The Writeup is three questions. The first compares the live station's sideband l
 :class: read-only doc-links
 
 - <a class="doc-link" href="../../labs/ECE448_Lab_L14_HDRadio_blank.pdf" target="_blank" rel="noopener">L14 Lab packet (PDF)</a>
-- <a class="doc-link" href="../../grc/L14-lab-capture.cu8" download>L14-lab-capture.cu8</a>: the lab's simulated capture, 1.5 s (4.5 MB) of unsigned 8-bit IQ at 1,488,375 samples per second, for Question 4.
+- `L14-lab-capture.cu8`, the lab's simulated capture for Question 4, will be posted here before the lab.
 - The Lesson 14 page has `L14-hd-test-tx.grc`, which writes the lesson's test file, and `L14-hd-find.grc`, to check your meter against after Question 3.
 - nrsc5 is at <a href="https://github.com/theori-io/nrsc5" target="_blank" rel="noopener">github.com/theori-io/nrsc5</a>.
 ::::

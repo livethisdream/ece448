@@ -90,38 +90,29 @@ The lower sideband is the mirror image, $-356$ to $-546$. Subcarriers 356 to 545
 
 ::::{frame} Why OFDM
 :::{present}
-- One 69 kHz carrier would send a symbol every 15 μs; echoes last longer.
-- OFDM sends 191 slow carriers instead, each at 344.5 symbols per second.
-- Each symbol lasts 2.9 ms, so an echo blurs only its start.
-:::
-
-Many narrow carriers sent side by side is **orthogonal frequency-division multiplexing** (OFDM), and HD Radio uses it because of **multipath**. A car radio receives the transmitter directly and also by reflections from buildings and hills, which arrive tens of microseconds later. If one carrier filled the 69 kHz sideband, each symbol would last about 15 μs, so an echo 50 μs late would overlap parts of the next four symbols, and the receiver would need a complex equalizer to undo it.
-
-OFDM divides the same sideband among 191 subcarriers, each sending its own QPSK symbols at only 344.5 symbols per second, so each symbol lasts 2.902 ms. An echo 50 μs late now overlaps only the first 2% of a symbol, and each subcarrier is narrow enough that it sees the channel as a single gain and phase rather than a filter. The same reasoning puts OFDM in Wi-Fi, LTE, and digital TV, and Lesson 20 returns to it.
-::::
-
-::::{frame} Orthogonal Subcarriers and the Guard
-:::{present}
 $$\begin{aligned}
-\Delta f &= \frac{1}{T_u}, \qquad T_u = 2.752\ \text{ms} \\
-T_g &= \tfrac{7}{128}\,T_u = 150.5\ \mu\text{s}
+T_u &= \frac{4096}{f_s} = 2.752\ \text{ms} = \frac{1}{\Delta f} \\
+T_g &= \frac{224}{f_s} = 150.5\ \mu\text{s}
 \end{aligned}$$
 :::
 :::{present}
-- Spacing $1/T_u$ makes the subcarriers **orthogonal**: no leakage at the receiver.
-- A **guard interval** in front of each symbol absorbs echoes up to 150.5 μs.
+- One 69 kHz carrier would send a symbol every 15 μs; echoes last longer.
+- OFDM sends 191 slow carriers instead, each with a 2.902 ms symbol.
+- A 4096-point FFT separates the subcarriers, and a 224-sample guard absorbs echoes.
 :::
 
-Each symbol is a tone that lasts the **useful time** $T_u$, and the spectrum of a tone that lasts $T_u$ is a sinc shape whose nulls are $1/T_u$ apart. With the subcarriers spaced exactly $1/T_u$, every subcarrier's spectrum crosses zero at the center of every other one, so the receiver can separate them perfectly with an FFT even though their spectra overlap. That property is **orthogonality**, the O in OFDM. The transmitter builds all the subcarriers at once with an inverse FFT, and the receiver separates them with a forward FFT.
+Many narrow carriers sent side by side is **orthogonal frequency-division multiplexing** (OFDM), and HD Radio uses it because of **multipath**. A car radio receives the transmitter directly and also by reflections from buildings and hills, which arrive tens of microseconds later. If one carrier filled the 69 kHz sideband, each symbol would last about 15 μs, so an echo 50 μs late would overlap parts of the next four symbols, and the receiver would need a complex equalizer to undo it. OFDM divides the sideband among 191 subcarriers, each sending its own QPSK symbols at only 344.5 symbols per second, so a 50 μs echo overlaps only the first 2% of a symbol.
 
-In front of each symbol the transmitter adds a **guard interval** $T_g$, a copy of the end of the symbol, which makes each symbol 2.902 ms long. The receiver ignores the guard, so an echo that arrives up to 150.5 μs late, about 45 km of extra path, still falls inside the symbol it belongs to. The explorer in the next frame shows both effects.
+In a flowgraph, OFDM comes down to two block parameters. At $f_s$ = 1,488,375 samples per second, an FFT of `fft_len` = 4096 points lasts the **useful time** $T_u$ = 2.752 ms, and its bins are exactly the 363.4 Hz subcarrier spacing, so one inverse FFT builds every subcarrier of a symbol at once and one forward FFT separates them again; the subcarriers are **orthogonal**, which the explorer in the next frame shows. A **guard interval** of `cp_len` = 224 samples, 7/128 of 4096, or 150.5 μs, goes in front of each symbol, which makes each symbol 2.902 ms long. NRSC-5 tapers the symbol edges, so the guard absorbs echoes somewhat shorter than 150.5 μs, which is still tens of kilometers of extra path. The same design puts OFDM in Wi-Fi, LTE, and digital TV, and Lesson 20 returns to it.
 ::::
 
 ::::{frame} OFDM Explorer
 :class: viz-frame
 
 :::{depth}
-The left panel shows the spectra of five neighboring subcarriers with the HD Radio spacing; the red dots on the dashed line are what the four neighbors add at the center subcarrier's frequency. At spacing 1.00 every red dot sits on zero. Move the spacing away from 1.00 and the dots leave zero, and the leakage readout shows how much the neighbors interfere. The right panel shows two symbols with their guards, an echo of them, and the receiver's FFT window. Drag the echo delay past 150 μs and the end of symbol 1's echo enters symbol 2's window, shown in red.
+Each OFDM symbol is a set of tones that last $T_u$, and the spectrum of a tone that lasts $T_u$ is a sinc shape whose nulls are $1/T_u$ apart. With the subcarriers spaced exactly $1/T_u$, every subcarrier's spectrum crosses zero at the center of every other one, so an FFT separates them even though their spectra overlap. That property is **orthogonality**, the O in OFDM.
+
+The left panel shows the spectra of five neighboring subcarriers with the HD Radio spacing; the red dots on the dashed line are what the four neighbors add at the center subcarrier's frequency. At spacing 1.00 every red dot sits on zero. Move the spacing away from 1.00 and the dots leave zero, and the leakage readout shows how much the neighbors interfere. The right panel shows two symbols with their guards, an echo of them, and the receiver's FFT window. Drag the echo delay past 150 μs and the end of symbol 1's echo enters symbol 2's window, shown in red. The explorer draws a plain guard; because NRSC-5 tapers the symbol edges, the readout treats an echo in the second half of the guard as marginal.
 :::
 
 :::{present}
@@ -148,7 +139,7 @@ $$\begin{aligned}
 -20 - 10\log_{10} 382 &= -45.8\ \text{dBc}
 \end{aligned}$$
 
-In 2010 the FCC allowed stations to raise the digital power to $-14$ dBc by notifying the FCC, and to as much as $-10$ dBc with its approval, and many stations did, to reach farther. NRSC-5 also lets the two sidebands differ by up to 10 dB, which a station uses to protect a neighbor on one side. A measurement of the two sidebands shows which of these choices a station has made.
+In 2010 the FCC allowed stations to raise the digital power to $-14$ dBc by notifying the FCC, and to as much as $-10$ dBc with its approval, and many stations did, to reach farther. NRSC-5 also lets the two sidebands differ by up to 10 dB, which a station uses to protect a neighbor on one side.
 ::::
 
 ::::{frame} The Test Signal
@@ -218,19 +209,20 @@ On the test file the meters read $-23.05$ and $-23.04$ dBc, which matches the $-
 ::::{frame} Decoding with nrsc5
 :::{present}
 ```
-nrsc5 -g 40 100.3 0          # tune 100.3 MHz, play HD1
-nrsc5 -w hd.cu8 100.3 0      # also record the IQ
+nrsc5 -g 30 100.3 0          # tune 100.3 MHz, play HD1
+nrsc5 -g 30 -w hd.cu8 100.3 0  # also record the IQ
 nrsc5 -r hd.cu8 0            # decode a recording
 ```
 :::
 :::{present}
 - nrsc5 tunes the RTL-SDR, decodes the sidebands, and plays the audio.
 - Program 0 is HD1; 1 to 3 are HD2 to HD4.
+- The nrsc5 README documents these commands; we have not yet tested them in this course.
 :::
 
 Finding and measuring the sidebands needs only the spectrum. Decoding them takes the rest of NRSC-5: the receiver synchronizes to the reference subcarriers, demodulates each subcarrier's QPSK, undoes the interleaving and the convolutional code, and decompresses the audio. The open-source **nrsc5** project does all of that from an RTL-SDR or a recording, at 1,488,375 samples per second, the rate of our test file. It plays the chosen program and prints the station's name, the song title and artist, and measures of signal quality as they arrive. A recording that nrsc5 makes with `-w` opens in `L14-hd-find.grc` too.
 
-nrsc5 is a C program, not a GNU Radio block, and it is not part of radioconda, so you install it separately: build it from source on Linux, install it with Homebrew on macOS, or use the project's MSYS2 build on Windows. We have not run it in this course yet, so expect the lab's decode step to need some adjustment. The related project gr-nrsc5 is an HD Radio transmitter, not a receiver, and this course does not transmit on the FM band.
+nrsc5 is a C program, not a GNU Radio block, and it is not part of radioconda, so you install it separately: build it from source on Linux, install it with the project's Homebrew formula on macOS, or use the project's MSYS2 build on Windows. We have not run it in this course yet, so expect the lab's decode step to need some adjustment. The related project gr-nrsc5 is an HD Radio transmitter, not a receiver, and this course does not transmit on the FM band.
 ::::
 
 ::::{frame} Key Point
@@ -257,7 +249,7 @@ A weak sideband measurement reads high, because the band's noise adds to it. Che
 
 - <a class="doc-link" href="../../grc/L14-hd-test-tx.grc" download>L14-hd-test-tx.grc</a>: writes `L14-hd-test.cu8`, 4 s (11.9 MB) of a simulated hybrid station at 100.3 MHz, with an analog-only neighbor 400 kHz below. Run it once; it stops on its own.
 - <a class="doc-link" href="../../grc/L14-hd-find.grc" download>L14-hd-find.grc</a>: the spectrum, waterfall, and sideband power meters, playing the test file, an RTL-SDR recording at 1,488,375 samples per second, or the RTL-SDR live.
-- <a class="doc-link" href="../../legacy/refs/nrsc-1011s_hd-radio.pdf" target="_blank" rel="noopener">NRSC-5 Layer 1 FM specification, SY_IDD_1011s (PDF)</a>: Section 3.5 and Table 5-1 list the numbers this lesson uses.
+- <a class="doc-link" href="../../legacy/refs/nrsc-1011s_hd-radio.pdf" target="_blank" rel="noopener">NRSC-5 Layer 1 FM specification, SY_IDD_1011s (PDF)</a>: Section 3.5 and Table 5-1 give the spacing and subcarriers, and Section 5.3 the 10 dB asymmetry limit; the power levels come from NRSC-5's transmission specification and the FCC's 2010 order.
 - nrsc5, the receiver, is at <a href="https://github.com/theori-io/nrsc5" target="_blank" rel="noopener">github.com/theori-io/nrsc5</a>, with build instructions for Linux, macOS, and Windows.
 
 Put both flowgraphs in one folder and run the test transmitter first; GRC runs a flowgraph from its own folder, so the finder finds the test file there.
@@ -271,7 +263,7 @@ Put both flowgraphs in one folder and run the test transmitter first; GRC runs a
 | Subcarrier spacing | $\Delta f$ = 363.4 Hz | 1,488,375 / 4096 |
 | Sideband | subcarriers 356 to 546, 129.4 to 198.4 kHz | $k\,\Delta f$ |
 | Partition | 19 subcarriers: 18 data, 1 reference | 10 per sideband, plus subcarrier 546 |
-| Symbol | $T_u$ = 2.752 ms, $T_g$ = 150.5 μs, 2.902 ms total | $T_u = 1/\Delta f$, $T_g = (7/128)\,T_u$ |
+| Symbol | $T_u$ = 2.752 ms (4096 samples), $T_g$ = 150.5 μs (224 samples), 2.902 ms total | `fft_len` and `cp_len` at 1,488,375 S/s |
 | Power | −20 dBc total, −23 dBc per sideband; −14 dBc, or −10 dBc with approval, since 2010 | 382 subcarriers |
 | Decoder | nrsc5, RTL-SDR at 1,488,375 samples per second | program 0 is HD1 |
 ::::

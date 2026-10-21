@@ -2,7 +2,7 @@
 %
 % L14 practice set (HD Radio). Every question is a step in finding, measuring,
 % or decoding the hybrid sidebands: locating subcarriers on a real station,
-% choosing an FFT size, the OFDM timing and data rate, and reading sideband
+% choosing an FFT size, the OFDM timing and block parameters, and reading sideband
 % power. The L14 Lab asks for the extended hybrid edges, the FFT sizes 1024 and
 % 8192 at 1,488,375 samples per second, and the -14 dBc case, so none of
 % those appear here.
@@ -105,7 +105,7 @@ useful symbol time.}
 
 \newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\question \textbf{OFDM timing and data rate.}
+\question \textbf{OFDM timing and block parameters.}
 \begin{parts}
 
 	\begin{minipage}[t]{0.58\linewidth}
@@ -130,42 +130,57 @@ useful symbol time.}
 	\end{minipage}
 
 	\begin{minipage}[t]{0.58\linewidth}
-		\part Each data subcarrier carries one QPSK symbol per OFDM symbol. Find the raw bit
-		rate of the 360 data subcarriers in both sidebands.
-		\begin{solution}[0.8in]
-		\eq{ 360 \times 2\ \text{bits} \times 344.53\ \text{/s} = 248\ \text{kbit/s} }
-		\end{solution}
-	\end{minipage}\hfill%
-	\begin{minipage}[t]{0.37\linewidth}
-		\raggedleft \vspace{12pt}
-		\ansbox[1.2in]{248 kbit/s}
-	\end{minipage}
-
-	\part The hybrid mode delivers about 98 kbit/s of program data. What fraction of the raw
-	rate is that, and what do you think the rest carries?
+		\part nrsc5 reads complex float recordings at 744,187.5 samples per second. In a GNU
+		Radio OFDM transmitter at that rate, what \texttt{fft\_len} puts one subcarrier in each
+		FFT bin, and what \texttt{cp\_len} gives NRSC-5's guard of $7/128$ of the FFT?
 		\begin{solution}[0.9in]
-		$98/248 = 0.40$, so about 40\%. The rest is redundancy: the bits pass through an
-		error-correcting code before the transmitter maps them to subcarriers, and the code lets the
-		receiver correct the errors that noise and fading cause. The reference subcarriers
-		are not in the 360, so they are extra again.
-		\end{solution}
-
-	\begin{minipage}[t]{0.58\linewidth}
-		\part A reflection from a mountain travels 30 km farther than the direct path. Find
-		its delay. Does it fit inside the guard? How many symbols would it span if the
-		sideband were one carrier with a 14.5 $\mu$s symbol?
-		\begin{solution}[1.0in]
-		\eq{ \tau = 30\ \text{km}/(3\times10^8\ \text{m/s}) = 100\ \mu\text{s} }
-		It fits inside the 150.5 $\mu$s guard with 50 $\mu$s to spare. On one carrier it
-		would span $100/14.5 \approx 7$ symbols.
+		\eq{ \texttt{fft\_len} &= 744{,}187.5/363.37 = 2048 \\
+			\texttt{cp\_len} &= (7/128) \times 2048 = 112 }
 		\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
 		\raggedleft \vspace{12pt}
-		$\tau$ \ansbox[1.1in]{100 $\mu$s}
+		\texttt{fft\_len} \ansbox[1.1in]{2048}
 
 		\vspace{4pt}
-		symbols \ansbox[1.1in]{about 7}
+		\texttt{cp\_len} \ansbox[1.1in]{112}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part At what sample rate would \texttt{fft\_len} = 8192 put one subcarrier in each
+		bin, and what \texttt{cp\_len} goes with it? Could the course's RTL-SDRs, which run at
+		2.4 MS/s, record at that rate?
+		\begin{solution}[0.9in]
+		\eq{ 8192 \times 363.37 &= 2{,}976{,}750\ \text{S/s} \\
+			\texttt{cp\_len} &= (7/128) \times 8192 = 448 }
+		No: that is above the 2.4 MS/s the course uses, so the RTL-SDR records at
+		1,488,375 S/s with \texttt{fft\_len} = 4096 instead.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		rate \ansbox[1.2in]{2,976,750 S/s}
+
+		\vspace{4pt}
+		\texttt{cp\_len} \ansbox[1.2in]{448}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part A reflection from a ridge travels 18 km farther than the direct path. Find its
+		delay. Does it fit inside the guard, whose edges NRSC-5 tapers? How many symbols would
+		it span if the sideband were one carrier with a 14.5 $\mu$s symbol?
+		\begin{solution}[1.0in]
+		\eq{ \tau = 18\ \text{km}/(3\times10^8\ \text{m/s}) = 60\ \mu\text{s} }
+		It fits in the first half of the 150.5 $\mu$s guard, clear of the tapered edge. On
+		one carrier it would span $60/14.5 \approx 4$ symbols.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		$\tau$ \ansbox[1.1in]{60 $\mu$s}
+
+		\vspace{4pt}
+		symbols \ansbox[1.1in]{about 4}
 	\end{minipage}
 
 \end{parts}

@@ -89,15 +89,18 @@ Multipath from buildings and hills arrives tens of microseconds late. With one w
 
 ---
 
-## Orthogonality and the Guard
+## OFDM as Block Parameters
 
-$$\Delta f = \frac{1}{T_u}, \quad T_u = 2.752\ \text{ms}, \quad T_g = \tfrac{7}{128} T_u = 150.5\ \mu\text{s}$$
+$$\begin{aligned}
+T_u &= 4096\ \text{samples} = 2.752\ \text{ms} = 1/\Delta f \\
+T_g &= 224\ \text{samples} = 150.5\ \mu\text{s}
+\end{aligned}$$
 
-- Spacing $1/T_u$ puts every subcarrier on its neighbors' nulls.
-- The guard absorbs echoes up to 150.5 μs, about 45 km of extra path.
+- `fft_len` = 4096 at 1,488,375 S/s makes each bin one subcarrier.
+- `cp_len` = 224 is the guard, whose edges NRSC-5 tapers, so it absorbs echoes somewhat shorter than 150.5 μs.
 
 Note:
-A tone lasting Tu has a sinc spectrum with nulls 1/Tu apart. The transmitter builds every subcarrier at once with an inverse FFT and the receiver separates them with a forward FFT. The guard is a copy of the end of the symbol, which the receiver discards.
+A tone lasting Tu has a sinc spectrum with nulls 1/Tu apart, so subcarriers spaced 1/Tu are orthogonal. The transmitter builds every subcarrier at once with an inverse FFT and the receiver separates them with a forward FFT. The guard is a copy of the end of the symbol, which the receiver discards.
 
 ---
 
@@ -106,10 +109,10 @@ A tone lasting Tu has a sinc spectrum with nulls 1/Tu apart. The transmitter bui
 <a href="../viz/ofdm-explorer.html" target="_blank" rel="noopener">Open the OFDM explorer</a> (it is also on the lesson page).
 
 - Spacing 1.00: every neighbor crosses zero at the center subcarrier.
-- An echo longer than 150.5 μs reaches into the next symbol's FFT window.
+- An echo longer than the guard reaches into the next symbol's FFT window.
 
 Note:
-Start at HD Radio: the red dots sit on zero. Move the spacing off 1.00 and the neighbors leak in. Drag the echo past 150 microseconds and the red sliver appears inside symbol 2's FFT window.
+Start at HD Radio: the red dots sit on zero. Move the spacing off 1.00 and the neighbors leak in. Drag the echo past 150 microseconds and the red sliver appears inside symbol 2's FFT window. The explorer draws a plain guard; NRSC-5 tapers the edges, so echoes in the second half of the guard are marginal.
 
 ---
 
@@ -173,15 +176,17 @@ The host band is plus or minus 100 kHz, each sideband is plus or minus 34.7 kHz 
 ## Decoding with nrsc5
 
 ```
-nrsc5 -g 40 100.3 0          # tune 100.3 MHz, play HD1
-nrsc5 -w hd.cu8 100.3 0      # also record the IQ
+nrsc5 -g 30 100.3 0            # tune 100.3 MHz, play HD1
+nrsc5 -g 30 -w hd.cu8 100.3 0  # also record the IQ
 nrsc5 -r hd.cu8 0            # decode a recording
 ```
 
 nrsc5 runs the rest of NRSC-5: sync, QPSK, deinterleaving, decoding, and audio.
 
+The nrsc5 README documents these commands; we have not yet tested them in this course.
+
 Note:
-nrsc5 is not part of radioconda; build it from source on Linux, with Homebrew on macOS, or with MSYS2 on Windows. We have not yet run it in this course. Program 0 is HD1. A recording made with -w opens in L14-hd-find.grc. gr-nrsc5 is a transmitter, not a receiver.
+nrsc5 is not part of radioconda; build it from source on Linux, with the project's Homebrew formula on macOS, or with MSYS2 on Windows. We have not yet run it in this course. Program 0 is HD1. A recording made with -w opens in L14-hd-find.grc. gr-nrsc5 is a transmitter, not a receiver.
 
 ---
 

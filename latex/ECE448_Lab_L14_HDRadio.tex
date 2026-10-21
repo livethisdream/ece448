@@ -58,6 +58,22 @@
 \newcolumntype{K}[1]{>{\centering\arraybackslash}p{#1}}
 \newcommand{\kv}[1]{\ifkey{\color{red}#1}\fi\rule[-0.10in]{0pt}{0.34in}}
 
+% Question 4 (the lab capture) and Question 7(b) take their answers from
+% L14_capture_key.tex, which lives in ECE448-faculty and is never committed
+% here. Without it, even a KEY build prints placeholders.
+\newcommand{\capfk}{(faculty key)}
+\newcommand{\capEdgeLo}{\capfk}\newcommand{\capEdgeLi}{\capfk}
+\newcommand{\capEdgeUi}{\capfk}\newcommand{\capEdgeUo}{\capfk}
+\newcommand{\capScLo}{\capfk}\newcommand{\capScLi}{\capfk}
+\newcommand{\capScUi}{\capfk}\newcommand{\capScUo}{\capfk}
+\newcommand{\capUpperHybrid}{\capfk}\newcommand{\capLowerHybrid}{\capfk}
+\newcommand{\capUpperInner}{\capfk}\newcommand{\capLowerInner}{\capfk}
+\newcommand{\capTotal}{\capfk}\newcommand{\capDiff}{\capfk}
+\newcommand{\capSolEdges}{\capfk}\newcommand{\capSolMeters}{\capfk}
+\newcommand{\capSolTotal}{\capfk}\newcommand{\capSolNeighbor}{\capfk}
+\newcommand{\capSolWriteup}{\capfk}
+\IfFileExists{L14_capture_key.tex}{\input{L14_capture_key}}{}
+
 % print the answers if this is the key
 \ifkey
 	\printanswers % if this IS the key
@@ -126,8 +142,8 @@ question asks for one.
 captures came from GNU Radio flowgraphs, not from an antenna.
 
 The flowgraphs are on the L14 lesson page, \texttt{L14-hd-test-tx.grc} and
-\texttt{L14-hd-find.grc}, and the capture \texttt{L14-lab-capture.cu8} is on the L14 Lab
-page. Both captures are simulated: unsigned 8-bit I and Q at 1,488,375 samples per second,
+\texttt{L14-hd-find.grc}, and the capture \texttt{L14-lab-capture.cu8} will be posted on
+the L14 Lab page before the lab. Both captures are simulated: unsigned 8-bit I and Q at 1,488,375 samples per second,
 the format the RTL-SDR and nrsc5 record. Every number below uses the hybrid values from
 the lesson: subcarrier spacing $\Delta f = 1{,}488{,}375/4096 = 363.37$ Hz, sidebands from
 subcarrier 356 to 546 on each side, partitions of 19 subcarriers, and an extended hybrid
@@ -174,7 +190,9 @@ station adding one, two, or four partitions inside subcarrier 356 on each side.
 
 	\part A station adds one, two, or four partitions inside subcarrier 356 on each side.
 	For each, find the new inner subcarrier number, its frequency from the channel center,
-	and the number of subcarriers in one sideband.
+	and the number of subcarriers in one sideband. Every subcarrier carries the same power,
+	and a meter set to the hybrid band, subcarriers 356 to 546, measures only part of the
+	sideband; find how many dB low it reads.
 
 	\begin{center}
 	\renewcommand{\arraystretch}{1.25}
@@ -184,13 +202,15 @@ station adding one, two, or four partitions inside subcarrier 356 on each side.
 	Inner subcarrier & \kv{337} & \kv{318} & \kv{280} \\\hline
 	Inner edge (kHz) & \kv{122.5} & \kv{115.6} & \kv{101.7} \\\hline
 	Subcarriers per side & \kv{210} & \kv{229} & \kv{267} \\\hline
+	Hybrid meter reads low (dB) & \kv{0.41} & \kv{0.79} & \kv{1.45} \\\hline
 	\end{tabular}
 	\end{center}
 
 		\begin{solution}[0.5in]
 		Each partition is 19 subcarriers, so the inner edge moves to $356 - 19n$, and the
 		sideband gains $19n$ subcarriers over its 191. With four partitions the digital
-		signal starts 101.7 kHz from center.
+		signal starts 101.7 kHz from center. The hybrid meter sees 191 of them, so it reads
+		$10\log_{10}(N/191)$ low, where $N$ is the number of subcarriers per side.
 		\end{solution}
 
 	\part Find the frequency sink's bin width, the number of bins one 69,041 Hz sideband
@@ -231,20 +251,6 @@ station adding one, two, or four partitions inside subcarrier 356 on each side.
 
 		\vspace{4pt}
 		total \ansbox[1.1in]{239 W}
-	\end{minipage}
-
-	\begin{minipage}[t]{0.58\linewidth}
-		\part An extended hybrid sideband with two added partitions has the same power in every
-		subcarrier. A meter set to subcarriers 356 to 546 measures only part of it. By how many
-		dB does that meter read low?
-		\begin{solution}[0.8in]
-		The meter sees 191 of the 229 subcarriers:
-		\eq{ 10\log_{10}(191/229) = -0.79\ \text{dB} }
-		\end{solution}
-	\end{minipage}\hfill%
-	\begin{minipage}[t]{0.37\linewidth}
-		\raggedleft \vspace{12pt}
-		\ansbox[1.1in]{0.79 dB low}
 	\end{minipage}
 
 \end{parts}
@@ -300,15 +306,13 @@ station adding one, two, or four partitions inside subcarrier 356 on each side.
 	\begin{tabular}{| l | K{1.0in} | K{1.0in} | K{1.0in} | K{1.0in} |}
 	\hline
 	 & Lower outer & Lower inner & Upper inner & Upper outer \\\hline
-	Edge (MHz) & \kv{100.1016} & \kv{100.1844} & \kv{100.4156} & \kv{100.4984} \\\hline
-	Subcarrier & \kv{$-546$} & \kv{$-318$} & \kv{318} & \kv{546} \\\hline
+	Edge (MHz) & \kv{\capEdgeLo} & \kv{\capEdgeLi} & \kv{\capEdgeUi} & \kv{\capEdgeUo} \\\hline
+	Subcarrier & \kv{\capScLo} & \kv{\capScLi} & \kv{\capScUi} & \kv{\capScUo} \\\hline
 	\end{tabular}
 	\end{center}
 
 		\begin{solution}[0.6in]
-		Within a few subcarriers when zoomed in. The inner edges are 38 subcarriers, two partitions,
-		inside 356, so the station runs extended hybrid with two added partitions on each
-		side.
+		\capSolEdges
 		\end{solution}
 
 	\part Record both meter readings with \texttt{inner} at 356 and with \texttt{inner} set
@@ -319,35 +323,33 @@ station adding one, two, or four partitions inside subcarrier 356 on each side.
 	\begin{tabular}{| l | K{1.4in} | K{1.4in} |}
 	\hline
 	\texttt{inner} & Upper (dBc) & Lower (dBc) \\\hline
-	356 & \kv{$-17.8$} & \kv{$-21.8$} \\\hline
-	your inner edge & \kv{$-17.0$} & \kv{$-21.0$} \\\hline
+	356 & \kv{\capUpperHybrid} & \kv{\capLowerHybrid} \\\hline
+	your inner edge & \kv{\capUpperInner} & \kv{\capLowerInner} \\\hline
 	\end{tabular}
 	\end{center}
 
 		\begin{solution}[0.5in]
-		Setting \texttt{inner} to 318 raises both readings by 0.8 dB, as Question 2(d)
-		predicted for two added partitions.
+		\capSolMeters
 		\end{solution}
 
 	\begin{minipage}[t]{0.58\linewidth}
 		\part Find the total digital power in dBc, and the difference between the sidebands.
 		\begin{solution}[1.0in]
-		\eq{ 10\log_{10}\left(10^{-1.70} + 10^{-2.10}\right) = -15.5\ \text{dBc} }
-		The upper sideband is 4.0 dB stronger than the lower: asymmetric sidebands.
+		\capSolTotal
 		\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
 		\raggedleft \vspace{12pt}
-		total \ansbox[1.1in]{$-15.5$ dBc}
+		total \ansbox[1.1in]{\capTotal}
 
 		\vspace{4pt}
-		difference \ansbox[1.1in]{4.0 dB}
+		difference \ansbox[1.1in]{\capDiff}
 	\end{minipage}
 
-	\part Does the station 400 kHz above the center carry HD Radio? How can you tell?
+	\part Find the other station in the capture, give its offset from the center, and say
+	whether it carries HD Radio. How can you tell?
 		\begin{solution}[0.6in]
-		No. The station at 100.7 MHz has a rounded host and no flat shelves on either side,
-		so it is analog only.
+		\capSolNeighbor
 		\end{solution}
 
 \end{parts}
@@ -396,6 +398,8 @@ station with HD Radio, as the lab page lists.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newpage
 \question \textbf{Decode it.} Decode the same station with nrsc5, as the lab page lists.
+These steps are documented usage from the nrsc5 README; we have not yet tested them in
+this course.
 
 \begin{parts}
 
@@ -454,11 +458,7 @@ station with HD Radio, as the lab page lists.
 	\part Explain how the lab capture's edges and meter readings identified its
 	configuration, and give one reason a station would choose each feature you found.
 		\begin{solution}[1.5in]
-		The inner edges at subcarriers $\pm 318$ are two partitions inside 356, which is
-		extended hybrid; a station adds partitions for more data capacity, which leaves less room
-		for the analog signal. The upper sideband is 4 dB above the lower, which is asymmetric;
-		a station lowers one sideband to protect a neighbor on that side. The total of
-		$-15.5$ dBc is above the original $-20$ dBc and below the $-14$ dBc the FCC allows by notification.
+		\capSolWriteup
 		\end{solution}
 
 	\part nrsc5 cannot decode \texttt{L14-hd-test.cu8}, although its sidebands have the right
