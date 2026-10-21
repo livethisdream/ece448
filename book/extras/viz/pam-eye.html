@@ -46,7 +46,7 @@
     </div>
     <div class="ctl"><label for="a">Roll-off α</label><span class="val" id="a-v"></span>
       <input type="range" id="a" min="0.1" max="1" step="0.05" value="0.35"></div>
-    <div class="ctl"><label for="snr">Es/N0</label><span class="val" id="snr-v"></span>
+    <div class="ctl"><label for="snr">SNR</label><span class="val" id="snr-v"></span>
       <input type="range" id="snr" min="0" max="30" step="1" value="20"></div>
     <div class="ctl"><label for="tau">Sample time</label><span class="val" id="tau-v"></span>
       <input type="range" id="tau" min="-0.5" max="0.5" step="0.05" value="0"></div>
@@ -54,7 +54,7 @@
   <div class="readouts">
     <div class="ro"><span class="k">bandwidth</span><span class="v" id="o-bw">—</span></div>
     <div class="ro" id="ro-eye"><span class="k">eye opening</span><span class="v" id="o-eye">—</span></div>
-    <div class="ro" id="ro-ser"><span class="k">symbol errors</span><span class="v" id="o-ser">—</span></div>
+    <div class="ro" id="ro-ser"><span class="k">wrong decisions</span><span class="v" id="o-ser">—</span></div>
   </div>
 </div>
 
@@ -103,13 +103,13 @@ function conv(x, h) {
 function levels(m) { return m === 2 ? [-1, 1] : [-3, -1, 1, 3].map(v => v / Math.sqrt(5)); }
 
 function simulate() {
-  const alpha = +$('a').value, esn0 = 10 ** (+$('snr').value / 10), r = rng(7), L = levels(M);
+  const alpha = +$('a').value, snr = 10 ** (+$('snr').value / 10), r = rng(7), L = levels(M);
   const sym = Array.from({ length: NSYM }, () => L[Math.floor(r() * M)]);
   const up = new Float64Array(NSYM * SPS); sym.forEach((a, k) => up[k * SPS] = a);
   const h = pulse === 'rect' ? rect() : rrc(alpha);
   const tx = conv(up, h);
-  // Es = 1 with a unit-energy pulse, so the noise per sample has variance N0/2.
-  const sigma = Math.sqrt(1 / esn0 / 2);
+  // Unit symbol energy and a unit-energy pulse: the slider sets the SNR per symbol.
+  const sigma = Math.sqrt(1 / snr / 2);
   const rxNoisy = Float64Array.from(tx, v => v + sigma * gauss(r));
   let y, yClean, delay;
   if (pulse === 'mf') {
