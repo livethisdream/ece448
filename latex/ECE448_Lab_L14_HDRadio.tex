@@ -58,23 +58,17 @@
 \newcolumntype{K}[1]{>{\centering\arraybackslash}p{#1}}
 \newcommand{\kv}[1]{\ifkey{\color{red}#1}\fi\rule[-0.10in]{0pt}{0.34in}}
 
-% Questions 1 to 3 (on the test file), Question 4 (the lab capture), and Question 7(b) take their answers from
-% L14_capture_key.tex, which lives in ECE448-faculty and is never committed
-% here. Without it, even a KEY build prints placeholders.
-\newcommand{\capfk}{(faculty key)}
-\newcommand{\qOneUpper}{\capfk}\newcommand{\qOneLower}{\capfk}\newcommand{\qOneDiff}{\capfk}
-\newcommand{\qOneSol}{\capfk}\newcommand{\qOneShot}{\capfk}
-\newcommand{\qTwoCell}{\capfk}\newcommand{\qTwoSol}{\capfk}
-\newcommand{\capEdgeLo}{\capfk}\newcommand{\capEdgeLi}{\capfk}
-\newcommand{\capEdgeUi}{\capfk}\newcommand{\capEdgeUo}{\capfk}
-\newcommand{\capUpperHybrid}{\capfk}\newcommand{\capLowerHybrid}{\capfk}
-\newcommand{\capInnerStop}{\capfk}
-\newcommand{\capUpperInner}{\capfk}\newcommand{\capLowerInner}{\capfk}
-\newcommand{\capDiff}{\capfk}
-\newcommand{\capSolEdges}{\capfk}\newcommand{\capSolMeters}{\capfk}
-\newcommand{\capSolTotal}{\capfk}\newcommand{\capSolNeighbor}{\capfk}
-\newcommand{\capSolWriteup}{\capfk}
-\IfFileExists{L14_capture_key.tex}{\input{L14_capture_key}}{}
+% Answers are not in this public file. Every solution, \kv value, and \ansbox
+% value is \keysol{<id>}, defined in the private ECE448-faculty repo at
+% lab-keys/src/ECE448_Lab_L14_HDRadio_solutions.tex; build_lab.sh puts that
+% folder on TEXINPUTS (KEYDIR) for the KEY. A KEY build without it stops.
+\long\def\defkeysol#1#2{\expandafter\long\expandafter\def\csname keysol@#1\endcsname{#2}}
+\def\keysol#1{\ifcsname keysol@#1\endcsname\csname keysol@#1\endcsname\fi}
+\ifkey
+	\IfFileExists{ECE448_Lab_L14_HDRadio_solutions.tex}%
+		{\input{ECE448_Lab_L14_HDRadio_solutions}}%
+		{\errmessage{KEY build needs ECE448_Lab_L14_HDRadio_solutions.tex from ECE448-faculty/lab-keys/src (set KEYDIR)}}
+\fi
 
 % print the answers if this is the key
 \ifkey
@@ -165,26 +159,22 @@ to $-18$, and run it once to write \texttt{L14-hd-test.cu8}. Then open and run
 
 	\begin{minipage}[t]{0.58\linewidth}
 		\part After about 5 s, record the three meter readings.
-		\begin{solution}[0.6in]
-		\qOneSol
-		\end{solution}
+		\begin{solution}[0.6in]\keysol{sol1}\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
 		\raggedleft \vspace{12pt}
-		upper \ansbox[1.1in]{\qOneUpper}
+		upper \ansbox[1.1in]{\keysol{ans1}}
 
 		\vspace{4pt}
-		lower \ansbox[1.1in]{\qOneLower}
+		lower \ansbox[1.1in]{\keysol{ans2}}
 
 		\vspace{4pt}
-		upper $-$ lower \ansbox[1.1in]{\qOneDiff}
+		upper $-$ lower \ansbox[1.1in]{\keysol{ans3}}
 	\end{minipage}
 
 	\part Paste a screenshot of the running flowgraph's window. What changed on the frequency
 	sink compared with the lesson's figure?
-		\begin{solution}[1.6in]
-		\qOneShot
-		\end{solution}
+		\begin{solution}[1.6in]\keysol{sol2}\end{solution}
 
 \end{parts}
 
@@ -199,13 +189,11 @@ upper sideband reading at each step.
 	\begin{tabular}{| l | K{0.8in} | K{0.8in} | K{0.8in} | K{0.8in} | K{0.8in} |}
 	\hline
 	Inner subcarrier & 356 & 337 & 318 & 299 & 280 \\\hline
-	Upper (dBc) & \kv{\qTwoCell} & \kv{\qTwoCell} & \kv{\qTwoCell} & \kv{\qTwoCell} & \kv{\qTwoCell} \\\hline
+	Upper (dBc) & \kv{\keysol{kv1}} & \kv{\keysol{kv2}} & \kv{\keysol{kv3}} & \kv{\keysol{kv4}} & \kv{\keysol{kv5}} \\\hline
 	\end{tabular}
 	\end{center}
 
-	\begin{solution}[0.8in]
-	\qTwoSol
-	\end{solution}
+	\begin{solution}[0.8in]\keysol{sol3}\end{solution}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newpage
@@ -218,30 +206,22 @@ upper sideband reading at each step.
 
 	\part Paste a screenshot of your flowgraph on the GRC canvas. Every connection must be
 	black, not red.
-		\begin{solution}[1.6in]
-		The flowgraph matches the lab page: the byte File Source, Throttle, UChar To Float,
-		Add Const, Multiply Const, Deinterleave, and Float To Complex; a frequency sink; three
-		Frequency Xlating FFT Filters, each followed by Complex to Mag\^{}2, Moving Average,
-		Keep 1 in N, and Log10; three Subtract blocks; and a Number Sink with three inputs.
-		\end{solution}
+		\begin{solution}[1.6in]\keysol{sol4}\end{solution}
 
 	\begin{minipage}[t]{0.58\linewidth}
 		\part Run it on the file you wrote in Question 1 and record the three readings. Paste
 		a screenshot of the running window.
-		\begin{solution}[1.2in]
-		Within 0.1 dB of the finder's readings in Question 1(a), because the meter uses the
-		same filters and averaging.
-		\end{solution}
+		\begin{solution}[1.2in]\keysol{sol5}\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
 		\raggedleft \vspace{12pt}
-		upper \ansbox[1.1in]{\qOneUpper}
+		upper \ansbox[1.1in]{\keysol{ans4}}
 
 		\vspace{4pt}
-		lower \ansbox[1.1in]{\qOneLower}
+		lower \ansbox[1.1in]{\keysol{ans5}}
 
 		\vspace{4pt}
-		upper $-$ lower \ansbox[1.1in]{\qOneDiff}
+		upper $-$ lower \ansbox[1.1in]{\keysol{ans6}}
 	\end{minipage}
 
 \end{parts}
@@ -261,13 +241,11 @@ upper sideband reading at each step.
 	\begin{tabular}{| l | K{1.0in} | K{1.0in} | K{1.0in} | K{1.0in} |}
 	\hline
 	 & Lower outer & Lower inner & Upper inner & Upper outer \\\hline
-	Edge (MHz) & \kv{\capEdgeLo} & \kv{\capEdgeLi} & \kv{\capEdgeUi} & \kv{\capEdgeUo} \\\hline
+	Edge (MHz) & \kv{\keysol{kv6}} & \kv{\keysol{kv7}} & \kv{\keysol{kv8}} & \kv{\keysol{kv9}} \\\hline
 	\end{tabular}
 	\end{center}
 
-		\begin{solution}[0.6in]
-		\capSolEdges
-		\end{solution}
+		\begin{solution}[0.6in]\keysol{sol6}\end{solution}
 
 	\part Record both meter readings with Inner subcarrier at 356. If the inner edge is not at
 	129.4 kHz, slide Inner subcarrier down until the readings stop rising, and record the
@@ -278,32 +256,26 @@ upper sideband reading at each step.
 	\begin{tabular}{| l | K{1.4in} | K{1.4in} |}
 	\hline
 	Inner subcarrier & Upper (dBc) & Lower (dBc) \\\hline
-	356 & \kv{\capUpperHybrid} & \kv{\capLowerHybrid} \\\hline
-	\kv{\capInnerStop} & \kv{\capUpperInner} & \kv{\capLowerInner} \\\hline
+	356 & \kv{\keysol{kv10}} & \kv{\keysol{kv11}} \\\hline
+	\kv{\keysol{kv12}} & \kv{\keysol{kv13}} & \kv{\keysol{kv14}} \\\hline
 	\end{tabular}
 	\end{center}
 
-		\begin{solution}[0.5in]
-		\capSolMeters
-		\end{solution}
+		\begin{solution}[0.5in]\keysol{sol7}\end{solution}
 
 	\begin{minipage}[t]{0.58\linewidth}
 		\part Do the two sidebands read the same? If not, which is stronger, and by how many
 		dB on the Upper minus lower meter?
-		\begin{solution}[1.0in]
-		\capSolTotal
-		\end{solution}
+		\begin{solution}[1.0in]\keysol{sol8}\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
 		\raggedleft \vspace{12pt}
-		difference \ansbox[1.1in]{\capDiff}
+		difference \ansbox[1.1in]{\keysol{ans7}}
 	\end{minipage}
 
 	\part Find the other station in the capture, give its offset from the center, and say
 	whether it carries HD Radio. How can you tell?
-		\begin{solution}[0.6in]
-		\capSolNeighbor
-		\end{solution}
+		\begin{solution}[0.6in]\keysol{sol9}\end{solution}
 
 \end{parts}
 
@@ -316,28 +288,16 @@ station with HD Radio, as the lab page lists.
 
 	\part Paste a screenshot with the shelves visible, and record the station, the RF
 	gain, and the height of the shelves above the floor.
-		\begin{solution}[1.6in]
-		Answers vary. The shelves should look like the test file's, with a rougher host whose
-		width changes with the audio on the waterfall.
-		\end{solution}
+		\begin{solution}[1.6in]\keysol{sol10}\end{solution}
 
 	\part Record the inner and outer edges in MHz, the Inner subcarrier setting where the
 	readings stop rising, and the configuration.
-		\begin{solution}[0.8in]
-		Answers vary. Most stations are hybrid: edges about 129.4 and 198.4 kHz from the
-		center, and readings that do not rise below 356. Edges closer to the host, with
-		readings that rise as the slider moves down, mean extended hybrid.
-		\end{solution}
+		\begin{solution}[0.8in]\keysol{sol11}\end{solution}
 
 	\begin{minipage}[t]{0.58\linewidth}
 		\part Record both meter readings. Then lower the gain in steps and record what happens
 		to the shelves and the readings as the floor rises toward them.
-		\begin{solution}[0.9in]
-		Answers vary; a station at the original level reads about $-23$ dBc per sideband,
-		and a stronger one reads higher. As the floor rises toward the shelves, the noise in
-		each band adds to the reading, so the meter reads high, and the shelves' edges blur
-		into the floor.
-		\end{solution}
+		\begin{solution}[0.9in]\keysol{sol12}\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
 		\raggedleft \vspace{12pt}
@@ -359,25 +319,16 @@ this course.
 
 	\part Record the station name, the title and artist of what is playing, and the
 	programs the station carries.
-		\begin{solution}[1.0in]
-		Answers vary. nrsc5 prints the station name and the title and artist as they arrive,
-		and lists the station's audio programs; HD1 is program 0.
-		\end{solution}
+		\begin{solution}[1.0in]\keysol{sol13}\end{solution}
 
 	\part Lower the gain until the audio stops. At what gain does it stop? Then stop nrsc5,
 	run your meter at that gain, and record how high the shelves stand above the floor.
-		\begin{solution}[1.0in]
-		Answers vary. The digital audio stops abruptly, not gradually as analog FM does, while
-		the shelves still stand a little above the floor.
-		\end{solution}
+		\begin{solution}[1.0in]\keysol{sol14}\end{solution}
 
 	\begin{minipage}[t]{0.58\linewidth}
 		\part Record 10 s with \texttt{nrsc5 -w}, open the recording in your meter, and
 		record both readings. Do they match Question 5(c)?
-		\begin{solution}[0.9in]
-		Answers vary. They should be close if the gain is the same, because the file holds the
-		same samples the RTL-SDR delivers live.
-		\end{solution}
+		\begin{solution}[0.9in]\keysol{sol15}\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
 		\raggedleft \vspace{12pt}
@@ -400,29 +351,16 @@ this course.
 	\part Compare the live station with the lesson's test file: where its shelves sit,
 	how high they stand, and whether the two sides match. What does each difference tell
 	you about the station's HD Radio signal?
-		\begin{solution}[1.5in]
-		Answers vary. Edges at 129.4 and 198.4 kHz mean hybrid; an inner edge closer to the
-		host means extended hybrid. Shelves that read higher in dBc than the test file's mean
-		the station runs its digital signal stronger than the test file. Two sides that read
-		differently mean the station runs one sideband weaker than the other.
-		\end{solution}
+		\begin{solution}[1.5in]\keysol{sol16}\end{solution}
 
 	\part Explain how the lab capture's waterfall, edges, and meter readings identified its
 	configuration.
-		\begin{solution}[1.5in]
-		\capSolWriteup
-		\end{solution}
+		\begin{solution}[1.5in]\keysol{sol17}\end{solution}
 
 	\part nrsc5 cannot decode \texttt{L14-hd-test.cu8}, although its sidebands have the right
 	subcarriers, spacing, and guard. Name two things nrsc5 needs from a signal that the test
 	file does not provide.
-		\begin{solution}[1.5in]
-		Any two: reference subcarriers that carry NRSC-5's known synchronization and control
-		bits, which nrsc5 uses to find the timing, frequency, and phase; data subcarriers
-		that carry real NRSC-5 frames, scrambled, coded, and interleaved as the standard
-		specifies, rather than random QPSK; and compressed audio and station data inside
-		those frames.
-		\end{solution}
+		\begin{solution}[1.5in]\keysol{sol18}\end{solution}
 
 \end{parts}
 
