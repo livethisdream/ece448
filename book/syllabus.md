@@ -35,8 +35,10 @@ choosing.
 
 ### An applications course
 
-This course gives you **only as much theory as the application needs**. ECE 447
-derives communications theory; here we use it. Every lesson starts with a
+**Watch what the signal does; don't calculate it.** We use real radios and
+GNU Radio to observe effects, such as what happens when the noise goes up, and,
+when it helps, tie what we see back to theory. ECE 447 derives communications
+theory; here we use it. Every lesson starts with a
 signal to build, receive, or decode, and most of every period is spent in
 GNU Radio with real hardware and real captures. When a lesson brings in an
 equation, it is because a block parameter, a sample rate, or a filter needs

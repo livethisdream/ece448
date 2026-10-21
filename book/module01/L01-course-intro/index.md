@@ -117,7 +117,7 @@ _Playing guitar with the band at Trace, my church._
 
 Think about the last hour. How many wireless links did you use? Cellular data, WiFi, Bluetooth earbuds, a car key fob, an RFID badge, GPS on your phone, maybe a garage door opener, a drone downlink, ADS-B chirping overhead every second — modern life is soaked in RF. **Every one of those signals is generated, transmitted, and received the same fundamental way.** Once you know how, you can decode most of them yourself.
 
-**ECE 447** teaches you the *theory* behind these systems — the math of modulation, coding, and channel capacity. **ECE 448 is where that theory meets a $30 dongle and a laptop.** Instead of drawing block diagrams, you'll build them in GNU Radio. Instead of computing an SNR by hand, you'll measure it. Instead of trusting that "the receiver demodulates the signal," you'll write the receiver.
+**ECE 447** teaches you the *theory* behind these systems — the math of modulation, coding, and channel capacity. **ECE 448 is where that theory meets a $30 dongle and a laptop.** Here we watch what a signal does rather than calculate it: turn the noise up and see the constellation spread, narrow a filter and hear the audio change. Instead of drawing block diagrams, you'll build them in GNU Radio. Instead of trusting that "the receiver demodulates the signal," you'll write the receiver.
 ::::
 
 ::::{frame} What Is a Software Defined Radio?

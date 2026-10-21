@@ -7,6 +7,10 @@ working rules apply here.
 
 **This is an applications course. Teach only enough theory to get by.**
 
+**Watch what the signal does; don't calculate it** (Neil, 2026-10-21). We use
+real radios to observe effects and, when it helps, tie them back to theory.
+This is the line the landing page, syllabus, and Lesson 1 use.
+
 Every lesson exists to get a real signal built, received, or decoded in
 GNU Radio. Theory earns a place only when the application needs it, and only
 as much as the application needs. Write lesson pages, slides, practice sets,
