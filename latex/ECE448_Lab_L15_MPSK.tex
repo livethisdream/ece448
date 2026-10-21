@@ -58,6 +58,18 @@
 \newcolumntype{K}[1]{>{\centering\arraybackslash}p{#1}}
 \newcommand{\kv}[1]{\ifkey{\color{red}#1}\fi\rule[-0.10in]{0pt}{0.34in}}
 
+% Answers are not in this public file. Every solution, \kv value, and \ansbox
+% value is \keysol{<id>}, defined in the private ECE448-faculty repo at
+% lab-keys/src/ECE448_Lab_L15_MPSK_solutions.tex; build_lab.sh puts that
+% folder on TEXINPUTS (KEYDIR) for the KEY. A KEY build without it stops.
+\long\def\defkeysol#1#2{\expandafter\long\expandafter\def\csname keysol@#1\endcsname{#2}}
+\def\keysol#1{\ifcsname keysol@#1\endcsname\csname keysol@#1\endcsname\fi}
+\ifkey
+	\IfFileExists{ECE448_Lab_L15_MPSK_solutions.tex}%
+		{\input{ECE448_Lab_L15_MPSK_solutions}}%
+		{\errmessage{KEY build needs ECE448_Lab_L15_MPSK_solutions.tex from ECE448-faculty/lab-keys/src (set KEYDIR)}}
+\fi
+
 % print the answers if this is the key
 \ifkey
 	\printanswers % if this IS the key
@@ -149,22 +161,16 @@ with every slider at its default.
 
 	\begin{minipage}[t]{0.58\linewidth}
 		\part After about 15 s, record the Received label and the Lines label.
-		\begin{solution}[0.7in]
-		The Received label reads \texttt{USAFA ECE 448: ASCII over mPSK.}, and every line
-		is correct, about 21 lines a second.
-		\end{solution}
+		\begin{solution}[0.7in]\keysol{sol1}\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
 		\raggedleft \vspace{12pt}
-		\ansbox[1.4in]{all correct}
+		\ansbox[1.4in]{\keysol{ans1}}
 	\end{minipage}
 
 	\part Type 50 into the frequency offset box, wait about 5 s, and paste a screenshot of
 	the running flowgraph's window.
-		\begin{solution}[1.6in]
-		The Symbol Sync output is a ring, the Costas Loop output is four clusters, and the
-		frequency estimate sits at 50 Hz.
-		\end{solution}
+		\begin{solution}[1.6in]\keysol{sol2}\end{solution}
 
 \end{parts}
 
@@ -185,42 +191,33 @@ with every slider at its default.
 	\begin{tabular}{| l | *{8}{K{0.55in} |}}
 	\hline
 	Index & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 \\\hline
-	Angle & \kv{$22.5^\circ$} & \kv{$67.5^\circ$} & \kv{$112.5^\circ$} & \kv{$157.5^\circ$} & \kv{$202.5^\circ$} & \kv{$247.5^\circ$} & \kv{$292.5^\circ$} & \kv{$337.5^\circ$} \\\hline
+	Angle & \kv{\keysol{kv1}} & \kv{\keysol{kv2}} & \kv{\keysol{kv3}} & \kv{\keysol{kv4}} & \kv{\keysol{kv5}} & \kv{\keysol{kv6}} & \kv{\keysol{kv7}} & \kv{\keysol{kv8}} \\\hline
 	\end{tabular}
 	\end{center}
-		\begin{solution}[0.4in]
-		$22.5^\circ$ plus multiples of $45^\circ$. In Python,
-		\texttt{cmath.exp(1j*(math.pi/8 + math.pi/4*i))} for \texttt{i} from 0 to 7.
-		\end{solution}
+		\begin{solution}[0.4in]\keysol{sol3}\end{solution}
 
 	\begin{minipage}[t]{0.58\linewidth}
 		\part The Costas Loop's frequency output is in radians per symbol. Find the constant
 		of the Multiply Const that turns it into hertz at 4,000 symbols per second.
-		\begin{solution}[0.9in]
-		One cycle is $2\pi$ radians, so $f = \omega R_s / 2\pi$:
-		\eq{ \dfrac{4000}{2\pi} &= 636.6 }
-		\end{solution}
+		\begin{solution}[0.9in]\keysol{sol4}\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
 		\raggedleft \vspace{12pt}
-		\ansbox[1.0in]{636.6}
+		\ansbox[1.0in]{\keysol{ans2}}
 	\end{minipage}
 
 	\begin{minipage}[t]{0.58\linewidth}
 		\part Your Question 3 flowgraph adds a 20 Hz frequency offset at 4,000 symbols per
 		second. How far does it turn the constellation each symbol, and how many symbols
 		does one full turn take?
-		\begin{solution}[0.9in]
-		\eq{ 360^\circ \times \dfrac{20}{4000} &= 1.8^\circ \\
-		\dfrac{360^\circ}{1.8^\circ} &= 200\ \text{symbols} }
-		\end{solution}
+		\begin{solution}[0.9in]\keysol{sol5}\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
 		\raggedleft \vspace{12pt}
-		\ansbox[1.0in]{$1.8^\circ$}
+		\ansbox[1.0in]{\keysol{ans3}}
 
 		\vspace{4pt}
-		\ansbox[1.0in]{200}
+		\ansbox[1.0in]{\keysol{ans4}}
 	\end{minipage}
 
 \end{parts}
@@ -237,40 +234,24 @@ lab page lists, with a 20 Hz frequency offset.
 
 	\part Paste a screenshot of your flowgraph on the GRC canvas. Every connection
 	must be black, not red.
-		\begin{solution}[1.5in]
-		The flowgraph matches the lab page's list: Random Source, Chunks to Symbols with
-		the 8PSK table, Throttle, a Multiply with a complex Signal Source at \texttt{foff},
-		an Add with a Noise Source, and a Costas Loop of order 8, with a two-input QT GUI
-		Constellation Sink and the loop's frequency output, scaled by
-		$4000/2\pi$, on a QT GUI Number Sink.
-		\end{solution}
+		\begin{solution}[1.5in]\keysol{sol6}\end{solution}
 
 	\begin{minipage}[t]{0.58\linewidth}
 		\part Paste a screenshot of the running window, and record the loop's frequency
 		reading at offsets of 20 Hz and $-60$ Hz.
-		\begin{solution}[1.2in]
-		The input is a ring and the output is eight clusters at $22.5^\circ$ plus
-		multiples of $45^\circ$. The reading settles within about 1 Hz of the offset: near
-		20 Hz, then near $-60$ Hz.
-		\end{solution}
+		\begin{solution}[1.2in]\keysol{sol7}\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
 		\raggedleft \vspace{12pt}
-		20 Hz: \ansbox[1.0in]{$\approx 20$ Hz}
+		20 Hz: \ansbox[1.0in]{\keysol{ans5}}
 
 		\vspace{4pt}
-		$-60$ Hz: \ansbox[1.0in]{$\approx -60$ Hz}
+		$-60$ Hz: \ansbox[1.0in]{\keysol{ans6}}
 	\end{minipage}
 
 	\part Change the Costas Loop's order from 8 to 2 and run it again. Describe the
 	output and the frequency reading, and explain why the loop needs the right order.
-		\begin{solution}[1.2in]
-		The output stays a ring and the reading wanders by tens of hertz and never settles
-		at 20 Hz. The order-2 detector, $I \times Q$, expects two points on the I axis.
-		Averaged over the eight 8PSK points its error is zero at every phase, so it gives
-		the loop nothing to lock to. The detector has to know the constellation to measure
-		the error to the nearest point.
-		\end{solution}
+		\begin{solution}[1.2in]\keysol{sol8}\end{solution}
 
 \end{parts}
 
@@ -291,35 +272,19 @@ each step, and watch the Costas Loop's output and the Lines label.
 	\begin{tabular}{| l | K{1.1in} | K{1.1in} | K{1.1in} |}
 	\hline
 	& BPSK & QPSK & 8PSK \\\hline
-	Noise amplitude & \kv{$\approx 1.3$ to 1.4} & \kv{$\approx 0.9$ to 1.0} & \kv{$\approx 0.5$ to 0.6} \\\hline
+	Noise amplitude & \kv{\keysol{kv9}} & \kv{\keysol{kv10}} & \kv{\keysol{kv11}} \\\hline
 	\end{tabular}
 	\end{center}
-		\begin{solution}[1.0in]
-		Measured over 30 s runs, half the lines were correct at about 1.35 for BPSK, 0.95
-		for QPSK, and 0.55 for 8PSK; accept values within about 0.1 of these. At each limit
-		the clouds have grown until they touch their neighbors, and some symbols land in
-		a neighbor's region.
-		\end{solution}
+		\begin{solution}[1.0in]\keysol{sol9}\end{solution}
 
 	\part At each constellation's limit, describe the Lines label and the Received label:
 	how many lines arrive, and what the wrong characters look like. Do the three limits look
 	different?
-		\begin{solution}[1.2in]
-		Answers vary. Lines still arrive, about half of them correct, and some packets are
-		lost outright. A wrong line is mostly right, with a few characters replaced: with
-		Gray coding a slip to a neighbor flips one bit, and with differential coding on each
-		slip corrupts two symbols, so a wrong character usually has one or two flipped bits
-		and becomes a nearby letter or a symbol. The three limits look alike, because each is where about the
-		same share of symbols lands in a neighbor's region.
-		\end{solution}
+		\begin{solution}[1.2in]\keysol{sol10}\end{solution}
 
 	\part Paste a screenshot of the window for 8PSK at its limit, and mark one wrong
 	character in the Received label.
-		\begin{solution}[1.4in]
-		Answers vary. The Costas output shows eight clouds that run together. A wrong
-		character usually differs from the right one in one or two bits, such as P read as
-		D or T.
-		\end{solution}
+		\begin{solution}[1.4in]\keysol{sol11}\end{solution}
 
 \end{parts}
 
@@ -340,16 +305,12 @@ estimate for up to 20 s.
 	\begin{tabular}{| l | K{1.1in} | K{1.1in} | K{1.1in} |}
 	\hline
 	Offset (Hz) & 250 & 350 & 400 \\\hline
-	Locks? & \kv{yes} & \kv{yes} & \kv{sometimes} \\\hline
-	Time & \kv{$\approx 1.5$ s} & \kv{$\approx 4$ s} & \kv{$\approx 6$ s} \\\hline
-	Settles at (Hz) & \kv{250} & \kv{350} & \kv{400 or $-100$} \\\hline
+	Locks? & \kv{\keysol{kv12}} & \kv{\keysol{kv13}} & \kv{\keysol{kv14}} \\\hline
+	Time & \kv{\keysol{kv15}} & \kv{\keysol{kv16}} & \kv{\keysol{kv17}} \\\hline
+	Settles at (Hz) & \kv{\keysol{kv18}} & \kv{\keysol{kv19}} & \kv{\keysol{kv20}} \\\hline
 	\end{tabular}
 	\end{center}
-		\begin{solution}[0.6in]
-		At 400 Hz the loop locked in about two runs of three, in 5 to 7 s. The other runs
-		settled 500 Hz away, near $-100$ Hz, a false lock with eight clusters on the
-		constellation; accept either.
-		\end{solution}
+		\begin{solution}[0.6in]\keysol{sol12}\end{solution}
 
 	\part Set \texttt{M} to 8 and run the flowgraph again. Record the same for 8PSK, and
 	find its pull-in range.
@@ -359,15 +320,11 @@ estimate for up to 20 s.
 	\begin{tabular}{| l | K{0.9in} | K{0.9in} | K{0.9in} | K{0.9in} |}
 	\hline
 	Offset (Hz) & 100 & 150 & 200 & 250 \\\hline
-	Locks? & \kv{yes} & \kv{yes} & \kv{usually} & \kv{no} \\\hline
-	Time & \kv{$\approx 3$ s} & \kv{$\approx 9$ s} & \kv{10 to 14 s} & \kv{--} \\\hline
+	Locks? & \kv{\keysol{kv21}} & \kv{\keysol{kv22}} & \kv{\keysol{kv23}} & \kv{\keysol{kv24}} \\\hline
+	Time & \kv{\keysol{kv25}} & \kv{\keysol{kv26}} & \kv{\keysol{kv27}} & \kv{\keysol{kv28}} \\\hline
 	\end{tabular}
 	\end{center}
-		\begin{solution}[0.6in]
-		The 8PSK loop pulls in from about 175 to 200 Hz at this noise. In measured runs it
-		locked at 150 Hz every time, at 200 Hz in about five runs of six, taking 10 to 14 s,
-		and at 250 Hz never; accept yes or sometimes at 200 Hz.
-		\end{solution}
+		\begin{solution}[0.6in]\keysol{sol13}\end{solution}
 
 \end{parts}
 
@@ -389,26 +346,16 @@ the Lines count keeps rising.
 	\begin{tabular}{| l | *{18}{K{0.2in} |}}
 	\hline
 	Phase & 0 & 20 & 40 & 60 & 80 & 100 & 120 & 140 & 160 & 180 & 200 & 220 & 240 & 260 & 280 & 300 & 320 & 340 \\\hline
-	QPSK & \kv{\checkmark} & \kv{\checkmark} & \kv{\checkmark} & & & & & & & & & & & & & & \kv{\checkmark} & \kv{\checkmark} \\\hline
-	8PSK & \kv{\checkmark} & \kv{\checkmark} & & & & & & & & & & & & & & & & \kv{\checkmark} \\\hline
+	QPSK & \kv{\keysol{ph1}} & \kv{\keysol{ph2}} & \kv{\keysol{ph3}} & \kv{\keysol{ph4}} & \kv{\keysol{ph5}} & \kv{\keysol{ph6}} & \kv{\keysol{ph7}} & \kv{\keysol{ph8}} & \kv{\keysol{ph9}} & \kv{\keysol{ph10}} & \kv{\keysol{ph11}} & \kv{\keysol{ph12}} & \kv{\keysol{ph13}} & \kv{\keysol{ph14}} & \kv{\keysol{ph15}} & \kv{\keysol{ph16}} & \kv{\keysol{ph17}} & \kv{\keysol{ph18}} \\\hline
+	8PSK & \kv{\keysol{ph19}} & \kv{\keysol{ph20}} & \kv{\keysol{ph21}} & \kv{\keysol{ph22}} & \kv{\keysol{ph23}} & \kv{\keysol{ph24}} & \kv{\keysol{ph25}} & \kv{\keysol{ph26}} & \kv{\keysol{ph27}} & \kv{\keysol{ph28}} & \kv{\keysol{ph29}} & \kv{\keysol{ph30}} & \kv{\keysol{ph31}} & \kv{\keysol{ph32}} & \kv{\keysol{ph33}} & \kv{\keysol{ph34}} & \kv{\keysol{ph35}} & \kv{\keysol{ph36}} \\\hline
 	\end{tabular}
 	\end{center}
-		\begin{solution}[0.5in]
-		QPSK delivers text at 5 settings, those within $45^\circ$ of 0, and 8PSK at 3, those within
-		$22.5^\circ$: the loop locks to the nearest of $M$ rotations, $360^\circ/M$ apart. At 20
-		and 340 degrees 8PSK is within $2.5^\circ$ of the boundary, and noise sometimes slips the
-		loop to the next rotation, so accept either result there.
-		\end{solution}
+		\begin{solution}[0.5in]\keysol{sol14}\end{solution}
 
 	\part Set \texttt{diff} to 1, run the flowgraph again, and repeat three settings that failed. Record
 	what happens. Then, for QPSK with differential coding off, explain what changes if you
 	step the phase by 20 degrees at a time without returning to 0.
-		\begin{solution}[1.3in]
-		With differential coding on, every setting delivers text. Stepping 20 degrees at
-		a time, the QPSK loop follows each small step and never leaves its lock position, so
-		even with differential coding off the text keeps arriving: a jump of more than
-		$180^\circ/M$ is what moves the loop to a different rotation.
-		\end{solution}
+		\begin{solution}[1.3in]\keysol{sol15}\end{solution}
 
 \end{parts}
 
@@ -424,11 +371,7 @@ before you disconnect the cable.
 
 	\part Once lines arrive, paste a screenshot that shows both constellations, the
 	frequency estimate, and the Lines label.
-		\begin{solution}[1.5in]
-		The Symbol Sync output shows four clusters turned by the cable's phase, the
-		Costas output shows them at $45^\circ$ plus multiples of $90^\circ$, the frequency
-		estimate sits near 0 Hz, and the lines arrive correct.
-		\end{solution}
+		\begin{solution}[1.5in]\keysol{sol16}\end{solution}
 
 	\part With \texttt{diff} = 1, stop and start the flowgraph three times. Then set
 	\texttt{diff} to 0 and do it eight more times. Record which runs deliver text.
@@ -443,11 +386,7 @@ before you disconnect the cable.
 	Text? & & & & & & & & & & & \\\hline
 	\end{tabular}
 	\end{center}
-		\begin{solution}[0.8in]
-		Every run with differential coding on delivers text. With it off, each run
-		delivers text only if the loop happened to lock in the right rotation, about one
-		run in four, since the cable's phase changes from start to start.
-		\end{solution}
+		\begin{solution}[0.8in]\keysol{sol17}\end{solution}
 
 	\part With \texttt{diff} = 1, wait 30 s at each TX attenuation and record the Lines label.
 	Explain what changes as the attenuation rises.
@@ -460,14 +399,7 @@ before you disconnect the cable.
 	Lines correct of received & & & \\\hline
 	\end{tabular}
 	\end{center}
-		\begin{solution}[1.2in]
-		Each 10 dB step lowers the received signal while the receiver's own noise stays
-		the same. The AGC keeps the constellation the same size, so the noise clouds grow
-		instead, and once they touch, lines start to fail. With estimated Pluto levels, a
-		simulation delivered every line at 70 and 80 dB and about a quarter of them at
-		89 dB. The real levels depend on the hardware, and a Pluto with a lower noise
-		floor may deliver every line even at 89 dB; accept that with the explanation.
-		\end{solution}
+		\begin{solution}[1.2in]\keysol{sol18}\end{solution}
 
 \end{parts}
 
@@ -482,37 +414,17 @@ before you disconnect the cable.
 	\part Compare the noise limits in Question 4 for the three constellations. Explain
 	in words why they come in that order, and what that means for a radio that must carry
 	more bits per symbol.
-		\begin{solution}[1.5in]
-		The noise spreads every point into a cloud of the same size. The points sit 2.00
-		apart for BPSK, 1.41 for QPSK, and 0.77 for 8PSK, so 8PSK's clouds touch their
-		neighbors first and BPSK's last, and the noise limits come in the same order. More bits per symbol put more points on the same circle, closer
-		together, so the link tolerates less noise; to keep the clouds apart it needs a
-		stronger signal, which a link budget from Lesson 2 has to supply.
-		\end{solution}
+		\begin{solution}[1.5in]\keysol{sol19}\end{solution}
 
 	\part Compare the 8PSK pull-in range with QPSK's, explain the difference, and say what a link between two different Plutos,
 	each accurate to 25 ppm at 915 MHz, would need before its Costas Loop.
-		\begin{solution}[1.5in]
-		The 8PSK loop pulled in from about 175 to 200 Hz, while QPSK locked at 350 Hz and sometimes at 400 Hz. Its
-		detector measures an error only up to $22.5^\circ$, so a spinning constellation
-		leaves that range sooner. Two Plutos can be up to $2 \times 25 \times 10^{-6}
-		\times 915\ \text{MHz} \approx 46$ kHz apart, more than a hundred times the range, so the
-		receiver needs a coarse frequency correction first, such as an FLL Band-Edge
-		block, or a higher symbol rate with the loop scaled to it.
-		\end{solution}
+		\begin{solution}[1.5in]\keysol{sol20}\end{solution}
 
 	\part Compare Question 6 with Question 7(b). Explain why the
 	working settings were where they were, why the Pluto runs behaved as they did, and
 	why a real mPSK link uses differential coding even though one wrong symbol then
 	corrupts two.
-		\begin{solution}[1.5in]
-		The loop locks to the rotation nearest the received phase, so with coding off the
-		text arrives only when the phase is within $180^\circ/M$ of $0^\circ$: 5 of 18
-		settings for QPSK and 3 for 8PSK. On the Pluto the phase is random at every
-		start, so about one run in four locks the right way. Differential coding makes
-		every rotation work and limits a cycle slip to a symbol or two, which matters more
-		than the second symbol each wrong decision corrupts.
-		\end{solution}
+		\begin{solution}[1.5in]\keysol{sol21}\end{solution}
 
 \end{parts}
 
