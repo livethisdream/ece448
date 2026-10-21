@@ -125,7 +125,7 @@ Same transmitter power for all four; the dashed circle is that power. BPSK is 2-
 The receiver picks the nearest point; for QPSK the decision regions are the quadrants.
 
 Note:
-QPSK at three SNRs. At 20 dB nothing crosses; at 10 dB a few do; at 4 dB the clouds overlap. Red is a sample in the wrong region. This is what the constellation sink shows from Lesson 5 on.
+QPSK at three SNRs. At 20 dB nothing crosses; at 10 dB a few do; at 4 dB the clouds overlap. Red is a sample in the wrong region. This is what the constellation sink shows, starting with the RDS receiver in Lesson 7.
 
 ---
 
@@ -202,7 +202,7 @@ If they keep one picture, it is the noise clouds at three SNRs.
 ## Looking Ahead
 
 - Lesson 4: the SDR hardware that turns a carrier into $I + jQ$
-- Lesson 5: a constellation sink on a real signal
+- Lesson 7: a constellation sink on a real signal
 - Lessons 9, 10, and 15: PAM and PSK receivers built on these ideas
 
 Note:

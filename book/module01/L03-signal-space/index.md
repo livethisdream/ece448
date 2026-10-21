@@ -150,7 +150,7 @@ The figure draws all four at the same average energy, which is the same transmit
 
 The receiver decides each symbol the way it did for binary PAM: it picks the nearest point. Every sample closer to one point than to any other falls in that point's **decision region**, and the boundaries sit halfway between neighbors. For QPSK the regions are the four quadrants, so the receiver needs only the signs of $I$ and $Q$. Binary PAM's threshold at zero is the same idea on a line.
 
-The figure sends 600 QPSK symbols at three SNRs. Noise adds a random offset to both $I$ and $Q$, so each point arrives as a round cloud. At 20 dB the clouds are tight and every symbol lands in its own quadrant. At 10 dB a few stray across. At 4 dB the clouds overlap and the red samples, the ones in the wrong region, are everywhere. This is what the GNU Radio constellation sink will show us from Lesson 5 on.
+The figure sends 600 QPSK symbols at three SNRs. Noise adds a random offset to both $I$ and $Q$, so each point arrives as a round cloud. At 20 dB the clouds are tight and every symbol lands in its own quadrant. At 10 dB a few stray across. At 4 dB the clouds overlap and the red samples, the ones in the wrong region, are everywhere. This is what the GNU Radio constellation sink shows, starting with the RDS receiver in Lesson 7.
 ::::
 
 ::::{frame} Try It in GNU Radio
@@ -216,7 +216,7 @@ Try it before looking at the figure: label the eight points of 8-PSK, starting f
 :::
 :::{present}
 - Each receiver problem has its own shape on the constellation.
-- From Lesson 5 on, the constellation sink is the first place we look.
+- From Lesson 7 on, the constellation sink is the first place we look.
 :::
 
 GNU Radio's constellation sink plots received samples exactly as in this lesson, and it is the first place to look when a receiver fails, because each problem leaves its own shape. **Noise** spreads each point into a round cloud, and the cloud's size tells us how good the SNR is. A **phase offset** between the transmitter and receiver oscillators rotates the whole constellation. A **frequency offset** makes that rotation continuous, so the points smear into a ring. A **timing offset**, sampling each symbol off its peak, mixes in neighboring symbols and smears each point into a spread that noise does not explain.
@@ -269,11 +269,11 @@ Downloads:
 ::::{frame} Looking Ahead
 :::{present}
 - Lesson 4 opens the SDR that turns a carrier into $I + jQ$.
-- Lesson 5 puts a constellation sink on a real signal.
+- Lesson 7 puts a constellation sink on a real signal.
 - Lessons 9, 10, and 15 build PAM and PSK receivers on these ideas.
 :::
 
-Today we treated the receiver as an ideal box that hands us $(I, Q)$ once per symbol. Lesson 4 opens that box: the mixers that multiply by the cosine and the sine, the filters, and the analog-to-digital converter that produce the complex sample stream. Lesson 5 then puts a real signal into GNU Radio and onto a constellation sink.
+Today we treated the receiver as an ideal box that hands us $(I, Q)$ once per symbol. Lesson 4 opens that box: the mixers that multiply by the cosine and the sine, the filters, and the analog-to-digital converter that produce the complex sample stream. Lesson 5 then puts a real signal into GNU Radio, and Lesson 7's RDS receiver puts one onto a constellation sink.
 
 The rest of the course builds on this picture. Lessons 9 and 10 build a PAM link and recover its symbol timing, and Lesson 15 does the same for PSK with carrier recovery. In each one we will turn up the noise and watch the clouds grow, just as we did today. Before the next lesson, be able to sketch 2-PAM, 4-PAM, QPSK, and 8-PSK, mark their decision regions, and label 8-PSK with a Gray code.
 ::::
