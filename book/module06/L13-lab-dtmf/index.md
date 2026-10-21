@@ -27,9 +27,9 @@ L13 Lab · Module 6: Waveform Applications & RF Reverse Engineering · Dr. Neil 
 
 ::::{frame} From Lesson to Bench
 :::{present}
-- **Pre-Lab:** run the receiver and predict tones, bins, block times, and twist.
-- **Bench:** build the keypad and its bins, decode an unknown capture, find the limits, and decode a phone.
-- **Writeup:** compare the limits with the standard and explain them.
+- **Pre-Lab:** run the receiver, work out block settings, and add noise.
+- **Bench:** build the keypad and bins, decode a capture, find the limits, and decode a phone.
+- **Writeup:** explain where the decoder misses digits, and why.
 :::
 
 Lesson 13 decoded a synthetic capture of a phone number. Today you build the keypad and the receiver's eight Goertzel bins from an empty canvas, decode a second capture whose number you do not know, and measure where the decoder stops working as the twist, the tone length, and the block length change. Then you decode a real signal: a phone's keypad through your laptop's microphone. The lab packet has three parts, and you turn it in once, complete, before Lesson 14. You do **Part 1, the Pre-Lab**, on your own before the period, record **Part 2**'s measurements in class, and explain them in **Part 3, the Writeup**.
@@ -40,14 +40,14 @@ Nothing in this lab transmits. Bring a phone whose keypad plays tones, and headp
 ::::{frame} Part 1: Before the Period
 :::{present}
 - `L13-dtmf-rx.grc` decodes `L13-capture.wav`.
-- Predict the tones of a number of your own.
-- Predict the bins at N = 205, and the block times at N = 102 and 410.
-- Predict a signal's twist, and whether the decoder accepts it.
+- Look up the tones of a number of your own.
+- Work out the block times at N = 102 and 410.
+- Run `L13-dtmf-link.grc` and lower the SNR until digits drop.
 :::
 
 Do the Pre-Lab before you arrive. Put every file from the Lesson 13 and L13 Lab pages in one folder. Question 1 checks that the receiver opens, runs, and reads 7195550148 from `L13-capture.wav`; if GRC reports an error, the L5 lesson page lists the install checks.
 
-Question 2 asks for predictions from the lesson: the two tones of each key in a number you choose, the bin number $k$ and the rounded bin's frequency for the six tones the lesson did not work, the block time and bin spacing at two other block lengths, and the twist of a signal with given tone amplitudes. Part 2 checks each one.
+Question 2 sets up the bench. Look up the two tones of each key in a number you choose, and work out the block time $N/f_s$ and the null spacing $f_s/N$ at the two other block lengths Part 2 uses. Then open `L13-dtmf-link.grc`, lower the SNR slider a step at a time, and record where the Numbers label first shows a number missed or wrong.
 ::::
 
 ::::{frame} Expected Numbers
@@ -56,7 +56,7 @@ Question 2 asks for predictions from the lesson: the two tones of each key in a 
 | :-- | :-- |
 | `L13-capture.wav` | 7195550148, every 1.5 s |
 | Key '9' | 852 Hz and 1477 Hz |
-| Bin at N = 205 | $k = fN/f_s$, 39.0 Hz apart |
+| Block at N = 205 | 25.6 ms, nulls 39 Hz out |
 | Repeated digits | each one counts |
 :::
 
@@ -91,7 +91,7 @@ The receiver should decode every repetition of the lesson's capture with no wron
 
 1. Open `L13-dtmf-rx.grc`. Double-click the Variable `wav`, change its value to `'L13-lab-capture.wav'`, with the quotes, and run it. The Wav File Source reads the file only when the flowgraph starts.
 2. Wait for the Numbers label to count at least five, and record the number in the Digits label for Question 4(a). Screenshot the window.
-3. Read the height of the row peaks and of the column peaks in the two time sinks, and find the twist in dB for Question 4(b). Each peak is half the tone's amplitude.
+3. Read the height of the row peaks and of the column peaks in the two time sinks, and note which group arrives weaker, for Question 4(b).
 4. Read the time from one dialing to the next in the time sinks, count the digits, and estimate the time per digit, tone plus gap, for Question 4(c).
 ::::
 
@@ -146,12 +146,12 @@ For the receiver, check that the WAV files are in the same folder as the flowgra
 
 ::::{frame} Part 3: After the Lab
 :::{present}
-- Compare the decoder's measured limits with the standard's rules.
+- Compare where the decoder missed digits with the lesson's 40 ms tones and 20 ms gaps.
 - Explain what a shorter and a longer block gain and lose.
 - Compare the phone with the synthetic captures.
 :::
 
-The Writeup is three questions. The first compares the twist, tone-length, and gap limits you measured with the rules of the lesson's table, and says whether the decoder meets each one. The second uses your Question 6 measurements to explain what a shorter and a longer Goertzel block gain and lose. The third compares the real phone with the synthetic captures and proposes one change to the decoder for a noisy room.
+The Writeup is three questions. The first compares where the decoder started to miss digits as you moved the twist, tone, and gap sliders with the lesson's timing, tones of 40 ms and up and gaps of 20 ms and up, and with the decoder's twist test, and explains why it fails where it does. The second uses your Question 6 measurements to explain what a shorter and a longer Goertzel block gain and lose. The third compares the real phone with the synthetic captures and proposes one change to the decoder for a noisy room.
 ::::
 
 ::::{frame} Lab Packet
