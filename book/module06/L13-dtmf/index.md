@@ -244,12 +244,12 @@ Lower the SNR and watch the spectrum fill with noise. Every number arrives down 
 ::::{frame} DTMF on a Real Radio
 :::{present}
 - Two-way radios send DTMF over FM to control repeaters.
-- Listen in GQRX on an RTL-SDR, in Narrow FM.
-- Send GQRX's audio to multimon-ng, or to this decoder.
+- Listen in SDR Flex or GQRX on an RTL-SDR, in narrow FM.
+- Hand the audio to multimon-ng, or to this decoder.
 - The L13 Lab decodes a phone through the microphone.
 :::
 
-On the air, radios send DTMF over narrowband FM. Amateur repeaters accept DTMF commands, and many handheld radios have a DTMF keypad. To hear it, open GQRX with an RTL-SDR, choose the Narrow FM mode, tune to a channel that carries DTMF, and listen. GQRX's UDP button sends the audio, 48 kHz and 16 bits, to port 7355; a short pipe through `nc` and `sox` brings it to 22.05 kHz for `multimon-ng -t raw -a DTMF -`, which prints the digits. To decode it in GNU Radio instead, tune an RTL-SDR to the channel, demodulate it with an FM receiver like Lesson 7's, with its channel filter narrowed to the 12.5 kHz channel, resample the audio to 8 kHz, and connect the audio to the DTMF Decoder block in place of the Wav File Source.
+On the air, radios send DTMF over narrowband FM. Amateur repeaters accept DTMF commands, and many handheld radios have a DTMF keypad. To hear it, open [SDR Flex](https://livethisdream.github.io/sdr-flex/) with an RTL-SDR, tune to a channel that carries DTMF, demodulate it as narrow FM, and listen. SDR Flex can attach `multimon-ng`, a ready-made decoder that reads DTMF among other formats, and print the digits: the same job as our decoder. Without SDR Flex, use GQRX in Narrow FM mode; its UDP button sends the audio, 48 kHz and 16 bits, to port 7355; a short pipe through `nc` and `sox` brings it to 22.05 kHz for `multimon-ng -t raw -a DTMF -`, which prints the digits. To decode it in GNU Radio instead, tune an RTL-SDR to the channel, demodulate it with an FM receiver like Lesson 7's, with its channel filter narrowed to the 12.5 kHz channel, resample the audio to 8 kHz, and connect the audio to the DTMF Decoder block in place of the Wav File Source.
 
 Nothing in this lesson transmits, and decoding is receive-only. In class we transmit only into a cable, into a shielded enclosure, or at very low power in an ISM band, and only when the lesson says to. The L13 Lab uses a real acoustic signal instead: `L13-dtmf-mic.grc` decodes a phone's keypad tones from the laptop's microphone. It is compiled only and not yet tested with a real microphone.
 ::::

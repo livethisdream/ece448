@@ -206,10 +206,10 @@ Same noise, three filters: drag the CW filter slider live. A narrower filter pas
 - L12 Lab: one PlutoSDR, TX port to RX port, 30 dB attenuator
 - An AGC restores the envelope level; check the threshold line
 - Nothing in L12 transmits over the air
-- GQRX: hear a VOR's Morse identifier in AM mode
+- SDR Flex or GQRX: hear a VOR's Morse identifier in AM
 
 Note:
-In class we transmit only into a cable, into a shielded enclosure, or at very low power in an ISM band, and only when the lesson says to. The PlutoSDR flowgraph has run only in simulation so far; the lab is its first run on hardware. For GQRX, tune a VOR between 108 and 118 MHz in AM mode and wait for its identifier, a 1020 Hz tone. Amateur CW is on HF, below an RTL-SDR's range without an upconverter.
+In class we transmit only into a cable, into a shielded enclosure, or at very low power in an ISM band, and only when the lesson says to. The PlutoSDR flowgraph has run only in simulation so far; the lab is its first run on hardware. In SDR Flex (GQRX as the fallback), tune a VOR between 108 and 118 MHz in AM mode and wait for its identifier, a 1020 Hz tone. Amateur CW is on HF, below an RTL-SDR's range without an upconverter.
 
 ---
 

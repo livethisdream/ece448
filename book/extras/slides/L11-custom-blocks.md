@@ -232,7 +232,7 @@ macOS also needs xcode-select --install; we did not test a Mac or the Windows Bu
 The same block keys on a 433.92 MHz remote. The flowgraph only receives.
 
 Note:
-Find the bursts in GQRX first: tune 433.92 MHz and watch the waterfall while pressing the remote. Then close GQRX and open the flowgraph. Tuned 200 kHz low to keep the DC spike off the signal. N = 4 at 128 kHz is about 31 microseconds per output, short enough for pulses a few hundred microseconds long. Not run for the page: it needs an RTL-SDR and a remote.
+Find the bursts first in SDR Flex (GQRX as the fallback): tune 433.92 MHz and watch the waterfall while pressing the remote. SDR Flex can pass them to rtl_433, a ready-made decoder that names the device. Then close the explore tool and open the flowgraph. Tuned 200 kHz low to keep the DC spike off the signal. N = 4 at 128 kHz is about 31 microseconds per output, short enough for pulses a few hundred microseconds long. Not run for the page: it needs an RTL-SDR and a remote.
 
 ---
 

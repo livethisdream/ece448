@@ -262,14 +262,14 @@ Every column breaks the same way as the noise rises, and the narrower the filter
 :::{present}
 - The L12 Lab sends CW through a PlutoSDR, TX to RX, with a 30 dB attenuator.
 - Nothing in L12 transmits over the air.
-- In GQRX, an RTL-SDR hears a VOR's Morse identifier in AM mode.
+- In SDR Flex or GQRX, an RTL-SDR hears a VOR's Morse identifier in AM.
 :::
 
 The L12 Lab moves this link onto a PlutoSDR. The transmit half ends at a PlutoSDR Sink at 915 MHz instead of the Noise Source, and the receive half starts at a PlutoSDR Source, with the same Xlating filter, product detector, CW filter, envelope detector, threshold, and decoder. As in L10, a Rational Resampler raises the 32 kHz stream by 32, to 1.024 MS/s, on the way out and lowers it again on the way in. The received level depends on the cable, the attenuator, and the Pluto's gain, and at the course's settings it is thousands of times smaller than in the simulation, so the lab flowgraph adds an **AGC** after the Xlating filter. It holds the tuned carrier near amplitude 1, which puts the envelope's mark level back near 0.64 at any attenuation, and the envelope plot shows the threshold as a red line so you can check it sits halfway between the space and mark levels.
 
 In class we transmit only into a cable, into a shielded enclosure, or at very low power in an ISM band, and only when the lesson says to. Nothing in this lesson transmits; the L12 Lab transmits from the Pluto's TX port through an inline 30 dB attenuator into its own RX port. We have run the PlutoSDR flowgraph only in simulation, with a model of the cable in place of the radio, so the lab is its first run on hardware.
 
-To hear real Morse, open GQRX with an RTL-SDR, tune a nearby VOR between 108 and 118 MHz, and choose AM mode. Every few seconds the station keys its two- or three-letter identifier as a 1020 Hz tone, and the waterfall shows each mark as a short dash beside the carrier. GQRX's CW modes, CW-U and CW-L, work like today's product detector: they turn a keyed carrier into a tone you can hear. Amateur CW sits on HF, below the RTL-SDR's range, so it needs an HF receiver or an upconverter. Listening is receive-only.
+To hear real Morse, open [SDR Flex](https://livethisdream.github.io/sdr-flex/) with an RTL-SDR, or GQRX if SDR Flex is not set up, tune a nearby VOR between 108 and 118 MHz, and choose AM. Every few seconds the station keys its two- or three-letter identifier as a 1020 Hz tone, and the waterfall shows each mark as a short dash beside the carrier. The CW demodulator in SDR Flex, and GQRX's CW-U and CW-L modes, work like today's product detector: they turn a keyed carrier into a tone you can hear. Amateur CW sits on HF, below the RTL-SDR's range, so it needs an HF receiver or an upconverter. Listening is receive-only.
 ::::
 
 ::::{frame} Key Point

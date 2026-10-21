@@ -209,7 +209,7 @@ Run the link live and pull the SNR slider down. With bins 39 Hz apart, nulls 39 
 ## DTMF on a Real Radio
 
 - Repeaters and remote sites take DTMF over FM.
-- Listen in GQRX on an RTL-SDR, Narrow FM; UDP audio can feed multimon-ng.
+- Listen in SDR Flex (or GQRX) on an RTL-SDR, narrow FM; multimon-ng decodes the digits.
 - Or feed 8 kHz FM audio to the DTMF Decoder.
 - The L13 Lab decodes a phone through the laptop microphone.
 
