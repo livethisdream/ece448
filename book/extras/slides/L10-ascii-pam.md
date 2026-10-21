@@ -24,7 +24,7 @@ Spring 2027 · Dr. Neil Rogers
 
 - Lesson 8: text in packets behind an access code
 - Lesson 9: the PAM link, from bits to one clean sample per symbol; decide by the sign
-- The reading: Mathys (2016), four acts from text to matched filter
+- The reading: Mathys (2016), Motivating Undergraduate Communication Theory Using GNU Radio
 
 Today: text in at one end of the PAM link and out the other.
 
@@ -37,12 +37,13 @@ Open both L10 flowgraphs in GRC before class. The link flowgraph runs in the fir
 
 1. Text to bits: ASCII and bit order
 2. Packets: access code, header, payload
-3. The receiver: slicer, access-code search, bytes
-4. Noise without a matched filter
-5. The matched filter, then clock error and a real radio
+3. Bits to a waveform
+4. The receiver: slicer, access-code search, bytes
+5. Noise without a matched filter
+6. The matched filter, then clock error and a real radio
 
 Note:
-Parts 1 and 2 are the transmitter, part 3 the receiver. Parts 4 and 5 run live with the sliders and the matched-filter switch.
+Parts 1 to 3 are the transmitter, part 4 the receiver. Parts 5 and 6 run live with the sliders and the matched-filter switch.
 
 ---
 

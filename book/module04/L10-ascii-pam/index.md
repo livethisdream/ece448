@@ -228,7 +228,7 @@ Watch the Lines label too. The correct count falls behind the received count, an
 :::{present}
 - Switch the matched filter on: every line arrives again.
 - Now raise the noise until the text breaks again.
-- The screenshot is well past that point.
+- The screenshot shows characters going wrong.
 :::
 
 Switch the matched filter back on at 0.4, and the eye opens, the symbols pull back into two bands at $\pm 1$, and every line arrives. The signal sits in a few kilohertz of the 32 kHz the samples represent, and the filter, matched to the transmitted pulse, keeps that band and throws the rest of the noise away.
