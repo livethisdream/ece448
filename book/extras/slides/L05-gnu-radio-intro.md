@@ -155,7 +155,7 @@ This is the wagon-wheel effect from movies. Each sample advances more than half 
 - Note the frequency; quit GQRX before opening GRC.
 
 Note:
-SDR Flex (livethisdream.github.io/sdr-flex) on an example capture shows the select-and-demodulate moves; its browser version has no live radio, so GQRX does the live part. Explore first, so they hear the station before they build anything. Only one program can open the RTL-SDR at a time, so quit GQRX before running the flowgraph. GQRX comes with radioconda; if GQRX does not start on a laptop, SDR++ has the same controls.
+SDR Flex (livethisdream.github.io/sdr-flex) on an example capture shows the select-and-demodulate moves. On the full SDR Flex server each action builds a GNU Radio flowgraph; the browser copy simulates it and has no live radio, so GQRX does the live part. Explore first, so they hear the station before they build anything. Only one program can open the RTL-SDR at a time, so quit GQRX before running the flowgraph. GQRX comes with radioconda; if GQRX does not start on a laptop, SDR++ has the same controls.
 
 ---
 
@@ -197,7 +197,7 @@ Demo both extremes live: gain at zero hides the weak stations; gain at maximum m
 - Record the sample rate and center frequency with the file.
 
 Note:
-Enable the File Sink for two seconds, then disable it. Show the file size: about 38 MB. Mention SigMF, which later lessons use for handed-out captures.
+Enable the File Sink for about one second, then disable it, and show the file size against the 19.2 MB per second on the slide. Mention SigMF, which later lessons use for handed-out captures.
 
 ---
 

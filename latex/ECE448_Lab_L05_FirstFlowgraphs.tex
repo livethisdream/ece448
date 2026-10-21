@@ -178,45 +178,45 @@ prompt.
 
 \begin{parts}
 
-	\part The tone flowgraph samples at $f_s = 32$ kHz. Work out where the frequency
+	\part The tone flowgraph you build at the bench samples at $f_s = 48$ kHz. Work out where the frequency
 	sink shows each tone.
 
 	\begin{center}
 	\renewcommand{\arraystretch}{1.25}
 	\begin{tabular}{| l | K{0.68in} | K{0.68in} | K{0.68in} | K{0.68in} | K{0.68in} |}
 	\hline
-	Tone (kHz) & $1$ & $12$ & $20$ & $30$ & $-25$ \\\hline
-	Expected (kHz) & \kv{$1$} & \kv{$12$} & \kv{$-12$} & \kv{$-2$} & \kv{$7$} \\\hline
+	Tone (kHz) & $5$ & $20$ & $30$ & $40$ & $-35$ \\\hline
+	Expected (kHz) & \kv{$5$} & \kv{$20$} & \kv{$-18$} & \kv{$-8$} & \kv{$13$} \\\hline
 	\end{tabular}
 	\end{center}
 
 		\begin{solution}[0.6in]
-		Tones inside $\pm 16$ kHz appear where they are. Outside, subtract or add
-		$32$ kHz until the result lands inside: $20 - 32 = -12$, $30 - 32 = -2$,
-		$-25 + 32 = 7$.
+		Tones inside $\pm 24$ kHz appear where they are. Outside, subtract or add
+		$48$ kHz until the result lands inside: $30 - 48 = -18$, $40 - 48 = -8$,
+		$-35 + 48 = 13$.
 		\end{solution}
 
 	\begin{minipage}[t]{0.58\linewidth}
-		\part The FM flowgraph samples at 2.4 MS/s centered on 100.1 MHz. Find the
+		\part The FM flowgraph samples at 2.4 MS/s. Centered on 96.5 MHz, find the
 		band the display shows.
 		\begin{solution}[0.7in]
-		\eq{ 100.1 \pm 1.2 = 98.9 \text{ to } 101.3\ \text{MHz} }
+		\eq{ 96.5 \pm 1.2 = 95.3 \text{ to } 97.7\ \text{MHz} }
 		\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
 		\raggedleft \vspace{12pt}
-		band = \ansbox[1.5in]{98.9 to 101.3 MHz}
+		band = \ansbox[1.5in]{95.3 to 97.7 MHz}
 	\end{minipage}
 
 	\begin{minipage}[t]{0.58\linewidth}
-		\part Find the size of a 2 s recording at 2.4 MS/s.
+		\part Find the size of a 3 s recording at 2.4 MS/s.
 		\begin{solution}[0.7in]
-		\eq{ 2 \times 2.4\times10^{6} \times 8\ \text{bytes} = 38.4\ \text{MB} }
+		\eq{ 3 \times 2.4\times10^{6} \times 8\ \text{bytes} = 57.6\ \text{MB} }
 		\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
 		\raggedleft \vspace{12pt}
-		\ansbox[1.3in]{38.4 MB}
+		\ansbox[1.3in]{57.6 MB}
 	\end{minipage}
 
 \end{parts}
@@ -227,8 +227,8 @@ prompt.
 
 \question \textbf{Build the tone flowgraph.} Start GRC with an empty canvas. Do not
 open \texttt{L05-tone.grc}: build it yourself from the Options block, a
-\texttt{samp\_rate} variable of 32000, a QT GUI Range named \texttt{freq} from
-$-48000$ to $48000$, a complex Signal Source, a Throttle, a QT GUI Time Sink, and
+\texttt{samp\_rate} variable of 48000, a QT GUI Range named \texttt{freq} from
+$-72000$ to $72000$, a complex Signal Source, a Throttle, a QT GUI Time Sink, and
 a QT GUI Frequency Sink.
 
 \begin{parts}
@@ -245,8 +245,8 @@ a QT GUI Frequency Sink.
 	\renewcommand{\arraystretch}{1.25}
 	\begin{tabular}{| l | K{0.68in} | K{0.68in} | K{0.68in} | K{0.68in} | K{0.68in} |}
 	\hline
-	Tone (kHz) & $1$ & $12$ & $20$ & $30$ & $-25$ \\\hline
-	Measured (kHz) & \kv{$1$} & \kv{$12$} & \kv{$-12$} & \kv{$-2$} & \kv{$7$} \\\hline
+	Tone (kHz) & $5$ & $20$ & $30$ & $40$ & $-35$ \\\hline
+	Measured (kHz) & \kv{$5$} & \kv{$20$} & \kv{$-18$} & \kv{$-8$} & \kv{$13$} \\\hline
 	\end{tabular}
 	\end{center}
 
@@ -280,22 +280,23 @@ in GQRX first, then look at the band in GNU Radio.
 
 	\part Run \texttt{L05-fm-spectrum.grc} with its center frequency set to the
 	station from part (a). Then tune across 88 to 108 MHz and record the three strongest stations: the
-	frequency, the peak level on the display, and the approximate width.
+	frequency, the peak level on the display, and how wide each looks next to
+	the others (narrow, medium, wide).
 
 	\begin{center}
 	\renewcommand{\arraystretch}{1.25}
 	\begin{tabular}{| l | K{1.3in} | K{1.3in} | K{1.3in} |}
 	\hline
-	& Frequency (MHz) & Peak (dB) & Width (kHz) \\\hline
-	Station 1 & \kv{odd tenth} & \kv{varies} & \kv{$\approx 200$} \\\hline
+	& Frequency (MHz) & Peak (dB) & Looks \\\hline
+	Station 1 & \kv{odd tenth} & \kv{varies} & \kv{similar} \\\hline
 	Station 2 & & & \\\hline
 	Station 3 & & & \\\hline
 	\end{tabular}
 	\end{center}
 
 		\begin{solution}[0.5in]
-		Local stations vary. Every frequency should end in an odd tenth, and each
-		station should be about 150 to 250 kHz wide.
+		Local stations vary. Every frequency should end in an odd tenth, and the
+		stations should look about the same width, whatever their heights.
 		\end{solution}
 
 	\part Find the DC spike. Tune so that a station sits on it, then tune 300 kHz
@@ -335,15 +336,15 @@ DC spike and set the highest gain in your 4(d) table at which no spurs appeared.
 \begin{parts}
 
 	\begin{minipage}[t]{0.58\linewidth}
-		\part Enable the File Sink, run the flowgraph for about 2 s, stop it, and record
+		\part Enable the File Sink, run the flowgraph for about 3 s, stop it, and record
 		the file size.
 		\begin{solution}[0.6in]
-		About 38 MB, matching Question 2(c); the exact size depends on how long it ran.
+		About 58 MB, matching Question 2(c); the exact size depends on how long it ran.
 		\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
 		\raggedleft \vspace{12pt}
-		size = \ansbox[1.3in]{$\approx 38$ MB}
+		size = \ansbox[1.3in]{$\approx 58$ MB}
 	\end{minipage}
 
 	\part Run the plotting script with your center frequency, and paste the plot:
@@ -364,12 +365,12 @@ DC spike and set the highest gain in your 4(d) table at which no spurs appeared.
 \begin{parts}
 
 	\part Compare your measured aliases in Question 3(b) with your answers in
-	Question 2(a). Explain why a 20 kHz tone and a $-12$ kHz tone produce the same
-	samples at 32 kHz.
+	Question 2(a). Explain why a 30 kHz tone and a $-18$ kHz tone produce the same
+	samples at 48 kHz.
 		\begin{solution}[1.2in]
-		They match exactly. On the sampling wheel, a tone 32 kHz higher turns one
+		They match exactly. On the sampling wheel, a tone 48 kHz higher turns one
 		extra whole turn between samples, which lands each sample on the same point.
-		$20$ kHz and $-12$ kHz differ by exactly $32$ kHz, so their samples are
+		$30$ kHz and $-18$ kHz differ by exactly $48$ kHz, so their samples are
 		identical.
 		\end{solution}
 

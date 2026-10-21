@@ -47,42 +47,31 @@ Nothing in this lab transmits. The RTL-SDR is receive-only, and the tone flowgra
 
 Do the Pre-Lab before you arrive; the bench time assumes a working install. The three checks on the slide are the packet's Question 1. If any fails, the L5 lesson page lists the fixes, and the most common one on Windows is the Zadig driver step for the RTL-SDR. Bring the problem to EI before the lab rather than to the lab itself.
 
-Question 2 is quick arithmetic from your block settings: where five tones appear at a 32 kHz sample rate, the band the FM display shows, and the size of a 2 s recording. Part 2 checks each one on the screen.
-::::
-
-::::{frame} Expected Numbers
-:::{present}
-| Check | Expected |
-| :-- | :-- |
-| 20 kHz tone at 32 kHz | appears at $-12$ kHz |
-| FM display at 100.1 MHz | 98.9 to 101.3 MHz |
-| 2 s recording | 38.4 MB |
-:::
-
-These are the answers to Question 2, worked from Lesson 5. The tone aliases are exact, because a computed tone has no noise or hardware in the way; if a measurement disagrees, the flowgraph is built differently from the instructions, most often with a different `samp_rate`. The FM numbers depend only on the center frequency and sample rate you set. Station levels, the noise floor, and the gain where overload starts depend on your antenna and location, so the packet has you watch and record them instead.
+Question 2 is quick arithmetic from your block settings: where five tones appear at a 48 kHz sample rate, the band the FM display shows at a given center frequency, and the size of a 3 s recording. Part 2 checks the tones and the file size on the screen. The tone results are exact, because a computed tone has no noise or hardware in the way; if a measurement disagrees with your arithmetic, check `samp_rate` first.
 ::::
 
 ::::{frame} Part 2: Build the Tone Flowgraph
 :class: read-only
 
 1. Start GRC and choose File, New, QT GUI. Do not open `L05-tone.grc`; build it yourself.
-2. Set the `samp_rate` variable to 32000.
-3. Add a **QT GUI Range** with ID `freq`, from $-48000$ to $48000$ in steps of 250, default 1000.
+2. Set the `samp_rate` variable to 48000.
+3. Add a **QT GUI Range** with ID `freq`, from $-72000$ to $72000$ in steps of 250, default 1000.
 4. Add a **Signal Source**: type complex, sample rate `samp_rate`, waveform cosine, frequency `freq`.
 5. Add a **Throttle** (complex, `samp_rate`), a **QT GUI Time Sink** (complex), and a **QT GUI Frequency Sink** (complex, bandwidth `samp_rate`).
 6. Connect source to throttle and throttle to both sinks. Every arrow must be black; a red arrow is a type mismatch.
 7. Run it. Screenshot the canvas for Question 3(a).
-8. Set the slider to 1, 12, 20, 30, and $-25$ kHz in turn and record where the spike appears for Question 3(b).
+8. Set the slider to 5, 20, 30, 40, and $-35$ kHz in turn and record where the spike appears for Question 3(b).
 ::::
 
 ::::{frame} Part 2: The FM Band
 :class: read-only
 
-1. Connect the antenna to the RTL-SDR and plug it in. Run `gqrx`, choose the RTL-SDR, set the mode to WFM (stereo), and press the power button. GQRX comes with radioconda; if GQRX does not start on your laptop, SDR++ has the same controls.
-2. Click across the FM band until you hear a station clearly. Record its frequency for Question 4(a), then quit GQRX; only one program can open the RTL-SDR at a time.
-3. Open `L05-fm-spectrum.grc`, set the center frequency to the station you found, and run it. Drag the center frequency across 88 to 108 MHz. Record the three strongest stations' frequencies, peak levels, and widths for Question 4(b).
-4. Center a station exactly on the spike in the middle of the display, then tune 300 kHz away. Note what moves for Question 4(c).
-5. With the strongest station on screen, set the gain to 0, 20, 30, 40, and 49 dB. At each, record the noise floor away from any station, and whether new signals appear between stations, for Question 4(d).
+1. Optional warm-up, not graded: on an example capture in <a href="https://livethisdream.github.io/sdr-flex/" target="_blank" rel="noopener">SDR Flex</a> (livethisdream.github.io/sdr-flex), drag across a signal and choose a demodulator. Skip it if you are short on time.
+2. Connect the antenna to the RTL-SDR and plug it in. Run `gqrx`, choose the RTL-SDR, set the mode to WFM (stereo), and press the power button. GQRX comes with radioconda; if GQRX does not start on your laptop, SDR++ has the same controls.
+3. Click across the FM band until you hear a station clearly. Record its frequency for Question 4(a), then quit GQRX; only one program can open the RTL-SDR at a time.
+4. Open `L05-fm-spectrum.grc`, set the center frequency to the station you found, and run it. Drag the center frequency across 88 to 108 MHz. Record the three strongest stations' frequencies and peak levels, and how wide each looks next to the others, for Question 4(b).
+5. Center a station exactly on the spike in the middle of the display, then tune 300 kHz away. Note what moves for Question 4(c).
+6. With the strongest station on screen, set the gain to 0, 20, 30, 40, and 49 dB. At each, record the noise floor away from any station, and whether new signals appear between stations, for Question 4(d).
 ::::
 
 ::::{frame} Part 2: Record and Plot
@@ -90,7 +79,7 @@ These are the answers to Question 2, worked from Lesson 5. The tone aliases are 
 
 1. Stop the flowgraph. Right-click the gray File Sink and choose Enable. Set its file name to `fm_capture.cfile` in a folder you can find.
 2. Center the strongest station slightly off the DC spike and set the highest gain in your 4(d) table at which no spurs appeared.
-3. Run the flowgraph for about 2 s and stop it. Record the file size for Question 5(a).
+3. Run the flowgraph for about 3 s and stop it. Record the file size for Question 5(a).
 4. Disable the File Sink again so the next run does not overwrite the capture.
 5. From the radioconda prompt, run `python L05-psd.py fm_capture.cfile --fs 2.4e6 --fc` followed by your center frequency in hertz. Paste the plot for Question 5(b).
 ::::
@@ -106,7 +95,7 @@ Do Question 3 on your laptop as written; it needs no hardware. For Questions 4 a
 
 ::::{frame} Part 3: After the Lab
 :::{present}
-- Explain why 20 kHz and $-12$ kHz give identical samples at 32 kHz.
+- Explain why two of your tones give identical samples at 48 kHz.
 - Describe, in words, what raising the gain did to the floor and the stations.
 - Choose and justify a gain for weak stations.
 :::
