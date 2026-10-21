@@ -198,7 +198,7 @@ The Hilbert block outputs z(t), the message with only its positive frequencies, 
 A tuning error $\Delta f$ shifts every audio tone by $\Delta f$.
 
 Note:
-Drag the tuning error to plus and minus 200 Hz with the audio on. On USB with the LO 200 Hz high, 1 and 2.5 kHz drop to 800 Hz and 2.3 kHz; on LSB they rise to 1.2 and 2.7 kHz. The tones change pitch but never fade. Listeners notice the shift at a few tens of hertz, and speech stays intelligible to about 100 Hz. That is why an SSB operator tunes by ear and needs no carrier recovery.
+Drag the tuning error to plus and minus 200 Hz with the audio on. On USB with the LO 200 Hz high, 1 and 2.5 kHz drop to 800 Hz and 2.3 kHz; on LSB they rise to 1.2 and 2.7 kHz. The tones change pitch but never fade. Speech stays intelligible to about 100 Hz. That is why an SSB operator tunes by ear and needs no carrier recovery.
 
 ---
 

@@ -46,7 +46,7 @@ This lab needs no SDR, and nothing in it transmits. The Channel Model block stan
 
 Do the Pre-Lab before you arrive. Question 1 is a check that `L08-fsk-link.grc` opens and runs on your laptop: if GRC reports an error, the L5 lesson page lists the install checks, and EI before the lab is the place to fix it.
 
-Question 2 asks for block settings from the lesson's formulas: the transmitter's sensitivity, the receiver's gain, the bandwidth, and the filter cutoff for deviations of 1500 and 2000 Hz, and the length and duration of one packet. It also asks you to read, on the running link's spectrum, how far the two tones stand above the noise floor at two noise settings. Part 2 uses the settings when you build and the packet time when you count lines.
+Question 2 asks for block settings from the lesson's formulas: the transmitter's sensitivity, the receiver's gain, the bandwidth, and the filter cutoff for deviations of 1500 and 2000 Hz, and the length and duration of one packet. It also asks you to read, on the running link's spectrum, how far the two tones stand above the noise floor at two noise settings. Part 2 checks the bandwidth against your spectrum and uses the packet time when you count lines.
 ::::
 
 ::::{frame} Part 2: Build the Transmitter
@@ -59,7 +59,7 @@ Question 2 asks for block settings from the lesson's formulas: the transmitter's
 5. Add **Unpack K Bits** with K = 8, then **Chunks to Symbols**: input byte, output float, symbol table `[-1, 1]`.
 6. Add **Repeat**: type float, interpolation `sps`. Then add **Frequency Mod** with sensitivity `2*math.pi*dev/samp_rate`.
 7. Add a **Throttle** (complex, `samp_rate`) and a **QT GUI Frequency Sink** (complex, bandwidth `samp_rate`), and connect the chain. Every arrow must be black.
-8. Run it. Screenshot the canvas for Question 3(a), then record the two peaks at a deviation of 1500 and 2000 Hz for Question 3(b).
+8. Run it. Screenshot the canvas for Question 3(a), then record the two peaks at a deviation of 1500 and 2000 Hz, and compare each spectrum's width with your Question 2(a) bandwidth, for Question 3(b).
 ::::
 
 ::::{frame} Part 2: Noise and Offset

@@ -158,7 +158,7 @@ with the sliders at their defaults.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newpage
-\question \textbf{Settings and readings.} You will use these at the bench.
+\question \textbf{Settings and readings.} Question 3 checks the bandwidth against your spectrum.
 
 \begin{parts}
 
@@ -206,7 +206,7 @@ with the sliders at their defaults.
 		\begin{solution}[1.0in]
 		\eq{ 64 + 32 + 8 \times 41 &= 424\ \text{bits} \\
 			424 / 1000 &= 0.424\ \text{s} \\
-			30 / 0.424 &\approx 71 }
+			30 / 0.424 &\approx 70.8 \Rightarrow 70 }
 		\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
@@ -217,7 +217,7 @@ with the sliders at their defaults.
 		time = \ansbox[1.0in]{0.424 s}
 
 		\vspace{4pt}
-		in 30 s = \ansbox[1.0in]{71}
+		in 30 s = \ansbox[1.0in]{70}
 	\end{minipage}
 
 
@@ -243,7 +243,8 @@ Throttle, and a QT GUI Frequency Sink, with a QT GUI Range named \texttt{dev}.
 		\end{solution}
 
 	\part Run it and record the frequencies of the two spectral peaks at each
-	deviation. Paste a screenshot of the spectrum at 2000 Hz.
+	deviation. Paste a screenshot of the spectrum at 2000 Hz, and compare its width
+	at each deviation with your bandwidth $B$ from Question 2(a).
 
 	\begin{center}
 	\renewcommand{\arraystretch}{1.25}
@@ -255,8 +256,8 @@ Throttle, and a QT GUI Frequency Sink, with a QT GUI Range named \texttt{dev}.
 	\end{center}
 
 		\begin{solution}[1.6in]
-		The peaks sit at $\pm\Delta f$. At 2000 Hz the spectrum is visibly wider, about
-		6 kHz between its shoulders, the bandwidth from Question 2(a).
+		The peaks sit at $\pm\Delta f$. The spectrum is about 5 kHz between its
+		shoulders at 1500 Hz and about 6 kHz at 2000 Hz, matching $B$ from Question 2(a).
 		\end{solution}
 
 \end{parts}
@@ -302,11 +303,11 @@ packet time from Question 2(c).
 
 	\begin{minipage}[t]{0.58\linewidth}
 		\part Set the noise back to 0.5 and raise it in steps of 0.1 until a wrong
-		line appears. Record that noise voltage and how far the tones stand above the
-		floor on the spectrum.
+		line appears. Record that noise voltage, and compare the tones' height above
+		the floor there with your reading at 1.0 in Question 2(b).
 		\begin{solution}[0.7in]
-		Near 1.0, with the tones about 19 dB above the floor. A run can give 0.9 to
-		1.1, because the noise is random.
+		Near 1.0, so the height above the floor matches Question 2(b), about 19 dB.
+		A run can give 0.9 to 1.1, because the noise is random.
 		\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
@@ -314,7 +315,7 @@ packet time from Question 2(c).
 		$\sigma$ = \ansbox[1.0in]{$\approx 1.0$}
 
 		\vspace{4pt}
-		above floor = \ansbox[1.0in]{$\approx 19$ dB}
+		vs.\ 2(b): \ansbox[1.0in]{about the same}
 	\end{minipage}
 
 \end{parts}
@@ -392,7 +393,8 @@ and the Lines label.
 		first fade, so it needs margin.
 		\end{solution}
 
-	\part Your link tolerated an offset of about 600 Hz. Convert that to parts per
+	\part Take the largest offset at which your link still delivered correct lines in
+	Question 5(a). Convert it to parts per
 	million at 915 MHz, and explain what it says about running this link over the air
 	between two SDRs whose crystals are accurate to a few ppm.
 		\begin{solution}[1.3in]

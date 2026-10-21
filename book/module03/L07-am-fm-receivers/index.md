@@ -48,7 +48,7 @@ Lesson 7 · Module 3: Analog Modulation · Dr. Neil Rogers
 - Today we get audio from one of them, and its station name.
 :::
 
-In the L5 Lab you recorded 2 s of the FM band to `fm_capture.cfile`. The figure is a file of the same kind: 2.4 million complex samples per second around 100.0 MHz, holding a station at 100.3 MHz and a weaker one at 99.5 MHz. It came from a GNU Radio flowgraph rather than an antenna, so the figure carries a "Simulated" label. The station at 100.3 MHz carries a two-tone message, the L6 message of 1 kHz and 2.5 kHz, and its name, "ECE 448", in RDS data.
+In the L5 Lab you recorded a few seconds of the FM band to `fm_capture.cfile`. The figure is a file of the same kind: 2.4 million complex samples per second around 100.0 MHz, holding a station at 100.3 MHz and a weaker one at 99.5 MHz. It came from a GNU Radio flowgraph rather than an antenna, so the figure carries a "Simulated" label. The station at 100.3 MHz carries a two-tone message, the L6 message of 1 kHz and 2.5 kHz, and its name, "ECE 448", in RDS data.
 
 By the end of the lesson we will turn that file into audio, read the station's name out of it, and then point the same flowgraph at the live band. We will also build an AM receiver for the aircraft band and compare AM and FM in the same noise.
 

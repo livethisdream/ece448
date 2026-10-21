@@ -199,7 +199,7 @@ Here both oscillators come from the same `fc` variable, so they match. A real DS
 ::::{frame} Part 3: SSB
 :::{present}
 <img src="../../viz/img/L06-ssb-spectra.png"
-     alt="Two frequency sinks from L06-ssb.grc: with USB selected, lines at 11 and 12.5 kHz and the lower pair suppressed to about minus 80 dB; with LSB selected, lines at 9 and 7.5 kHz and the upper pair suppressed"
+     alt="Two frequency sinks from L06-ssb.grc: with USB selected, lines at 11 and 12.5 kHz and the lower pair suppressed far below the kept lines; with LSB selected, lines at 9 and 7.5 kHz and the upper pair suppressed"
      style="max-width: 760px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}

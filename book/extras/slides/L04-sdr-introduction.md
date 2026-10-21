@@ -227,7 +227,7 @@ On a real SDR these false signals look exactly like transmissions. Set the gain 
 3. **Gain**: the strongest signal in the window stays below full scale.
 
 Note:
-Broadcast FM: RTL-SDR at 2.4 MS/s. A 20 MHz Wi-Fi channel: HackRF at its 20 MS/s maximum, with no margin at the edges; the PlutoSDR streams only about 4 MS/s. Transmit into a cable: HackRF or PlutoSDR. Direction of an X-band source: ADALM-PHASER.
+Broadcast FM: RTL-SDR at 2.4 MS/s. A 20 MHz Wi-Fi channel: HackRF at its 20 MS/s maximum, with no margin at the edges; the PlutoSDR streams only about 4 MS/s. Transmit into a cable through the 30 dB attenuator: HackRF or PlutoSDR. Direction of an X-band source: ADALM-PHASER.
 
 ---
 
