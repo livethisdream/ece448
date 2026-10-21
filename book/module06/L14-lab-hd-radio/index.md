@@ -96,7 +96,7 @@ Your meter should read the lesson's test file within 0.1 dB of the finder's −2
 The figure shows the lesson's simulated test file; a live station's host is rougher, and its shelves may stand closer to the floor. We have compiled this step but not yet tested it on a live station, so expect to adjust the gain.
 
 1. Add a **Soapy RTLSDR Source** to your meter: sample rate `samp_rate`, center frequency `fc`, gain `rf_gain`. Connect it to the frequency sink and the three filters. Then select the File Source and the six blocks after it, through Float To Complex, and press D to disable all seven; GRC will not run with both sources connected.
-2. Plug in the RTL-SDR and antenna, and run it. Type each strong station's frequency in hertz into Center in turn, and stop at one with two flat shelves beside it.
+2. Plug in the RTL-SDR and antenna. If you have SDR Flex or GQRX, find a station with two flat shelves there first, and close it before you run your meter, because only one program can hold the RTL-SDR; otherwise run your meter and type each strong station's frequency in hertz into Center in turn, and stop at one with two flat shelves beside it.
 3. Raise the gain until the shelves stand at least 10 dB above the floor, but lower it if the floor rises everywhere or copies of other stations appear.
 4. Record the station, its sideband edges, and both meter readings, with a screenshot, for Question 5. If its inner edge is inside 129.4 kHz, set `inner` to match before you read the meters.
 5. Lower the RF gain slider in steps and watch the shelves and the readings as the floor rises toward them, for Question 5(c).

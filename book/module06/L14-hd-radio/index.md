@@ -36,20 +36,20 @@ Lesson 14 · Module 6: Waveform Applications & RF Reverse Engineering · Dr. Nei
 </ol>
 ::::
 
-::::{frame} Open GQRX on an FM Station
+::::{frame} Find the Shelves on the Air
 :::{present}
 <img src="../../viz/img/L14-gqrx.png"
      alt="GQRX labeled Simulated: L14 test file, tuned to 100.3 MHz in WFM mono mode: the spectrum shows a rounded station at 100.3 MHz with a flat shelf on each side and a second rounded station at 99.9 MHz with none; on the waterfall the shelves are two straight orange bands of constant width beside the host"
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
-- Tune GQRX to a strong FM station and watch the waterfall.
-- Two straight, flat bands beside the station are HD Radio.
+- Tune SDR Flex, or GQRX, to a strong FM station.
+- Look for flat bands on either side, and select one to look at it alone.
 :::
 
-We start in GQRX, the receiver from Lesson 4's software table, which radioconda installs. Plug in the RTL-SDR, choose the RTL-SDR as the input with a sample rate of 1,488,375 samples per second, set the mode to WFM, and tune to a strong local FM station. The station is a rounded band on the waterfall whose width changes with the audio. Many stations also show two flat bands of constant width on either side of it, which an ordinary FM radio ignores. Those bands are **HD Radio**, a digital broadcast that carries the station's program, and often extra programs, on the same channel. The station list at hdradio.com shows which local stations carry it.
+We start on the air, in **SDR Flex**, the course's explore tool, or in **GQRX** if SDR Flex is not set up. Live radios need SDR Flex's full version, run from its Docker image or as a server against your own GNU Radio; its browser version has no live radios. Plug in the RTL-SDR, set the sample rate to 1,488,375 samples per second, and tune to a strong local FM station. The station is a rounded band on the waterfall whose width changes with the audio. Many stations also show two flat bands of constant width on either side of it, which an ordinary FM radio ignores. In SDR Flex, drag a box across one of those bands and choose **Tune here** to look at that band alone; in GQRX, click it. Those bands are **HD Radio**, a digital broadcast that carries the station's program, and often extra programs, on the same channel. The station list at hdradio.com shows which local stations carry it.
 
-The figure is GQRX playing the lesson's test file rather than an antenna, so it carries a "Simulated" label: the station at 100.3 MHz has the two bands, and the one at 99.9 MHz has none. The rest of the lesson builds that test signal in GNU Radio, finds and measures the bands, and decodes a real station with **nrsc5**.
+The figure is GQRX playing the lesson's test file rather than an antenna, so it carries a "Simulated" label; SDR Flex shows the same shelves on its own waterfall: the station at 100.3 MHz has the two bands, and the one at 99.9 MHz has none. The rest of the lesson builds that test signal in GNU Radio, finds and measures the bands, and decodes a real station with **nrsc5**.
 ::::
 
 ::::{frame} HD Radio Modes
@@ -227,7 +227,7 @@ nrsc5 -r hd.cu8 0            # decode a recording
 
 Finding and measuring the sidebands needs only the spectrum. Decoding them needs the rest of NRSC-5: the receiver locks onto the reference subcarriers, reads each subcarrier's QPSK point, corrects errors, and decompresses the audio. The open-source **nrsc5** project does all of that from an RTL-SDR or a recording, at 1,488,375 samples per second, the rate of our test file. It plays the chosen program and prints the station's name, the song title and artist, and measures of signal quality as they arrive. A recording that nrsc5 makes with `-w` opens in `L14-hd-find.grc` too.
 
-nrsc5 is a C program, not a GNU Radio block, and it is not part of radioconda, so you install it separately: build it from source on Linux, install it with the project's Homebrew formula on macOS, or use the project's MSYS2 build on Windows. We have not run it in this course yet, so expect the lab's decode step to need some adjustment. **NRSC5-DUI**, which the 2025 slides list, is a graphical front end for nrsc5. The related project gr-nrsc5 is an HD Radio transmitter for GNU Radio, not a receiver, and this course does not transmit on the FM band; gr-rds, from Lesson 7, still decodes the RBDS inside the host.
+nrsc5 is a C program, not a GNU Radio block, and it is not part of radioconda, so you install it separately: build it from source on Linux, install it with the project's Homebrew formula on macOS, or use the project's MSYS2 build on Windows. We have not run it in this course yet, so expect the lab's decode step to need some adjustment. **NRSC5-DUI**, which the 2025 slides list, is a graphical front end for nrsc5, and SDR Flex's full version lists nrsc5 among its decoders; its README says that decoder has not yet decoded a real signal, and we have not tested it in this course either. The related project gr-nrsc5 is an HD Radio transmitter for GNU Radio, not a receiver, and this course does not transmit on the FM band; gr-rds, from Lesson 7, still decodes the RBDS inside the host.
 ::::
 
 ::::{frame} Key Point
@@ -244,7 +244,7 @@ HD Radio adds two OFDM sidebands, 129.4 to 198.4 kHz from the station's center a
 - Receiving is unrestricted, and the RTL-SDR receives only.
 :::
 
-To look for HD Radio live, disable the File Source and the six blocks after it in `L14-hd-find.grc`, enable the RTL-SDR Source, and type the station's frequency into Center. Centering on the station puts the RTL-SDR's DC spike on the host, where it does not touch the sidebands or the meters. Set the RF gain from your L5 Lab gain table, and lower it if the floor rises or copies of strong stations appear, because the sidebands are far weaker than the host and an overloaded receiver buries them. Not every station carries HD Radio, so find one in GQRX first, or in the station list at hdradio.com, and then type its frequency into the finder.
+To look for HD Radio live, disable the File Source and the six blocks after it in `L14-hd-find.grc`, enable the RTL-SDR Source, and type the station's frequency into Center. Centering on the station puts the RTL-SDR's DC spike on the host, where it does not touch the sidebands or the meters. Set the RF gain from your L5 Lab gain table, and lower it if the floor rises or copies of strong stations appear, because the sidebands are far weaker than the host and an overloaded receiver buries them. Not every station carries HD Radio, so find one in SDR Flex or GQRX first, or in the station list at hdradio.com, and then type its frequency into the finder.
 
 A weak sideband measurement reads high, because the band's noise adds to it. Check the floor beside the shelves: the shelves should stand at least 10 dB above it. As in Lesson 7, receiving is unrestricted and transmitting is not; nothing in this lesson transmits.
 ::::
@@ -261,7 +261,7 @@ Put both flowgraphs in one folder and run the test transmitter first; GRC runs a
 
 - <a class="doc-link" href="../../legacy/L24-hd-radio.pdf" target="_blank" rel="noopener">HD Radio, 2025 slides (PDF)</a>
 - <a href="https://wiki.gnuradio.org/index.php/Basic_OFDM_Tutorial" target="_blank" rel="noopener">GNU Radio wiki, Basic OFDM Tutorial</a>: the OFDM Carrier Allocator, FFT, and OFDM Cyclic Prefixer of the test transmitter. The other blocks are in the <a href="https://wiki.gnuradio.org/index.php/Tutorials" target="_blank" rel="noopener">GNU Radio tutorials</a>, and each block's wiki page has the same name as the block.
-- GQRX, which radioconda installs, for the first look at the band.
+- <a href="https://github.com/livethisdream/sdr-flex" target="_blank" rel="noopener">SDR Flex and its README</a>, the course's explore tool, for the first look at the band, and GQRX, which radioconda installs, as the fallback.
 - <a href="https://github.com/theori-io/nrsc5" target="_blank" rel="noopener">nrsc5 and its README</a>, the decoder, with build instructions for Linux, macOS, and Windows, and <a href="https://github.com/markjfine/nrsc5-dui" target="_blank" rel="noopener">NRSC5-DUI</a>, its graphical front end.
 - <a href="https://pysdr.org/content/rds.html" target="_blank" rel="noopener">PySDR, RDS</a>, the 2025 slides' activity for decoding RBDS in Python, and <a href="https://github.com/bastibl/gr-rds" target="_blank" rel="noopener">gr-rds</a>, the RDS blocks of Lesson 7.
 - <a href="https://hdradio.com/stations/" target="_blank" rel="noopener">hdradio.com station list</a>, to find local HD Radio stations.
@@ -272,7 +272,7 @@ Put both flowgraphs in one folder and run the test transmitter first; GRC runs a
 
 | Part | What to know | In GNU Radio |
 | :-- | :-- | :-- |
-| Modes | hybrid, extended hybrid, all digital | the shelves on the GQRX waterfall |
+| Modes | hybrid, extended hybrid, all digital | the shelves on the SDR Flex or GQRX waterfall |
 | Host | analog FM, about ±130 kHz, with mono, pilot, stereo, RBDS | Lesson 7's receiver and gr-rds |
 | Sidebands | ±129.4 to ±198.4 kHz, subcarriers 356 to 546 | the meter's `inner` and `outer` |
 | Subcarriers | 363.4 Hz apart, partitions of 18 data and 1 reference | `fft_len` = 4096 at 1,488,375 S/s |

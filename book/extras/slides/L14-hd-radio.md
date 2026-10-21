@@ -44,14 +44,14 @@ This follows the 2025 deck: overview, spectrum, RBDS, sidebands, the OFDM concep
 
 ---
 
-## Open GQRX on an FM Station
+## Find the Shelves on the Air
 
 <img src="./img/14-hd-radio/L14-gqrx.png" alt="Simulated: GQRX on the L14 test file at 100.3 MHz, with a flat shelf on each side of the station on the spectrum and two straight bands on the waterfall; the station at 99.9 MHz has none" style="max-height:400px; display:block; margin:0 auto;">
 
-Two straight, flat bands beside a station on the waterfall are HD Radio.
+Tune SDR Flex, or GQRX, to an FM station: flat bands beside it are HD Radio.
 
 Note:
-Live demo: RTL-SDR in GQRX at 1,488,375 samples per second, WFM mode, tuned to a strong local station. hdradio.com/stations lists the local HD stations. The figure is GQRX playing the simulated test file.
+Live demo: the RTL-SDR in SDR Flex's full version, or GQRX as the fallback, at 1,488,375 samples per second, tuned to a strong local station. In SDR Flex, drag a box across one shelf and choose Tune here. hdradio.com/stations lists the local HD stations. The figure is GQRX playing the simulated test file.
 
 ---
 
@@ -185,7 +185,7 @@ nrsc5 runs the rest of NRSC-5: sync, QPSK, deinterleaving, decoding, and audio.
 The nrsc5 README documents these commands; we have not yet tested them in this course.
 
 Note:
-nrsc5 is not part of radioconda; build it from source on Linux, with the project's Homebrew formula on macOS, or with MSYS2 on Windows. We have not yet run it in this course. Program 0 is HD1. A recording made with -w opens in L14-hd-find.grc. NRSC5-DUI is a graphical front end for nrsc5. gr-nrsc5 is a transmitter, not a receiver.
+nrsc5 is not part of radioconda; build it from source on Linux, with the project's Homebrew formula on macOS, or with MSYS2 on Windows. We have not yet run it in this course. Program 0 is HD1. A recording made with -w opens in L14-hd-find.grc. NRSC5-DUI is a graphical front end for nrsc5; SDR Flex's full version lists nrsc5 as a decoder, not yet tested on a real signal. gr-nrsc5 is a transmitter, not a receiver.
 
 ---
 
