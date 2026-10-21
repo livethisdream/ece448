@@ -218,7 +218,7 @@ The noise a receiver sees grows with the bandwidth it lets through, and its own 
 - Oxygen absorbs strongly near 60 GHz; water vapor, near 22 and 183 GHz.
 :::
 
-Free space absorbs nothing, but the atmosphere does, and how much depends on frequency. The chart is the clear-air absorption at sea level from the ITU-R model. Below about 10 GHz, which covers every band our SDRs reach, the clear atmosphere is nearly transparent: less than 0.01 dB/km. Above that, water vapor adds loss, and near 60 GHz oxygen absorbs about 15 dB/km. Rain, foliage, walls, and people in the path add loss at any frequency, and an indoor Wi-Fi budget can lose 10 dB or more through a couple of walls. These losses are hard to predict exactly, which is one reason a link budget carries margin.
+Free space absorbs nothing, but the atmosphere does, and how much depends on frequency. The chart is the clear-air absorption at sea level from the ITU-R model. Below 6 GHz, which covers every band our SDRs reach, the clear atmosphere is nearly transparent: less than 0.01 dB/km. Above that, water vapor adds loss, and near 60 GHz oxygen absorbs about 15 dB/km. Rain, foliage, walls, and people in the path add loss at any frequency, and an indoor Wi-Fi budget can lose 10 dB or more through a couple of walls. These losses are hard to predict exactly, which is one reason a link budget carries margin.
 ::::
 
 ::::{frame} Part 5: SNR and Margin
@@ -266,7 +266,7 @@ From the 2025 slides. The goal is at least 10 dB of margin.
 | Max bank angle (HPBW) | $20^\circ$ |
 | Insertion loss (radio to antenna) | 1.5 dB each side |
 
-The drone may bank until the ground station sits at the edge of its antenna's half-power beamwidth, which costs 3 dB.
+The 20° is the drone antenna's half-power beamwidth, and the bank is limited so the ground station stays at its edge, which costs 3 dB.
 
 | Quantity | Work | Result |
 | :-- | :-- | :-- |
@@ -284,7 +284,7 @@ The link meets the 10 dB goal. The effective isotropic radiated power, **EIRP**,
 :class: viz-frame
 
 :::{depth}
-The widget starts on the drone link above. The four steps are the transmitter, the level after the transmit antenna, the level after the path, and the receiver input after the remaining losses; the dashed red line is the noise floor and the dotted line is the sensitivity. The widget builds the sensitivity from a bandwidth, a noise figure, and a required SNR; for the drone, 1 MHz, 7 dB, and 14 dB land on the datasheet's $-93$ dBm. Drag the distance to 6 km and watch the margin drop by 6.0 dB. Raise the bandwidth to 20 MHz and watch the floor rise by 13 dB, so a wideband link loses range for the same power. Then try the two other presets. The Wi-Fi link loses 10 dB to walls and needs 25 dB of SNR for a fast modulation, so it has little margin even at 50 m. The GPS link arrives about 18 dB *below* the noise floor; a GPS receiver still works because it correlates the signal against a code it already knows, which pulls the signal back out of the noise.
+The widget starts on the drone link above. The four steps are the transmitter, the level after the transmit antenna, the level after the path, and the receiver input after the remaining losses; the dashed red line is the noise floor and the dotted line is the sensitivity. The widget builds the sensitivity from a bandwidth, a noise figure, and a required SNR; the drone preset is set to match the datasheet's $-93$ dBm. Drag the distance to 6 km and watch the margin drop by 6.0 dB. Raise the bandwidth to 20 MHz and watch the floor rise by 13 dB, so a wideband link loses range for the same power. Then try the two other presets. The Wi-Fi link loses 10 dB to walls and needs 25 dB of SNR for a fast modulation, so it has little margin even at 50 m. The GPS link arrives about 18 dB *below* the noise floor; a GPS receiver still works because it correlates the signal against a code it already knows, which pulls the signal back out of the noise.
 :::
 
 :::{present}
@@ -304,7 +304,7 @@ The widget starts on the drone link above. The four steps are the transmitter, t
 3. FFT Settings → FFT size 4096 → 8192.
 :::
 
-This is an instructor demo, following PySDR's *Noise and dB* chapter; cadets repeat it in GNU Radio's frequency sink once the Lesson 5 install is done. Start in <a href="https://livethisdream.github.io/sdr-flex/" target="_blank" rel="noopener">SDR Flex</a>, in the browser: right-click the source chip, open one of its example FM captures, and read the level of a station's peak and of the floor beside it. Then go live with an RTL-SDR in GQRX, the fallback, since SDR Flex in the browser has no live radio:
+This is an instructor demo, with background from PySDR's *Noise and dB* chapter; cadets repeat it in GNU Radio's frequency sink once the Lesson 5 install is done. Start in <a href="https://livethisdream.github.io/sdr-flex/" target="_blank" rel="noopener">SDR Flex</a>, in the browser: right-click the source chip, open one of its example FM captures, and read the level of a station's peak and of the floor beside it. Then go live with an RTL-SDR in GQRX, the fallback, since SDR Flex in the browser has no live radio:
 
 1. Device: the RTL-SDR. Frequency 99.9 MHz (or any local station), mode WFM, AGC off, RF gain 30 dB.
 2. Read the station's peak and the floor beside it, in dBFS. The difference is the SNR. Tune a weak station and compare.
@@ -362,5 +362,5 @@ The hands-on step, reading SNR off a spectrum display, is an instructor demo in 
 
 Today we took the receiver's sensitivity from its datasheet, the $-93$ dBm in the drone example, and that number rests on the SNR the receiver needs. Lesson 3 shows what that SNR protects. A digital modulation places its symbols at points, and the noise floor we computed today spreads each received symbol into a cloud around its point. Turn the noise up and the clouds grow until samples land in a neighbor's region; the SNR a radio needs is whatever keeps that from happening too often.
 
-Lesson 4 then opens the SDRs themselves: the RF front end, the mixer and filters, and the analog-to-digital converter, which together set the noise figure, the bandwidth, and the dynamic range we used in today's budget. Before the next lesson, be able to compute a free-space path loss and a noise floor to within a dB. Every lab in this course starts by checking the signal is there on the display.
+Lesson 4 then opens the SDRs themselves: the RF front end, the mixer and filters, and the analog-to-digital converter, which together set the noise figure, the bandwidth, and the dynamic range we used in today's budget. Before the next lesson, be able to compute a free-space path loss and a noise floor to within a dB, since every lab in this course starts by checking that the signal is there on the display.
 ::::

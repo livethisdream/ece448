@@ -29,7 +29,7 @@ Spring 2027 · Dr. Neil Rogers
 Today: **a link budget** adds every gain and loss between two radios and compares the result to the noise floor.
 
 Note:
-Open with the question every radio engineer asks first: will the link close? Every lab this semester starts by checking the signal is there on the display.
+Open with the question every radio engineer asks first: will the link close? A budget answers it before we transmit, and every lab this semester then checks that the signal is there on the display.
 
 ---
 
@@ -85,7 +85,7 @@ Pull up the NTIA allocation chart on the screen if there is time. Point out that
 
 $$P_r = \frac{P_t\ G_t\ G_r\ \lambda^2}{(4\pi R)^2}$$
 
-- Line of sight: always check first!
+- Check line of sight first.
 - Then power, antenna gains, wavelength, and distance.
 
 Note:
@@ -258,7 +258,7 @@ Demo live from the lesson page. Start on the drone preset, double the distance, 
 3. FFT Settings → FFT size 4096 → 8192.
 
 Note:
-Instructor demo, following PySDR's Noise and dB chapter; cadets repeat it in GRC from Lesson 5. SDR Flex is at livethisdream.github.io/sdr-flex; right-click the source chip for an example capture. Its browser version has no live radio, so GQRX is the fallback for the live band. The peak minus the floor, both in dBFS, is the SNR. In step 3 the floor drops 3 dB; the wide FM station drops with it, so its displayed SNR stays put. A narrow carrier would stay where it was.
+Instructor demo, with background from PySDR's Noise and dB chapter; cadets repeat it in GRC from Lesson 5. SDR Flex is at livethisdream.github.io/sdr-flex; right-click the source chip for an example capture. Its browser version has no live radio, so GQRX is the fallback for the live band. The peak minus the floor, both in dBFS, is the SNR. In step 3 the floor drops 3 dB; the wide FM station drops with it, so its displayed SNR stays put. A narrow carrier would stay where it was.
 
 ---
 

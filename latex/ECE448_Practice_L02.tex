@@ -162,8 +162,7 @@ broadcast FM station. One FM channel occupies about 200 kHz.
 		Noise power grows with bandwidth, but the station's power does not: it all lies
 		inside its 200 kHz channel. The wide filter lets in about 12 times as much noise
 		and no more signal, so the SNR looks lower. A demodulator that filters to the
-		channel first sees the 35.0 dB of part (b), which is why every receiver filters
-		before it demodulates.
+		channel first sees the 35.0 dB of part (b).
 		\end{solution}
 
 \end{parts}
@@ -197,18 +196,18 @@ figure of each arrangement is:
 		\begin{solution}[1.0in]
 		In front of the LNA the cable is the first stage, and nothing ahead of it
 		divides its noise down, so its 2 dB adds almost directly to the noise figure.
-		Behind the LNA, the LNA's 18 dB of gain divides the cable's noise down, and the
-		cable adds only about 0.2 dB.
+		Behind the LNA, its 18 dB of gain sits ahead of both the cable and the SDR, so
+		the cable changes the total by only about 0.2 dB.
 		\end{solution}
 
 	\part Without the LNA the noise figure is 9.0 dB, the cable's 2 dB plus the SDR's
-	7 dB. What happens to the noise floor on the SDR's display, and to a weak
-	signal near it, when you add the LNA at the antenna?
-		\begin{solution}[1.0in]
-		The receiver's own noise drops by almost 8 dB, so the floor set by the receiver
-		falls and a weak signal that was buried in it stands clear of the floor. The
-		signal's own level does not change; the LNA wins by adding less noise than the
-		cable and SDR it sits ahead of.
+	7 dB. You add the LNA at the antenna. What happens on the SDR's display to the
+	noise floor, to a weak signal near it, and to the SNR?
+		\begin{solution}[1.1in]
+		Both rise on the display: the signal by the LNA's 18 dB, and the floor by only
+		about 10 dB, because the system adds 7.8 dB less noise of its own. The weak
+		signal stands about 8 dB clearer of the floor, so the SNR improves by about
+		8 dB.
 		\end{solution}
 
 \end{parts}
@@ -259,7 +258,7 @@ bandwidth.
 	Explain in one or two sentences how.
 		\begin{solution}[0.9in]
 		The receiver already knows each satellite's code, so it correlates the received
-		signal against that code. The code adds up coherently over many chips while the
+		signal against that code. The code adds up coherently over its whole length while the
 		noise does not, which pulls the signal back out of the noise.
 		\end{solution}
 
@@ -309,8 +308,7 @@ the noise floor beside it reads $-78$ dBFS.
 		\begin{solution}[1.1in]
 		Each bin gets narrower and holds less of the noise, so the floor drops. The
 		carrier's power is all in one bin, so its peak stays where it was, and the
-		displayed SNR rises. Nothing about the signal changed; only the display did,
-		which is why an SNR read off a display always goes with its FFT size.
+		displayed SNR rises, though the signal itself did not change.
 		\end{solution}
 
 \end{parts}
