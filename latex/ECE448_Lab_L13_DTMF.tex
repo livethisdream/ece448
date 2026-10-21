@@ -58,6 +58,18 @@
 \newcolumntype{K}[1]{>{\centering\arraybackslash}p{#1}}
 \newcommand{\kv}[1]{\ifkey{\color{red}#1}\fi\rule[-0.10in]{0pt}{0.34in}}
 
+% Answers are not in this public file. Every solution, \kv value, and \ansbox
+% value is \keysol{<id>}, defined in the private ECE448-faculty repo at
+% lab-keys/src/ECE448_Lab_L13_DTMF_solutions.tex; build_lab.sh puts that
+% folder on TEXINPUTS (KEYDIR) for the KEY. A KEY build without it stops.
+\long\def\defkeysol#1#2{\expandafter\long\expandafter\def\csname keysol@#1\endcsname{#2}}
+\def\keysol#1{\ifcsname keysol@#1\endcsname\csname keysol@#1\endcsname\fi}
+\ifkey
+	\IfFileExists{ECE448_Lab_L13_DTMF_solutions.tex}%
+		{\input{ECE448_Lab_L13_DTMF_solutions}}%
+		{\errmessage{KEY build needs ECE448_Lab_L13_DTMF_solutions.tex from ECE448-faculty/lab-keys/src (set KEYDIR)}}
+\fi
+
 % print the answers if this is the key
 \ifkey
 	\printanswers % if this IS the key
@@ -158,20 +170,15 @@ blocks in a row agree.
 
 	\begin{minipage}[t]{0.58\linewidth}
 		\part After about 10 s, record the Digits and Numbers labels.
-		\begin{solution}[0.5in]
-		Digits reads 7195550148, and Numbers counts one dialing every 1.5 s, about 6 in 10 s.
-		\end{solution}
+		\begin{solution}[0.5in]\keysol{sol1}\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
 		\raggedleft \vspace{12pt}
-		\ansbox[1.6in]{7195550148}
+		\ansbox[1.6in]{\keysol{ans1}}
 	\end{minipage}
 
 	\part Paste a screenshot of the running flowgraph's window.
-		\begin{solution}[1.6in]
-		The row bins show ten peaks near 0.15 per dialing and the column bins ten peaks
-		near 0.12, one row and one column per digit.
-		\end{solution}
+		\begin{solution}[1.6in]\keysol{sol2}\end{solution}
 
 \end{parts}
 
@@ -183,28 +190,20 @@ blocks in a row agree.
 
 	\part Choose a number of at least seven digits that ends in \#, such as a voicemail
 	code. Write each key's row and column frequency from the grid.
-		\begin{solution}[0.8in]
-		The answer depends on the number. For \texttt{2486100\#}: 2 is 697 + 1336 Hz, 4 is
-		770 + 1209 Hz, 8 is 852 + 1336 Hz, 6 is 770 + 1477 Hz, 1 is 697 + 1209 Hz, 0 is
-		941 + 1336 Hz, and \# is 941 + 1477 Hz.
-		\end{solution}
+		\begin{solution}[0.8in]\keysol{sol3}\end{solution}
 
 	\begin{minipage}[t]{0.58\linewidth}
 		\part The bench changes the Goertzel Length $N$. Find the block time $N/f_s$ and the
 		bin spacing $f_s/N$, which is also the distance to the first null, for $N = 102$ and $N = 410$. For each, say whether a 50 ms tone
 		can fill a whole block.
-		\begin{solution}[1.2in]
-		\eq{ N = 102:&\ 12.75\ \text{ms},\ 78.4\ \text{Hz} \\
-			N = 410:&\ 51.25\ \text{ms},\ 19.5\ \text{Hz} }
-		A 50 ms tone fills several 12.75 ms blocks, but no 51.25 ms block.
-		\end{solution}
+		\begin{solution}[1.2in]\keysol{sol4}\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
 		\raggedleft \vspace{12pt}
-		102: \ansbox[1.3in]{12.75 ms, 78.4 Hz}
+		102: \ansbox[1.3in]{\keysol{ans2}}
 
 		\vspace{4pt}
-		410: \ansbox[1.3in]{51.25 ms, 19.5 Hz}
+		410: \ansbox[1.3in]{\keysol{ans3}}
 	\end{minipage}
 
 	\begin{minipage}[t]{0.58\linewidth}
@@ -212,16 +211,11 @@ blocks in a row agree.
 		the column tone arrives weaker. Then lower the SNR slider from 20 dB, 1 dB at a time,
 		waiting about 15 s at each step. Record the SNR at which the Numbers label first shows
 		a number missed or wrong, and describe what the spectrum looks like there.
-		\begin{solution}[1.2in]
-		Every number arrives down to about 4 dB. Near 3 dB a few numbers come out short or
-		wrong, and by 1 dB most are lost. That is a dB or two worse than with no twist: the
-		weaker column tone sinks into the noise first. The spectrum shows the column tone
-		barely above the noise and the row tone a little higher.
-		\end{solution}
+		\begin{solution}[1.2in]\keysol{sol5}\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
 		\raggedleft \vspace{12pt}
-		SNR \ansbox[1.1in]{about 3 dB}
+		SNR \ansbox[1.1in]{\keysol{ans4}}
 	\end{minipage}
 
 \end{parts}
@@ -238,11 +232,7 @@ receiver's eight Goertzel bins.
 
 	\part Paste a screenshot of your flowgraph on the GRC canvas and of its spectrum with
 	one key held. Every connection must be black, not red.
-		\begin{solution}[1.6in]
-		The flowgraph matches the lab page: a Chooser, a Push Button, two Variables, two
-		float Signal Sources, Add, Multiply Const, a Rational Resampler up by 6, an Audio
-		Sink at 48 kHz, and a frequency sink and a time sink. The spectrum shows two lines.
-		\end{solution}
+		\begin{solution}[1.6in]\keysol{sol6}\end{solution}
 
 	\part For three keys, read both spectrum peaks and compare them with the grid.
 
@@ -256,28 +246,16 @@ receiver's eight Goertzel bins.
 	\end{tabular}
 	\end{center}
 
-		\begin{solution}[0.5in]
-		Each peak falls on the grid's frequency within the sink's 3.9 Hz bin spacing,
-		8000/2048.
-		\end{solution}
+		\begin{solution}[0.5in]\keysol{sol7}\end{solution}
 
 	\part Add the eight Goertzel bins and the DTMF Decoder to your keypad, as the lab page
 	lists. Hold one key and paste a screenshot of both time sinks. Which traces rise, and how
 	high?
-		\begin{solution}[1.4in]
-		Exactly one row trace and one column trace rise, the key's two tones, and each peaks
-		near 0.15, half the tone's 0.3 amplitude, because the stock Goertzel block divides its
-		output by $N$. The other six traces stay near 0. The first point of a
-		press can be lower, because the block that holds the start of the tone is only partly
-		filled.
-		\end{solution}
+		\begin{solution}[1.4in]\keysol{sol8}\end{solution}
 
 	\part Press each key of your Question 2(a) number. Record the keys the decoder reports,
 	and say whether they match.
-		\begin{solution}[0.7in]
-		Every key held for more than about 50 ms decodes correctly. Each key appears about
-		0.2 s after release, as its own number, because a 200 ms pause ends a number.
-		\end{solution}
+		\begin{solution}[0.7in]\keysol{sol9}\end{solution}
 
 \end{parts}
 
@@ -290,51 +268,40 @@ receiver's eight Goertzel bins.
 
 	\begin{minipage}[t]{0.58\linewidth}
 		\part Record the number and paste a screenshot.
-		\begin{solution}[1.2in]
-		The number is \texttt{7195550186*2701\#}, 16 keys: a phone number, then an
-		extension after the star, ended by the pound key. Every dialing decodes the same.
-		\end{solution}
+		\begin{solution}[1.2in]\keysol{sol10}\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
 		\raggedleft \vspace{12pt}
-		\ansbox[1.6in]{7195550186*2701\#}
+		\ansbox[1.6in]{\keysol{ans5}}
 	\end{minipage}
 
 	\begin{minipage}[t]{0.58\linewidth}
 		\part Read the row and column peak heights. Which group arrives weaker, and about
 		what fraction of the other group's height does it reach?
-		\begin{solution}[1.0in]
-		The row peaks reach about 0.15 and the column peaks about 0.084, a little over half
-		as high, so the column tones arrive weaker. \texttt{L13-dtmf-capture.grc} dialed it
-		with $-5$ dB of twist.
-		\end{solution}
+		\begin{solution}[1.0in]\keysol{sol11}\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
 		\raggedleft \vspace{12pt}
-		row \ansbox[1.0in]{0.15}
+		row \ansbox[1.0in]{\keysol{ans6}}
 
 		\vspace{4pt}
-		column \ansbox[1.0in]{0.084}
+		column \ansbox[1.0in]{\keysol{ans7}}
 
 		\vspace{4pt}
-		weaker \ansbox[1.0in]{column}
+		weaker \ansbox[1.0in]{\keysol{ans8}}
 	\end{minipage}
 
 	\begin{minipage}[t]{0.58\linewidth}
 		\part Find the time from one dialing to the next and estimate the time per key,
 		tone plus gap.
-		\begin{solution}[1.0in]
-		Dialings repeat every 1.94 s. The capture holds 16 keys and a 500 ms pause, so
-		\eq{ (1.94 - 0.5)/16 = 90\ \text{ms} }
-		per key: 45 ms of tone and 45 ms of gap.
-		\end{solution}
+		\begin{solution}[1.0in]\keysol{sol12}\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
 		\raggedleft \vspace{12pt}
-		period \ansbox[1.0in]{1.94 s}
+		period \ansbox[1.0in]{\keysol{ans9}}
 
 		\vspace{4pt}
-		per key \ansbox[1.0in]{90 ms}
+		per key \ansbox[1.0in]{\keysol{ans10}}
 	\end{minipage}
 
 \end{parts}
@@ -354,13 +321,11 @@ decoded. A count of 0 of 0 means that no number decoded.
 	\begin{tabular}{| l | K{0.42in} | K{0.42in} | K{0.42in} | K{0.42in} | K{0.42in} | K{0.42in} | K{0.42in} | K{0.42in} |}
 	\hline
 	Twist (dB) & $-11$ & $-10$ & $-9$ & $-8$ & $+4$ & $+5$ & $+6$ & $+7$ \\\hline
-	Correct & \kv{none} & \kv{none} & \kv{all} & \kv{all} & \kv{all} & \kv{all} & \kv{none} & \kv{none} \\\hline
+	Correct & \kv{\keysol{kv1}} & \kv{\keysol{kv2}} & \kv{\keysol{kv3}} & \kv{\keysol{kv4}} & \kv{\keysol{kv5}} & \kv{\keysol{kv6}} & \kv{\keysol{kv7}} & \kv{\keysol{kv8}} \\\hline
 	\end{tabular}
 	\end{center}
 
-		\begin{solution}[0.4in]
-		A noiseless headless sweep of 40 dialings per setting gave 40 of 40 from $-9$ to $+5$ dB and 0 of 40 outside it.
-		\end{solution}
+		\begin{solution}[0.4in]\keysol{sol13}\end{solution}
 
 	\part Tone length, with 60 ms gaps:
 
@@ -369,13 +334,11 @@ decoded. A count of 0 of 0 means that no number decoded.
 	\begin{tabular}{| l | K{0.62in} | K{0.62in} | K{0.62in} | K{0.62in} | K{0.62in} | K{0.62in} |}
 	\hline
 	Tone (ms) & 25 & 28 & 30 & 33 & 35 & 40 \\\hline
-	Correct & \kv{none} & \kv{none} & \kv{about half} & \kv{almost all} & \kv{all} & \kv{all} \\\hline
+	Correct & \kv{\keysol{kv9}} & \kv{\keysol{kv10}} & \kv{\keysol{kv11}} & \kv{\keysol{kv12}} & \kv{\keysol{kv13}} & \kv{\keysol{kv14}} \\\hline
 	\end{tabular}
 	\end{center}
 
-		\begin{solution}[0.4in]
-		A noiseless headless sweep gave 0, 0, 20, 39, 40, and 40 of 40; at 20 dB SNR, 30 ms gave about 17.
-		\end{solution}
+		\begin{solution}[0.4in]\keysol{sol14}\end{solution}
 
 	\part Gap length, with 60 ms tones:
 
@@ -384,14 +347,11 @@ decoded. A count of 0 of 0 means that no number decoded.
 	\begin{tabular}{| l | K{0.62in} | K{0.62in} | K{0.62in} | K{0.62in} | K{0.62in} | K{0.62in} |}
 	\hline
 	Gap (ms) & 10 & 15 & 20 & 25 & 30 & 40 \\\hline
-	Correct & \kv{about 1/3} & \kv{about 3/4} & \kv{most} & \kv{all} & \kv{all} & \kv{all} \\\hline
+	Correct & \kv{\keysol{kv15}} & \kv{\keysol{kv16}} & \kv{\keysol{kv17}} & \kv{\keysol{kv18}} & \kv{\keysol{kv19}} & \kv{\keysol{kv20}} \\\hline
 	\end{tabular}
 	\end{center}
 
-		\begin{solution}[0.6in]
-		A noiseless headless sweep gave 14, 29, 37, 40, 40, and 40 of 40. A short gap fails
-		by merging a repeated digit, such as the 555, into one.
-		\end{solution}
+		\begin{solution}[0.6in]\keysol{sol15}\end{solution}
 
 \end{parts}
 
@@ -405,24 +365,19 @@ decoded. A count of 0 of 0 means that no number decoded.
 \begin{tabular}{| l | l | K{1.3in} |}
 \hline
 $N$ & Setting & Correct \\\hline
-102 & 22 ms tones, 60 ms gaps & \kv{a few} \\\hline
-102 & 25 ms tones, 60 ms gaps & \kv{all} \\\hline
-102 & 30 ms tones, 60 ms gaps & \kv{all} \\\hline
-102 & 50 ms tones, $+1.5$\% error & \kv{all} \\\hline
-102 & 50 ms tones, $+2.5$\% error & \kv{all} \\\hline
-102 & 50 ms tones, $+3.5$\% error & \kv{none} \\\hline
-410 & 50 ms tones and gaps & \kv{none} \\\hline
-410 & 100 ms tones, $+0.5$\% error & \kv{all} \\\hline
-410 & 100 ms tones, $+1.0$\% error & \kv{none} \\\hline
+102 & 22 ms tones, 60 ms gaps & \kv{\keysol{kv21}} \\\hline
+102 & 25 ms tones, 60 ms gaps & \kv{\keysol{kv22}} \\\hline
+102 & 30 ms tones, 60 ms gaps & \kv{\keysol{kv23}} \\\hline
+102 & 50 ms tones, $+1.5$\% error & \kv{\keysol{kv24}} \\\hline
+102 & 50 ms tones, $+2.5$\% error & \kv{\keysol{kv25}} \\\hline
+102 & 50 ms tones, $+3.5$\% error & \kv{\keysol{kv26}} \\\hline
+410 & 50 ms tones and gaps & \kv{\keysol{kv27}} \\\hline
+410 & 100 ms tones, $+0.5$\% error & \kv{\keysol{kv28}} \\\hline
+410 & 100 ms tones, $+1.0$\% error & \kv{\keysol{kv29}} \\\hline
 \end{tabular}
 \end{center}
 
-	\begin{solution}[0.8in]
-	A noiseless headless sweep gave 7, 40, 40, 40, 40, 0, 0, 40, and 0 of 40. With
-	$N = 102$ the decoder catches tones as short as 25 ms and even a few 22 ms bursts, and
-	it still decodes a tone 2.5\% off frequency. With $N = 410$ no block fits inside a
-	50 ms tone, and with long tones the narrow bins miss a tone only 1\% off.
-	\end{solution}
+	\begin{solution}[0.8in]\keysol{sol16}\end{solution}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newpage
@@ -432,26 +387,13 @@ $N$ & Setting & Correct \\\hline
 
 	\part Record the number you pressed and the Digits label, and paste a screenshot of the
 	window while you press one key.
-		\begin{solution}[1.5in]
-		Answers vary. With the phone close and keys pressed slowly, the decoder reads
-		every key. The bins rise and fall less cleanly than in the synthetic captures,
-		because the room adds echo and noise, and the phone and microphone do not pass
-		every frequency equally, which adds twist.
-		\end{solution}
+		\begin{solution}[1.5in]\keysol{sol17}\end{solution}
 
 	\part Press keys as fast as you can. What does the decoder miss?
-		\begin{solution}[0.9in]
-		Answers vary. Most phones play a tone for as long as a key is held, so
-		fast presses make short tones and short gaps; a tone shorter than about 33 ms is
-		missed, and a repeated key with a gap shorter than about 20 ms counts once.
-		\end{solution}
+		\begin{solution}[0.9in]\keysol{sol18}\end{solution}
 
 	\part Talk, whistle, or play music near the microphone. Record any false digits.
-		\begin{solution}[0.9in]
-		Answers vary; speech should produce few or none. A whistle is one tone, so it
-		fails the test that needs one row and one column tone. Music with two steady
-		notes near a row and a column frequency can produce a false digit.
-		\end{solution}
+		\begin{solution}[0.9in]\keysol{sol19}\end{solution}
 
 \end{parts}
 
@@ -466,36 +408,15 @@ $N$ & Setting & Correct \\\hline
 	\part Lesson 13 says DTMF tones last 40 ms or longer and gaps 20 ms or longer, and the
 	decoder's twist test allows $-10$ to $+6$ dB. Compare each with what you saw in
 	Question 5. Where does the decoder start to miss digits, and why there?
-		\begin{solution}[1.5in]
-		Twist: every number decoded from $-9$ to $+5$ dB and none at $-10$ or $+6$, the
-		edges of the twist test. Tone: every 35 and 40 ms tone decoded and none at 28 ms;
-		the edge fell near 30 ms. Three overlapping blocks, 102 samples apart, must each hold
-		mostly tone, so the tone must last a little longer than one 25.6 ms block. 40 ms
-		tones are safe. Gap: 25 ms and longer always worked, but at 20 ms a few numbers
-		failed, because a repeated digit such as the 555 merged into one. The decoder is
-		right at the edge of the 20 ms gap.
-		\end{solution}
+		\begin{solution}[1.5in]\keysol{sol20}\end{solution}
 
 	\part Use Question 6 to explain what a shorter and a longer Goertzel block gain and
 	lose, and why $N = 205$ is the usual choice at 8 kHz.
-		\begin{solution}[1.5in]
-		A short block responds quickly, so it catches short tones, but its bins are wide,
-		bins 78 Hz apart, nulls 78 Hz either side, at $N = 102$, so it accepts tones farther off frequency, and it lets some
-		22 ms bursts through, which makes speech more likely to look like a digit. A long block
-		has narrow bins, 19.5 Hz apart at $N = 410$, but lasts 51 ms, longer than a 40 ms tone, and
-		misses a tone only 1\% off. $N = 205$ gives bins 39 Hz apart, nulls 39 Hz either side, and a 25.6 ms block, short
-		enough for a 40 ms tone and wide enough for a tone slightly off frequency.
-		\end{solution}
+		\begin{solution}[1.5in]\keysol{sol21}\end{solution}
 
 	\part Compare the phone with the synthetic captures, and propose one change to the
 	decoder for a noisy room.
-		\begin{solution}[1.5in]
-		Answers vary. The phone's bins are lower and rougher, with more twist and more
-		energy outside the eight bins. Reasonable changes: require an absolute level as
-		well as the 35\% share, so quiet background sounds cannot trigger a digit;
-		require four blocks instead of three for more protection against speech, although
-		the decoder then misses the shortest tones; or band-pass the audio to 600 to 1700 Hz first.
-		\end{solution}
+		\begin{solution}[1.5in]\keysol{sol22}\end{solution}
 
 \end{parts}
 

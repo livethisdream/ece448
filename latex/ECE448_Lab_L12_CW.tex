@@ -58,6 +58,18 @@
 \newcolumntype{K}[1]{>{\centering\arraybackslash}p{#1}}
 \newcommand{\kv}[1]{\ifkey{\color{red}#1}\fi\rule[-0.10in]{0pt}{0.34in}}
 
+% Answers are not in this public file. Every solution, \kv value, and \ansbox
+% value is \keysol{<id>}, defined in the private ECE448-faculty repo at
+% lab-keys/src/ECE448_Lab_L12_CW_solutions.tex; build_lab.sh puts that
+% folder on TEXINPUTS (KEYDIR) for the KEY. A KEY build without it stops.
+\long\def\defkeysol#1#2{\expandafter\long\expandafter\def\csname keysol@#1\endcsname{#2}}
+\def\keysol#1{\ifcsname keysol@#1\endcsname\csname keysol@#1\endcsname\fi}
+\ifkey
+	\IfFileExists{ECE448_Lab_L12_CW_solutions.tex}%
+		{\input{ECE448_Lab_L12_CW_solutions}}%
+		{\errmessage{KEY build needs ECE448_Lab_L12_CW_solutions.tex from ECE448-faculty/lab-keys/src (set KEYDIR)}}
+\fi
+
 % print the answers if this is the key
 \ifkey
 	\printanswers % if this IS the key
@@ -150,21 +162,15 @@ with every slider at its default.
 	\begin{minipage}[t]{0.58\linewidth}
 		\part After about 30 s, record the Received label, and time one repeat of the
 		message with a watch.
-		\begin{solution}[0.7in]
-		The label reads \texttt{USAFA ECE 448} three times with no errors. One repeat, 126
-		units at 60 ms, takes 7.56 s.
-		\end{solution}
+		\begin{solution}[0.7in]\keysol{sol1}\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
 		\raggedleft \vspace{12pt}
-		\ansbox[1.4in]{no errors, 7.6 s}
+		\ansbox[1.4in]{\keysol{ans1}}
 	\end{minipage}
 
 	\part Paste a screenshot of the running flowgraph's window.
-		\begin{solution}[1.6in]
-		The waterfall shows the keyed carrier at +5 kHz, the envelope sits near 0.64 during
-		marks and near 0.04 between them, and the key trace follows the marks.
-		\end{solution}
+		\begin{solution}[1.6in]\keysol{sol2}\end{solution}
 
 \end{parts}
 
@@ -177,73 +183,53 @@ with every slider at its default.
 	\begin{minipage}[t]{0.58\linewidth}
 		\part Find the length of a dit, a dah, the gap between letters, and the gap
 		between words at 13 WPM.
-		\begin{solution}[1.1in]
-		\eq{ t_\text{dit} &= 1.2\ \text{s} / 13 = 92.3\ \text{ms} \\
-			t_\text{dah} &= t_\text{letter} = 3 \times 92.3 = 277\ \text{ms} \\
-			t_\text{word} &= 7 \times 92.3 = 646\ \text{ms} }
-		\end{solution}
+		\begin{solution}[1.1in]\keysol{sol3}\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
 		\raggedleft \vspace{12pt}
-		dit = \ansbox[1.0in]{92.3 ms}
+		dit = \ansbox[1.0in]{\keysol{ans2}}
 
 		\vspace{4pt}
-		dah = \ansbox[1.0in]{277 ms}
+		dah = \ansbox[1.0in]{\keysol{ans3}}
 
 		\vspace{4pt}
-		word gap = \ansbox[1.0in]{646 ms}
+		word gap = \ansbox[1.0in]{\keysol{ans4}}
 	\end{minipage}
 
 	\part Write your initials, two or three letters, in Morse code. Then write them as
 	a list with one 0 or 1 per unit: 1 for each unit the key is down, 0 for each unit
 	it is up, ending with the 7-unit gap after the word. Count the units and find how
 	long the pattern lasts at 13 WPM.
-		\begin{solution}[1.2in]
-		The answer depends on the initials. For JD, J is \texttt{.---} and D is
-		\texttt{-..}, so the list is
-		\begin{center}\texttt{[1,0,1,1,1,0,1,1,1,0,1,1,1, 0,0,0, 1,1,1,0,1,0,1, 0,0,0,0,0,0,0]}\end{center}
-		J takes 13 units, the letter gap 3, D 7, and the word gap 7, for 30 units in all,
-		or $30 \times 92.3\ \text{ms} = 2.77$ s.
-		\end{solution}
+		\begin{solution}[1.2in]\keysol{sol4}\end{solution}
 
 	\part In the running link, drag the noise amplitude slider slowly from 1 up to 7,
 	with the other sliders at their defaults. Describe what happens to the waterfall,
 	to the envelope's level between marks, and to the Received label, and say roughly
 	where the text starts to break.
-		\begin{solution}[1.2in]
-		The noise fills the waterfall until it hides the carrier, around 5 or 6. The
-		envelope's level between marks climbs toward the 0.3 threshold, the key starts to
-		chatter between marks, and the Received label fills with extra Es and Ts and \#
-		marks. With the threshold left at 0.3, the text is badly broken by about 5.
-		\end{solution}
+		\begin{solution}[1.2in]\keysol{sol5}\end{solution}
 
 	\begin{minipage}[t]{0.58\linewidth}
 		\part The decoder is set to 20 WPM, so its unit is 60 ms. It calls a mark under
 		2 units a dit, ends a letter when a space reaches 2 units, and ends a word when a
 		space reaches 5. Find those two boundaries in milliseconds.
-		\begin{solution}[0.6in]
-		$2 \times 60 = 120$ ms and $5 \times 60 = 300$ ms.
-		\end{solution}
+		\begin{solution}[0.6in]\keysol{sol6}\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
 		\raggedleft \vspace{12pt}
-		2 units = \ansbox[1.0in]{120 ms}
+		2 units = \ansbox[1.0in]{\keysol{ans5}}
 
 		\vspace{4pt}
-		5 units = \ansbox[1.0in]{300 ms}
+		5 units = \ansbox[1.0in]{\keysol{ans6}}
 	\end{minipage}
 
 	\begin{minipage}[t]{0.58\linewidth}
 		\part The CW filter is 200 Hz wide and centered on the 700 Hz tone. How far can
 		you tune the receiver from the carrier before the tone leaves the filter?
-		\begin{solution}[0.6in]
-		You can tune half the filter width, 100 Hz, either way: the tone moves from 700 Hz to
-		$700 \pm 100$ Hz, the edges of the filter.
-		\end{solution}
+		\begin{solution}[0.6in]\keysol{sol7}\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
 		\raggedleft \vspace{12pt}
-		\ansbox[1.1in]{100 Hz}
+		\ansbox[1.1in]{\keysol{ans7}}
 	\end{minipage}
 
 \end{parts}
@@ -260,25 +246,16 @@ list from Question 2(b) in the Vector Source.
 
 	\part Paste a screenshot of your flowgraph on the GRC canvas. Every connection
 	must be black, not red.
-		\begin{solution}[1.5in]
-		The flowgraph matches the lab page's list: Vector Source, Repeat, and Throttle, then a
-		Moving Average, with a two-input QT GUI Time Sink and a two-input QT GUI
-		Frequency Sink fed by the Throttle and the Moving Average.
-		\end{solution}
+		\begin{solution}[1.5in]\keysol{sol8}\end{solution}
 
 	\begin{minipage}[t]{0.58\linewidth}
 		\part Paste a screenshot of the time sink zoomed in on one dit, and compare its
 		length with Question 2(a).
-		\begin{solution}[1.3in]
-		The Repeat block holds each unit for $\texttt{int}(8000 \times 1.2/13) = 738$
-		samples, 92.25 ms, within a fraction of a millisecond of 92.3 ms. The shaped
-		trace rises in a straight 5 ms ramp and lags the hard trace by 2.5 ms, half the
-		Moving Average's length.
-		\end{solution}
+		\begin{solution}[1.3in]\keysol{sol9}\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
 		\raggedleft \vspace{12pt}
-		\ansbox[1.1in]{92 ms}
+		\ansbox[1.1in]{\keysol{ans8}}
 	\end{minipage}
 
 	\part Read the highest peak of the hard and shaped spectra within 100 Hz of 1 kHz and of
@@ -290,17 +267,12 @@ list from Question 2(b) in the Vector Source.
 	\begin{tabular}{| l | K{1.1in} | K{1.1in} | K{1.1in} |}
 	\hline
 	& Hard (dB) & Ramp (dB) & Difference (dB) \\\hline
-	1 kHz from the carrier & & & \kv{$\approx -25$} \\\hline
-	2 kHz from the carrier & & & \kv{$\approx -30$} \\\hline
+	1 kHz from the carrier & & & \kv{\keysol{kv1}} \\\hline
+	2 kHz from the carrier & & & \kv{\keysol{kv2}} \\\hline
 	\end{tabular}
 	\end{center}
 
-		\begin{solution}[1.0in]
-		The ramp is about 23 to 26 dB below hard keying 1 kHz away and 29 to 31 dB below
-		2 kHz away. A receiver tuned 1 kHz away hears a click at every edge of the hard
-		keying, and a much fainter one from the ramp. The ramp still has a corner where it
-		starts and where it ends, which is why Lesson 12's keyer rounds its edges instead.
-		\end{solution}
+		\begin{solution}[1.0in]\keysol{sol10}\end{solution}
 
 \end{parts}
 
@@ -321,28 +293,18 @@ message, and count the wrong, missing, and extra characters among those 39.
 	\hline
 	Noise & $4.5$ & $5.5$ & $6.5$ & $6.5$ & $6.5$ \\\hline
 	Filter width & 200 Hz & 200 Hz & 200 Hz & 1000 Hz & 50 Hz \\\hline
-	Space level & \kv{$0.19$} & \kv{$0.24$} & \kv{$0.28$} & \kv{$0.62$} & \kv{$0.14$} \\\hline
-	Mark level & \kv{$0.67$} & \kv{$0.68$} & \kv{$0.69$} & \kv{$0.86$} & \kv{$0.64$} \\\hline
-	Threshold & \kv{$0.43$} & \kv{$0.46$} & \kv{$0.48$} & \kv{$0.74$} & \kv{$0.39$} \\\hline
-	Wrong of 39 & \kv{0} & \kv{1 to 3} & \kv{$\approx 5$} & \kv{$\approx 21$} & \kv{0 or 1} \\\hline
+	Space level & \kv{\keysol{kv3}} & \kv{\keysol{kv4}} & \kv{\keysol{kv5}} & \kv{\keysol{kv6}} & \kv{\keysol{kv7}} \\\hline
+	Mark level & \kv{\keysol{kv8}} & \kv{\keysol{kv9}} & \kv{\keysol{kv10}} & \kv{\keysol{kv11}} & \kv{\keysol{kv12}} \\\hline
+	Threshold & \kv{\keysol{kv13}} & \kv{\keysol{kv14}} & \kv{\keysol{kv15}} & \kv{\keysol{kv16}} & \kv{\keysol{kv17}} \\\hline
+	Wrong of 39 & \kv{\keysol{kv18}} & \kv{\keysol{kv19}} & \kv{\keysol{kv20}} & \kv{\keysol{kv21}} & \kv{\keysol{kv22}} \\\hline
 	\end{tabular}
 	\end{center}
 
-		\begin{solution}[0.8in]
-		Counts over 39 characters vary from run to run because the noise is random; over
-		long runs, the 200 Hz filter at 6.5 garbles a few letters in every line and the 1000 Hz
-		filter most of them. The space level rises with the noise and with the filter width,
-		so the threshold has to move with it.
-		\end{solution}
+		\begin{solution}[0.8in]\keysol{sol11}\end{solution}
 
 	\part Paste a screenshot at a noise amplitude of 6.5 with the 200 Hz filter, and mark one wrong
 	character in the Received label.
-		\begin{solution}[1.4in]
-		Answers vary. Each error comes from a mark that noise splits, shortens, or invents,
-		or from a lost dit: a dah broken into two dits turns A into S; a dah shrunk to a dit
-		turns 8 into 7; a lost dit turns F into R or into an unknown pattern \#; and a noise
-		burst adds an extra E.
-		\end{solution}
+		\begin{solution}[1.4in]\keysol{sol12}\end{solution}
 
 \end{parts}
 
@@ -361,18 +323,11 @@ amplitude at 1, the 200 Hz filter, and the threshold at 0.3.
 	\begin{tabular}{| l | K{0.5in} | K{0.5in} | K{0.5in} | K{0.5in} | K{0.5in} | K{0.5in} | K{0.5in} |}
 	\hline
 	Sender WPM & 10 & 12 & 13 & 20 & 27 & 28 & 30 \\\hline
-	Decodes? & \kv{no} & \kv{no} & \kv{yes} & \kv{yes} & \kv{yes} & \kv{no} & \kv{no} \\\hline
+	Decodes? & \kv{\keysol{kv23}} & \kv{\keysol{kv24}} & \kv{\keysol{kv25}} & \kv{\keysol{kv26}} & \kv{\keysol{kv27}} & \kv{\keysol{kv28}} & \kv{\keysol{kv29}} \\\hline
 	\end{tabular}
 	\end{center}
 
-		\begin{solution}[1.2in]
-		At 10 WPM every dit lasts 2 decoder units, so the decoder reads every mark as a dah
-		and prints Ts and Ms. At 12 WPM each letter gap lasts exactly 5 units and reads as a
-		word gap, so most letters come out separated by spaces, as in \texttt{US A F A}. From 13 to
-		27 WPM the text is correct. At 28 WPM each word gap lasts exactly 5 units, and the
-		words run together; at 30 WPM the letter gaps also fall to the 2-unit boundary, the
-		letters merge, and the decoder prints \#.
-		\end{solution}
+		\begin{solution}[1.2in]\keysol{sol13}\end{solution}
 
 	\part Record the pitch and whether the text decodes at each tuning.
 
@@ -381,17 +336,12 @@ amplitude at 1, the 200 Hz filter, and the threshold at 0.3.
 	\begin{tabular}{| l | K{0.9in} | K{0.9in} | K{0.9in} | K{0.9in} |}
 	\hline
 	Tuning (Hz) & 5050 & 5080 & 5100 & 5150 \\\hline
-	Pitch & \kv{lower, 650 Hz} & \kv{lower, 620 Hz} & \kv{lower, 600 Hz} & \kv{lower, 550 Hz} \\\hline
-	Decodes? & \kv{yes} & \kv{yes} & \kv{no} & \kv{no} \\\hline
+	Pitch & \kv{\keysol{kv30}} & \kv{\keysol{kv31}} & \kv{\keysol{kv32}} & \kv{\keysol{kv33}} \\\hline
+	Decodes? & \kv{\keysol{kv34}} & \kv{\keysol{kv35}} & \kv{\keysol{kv36}} & \kv{\keysol{kv37}} \\\hline
 	\end{tabular}
 	\end{center}
 
-		\begin{solution}[0.9in]
-		Tuning above the carrier puts it below 0 Hz after the Xlating filter, so the tone
-		drops by the tuning error. At 100 Hz the tone sits on the filter's edge, the mark
-		level falls to about half, and the text breaks up; at 150 Hz the filter removes
-		the tone and nothing decodes.
-		\end{solution}
+		\begin{solution}[0.9in]\keysol{sol14}\end{solution}
 
 \end{parts}
 
@@ -409,17 +359,10 @@ unplug the Pluto before you disconnect the cable.
 	\part Once \texttt{USAFA ECE 448} decodes, paste a screenshot that shows the
 	waterfall, the envelope with the threshold line halfway between the space and mark
 	levels, and the Received label.
-		\begin{solution}[1.5in]
-		The waterfall shows the keyed carrier at +5 kHz. The AGC holds the envelope's mark level
-		near 0.6, the red threshold line sits halfway between the space and mark levels, and
-		the message decodes without errors.
-		\end{solution}
+		\begin{solution}[1.5in]\keysol{sol15}\end{solution}
 
 	\part Record your teammate's message as decoded, and check it with them.
-		\begin{solution}[0.6in]
-		The decoded text matches the teammate's message. The keyer sends lowercase letters
-		as capitals and skips any character that is not in its Morse table, such as @.
-		\end{solution}
+		\begin{solution}[0.6in]\keysol{sol16}\end{solution}
 
 	\part Record the mark and space levels and whether the text decodes at each TX
 	attenuation. Explain why the mark level hardly changes while the received power falls
@@ -436,13 +379,7 @@ unplug the Pluto before you disconnect the cable.
 	\end{tabular}
 	\end{center}
 
-		\begin{solution}[1.0in]
-		Each step weakens the received signal, and the AGC raises its gain to make up for
-		it, so the mark level stays near 0.6. The noise does not fall with the signal, so
-		the AGC raises it too, and the space level climbs as the signal gets weaker. With estimated Pluto levels, a simulation decoded at every step,
-		with the space level rising from about 0.04 to 0.05; the real levels, and whether
-		the text still decodes at 89 dB, depend on the hardware.
-		\end{solution}
+		\begin{solution}[1.0in]\keysol{sol17}\end{solution}
 
 \end{parts}
 
@@ -457,40 +394,17 @@ unplug the Pluto before you disconnect the cable.
 	\part Using your noise table and what you saw in Question 2(c), describe what
 	rising noise did to the envelope and to the decoded text with the 200 Hz filter, and
 	explain in words why the threshold had to move as the noise rose.
-		\begin{solution}[1.5in]
-		The link copied without errors at 4.5, lost a letter or two at 5.5, and garbled a few
-		letters in every line at 6.5. Noise passing the filter raises the envelope during the spaces, from
-		about 0.04 at a noise amplitude of 1 to 0.28 at 6.5, while the mark level hardly
-		moves, so a fixed threshold of 0.3 lets noise peaks through as dits. The threshold
-		must sit halfway between the space and mark levels, so it has to rise with the
-		space level.
-		\end{solution}
+		\begin{solution}[1.5in]\keysol{sol18}\end{solution}
 
 	\part Compare the 1000, 200, and 50 Hz filters at a noise amplitude of 6.5. Explain why the
 	narrowest filter did best, and use your tuning measurement to say what it gives
 	up.
-		\begin{solution}[1.5in]
-		The signal is only about 100 Hz wide, so a wider filter adds noise without adding
-		signal: the 1000 Hz filter let through much more noise than the 200 Hz filter and lost
-		more than half the characters, while the 50 Hz filter passes much less noise and
-		copied almost every letter. The tone must stay
-		inside the filter: the 200 Hz filter decoded out to 80 Hz of tuning error and
-		failed at 100 Hz, so a 50 Hz filter would need the receiver within about 25 Hz of
-		the carrier, and transmitter drift would matter four times as much.
-		\end{solution}
+		\begin{solution}[1.5in]\keysol{sol19}\end{solution}
 
 	\part Use your boundaries from Question 2(d) to say which window failed at each end
 	of the sender speeds you tried, and propose a change to the decoder that would let it
 	copy any sender's speed.
-		\begin{solution}[1.5in]
-		The link decoded from 13 to 27 WPM. At 12 WPM a letter gap lasts 300 ms, the
-		5-unit word boundary, so letter gaps read as word gaps; at 28 WPM a word gap lasts
-		about 300 ms, so word gaps fell to that same boundary and the words ran together.
-		At both edge speeds a gap lands exactly on the 5-unit boundary, and the noise's
-		jitter of a few hundredths of a unit pushes it to either side, so the text breaks up. A decoder can measure the sender's speed instead of
-		assuming it: keep a running average of the short marks, take it as the dit
-		length, and set the 2- and 5-unit boundaries from that.
-		\end{solution}
+		\begin{solution}[1.5in]\keysol{sol20}\end{solution}
 
 \end{parts}
 

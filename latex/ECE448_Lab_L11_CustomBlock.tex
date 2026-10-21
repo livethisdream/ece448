@@ -58,6 +58,18 @@
 \newcolumntype{K}[1]{>{\centering\arraybackslash}p{#1}}
 \newcommand{\kv}[1]{\ifkey{\color{red}#1}\fi\rule[-0.10in]{0pt}{0.34in}}
 
+% Answers are not in this public file. Every solution, \kv value, and \ansbox
+% value is \keysol{<id>}, defined in the private ECE448-faculty repo at
+% lab-keys/src/ECE448_Lab_L11_CustomBlock_solutions.tex; build_lab.sh puts that
+% folder on TEXINPUTS (KEYDIR) for the KEY. A KEY build without it stops.
+\long\def\defkeysol#1#2{\expandafter\long\expandafter\def\csname keysol@#1\endcsname{#2}}
+\def\keysol#1{\ifcsname keysol@#1\endcsname\csname keysol@#1\endcsname\fi}
+\ifkey
+	\IfFileExists{ECE448_Lab_L11_CustomBlock_solutions.tex}%
+		{\input{ECE448_Lab_L11_CustomBlock_solutions}}%
+		{\errmessage{KEY build needs ECE448_Lab_L11_CustomBlock_solutions.tex from ECE448-faculty/lab-keys/src (set KEYDIR)}}
+\fi
+
 % print the answers if this is the key
 \ifkey
 	\printanswers % if this IS the key
@@ -151,24 +163,16 @@ resort build the two modules on a teammate's laptop for Questions 3(a) and 5.
 	\begin{minipage}[t]{0.58\linewidth}
 		\part Record your operating system, your GNU Radio version, and whether
 		\texttt{gr\_modtool} and \texttt{cmake} run. Name the route you will take.
-		\begin{solution}[0.9in]
-		Radioconda installs GNU Radio 3.10 with \texttt{gr\_modtool} on every platform.
-		\texttt{cmake} runs only after \texttt{conda install -c conda-forge
-		gnuradio-build-deps}. Linux and macOS take the module route; Windows takes WSL2 with
-		Ubuntu, or else the Embedded Python Block route.
-		\end{solution}
+		\begin{solution}[0.9in]\keysol{sol1}\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
 		\raggedleft \vspace{12pt}
-		\ansbox[1.6in]{3.10.x; route}
+		\ansbox[1.6in]{\keysol{ans1}}
 	\end{minipage}
 
 	\part Open and run \texttt{L11-keyed-carrier-epy.grc}, which needs nothing installed.
 	Paste a screenshot of its window at the default settings.
-		\begin{solution}[1.5in]
-		The power steps between about 0 dB and $-20$ dB in the pattern of ECE, and the
-		detected key matches the sent keying.
-		\end{solution}
+		\begin{solution}[1.5in]\keysol{sol2}\end{solution}
 
 \end{parts}
 
@@ -187,48 +191,38 @@ resort build the two modules on a teammate's laptop for Questions 3(a) and 5.
 	\begin{tabular}{| K{0.62in} | K{0.62in} | K{0.75in} | K{0.75in} | K{0.75in} | K{0.75in} |}
 	\hline
 	Dit & Dah & Inside a letter & Between letters & After the word & Samples per unit \\\hline
-	\kv{80 ms} & \kv{240 ms} & \kv{80 ms} & \kv{240 ms} & \kv{560 ms} & \kv{2560} \\\hline
+	\kv{\keysol{kv1}} & \kv{\keysol{kv2}} & \kv{\keysol{kv3}} & \kv{\keysol{kv4}} & \kv{\keysol{kv5}} & \kv{\keysol{kv6}} \\\hline
 	\end{tabular}
 	\end{center}
 
-		\begin{solution}[0.4in]
-		One unit is $1.2/15 = 80$ ms, and $0.080 \times 32{,}000 = 2560$ samples.
-		\end{solution}
+		\begin{solution}[0.4in]\keysol{sol3}\end{solution}
 
 	\begin{minipage}[t]{0.58\linewidth}
 		\part One sending of ``ECE'' is 26 units long, with its final word gap. How long
 		does it last at 15 WPM, and how many points is that at the detector's 1 kHz
 		output rate? You set the Time Sinks' Number of Points to this at the bench.
-		\begin{solution}[0.6in]
-		$26 \times 80\ \text{ms} = 2.08$ s, and $2.08 \times 1000 = 2080$ points.
-		\end{solution}
+		\begin{solution}[0.6in]\keysol{sol4}\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
 		\raggedleft \vspace{12pt}
-		\ansbox[1.0in]{2.08 s, 2080}
+		\ansbox[1.0in]{\keysol{ans2}}
 	\end{minipage}
 
 	\begin{minipage}[t]{0.58\linewidth}
 		\part Averaging 32 samples, how many detector outputs is a dit? Averaging 128, how
 		long does one output last, and how many outputs is a dit? How many marks (key-downs)
 		does one sending of ``ECE'' hold, and how many arrive in 30 s?
-		\begin{solution}[1.2in]
-		$32/32{,}000 = 1$ ms, so a dit is 80 outputs; $128/32{,}000 = 4$ ms, so a dit is
-		20 outputs. ECE is a dit, then dah dit dah dit, then a dit: 6 marks in 26 units,
-		2.08 s. In 30 s the flowgraph sends 14 whole sendings, 84 marks, and the Key Timer counts a
-		mark when it ends, so it adds 3 completed marks of the 15th (the 4th is still down):
-		87, or 88 if read a moment late.
-		\end{solution}
+		\begin{solution}[1.2in]\keysol{sol5}\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
 		\raggedleft \vspace{12pt}
-		$N=32$: \ansbox[1.0in]{80}
+		$N=32$: \ansbox[1.0in]{\keysol{ans3}}
 
 		\vspace{4pt}
-		$N=128$: \ansbox[1.0in]{4 ms, 20}
+		$N=128$: \ansbox[1.0in]{\keysol{ans4}}
 
 		\vspace{4pt}
-		marks: \ansbox[1.0in]{6; 87--88}
+		marks: \ansbox[1.0in]{\keysol{ans5}}
 	\end{minipage}
 
 \end{parts}
@@ -243,21 +237,11 @@ resort build the two modules on a teammate's laptop for Questions 3(a) and 5.
 
 	\part Paste the output of \texttt{ctest}, and the \texttt{gr\_python\_install} line
 	of \texttt{python/ece448/CMakeLists.txt}.
-		\begin{solution}[1.2in]
-		\texttt{ctest} reports that 100\% of tests passed, 0 failed out of 1: the one test
-		file holds the four test methods of \texttt{qa\_energy\_detector.py}. The line reads\\
-		\texttt{gr\_python\_install(FILES \_\_init\_\_.py energy\_detector.py}\\
-		\texttt{\ \ DESTINATION ...)}.
-		\end{solution}
+		\begin{solution}[1.2in]\keysol{sol6}\end{solution}
 
 	\part Open \texttt{L11-keyed-carrier.grc}, which uses the installed block, and run it.
 	Paste a screenshot of the Energy Detector's properties dialog.
-		\begin{solution}[1.3in]
-		The dialog shows Samples Averaged 32, Threshold (dB) \texttt{threshold}, and
-		Hysteresis (dB) \texttt{hyst}. On the Embedded Python Block route, the dialog of
-		the Embedded Python Block shows the same three parameters, and part (a) comes from
-		the lab machine.
-		\end{solution}
+		\begin{solution}[1.3in]\keysol{sol7}\end{solution}
 
 \end{parts}
 
@@ -271,30 +255,20 @@ resort build the two modules on a teammate's laptop for Questions 3(a) and 5.
 	\begin{minipage}[t]{0.58\linewidth}
 		\part Read the floor and the carrier-on level from the power plot, and describe
 		how much the floor jumps up and down.
-		\begin{solution}[0.8in]
-		The floor sits near $-6$ dB and wanders by about a dB either way, and the carrier
-		sits near $+1$ dB.
-		\end{solution}
+		\begin{solution}[0.8in]\keysol{sol8}\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
 		\raggedleft \vspace{12pt}
-		off: \ansbox[1.0in]{$\approx -6$ dB}
+		off: \ansbox[1.0in]{\keysol{ans6}}
 
 		\vspace{4pt}
-		on: \ansbox[1.0in]{$\approx +1$ dB}
+		on: \ansbox[1.0in]{\keysol{ans7}}
 	\end{minipage}
 
 	\part Set the threshold to the floor's level with no hysteresis, and describe the
 	key. Then choose your own threshold and hysteresis so that the key follows the
 	keying for at least 20 s. Record your settings and paste a screenshot.
-		\begin{solution}[1.3in]
-		At $-6$ dB and no hysteresis the key chatters through every gap. A threshold of
-		$-2.5$ dB with 1 to 2 dB of hysteresis gives a key that matches the keying: the
-		on level sits 3.5 dB above the floor, and the off level stays above the floor's
-		wander. With 3 dB the off level, $-5.5$ dB, sits inside that wander, so the key
-		still follows the keying but some marks run a millisecond or two long
-		(Question 8).
-		\end{solution}
+		\begin{solution}[1.3in]\keysol{sol9}\end{solution}
 
 \end{parts}
 
@@ -310,36 +284,16 @@ mark and the last space, in ms, and the number of marks so far. Three methods,
 \begin{parts}
 
 	\part Paste your \texttt{key\_timer.py}.
-		\begin{solution}[2.4in]
-		A \texttt{gr.sync\_block} with \texttt{in\_sig=[numpy.float32]} and
-		\texttt{out\_sig=None}. \texttt{work()} loops over the input, compares each value
-		(as 0 or 1) with the stored state, and increments a counter while they match. On a
-		change, it converts the count to milliseconds,
-		\[ t = \frac{1000 \times \text{count}}{\text{rate}}, \]
-		stores it
-		as the last mark if the state was 1 (and adds one to the mark count) or as the last
-		space if it was 0, then stores the new state and restarts the count at 1. The state
-		and the count are attributes of \texttt{self}, so a mark that spans two calls to
-		\texttt{work()} still gets the right length. \texttt{work()} returns the number of inputs.
-		Grade against the faculty reference.
-		\end{solution}
+		\begin{solution}[2.4in]\keysol{sol10}\end{solution}
 
 	\part Paste your \texttt{qa\_key\_timer.py} test and the output of \texttt{ctest}. The
 	test must feed a known key, such as five 0s, three 1s, two 0s, one 1, and four 0s at
 	a rate of 1000, and check all three methods.
-		\begin{solution}[1.4in]
-		For that key the block reports 2 marks, a last mark of 1 ms, and a last space of
-		2 ms. The 2 ms space replaces the first space, 5 ms, and the final 4 ms space never
-		ends, so the block does not count it. \texttt{ctest} reports the test passed.
-		\end{solution}
+		\begin{solution}[1.4in]\keysol{sol11}\end{solution}
 
 	\part Paste your \texttt{grc/*.block.yml}, and the \texttt{gr\_python\_install}
 	line, which must list \texttt{key\_timer.py}.
-		\begin{solution}[1.2in]
-		The file has \texttt{make: <module>.key\_timer(\$\{rate\})}, one parameter \texttt{rate} of type
-		\texttt{real}, one \texttt{float} input, no outputs. On GNU Radio 3.10.9 the
-		install line needs \texttt{key\_timer.py} added by hand.
-		\end{solution}
+		\begin{solution}[1.2in]\keysol{sol12}\end{solution}
 
 \end{parts}
 
@@ -360,19 +314,14 @@ through Function Probes.
 	\begin{tabular}{| l | K{0.72in} | K{0.72in} | K{0.72in} | K{0.72in} | K{0.72in} |}
 	\hline
 	& Dit & Dah & Inside a letter & Between letters & After the word \\\hline
-	Measured (ms) & \kv{80--82} & \kv{240--242} & \kv{78--80} & \kv{238--240} & \kv{558--560} \\\hline
+	Measured (ms) & \kv{\keysol{kv7}} & \kv{\keysol{kv8}} & \kv{\keysol{kv9}} & \kv{\keysol{kv10}} & \kv{\keysol{kv11}} \\\hline
 	\end{tabular}
 	\end{center}
 
-		\begin{solution}[0.5in]
-		Each length falls within 1 or 2 ms of 80, 240, 80, 240, and 560 ms.
-		\end{solution}
+		\begin{solution}[0.5in]\keysol{sol13}\end{solution}
 
 	\part Paste a screenshot of your flowgraph's canvas and of its running window.
-		\begin{solution}[1.6in]
-		The Key Timer connects to the Energy Detector's key output, and the labels read, for
-		example, 80.0 ms and 240.0 ms.
-		\end{solution}
+		\begin{solution}[1.6in]\keysol{sol14}\end{solution}
 
 \end{parts}
 
@@ -384,22 +333,12 @@ through Function Probes.
 
 	\part With 32 samples averaged, choose the best threshold and hysteresis you can
 	find. Record them, then restart the flowgraph and record the mark count after 30 s.
-		\begin{solution}[1.0in]
-		The best settings sit near a threshold of $+0.5$ dB with 2 dB of hysteresis, and
-		even there the count runs a few marks high, about 89 to 95 for 87 to 88 sent, because
-		the noise now and then makes a mark of 1 to 3 ms in a gap. At a threshold of 0 dB the
-		count rises to about 130. The floor (near $-2$ dB) and the carrier (near $+2$ dB) are
-		only about 4 dB apart, and the floor's ragged edge fills much of that gap.
-		\end{solution}
+		\begin{solution}[1.0in]\keysol{sol15}\end{solution}
 
 	\part Stop the flowgraph, set \texttt{decim} to 128, and repeat. Describe how the
 	floor on the power plot changed. Record your settings, the count after 30 s, and the
 	dit length the Key Timer reports.
-		\begin{solution}[1.0in]
-		The floor is visibly smoother, wandering about half as far. With a threshold of 0.5 to 1 dB and 1.5 to 2 dB of hysteresis the count matches the
-		marks sent, 87 to 88, and the dit reads 80 ms, sometimes 84 ms, one 4 ms output
-		long.
-		\end{solution}
+		\begin{solution}[1.0in]\keysol{sol16}\end{solution}
 
 \end{parts}
 
@@ -410,35 +349,18 @@ through Function Probes.
 \question \textbf{Hysteresis and timing.} At a noise amplitude of 0.5, with a $-2.5$ dB threshold, and
 3 dB of hysteresis, some dits read 81 or 82 ms; with no hysteresis, they read 80 ms.
 Explain why, and what Question 7 says about choosing $N$.
-		\begin{solution}[1.5in]
-		With 3 dB of hysteresis the off level is $-5.5$ dB, only 0.5 dB above the $-6$ dB
-		floor, so after the carrier stops, the averaged noise can stay above the off level
-		for an output or two and the key turns off late. Question 7 showed that a larger
-		$N$ smooths the floor, which leaves more room between the noise and the levels,
-		but each output then lasts longer, $N/f_s$, so the edges move in larger steps:
-		averaging more samples gives a cleaner key with coarser edge timing.
-		\end{solution}
+		\begin{solution}[1.5in]\keysol{sol17}\end{solution}
 
 \question \textbf{Module or Embedded Python Block?} Lesson 12 builds a Morse decoder that
 uses the Energy Detector and your Key Timer. Explain which of the two should live in an
 OOT module and why, and what the unit test caught or would catch that watching the
 flowgraph would not.
-		\begin{solution}[1.5in]
-		Both belong in a module: every CW flowgraph in Lesson 12 and later needs them, and a module keeps one
-		tested copy of the code. The unit test checks exact values, such as a mark that
-		spans two calls to \texttt{work()} or a final space that never ends, which a label
-		updating four times a second cannot show.
-		\end{solution}
+		\begin{solution}[1.5in]\keysol{sol18}\end{solution}
 
 \question \textbf{From timing to letters.} The Key Timer reports the dit and dah lengths you measured in
 Question 6(a). Propose a rule a decoder can use to tell a dit from a dah, and a rule to tell
 the end of a letter from the gap inside one, that still works at 20 WPM.
-		\begin{solution}[1.5in]
-		Measure the unit from the shortest common mark, then call a mark longer than 2 units
-		a dah and a shorter one a dit; call a space longer than 2 units the end of a letter,
-		and longer than 5 units the end of a word. Because the rule uses the measured unit,
-		60 ms at 20 WPM, it does not depend on the sending speed.
-		\end{solution}
+		\begin{solution}[1.5in]\keysol{sol19}\end{solution}
 
 \vspace{1.5em}
 \noindent\textbf{Documentation:} \rule[-2pt]{0.6\linewidth}{0.4pt}
