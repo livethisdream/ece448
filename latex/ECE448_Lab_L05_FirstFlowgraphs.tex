@@ -259,12 +259,26 @@ a QT GUI Frequency Sink.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newpage
-\question \textbf{The FM band.} Connect the antenna to the RTL-SDR and run
-\texttt{L05-fm-spectrum.grc}.
+\question \textbf{The FM band.} Connect the antenna to the RTL-SDR. Find a station
+in GQRX first, then look at the band in GNU Radio.
 
 \begin{parts}
 
-	\part Tune across 88 to 108 MHz and record the three strongest stations: the
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Run \texttt{gqrx}, choose the RTL-SDR, set the mode to WFM (stereo), and
+		press the power button. Click across the FM band until a station plays
+		clearly, and record its frequency. Then quit GQRX.
+		\begin{solution}[0.6in]
+		Any local station; the frequency ends in an odd tenth of a megahertz.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		station = \ansbox[1.3in]{odd tenth, MHz}
+	\end{minipage}
+
+	\part Run \texttt{L05-fm-spectrum.grc} with its center frequency set to the
+	station from part (a). Then tune across 88 to 108 MHz and record the three strongest stations: the
 	frequency, the peak level on the display, and the approximate width.
 
 	\begin{center}
@@ -315,7 +329,7 @@ a QT GUI Frequency Sink.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newpage
 \question \textbf{Record and plot.} Center the strongest station slightly off the
-DC spike and set the gain you chose in Question 4(c).
+DC spike and set the gain you chose in Question 4(d).
 
 \begin{parts}
 
@@ -358,7 +372,7 @@ DC spike and set the gain you chose in Question 4(c).
 		identical.
 		\end{solution}
 
-	\part Using your table in Question 4(c), describe in words what happened as you
+	\part Using your table in Question 4(d), describe in words what happened as you
 	raised the gain from 0 to 49 dB: to the noise floor, to how far the strongest
 	station stood above it, and to the space between stations.
 		\begin{solution}[1.5in]
@@ -370,7 +384,7 @@ DC spike and set the gain you chose in Question 4(c).
 		\end{solution}
 
 	\part State the gain you would use to receive weak stations in this room, and
-	justify it from your table in Question 4(c).
+	justify it from your table in Question 4(d).
 		\begin{solution}[1.0in]
 		The setting where the floor has risen a few dB above its low-gain value but no
 		spurs have appeared, typically 30 to 40 dB. Below it the converter's noise buries

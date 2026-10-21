@@ -13,7 +13,7 @@ frame_view: true
 
 <div class="title-rule"></div>
 
-Build a flowgraph from an empty canvas, measure aliasing, then find, record, and plot the broadcast FM band.
+Build a flowgraph from an empty canvas, measure aliasing, then find the broadcast FM band in GQRX and record and plot it in GNU Radio.
 
 L5 Lab · Module 2: SDR & GNU Radio Foundations · Dr. Neil Rogers
 ::::
@@ -29,7 +29,7 @@ L5 Lab · Module 2: SDR & GNU Radio Foundations · Dr. Neil Rogers
 ::::{frame} From Lesson to Bench
 :::{present}
 - **Pre-Lab:** install radioconda and work out the numbers your settings fix.
-- **Bench:** build the tone flowgraph yourself, then receive and record the FM band.
+- **Bench:** build the tone flowgraph yourself, find an FM station in GQRX, then receive and record the band in GNU Radio.
 - **Writeup:** compare, and explain the differences.
 :::
 
@@ -78,17 +78,18 @@ These are the answers to Question 2, worked from Lesson 5. The tone aliases are 
 ::::{frame} Part 2: The FM Band
 :class: read-only
 
-1. Connect the antenna to the RTL-SDR and plug it in. Open and run `L05-fm-spectrum.grc`.
-2. Drag the center frequency across 88 to 108 MHz. Record the three strongest stations' frequencies, peak levels, and widths for Question 4(a).
-3. Center a station exactly on the spike in the middle of the display, then tune 300 kHz away. Note what moves for Question 4(b).
-4. With the strongest station on screen, set the gain to 0, 20, 30, 40, and 49 dB. At each, record the noise floor away from any station, and whether new signals appear between stations, for Question 4(c).
+1. Connect the antenna to the RTL-SDR and plug it in. Run `gqrx`, choose the RTL-SDR, set the mode to WFM (stereo), and press the power button.
+2. Click across the FM band until you hear a station clearly. Record its frequency for Question 4(a), then quit GQRX; only one program can open the RTL-SDR at a time.
+3. Open `L05-fm-spectrum.grc`, set the center frequency to the station you found, and run it. Drag the center frequency across 88 to 108 MHz. Record the three strongest stations' frequencies, peak levels, and widths for Question 4(b).
+4. Center a station exactly on the spike in the middle of the display, then tune 300 kHz away. Note what moves for Question 4(c).
+5. With the strongest station on screen, set the gain to 0, 20, 30, 40, and 49 dB. At each, record the noise floor away from any station, and whether new signals appear between stations, for Question 4(d).
 ::::
 
 ::::{frame} Part 2: Record and Plot
 :class: read-only
 
 1. Stop the flowgraph. Right-click the gray File Sink and choose Enable. Set its file name to `fm_capture.cfile` in a folder you can find.
-2. Center the strongest station slightly off the DC spike and set the gain you chose in step 4 of the FM band.
+2. Center the strongest station slightly off the DC spike and set the gain you chose in step 5 of the FM band.
 3. Run the flowgraph for about 2 s and stop it. Record the file size for Question 5(a).
 4. Disable the File Sink again so the next run does not overwrite the capture.
 5. From the radioconda prompt, run `python L05-psd.py fm_capture.cfile --fs 2.4e6 --fc` followed by your center frequency in hertz. Paste the plot for Question 5(b).

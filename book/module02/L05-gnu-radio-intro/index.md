@@ -73,6 +73,7 @@ Open the radioconda prompt (on Windows, "Radioconda Prompt" in the Start menu; o
 | Command | Checks | A working result |
 | :-- | :-- | :-- |
 | `gnuradio-companion` | GRC itself | the GRC window opens |
+| `gqrx` | GQRX, the stand-alone receiver | the GQRX window opens |
 | `rtl_test` | an RTL-SDR on USB | `Found 1 device(s)` and a tuner name |
 | `hackrf_info` | a HackRF on USB | a serial number and firmware version |
 | `iio_info -s` | a PlutoSDR on USB | a context listing `PlutoSDR` |
@@ -81,34 +82,16 @@ Open the radioconda prompt (on Windows, "Radioconda Prompt" in the Start menu; o
 Plug in only the radio you are testing. A command that reports no device usually means a USB driver problem (on Windows, Zadig for the RTL-SDR) or a cable that carries power but not data.
 ::::
 
-::::{frame} Part 2: Anatomy of a Flowgraph
+::::{frame} Part 2: Your First Flowgraph
 :::{present}
-- The **Options** block names the flowgraph and picks the GUI.
-- **Variables** hold numbers that many blocks share, such as `samp_rate`.
+- File, New: GRC starts with an **Options** block and a `samp_rate` variable.
+- Add a **Signal Source**, a **Throttle**, and a **QT GUI Time Sink**; wire them and run.
 - A **Throttle** paces a flowgraph that has no hardware; real hardware sets its own pace.
 :::
 
-Every flowgraph starts with an **Options** block, which sets the flowgraph's title, the name of the Python file GRC generates, and the kind of window it opens; "QT GUI" gives the windows with plots and sliders we use all semester. **Variable** blocks hold values that several blocks share. The sample rate is the most important one, and by convention we call it `samp_rate`; change it in one place and every block that uses it follows. A **QT GUI Range** is a variable with a slider, so we can change it while the flowgraph runs.
+This follows the wiki's "Your First Flowgraph." Every flowgraph starts with an **Options** block, which sets the flowgraph's title, the name of the Python file GRC generates, and the kind of window it opens; "QT GUI" gives the windows with plots and sliders we use all semester. Add a Signal Source, a Throttle, and a QT GUI Time Sink, connect them in that order, and press run: a window opens with the tone on the time plot. Then add a **QT GUI Frequency Sink** off the same throttle output to see the tone in frequency too.
 
 A flowgraph with real hardware runs at the rate the hardware delivers samples. A flowgraph with no hardware, like a signal source feeding a plot, has nothing to slow it down and would use a whole processor core computing samples as fast as it can. The **Throttle** block limits it to `samp_rate` samples per second. Use one only when no hardware block sets the pace; with an SDR in the flowgraph, a throttle is unnecessary and can cause dropped samples.
-::::
-
-::::{frame} Port Colors and Data Types
-:::{present}
-| Color | Type | Bytes/sample |
-| :-- | :-- | :-: |
-| Blue | complex | 8 |
-| Orange | float | 4 |
-| Green | int | 4 |
-| Yellow | short | 2 |
-| Purple | byte | 1 |
-:::
-:::{present}
-- Connected ports must match; a mismatch draws the arrow red.
-- SDRs deliver complex samples, so most chains start blue.
-:::
-
-Each block port carries one data type, and GRC colors the port to show which. A **complex** sample is a pair of 32-bit floats, the $I$ and $Q$ of Lesson 3, so it takes 8 bytes; a **float** is one 32-bit value; and the integer types carry bits, symbols, and audio samples in later lessons. Two connected ports must have the same type. When they do not, GRC draws the connection in red and refuses to run, which is the most common error in a first flowgraph. Most blocks have a type setting that changes their port color, and conversion blocks such as Complex to Float sit between types when we need both.
 ::::
 
 ::::{frame} A Tone in Time and Frequency
@@ -122,9 +105,39 @@ Each block port carries one data type, and GRC colors the port to show which. A 
 - A complex tone has one spike, at $+1$ kHz.
 :::
 
-The tone flowgraph runs at `samp_rate` = 32 kHz with the slider at 1 kHz. The time sink plots the real and imaginary parts, $I$ and $Q$, as two traces: $I$ is a cosine and $Q$ is a sine, a quarter cycle behind it, which is the point $e^{j2\pi ft}$ going around the unit circle of Lesson 3. The 8 ms window holds eight cycles, as it should at 1 kHz.
+The tone flowgraph runs at `samp_rate` = 32 kHz with `freq` at 1 kHz. The time sink plots the real and imaginary parts, $I$ and $Q$, as two traces: $I$ is a cosine and $Q$ is a sine, a quarter cycle behind it, which is the point $e^{j2\pi ft}$ going around the unit circle of Lesson 3. The 8 ms window holds eight cycles, as it should at 1 kHz.
 
 The frequency sink shows the same signal as a single spike at $+1$ kHz, about 10 dB below the top of the plot because of how the sink scales its FFT. There is no spike at $-1$ kHz. A real cosine would have one at each, but a complex tone is not a cosine: it rotates in one direction, and the sign of its frequency says which. That is why an SDR delivers complex samples: it can tell a signal 100 kHz above its tuned frequency from one 100 kHz below.
+::::
+
+::::{frame} Variables and Sliders
+:::{present}
+- A **Variable** holds a number many blocks share, such as `samp_rate`.
+- A **QT GUI Range** is a variable with a slider, changed while the flowgraph runs.
+- Do: set the Signal Source's frequency to `freq`, then drag the slider.
+:::
+
+This is the wiki's "Python Variables in GRC," "Variables in Flowgraphs," and "Runtime Updating Variables." Any block parameter can be a Python expression, and a **Variable** block gives a name to a value that several blocks share. The sample rate is the most important one, and by convention we call it `samp_rate`; change it in one place and every block that uses it follows. Try it: change `samp_rate` from its default 32000 to 64000, watch both sinks rescale, and set it back.
+
+A **QT GUI Range** is a variable with a slider. Add one with ID `freq`, from $-48000$ to $48000$, type `freq` into the Signal Source's frequency, and run. Dragging the slider moves the tone while the flowgraph runs, which is how every flowgraph in this course exposes the settings we want to turn.
+::::
+
+::::{frame} Data Types and Converting Them
+:::{present}
+| Color | Type | Bytes/sample |
+| :-- | :-- | :-: |
+| Blue | complex | 8 |
+| Orange | float | 4 |
+| Green | int | 4 |
+| Yellow | short | 2 |
+| Purple | byte | 1 |
+:::
+:::{present}
+- Connected ports must match; a mismatch draws the arrow red.
+- Do: put a **Complex to Float** before a float Time Sink and watch $I$ and $Q$ on two inputs.
+:::
+
+This is the wiki's "Signal Data Types" and "Converting Data Types." Each block port carries one data type, and GRC colors the port to show which. A **complex** sample is a pair of 32-bit floats, the $I$ and $Q$ of Lesson 3, so it takes 8 bytes; a **float** is one 32-bit value; and the integer types carry bits, symbols, and audio samples in later lessons. Two connected ports must have the same type. When they do not, GRC draws the connection in red and refuses to run, which is the most common error in a first flowgraph. Most blocks have a type setting that changes their port color, and conversion blocks sit between types when we need both. Try it on the tone flowgraph: add a second Time Sink with its type set to float and see the red arrow, then insert **Complex to Float** and connect its two outputs to two sink inputs. The plot shows $I$ and $Q$ as separate traces, the same two curves the complex sink drew. Packing bits, vectors, and hierarchical blocks, the next wiki tutorials, come back when later lessons need them.
 ::::
 
 ::::{frame} Complex Sampling and Aliasing
@@ -161,7 +174,19 @@ The left panel plots the tone's last eight samples on the unit circle, one new s
 :::
 ::::
 
-::::{frame} Part 3: A Real Signal
+::::{frame} Part 3: Find a Station in GQRX
+:::{present}
+- Run `gqrx`, choose the RTL-SDR, and press the power button.
+- Mode **WFM (stereo)**; click a tall peak in the FM band and listen.
+- Note its frequency: that is the flowgraph's center frequency next.
+:::
+
+Before building a receiver, find a signal with one that already works. **GQRX**, installed with radioconda, is a spectrum, waterfall, and receiver in one window. Start it from the radioconda prompt with `gqrx`, pick the RTL-SDR in the device dialog, set the frequency to about 100 MHz, and press the power button at the top left. Set the mode to WFM (stereo), click on one of the tall bands in the spectrum, and the station plays through the speaker.
+
+Write down the frequency of the strongest station you can hear, then quit GQRX; only one program can open the RTL-SDR at a time. The next flowgraph uses that frequency as its center frequency, so the station we just heard is the one we look at in GRC.
+::::
+
+::::{frame} A Real Signal in GRC
 :::{present}
 <img src="../../viz/img/L05-grc-fm.png"
      alt="GNU Radio Companion with the L5 FM flowgraph open: a Soapy RTLSDR Source at 2.4 MS/s tuned by a center-frequency slider, feeding a QT GUI Sink, with a disabled File Sink below"
@@ -172,7 +197,7 @@ The left panel plots the tone's last eight samples on the unit circle, one new s
 - The display spans $f_c \pm f_s/2$: 2.4 MHz of the FM band at once.
 :::
 
-The second flowgraph replaces the signal source with an RTL-SDR. The **Soapy RTLSDR Source** block has three settings that matter today: the **center frequency** $f_c$ the radio tunes to, the **sample rate** $f_s$ it digitizes at, and the **RF gain**. Its output is the same complex stream as the tone flowgraph's, so the plots work unchanged. We give the **QT GUI Sink** the center frequency so its axis reads in real frequencies, from $f_c - f_s/2$ to $f_c + f_s/2$. At 2.4 MS/s centered on 100.1 MHz, that is 98.9 to 101.3 MHz, enough to see several FM stations at once.
+The second flowgraph replaces the signal source with an RTL-SDR. The **Soapy RTLSDR Source** block has three settings that matter today: the **center frequency** $f_c$ the radio tunes to, the **sample rate** $f_s$ it digitizes at, and the **RF gain**. Its output is the same complex stream as the tone flowgraph's, so the plots work unchanged. We give the **QT GUI Sink** the center frequency so its axis reads in real frequencies, from $f_c - f_s/2$ to $f_c + f_s/2$. Set the center frequency to the station you found in GQRX. At 2.4 MS/s centered on 100.1 MHz, the display spans 98.9 to 101.3 MHz, enough to see several FM stations at once.
 
 The File Sink below is disabled, which GRC draws in gray. Enabling it records every sample to a file, which the last part of this lesson reads in Python. There is no throttle here: the RTL-SDR delivers samples at exactly 2.4 MS/s, so the hardware sets the pace.
 ::::
@@ -244,7 +269,7 @@ An SDR hands GNU Radio a stream of complex samples that shows $f_s$ of spectrum 
 :::
 ::::
 
-::::{frame} Downloads
+::::{frame} Downloads and Sources
 :class: read-only doc-links
 
 - <a class="doc-link" href="../../grc/L05-tone.grc" download>L05-tone.grc</a>: a complex tone in time and frequency, with a frequency slider for the aliasing demonstration. No hardware needed.
@@ -252,6 +277,21 @@ An SDR hands GNU Radio a stream of complex samples that shows $f_s$ of spectrum 
 - <a class="doc-link" href="../../grc/L05-psd.py" download>L05-psd.py</a>: reads a File Sink capture and plots its power spectral density.
 
 Open a `.grc` file from GRC's File menu, or run `gnuradio-companion L05-tone.grc` from the radioconda prompt.
+
+**Follows.** This lesson walks the GNU Radio wiki's Beginner Tutorials, in order, and two chapters of PySDR:
+
+1. <a class="doc-link" href="https://wiki.gnuradio.org/index.php?title=Your_First_Flowgraph" target="_blank" rel="noopener">Your First Flowgraph</a>
+2. <a class="doc-link" href="https://wiki.gnuradio.org/index.php?title=Python_Variables_in_GRC" target="_blank" rel="noopener">Python Variables in GRC</a>
+3. <a class="doc-link" href="https://wiki.gnuradio.org/index.php?title=Variables_in_Flowgraphs" target="_blank" rel="noopener">Variables in Flowgraphs</a>
+4. <a class="doc-link" href="https://wiki.gnuradio.org/index.php?title=Runtime_Updating_Variables" target="_blank" rel="noopener">Runtime Updating Variables</a>
+5. <a class="doc-link" href="https://wiki.gnuradio.org/index.php?title=Signal_Data_Types" target="_blank" rel="noopener">Signal Data Types</a>
+6. <a class="doc-link" href="https://wiki.gnuradio.org/index.php?title=Converting_Data_Types" target="_blank" rel="noopener">Converting Data Types</a>
+7. <a class="doc-link" href="https://wiki.gnuradio.org/index.php?title=Packing_Bits" target="_blank" rel="noopener">Packing Bits</a>
+8. <a class="doc-link" href="https://wiki.gnuradio.org/index.php?title=Streams_and_Vectors" target="_blank" rel="noopener">Streams and Vectors</a>
+9. <a class="doc-link" href="https://wiki.gnuradio.org/index.php?title=Hier_Blocks_and_Parameters" target="_blank" rel="noopener">Hier Blocks and Parameters</a>
+
+- <a class="doc-link" href="https://pysdr.org/content/sampling.html" target="_blank" rel="noopener">PySDR: IQ Sampling</a>
+- <a class="doc-link" href="https://pysdr.org/content/frequency_domain.html" target="_blank" rel="noopener">PySDR: Frequency Domain</a>
 ::::
 
 ::::{frame} Summary
