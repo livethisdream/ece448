@@ -2,7 +2,8 @@
 %
 % L10 practice set (ASCII over PAM). Every question is a step in the L10 link:
 % characters to bits, a packet's length and timing, the access-code search,
-% the noise a line of text survives, and the receiver settings that must match
+% what noise and the matched filter do to the text (watched, not calculated:
+% ROADMAP, "Sources and noise", 2026-10-21), and the receiver settings that must match
 % the transmitter's. Blank copy: \begin{solution}[h] reserves h of work space.
 % SOLUTIONS copy (\iskey=1) prints the red worked solutions.
 
@@ -124,25 +125,17 @@ most 2 bits differ.
 		average half of the 64 match.
 		\end{solution}
 
-	\begin{minipage}[t]{0.58\linewidth}
-		\part The link's bit error rate is $10^{-3}$. Find the fraction of packets the
-		receiver misses because of errors in the access code with a threshold of 0, and
-		with a threshold of 2.
-		\begin{solution}[1.4in]
-		With a threshold of 0, one error anywhere in the 64 bits loses the packet:
-		\eq{ 1 - (1 - 10^{-3})^{64} = 6.2\% }
-		With a threshold of 2, it takes 3 or more errors, and the 3-error term dominates:
-		\eq{ \binom{64}{3}(10^{-3})^3(1-10^{-3})^{61} = 3.9\times10^{-5} }
-		Including 4 or more errors gives $4.0\times10^{-5}$.
+	\part A teammate sets the threshold to 0, so the block declares a packet only when
+	all 64 bits match. In words, what happens to the link as the noise rises, compared
+	with a threshold of 2? Why not set the threshold to 20 instead?
+		\begin{solution}[1.3in]
+		With a threshold of 0, a single wrong bit anywhere in the access code loses the
+		whole packet, so lines stop arriving at a lower noise setting even when the
+		payload would have come through intact. A threshold of 2 lets a packet with one
+		or two damaged access-code bits through. A threshold of 20 is far too loose:
+		random bits match about 32 of 64 by chance, and some stretches come within 20,
+		so the receiver would start false packets in the middle of the noise and data.
 		\end{solution}
-	\end{minipage}\hfill%
-	\begin{minipage}[t]{0.37\linewidth}
-		\raggedleft \vspace{12pt}
-		threshold 0: \ansbox[1.0in]{6.2\%}
-
-		\vspace{4pt}
-		threshold 2: \ansbox[1.0in]{$4.0\times10^{-5}$}
-	\end{minipage}
 
 	\part On the PlutoSDR version of the link, no packets arrive, yet the constellation
 	after the Costas Loop shows two tight clusters on the real axis. Explain in words what the
@@ -159,57 +152,54 @@ most 2 bits differ.
 
 \newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\question \textbf{How much noise a line survives.} In the L10 link, the SNR at the
-slicer is $8/\sigma^2$ for a noise amplitude $\sigma$, each bit is wrong with probability
-$Q(\sqrt{\text{SNR}})$, and a 31-byte line arrives intact only if all 280 bits of its
-header and payload are right.
+\question \textbf{Watching noise break the text.} The L10 link runs at a noise
+amplitude of 0.3 with every line intact. A cadet raises the noise slider a step at a
+time while watching the matched-filter eye, the Symbol Sync output, and the Received and
+Lines labels.
 \begin{parts}
 
-	\begin{minipage}[t]{0.58\linewidth}
-		\part At $\sigma = 0.9$, find the SNR in dB, the bit error rate, and the
-		fraction of lines that arrive intact. Use $Q(3.14) = 8.4\times10^{-4}$.
-		\begin{solution}[1.3in]
-		\eq{ \text{SNR} &= \dfrac{8}{0.81} = 9.88 = 9.9\db \\
-		\text{BER} &= Q(\sqrt{9.88}) = Q(3.14) = 8.4\times10^{-4} \\
-		P &= (1 - 8.4\times10^{-4})^{280} = 0.79 }
-		About 79\% of the lines arrive intact; the lesson measured 76\%.
-		\end{solution}
-	\end{minipage}\hfill%
-	\begin{minipage}[t]{0.37\linewidth}
-		\raggedleft \vspace{12pt}
-		SNR: \ansbox[1.1in]{9.9 dB}
-
-		\vspace{4pt}
-		lines: \ansbox[1.1in]{79\%}
-	\end{minipage}
-
-	\begin{minipage}[t]{0.58\linewidth}
-		\part The link must deliver 99\% of lines. Find the largest bit error rate that
-		allows this, the SNR it needs (use $Q(3.97) = 3.6\times10^{-5}$), and the largest
-		$\sigma$ the link tolerates.
+	\part Describe, in order, what changes on each display as the noise rises from 0.3
+	to about 1.4.
 		\begin{solution}[1.4in]
-		\eq{ \text{BER} &= 1 - 0.99^{1/280} = 3.6\times10^{-5} \\
-		\text{SNR} &= 3.97^2 = 15.8 = 12.0\db \\
-		\sigma &= \sqrt{8/15.8} = 0.71 }
+		The eye fills in from above and below until it closes. The Symbol Sync output,
+		two tight bands at $\pm 1$, spreads into two clouds that reach toward zero. Then
+		single characters go wrong in the Received label, the correct count falls behind
+		the received count, and finally the received count falls too, because a wrong bit
+		in the access code or header loses the whole line. By about 1.4, no line arrives
+		intact.
+		\end{solution}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part At 1.1, the line reads \texttt{USAFA ECE 448: ASCII over PCM.} instead of
+		\texttt{\ldots PAM.} `A' is 0x41 and `C' is 0x43. How many bits went wrong in
+		that character, and which one?
+		\begin{solution}[1.0in]
+		0x41 is \texttt{01000001} and 0x43 is \texttt{01000011}: one bit, the second
+		from the right, flipped from 0 to 1.
 		\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
 		\raggedleft \vspace{12pt}
-		SNR: \ansbox[1.1in]{12.0 dB}
-
-		\vspace{4pt}
-		$\sigma$: \ansbox[1.1in]{0.71}
+		\ansbox[1.1in]{1 bit}
 	\end{minipage}
 
 	\part A teammate proposes 200-byte packets to raise the share of text on the air
-	from 72\% to 94\%. In words, explain why the link then needs more SNR for the same
-	99\% of packets, and what a Lesson 2 link budget should do about it.
-		\begin{solution}[1.2in]
-		The receiver loses a packet if any one of its bits is wrong, and a 200-byte packet has
-		1632 header and payload bits instead of 280, so each bit must be about six times
-		more reliable for the packet to arrive as often. That takes about 12.8 dB
-		instead of 12.0 dB. The link budget should target the SNR the longest packet
-		needs, plus the usual fade margin.
+	from 72\% to 94\%. In words, would the longer line start to break at a lower or a
+	higher noise setting than the 31-byte line, and why?
+		\begin{solution}[1.1in]
+		Lower. A line arrives intact only if every one of its bits is right, and a 200-byte
+		line has about six times as many bits that can go wrong, so at any noise setting
+		it is more likely to catch at least one wrong bit.
+		\end{solution}
+
+	\part At a noise amplitude of 0.5, every line arrives. The cadet switches the
+	matched filter off, and only a few lines in a hundred arrive intact. Explain why,
+	and say which display shows it first.
+		\begin{solution}[1.1in]
+		The signal occupies only a few kilohertz of the 32 kHz the samples represent. The
+		matched filter blocks the noise outside the signal's band; without it, all that
+		noise reaches Symbol Sync and the slicer, and many samples cross zero. The eye
+		shows it first: its opening disappears the moment the filter is switched off.
 		\end{solution}
 
 \end{parts}

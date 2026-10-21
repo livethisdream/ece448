@@ -13,7 +13,7 @@ frame_view: true
 
 <div class="title-rule"></div>
 
-A PAM transmitter and receiver in GNU Radio: pulse shaping, bandwidth, the eye diagram, matched filtering, and symbol-timing recovery.
+A PAM link in GNU Radio: levels, noise, Gray coding, pulse shaping, the eye, matched filtering, and timing recovery.
 
 Lesson 9 · Module 4: Digital Modulation · Dr. Neil Rogers
 ::::
@@ -50,25 +50,59 @@ Lesson 9 · Module 4: Digital Modulation · Dr. Neil Rogers
 
 Lesson 10 sends text over a PAM link. Before that works, the link has to carry random bits reliably, and the figure is the flowgraph that does it. Bits become **symbols**, a filter shapes each symbol into a pulse that fits a fixed bandwidth, the channel adds noise and a clock error, and the receiver filters, finds the right instant to sample, and recovers one number per symbol.
 
-Lesson 3 covered what happens at that last step: once we have one clean sample per symbol, the constellation and the bit error rate follow. This lesson covers everything before it. Each part below adds one block to the flowgraph, and every block has a parameter we have to choose.
+Part 1 follows the 2025 PAM slides: what a PAM symbol is, what noise does to it, and how its levels look on a constellation. The parts after that build the flowgraph one block at a time, and every block has a parameter we have to choose.
 ::::
 
-::::{frame} Part 1: Bits to Levels
+::::{frame} Part 1: Binary and M-ary PAM
 :::{present}
 <img src="../../viz/img/L09-pam-levels.svg"
      alt="Eight bits, 1 0 1 1 0 0 1 0, as 2-PAM: eight rectangular pulses at plus or minus 1. The same bits as Gray-coded 4-PAM: four pulses, each two bit periods long, at levels plus 3, plus 1, minus 3, and plus 3"
      style="max-width: 720px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
-- **PAM** sends each symbol as a pulse whose amplitude carries the bits.
+- **PAM** sends each symbol as a pulse whose height carries the bits.
+- Binary PAM sends $+A$ for a 1 and $-A$ for a 0.
 - $M$ levels carry $\log_2 M$ bits, so $R_s = R_b/\log_2 M$.
 :::
 
-**Pulse amplitude modulation** (PAM) is the simplest digital signal: each symbol is a pulse, and its height carries the data. 2-PAM uses two levels, $\pm 1$, and carries one bit per symbol. 4-PAM uses four, $\pm 1$ and $\pm 3$, and carries two bits per symbol, Gray coded as in Lesson 3 so that neighboring levels differ in one bit. In general, $M$ levels carry $\log_2 M$ bits, so the **symbol rate** $R_s$, in symbols per second or **baud**, is
+**Pulse amplitude modulation** (PAM) is the simplest digital signal: each symbol is a pulse, and its height carries the data. **Binary PAM**, or 2-PAM, sends a pulse of height $+A$ for a 1 and $-A$ for a 0, and the receiver decides by the sign of what it receives. The two levels are mirror images, so they sit as far apart as the transmitter's power allows. **M-ary PAM** uses more levels: 4-PAM uses $\pm 1$ and $\pm 3$ and carries two bits per symbol. In general, $M$ levels carry $\log_2 M$ bits, so the **symbol rate** $R_s$, in symbols per second or **baud**, is
 
 $$R_s = \frac{R_b}{\log_2 M}$$
 
 where $R_b$ is the bit rate. The figure sends the same eight bits both ways: 4-PAM takes half as many symbols, each twice as long. In GNU Radio, a **Chunks to Symbols** block makes this mapping: it reads a number from 0 to $M-1$ and outputs the matching level from a table, such as `[-1, 1]`.
+::::
+
+::::{frame} What Noise Does to the Levels
+:::{present}
+<img src="../../viz/img/L09-pam-noise.svg"
+     alt="Received samples, one per symbol, in three strips. 2-PAM with a little noise: two tight bands at plus and minus 1, no sample crosses the dashed threshold at zero. 2-PAM with more noise: the bands spread and 4 of 160 samples land on the wrong side, drawn red. 4-PAM at the same power with the same little noise as the first strip: four bands closer together, three dashed thresholds, and 11 of 160 samples red"
+     style="max-width: 720px; width: 100%; display: block; margin: 0 auto;">
+:::
+:::{present}
+- Noise spreads each level into a band.
+- A sample past a dashed threshold is a wrong decision, in red.
+- 4-PAM's levels sit closer, so the same noise does more harm.
+:::
+
+Each strip shows what the receiver gets, one sample per symbol, after the channel adds noise. The receiver picks the nearest level, so the dashed lines halfway between the levels are its **decision thresholds**. With a little noise, the 2-PAM samples stay in two tight bands and none crosses zero. Turn the noise up and the bands spread until a few samples land on the wrong side, and each red dot is a wrong bit.
+
+The bottom strip is 4-PAM at the same transmit power and the same little noise as the top strip. Four levels in the same power sit closer together, so bands that were harmless for 2-PAM now cross the thresholds. That is the trade the rest of the course keeps meeting: more levels carry more bits per symbol, and they need a quieter channel. We will not calculate how many errors to expect; we watch them, on a constellation sink, on an eye diagram, and in the text a link delivers.
+::::
+
+::::{frame} Constellations and Gray Coding
+:::{present}
+<img src="../../viz/img/L09-constellations.svg"
+     alt="Three constellation diagrams on I and Q axes: 2-PAM with points at minus 1, labeled 0, and plus 1, labeled 1; Gray-coded 4-PAM with four points on the real axis labeled 00, 01, 11, 10; and Gray-coded QPSK with four points on a circle, one per quadrant, labeled 00, 01, 11, 10 going around"
+     style="max-width: 760px; width: 100%; display: block; margin: 0 auto;">
+:::
+:::{present}
+- PAM's levels lie on the real axis; PSK's points lie on a circle.
+- **Gray coding**: neighboring points differ in one bit.
+:::
+
+A **constellation diagram** plots each symbol as a point on the I/Q plane, the view GNU Radio's constellation sink gives. PAM changes only the height of a real pulse, so all its points sit on the real axis: two for 2-PAM, four for 4-PAM. **m-PSK**, the subject of Lesson 15, keeps the height fixed and moves the points around a circle instead, so it uses both axes.
+
+The labels show which bits each point carries. In a **Gray code**, each point differs from its neighbors in exactly one bit, so 4-PAM goes 00, 01, 11, 10 rather than counting 00, 01, 10, 11. Noise almost always pushes a sample to a neighboring point, not across the constellation, so with Gray coding a wrong decision usually costs one bit rather than two. The practice set asks you to Gray-code 8-PSK.
 ::::
 
 ::::{frame} Part 2: Why Not Rectangular Pulses?
@@ -173,14 +207,14 @@ R_s &= \frac{B}{1+\alpha} \\
     &= \frac{12.96\ \text{kHz}}{1.35} = 9.6\ \text{kbaud}.
 \end{aligned}$$
 
-The number of levels sets the bit rate in that bandwidth, and more levels need more signal power. The $E_b/N_0$ column is the value for a bit error rate of $10^{-5}$ from Lesson 3's curves.
+That number goes straight into the flowgraph. At a sample rate of 48 kHz, `sps` = 48/9.6 = 5, an integer, so the Interpolating FIR Filter interpolates by 5 and the RRC taps use a symbol rate of `samp_rate/sps`. At 32 kHz, 32/9.6 is not an integer, so the flowgraph would need a different sample rate.
 
-| Modulation | Bits per symbol | Bit rate at 9.6 kbaud | Bandwidth | $E_b/N_0$ at $10^{-5}$ |
-| :-- | :-: | :-: | :-: | :-: |
-| 2-PAM | 1 | 9.6 kb/s | 12.96 kHz | 9.6 dB |
-| 4-PAM | 2 | 19.2 kb/s | 12.96 kHz | 13.4 dB |
+| Modulation | Bits per symbol | Bit rate at 9.6 kbaud | Bandwidth |
+| :-- | :-: | :-: | :-: |
+| 2-PAM | 1 | 9.6 kb/s | 12.96 kHz |
+| 4-PAM | 2 | 19.2 kb/s | 12.96 kHz |
 
-4-PAM doubles the bit rate in the same channel, and it needs 3.8 dB more $E_b/N_0$ to keep the same error rate, because its four levels sit closer together. The other way to double the bit rate is to double the symbol rate, which doubles the bandwidth to 25.92 kHz and no longer fits the channel. Lowering $\alpha$ to 0.25 instead would fit 10.4 kbaud, but with a longer pulse that tolerates less timing error.
+4-PAM doubles the bit rate in the same channel by changing one block, the Chunks to Symbols table, but its levels sit closer together, so it breaks at less noise; try both in the explorer below. The other way to double the bit rate is to double the symbol rate, which doubles the bandwidth to 25.92 kHz and no longer fits the channel. Lowering $\alpha$ to 0.25 instead would fit 10.4 kbaud, but with a longer pulse that tolerates less timing error.
 ::::
 
 ::::{frame} Part 3: The Eye Diagram
@@ -203,7 +237,7 @@ The eye shows three things at a glance. The height of the opening is the margin 
 :class: viz-frame
 
 :::{depth}
-The left panel is the eye of the received signal and the right panel is the transmitted spectrum, with a rectangular pulse in gray for comparison. Start with "RRC + matched" at $\alpha = 0.35$: the eye is open and the spectrum ends at $(1+\alpha)R_s/2$. Lower $\alpha$ and the spectrum narrows while the eye's waist pinches, so timing error matters more. Switch to "rectangular" and watch the spectrum spread. Switch to "RRC only" and the eye picks up ISI, because the matched filter is missing. Then lower $E_s/N_0$, move the sample time off center, and switch to 4-PAM, and watch the symbol errors climb.
+The left panel is the eye of the received signal and the right panel is the transmitted spectrum, with a rectangular pulse in gray for comparison. Start with "RRC + matched" at $\alpha = 0.35$: the eye is open and the spectrum ends at $(1+\alpha)R_s/2$. Lower $\alpha$ and the spectrum narrows while the eye's waist pinches, so timing error matters more. Switch to "rectangular" and watch the spectrum spread. Switch to "RRC only" and the eye picks up ISI, because the matched filter is missing. Then lower the SNR, move the sample time off center, and switch to 4-PAM, and watch the eye close and the count of wrong decisions climb.
 :::
 
 :::{present}
@@ -211,7 +245,7 @@ The left panel is the eye of the received signal and the right panel is the tran
         width="100%" height="447"
         style="border: 1px solid #cddce9; border-radius: 6px;"
         loading="lazy"
-        title="PAM eye explorer: a 2-PAM or 4-PAM signal with rectangular, RRC, or RRC plus matched-filter pulses, showing the eye diagram, the transmitted spectrum, the eye opening, and the symbol errors as roll-off, noise, and sample time change">
+        title="PAM eye explorer: a 2-PAM or 4-PAM signal with rectangular, RRC, or RRC plus matched-filter pulses, showing the eye diagram, the transmitted spectrum, the eye opening, and the count of wrong decisions as roll-off, noise, and sample time change">
 </iframe>
 :::
 ::::
@@ -224,12 +258,13 @@ The left panel is the eye of the received signal and the right panel is the tran
 :::
 :::{present}
 - The **matched filter** is the transmit pulse, reused at the receiver.
-- At 8 samples per symbol it removes about 9 dB of noise.
+- It passes the signal's band and blocks the rest of the noise.
+- The eye that noise closed opens again.
 :::
 
 The receiver's job at each symbol is to decide which level was sent, and the best it can do is make the signal as large as possible relative to the noise at the sampling instant. The filter that does this is the **matched filter**: a filter whose impulse response is the transmitted pulse, reversed in time. An RRC pulse is symmetric, so the matched filter for RRC shaping is the same RRC filter, which is why the split of the last part works.
 
-The screenshot shows the effect with the noise turned up. Before the filter, the noise occupies the full 32 kHz the samples represent, and the eye is closed. The matched filter passes only the signal's band. Its noise-equivalent bandwidth is about $R_s = 4$ kHz, so it reduces the noise power by a factor of $32/4 = 8$, which is $10\log_{10}(\texttt{sps}) = 9$ dB, and the eye opens. In GNU Radio the matched filter is a **Decimating FIR Filter** with `rx_taps` from `firdes.root_raised_cosine` with the same parameters as the transmitter except a gain of 1. Its decimation is 1, so it keeps all 8 samples per symbol for the timing recovery that follows.
+The screenshot shows the effect with the noise turned up. Before the filter, the noise is spread across the full 32 kHz the samples represent, and the eye is closed: the traces fill the space between the levels. The signal occupies only about $\pm 2.7$ kHz of that. The matched filter passes that band and blocks the noise everywhere else, so after it the traces converge near $\pm 1$ and the eye is open again, with the same noise slider. Lesson 10 switches the filter off in a running link and watches the text fall apart. In GNU Radio the matched filter is a **Decimating FIR Filter** with `rx_taps` from `firdes.root_raised_cosine` with the same parameters as the transmitter except a gain of 1. Its decimation is 1, so it keeps all 8 samples per symbol for the timing recovery that follows.
 ::::
 
 ::::{frame} Part 5: Symbol-Timing Recovery
@@ -264,7 +299,8 @@ The **loop bandwidth** is the main setting. A larger value tracks a drifting clo
 ::::
 
 ::::{frame} The PAM Receiver in GNU Radio
-:::{present}
+:class: read-only
+
 | Idea | Block | Parameter |
 | :-- | :-- | :-- |
 | Symbol mapping | Chunks to Symbols | level table |
@@ -272,7 +308,6 @@ The **loop bandwidth** is the main setting. A larger value tracks a drifting clo
 | Matched filter | Decimating FIR Filter | the same RRC |
 | Eye check | QT GUI Eye Sink | `sps` |
 | Timing recovery | Symbol Sync | TED, loop bandwidth |
-:::
 
 Every idea in this lesson became one block and one or two parameters. Choosing them for a real link starts from the channel: its width and $\alpha$ fix the symbol rate, the symbol rate and the radio's sample rate fix `sps`, and `sps` and $\alpha$ fix both RRC filters. The eye sink is the check at each stage, before and after the matched filter and after timing recovery.
 
@@ -301,11 +336,13 @@ Open a `.grc` file from GRC's File menu, or run `gnuradio-companion L09-pulse-sh
 | Idea | What it is | Number to remember |
 | :-- | :-- | :-- |
 | Symbol rate | $R_s = R_b/\log_2 M$ | 4-PAM halves $R_s$ for the same $R_b$ |
+| Noise | spreads each level into a band | more levels, closer together, break sooner |
+| Gray coding | neighbors differ in one bit | 4-PAM: 00, 01, 11, 10 |
 | Raised cosine | zero-ISI pulse with roll-off $\alpha$ | $B = (1+\alpha)R_s$ |
 | Root-raised cosine | half the raised cosine, at each end | `firdes.root_raised_cosine`, `11*sps` taps |
 | Samples per symbol | `sps` = `samp_rate`/$R_s$ | an integer; L9 uses 8 |
 | Eye diagram | waveform overlaid two symbols at a time | sample at the widest opening |
-| Matched filter | the transmit pulse, at the receiver | about 9 dB less noise at 8 sps |
+| Matched filter | the transmit pulse, at the receiver | opens the eye that noise closed |
 | Symbol Sync | timing error detector, loop, interpolator | Gardner, loop bandwidth 0.045 |
 ::::
 
@@ -323,7 +360,7 @@ Open a `.grc` file from GRC's File menu, or run `gnuradio-companion L09-pulse-sh
 - The L10 Lab runs the link over real radios.
 :::
 
-Today's receiver ends with one clean sample per symbol, and Lesson 3 already said what to do with it: decide the nearest level. Lesson 10 builds the rest of a working link around today's flowgraph. Text becomes bytes and bytes become bits before the Chunks to Symbols block; after Symbol Sync, a **Binary Slicer** turns each sample back into a bit; and because a receiver that starts listening mid-message cannot tell where one byte ends and the next begins, the transmitter adds a known marker that the receiver searches for.
+Today's receiver ends with one clean sample per symbol, and Part 1 said what to do with it: decide the nearest level. Lesson 10 builds the rest of a working link around today's flowgraph. Text becomes bytes and bytes become bits before the Chunks to Symbols block; after Symbol Sync, a **Binary Slicer** turns each sample back into a bit; and because a receiver that starts listening mid-message cannot tell where one byte ends and the next begins, the transmitter adds a known marker that the receiver searches for.
 
 The L10 Lab then moves the link from simulation to radios, where the noise and the clock error come from real hardware. Before Lesson 10, run both L9 flowgraphs, and be able to find the symbol rate that fits a given channel and the `sps` that a sample rate gives.
 ::::

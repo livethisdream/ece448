@@ -111,11 +111,10 @@ receives ASCII text end-to-end.}
 
 This packet is the L\labLesson\ Lab, in three parts, and you turn it in once, complete,
 before Lesson 11. Do \textbf{Part 1} on your own before the lab period: run the link
-flowgraph and make the predictions you will check at the bench. \textbf{Part 2} is
+flowgraph and work out the packet you will see at the bench. \textbf{Part 2} is
 your own measurements, recorded in class: Questions 3 to 6 on your own laptop, and
 Question 7 at a PlutoSDR station with your team. Do \textbf{Part 3} on your own after
-the lab: compare the measurements with the predictions and answer the analysis
-questions.
+the lab: explain, in words, what you saw.
 
 \textbf{Grading.} One submission, graded against Objective 4.4 on the course's
 1 / 0 scale, with revision allowed under course policy. Paste screenshots where a
@@ -168,7 +167,7 @@ with the sliders at their defaults, a noise amplitude of 0.3 and a clock error o
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newpage
-\question \textbf{Predictions.} You will check each of these at the bench.
+\question \textbf{The packet.} You will see each of these at the bench.
 
 \begin{parts}
 
@@ -201,46 +200,6 @@ with the sliders at their defaults, a noise amplitude of 0.3 and a clock error o
 		13 bytes, so the length field is \texttt{0000000000001101}, and `C' is 0x43,
 		\texttt{01000011}.
 		\end{solution}
-
-	\part Predict the SNR at the slicer, $8/\sigma^2$, the bit error rate,
-	$Q(\sqrt{\text{SNR}})$, and the fraction of lines that arrive intact,
-	$(1 - \text{BER})^{280}$, for each noise amplitude.
-	In Python, $Q(x)$ is \texttt{0.5*math.erfc(x/math.sqrt(2))}.
-
-	\begin{center}
-	\renewcommand{\arraystretch}{1.25}
-	\begin{tabular}{| l | K{0.62in} | K{0.62in} | K{0.62in} | K{0.62in} | K{0.62in} | K{0.62in} |}
-	\hline
-	$\sigma$ & $0.6$ & $0.75$ & $0.85$ & $0.95$ & $1.1$ & $1.3$ \\\hline
-	SNR (dB) & \kv{$13.5$} & \kv{$11.5$} & \kv{$10.4$} & \kv{$9.5$} & \kv{$8.2$} & \kv{$6.8$} \\\hline
-	BER & \kv{$1.2\times10^{-6}$} & \kv{$8.1\times10^{-5}$} & \kv{$4.4\times10^{-4}$} & \kv{$1.5\times10^{-3}$} & \kv{$5.1\times10^{-3}$} & \kv{$1.5\times10^{-2}$} \\\hline
-	Lines intact & \kv{100\%} & \kv{98\%} & \kv{89\%} & \kv{67\%} & \kv{24\%} & \kv{1.5\%} \\\hline
-	\end{tabular}
-	\end{center}
-
-		\begin{solution}[0.4in]
-		The 280 bits are the 32 header bits and the 248 payload bits; the access code
-		tolerates 2 errors.
-		\end{solution}
-
-	\begin{minipage}[t]{0.58\linewidth}
-		\part At a clock error of 10,000 ppm, how many samples does each symbol span at
-		the receiver? Without timing recovery, after how many symbols, and how many
-		milliseconds, would a fixed sampling point slip one whole symbol?
-		\begin{solution}[1.1in]
-		\eq{ 8/1.01 &= 7.92\ \text{samples} \\
-			1 / 0.01 &= 100\ \text{symbols} \\
-			100 / 4000 &= 25\ \text{ms} }
-		That is less than a third of one packet.
-		\end{solution}
-	\end{minipage}\hfill%
-	\begin{minipage}[t]{0.37\linewidth}
-		\raggedleft \vspace{12pt}
-		samples = \ansbox[1.0in]{7.92}
-
-		\vspace{4pt}
-		slip in \ansbox[1.0in]{25 ms}
-	\end{minipage}
 
 \end{parts}
 
@@ -330,40 +289,75 @@ with your line of text from Question 2(b) in \texttt{msg}.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newpage
 \question \textbf{Noise.} Run \texttt{L10-pam-link.grc} with the clock error at its
-default, 500 ppm. For each noise amplitude, set the slider, wait about 30 s, and record
-the Lines label. The count restarts each time a slider moves. Sent is the time
-multiplied by 11.6 packets a second.
+default, 500 ppm, and the matched filter on. Start the noise amplitude at 0.5 and raise
+it by 0.1 at a time, waiting about 20 s at each step and watching the Lines label, the
+eye, and the Symbol Sync output, which is the 2-PAM constellation drawn against time.
+The count restarts each time a slider moves.
 
 \begin{parts}
 
-	\part Fill in the table.
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Record the noise amplitude at which lines start to break, the first
+		setting where the correct count falls behind the lines sent, and the setting at
+		which no line arrives intact in 20 s.
+		\begin{solution}[1.0in]
+		Lines start to break near 0.7 (between 0.6 and 0.8, depending on the run): a
+		few lines in a hundred arrive with a wrong character or not at all. About half
+		arrive intact near 1.0, and none arrive intact by about 1.4 (between 1.3 and
+		1.5).
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		break at \ansbox[1.0in]{$\approx 0.7$}
+
+		\vspace{4pt}
+		stop at \ansbox[1.0in]{$\approx 1.4$}
+	\end{minipage}
+
+	\part Describe the eye and the Symbol Sync output at 0.3, at your break setting,
+	and at your stop setting.
 
 	\begin{center}
 	\renewcommand{\arraystretch}{1.25}
-	\begin{tabular}{| l | K{0.6in} | K{0.6in} | K{0.6in} | K{0.6in} | K{0.6in} | K{0.6in} |}
+	\begin{tabular}{| l | K{1.6in} | K{1.6in} | K{1.6in} |}
 	\hline
-	$\sigma$ & $0.6$ & $0.75$ & $0.85$ & $0.95$ & $1.1$ & $1.3$ \\\hline
-	Time (s) & & & & & & \\\hline
-	Sent & & & & & & \\\hline
-	Received & \kv{all} & \kv{all} & \kv{$\approx$ 98\%} & \kv{$\approx$ 95\%} & \kv{$\approx$ 83\%} & \kv{$\approx$ 55\%} \\\hline
-	Correct & \kv{all} & \kv{$\approx$ 97\%} & \kv{$\approx$ 87\%} & \kv{$\approx$ 62\%} & \kv{$\approx$ 20\%} & \kv{$\approx$ 1\%} \\\hline
+	Noise & $0.3$ & break & stop \\\hline
+	Eye & \kv{wide open} & \kv{open, fuzzy} & \kv{closed} \\\hline
+	Symbol Sync output & \kv{two tight bands} & \kv{two wide bands} & \kv{two clouds that meet at zero} \\\hline
 	\end{tabular}
 	\end{center}
 
-		\begin{solution}[0.7in]
-		Correct is a fraction of sent. The measurements follow Question 2(c), a few
-		percent lower between 8 and 10 dB. Counts vary from run to run because the noise is
-		random. Received exceeds correct because a line with a wrong payload bit still
-		arrives, with a wrong character.
+		\begin{solution}[0.5in]
+		As the noise rises, the eye fills in from above and below and the bands at $\pm 1$
+		spread until some samples land on the wrong side of zero.
 		\end{solution}
 
-	\part Paste a screenshot at $\sigma = 1.1$ that shows a received line with at least
-	one wrong character. Find the character, write its correct and received bytes in
+	\part Near 1.1, wait for a line with a wrong character in the Received label and
+	paste a screenshot. Find the character, write its correct and received bytes in
 	binary, and count the bits that differ.
 		\begin{solution}[1.4in]
 		Answers vary. Most wrong characters differ from the right one in one bit, such as
 		`4', \texttt{00110100}, received as `6', \texttt{00110110}. The Text Sink shows a
 		byte that does not print as `?'.
+		\end{solution}
+
+	\part Set the noise to 0.5. Switch the matched filter off, wait 20 s, and record
+	the Lines label and how the eye looks. Then switch it back on and do the same.
+
+	\begin{center}
+	\renewcommand{\arraystretch}{1.25}
+	\begin{tabular}{| l | K{2.0in} | K{2.0in} |}
+	\hline
+	Matched filter & off & on \\\hline
+	Lines label & \kv{a few correct of $\approx 110$} & \kv{all correct} \\\hline
+	Eye & \kv{no opening} & \kv{open} \\\hline
+	\end{tabular}
+	\end{center}
+
+		\begin{solution}[0.4in]
+		With the filter off, most lines that arrive have wrong characters and about half
+		never arrive. With it on, at the same noise, every line arrives.
 		\end{solution}
 
 \end{parts}
@@ -460,33 +454,42 @@ frequency error between them; the noise and the carrier phase come from the hard
 \newpage
 \fullwidth{\large\textbf{Part 3: Writeup} \normalsize(individual, after the lab)}
 
-\question \textbf{Analysis.}
+\question \textbf{Analysis.} Answer in words; no formulas are needed.
 
 \begin{parts}
 
-	\part Compare your noise table with Question 2(c). Find the SNR at which your link
-	first lost lines and the SNR at which almost none arrived, and say what SNR a
-	Lesson 2 link budget for this link should deliver at the slicer.
+	\part Your link went from every line intact to none over a fairly small change in
+	the noise amplitude. Explain why, using what a line needs in order to count as
+	correct, and say what that means for a link on a real radio.
 		\begin{solution}[1.5in]
-		Lines start to fail near 11.5 dB ($\sigma = 0.75$), the link loses about a third of
-		them at 9.5 dB, and almost none arrive at 6.8 dB, so the change takes about 5 dB. Each line needs
-		all 280 header and payload bits right, so a modest rise in the bit error rate
-		loses many lines. A budget should deliver at least 12 dB at the slicer, for
-		99\% of lines, plus a fade margin. Measured lines run a few percent below the
-		prediction because Symbol Sync's sampling instant jitters.
+		A line counts only if every bit of its header and payload is right, 280 bits for
+		the default line, and a wrong header bit loses the line entirely. While the bands
+		at $\pm 1$ are tight, no sample crosses zero and every line arrives. Once the noise
+		spreads the bands far enough that a few samples cross, almost every 280-bit line
+		catches at least one of them, so lines go from all to none quickly. A real link
+		therefore needs margin: a signal that only just works on a quiet day stops
+		working when it fades a little.
 		\end{solution}
 
-	\part Your link held nearly every line to at least 10,000 ppm. Compare that with two radios
-	whose crystals are accurate to 20 ppm each. Then use Question 2(d) to say what would
-	happen to the link if you replaced Symbol Sync with Keep 1 in N.
+	\part Explain why switching the matched filter off broke the text at a noise level
+	the link handled easily with it on.
 		\begin{solution}[1.5in]
-		Two 20 ppm crystals can differ by 40 ppm, 250 times smaller than 10,000
-		ppm, so clock error does not limit this link. With Keep 1 in N, a 40 ppm error
-		slips the sampling point one whole symbol every $1/(40\times10^{-6}) = 25{,}000$
-		symbols, 6.25 s, and it crosses the zero crossings, where about half the
-		decisions are wrong, every few seconds. Lines would fail in bursts, and at
-		10,000 ppm the sampling point would slip a symbol every 25 ms, so almost no line
-		would arrive.
+		The signal occupies only a few kilohertz of the 32 kHz the samples represent,
+		but the noise fills all of it. The matched filter, the receive RRC, passes the
+		signal's band and blocks the noise outside it. With it off, all that noise
+		reaches Symbol Sync and the slicer, the eye closes, and many samples land on the
+		wrong side of zero.
+		\end{solution}
+
+	\part Your link held nearly every line to at least 10,000 ppm. Compare that with two
+	radios whose crystals are accurate to 20 ppm each, and say what would happen to the
+	link if you replaced Symbol Sync with Keep 1 in N, which samples at a fixed point.
+		\begin{solution}[1.5in]
+		Two 20 ppm crystals can differ by 40 ppm, 250 times smaller than 10,000 ppm, so
+		clock error does not limit this link. Keep 1 in N cannot follow a drift: its
+		sampling point would slowly slide away from the center of the eye toward the
+		zero crossings, and lines would fail in bursts each time it got there, every few
+		seconds even at 40 ppm. At 10,000 ppm almost no line would arrive.
 		\end{solution}
 
 	\part Explain why the working polarity changed between runs on the Pluto, and
