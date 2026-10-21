@@ -735,7 +735,7 @@ blocks:
     grid: 'False'
     gui_hint: 2,0,4,1
     int_max: '0'
-    int_min: '-60'
+    int_min: '-30'
     label1: ''
     label10: ''
     label2: ''

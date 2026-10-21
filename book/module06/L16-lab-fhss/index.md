@@ -46,7 +46,7 @@ Questions 1 to 5 run on your laptop and transmit nothing. Question 6 transmits, 
 
 Do the Pre-Lab before you arrive. Question 1 checks that the link flowgraph opens, locks, and decodes on your laptop: if GRC reports an error, the L5 lesson page lists the install checks, and EI before the lab is the place to fix it.
 
-Question 2 asks for predictions from the lesson: the length of a hop, the hop rate, the cycle time, and the samples per hop when each packet carries 4 guard bytes at each end instead of 2; the range of receiver timing errors those guard bytes should absorb; the hop frequencies and samples per hop for the hopper you build in Question 3; and the fraction of packets that should arrive past a strong jammer on one channel when the link hops over 2 or 4 channels, and over 8 channels when a weaker jammer lets a fraction $p$ through on its own channel.
+Question 2 asks for predictions from the lesson: the length of a hop, the hop rate, the cycle time, and the samples per hop when each packet carries 4 guard bytes at each end instead of 2; the range of receiver timing errors those guard bytes should absorb; the hop frequencies, hop time, and cycle time of the hopper you build in Question 3; and the fraction of packets that should arrive past a strong jammer on one channel when the link hops over 2 or 4 channels, and over 8 channels when a weaker jammer lets a fraction $p$ through on its own channel.
 ::::
 
 ::::{frame} Expected Numbers
@@ -56,7 +56,7 @@ Question 2 asks for predictions from the lesson: the length of a hop, the hop ra
 | Hop length | bits per hop / 1000 baud |
 | Cycle time | channels × hop length |
 | Timing window | the guard time at each end |
-| Delivered past a jammer | $1 - 1/N$, or $1 - (1 - p)/N$ |
+| Delivered past a jammer | the share of hops on the jammed channel |
 :::
 
 These follow from Lesson 16. The hop timing is exact. The timing window and the jamming fractions are approximate: the access-code search tolerates 2 wrong bits, which stretches the window a little on the late side, and the count of packets in a short run varies with the noise. That is why the packet records the delivered fraction over at least 30 s at each setting.
@@ -66,7 +66,7 @@ These follow from Lesson 16. The hop timing is exact. The timing window and the 
 :class: read-only
 
 1. Start GRC and choose File, New, QT GUI. Do not open `L16-fhss-tx.grc`; build the hopper yourself from standard blocks.
-2. Set `samp_rate` to 128000. Add Variables `dwell` = 32000, the samples in one 250 ms hop; `order` = your list of the 8 channels from Question 2(c), in square brackets; and `hop_f` = `[10000*(k - 3.5) for k in order]`.
+2. Set `samp_rate` to 128000. Add Variables `dwell` = 32000, the samples in one hop; `order` = your list of the 8 channels from Question 2(c), in square brackets; and `hop_f` = `[10000*(k - 3.5) for k in order]`.
 3. Add a **Vector Source**: type float, vector `hop_f`, repeat Yes. Then a **Repeat**: type float, interpolation `dwell`. Then a **VCO (complex)**: sample rate `samp_rate`, sensitivity 6.283185, amplitude 1. Its output is a tone that hops through your channels.
 4. Add a **Signal Source**: type complex, frequency 5000, amplitude 1. It is a jammer on channel 4. Add a **Noise Source**: type complex, amplitude 0.1. Add an **Add** block with 3 inputs and connect the VCO, the jammer, and the noise to it, then a **Throttle**: type complex, sample rate `samp_rate`, and a **QT GUI Waterfall Sink** named "Transmitted band", with bandwidth `samp_rate`.
 5. Build a second Vector Source, Repeat, and VCO exactly like the first: this is the receiver's hop synthesizer. Add a **Multiply Conjugate** block, with the Throttle's output on its first input and the second VCO on its second, and a second Waterfall Sink named "De-hopped" on its output. Every arrow must be black.
@@ -85,7 +85,7 @@ These follow from Lesson 16. The hop timing is exact. The timing window and the 
 2. Set the jammer amplitude to 2 on channel 4. Wait 30 s and record the Packets label for Question 4(a). The counts restart each time a slider moves.
 3. Close the flowgraph. On the canvas, double-click the variable `nch` and set it to 1, which keeps the link on one channel. Run it, set the jammer amplitude to 0.7, wait 30 s, and record the Packets label for Question 4(b). Close it, set `nch` back to 8, run it, set the jammer to 0.7 on channel 4, and record the Packets label again.
 4. Set `nch` to 2, run it, set the jammer to 2 on channel 1, and record the Packets label after 30 s. Do the same with `nch` set to 4. Set `nch` back to 8.
-5. Set the jammer amplitude to 3 on channel 7, the sync channel for key 448, while the receiver is locked, and record the Packets label after 30 s. Then close the flowgraph, run it again, set the same jammer before the receiver locks, and record the Receiver and Packets labels after 30 s, for Question 4(d).
+5. Set the jammer amplitude to 3 on channel 7, the sync channel for key 448, while the receiver is locked, and record the Packets label after 30 s. Then close the flowgraph. The receiver locks about 0.1 s after a run starts, too fast to move a slider first, so on the canvas double-click the QT GUI Range `jam_amp` and set its Default Value to 3, and set `jam_ch`'s Default Value to 7. Run it, and record the Receiver and Packets labels after 30 s, for Question 4(d). Set both Default Values back to 0 and 4.
 ::::
 
 ::::{frame} Part 2: Sync
@@ -93,7 +93,7 @@ These follow from Lesson 16. The hop timing is exact. The timing window and the 
 
 1. Set the jammer amplitude back to 0. Set the Receiver hop offset to +1, wait 20 s, and record the Packets label. Do the same at −1. Set it back to 0.
 2. Close the flowgraph. Set the variable `guard` to 4, run it, and wait for the receiver to lock. Set the Receiver timing error to −24, +24, −30, +30, −36, and +36 ms in turn, and record the Packets label after 30 s at each, for Question 5(b). Set `guard` back to 2 when you finish.
-3. With the timing error at 0, move the Path delay slider from 100 to 500 ms and start a stopwatch. Stop it when the Received label shows the message again. Repeat three times, moving the slider between 100 and 500 ms, for Question 5(c).
+3. With the timing error at 0, move the Path delay slider from 100 to 500 ms and start a stopwatch. The Packets label restarts at 0 correct when the slider moves; stop the watch when its correct count first rises above 0. Repeat three times, moving the slider between 100 and 500 ms, for Question 5(c).
 ::::
 
 ::::{frame} If No Packets Arrive
@@ -125,7 +125,7 @@ In class we transmit only into a cable, into a shielded enclosure, or at very lo
 :class: read-only
 
 <img src="../../viz/img/L16-pluto-sim.png"
-     alt="L16-fhss-pluto.grc run in simulation, labeled SIMULATED on the figure, with a model of the cable, a 37 ms delay, and the Pluto's estimated levels and noise in place of the PlutoSDR: at 60 dB TX attenuation, 40 dB RX gain, and a jammer of amplitude 2 on channel 4, the received-band waterfall shows the hopping dashes and the jammer line at plus 5 kHz, the After Hop Sync waterfall shows the signal steady at 0 Hz and the jammer hopping, and the labels read Receiver locked, Packets 90 correct of 103 sent in 25 s (87%), and Received USAFA ECE 448"
+     alt="L16-fhss-pluto.grc run in simulation, labeled SIMULATED on the figure, with a model of the cable, a 37 ms delay, and the Pluto's estimated levels and noise in place of the PlutoSDR: at 60 dB TX attenuation, 40 dB RX gain, and a jammer of amplitude 2 on channel 4, the received-band waterfall shows the hopping dashes and the jammer line at plus 5 kHz, the After Hop Sync waterfall shows the signal steady at 0 Hz and the jammer hopping, and the labels read Receiver locked, Packets 91 correct of 104 sent in 25 s (88%), and Received USAFA ECE 448"
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto 12px;">
 
 The figure is the PlutoSDR flowgraph run in simulation, with the Pluto Sink and Source replaced by a model of the cable that uses our estimate of the Pluto's levels and a fixed delay of 37 ms between the ports. The real levels and delay will differ, but Hop Sync and the AGC should give the same picture. On the bench, look for the same three things: the hopping dashes on the received-band waterfall, a steady trace at 0 Hz after Hop Sync with the Receiver label reading "locked", and the message in the Received label.
@@ -145,7 +145,7 @@ The figure is the PlutoSDR flowgraph run in simulation, with the Pluto Sink and 
 ::::{frame} Part 3: After the Lab
 :::{present}
 - Compare the jamming results with $1 - 1/N$, and explain why more jammer power did not take more packets.
-- Explain what the guard bytes buy and what they take from each hop.
+- Explain what the guard bytes allow and what they take from each hop.
 - Explain the sync channel's weakness, and propose a fix.
 :::
 

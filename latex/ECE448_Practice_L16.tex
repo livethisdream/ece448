@@ -66,7 +66,7 @@ hertz, into a tone. The hopper uses 6 channels spaced 12 kHz apart and centered 
 \newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \question \textbf{Hop timing.} A hopper sends one packet per hop, as the L16 link does:
-2 guard bytes, the 12-byte access code and header, a payload of $N$ bytes, and 2 more
+2 guard bytes, the 12-byte access code and header, the payload, and 2 more
 guard bytes. It runs at $R_s = 2000$ baud, with 16 channels.
 \begin{parts}
 
@@ -125,7 +125,7 @@ guard bytes. It runs at $R_s = 2000$ baud, with 16 channels.
 		If a packet ran across a boundary, part of it would be on one channel and part on
 		the next, so a jammer on either channel, or a receiver whose timing is a little
 		off, would lose the whole packet. With one packet per hop the boundaries fall in
-		the guard bits between packets, a lost hop costs exactly one packet, and the
+		the guard bits between packets, a lost hop loses exactly one packet, and the
 		receiver can count packets to check it is on the right hops.
 		\end{solution}
 
@@ -133,8 +133,8 @@ guard bytes. It runs at $R_s = 2000$ baud, with 16 channels.
 
 \newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\question \textbf{The FCC dwell rule.} FCC Part 15.247 lets a narrowband hopper at
-915 MHz transmit without a license if it hops over at least 50 channels, uses every
+\question \textbf{The FCC dwell rule.} Among its limits on power and bandwidth, FCC Part 15.247 lets a narrowband hopper at
+915 MHz transmit without a license only if it hops over at least 50 channels, uses every
 channel equally, and stays on any one channel no more than 0.4 s in any 20 s. The L16
 link hops over 8 channels with 240 ms hops, each channel once per cycle.
 \begin{parts}

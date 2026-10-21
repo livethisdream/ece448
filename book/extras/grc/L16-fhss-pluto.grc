@@ -1209,23 +1209,21 @@ blocks:
       \ = value\n        self.good = 0\n        self.total = 0\n        self.t0 =\
       \ time.monotonic()\n\n    def work(self, input_items, output_items):\n     \
       \   data = input_items[0]\n        start = self.nitems_read(0)\n        # Each\
-      \ packet starts with a packet_len tag, so a corrupted newline\n        # cannot\
-      \ run two packets together.\n        # Each packet starts with a packet_len\
-      \ tag that holds its length, so\n        # the line ends after that many bytes,\
-      \ even if its newline is wrong.\n        tags = {t.offset - start: pmt.to_long(t.value)\n\
-      \                for t in self.get_tags_in_window(0, 0, len(data), self.key)}\n\
-      \        for i, b in enumerate(data):\n            if i in tags:\n         \
-      \       if self.buf:\n                    self.finish()\n                self.need\
-      \ = tags[i]\n            self.buf += chr(b) if 32 <= b < 127 or b == 10 else\
-      \ '?'\n            if len(self.buf) == self.need:\n                self.finish()\n\
-      \        return len(data)\n\n    def finish(self):\n        self.line = self.buf[:-1]\
-      \ if self.buf.endswith('\\n') else self.buf\n        self.total += 1\n     \
-      \   self.good += self.buf == self.expected + '\\n'\n        self.buf = ''\n\
-      \        self.message_port_pub(pmt.intern('pkt'), pmt.PMT_T)\n\n    def last_line(self):\n\
-      \        return self.line\n\n    def stats(self):\n        t = time.monotonic()\
-      \ - self.t0\n        sent = int(t * self.hop_rate)\n        pct = f' ({100 *\
-      \ self.good / sent:.0f}%)' if sent else ''\n        return f'{self.good} correct\
-      \ of {sent} sent in {t:.0f} s{pct}'\n"
+      \ packet starts with a packet_len tag that holds its length, so\n        # the\
+      \ line ends after that many bytes, even if its newline is wrong.\n        tags\
+      \ = {t.offset - start: pmt.to_long(t.value)\n                for t in self.get_tags_in_window(0,\
+      \ 0, len(data), self.key)}\n        for i, b in enumerate(data):\n         \
+      \   if i in tags:\n                if self.buf:\n                    self.finish()\n\
+      \                self.need = tags[i]\n            self.buf += chr(b) if 32 <=\
+      \ b < 127 or b == 10 else '?'\n            if len(self.buf) == self.need:\n\
+      \                self.finish()\n        return len(data)\n\n    def finish(self):\n\
+      \        self.line = self.buf[:-1] if self.buf.endswith('\\n') else self.buf\n\
+      \        self.total += 1\n        self.good += self.buf == self.expected + '\\\
+      n'\n        self.buf = ''\n        self.message_port_pub(pmt.intern('pkt'),\
+      \ pmt.PMT_T)\n\n    def last_line(self):\n        return self.line\n\n    def\
+      \ stats(self):\n        t = time.monotonic() - self.t0\n        sent = int(t\
+      \ * self.hop_rate)\n        pct = f' ({100 * self.good / sent:.0f}%)' if sent\
+      \ else ''\n        return f'{self.good} correct of {sent} sent in {t:.0f} s{pct}'\n"
     affinity: ''
     alias: ''
     comment: ''
@@ -1374,7 +1372,7 @@ blocks:
     grid: 'False'
     gui_hint: 3,1,4,1
     int_max: '0'
-    int_min: '-60'
+    int_min: '-30'
     label1: ''
     label10: ''
     label2: ''
@@ -1436,7 +1434,7 @@ blocks:
     grid: 'False'
     gui_hint: 3,0,4,1
     int_max: '0'
-    int_min: '-60'
+    int_min: '-30'
     label1: ''
     label10: ''
     label2: ''

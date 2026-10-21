@@ -22,11 +22,11 @@ Spring 2027 · Dr. Neil Rogers
 
 ## Where We Were
 
-- Lesson 8: FSK, a transmitter, a channel, and a receiver
-- Lesson 10: packets behind a 64-bit access code
-- Lesson 11: Embedded Python Blocks
+- Lesson 8 sent text through an FSK transmitter, a channel, and a receiver.
+- Lesson 10 put each line behind a 64-bit access code.
+- Lesson 11 wrote Embedded Python Blocks.
 
-Today: Lesson 8's packets, sent on a new channel every hop.
+Today we send Lesson 8's packets on a new channel every hop.
 
 Note:
 Open both L16 flowgraphs in GRC before class. The link flowgraph runs in the first five minutes, with the jammer off, and again with the jammer on at amplitude 3.
@@ -48,9 +48,9 @@ Parts 1 and 2 are the transmitter, parts 3 and 4 the receiver. Part 5 runs live 
 
 ## A Link That Hops
 
-<img src="./img/16-fhss/L16-link-jam.png" alt="The L16 link with a jammer on channel 4: the received band shows hopping dashes and a jammer line; after Hop Sync the signal is steady at 0 Hz; 86 of 98 packets arrive" style="max-height:440px; display:block; margin:0 auto;">
+<img src="./img/16-fhss/L16-link-jam.png" alt="The L16 link with a jammer on channel 4: the received band shows hopping dashes and a jammer line; after Hop Sync the signal is steady at 0 Hz; 87 of 99 packets arrive" style="max-height:440px; display:block; margin:0 auto;">
 
-A new channel every 240 ms; the jammer costs 1 hop in 8.
+The link changes channel every 240 ms, and the jammer takes 1 hop in 8.
 
 Note:
 Run L16-fhss-link.grc live. Left waterfall: what the receiver sees, with the jammer as a solid line at plus 5 kHz. Right waterfall: after Hop Sync the signal sits at 0 Hz and the jammer hops instead. The Packets label reads about 88%.
@@ -144,7 +144,7 @@ Hop Sync is an Embedded Python Block. The Low Pass Filter keeps plus and minus 2
 
 ## De-Hopping
 
-<img src="./img/16-fhss/L16-link-clean.png" alt="The L16 link with no jammer: after Hop Sync one steady trace at 0 Hz; 82 of 82 packets arrive" style="max-height:400px; display:block; margin:0 auto;">
+<img src="./img/16-fhss/L16-link-clean.png" alt="The L16 link with no jammer: after Hop Sync one steady trace at 0 Hz; 81 of 81 packets arrive" style="max-height:400px; display:block; margin:0 auto;">
 
 Multiply by the conjugate hop tone: every hop returns to 0 Hz.
 
@@ -166,20 +166,20 @@ Each channel appears once per cycle, so power on channel 7 means hop 0. Hop Sync
 
 ## Losing and Regaining Sync
 
-<img src="./img/16-fhss/L16-link-resync.png" alt="The L16 link after the path delay moved from 100 to 400 ms: the de-hopped signal scatters for about 2.4 s, then returns to 0 Hz; 26 of 36 packets arrive" style="max-height:400px; display:block; margin:0 auto;">
+<img src="./img/16-fhss/L16-link-resync.png" alt="The L16 link after the path delay moved from 100 to 400 ms: the de-hopped signal scatters, then returns to 0 Hz; 20 of 37 packets arrive" style="max-height:400px; display:block; margin:0 auto;">
 
-No packet for about 10 hops: park and lock again.
+After about 10 hops with no packet, Hop Sync parks and locks again.
 
 Note:
-Moving the path delay by 300 ms puts the receiver more than a hop off. Hop Sync parks again after more than 9 hops without a packet and locks on the next hop 0. Here 10 packets were lost.
+Moving the path delay by 300 ms puts the receiver more than a hop off. Hop Sync parks again after more than 9 hops without a packet and locks on the next hop 0. Here the receiver lost 17 packets, 4.1 s.
 
 ---
 
 ## Off by One Hop
 
-<img src="./img/16-fhss/L16-link-offset.png" alt="The L16 link with the receiver one hop ahead: the de-hopped signal is scattered across the band and 0 of 99 packets arrive" style="max-height:400px; display:block; margin:0 auto;">
+<img src="./img/16-fhss/L16-link-offset.png" alt="The L16 link with the receiver one hop ahead: the de-hopped signal is scattered across the band and 0 of 98 packets arrive" style="max-height:400px; display:block; margin:0 auto;">
 
-One hop ahead, the receiver is never on the right channel: 0 of 99.
+One hop ahead, the receiver is never on the right channel, and 0 of 98 packets arrive.
 
 Note:
 Consecutive entries of a permutation are always different channels. Offsets of minus 1, plus 2, and minus 2 also gave no packets.
@@ -226,7 +226,7 @@ The jammer is 9.5 dB stronger than the signal. It reaches the receiver only on t
 The same power spread over 8 channels blocked nothing.
 
 Note:
-Eight tones of amplitude 0.354, together as strong as one tone of amplitude 1, blocked no packets. A jammer on the sync channel before the receiver locks keeps it from ever locking; after lock it costs only its 1 hop in 8.
+Eight tones of amplitude 0.354, together as strong as one tone of amplitude 1, blocked no packets. A jammer on the sync channel before the receiver locks keeps it from ever locking; after lock it takes only its 1 hop in 8.
 
 ---
 
@@ -243,7 +243,7 @@ In class we transmit only into a cable, into a shielded enclosure, or at very lo
 
 ## Key Point
 
-<div class="callout">A hopper sends each packet on a new channel in a keyed order. A receiver with the same key and hop timing de-hops it, and a narrowband jammer takes only its own channel's hops. Off by one hop, nothing arrives.</div>
+<div class="callout">A hopper sends each packet on a new channel in a keyed order. A receiver with the key and hop timing de-hops it. A narrowband jammer takes only its own channel's hops, and a receiver one hop off gets nothing.</div>
 
 Note:
 The receiver needs the key and the timing. Sync on a known hop gets the timing from the key alone.

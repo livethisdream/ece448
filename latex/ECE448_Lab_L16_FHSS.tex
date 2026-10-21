@@ -327,10 +327,10 @@ percent.
 		\end{solution}
 
 	\part Record the Receiver and Packets labels with the jammer at 3 on channel 7 turned
-	on after the receiver locked, and again turned on before it locked.
+	on after the receiver locked, and again set as the slider defaults before the run.
 		\begin{solution}[0.9in]
-		Turned on after lock: the receiver stays locked and about 89\% of packets arrive,
-		7 in 8. Turned on before lock: the Receiver label stays at ``searching: parked on
+		Turned on after lock: the receiver stays locked and about 88\% of packets arrive,
+		7 in 8. Set as the default before the run: the Receiver label stays at ``searching: parked on
 		channel 7'' and no packets arrive, because the jammer already fills the sync
 		channel and Hop Sync never sees the power jump that marks hop 0.
 		\end{solution}
@@ -361,7 +361,7 @@ percent.
 	\begin{tabular}{| l | K{0.55in} | K{0.55in} | K{0.55in} | K{0.55in} | K{0.55in} | K{0.65in} |}
 	\hline
 	Timing (ms) & $-24$ & $+24$ & $-30$ & $+30$ & $-36$ & $+36$ \\\hline
-	Delivered & \kv{100\%} & \kv{100\%} & \kv{100\%} & \kv{100\%} & \kv{$\approx 4\%$} & \kv{70--95\%} \\\hline
+	Delivered & \kv{100\%} & \kv{100\%} & \kv{100\%} & \kv{100\%} & \kv{$\approx 4\%$} & \kv{60--95\%} \\\hline
 	\end{tabular}
 	\end{center}
 
@@ -373,15 +373,16 @@ percent.
 		\end{solution}
 
 	\begin{minipage}[t]{0.58\linewidth}
-		\part Record the three times from moving the path delay to the next received line.
+		\part Record the three times from moving the path delay to the first correct packet.
 		\begin{solution}[0.9in]
-		About 2.4 to 4.3 s each: more than 9 hops without a packet before Hop Sync parks,
-		then up to one cycle, 1.92 s, until hop 0 reaches the sync channel.
+		About 2.4 to 4.6 s each: more than 9 hops without a packet before Hop Sync parks,
+		then up to one cycle, 1.92 s, until hop 0 reaches the sync channel, and 0.24 s
+		more for that hop's packet to finish.
 		\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
 		\raggedleft \vspace{12pt}
-		\ansbox[1.1in]{2.4 to 4.3 s}
+		\ansbox[1.1in]{2.4 to 4.6 s}
 	\end{minipage}
 
 \end{parts}
@@ -469,7 +470,7 @@ before you disconnect the cable.
 		\end{solution}
 
 	\part From Question 4(d), explain why one jammed channel can keep a receiver from
-	ever locking although it costs a locked receiver only 1 hop in 8, and propose a
+	ever locking although it takes only 1 hop in 8 from a locked receiver, and propose a
 	change to Hop Sync or to the packet that removes that weakness.
 		\begin{solution}[1.5in]
 		Hop Sync acquires only on the sync channel, by the jump in its power when hop 0
