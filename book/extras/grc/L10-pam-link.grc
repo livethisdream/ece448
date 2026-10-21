@@ -7,9 +7,9 @@ options:
     comment: ''
     copyright: ''
     description: 'L10: a line of ASCII text in packets over an RRC 2-PAM link, through
-      noise and a receiver clock error, then a matched filter, Symbol Sync, a slicer,
-      and an access-code search. Raise the noise or the clock error until the text
-      breaks.'
+      noise and a receiver clock error, then a matched filter that can be switched
+      off, Symbol Sync, a slicer, and an access-code search. Raise the noise or the
+      clock error until the text breaks.'
     gen_cmake: 'On'
     gen_linking: dynamic
     generate_options: qt_gui
@@ -26,7 +26,7 @@ options:
     sizing_mode: fixed
     thread_safe_setters: ''
     title: L10 - PAM Text Link
-    window_size: (1000,600)
+    window_size: (1000,640)
   states:
     bus_sink: false
     bus_source: false
@@ -59,6 +59,36 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [680, 12]
+    rotation: 0
+    state: enabled
+- name: mf
+  id: variable_qtgui_chooser
+  parameters:
+    comment: ''
+    gui_hint: 1,0,1,2
+    label: Matched filter
+    label0: 'on'
+    label1: 'off'
+    label2: ''
+    label3: ''
+    label4: ''
+    labels: '[]'
+    num_opts: '2'
+    option0: '1'
+    option1: '0'
+    option2: '2'
+    option3: '3'
+    option4: '4'
+    options: '[0, 1, 2]'
+    orient: Qt.QHBoxLayout
+    type: int
+    value: '1'
+    widget: radio_buttons
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [640, 88]
     rotation: 0
     state: enabled
 - name: msg
@@ -120,7 +150,7 @@ blocks:
   parameters:
     comment: ''
     formatter: 'lambda x: '':  '' + x'
-    gui_hint: 2,0,1,2
+    gui_hint: 3,0,1,2
     label: Received
     type: string
     value: rx_text
@@ -204,7 +234,7 @@ blocks:
   parameters:
     comment: ''
     formatter: 'lambda x: '':  '' + x'
-    gui_hint: 3,0,1,2
+    gui_hint: 4,0,1,2
     label: Lines
     type: string
     value: rx_stats
@@ -512,7 +542,7 @@ blocks:
     expected: msg
     maxoutbuf: '0'
     minoutbuf: '0'
-    settings: (noise, ppm)
+    settings: (noise, ppm, mf)
   states:
     _io_cache: ('Text Sink', 'blk', [('expected', "''"), ('settings', 'None')], [('0',
       'byte', 1)], [], '', ['expected', 'settings'])
@@ -532,7 +562,7 @@ blocks:
     maxoutbuf: '0'
     minoutbuf: '0'
     samp_delay: '0'
-    taps: rx_taps
+    taps: rx_taps if mf else [1.0]
     type: fff
   states:
     bus_sink: false
@@ -609,8 +639,8 @@ blocks:
     ctrlpanel: 'False'
     entags: 'False'
     grid: 'True'
-    gui_hint: 1,0,1,1
-    label1: Matched-filter output
+    gui_hint: 2,0,1,1
+    label1: Receive-filter output
     label10: Signal 10
     label2: Signal 2
     label3: Signal 3
@@ -705,7 +735,7 @@ blocks:
     ctrlpanel: 'False'
     entags: 'False'
     grid: 'True'
-    gui_hint: 1,1,1,1
+    gui_hint: 2,1,1,1
     label1: Symbols
     label10: Signal 10
     label2: Signal 2
