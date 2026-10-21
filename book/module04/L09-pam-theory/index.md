@@ -65,7 +65,7 @@ Part 1 covers what a PAM symbol is, what noise does to it, and how its levels lo
 - $M$ levels carry $\log_2 M$ bits, so $R_s = R_b/\log_2 M$.
 :::
 
-**Pulse amplitude modulation** (PAM) is the simplest digital signal: each symbol is a pulse, and its height carries the data. **Binary PAM**, or 2-PAM, sends a pulse of height $+A$ for a 1 and $-A$ for a 0, and the receiver decides by the sign of what it receives. The two levels are mirror images, so they sit as far apart as the transmitter's power allows. **M-ary PAM** uses more levels: 4-PAM uses $\pm 1$ and $\pm 3$ and carries two bits per symbol. In general, $M$ levels carry $\log_2 M$ bits, so the **symbol rate** $R_s$, in symbols per second or **baud**, is
+**Pulse amplitude modulation** (PAM) is the simplest digital signal: each symbol is a pulse, and its height carries the data. **Binary PAM**, or 2-PAM, sends a pulse of height $+A$ for a 1 and $-A$ for a 0, and the receiver decides by the sign of what it receives. The two levels are mirror images, so they sit as far apart as the transmitter's power allows. Compare FSK from Lesson 8: its two tones are orthogonal, at right angles on a constellation, so at the same power its two points sit closer together than PAM's $\pm A$, and the same noise reaches across between them sooner. **M-ary PAM** uses more levels: 4-PAM uses $\pm 1$ and $\pm 3$ and carries two bits per symbol. In general, $M$ levels carry $\log_2 M$ bits, so the **symbol rate** $R_s$, in symbols per second or **baud**, is
 
 $$R_s = \frac{R_b}{\log_2 M}$$
 
@@ -330,7 +330,7 @@ The RRC filter at the transmitter fixes the bandwidth at $(1+\alpha)R_s$. The sa
 
 Open a `.grc` file from GRC's File menu, or run `gnuradio-companion L09-pulse-shaping.grc` from the radioconda prompt.
 
-This lesson follows Neil's 2025 PAM slides for its topics and these pages for the hands-on steps, in this order:
+This lesson follows Dr. Rogers's 2025 PAM slides, <a class="doc-link" href="../../legacy/L13-pam-theory.pdf" target="_blank" rel="noopener">L13-pam-theory.pdf</a>, for its topics and these pages for the hands-on steps, in this order:
 
 - <a class="doc-link" href="https://pysdr.org/content/digital_modulation.html" target="_blank" rel="noopener">PySDR: Digital Modulation</a>: PAM levels, constellations, and Gray coding (Part 1).
 - <a class="doc-link" href="https://pysdr.org/content/pulse_shaping.html" target="_blank" rel="noopener">PySDR: Pulse Shaping</a>: rectangular and raised-cosine pulses, RRC, and the eye (Parts 2 and 3).

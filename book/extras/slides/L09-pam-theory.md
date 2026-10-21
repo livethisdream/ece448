@@ -64,7 +64,7 @@ Trace the signal left to right: symbols, transmit filter, channel, matched filte
 $$R_s = \frac{R_b}{\log_2 M}$$
 
 Note:
-Binary PAM sends plus A for a 1 and minus A for a 0, and the receiver decides by the sign. The same eight bits go out both ways: 4-PAM uses half as many symbols, each twice as long. In GNU Radio, a Chunks to Symbols block does the mapping from a table.
+Binary PAM sends plus A for a 1 and minus A for a 0, and the receiver decides by the sign. FSK's two tones are orthogonal, so at the same power its points sit closer together than PAM's mirror-image pair. The same eight bits go out both ways: 4-PAM uses half as many symbols, each twice as long. In GNU Radio, a Chunks to Symbols block does the mapping from a table.
 
 ---
 
@@ -86,7 +86,7 @@ Top: a little noise, no errors. Middle: more noise, a few red dots. Bottom: 4-PA
 Neighboring points differ in one bit. Now label the 8-PSK points.
 
 Note:
-PAM's points lie on the real axis; m-PSK's lie on a circle and come back in Lesson 15. Noise usually pushes a sample to a neighbor, so with Gray coding a wrong decision usually costs one bit. Give the class two minutes to Gray-code the blank 8-PSK; one answer going around is 000, 001, 011, 010, 110, 111, 101, 100. It is also in the practice set.
+PAM's points lie on the real axis; m-PSK's lie on a circle and come back in Lesson 15. Noise usually pushes a sample to a neighbor, so with Gray coding a wrong decision usually costs one bit. Give the class two minutes to Gray-code the blank 8-PSK; the answer is in the practice SOLUTIONS.
 
 ---
 

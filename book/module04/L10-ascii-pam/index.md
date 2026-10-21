@@ -49,7 +49,7 @@ Lesson 10 · Module 4: Digital Modulation · Dr. Neil Rogers
 
 The figure is today's flowgraph, `L10-pam-link.grc`, running. A line of text goes in at the transmitter, crosses a channel with noise and a clock error, and comes out of the receiver intact, about 11 times a second. The left plot is the eye after the receive filter, the matched filter, and the right plot is the output of Symbol Sync, the same two checks Lesson 9 used.
 
-Lesson 9 built everything between the symbols and the samples. This lesson adds the two ends, in the order of Mathys's "Motivating Undergraduate Communication Theory Using GNU Radio": text to bits (Parts 1 to 3), bits to a waveform (the transmitter), the waveform through noise (Part 4), and the matched filter that cleans it up (Part 5). At the transmitter, text becomes bytes, bytes become bits, and the bits go out in **packets**. At the receiver, a slicer turns each sample back into a bit, and the receiver searches the bits for the start of each packet before it turns them back into text.
+Lesson 9 built everything between the symbols and the samples. This lesson adds the two ends, in the order of the 2025 reading, Mathys's "Motivating Undergraduate Communication Theory Using GNU Radio", linked under Downloads: text to bits (Parts 1 and 2, where packets replace the reading's hand-set delay), bits to a waveform (Part 3), the receiver (Part 4), the waveform through noise (Part 5), and the matched filter that cleans it up (Part 6). At the transmitter, text becomes bytes, bytes become bits, and the bits go out in **packets**. At the receiver, a slicer turns each sample back into a bit, and the receiver searches the bits for the start of each packet before it turns them back into text.
 ::::
 
 ::::{frame} Part 1: Text to Bits
@@ -100,7 +100,7 @@ We send each line of text as a **packet**, the same format the L8 link used. A p
 The header and access code add 96 bits to our 248, so one packet is 344 bits and takes 86 ms at 4 kbaud. The link sends 11.6 packets a second, and 72% of the bits it sends are text. A longer line spreads the same 96 bits over more text, and a 200-byte payload raises that share to 94%.
 ::::
 
-::::{frame} Bits to a Waveform
+::::{frame} Part 3: Bits to a Waveform
 :::{present}
 <img src="../../viz/img/L10-grc-tx.png"
      alt="The L10 transmitter flowgraph in GNU Radio Companion: Vector Source, Stream to Tagged Stream, Protocol Formatter, and Tagged Stream Mux build each packet; Unpack K Bits and Chunks to Symbols turn it into levels; a Throttle and an Interpolating FIR Filter with RRC taps shape the pulses; a Repeat and a Delay hold the bits for comparison on a QT GUI Time Sink"
@@ -157,20 +157,20 @@ T &= \frac{344}{4000\text{ baud}} = 86 \text{ ms}.
 The share of text grows with the payload, but a longer packet also has more bits that can go wrong, and the line counts as correct only if every bit is right. A longer line therefore starts to break at a lower noise setting than a short one.
 ::::
 
-::::{frame} Part 3: The Receiver
+::::{frame} Part 4: The Receiver
 :::{present}
 <img src="../../viz/img/L10-grc-rx.png"
      alt="The channel and receiver of the L10 link flowgraph in GNU Radio Companion: Throttle, Interpolating FIR Filter, a Fractional Resampler for the clock error, and an Add with a Noise Source; then a Decimating FIR Filter as the matched filter, Symbol Sync, Binary Slicer, Correlate Access Code - Tag Stream, Repack Bits, and a Text Sink, with an eye sink and a time sink"
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
-- The matched filter and Symbol Sync keep Lesson 9's settings.
-- A **Binary Slicer**, the access-code search, and Repack Bits are new.
+- The back end comes from the L8 link: slicer, access-code search, Repack Bits.
+- Only the PAM front end differs: L9's matched filter and Symbol Sync.
 :::
 
 The channel is Lesson 9's: a **Fractional Resampler** with ratio $1 + \text{ppm} \times 10^{-6}$ models the receiver's clock error, and a **Noise Source** adds Gaussian noise of a chosen amplitude. The receiver starts with Lesson 9's matched filter, `rx_taps` in a Decimating FIR Filter, and Lesson 9's **Symbol Sync**: Gardner detector, `sps` = 8, loop bandwidth 0.045, one sample out per symbol.
 
-Three blocks are new. The **Binary Slicer** outputs a 1 for a sample above zero and a 0 below, the decision threshold of Lesson 9's Part 1. **Correlate Access Code - Tag Stream** finds each packet and passes on its payload bits. **Repack Bits** collects 8 bits at a time, MSB first, back into bytes, and the **Text Sink**, an Embedded Python Block from Lesson 8, displays each line and counts the correct ones.
+The rest comes from the L8 link. The **Binary Slicer** outputs a 1 for a sample above zero and a 0 below, the decision threshold of Lesson 9's Part 1. **Correlate Access Code - Tag Stream** finds each packet and passes on its payload bits. **Repack Bits** collects 8 bits at a time, MSB first, back into bytes, and the **Text Sink**, an Embedded Python Block from Lesson 8, displays each line and counts the correct ones.
 ::::
 
 ::::{frame} Finding the Access Code
@@ -202,62 +202,44 @@ The explorer's SNR slider is in dB, so higher means less noise, the opposite dir
 :::
 ::::
 
-::::{frame} Part 4: Noise Without a Matched Filter
+::::{frame} Part 5: Noise Without a Matched Filter
 :::{present}
 <img src="../../viz/img/L10-link-mf-off.png"
-     alt="The L10 link at noise amplitude 0.5 with the matched filter switched off: the receive-filter eye is a tangle of jagged traces with no opening, the Symbol Sync output is scattered between minus 2 and plus 2 with many samples near zero, the Received label reads USAFP ECE 548: ASCII orer PAM., and the Lines label reads 4 correct of 110 received in 20 s"
+     alt="The L10 link at noise amplitude 0.4 with the matched filter switched off: the receive-filter eye is a tangle of jagged traces with almost no opening, the Symbol Sync output is scattered between minus 2 and plus 2 with several samples near zero, and the Received label reads USAFA ECU 448: ASCII over PAM., with one wrong character"
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
-- Switch the matched filter off and set the noise to 0.5.
-- The eye has no opening and the symbols scatter.
-- 4 of 110 lines arrive intact.
+- Switch the matched filter off and set the noise to 0.4.
+- The eye has almost no opening and the symbols scatter.
+- Watch the Received label: characters go wrong.
 :::
 
-The flowgraph's **Matched filter** switch, set to off, replaces the receive RRC with a filter that passes every sample unchanged, so Symbol Sync and the slicer see the raw received signal, the way the first receiver in the reading sampled it. Set the noise to 0.5 and watch. The eye display is a tangle, the Symbol Sync output, which is the 2-PAM constellation drawn against time, scatters across zero, and the text is full of wrong characters: a sample on the wrong side of zero is a wrong bit, and 'A' becomes 'P' or 'v' becomes 'r'.
+The flowgraph's **Matched filter** switch, set to off, replaces the receive RRC with a filter that passes every sample unchanged, so Symbol Sync and the slicer see the raw received signal, the way the first receiver in the reading sampled it. Set the noise to 0.4 and watch. The eye display is a tangle, the Symbol Sync output, which is the 2-PAM constellation drawn against time, scatters toward zero, and characters go wrong: a sample on the wrong side of zero is a wrong bit, and in the screenshot 'E' became 'U'.
 
-The Lines label reads 4 intact out of 110 received in 20 s. The link sent about 230 in that time; the rest lost a bit in the access code or the header, so the receiver never saw them as lines at all.
+Watch the Lines label too. The correct count falls behind the received count, and the received count grows more slowly than the link sends, because a line that loses a bit in the access code or the header never reaches the receiver as a line at all.
 ::::
 
-::::{frame} Part 5: The Matched Filter
+::::{frame} Part 6: The Matched Filter
 :::{present}
 <img src="../../viz/img/L10-link-noisy.png"
-     alt="The L10 link at noise amplitude 1.0 with the matched filter on: the receive-filter eye is mostly closed, the Symbol Sync output spreads between about minus 1.8 and plus 1.9 with a few samples near zero, the Received label reads USAFA ECE 648: ASCII over ?AM., and the Lines label reads 94 correct of 198 received in 20 s"
+     alt="The L10 link at noise amplitude 1.0 with the matched filter on: the receive-filter eye is mostly closed, the Symbol Sync output spreads between about minus 1.8 and plus 1.9 with a few samples near zero, and the Received label reads USAFA ECE 648: ASCII over ?AM., with two wrong characters"
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
-- Switch the matched filter on: at 0.5, every line arrives.
+- Switch the matched filter on: every line arrives again.
 - Now raise the noise until the text breaks again.
-- At 1.0, twice the noise, about half the lines survive.
+- The screenshot is well past that point.
 :::
 
-Switch the matched filter back on at 0.5, and the eye opens, the symbols pull back into two bands at $\pm 1$, and every line arrives. The signal sits in a few kilohertz of the 32 kHz the samples represent, and the filter, matched to the transmitted pulse, keeps that band and throws the rest of the noise away.
+Switch the matched filter back on at 0.4, and the eye opens, the symbols pull back into two bands at $\pm 1$, and every line arrives. The signal sits in a few kilohertz of the 32 kHz the samples represent, and the filter, matched to the transmitted pulse, keeps that band and throws the rest of the noise away.
 
-Now raise the noise from 0.5 and watch the same three displays. The eye fills in, the bands spread, and near 0.7 characters start to go wrong: in the screenshot, at 1.0, '4' became '6' and 'P' became a byte that does not print, and 94 lines of 198 received are intact. A wrong bit in the header or the access code loses the whole line, so by about 1.4 no line arrives intact. With the filter, the link survives about three times the noise it could take without one.
-::::
-
-::::{frame} Noise Sweep
-:class: read-only
-
-We ran the link's blocks headless, without the Throttle, sending 300 packets at each noise amplitude with a 500 ppm clock error, and counted the lines that arrived intact.
-
-| Noise amplitude | Matched filter off | Matched filter on | Eye with the filter on |
-| :-: | :-: | :-: | :-- |
-| 0.3 | 93% | all | wide open |
-| 0.5 | 1% | all | open |
-| 0.7 | none | 98% | open, edges fuzzy |
-| 0.9 | none | 71% | half closed |
-| 1.0 | none | 45% | mostly closed |
-| 1.2 | none | 6% | closed |
-| 1.4 | none | none | closed |
-
-With the filter on, the change from every line to none takes less than a doubling of the noise amplitude. The reason is in the packet: a line counts only if all 280 bits of its header and payload are right, so once single bits start to go wrong, whole lines go wrong quickly. On a real radio, this is why a link needs margin: a link that just barely works on a quiet day stops working when the signal fades a little.
+Now raise the noise and watch the same three displays. The eye fills in, the bands spread, and characters start to go wrong again: in the screenshot, at 1.0, '4' became '6' and 'P' became a byte that does not print. A line counts only if every bit of its header and payload is right, and a wrong bit in the header or the access code loses the whole line, so once single bits start to go wrong, whole lines go wrong quickly, and soon no line arrives intact. The L10 Lab finds those two settings on your own link. At the same slider setting, the filter turns a link that loses most lines into one that loses none.
 ::::
 
 ::::{frame} Clock Error
 :::{present}
 <img src="../../viz/img/L10-link-clock.png"
-     alt="The L10 link at noise amplitude 0.3 and a 10,000 ppm clock error: the receive-filter eye smears across the display because the eye sink assumes exactly 8 samples per symbol, but the Symbol Sync output stays in tight bands at plus and minus 1, and the Lines label reads 210 correct of 212 received in 21 s"
+     alt="The L10 link at noise amplitude 0.3 and a 10,000 ppm clock error: the receive-filter eye smears across the display because the eye sink assumes exactly 8 samples per symbol, but the Symbol Sync output stays in tight bands at plus and minus 1, and the Lines label shows nearly every line correct"
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
@@ -265,7 +247,7 @@ With the filter on, the change from every line to none takes less than a doublin
 - Two crystals of 20 ppm each can differ by 40 ppm.
 :::
 
-The clock-error slider sets how far the receiver's sample clock is from the transmitter's. At 10,000 ppm, a 1% error, the eye sink smears across the display, because it assumes exactly 8 samples per symbol and each symbol now spans 1% fewer. Symbol Sync tracks the difference, and its output stays at $\pm 1$: 210 of 212 lines arrive intact.
+The clock-error slider sets how far the receiver's sample clock is from the transmitter's. At 10,000 ppm, a 1% error, the eye sink smears across the display, because it assumes exactly 8 samples per symbol and each symbol now spans 1% fewer. Symbol Sync tracks the difference, and its output stays at $\pm 1$ and nearly every line arrives intact.
 
 Measured over thousands of packets at a noise amplitude of 0.3, a link that starts cold loses fewer than 1 line in 100 up to 10,000 ppm and a few percent, up to about 10%, from 15,000 to 25,000 ppm; started at 30,000 ppm it often fails to lock, and at 40,000 ppm it never does. Raised a step at a time while the loop is locked, the same link follows the error to 40,000 ppm and beyond and loses only a few percent of its lines. Two crystals accurate to 20 ppm each can differ by 40 ppm, 250 times smaller than 10,000 ppm, so with Symbol Sync in the receiver, clock error does not limit this link, and noise sets the limit instead.
 ::::
@@ -280,7 +262,7 @@ Measured over thousands of packets at a noise amplitude of 0.3, a link that star
 | Wrong access code | no packets |
 :::
 
-Every setting at the transmitter has a partner at the receiver, and the link works only when each pair agrees. The table lists four ways it can fail. An inverted signal turns every 1 into a 0, so the access code never matches and nothing arrives; this happens on a real radio, where the carrier phase can flip the sign, and the L10 Lab handles it. Reading bytes LSB first finds every packet but reverses every byte, so 'U', 01010101, becomes 10101010, 0xAA. A wrong `sps` or access code stops the search entirely. Try the first two in the explorer above.
+Every setting at the transmitter has a partner at the receiver, and the link works only when each pair agrees. The table lists four ways it can fail. An inverted signal turns every 1 into a 0, so the access code never matches and nothing arrives; this happens on a real radio, where the carrier phase can flip the sign, and the L10 Lab handles it. Reading bytes LSB first finds every packet but reverses every byte, so 'U', 01010101, becomes 10101010, 0xAA. A wrong `sps` or access code stops the search entirely. Try the first two in the explorer above. The transmitter's levels must match too: send unipolar levels, `[0, 1]`, instead of $\pm 1$, and the 0 level sits on the slicer's threshold, so noise decides those bits at random and no packet is found.
 ::::
 
 ::::{frame} PAM Text on a Real Radio
@@ -310,11 +292,11 @@ Each line goes out as bits in a packet behind an access code. The receiver slice
 
 Open a `.grc` file from GRC's File menu, or run `gnuradio-companion L10-pam-link.grc` from the radioconda prompt. The link's Text Sink is an Embedded Python Block, saved inside the `.grc` file. The L10 Lab page has the PlutoSDR version of the link.
 
-This lesson follows the 2025 reading, Mathys's four acts, for its topics and these pages for the hands-on steps:
+This lesson follows the 2025 reading for its topics, <a class="doc-link" href="../../legacy/L14-ascii-pam.pdf" target="_blank" rel="noopener">Mathys (2016), Motivating Undergraduate Communication Theory Using GNU Radio</a>, and these pages for the hands-on steps:
 
-- <a class="doc-link" href="https://wiki.gnuradio.org/index.php/Packet_Communications" target="_blank" rel="noopener">GNU Radio wiki: Packet Communications</a>: Stream to Tagged Stream, Protocol Formatter, and Correlate Access Code - Tag Stream (Parts 1 to 3).
-- <a class="doc-link" href="https://wiki.gnuradio.org/index.php/Guided_Tutorial_PSK_Demodulation" target="_blank" rel="noopener">GNU Radio wiki: Guided Tutorial, PSK Demodulation</a>: the RRC filters and Symbol Sync the link reuses from Lesson 9 (Parts 3 to 5).
-- <a class="doc-link" href="https://pysdr.org/content/pulse_shaping.html" target="_blank" rel="noopener">PySDR: Pulse Shaping</a>: what the matched filter does to the noise (Part 5).
+- <a class="doc-link" href="https://wiki.gnuradio.org/index.php/Packet_Communications" target="_blank" rel="noopener">GNU Radio wiki: Packet Communications</a>: Stream to Tagged Stream, Protocol Formatter, and Correlate Access Code - Tag Stream (Parts 1, 2, and 4).
+- <a class="doc-link" href="https://wiki.gnuradio.org/index.php/Guided_Tutorial_PSK_Demodulation" target="_blank" rel="noopener">GNU Radio wiki: Guided Tutorial, PSK Demodulation</a>: the RRC filters and Symbol Sync the link reuses from Lesson 9 (Parts 3 to 6).
+- <a class="doc-link" href="https://pysdr.org/content/pulse_shaping.html" target="_blank" rel="noopener">PySDR: Pulse Shaping</a>: what the matched filter does to the noise (Part 6).
 ::::
 
 ::::{frame} Summary
@@ -327,8 +309,8 @@ This lesson follows the 2025 reading, Mathys's four acts, for its topics and the
 | Packet | access code, header, payload | 64 + 32 + $8N$ bits |
 | Our line | 31 bytes with the newline | 344 bits, 86 ms at 4 kbaud |
 | Access-code search | at most 2 of 64 bits wrong | about 32 match by chance |
-| Noise | closes the eye, spreads the symbol bands, breaks the text | lines start to break near 0.7, none by 1.4 |
-| Matched filter | the receive RRC | off at 0.5: 4 of 110 lines; on: all |
+| Noise | closes the eye, spreads the symbol bands, breaks the text | whole lines fail soon after single bits do |
+| Matched filter | the receive RRC | keeps the text alive at noise that breaks it without |
 | Clock error | Symbol Sync tracks it | locks from a cold start to about 25,000 ppm |
 | Polarity | an inverted link finds no packets | the Costas Loop can flip it |
 ::::

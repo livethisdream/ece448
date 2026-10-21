@@ -154,23 +154,23 @@ most 2 bits differ.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \question \textbf{Watching noise break the text.} The L10 link runs at a noise
 amplitude of 0.3 with every line intact. A cadet raises the noise slider a step at a
-time while watching the matched-filter eye, the Symbol Sync output, and the Received and
+time while watching the receive-filter eye, the Symbol Sync output, and the Received and
 Lines labels.
 \begin{parts}
 
 	\part Describe, in order, what changes on each display as the noise rises from 0.3
-	to about 1.4.
+	until no line arrives.
 		\begin{solution}[1.4in]
 		The eye fills in from above and below until it closes. The Symbol Sync output,
 		two tight bands at $\pm 1$, spreads into two clouds that reach toward zero. Then
 		single characters go wrong in the Received label, the correct count falls behind
 		the received count, and finally the received count falls too, because a wrong bit
-		in the access code or header loses the whole line. By about 1.4, no line arrives
+		in the access code or header loses the whole line. In the end no line arrives
 		intact.
 		\end{solution}
 
 	\begin{minipage}[t]{0.58\linewidth}
-		\part At 1.1, the line reads \texttt{USAFA ECE 448: ASCII over PCM.} instead of
+		\part With the noise raised, the line reads \texttt{USAFA ECE 448: ASCII over PCM.} instead of
 		\texttt{\ldots PAM.} `A' is 0x41 and `C' is 0x43. How many bits went wrong in
 		that character, and which one?
 		\begin{solution}[1.0in]
@@ -192,14 +192,15 @@ Lines labels.
 		it is more likely to catch at least one wrong bit.
 		\end{solution}
 
-	\part At a noise amplitude of 0.5, every line arrives. The cadet switches the
-	matched filter off, and only a few lines in a hundred arrive intact. Explain why,
-	and say which display shows it first.
-		\begin{solution}[1.1in]
-		The signal occupies only a few kilohertz of the 32 kHz the samples represent. The
-		matched filter blocks the noise outside the signal's band; without it, all that
-		noise reaches Symbol Sync and the slicer, and many samples cross zero. The eye
-		shows it first: its opening disappears the moment the filter is switched off.
+	\part The cadet sets the noise back to 0.3, the default, where every line arrives,
+	and switches the matched filter off. Describe what the eye and the Symbol Sync
+	output look like with the filter off, and explain why they change.
+		\begin{solution}[1.2in]
+		The eye's traces turn jagged and its opening narrows, and the two bands of the
+		Symbol Sync output widen toward zero; an occasional sample crosses it, so now and
+		then a line goes wrong or goes missing. The signal occupies only a few kilohertz of
+		the 32 kHz the samples represent. The matched filter blocks the noise outside the
+		signal's band; without it, all that noise reaches Symbol Sync and the slicer.
 		\end{solution}
 
 \end{parts}

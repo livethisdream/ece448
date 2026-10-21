@@ -159,7 +159,7 @@ with the sliders at their defaults, a noise amplitude of 0.3 and a clock error o
 
 	\part Paste a screenshot of the running flowgraph's window.
 		\begin{solution}[1.6in]
-		The window shows an open matched-filter eye, Symbol Sync output in two tight
+		The window shows an open receive-filter eye, Symbol Sync output in two tight
 		bands at $\pm 1$, and the received line of text.
 		\end{solution}
 
@@ -299,11 +299,12 @@ moves.
 
 	\begin{minipage}[t]{0.58\linewidth}
 		\part Record the noise amplitude at which lines start to break, where the correct
-		count first falls behind the lines sent, and the setting at which no line arrives
-		intact in 20 s.
+		count first falls behind the received count on the Lines label, and the setting
+		at which no line arrives intact in 20 s.
 		\begin{solution}[1.0in]
-		Lines start to break near 0.7 (between 0.6 and 0.8, depending on the run): a
-		few lines in a hundred arrive with a wrong character or not at all. About half
+		Lines start to break near 0.7 (between 0.6 and 0.8, depending on the run): the
+		correct count first falls behind the received count, as a few lines in a hundred
+		arrive with a wrong character. About half
 		arrive intact near 1.0, and none arrive intact by about 1.4 (between 1.3 and
 		1.5).
 		\end{solution}

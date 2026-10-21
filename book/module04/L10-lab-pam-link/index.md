@@ -82,7 +82,7 @@ These follow from Lesson 10. The packet size is exact: 64 bits of access code, 3
 - The access-code search finds the right offset by itself.
 :::
 
-The figure shows one run of `L10-pam-raw.grc`. At an offset of 0 the receiver groups the bits one to seven bits away from the true byte boundary, and almost nothing it prints is a character. At an offset of 3 the same bits read as the line of text. The right offset depends on the bit at which the receiver started listening, so it changes from run to run, and a person has to find it again each time. The receiver in the Mathys reading used this kind of hand-set delay.
+The figure shows one run of `L10-pam-raw.grc`. At an offset of 0 the receiver groups the bits one to seven bits away from the true byte boundary, and almost nothing it prints is a character. At an offset of 3 the same bits read as the line of text. The right offset depends on the bit at which the receiver started listening, so it changes from run to run, and a person has to find it again each time. The receiver in the 2025 reading, <a class="doc-link" href="../../legacy/L14-ascii-pam.pdf" target="_blank" rel="noopener">Mathys (2016), Motivating Undergraduate Communication Theory Using GNU Radio</a>, used this kind of hand-set delay.
 
 The access code removes that step. Correlate Access Code - Tag Stream compares every 64-bit window of the received bits with the code, so it finds the first bit of each packet wherever the receiver started, and Repack Bits starts each byte there. That is why `L10-pam-link.grc` shows text within about a second every time it starts.
 ::::

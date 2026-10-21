@@ -24,7 +24,7 @@ Spring 2027 · Dr. Neil Rogers
 
 - Lesson 8: text in packets behind an access code
 - Lesson 9: the PAM link, from bits to one clean sample per symbol; decide by the sign
-- The reading: Mathys, four acts from text to matched filter
+- The reading: Mathys (2016), four acts from text to matched filter
 
 Today: text in at one end of the PAM link and out the other.
 
@@ -117,7 +117,7 @@ The time sink triggers on the packet_len tag. 31 in 16 bits is eleven zeros and 
 <img src="./img/10-ascii-pam/L10-grc-rx.png" alt="The channel and receiver of the L10 link in GRC" style="max-height:330px; display:block; margin:0 auto;">
 
 - Matched filter and Symbol Sync: Lesson 9's settings
-- New: Binary Slicer, Correlate Access Code, Repack Bits
+- From the L8 link: Binary Slicer, Correlate Access Code, Repack Bits
 
 Note:
 The channel is a Fractional Resampler for the clock error and a Noise Source. The Binary Slicer outputs a 1 for any sample above zero. Repack Bits packs 8 bits into a byte, MSB first. The Text Sink is the Embedded Python Block from Lesson 8.
@@ -153,29 +153,29 @@ Start at 12 dB, where the search finds the packet at bit 40. Press new noise a f
 
 ## Noise Without a Matched Filter
 
-<img src="./img/10-ascii-pam/L10-link-mf-off.png" alt="The L10 link at noise 0.5 with the matched filter off: no eye opening and 4 of 110 lines correct" style="max-height:380px; display:block; margin:0 auto;">
+<img src="./img/10-ascii-pam/L10-link-mf-off.png" alt="The L10 link at noise 0.4 with the matched filter off: almost no eye opening, scattered symbols, and a wrong character" style="max-height:380px; display:block; margin:0 auto;">
 
-Matched filter off, noise 0.5: 4 of 110 lines intact.
+Matched filter off, noise 0.4: watch the characters go wrong.
 
 Note:
-Click the Matched filter switch off, then set the noise to 0.5. The noise across the whole 32 kHz reaches the slicer, the eye has no opening, and the symbols scatter across zero. This is the third act of the Mathys reading.
+Click the Matched filter switch off, then set the noise to 0.4. The noise across the whole 32 kHz reaches the slicer, the eye has almost no opening, and the symbols scatter toward zero. Point at the Lines label: correct falls behind received. This is the third act of the Mathys reading (Mathys 2016, on the lesson page).
 
 ---
 
 ## The Matched Filter
 
-<img src="./img/10-ascii-pam/L10-link-noisy.png" alt="The L10 link at noise 1.0 with the matched filter on: a mostly closed eye, spread symbol bands, and 94 of 198 lines correct" style="max-height:380px; display:block; margin:0 auto;">
+<img src="./img/10-ascii-pam/L10-link-noisy.png" alt="The L10 link at noise 1.0 with the matched filter on: a mostly closed eye, spread symbol bands, and two wrong characters" style="max-height:380px; display:block; margin:0 auto;">
 
-On at 0.5: every line. Raised to 1.0: about half.
+Filter on: every line again. Raise the noise until it breaks.
 
 Note:
-Switch the filter back on at 0.5 and every line arrives. Then drag the noise up live. Lines start to break near 0.7, about half survive at 1.0, and none arrive by 1.4. A line needs all of its header and payload bits right, which is why the change from all to none is so quick. Point at the eye and the bands.
+Switch the filter back on at 0.4 and every line arrives. Then drag the noise up live and stop when characters go wrong; the lab finds the exact settings. A line needs all of its header and payload bits right, which is why the change from all to none is so quick. Point at the eye and the bands.
 
 ---
 
 ## Clock Error
 
-<img src="./img/10-ascii-pam/L10-link-clock.png" alt="The L10 link at a 10,000 ppm clock error: a smeared eye but tight Symbol Sync output and 210 of 212 lines correct" style="max-height:380px; display:block; margin:0 auto;">
+<img src="./img/10-ascii-pam/L10-link-clock.png" alt="The L10 link at a 10,000 ppm clock error: a smeared eye but tight Symbol Sync output and nearly every line correct" style="max-height:380px; display:block; margin:0 auto;">
 
 Symbol Sync locks cold to about 25,000 ppm; two 20 ppm crystals differ by up to 40 ppm.
 
