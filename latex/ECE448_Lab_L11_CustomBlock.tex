@@ -196,6 +196,19 @@ resort build the two modules on a teammate's laptop for Questions 3(a) and 5.
 		\end{solution}
 
 	\begin{minipage}[t]{0.58\linewidth}
+		\part One sending of ``ECE'' is 26 units long, with its final word gap. How long
+		does it last at 15 WPM, and how many points is that at the detector's 1 kHz
+		output rate? You set the Time Sinks' Number of Points to this at the bench.
+		\begin{solution}[0.6in]
+		$26 \times 80\ \text{ms} = 2.08$ s, and $2.08 \times 1000 = 2080$ points.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.0in]{2.08 s, 2080}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
 		\part Averaging 32 samples, how many detector outputs is a dit? Averaging 128, how
 		long does one output last, and how many outputs is a dit? How many marks (key-downs)
 		does one sending of ``ECE'' hold, and how many arrive in 30 s?
@@ -276,8 +289,11 @@ resort build the two modules on a teammate's laptop for Questions 3(a) and 5.
 	keying for at least 20 s. Record your settings and paste a screenshot.
 		\begin{solution}[1.3in]
 		At $-6$ dB and no hysteresis the key chatters through every gap. A threshold of
-		$-2.5$ dB with 1 to 3 dB of hysteresis gives a key that matches the keying: the
-		on level sits 3.5 dB above the floor and the off level stays above it.
+		$-2.5$ dB with 1 to 2 dB of hysteresis gives a key that matches the keying: the
+		on level sits 3.5 dB above the floor, and the off level stays above the floor's
+		wander. With 3 dB the off level, $-5.5$ dB, sits inside that wander, so the key
+		still follows the keying but some marks run a millisecond or two long
+		(Question 8).
 		\end{solution}
 
 \end{parts}

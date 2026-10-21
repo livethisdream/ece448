@@ -285,7 +285,7 @@ A Windows laptop without them has two other routes. The first is WSL2 with Ubunt
 - The same block keys on their bursts.
 :::
 
-On-off keying sends a 1 as a burst of carrier and a 0 as silence, the same signal as today's keyed tone, only faster. Weather sensors, doorbells, and some remotes in the US use on-off keying at 433.92 MHz, as low-power unlicensed devices under FCC Part 15. `L11-ook-rtlsdr.grc` tunes an RTL-SDR 200 kHz below 433.92 MHz to keep the radio's DC spike off the signal, shifts the signal to 0 Hz and decimates to 128 kHz, and runs the Energy Detector with $N = 4$. The time sink draws the key at $-60$ dB when it is off and $-40$ dB when it is on, so it shares the power plot's axis. Set the threshold halfway between the floor and the burst level on the power plot, press a remote nearby, and the key traces its bursts. The flowgraph only receives. This page has not run it, because it needs an RTL-SDR and a remote, so the figure shows the flowgraph in GRC, not a capture.
+On-off keying sends a 1 as a burst of carrier and a 0 as silence, the same signal as today's keyed tone, only faster. Weather sensors, doorbells, and some remotes in the U.S. use on-off keying at 433.92 MHz, as low-power unlicensed devices under FCC Part 15. First find the bursts in GQRX: tune the RTL-SDR to 433.92 MHz and watch the waterfall while you press the remote, and each press paints a short streak. Then close GQRX and open the flowgraph. `L11-ook-rtlsdr.grc` tunes an RTL-SDR 200 kHz below 433.92 MHz to keep the radio's DC spike off the signal, shifts the signal to 0 Hz and decimates to 128 kHz, and runs the Energy Detector with $N = 4$. The time sink draws the key at $-60$ dB when it is off and $-40$ dB when it is on, so it shares the power plot's axis. Set the threshold halfway between the floor and the burst level on the power plot, press a remote nearby, and the key traces its bursts. The flowgraph only receives. This page has not run it, because it needs an RTL-SDR and a remote, so the figure shows the flowgraph in GRC, not a capture.
 ::::
 
 ::::{frame} Key Point
@@ -304,6 +304,12 @@ A block several flowgraphs need belongs in an out-of-tree module: gr_modtool wri
 - <a class="doc-link" href="../../grc/L11-ook-rtlsdr.grc" download>L11-ook-rtlsdr.grc</a>: the Energy Detector on an RTL-SDR at 433.92 MHz, for OOK remotes. Needs `gr-ece448` and an RTL-SDR; receive only.
 
 Unzip the module, then follow its `README.md` from the radioconda prompt. Open a `.grc` file from GRC's File menu, or run `gnuradio-companion L11-keyed-carrier.grc`.
+
+Tutorials this lesson follows, on the GNU Radio wiki:
+
+- <a class="doc-link" href="https://wiki.gnuradio.org/index.php/Creating_Your_First_Block" target="_blank" rel="noopener">Creating Your First Block</a>
+- <a class="doc-link" href="https://wiki.gnuradio.org/index.php/Embedded_Python_Block" target="_blank" rel="noopener">Embedded Python Block</a>
+- <a class="doc-link" href="https://wiki.gnuradio.org/index.php/Creating_Python_OOT_with_gr-modtool" target="_blank" rel="noopener">Creating Python OOT with gr-modtool</a>
 ::::
 
 ::::{frame} Summary

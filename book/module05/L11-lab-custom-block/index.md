@@ -29,7 +29,7 @@ L11 Lab · Module 5: Custom Blocks & Midterm · Dr. Neil Rogers
 ::::{frame} From Lesson to Bench
 :::{present}
 - **Pre-Lab:** check your tools and work out the Morse timing at 15 WPM.
-- **Bench:** build `gr-ece448`, read the levels off the plot and set them, then write and time your own Key Timer.
+- **Bench:** build `gr-ece448`, set the levels from the plot, then write and time a Key Timer.
 - **Writeup:** explain hysteresis and timing, and what a Morse decoder needs.
 :::
 
@@ -45,7 +45,7 @@ The lab packet has three parts, and you turn it in once, complete, before the mi
 - Work out the Morse timing at 15 WPM.
 :::
 
-At the radioconda prompt, run `gnuradio-config-info --version`, `gr_modtool --help`, and `cmake --version`. If `cmake` is missing, run `conda install -c conda-forge gnuradio-build-deps`; on macOS, also run `xcode-select --install` once. Question 2 asks for the length of each Morse element at 15 words per minute, where one unit lasts $1.2/15$ s, and how many detector outputs a dit spans. You read the Energy Detector's levels off its Power plot at the bench.
+At the radioconda prompt, run `gnuradio-config-info --version`, `gr_modtool --help`, and `cmake --version`. If `cmake` is missing, run `conda install -c conda-forge gnuradio-build-deps`; on macOS, also run `xcode-select --install` once. Question 2 asks for the length of each Morse element at 15 words per minute, where one unit lasts $1.2/15$ s, how long one sending of "ECE" lasts and how many points that is at 1 kHz, and how many detector outputs a dit spans. You read the Energy Detector's levels off its Power plot at the bench.
 ::::
 
 ::::{frame} Two Routes
@@ -148,6 +148,12 @@ The Writeup is three questions. The first explains why some marks read a millise
 - <a class="doc-link" href="../../grc/L11-gr-ece448.zip" download>L11-gr-ece448.zip</a>: the `gr-ece448` module with the Energy Detector and its unit test.
 - <a class="doc-link" href="../../grc/L11-keyed-carrier.grc" download>L11-keyed-carrier.grc</a>: the keyed carrier through the installed Energy Detector. No hardware needed.
 - <a class="doc-link" href="../../grc/L11-keyed-carrier-epy.grc" download>L11-keyed-carrier-epy.grc</a>: the same flowgraph with the Energy Detector in an Embedded Python Block. Needs nothing installed.
+
+Tutorials this lesson follows, on the GNU Radio wiki:
+
+- <a class="doc-link" href="https://wiki.gnuradio.org/index.php/Creating_Your_First_Block" target="_blank" rel="noopener">Creating Your First Block</a>
+- <a class="doc-link" href="https://wiki.gnuradio.org/index.php/Embedded_Python_Block" target="_blank" rel="noopener">Embedded Python Block</a>
+- <a class="doc-link" href="https://wiki.gnuradio.org/index.php/Creating_Python_OOT_with_gr-modtool" target="_blank" rel="noopener">Creating Python OOT with gr-modtool</a>
 ::::
 
 ::::{frame} Looking Ahead

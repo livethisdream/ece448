@@ -52,7 +52,7 @@ Parts 1 and 3 are LO 5.1, the packaging. Part 2 and the levels are LO 5.2, the b
 Our block turns the carrier into a key: 1 while it is on.
 
 Note:
-Run L11-keyed-carrier.grc live. Morse ECE at 20 WPM, so a dit is 60 ms. The tone has power 0 dB and the noise at amplitude 0.1 has power minus 20 dB.
+Run L11-keyed-carrier.grc live. Morse ECE at 20 WPM, so a dit is 60 ms. On the Power plot the carrier reads 0 dB and the floor near minus 20 dB.
 
 ---
 
@@ -232,7 +232,7 @@ macOS also needs xcode-select --install; we did not test a Mac or the Windows Bu
 The same block keys on a 433.92 MHz remote. The flowgraph only receives.
 
 Note:
-Tuned 200 kHz low to keep the DC spike off the signal. N = 4 at 128 kHz is about 31 microseconds per output, short enough for pulses a few hundred microseconds long. Not run for the page: it needs an RTL-SDR and a remote.
+Find the bursts in GQRX first: tune 433.92 MHz and watch the waterfall while pressing the remote. Then close GQRX and open the flowgraph. Tuned 200 kHz low to keep the DC spike off the signal. N = 4 at 128 kHz is about 31 microseconds per output, short enough for pulses a few hundred microseconds long. Not run for the page: it needs an RTL-SDR and a remote.
 
 ---
 
@@ -249,6 +249,8 @@ The Energy Detector is the first block in gr-ece448; Lesson 12 can reuse it.
 
 - L11 Lab: build gr-ece448, then write a Key Timer block in a module of your own
 - Lesson 12: turn the key into Morse letters
+
+Wiki tutorials: Creating Your First Block · Embedded Python Block · Creating Python OOT with gr-modtool
 
 Note:
 Before the lab, make sure gr_modtool runs at the radioconda prompt, and decide with your instructor whether your laptop takes the module route or the Embedded Python Block route.
