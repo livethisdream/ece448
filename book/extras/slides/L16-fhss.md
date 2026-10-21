@@ -23,7 +23,7 @@ Spring 2027 · Dr. Neil Rogers
 ## Where We Were
 
 - Lesson 8 sent text through an FSK transmitter, a channel, and a receiver.
-- Lesson 10 put each line behind a 64-bit access code.
+- Lesson 8 also put each line in a packet behind a 64-bit access code.
 - Lesson 11 wrote Embedded Python Blocks.
 
 Today we send Lesson 8's packets on a new channel every hop.
@@ -35,14 +35,13 @@ Open both L16 flowgraphs in GRC before class. The link flowgraph runs in the fir
 
 ## Today's Plan
 
-1. The hopping transmitter
-2. The hop sequence and the hop timing
-3. The receiver: de-hopping
-4. Finding the hops: sync on a known hop
-5. A narrowband jammer
+1. The hopping transmitter and the hop sequence
+2. The receiver: de-hopping
+3. Finding the hops: sync on a known hop
+4. A narrowband jammer
 
 Note:
-Parts 1 and 2 are the transmitter, parts 3 and 4 the receiver. Part 5 runs live with the jammer slider.
+These are the four parts of the lesson page. Part 1 is the transmitter, parts 2 and 3 the receiver. Part 4 runs live with the jammer slider.
 
 ---
 

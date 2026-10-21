@@ -41,6 +41,7 @@ Questions 1 to 5 run on your laptop and transmit nothing. Question 6 transmits, 
 :::{present}
 - `L16-fhss-link.grc` runs, locks, and decodes `USAFA ECE 448`.
 - Predict the hop timing and the timing window with 4 guard bytes.
+- Predict your own hopper's hop frequencies and timing.
 - Predict the packets delivered past a jammer with 2 and 4 channels.
 :::
 
@@ -53,10 +54,12 @@ Question 2 asks for predictions from the lesson: the length of a hop, the hop ra
 :::{present}
 | Check | Source |
 | :-- | :-- |
-| Hop length | bits per hop / 1000 baud |
+| Hop length | bits / 1000 baud |
 | Cycle time | channels × hop length |
-| Timing window | the guard time at each end |
-| Delivered past a jammer | the share of hops on the jammed channel |
+| Your hop time | `dwell` / `samp_rate` |
+| Timing window | guard time per end |
+| Strong jammer | share of hops on its channel |
+| Weak jammer | its own-channel loss, over 8 |
 :::
 
 These follow from Lesson 16. The hop timing is exact. The timing window and the jamming fractions are approximate: the access-code search tolerates 2 wrong bits, which stretches the window a little on the late side, and the count of packets in a short run varies with the noise. That is why the packet records the delivered fraction over at least 30 s at each setting.
@@ -84,14 +87,14 @@ These follow from Lesson 16. The hop timing is exact. The timing window and the 
 1. Open and run `L16-fhss-link.grc` with every slider at its default. Wait until the Receiver label reads "locked" and the Received label shows the message.
 2. Set the jammer amplitude to 2 on channel 4. Wait 30 s and record the Packets label for Question 4(a). The counts restart each time a slider moves.
 3. Close the flowgraph. On the canvas, double-click the variable `nch` and set it to 1, which keeps the link on one channel. Run it, set the jammer amplitude to 0.7, wait 30 s, and record the Packets label for Question 4(b). Close it, set `nch` back to 8, run it, set the jammer to 0.7 on channel 4, and record the Packets label again.
-4. Set `nch` to 2, run it, set the jammer to 2 on channel 1, and record the Packets label after 30 s. Do the same with `nch` set to 4. Set `nch` back to 8.
-5. Set the jammer amplitude to 3 on channel 7, the sync channel for key 448, while the receiver is locked, and record the Packets label after 30 s. Then close the flowgraph. The receiver locks about 0.1 s after a run starts, too fast to move a slider first, so on the canvas double-click the QT GUI Range `jam_amp` and set its Default Value to 3, and set `jam_ch`'s Default Value to 7. Run it, and record the Receiver and Packets labels after 30 s, for Question 4(d). Set both Default Values back to 0 and 4.
+4. Close the flowgraph. Set `nch` to 2, run it, set the jammer to 2 on channel 1, and record the Packets label after 30 s. Do the same with `nch` set to 4. Set `nch` back to 8.
+5. Run it and wait for "locked". Set the jammer amplitude to 3 on channel 7, the sync channel for key 448, while the receiver is locked, and record the Packets label after 30 s. Then close the flowgraph. The receiver locks about 0.1 s after a run starts, too fast to move a slider first, so on the canvas double-click the QT GUI Range `jam_amp` and set its Default Value to 3, and set `jam_ch`'s Default Value to 7. Run it, and record the Receiver and Packets labels after 30 s, for Question 4(d). Set both Default Values back to 0 and 4.
 ::::
 
 ::::{frame} Part 2: Sync
 :class: read-only
 
-1. Set the jammer amplitude back to 0. Set the Receiver hop offset to +1, wait 20 s, and record the Packets label. Do the same at −1. Set it back to 0.
+1. Set the jammer amplitude back to 0. Set the Receiver hop offset to +1, wait 30 s, and record the Packets label. Do the same at −1. Set it back to 0.
 2. Close the flowgraph. Set the variable `guard` to 4, run it, and wait for the receiver to lock. Set the Receiver timing error to −24, +24, −30, +30, −36, and +36 ms in turn, and record the Packets label after 30 s at each, for Question 5(b). Set `guard` back to 2 when you finish.
 3. With the timing error at 0, move the Path delay slider from 100 to 500 ms and start a stopwatch. The Packets label restarts at 0 correct when the slider moves; stop the watch when its correct count first rises above 0. Repeat three times, moving the slider between 100 and 500 ms, for Question 5(c).
 ::::
@@ -125,7 +128,7 @@ In class we transmit only into a cable, into a shielded enclosure, or at very lo
 :class: read-only
 
 <img src="../../viz/img/L16-pluto-sim.png"
-     alt="L16-fhss-pluto.grc run in simulation, labeled SIMULATED on the figure, with a model of the cable, a 37 ms delay, and the Pluto's estimated levels and noise in place of the PlutoSDR: at 60 dB TX attenuation, 40 dB RX gain, and a jammer of amplitude 2 on channel 4, the received-band waterfall shows the hopping dashes and the jammer line at plus 5 kHz, the After Hop Sync waterfall shows the signal steady at 0 Hz and the jammer hopping, and the labels read Receiver locked, Packets 91 correct of 104 sent in 25 s (88%), and Received USAFA ECE 448"
+     alt="L16-fhss-pluto.grc run in simulation, labeled SIMULATED on the figure, with a model of the cable, a 37 ms delay, and the Pluto's estimated levels and noise in place of the PlutoSDR: at 60 dB TX attenuation, 40 dB RX gain, and no jammer, the received-band waterfall shows the hopping dashes, the After Hop Sync waterfall shows the signal steady at 0 Hz, and the labels read Receiver locked, Packets 104 correct of 105 sent in 25 s (99%), and Received USAFA ECE 448"
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto 12px;">
 
 The figure is the PlutoSDR flowgraph run in simulation, with the Pluto Sink and Source replaced by a model of the cable that uses our estimate of the Pluto's levels and a fixed delay of 37 ms between the ports. The real levels and delay will differ, but Hop Sync and the AGC should give the same picture. On the bench, look for the same three things: the hopping dashes on the received-band waterfall, a steady trace at 0 Hz after Hop Sync with the Receiver label reading "locked", and the message in the Received label.

@@ -47,7 +47,7 @@ Lesson 16 · Module 6: Waveform Applications & RF Reverse Engineering · Dr. Nei
 - A jammer parked on one channel stops only one hop in eight.
 :::
 
-The figure is today's flowgraph, `L16-fhss-link.grc`, running. The transmitter is Lesson 8's FSK modem sending Lesson 10's packets, one packet per **hop**, and it moves to a new channel for every hop. The left waterfall is the band the receiver sees: the signal appears as short dashes that step around eight channels, and a **jammer**, a strong tone parked on one channel, is the solid vertical line at +5 kHz.
+The figure is today's flowgraph, `L16-fhss-link.grc`, running. The transmitter is Lesson 8's FSK modem sending Lesson 8's packets, one packet per **hop**, and it moves to a new channel for every hop. The left waterfall is the band the receiver sees: the signal appears as short dashes that step around eight channels, and a **jammer**, a strong tone parked on one channel, is the solid vertical line at +5 kHz.
 
 The receiver follows the same sequence of channels. The right waterfall is its output after the **Hop Sync** block: the signal stands still at 0 Hz, and now the jammer appears to hop. The receiver loses only the hops that land on the jammed channel, 1 in 8, and the Packets label shows 88% of the packets arriving intact. This is **frequency-hopping spread spectrum** (FHSS).
 ::::
@@ -71,7 +71,7 @@ Bluetooth Classic hops among 79 channels 1 MHz apart, from 2402 MHz up, in slots
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
-- The top row is Lesson 8's FSK transmitter with Lesson 10's packets.
+- The top row is Lesson 8's FSK transmitter and its packets.
 - A **VCO** driven by the hop sequence is the hop synthesizer.
 - **Multiply** moves the FSK signal to each hop's channel.
 :::
@@ -207,9 +207,9 @@ FSK suits a hopper because the receiver does not need the carrier's phase. The t
 - When the power there jumps, hop 0 has started: it locks and hops from then on.
 :::
 
-A receiver that knows the key still does not know two things when it starts: which hop the transmitter is on, and when that hop began. The path delay alone is unknown, and on a real radio so are the latency of USB buffers and the instant the transmitter started. We use **sync on a known hop**. Hop Sync parks on the **sync channel**, `seq[0]`, channel 7 for key 448, and measures the power in it every 0.5 ms. Because the sequence visits each channel once per cycle, the transmitter can appear on channel 7 only on hop 0. When the power in the last 2 ms rises 6 dB above its average over an 18 ms window just before, hop 0 has just begun, and Hop Sync takes that instant as its hop boundary and starts hopping. It waits at most one cycle, 1.92 s.
+A receiver that knows the key still does not know two things when it starts: which hop the transmitter is on, and when that hop began. The path delay alone is unknown, and on a real radio so are the latency of USB buffers and the instant the transmitter started. We use **sync on a known hop**. Hop Sync parks on the **sync channel**, `seq[0]`, channel 7 for key 448, and measures the power in it every 0.5 ms. Because the sequence visits each channel once per cycle, the transmitter can appear on channel 7 only on hop 0. When the power in the last 2 ms rises 6 dB above its average over an 18 ms window ending 4 ms earlier, hop 0 has just begun, and Hop Sync takes that instant as its hop boundary and starts hopping. It waits at most one cycle, 1.92 s.
 
-Other designs were possible. A **start-of-hop marker**, such as the access code alone, gives timing within a hop but not which hop it is. **Time of day**, which SINCGARS uses, needs a clock shared to within the guard time. Sync on a known hop needs neither, only the key; its weakness is the one channel it listens on, which the Jammer frames below measure.
+Other designs were possible. A **start-of-hop marker**, such as the access code alone, gives timing within a hop but not which hop it is. **Time of day**, which SINCGARS uses, needs a clock shared to within the guard time. Sync on a known hop needs neither, only the key. It has two weaknesses. It listens on one channel to acquire, which the Jammer frames below measure. And once locked, Hop Sync keeps hopping on its own count of samples and never adjusts its timing; the packets only keep it from parking again. On one Pluto, whose transmitter and receiver share a clock, that does no harm, but between two radios whose clocks differ by a few parts per million, the hop boundaries would drift apart until they left the guard time.
 ::::
 
 ::::{frame} Losing and Regaining Sync
@@ -223,7 +223,7 @@ Other designs were possible. A **start-of-hop marker**, such as the access code 
 - It locks on the next hop 0; here the receiver lost 17 packets.
 :::
 
-The figure moves the path delay from 100 to 400 ms while the link runs, as if the buffering between the two radios had changed. The receiver's hop boundaries now fall 300 ms, more than a whole hop, away from the transmitter's, so it lands on the wrong channels and the scattered stretch on the right waterfall appears. Hop Sync counts the hops since the last packet, and when more than 9 pass, a cycle and a hop, with none, it parks on the sync channel again. It locks when hop 0 next arrives, and the steady trace returns.
+The figure moves the path delay from 100 to 400 ms while the link runs, as if the buffering between the two radios had changed. The receiver's hop boundaries now fall 300 ms, more than a whole hop, away from the transmitter's, so it lands on the wrong channels and the scattered stretch on the right waterfall appears. Hop Sync counts the hops since the last packet, and when more than 9 pass, a cycle and a hop, with none, it parks on the sync channel again. It locks when hop 0 next arrives, and the steady trace returns. The waterfall's time axis is only approximate, because the GUI scrolls one row per display update; on it, an 8-hop cycle of 1.92 s spans about 1.5 s. We read times from the Packets label instead.
 
 The receiver loses about 10 hops, 2.4 s, plus up to one more cycle and a hop, 2.2 s, depending on where in the cycle the transmitter is when Hop Sync parks. Here the Packets label shows 20 of 37 packets since the slider moved: the receiver lost 17 hops, 4.1 s, near the long end of that range.
 ::::
@@ -295,7 +295,7 @@ We measured the link headless at noise amplitude 1, with two noise seeds at each
 
 A jammer equal in power to the signal stops a fixed-channel link completely, and the hopping link still delivers 7 packets in 8. To take every hop, the jammer has to cover all 8 channels. The same transmitter power spread over 8 channels puts $10 \log_{10} 8 = 9$ dB less on each: eight tones of amplitude 0.354, together equal in power to one tone of amplitude 1, blocked no packets at all. Eight tones of amplitude 1, 8 times the power, took every hop: no packet arrived after they came on, and with the sync channel jammed too, the receiver never locked again.
 
-The receiver has one weak point, the sync channel. With the tone of amplitude 3 on the sync channel, channel 7, from the start, Hop Sync never saw the power jump and never locked: 0 packets. Turned on after the receiver had locked, the same jammer took only its 1 hop in 8, and 88% of the packets after it came on arrived. A real system protects acquisition by using several sync channels, as Bluetooth's inquiry procedure does with 32, or by sending the hop number in every packet so that any hop can serve.
+The receiver has one weak point, the sync channel. With the tone of amplitude 3 on the sync channel, channel 7, from the start, Hop Sync never saw the power jump and never locked: 0 packets. Turned on after the receiver had locked, the same jammer took only its 1 hop in 8, and 88% of the packets after it came on arrived, because the receiver kept hopping on its own count. But if that receiver ever lost lock, it would park on the jammed channel and never lock again. A real system protects acquisition too; the lab asks how.
 ::::
 
 ::::{frame} Frequency Hopping on a Real Radio

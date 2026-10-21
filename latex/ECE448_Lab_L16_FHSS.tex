@@ -275,7 +275,7 @@ the lab page lists, with your order from Question 2(c).
 		\begin{solution}[1.0in]
 		2000 samples is 15.6 ms, about 6\% of a hop. The carrier sits at 0 Hz for most of
 		each hop, and for the first 15.6 ms of each hop it jumps to $f_k - f_{k-1}$, which shows
-		as a short blip at each hop boundary. A receiver with 16 ms guards would still
+		as short blips at hop boundaries. A receiver with 16 ms guards would still
 		receive every packet.
 		\end{solution}
 
@@ -297,26 +297,27 @@ percent.
 	\hline
 	\texttt{nch} & 8 & 1 & 8 & 2 & 4 \\\hline
 	Jammer & 2, ch 4 & 0.7 & 0.7, ch 4 & 2, ch 1 & 2, ch 1 \\\hline
-	Delivered & \kv{88\%} & \kv{$\approx 44\%$} & \kv{$\approx 94\%$} & \kv{50\%} & \kv{75\%} \\\hline
+	Delivered & \kv{88\%} & \kv{40--46\%} & \kv{$\approx 94\%$} & \kv{50\%} & \kv{75\%} \\\hline
 	\end{tabular}
 	\end{center}
 
 		\begin{solution}[0.9in]
-		Measured headless over 160 to 320 hops: 87.8\%, 42 to 46\%, 93 to 94\%, 50\%,
-		and 75\%. A 30 s run is about 125 hops, so each count can differ by a few packets.
+		Measured headless over 160 to 320 hops: 87.8\%, about 40 to 46\%, 93 to 94\%, 50\%,
+		and 75\%. A 30 s run is only about 125 hops, so a cadet's percentages can differ from
+		these by a few points.
 		\end{solution}
 
 	\begin{minipage}[t]{0.58\linewidth}
 		\part Use your fixed-channel result at 0.7 as $p$ in Question 2(d), and compare the
 		prediction with the hopping result.
 		\begin{solution}[0.9in]
-		With $p = 0.44$, $1 - 0.56/8 = 0.93$, and the hopping link delivered about 94\%: the
+		With $p \approx 0.44$, $1 - 0.56/8 \approx 0.93$, and the hopping link delivered about 94\%: the
 		jammer takes some of the hops on its own channel and none of the others.
 		\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
 		\raggedleft \vspace{12pt}
-		\ansbox[1.1in]{93\% vs. 94\%}
+		\ansbox[1.3in]{about 93\% vs. 94\%}
 	\end{minipage}
 
 	\part Explain why the delivered fraction at 2 and 4 channels matches Question 2(d).
@@ -474,9 +475,9 @@ before you disconnect the cable.
 	change to Hop Sync or to the packet that removes that weakness.
 		\begin{solution}[1.5in]
 		Hop Sync acquires only on the sync channel, by the jump in its power when hop 0
-		arrives. A jammer already there hides that jump, so the receiver waits forever; a
-		receiver already locked keeps its timing from the packets on the other seven
-		channels. Two fixes: put the hop number in every packet's header and let Hop Sync
+		arrives. A jammer already there hides that jump, so the receiver waits forever. A
+		receiver already locked keeps hopping on its own sample count; packets on the other
+		channels keep the watchdog from parking it again. Two fixes: put the hop number in every packet's header and let Hop Sync
 		park on any channel, lock on the first packet it decodes there, and read which hop
 		it was; or give the receiver two or more sync channels and have it move to the
 		next when one stays busy, as Bluetooth's inquiry procedure uses 32.

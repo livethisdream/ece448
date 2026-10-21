@@ -8,7 +8,8 @@ options:
     copyright: ''
     description: 'L16 Lab: the hopping FSK link through one PlutoSDR, TX port to RX
       port through a 30 dB attenuator, at 915 MHz. A jammer tone added in software
-      leaves the same TX port. Needs a PlutoSDR.'
+      leaves the same TX port. Transmit only into the cable. Run only in simulation
+      so far. Needs a PlutoSDR.'
     gen_cmake: 'On'
     gen_linking: dynamic
     generate_options: qt_gui
