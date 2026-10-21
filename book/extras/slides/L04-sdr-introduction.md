@@ -39,9 +39,10 @@ Bring the RTL-SDR, HackRF, PlutoSDR, and ADALM-PHASER to the front of the room a
 4. Sample rate and bandwidth
 5. Bits and clipping, in a flowgraph
 6. Choosing the radio and its settings
+7. The FM band in GQRX
 
 Note:
-Item five runs live from L04-adc-bits.grc, which needs no hardware. If GNU Radio is not yet installed on the projector laptop, use the screenshots on the lesson page.
+Item five runs live from L04-adc-bits.grc, which needs no hardware. If GNU Radio is not yet installed on the projector laptop, use the screenshots on the lesson page. Item seven needs an RTL-SDR on the projector laptop.
 
 ---
 
@@ -227,6 +228,18 @@ On a real SDR these false signals look exactly like transmissions. Set the gain 
 
 Note:
 Broadcast FM: RTL-SDR at 2.4 MS/s. A 20 MHz Wi-Fi channel: HackRF at its 20 MS/s maximum, with no margin at the edges; the PlutoSDR streams only about 4 MS/s. Transmit into a cable: HackRF or PlutoSDR. Direction of an X-band source: ADALM-PHASER.
+
+---
+
+## Walkthrough: The FM Band in GQRX
+
+1. Plug in the RTL-SDR, open GQRX, and pick the RTL-SDR as the device.
+2. Tune to 98 MHz at 2.4 MS/s; read the spectrum and the waterfall.
+3. Click a station, set the mode to WFM, and listen.
+4. Raise the gain until false stations appear; back it off.
+
+Note:
+Run this live. Each station is a steady stripe about 200 kHz wide in the waterfall. Raise the gain in steps: weak stations rise first, then new stripes appear where nothing transmits, the clipping from the flowgraph on a real radio. SDR++ has the same controls if a laptop lacks GQRX.
 
 ---
 
