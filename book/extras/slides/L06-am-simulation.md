@@ -125,17 +125,6 @@ Drag m slowly from 0.5 to 1.4 with the audio on and ask the class to call out wh
 
 ---
 
-## Why Keep the Carrier?
-
-- The carrier is the tallest line on the spectrum.
-- It carries no information.
-- It makes the receiver simple.
-
-Note:
-Point at the frequency sink: the biggest line is the one that carries nothing. AM broadcasting kept the carrier in 1920 because it made the receiver simple and inexpensive.
-
----
-
 ## DSB-SC
 
 <img src="./img/06-am-simulation/L06-sc-spectrum.png" alt="DSB-SC spectrum: four sideband lines and no carrier at 10 kHz" style="max-height:300px; display:block; margin:0 auto;">
@@ -143,7 +132,7 @@ Point at the frequency sink: the biggest line is the one that carries nothing. A
 $$s(t) = A_cx(t)\cos(2\pi f_c t)$$
 
 Note:
-Open L06-dsb-sc.grc. Same sidebands, same 5 kHz, and no carrier line. All of the power is in the sidebands.
+Open L06-dsb-sc.grc. Same sidebands, same 5 kHz, and no carrier line. All of the power is in the sidebands. Go back to the DSB-AM sink for a moment: its tallest line was the carrier, which carries no information; AM keeps it only so the receiver can be a simple envelope detector.
 
 ---
 

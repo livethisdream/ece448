@@ -306,6 +306,9 @@ This lesson follows Dr. Rogers's 2025 slides, *AM Simulation*, which set the top
 
 - <a class="doc-link" href="https://wiki.gnuradio.org/index.php?title=Simulation_example:_Single_Sideband_transceiver" target="_blank" rel="noopener">GNU Radio wiki, Simulation example: Single Sideband transceiver</a>, for the SSB build
 - <a class="doc-link" href="https://wiki.gnuradio.org/index.php?title=Your_First_Flowgraph" target="_blank" rel="noopener">GNU Radio wiki, Your First Flowgraph</a> and <a class="doc-link" href="https://wiki.gnuradio.org/index.php?title=Runtime_Updating_Variables" target="_blank" rel="noopener">Runtime Updating Variables</a>, for the sliders that set $m$, the LO phase, and the tuning error
+- <a class="doc-link" href="https://pysdr.org/content/filters.html" target="_blank" rel="noopener">PySDR, Filters</a>, which the 2025 deck cites, for the low-pass filter
+
+The deck's opening sampling and data-type demos are in Lesson 5.
 ::::
 
 ::::{frame} Summary
