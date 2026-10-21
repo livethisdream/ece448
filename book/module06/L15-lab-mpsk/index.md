@@ -57,7 +57,7 @@ Question 2 asks for the settings the bench needs: the angles of the eight 8PSK p
 4. Add a **Signal Source**: type complex, sample rate `samp_rate`, waveform Cosine, frequency `foff`, amplitude 1. Add a **Multiply** with 2 complex inputs and connect the Throttle and the Signal Source to it. This is the frequency offset.
 5. Add a **Noise Source**: type complex, Gaussian, amplitude 0.2, and an **Add** with 2 complex inputs. Connect the Multiply and the Noise Source to the Add.
 6. Add a **Costas Loop**: loop bandwidth 0.02, order 8. Connect the Add's output to it.
-7. Add a **QT GUI Constellation Sink** with 2 inputs: the Add's output to input 0 and the Costas Loop's first output to input 1. Add a **Multiply Const**: type float, constant your Question 2(b) constant, written in terms of `samp_rate`, on the Costas Loop's frequency output, and a **QT GUI Number Sink** on that, with minimum $-200$ and maximum 200. Every arrow must be black.
+7. Add a **QT GUI Constellation Sink** with 2 inputs: the Add's output to input 0 and the Costas Loop's first output to input 1. Add a **Multiply Const**: type float, constant your Question 2(b) constant, on the Costas Loop's frequency output, and a **QT GUI Number Sink** on that, with minimum $-200$ and maximum 200. Every arrow must be black.
 8. Run it. Screenshot the canvas for Question 3(a) and the window for Question 3(b). Record the frequency reading at 20 Hz, then type $-60$ into the offset box and record it again.
 9. Stop the flowgraph, set the Costas Loop's order to 2, run it again, and describe the output for Question 3(c).
 ::::
@@ -70,25 +70,25 @@ Question 2 asks for the settings the bench needs: the angles of the eight 8PSK p
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto 12px;">
 
 1. Open and run `L15-psk-link.grc` with every slider at its default: noise amplitude 0.5, no frequency offset, channel phase 0, and `diff` = 1, differential coding on. The Lines label counts the lines received, and the correct ones, since a slider last moved.
-2. Type 0.6 into the noise amplitude box and press Enter. Wait about 20 s and watch the Costas Loop's output and the Lines label. Raise the noise by 0.1 at a time until only about half the lines received are correct, and record that noise amplitude for Question 4(a).
+2. Start at the default noise amplitude of 0.5. Wait about 20 s and watch the Costas Loop's output and the Lines label. Raise the noise by 0.1 at a time, typing each value into the noise amplitude box and pressing Enter, until only about half the lines received are correct, and record that noise amplitude for Question 4(a).
 3. Stop the flowgraph. Double-click the variable `M`, set it to 2, and run it again. Repeat step 2.
-4. Stop it, set `M` to 8, and run it again. Repeat step 2, starting from 0.5. Screenshot the window at that noise amplitude for Question 4(c).
+4. Stop it, set `M` to 8, and run it again. Repeat step 2. Screenshot the window at that noise amplitude for Question 4(c).
 ::::
 
 ::::{frame} Part 2: Carrier Recovery
 :class: read-only
 
 1. Stop the flowgraph, set `M` to 4 and `diff` to 1, and run it again, with the noise amplitude at its default of 0.5.
-2. With the frequency offset at 0 and lines arriving, type 250 into the frequency offset box in one jump. Watch the frequency estimate for up to 15 s, and record whether the loop locks, about how long it takes, and the frequency it settles at, for Question 5(a).
-3. Type 0, wait until lines arrive again, and repeat step 2 for 350 and then 400 Hz. If the loop does not lock at 400 Hz, read where its estimate settles and count the clusters in the Costas Loop's output.
-4. Stop the flowgraph, set `M` to 8, and run it again. Type 100 into the frequency offset box and record the same three things for Question 5(b). For 150, 200, and 250 Hz, stop the flowgraph and run it again before each one, so the loop starts locked at 0 Hz; returning to 0 by typing can leave the 8PSK loop stuck. At 200 Hz and above, give the loop 20 s.
+2. With the frequency offset at 0 and lines arriving, type 250 into the frequency offset box in one jump. Watch the frequency estimate for up to 20 s, and record whether the loop locks, about how long it takes, and the frequency it settles at, for Question 5(a).
+3. Type 0, wait until lines arrive again, and repeat step 2 for 350 and then 400 Hz. At any offset where the loop does not lock, record where its estimate settles and count the clusters in the Costas Loop's output.
+4. Stop the flowgraph, set `M` to 8, and run it again. Type 100 into the frequency offset box and record the same three things for Question 5(b). For 150, 200, and 250 Hz, stop the flowgraph and run it again before each one, so the loop starts locked at 0 Hz; returning to 0 by typing can leave the 8PSK loop stuck.
 ::::
 
 ::::{frame} Part 2: Phase Ambiguity
 :class: read-only
 
 1. Stop the flowgraph, set `M` to 4 and `diff` to 0, and run it again, so the loop locks with no frequency offset and the channel phase at 0. Do not move the frequency offset or the noise in this part. Lines should keep arriving.
-2. Type 20 into the channel phase box. Record whether the Lines count keeps rising after about 5 s. Then type 0, wait until the Lines count rises again, and type the next phase.
+2. Record whether lines arrive at phase 0. Then type 20 into the channel phase box. Record whether the Lines count keeps rising after about 5 s. Then type 0, wait until the Lines count rises again, and type the next phase.
 3. Repeat for every phase from 20 to 340 in steps of 20, returning to 0 between them, for Question 6(a).
 4. Stop the flowgraph, set `M` to 8, keep `diff` at 0, and run it again. Repeat steps 2 and 3, but stop the flowgraph and run it again before each phase instead of typing 0: the 8PSK loop can slip to another rotation, and typing 0 does not bring it back.
 5. Stop the flowgraph, set `diff` to 1, run it again, and repeat three of the phases that failed, for Question 6(b).
@@ -143,12 +143,12 @@ The figure is the PlutoSDR flowgraph run in simulation, with the Pluto Sink and 
 
 ::::{frame} Part 3: After the Lab
 :::{present}
-- Explain why 8PSK broke first as the noise rose.
+- Explain the order in which the constellations stopped delivering text.
 - Compare the 8PSK pull-in range with QPSK's.
 - Explain the phases that decoded, and the Pluto runs.
 :::
 
-The Writeup is Question 8, in three parts. Part (a) explains, in words, why the three constellations stopped delivering text in the order they did, and why more bits per symbol need a stronger signal. Part (b) compares the 8PSK pull-in range with QPSK's and asks what a link between two different PlutoSDRs would need before its Costas Loop. Part (c) explains which channel phases decoded, why the Pluto runs behaved as they did, and why real mPSK links use differential coding.
+The Writeup is Question 8, in three parts. Part (a) explains, in words, why the three constellations stopped delivering text in the order they did. Part (b) compares the 8PSK pull-in range with QPSK's and asks what a link between two different PlutoSDRs would need before its Costas Loop. Part (c) explains which channel phases decoded, why the Pluto runs behaved as they did, and why real mPSK links use differential coding.
 ::::
 
 ::::{frame} Lab Packet

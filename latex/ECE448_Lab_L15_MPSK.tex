@@ -307,8 +307,9 @@ each step, and watch the Costas Loop's output and the Lines label.
 		\begin{solution}[1.2in]
 		Answers vary. Lines still arrive, about half of them correct, and some packets are
 		lost outright. A wrong line is mostly right, with a few characters replaced: with
-		Gray coding a slip to a neighbor flips one bit, so a letter often becomes a nearby
-		letter or a symbol. The three limits look alike, because each is where about the
+		Gray coding a slip to a neighbor flips one bit, and with differential coding on each
+		slip corrupts two symbols, so a wrong character usually has one or two flipped bits
+		and becomes a nearby letter or a symbol. The three limits look alike, because each is where about the
 		same share of symbols lands in a neighbor's region.
 		\end{solution}
 
@@ -327,7 +328,7 @@ each step, and watch the Costas Loop's output and the Lines label.
 \question \textbf{Carrier recovery.} Follow the lab page's steps at the default noise
 amplitude of 0.5, with differential coding on. Before each offset, start from a loop locked at 0 Hz,
 as the lab page describes, and then type the new offset in one jump. Watch the frequency
-estimate for up to 15 s, or 20 s at 200 Hz and above.
+estimate for up to 20 s.
 
 \begin{parts}
 
@@ -479,8 +480,8 @@ before you disconnect the cable.
 \begin{parts}
 
 	\part Compare the noise limits in Question 4 for the three constellations. Explain
-	in words why they come in that order, and why a radio that must carry more bits per
-	symbol needs a stronger signal.
+	in words why they come in that order, and what that means for a radio that must carry
+	more bits per symbol.
 		\begin{solution}[1.5in]
 		The noise spreads every point into a cloud of the same size. The points sit 2.00
 		apart for BPSK, 1.41 for QPSK, and 0.77 for 8PSK, so 8PSK's clouds touch their
@@ -489,7 +490,7 @@ before you disconnect the cable.
 		stronger signal, which a link budget from Lesson 2 has to supply.
 		\end{solution}
 
-	\part Compare the 8PSK pull-in range with QPSK's, explain why it is smaller, and say what a link between two different Plutos,
+	\part Compare the 8PSK pull-in range with QPSK's, explain the difference, and say what a link between two different Plutos,
 	each accurate to 25 ppm at 915 MHz, would need before its Costas Loop.
 		\begin{solution}[1.5in]
 		The 8PSK loop pulled in from about 175 to 200 Hz, while QPSK locked at 350 Hz and sometimes at 400 Hz. Its

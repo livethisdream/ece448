@@ -201,7 +201,8 @@ blocks:
 - name: taps
   id: variable
   parameters:
-    comment: Gains in five frequency bands, the middle one fixed at 1
+    comment: Channel gains at five frequencies. Tap 3 is the band's center, Tap 2
+      and Tap 4 its edges; Tap 1 and the fixed 1.0 sit outside the signal's band
     value: list(ifftshift(ifft([tap3, tap4, 1.0, tap1, tap2])))
   states:
     bus_sink: false

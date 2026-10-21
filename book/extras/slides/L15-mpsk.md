@@ -77,7 +77,7 @@ Switch the chooser in L15-psk-tx.grc. QPSK sits at 45 degrees plus multiples of 
 Chunks to Symbols picks each point, and Lesson 9's RRC filter shapes it. Every $M$ fills 5.4 kHz.
 
 Note:
-The band is (1 + alpha) times the symbol rate, 1.35 times 4 kHz, whatever M is. More bits per symbol move more data in the same band, but the points sit closer together. GNU Radio's Constellation Modulator packs this chain into one block.
+The band is (1 + alpha) times the symbol rate, 1.35 times 4 kHz, whatever M is. More bits per symbol move more data in the same band, but the points sit closer together. Lessons 9 and 10 showed how the roll-off alpha sets the band. GNU Radio's Constellation Modulator packs this chain into one block; L15-psk-multipath.grc uses it.
 
 ---
 
@@ -149,7 +149,7 @@ Gardner's detector compares samples half a symbol apart, and a carrier turning a
 Lowering a tap tilts the spectrum and smears the clusters, and the equalizer pulls them tight.
 
 Note:
-Run L15-psk-multipath.grc. The four sliders follow Neil's 2025 multipath demo: each sets the channel's gain in one part of the band, and 1 means flat. The Linear Equalizer uses CMA, which needs only the fact that every QPSK point has the same amplitude. Very deep dips are beyond it. This is the tutorial's fourth stage.
+Run L15-psk-multipath.grc and lower Tap 2, 3, or 4. The sliders follow Neil's 2025 multipath demo: Tap 3 sets the gain at the band's center, Taps 2 and 4 near its edges, and 1 means flat; Tap 1 sits outside the band. The Linear Equalizer uses CMA, which needs only the fact that every QPSK point has the same amplitude. Very deep dips are beyond it. This is the tutorial's fourth stage.
 
 ---
 
@@ -215,14 +215,13 @@ The Differential Encoder adds each index to the last one sent, mod M; the decode
 
 ## Carrier Recovery Explorer
 
+- Start with QPSK at 100 Hz.
 - Raise the offset until the loop stops locking.
-- Turn differential coding off and step the channel phase.
-- With almost no noise, watch the QPSK loop fail to pull in.
 
 <p class="viz-cue">↗ Interactive on the lesson page</p>
 
 Note:
-The explorer runs GNU Radio's Costas Loop algorithm at one sample per symbol for 10 s. With the offset at 0 and coding off, the lock rotation jumps in steps of 360 over M degrees.
+The explorer runs GNU Radio's Costas Loop algorithm at one sample per symbol for 10 s, with loop bandwidth 0.04, twice the link's.
 
 ---
 

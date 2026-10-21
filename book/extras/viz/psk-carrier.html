@@ -129,7 +129,7 @@ function simulate(m, noise, f, phDeg, useDiff, s) {
     if (n >= start) { errs += pop(rb ^ bits[n]); cnt += k; rotHist[((dec[n] - txIdx) % m + m) % m]++; }
   }
   const rot = rotHist.indexOf(Math.max(...rotHist));
-  const tol = Math.max(0.1 * f, 3);
+  const tol = Math.max(0.1 * Math.abs(f), 10);
   let last = -1; for (let n = 0; n < N; n++) if (Math.abs(freq[n] - f) > tol) last = n;
   return { freq, outI, outQ, ber: errs / cnt, rot: rot * 360 / m, rotShare: rotHist[rot] / (N - start),
            lockT: last < N - 2 * RS ? (last + 1) / RS : null, fEnd: freq.slice(N - RS).reduce((a, b) => a + b, 0) / RS, th0 };

@@ -79,7 +79,7 @@ A constellation with $M$ points carries $k = \log_2 M$ bits per symbol. At the s
 - Every $M$ fills the same 5.4 kHz band.
 :::
 
-The transmitter is Lesson 9's, with complex points in place of real levels. **Chunks to Symbols** takes a number from 0 to $M - 1$ and outputs that point of the constellation, and the Interpolating FIR Filter shapes it with the same RRC taps as Lesson 9: $\alpha = 0.35$, 8 samples per symbol, and 32 kHz sampling, so 4,000 symbols a second. The tutorial's first step uses the **Constellation Modulator** block, which packs the bit grouping, the mapping, and the RRC filter into one block; we build the chain from its parts so that the Gray map and the differential encoder of Step 6 are visible; `L15-psk-multipath.grc` uses the one-block Constellation Modulator, so you can see both. Lesson 9 showed how the roll-off $\alpha$ sets the width of the band.
+The transmitter is Lesson 9's, with complex points in place of real levels. **Chunks to Symbols** takes a number from 0 to $M - 1$ and outputs that point of the constellation, and the Interpolating FIR Filter shapes it with the same RRC taps as Lesson 9: $\alpha = 0.35$, 8 samples per symbol, and 32 kHz sampling, so 4,000 symbols a second. The tutorial's **Constellation Modulator** packs the bit grouping, the mapping, and the RRC filter into one block, and `L15-psk-multipath.grc` uses it; the link shows the same chain as separate blocks, so the Gray map here and Step 6's differential encoder are visible. Lessons 9 and 10 showed how the roll-off $\alpha$ sets the width of the band.
 
 The spectrum does not change with $M$. The band is $(1 + \alpha) R_s = 1.35 \times 4$ kHz $= 5.4$ kHz wide whether each symbol carries one bit or three. More bits per symbol move more data through the same bandwidth, but the points sit closer together, and the Noise frame below shows what that does.
 ::::
@@ -162,11 +162,11 @@ The Costas Loop then needs only those samples. Working at the symbol rate, it se
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
-- Run `L15-psk-multipath.grc` and lower a tap slider.
+- Run `L15-psk-multipath.grc` and lower Tap 2, 3, or 4.
 - Watch the spectrum dip and the clusters smear, then the equalizer pull them tight.
 :::
 
-A radio signal often reaches the receiver along more than one path, and the echoes add with different delays. That **multipath** makes the channel's gain uneven across the band, and each symbol smears into its neighbors. The tutorial's fourth stage adds it to the Channel Model and removes it with an equalizer, and `L15-psk-multipath.grc` follows that stage, with four sliders set the way Neil's 2025 demo set them: each sets the channel's gain in one part of the band, and 1 means no change. At 1 the spectrum is flat and the clusters are tight; lower the sliders and the spectrum tilts and dips while the clusters smear.
+A radio signal often reaches the receiver along more than one path, and the echoes add with different delays. That **multipath** makes the channel's gain uneven across the band, and each symbol smears into its neighbors. The tutorial's fourth stage adds it to the Channel Model and removes it with an equalizer, and `L15-psk-multipath.grc` follows that stage, with four tap sliders on the Channel Model, as in Neil's 2025 demo. Tap 3 sets the channel's gain at the center of the band and Taps 2 and 4 near its lower and upper edges; Tap 1 sits outside the signal's band and barely changes it. At 1 the spectrum is flat and the clusters are tight; lower the sliders and the spectrum tilts and dips while the clusters smear.
 
 The **Linear Equalizer** block, set to the CMA algorithm, learns a filter that flattens the channel again, using only the fact that every QPSK point has the same amplitude. Its output, after a Costas Loop, is four tight points again; very deep dips are beyond what it can undo. The rest of this lesson's links use a channel with no multipath, so they leave the equalizer out.
 ::::
@@ -256,7 +256,7 @@ Differential coding has one drawback in noise. One wrong decision corrupts two d
 :class: viz-frame
 
 :::{depth}
-The explorer runs GNU Radio's Costas Loop algorithm at one sample per symbol for 10 s at 4,000 symbols per second. The left panel shows the loop's output for the last 600 symbols, with the ideal points as amber rings; the right panel shows the frequency estimate, with the true offset dashed. Its loop bandwidth is 0.04, twice the link's, so it locks faster and from farther away than the flowgraphs do. Start with QPSK at 100 Hz and watch the loop lock within a fraction of a second, then raise the offset until it no longer locks. Turn differential coding off and change the channel phase: the lock rotation readout changes, and the data comes out right only when it reads 0°.
+The explorer runs GNU Radio's Costas Loop algorithm at one sample per symbol for 10 s at 4,000 symbols per second. The left panel shows the loop's output for the last 600 symbols, with the ideal points as amber rings; the right panel shows the frequency estimate, with the true offset dashed. Its loop bandwidth is 0.04, twice the link's, so it locks faster and from farther away than the flowgraphs do. Start with QPSK at 100 Hz and watch the loop lock within a fraction of a second, then raise the offset until it no longer locks.
 :::
 
 :::{present}
