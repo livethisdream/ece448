@@ -46,7 +46,7 @@ Nothing in this lab transmits. The RTL-SDR receives only, and both captures came
 
 Do the Pre-Lab before you arrive. Put both flowgraphs from the Lesson 14 page in one folder, run `L14-hd-test-tx.grc` once to write `L14-hd-test.cu8`, and then run `L14-hd-find.grc`. Question 1 checks that the meters read what the lesson showed; if GRC reports an error, the L5 lesson page lists the install checks.
 
-Question 2 asks for predictions from the lesson: the inner edge of a sideband when a station adds one, two, or four partitions, the bin width and the number of bins per sideband for two FFT sizes, and the sideband and subcarrier levels of a station at the FCC's −14 dBc limit. Part 2 uses each one.
+Question 2 asks for predictions from the lesson: the inner edge of a sideband when a station adds one, two, or four partitions, the bin width and the number of bins per sideband for two FFT sizes, and the sideband and subcarrier levels of a station at −14 dBc, the level the FCC allows by notification. Part 2 uses each one.
 ::::
 
 ::::{frame} Expected Numbers
@@ -66,9 +66,9 @@ Your meter should read the lesson's test file within 0.1 dB of the finder's −2
 :class: read-only
 
 1. Start GRC and choose File, New, QT GUI. Do not open `L14-hd-find.grc`; build the meter yourself.
-2. Set `samp_rate` to 1488375. Add Variables `df` = `1488375 / 4096`, `inner` = `356`, `outer` = `546`, `sb_center` = `(inner + outer) / 2 * df`, `sb_half` = `((outer - inner) / 2 + 0.5) * df`, `decim` = `6`, and `avg_len` = `int(0.2 * samp_rate / decim)`.
+2. Set `samp_rate` to 1488375. Add Variables `df` = `1488375 / 4096`, `inner` = `356`, `outer` = `546`, `sb_center` = `(inner + outer) / 2 * df`, `sb_half` = `((outer - inner) / 2 + 0.5) * df`, `decim` = `6`, and `avg_len` = `int(0.2 * samp_rate / decim)`. Add a **QT GUI Entry** with ID `fc`, label Center (Hz), type real, and default value `100.3e6`.
 3. Read the file: a **File Source** (type byte, file `'L14-hd-test.cu8'` with the quotes, repeat Yes), a **Throttle** (byte, `2 * samp_rate`), **UChar To Float**, **Add Const** (float, −127.5), **Multiply Const** (float, `1 / 128`), **Deinterleave** (float, 2 streams), and **Float To Complex**.
-4. On the Float To Complex output, add a **QT GUI Frequency Sink**: complex, FFT size 4096, center frequency `100.3e6`, bandwidth `samp_rate`, average 0.1, Y axis from −110 to −10.
+4. On the Float To Complex output, add a **QT GUI Frequency Sink**: complex, FFT size 4096, center frequency `fc`, bandwidth `samp_rate`, average Medium, Y axis from −110 to −10.
 5. Add two **Low-pass Filter Taps** variables at `samp_rate`: `host_taps` with cutoff `100e3` and transition `10e3`, and `sb_taps` with cutoff `sb_half` and transition `2e3`.
 6. Add three **Frequency Xlating FFT Filters**, each with decimation `decim` and sample rate `samp_rate`: the host with taps `host_taps` and center 0, the upper sideband with `sb_taps` and center `sb_center`, and the lower sideband with `sb_taps` and center `-sb_center`. Connect Float To Complex to all three.
 7. After each filter add **Complex to Mag^2**, a **Moving Average** (float, length `avg_len`, scale `1 / avg_len`), **Keep 1 in N** (float, N `avg_len // 10`), and **Log10** (n = 10).
@@ -80,7 +80,7 @@ Your meter should read the lesson's test file within 0.1 dB of the finder's −2
 :class: read-only
 
 1. Stop your meter and change the File Source's file to `'L14-lab-capture.cu8'`. The File Source reads the file only when the flowgraph starts.
-2. Change the frequency sink's FFT size to 8192 and run it. Find the inner and outer edges of each sideband, in MHz, with the sink's grid or by hovering the cursor, and convert each edge to a subcarrier number for Question 4(a).
+2. Change the frequency sink's FFT size to 8192 and run it. Drag a box around one edge of a sideband on the frequency sink to zoom in, read the edge's frequency in MHz, and right-click to zoom back out. Do the same for the inner and outer edge of each sideband, and convert each edge to a subcarrier number for Question 4(a).
 3. Record both meter readings with `inner` at 356 for Question 4(b).
 4. Stop it, change `inner` to the subcarrier number you found for the inner edge, run it again, and record both readings.
 5. Look at the station 400 kHz above the center, and say whether it carries HD Radio, for Question 4(d).
@@ -95,8 +95,8 @@ Your meter should read the lesson's test file within 0.1 dB of the finder's −2
 
 The figure shows the lesson's simulated test file; a live station's host is rougher, and its shelves may stand closer to the floor. We have compiled this step but not yet tested it on a live station, so expect to adjust the gain.
 
-1. Add a **Soapy RTLSDR Source** to your meter: sample rate `samp_rate`, center frequency `100.3e6`, gain 30. Connect it to the frequency sink and the three filters, and disable the File Source, so that only one source drives them.
-2. Plug in the RTL-SDR and antenna, and run it. Change the center frequency to each strong station in the band in turn, and stop at one with two flat shelves beside it.
+1. Add a **Soapy RTLSDR Source** to your meter: sample rate `samp_rate`, center frequency `fc`, gain 30. Connect it to the frequency sink and the three filters. Then select the File Source and the six blocks after it, through Float To Complex, and press D to disable all seven; GRC will not run with both sources connected.
+2. Plug in the RTL-SDR and antenna, and run it. Type each strong station's frequency in hertz into Center in turn, and stop at one with two flat shelves beside it.
 3. Raise the gain until the shelves stand at least 10 dB above the floor, but lower it if the floor rises everywhere or copies of other stations appear.
 4. Record the station, its sideband edges, and both meter readings, with a screenshot, for Question 5. If its inner edge is inside 129.4 kHz, set `inner` to match before you read the meters.
 ::::
@@ -109,7 +109,7 @@ nrsc5 is not part of radioconda. Use a laptop that has nrsc5 installed, your own
 1. Tune and play the station you measured, with the gain you used in GRC: `nrsc5 -g 30 100.3 0`, with your station's frequency in place of 100.3. It takes a few seconds to synchronize.
 2. Record the station name, the song title and artist, and any HD2 or HD3 program it reports, for Question 6(a). Try program 1 for HD2.
 3. Lower the gain until the audio drops out, and record the gain at which it stops, for Question 6(b).
-4. Record 10 s with `nrsc5 -w hd.cu8 <station> 0`, open `hd.cu8` in your meter with the center frequency set to the station, and record both meter readings for Question 6(c).
+4. Record 10 s with `nrsc5 -g 30 -w hd.cu8 <station> 0`, with the same gain as step 1, open `hd.cu8` in your meter with the center frequency set to the station, and record both meter readings for Question 6(c).
 ::::
 
 ::::{frame} No Shelves?
@@ -123,12 +123,12 @@ For a file, check that the file name in the File Source is in quotes, that the f
 
 ::::{frame} Part 3: After the Lab
 :::{present}
-- Compare your live measurement with the FCC and NRSC-5 limits.
+- Compare your live measurement with the FCC power levels and the NRSC-5 asymmetry limit.
 - Explain how the capture's spectrum identified its configuration.
 - Explain why nrsc5 cannot decode the lesson's test file.
 :::
 
-The Writeup is three questions. The first compares the live station's sideband levels with the −20 dBc and −14 dBc rules and the 10 dB asymmetry limit, and describes the station's configuration. The second explains how the lab capture's edges and meter readings identified its configuration, and why a station would choose it. The third lists what nrsc5 needs from a signal that the lesson's test file does not provide.
+The Writeup is three questions. The first compares the live station's sideband levels with the −20 dBc original level, the −14 and −10 dBc levels the FCC allowed in 2010, and the 10 dB asymmetry limit of NRSC-5, and describes the station's configuration. The second explains how the lab capture's edges and meter readings identified its configuration, and why a station would choose it. The third lists what nrsc5 needs from a signal that the lesson's test file does not provide.
 ::::
 
 ::::{frame} Lab Packet

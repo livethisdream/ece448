@@ -89,13 +89,16 @@ useful symbol time.}
 		16384 \ansbox[1.3in]{146.5 Hz, 471}
 	\end{minipage}
 
-	\part Which FFT size could show individual subcarriers? Which one would you use to find
-	the sidebands' edges quickly on a live band, and why?
-		\begin{solution}[1.0in]
-		Only 16384: its bins are 146.5 Hz, about 2.5 bins per 363.4 Hz subcarrier, while a
-		2048-point bin is 3.2 subcarriers wide and averages them together. To find the edges
-		quickly, the 2048-point FFT is enough: 59 bins still draw a clear flat shelf, the
-		display updates and averages faster, and the edges are already within 1.2 kHz.
+	\part Which FFT size can locate a sideband's edge to within one 363.4 Hz subcarrier?
+	Which one would you use to find the sidebands quickly on a live band, and why? Why does
+	neither show the subcarriers as separate peaks?
+		\begin{solution}[1.3in]
+		Only 16384: its 146.5 Hz bins are narrower than a subcarrier, while a 2048-point bin is
+		3.2 subcarriers wide. To find the sidebands quickly, the 2048-point FFT is enough: 59
+		bins still draw a clear flat shelf, the display updates and averages faster, and the
+		edges are already within 1.2 kHz. Neither shows separate peaks because the subcarriers
+		are orthogonal: their sinc spectra overlap and add to a flat top, with no dip between
+		neighbors.
 		\end{solution}
 
 \end{parts}

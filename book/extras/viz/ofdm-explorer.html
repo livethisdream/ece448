@@ -147,7 +147,11 @@ function update() {
   document.getElementById('sp-v').textContent = sp.toFixed(2);
   document.getElementById('tau-v').textContent = tau.toFixed(0) + ' μs';
   document.getElementById('o-df').textContent = (sp * DF).toFixed(1) + ' Hz';
-  let p = 0; for (let k = 1; k <= 400; k++) p += 2 * sinc(k * sp) ** 2;
+  // leakage from every other subcarrier: the sum of sinc^2(k sp) over k != 0,
+  // which is 1/sp - 1 in closed form for sp <= 1
+  let p = 0;
+  if (sp <= 1) p = 1 / sp - 1;
+  else for (let k = 1; k <= 20000; k++) p += 2 * sinc(k * sp) ** 2;
   const ici = document.getElementById('o-ici');
   if (p < 1e-12) { ici.textContent = 'none'; ici.className = 'v ok'; }
   else { ici.textContent = (10 * Math.log10(p)).toFixed(1) + ' dB'; ici.className = 'v bad'; }

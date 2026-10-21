@@ -213,7 +213,7 @@ station adding one, two, or four partitions inside subcarrier 356 on each side.
 		\end{solution}
 
 	\begin{minipage}[t]{0.58\linewidth}
-		\part A hybrid station runs its digital signal at the FCC's $-14$ dBc limit, with equal
+		\part A hybrid station runs its digital signal at $-14$ dBc, the level the FCC allows by notification, with equal
 		sidebands. Find each sideband's level and each subcarrier's level in dBc. If its analog
 		signal is 6 kW, how many watts is the digital signal in total?
 		\begin{solution}[1.2in]
@@ -292,8 +292,8 @@ station adding one, two, or four partitions inside subcarrier 356 on each side.
 
 \begin{parts}
 
-	\part Read each sideband's edges with an FFT of 8192 points, convert each to a
-	subcarrier number, and name the configuration.
+	\part Zoom in on each sideband's edges with an FFT of 8192 points, read them, convert
+	each to a subcarrier number, and name the configuration.
 
 	\begin{center}
 	\renewcommand{\arraystretch}{1.25}
@@ -306,7 +306,7 @@ station adding one, two, or four partitions inside subcarrier 356 on each side.
 	\end{center}
 
 		\begin{solution}[0.6in]
-		Within about one subcarrier. The inner edges are 38 subcarriers, two partitions,
+		Within a few subcarriers when zoomed in. The inner edges are 38 subcarriers, two partitions,
 		inside 356, so the station runs extended hybrid with two added partitions on each
 		side.
 		\end{solution}
@@ -440,11 +440,13 @@ station with HD Radio, as the lab page lists.
 
 \begin{parts}
 
-	\part Compare the live station's sideband levels with the $-20$ dBc and $-14$ dBc
-	rules and the 10 dB limit on asymmetry. How is the station configured?
+	\part Compare the live station's sideband levels with the original $-20$ dBc, the
+	$-14$ and $-10$ dBc levels the FCC allowed in 2010, and the NRSC-5 limit of 10 dB on
+	asymmetry. How is the station configured?
 		\begin{solution}[1.5in]
 		Answers vary. A total near $-20$ dBc means the original level; near $-14$ dBc, the
-		increase the FCC allowed in 2010. Equal sidebands within about 1 dB are symmetric; a
+		increase the FCC allows by notification since 2010, and above that, a level up to
+		$-10$ dBc that needs FCC approval. Equal sidebands within about 1 dB are symmetric; a
 		larger difference, up to 10 dB, means the station lowered one side, usually to
 		protect a neighbor on that side.
 		\end{solution}
@@ -456,7 +458,7 @@ station with HD Radio, as the lab page lists.
 		extended hybrid; a station adds partitions for more data capacity, which leaves less room
 		for the analog signal. The upper sideband is 4 dB above the lower, which is asymmetric;
 		a station lowers one sideband to protect a neighbor on that side. The total of
-		$-15.5$ dBc is above the original $-20$ dBc and within the FCC's $-14$ dBc limit.
+		$-15.5$ dBc is above the original $-20$ dBc and below the $-14$ dBc the FCC allows by notification.
 		\end{solution}
 
 	\part nrsc5 cannot decode \texttt{L14-hd-test.cu8}, although its sidebands have the right
@@ -466,9 +468,8 @@ station with HD Radio, as the lab page lists.
 		Any two: reference subcarriers that carry NRSC-5's known synchronization and control
 		bits, which nrsc5 uses to find the timing, frequency, and phase; data subcarriers
 		that carry real NRSC-5 frames, scrambled, coded, and interleaved as the standard
-		specifies, rather than random QPSK; compressed audio and station data inside those
-		frames; and the standard's own symbol shaping rather than the test file's cyclic
-		prefix with a short rolloff.
+		specifies, rather than random QPSK; and compressed audio and station data inside
+		those frames.
 		\end{solution}
 
 \end{parts}

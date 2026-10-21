@@ -11,7 +11,7 @@
 
 The GNU Radio screenshots are taken from the real flowgraphs in
 book/extras/grc/ running under Xvfb (see CLAUDE.md, "Flowgraphs"); this script
-only crops them, stamps "Simulated: L14 test file" on the ones that show the
+only crops them, stamps "Simulated: L14 test file" on every one that shows the
 test file, and reduces them to a palette so they stay small. Make the raw
 shots first, in one folder:
 
@@ -116,9 +116,9 @@ def shots(raw: Path):
         print(f"wrote {name}.png ({(SHOTS[0] / f'{name}.png').stat().st_size // 1024} KB)")
 
     find = Image.open(raw / "find.png").convert("RGB")
-    save(stamp(find.copy(), (1020, 380)), "L14-hd-find", colors=40)
+    save(stamp(find.copy(), (1020, 380)), "L14-hd-find", colors=24)
     save(stamp(find.crop((0, 330, 1060, 605)), (1020, 50)), "L14-hd-band")
-    save(find.crop((0, 0, 1060, 330)), "L14-hd-meters", colors=32)
+    save(stamp(find.crop((0, 0, 1060, 330)), (1020, 90)), "L14-hd-meters", colors=32)
     save(Image.open(raw / "canvas_find.png").crop((0, 68, 1700, 1000)), "L14-grc-find", colors=64)
     save(Image.open(raw / "canvas_tx.png").crop((0, 68, 1760, 940)), "L14-grc-test-tx", colors=64)
 
