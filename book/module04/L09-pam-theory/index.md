@@ -328,6 +328,13 @@ The RRC filter at the transmitter fixes the bandwidth at $(1+\alpha)R_s$. The sa
 - <a class="doc-link" href="../../grc/L09-matched-filter.grc" download>L09-matched-filter.grc</a>: an RRC 2-PAM signal through noise and a clock error, then a matched filter and Symbol Sync, with eyes before and after the filter and plain decimation compared with timing recovery. No hardware needed.
 
 Open a `.grc` file from GRC's File menu, or run `gnuradio-companion L09-pulse-shaping.grc` from the radioconda prompt.
+
+This lesson follows Neil's 2025 PAM slides for its topics and these pages for the hands-on steps, in this order:
+
+- <a class="doc-link" href="https://pysdr.org/content/digital_modulation.html" target="_blank" rel="noopener">PySDR: Digital Modulation</a>: PAM levels, constellations, and Gray coding (Part 1).
+- <a class="doc-link" href="https://pysdr.org/content/pulse_shaping.html" target="_blank" rel="noopener">PySDR: Pulse Shaping</a>: rectangular and raised-cosine pulses, RRC, and the eye (Parts 2 and 3).
+- <a class="doc-link" href="https://wiki.gnuradio.org/index.php/Guided_Tutorial_PSK_Demodulation" target="_blank" rel="noopener">GNU Radio wiki: Guided Tutorial, PSK Demodulation</a>: the RRC transmit filter, the matched filter, and symbol timing in GRC (Parts 4 and 5).
+- <a class="doc-link" href="https://pysdr.org/content/sync.html" target="_blank" rel="noopener">PySDR: Synchronization</a>: why the receiver's clock drifts and how a timing loop follows it (Part 5).
 ::::
 
 ::::{frame} Summary

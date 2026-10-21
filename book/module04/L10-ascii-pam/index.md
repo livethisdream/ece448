@@ -309,6 +309,12 @@ Text becomes bytes, bytes become bits, and each line goes out as a packet behind
 - <a class="doc-link" href="../../grc/L10-pam-link.grc" download>L10-pam-link.grc</a>: the whole text link, with noise and clock-error sliders, a matched-filter switch, the matched-filter eye, the Symbol Sync output, and the received text. No hardware needed.
 
 Open a `.grc` file from GRC's File menu, or run `gnuradio-companion L10-pam-link.grc` from the radioconda prompt. The link's Text Sink is an Embedded Python Block, saved inside the `.grc` file. The L10 Lab page has the PlutoSDR version of the link.
+
+This lesson follows the 2025 reading, Mathys's four acts, for its topics and these pages for the hands-on steps:
+
+- <a class="doc-link" href="https://wiki.gnuradio.org/index.php/Packet_Communications" target="_blank" rel="noopener">GNU Radio wiki: Packet Communications</a>: Stream to Tagged Stream, Protocol Formatter, and Correlate Access Code - Tag Stream (Parts 1 to 3).
+- <a class="doc-link" href="https://wiki.gnuradio.org/index.php/Guided_Tutorial_PSK_Demodulation" target="_blank" rel="noopener">GNU Radio wiki: Guided Tutorial, PSK Demodulation</a>: the RRC filters and Symbol Sync the link reuses from Lesson 9 (Parts 3 to 5).
+- <a class="doc-link" href="https://pysdr.org/content/pulse_shaping.html" target="_blank" rel="noopener">PySDR: Pulse Shaping</a>: what the matched filter does to the noise (Part 5).
 ::::
 
 ::::{frame} Summary
