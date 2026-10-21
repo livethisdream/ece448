@@ -287,7 +287,7 @@ The gain comes last, set against the strongest signal in the window, not the one
 4. Raise the gain until false stations appear; back off.
 :::
 
-Before building a flowgraph for a signal, we find it in an explore tool. Start with <a href="https://livethisdream.github.io/sdr-flex/" target="_blank" rel="noopener">SDR Flex</a>, Dr. Rogers's own tool, which runs in the browser with nothing to install. It opens on a simulated scene of several signals. Right-click the source chip at the top left to open one of its example captures, drag across a signal on the waterfall to select it, and choose a demodulator. Each of those actions builds a GNU Radio flowgraph behind the scenes.
+Before building a flowgraph for a signal, we find it in an explore tool. Start with <a href="https://livethisdream.github.io/sdr-flex/" target="_blank" rel="noopener">SDR Flex</a>, Dr. Rogers's own tool, which runs in the browser with nothing to install. It opens on a simulated scene of several signals. Right-click the source chip at the top left to open one of its example captures, drag across a signal on the waterfall to select it, and choose a demodulator. On the full SDR Flex server each action builds a GNU Radio flowgraph; the browser copy simulates it.
 
 The browser version plays captures, not a live radio, so for the live band use GQRX, the fallback. Plug the RTL-SDR into a USB port, open GQRX, and choose the RTL-SDR in the device dialog, and set the input rate to 2.4 MS/s. GQRX comes with radioconda; if it does not start on your laptop, SDR++ has the same controls. Set the frequency to 98 MHz and press the power button to start.
 

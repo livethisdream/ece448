@@ -28,7 +28,7 @@ collaborate).}
 	\begin{enumerate}[label=(\roman*)]
 		\item Receive ship AIS at 162 MHz.
 		\item Display the whole FM broadcast band, 88 to 108 MHz, at once.
-		\item Transmit a 915 MHz test signal into a cable and receive it at the same time.
+		\item Transmit a 915 MHz test signal into a cable, through a 30 dB attenuator, and receive it at the same time.
 		\item Find the direction of a 10.3 GHz beacon.
 	\end{enumerate}
 		\begin{solution}[2.3in]
@@ -40,7 +40,8 @@ collaborate).}
 		roll-off. The RTL-SDR's 2.56 MS/s shows only 2.56 MHz, the PlutoSDR cannot tune
 		to 100 MHz, and the ADALM-PHASER works only at X band.
 
-		(iii) The PlutoSDR, the only full-duplex radio. The HackRF transmits or receives
+		(iii) The PlutoSDR, the only full-duplex radio, with its transmit port cabled
+		through the 30 dB attenuator to its receive port. The HackRF transmits or receives
 		but not both at once, the RTL-SDR cannot transmit, and the ADALM-PHASER does
 		not cover 915 MHz.
 
@@ -197,16 +198,15 @@ and its plots on the lesson page.
 		rounding error is smaller. The weak tone was always there, below the 8-bit floor.
 		\end{solution}
 
-	\part On a real 8-bit radio, a strong local station sits at $-10$ dBFS and a weak
-	signal we want is hidden in the floor. How far can the gain rise before the strong
-	station clips? Would raising it that far reveal the weak signal? Explain, and name
-	one thing that would help.
+	\part Set the flowgraph back to 8 bits. Raise the gain slider in steps until the
+	time sink's $I$ and $Q$ just begin to flatten at full scale. Did the weak tone
+	appear on the spectrum? Explain what you saw, and name one thing that would let an
+	8-bit radio show the weak signal.
 		\begin{solution}[1.3in]
-		10 dB, since 0 dBFS is full scale. Gain raises the strong and the weak signal
-		together, so the weak one rises at most 10 dB before the strong one clips. If
-		it sits deeper than that in the floor, it stays hidden. A radio with more bits
-		helps, or a narrower window or a filter that keeps the strong station out of
-		the ADC.
+		No. Gain raised the strong tone, the weak tone, and the spurs together, so the
+		weak tone stayed hidden below the spurs, and the strong tone reached full scale
+		first. Raising the gain further only clipped the strong tone. More bits would
+		help, or a filter that keeps the strong signal out of the ADC.
 		\end{solution}
 
 	\part In the L4 flowgraph, name two things on the plots that show the ADC is
