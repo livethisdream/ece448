@@ -155,90 +155,60 @@ broadcast FM station. One FM channel occupies about 200 kHz.
 		SNR = \ansbox[1.3in]{$35.0\db$}
 	\end{minipage}
 
-	\begin{minipage}[t]{0.58\linewidth}
-		\part A student leaves the receiver filter open to the full 2.4 MHz sample
-		rate and measures the station's power against all of that noise. Find the
-		noise floor and the SNR the student would compute.
+	\part A student leaves the receiver filter open to the full 2.4 MHz sample
+	rate and measures the station's power against all of that noise. Why does the
+	wide filter show a lower SNR, and which SNR does the FM demodulator experience?
 		\begin{solution}[1.1in]
-		\eq{ N &= -174 + 10\mylog{2.4\times10^{6}} + 6 = -104.2\ \text{dBm} \\
-			\text{SNR} &= -80 - (-104.2) = 24.2\db }
-		\end{solution}
-	\end{minipage}\hfill%
-	\begin{minipage}[t]{0.37\linewidth}
-		\raggedleft \vspace{12pt}
-		$N$ = \ansbox[1.3in]{$-104.2$ dBm}
-
-		\vspace{4pt}
-		SNR = \ansbox[1.3in]{$24.2\db$}
-	\end{minipage}
-
-	\part Explain why the answers to (b) and (c) differ, and which one the FM
-	demodulator experiences.
-		\begin{solution}[1.0in]
 		Noise power grows with bandwidth, but the station's power does not: it all lies
-		inside its 200 kHz channel. Letting in 12 times the bandwidth adds 10.8 dB of
-		noise and no signal. A demodulator that filters to the channel first sees the
-		35.0 dB of part (b), which is why every receiver filters before it demodulates.
+		inside its 200 kHz channel. The wide filter lets in about 12 times as much noise
+		and no more signal, so the SNR looks lower. A demodulator that filters to the
+		channel first sees the 35.0 dB of part (b), which is why every receiver filters
+		before it demodulates.
 		\end{solution}
 
 \end{parts}
 
 \newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\question \textbf{Cascaded noise figure.} A ground station has a 2 dB cable run, an
-LNA with NF 0.8 dB and 18 dB of gain, and an SDR with NF 7 dB.
+\question \textbf{Where the LNA goes.} A ground station has a 2 dB cable run, an
+LNA with NF 0.8 dB and 18 dB of gain, and an SDR with NF 7 dB. The system noise
+figure of each arrangement is:
+
+\begin{center}
+\begin{tabular}{ll}
+	antenna $\to$ cable $\to$ LNA $\to$ SDR & 3.0 dB \\
+	antenna $\to$ LNA $\to$ cable $\to$ SDR & 1.2 dB \\
+	antenna $\to$ cable $\to$ SDR (no LNA) & 9.0 dB \\
+\end{tabular}
+\end{center}
+
 \begin{parts}
 
-	\begin{minipage}[t]{0.58\linewidth}
-		\part Convert each stage to a linear noise factor and gain.
-		\begin{solution}[1.1in]
-		Cable: $F = 10^{0.2} = 1.585$, $G = 10^{-0.2} = 0.631$. LNA: $F = 10^{0.08}
-		= 1.202$, $G = 10^{1.8} = 63.1$. SDR: $F = 10^{0.7} = 5.01$.
-		\end{solution}
-	\end{minipage}\hfill%
-	\begin{minipage}[t]{0.37\linewidth}
-		\raggedleft \vspace{12pt}
-		$F_\text{cable}$ = \ansbox[1.3in]{$1.585$}
-
-		\vspace{4pt}
-		$F_\text{LNA}$ = \ansbox[1.3in]{$1.202$}
-	\end{minipage}
-
-	\begin{minipage}[t]{0.58\linewidth}
-		\part The cable runs from the antenna to the LNA, which sits next to the SDR.
-		Find the system noise figure.
-		\begin{solution}[1.2in]
-		\eq{ F &= 1.585 + \dfrac{1.202 - 1}{0.631} + \dfrac{5.01 - 1}{0.631 \times 63.1} \\
-			&= 1.585 + 0.320 + 0.101 = 2.006 \\
-			\text{NF} &= 10\mylog{2.006} = 3.0\db }
-		\end{solution}
-	\end{minipage}\hfill%
-	\begin{minipage}[t]{0.37\linewidth}
-		\raggedleft \vspace{12pt}
-		NF = \ansbox[1.3in]{$3.0\db$}
-	\end{minipage}
-
-	\begin{minipage}[t]{0.58\linewidth}
-		\part The LNA moves to the antenna, ahead of the cable. Find the new system
-		noise figure.
-		\begin{solution}[1.2in]
-		\eq{ F &= 1.202 + \dfrac{1.585 - 1}{63.1} + \dfrac{5.01 - 1}{63.1 \times 0.631} \\
-			&= 1.202 + 0.009 + 0.101 = 1.312 \\
-			\text{NF} &= 10\mylog{1.312} = 1.2\db }
-		\end{solution}
-	\end{minipage}\hfill%
-	\begin{minipage}[t]{0.37\linewidth}
-		\raggedleft \vspace{12pt}
-		NF = \ansbox[1.3in]{$1.2\db$}
-	\end{minipage}
-
-	\part Moving the LNA lowered the noise figure by 1.8 dB. Explain why the
-	cable's loss matters so much more in front of the LNA than behind it.
+	\part Where should the LNA go, and what would you tell someone who wants to mount
+	it next to the SDR to keep it out of the weather?
 		\begin{solution}[1.0in]
-		In front of the LNA the cable is the first stage, so its full noise factor
-		counts and nothing divides it down: its 2 dB adds almost directly to the
-		system noise figure. Behind the LNA, the LNA's gain of 63 divides down the cable's
-		excess noise, and the cable adds only about 0.2 dB.
+		At the antenna, ahead of the cable: that arrangement has the lowest noise
+		figure, 1.2 dB. Mounted next to the SDR it gives 3.0 dB, so the receiver's
+		noise floor sits 1.8 dB higher. Use a weatherproof LNA at the antenna instead.
+		\end{solution}
+
+	\part Explain why the cable's loss matters so much more in front of the LNA than
+	behind it.
+		\begin{solution}[1.0in]
+		In front of the LNA the cable is the first stage, and nothing ahead of it
+		divides its noise down, so its 2 dB adds almost directly to the noise figure.
+		Behind the LNA, the LNA's 18 dB of gain divides the cable's noise down, and the
+		cable adds only about 0.2 dB.
+		\end{solution}
+
+	\part Without the LNA the noise figure is 9.0 dB, the cable's 2 dB plus the SDR's
+	7 dB. What happens to the noise floor on the SDR's display, and to a weak
+	signal near it, when you add the LNA at the antenna?
+		\begin{solution}[1.0in]
+		The receiver's own noise drops by almost 8 dB, so the floor set by the receiver
+		falls and a weak signal that was buried in it stands clear of the floor. The
+		signal's own level does not change; the LNA wins by adding less noise than the
+		cable and SDR it sits ahead of.
 		\end{solution}
 
 \end{parts}
@@ -285,28 +255,22 @@ bandwidth.
 		SNR = \ansbox[1.3in]{$-18.5\db$}
 	\end{minipage}
 
-	\begin{minipage}[t]{0.58\linewidth}
-		\part The receiver correlates the signal against the satellite's known
-		1023-chip code, which raises the SNR by $10\mylog{1023}$. Find the SNR after
-		correlation.
-		\begin{solution}[1.0in]
-		\eq{ 10\mylog{1023} &= 30.1\db \\
-			\text{SNR}_\text{corr} &= -18.5 + 30.1 = 11.6\db }
+	\part The signal arrives below the noise floor, yet GPS works everywhere.
+	Explain in one or two sentences how.
+		\begin{solution}[0.9in]
+		The receiver already knows each satellite's code, so it correlates the received
+		signal against that code. The code adds up coherently over many chips while the
+		noise does not, which pulls the signal back out of the noise.
 		\end{solution}
-	\end{minipage}\hfill%
-	\begin{minipage}[t]{0.37\linewidth}
-		\raggedleft \vspace{12pt}
-		SNR = \ansbox[1.3in]{$11.6\db$}
-	\end{minipage}
 
 	\part A car's GPS antenna sits on the roof with 5 m of cable to the dashboard
 	receiver. Where should the LNA go, and why? Use your answer to (b) to explain
 	what is at stake.
 		\begin{solution}[1.1in]
 		The LNA belongs at the antenna, ahead of the cable; that is why GPS antennas with
-		a built-in LNA, active antennas, are common. The signal already arrives 18.5 dB below the
-		noise floor, and the correlation leaves only about 12 dB of SNR, so every dB of
-		cable loss in front of the first amplifier would come straight out of that.
+		a built-in LNA, active antennas, are common. The signal already arrives 18.5 dB
+		below the noise floor, so every dB of cable loss in front of the first amplifier
+		raises the floor and comes straight out of what the correlation has to work with.
 		\end{solution}
 
 \end{parts}
@@ -341,27 +305,13 @@ the noise floor beside it reads $-78$ dBFS.
 		\end{solution}
 
 	\part You change the FFT size from 2048 to 8192. What happens to the noise floor,
-	to the carrier's peak, and to the SNR the display shows?
-		\begin{solution}[1.0in]
-		Each bin is four times narrower and holds a quarter of the noise, so the floor
-		drops by about 6 dB, 3 dB for each doubling. The carrier's power is all in one
-		bin, so its peak stays at $-32$ dBFS, and the displayed SNR rises to about
-		52 dB. Nothing about the signal changed; only the display did.
-		\end{solution}
-
-	\begin{minipage}[t]{0.58\linewidth}
-		\part Back at 2048 points, the receiver filters to 2 kHz before it
-		demodulates. Find the SNR in that bandwidth.
+	to the carrier's peak, and to the SNR the display shows, and why?
 		\begin{solution}[1.1in]
-		Scale the floor from one bin to 2 kHz:
-		\eq{ 10\mylog{\dfrac{2000}{1172}} &= 2.3\db \\
-			\text{SNR} &= 46 - 2.3 = 43.7\db }
+		Each bin gets narrower and holds less of the noise, so the floor drops. The
+		carrier's power is all in one bin, so its peak stays where it was, and the
+		displayed SNR rises. Nothing about the signal changed; only the display did,
+		which is why an SNR read off a display always goes with its FFT size.
 		\end{solution}
-	\end{minipage}\hfill%
-	\begin{minipage}[t]{0.37\linewidth}
-		\raggedleft \vspace{12pt}
-		SNR = \ansbox[1.3in]{$43.7\db$}
-	\end{minipage}
 
 \end{parts}
 

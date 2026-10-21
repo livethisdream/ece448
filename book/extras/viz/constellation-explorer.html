@@ -65,12 +65,13 @@ function build(name) {
   if (name === 'BPSK') pts = [[-1,0,1],[1,0,0]];
   if (name === 'QPSK') for (let i = 0; i < 4; i++) { const a = Math.PI/4 + i*Math.PI/2; pts.push([Math.cos(a), Math.sin(a), gray(i)]); }
   if (name === '8-PSK') for (let i = 0; i < 8; i++) { const a = i*Math.PI/4; pts.push([Math.cos(a), Math.sin(a), gray(i)]); }
+  if (name === '16-PSK') for (let i = 0; i < 16; i++) { const a = i*Math.PI/8; pts.push([Math.cos(a), Math.sin(a), gray(i)]); }
   if (name === '4-PAM') [-3,-1,1,3].forEach((x,i) => pts.push([x, 0, gray(i)]));
   const e = pts.reduce((s,p) => s + p[0]*p[0] + p[1]*p[1], 0) / pts.length;
   const s = 1 / Math.sqrt(e);
   return pts.map(p => ({ x: p[0]*s, y: p[1]*s, b: p[2] }));
 }
-const MODS = { 'BPSK':1, 'QPSK':2, '8-PSK':3, '4-PAM':2 };
+const MODS = { 'BPSK':1, 'QPSK':2, '8-PSK':3, '16-PSK':4, '4-PAM':2 };
 
 const state = { mod: 'QPSK', pts: build('QPSK'), rx: [], nSym: 0, nSymErr: 0, running: true };
 const MAXPTS = 1500;

@@ -155,9 +155,14 @@ The figure sends 600 QPSK symbols at three SNRs. Noise adds a random offset to b
 
 ::::{frame} Try It in GNU Radio
 :::{present}
+<div style="display: flex; flex-wrap: wrap; gap: 12px; justify-content: center;">
+<img src="../../viz/img/L03-grc-snr20.png"
+     alt="The L3 noise flowgraph running with the SNR slider at 20 dB: the constellation sink shows four tight QPSK dots, one per quadrant"
+     style="max-width: 380px; width: 100%;">
 <img src="../../viz/img/L03-grc-snr6.png"
-     alt="The L3 noise flowgraph running in GNU Radio Companion with the SNR slider at 6 dB: the constellation sink shows four wide QPSK clouds that spread across the axes"
-     style="max-width: 520px; width: 100%; display: block; margin: 0 auto;">
+     alt="The same flowgraph with the SNR slider at 6 dB: four wide QPSK clouds that spread across the axes"
+     style="max-width: 380px; width: 100%;">
+</div>
 :::
 :::{present}
 1. Open `L03-noise-constellation.grc` and run it.
@@ -165,16 +170,16 @@ The figure sends 600 QPSK symbols at three SNRs. Noise adds a random offset to b
 3. Add a phase offset and watch the clouds rotate.
 :::
 
-This is the same demonstration as the figures, and it needs no SDR: an instructor demo today, and one to repeat after the Lesson 5 install. A **Random Source** picks symbols 0 to 3, **Chunks to Symbols** maps each one to a QPSK point through a Gray-coded table, and a **Channel Model** adds noise; its noise voltage is set from the SNR slider. A **QT GUI Constellation Sink** plots the result. A Multiply Const block between them rotates every point by the phase offset.
+This is the same demonstration as the figures, and it needs no SDR: an instructor demo today, and one to repeat after the Lesson 5 install. The flowgraph is adapted from the GNU Radio wiki's *QPSK Mod and Demod* tutorial (its first half, without pulse shaping). A **Random Source** picks symbols 0 to 3, **Chunks to Symbols** maps each one to a QPSK point through a Gray-coded table, and a **Channel Model** adds noise; its noise voltage is set from the SNR slider. A **QT GUI Constellation Sink** plots the result. A Multiply Const block between them rotates every point by the phase offset.
 
-Start at 20 dB, where the four points are tight dots, and drag the slider down. Somewhere below 10 dB the clouds start to reach the axes, which are QPSK's decision boundaries, and at 6 dB, the screenshot, they run into each other. Then put the SNR back at 20 dB and raise the phase offset toward 45°. Open Chunks to Symbols and read its symbol table: that list of four complex numbers is the constellation, in Gray order.
+Start at 20 dB, where the four points are tight dots, and drag the slider down. Somewhere below 10 dB the clouds start to reach the axes, which are QPSK's decision boundaries, and at 6 dB, the right-hand screenshot, they run into each other. Then put the SNR back at 20 dB and raise the phase offset toward 45°. Open Chunks to Symbols and read its symbol table: that list of four complex numbers is the constellation, in Gray order.
 ::::
 
 ::::{frame} Constellation Explorer
 :class: viz-frame
 
 :::{depth}
-The widget transmits random symbols, adds noise at the chosen SNR, and decides each one by the nearest point. The shaded tiles are the decision regions, and a symbol that lands in the wrong one turns red; the readouts count them. Start on QPSK at 12 dB, then switch to 8-PSK at the same SNR: the points sit closer together, the clouds reach the boundaries, and the red count climbs. Raise the SNR until 8-PSK is as clean as QPSK was. Then try 4-PAM against QPSK at the same SNR. Last, return to QPSK and add a phase offset: the clouds rotate toward the boundaries, and past $45^\circ$ every symbol would land in the wrong region even with no noise at all, which is why the receiver of Lesson 15 corrects the phase before it decides.
+The widget transmits random symbols, adds noise at the chosen SNR, and decides each one by the nearest point. The shaded tiles are the decision regions, and a symbol that lands in the wrong one turns red; the readouts count them. Start on QPSK at 12 dB, then switch to 8-PSK at the same SNR: the points sit closer together, the clouds reach the boundaries, and the red count climbs. Raise the SNR until 8-PSK is as clean as QPSK was, then step up to 16-PSK and do it again: each step up the ladder needs more SNR. Then try 4-PAM against QPSK at the same SNR. Last, return to QPSK and add a phase offset: the clouds rotate toward the boundaries, and past $45^\circ$ every symbol would land in the wrong region even with no noise at all, which is why the receiver of Lesson 15 corrects the phase before it decides.
 :::
 
 :::{present}
@@ -182,7 +187,7 @@ The widget transmits random symbols, adds noise at the chosen SNR, and decides e
         width="100%" height="411"
         style="border: 1px solid #cddce9; border-radius: 6px;"
         loading="lazy"
-        title="Constellation explorer: random symbols for BPSK, QPSK, 8-PSK, or 4-PAM through noise at a chosen SNR and phase offset, with the decision regions shaded and the symbols that land in the wrong region in red">
+        title="Constellation explorer: random symbols for BPSK, QPSK, 8-PSK, 16-PSK, or 4-PAM through noise at a chosen SNR and phase offset, with the decision regions shaded and the symbols that land in the wrong region in red">
 </iframe>
 :::
 ::::
@@ -231,7 +236,7 @@ A modulation is a set of points. Noise turns each point into a cloud, and a samp
 
 This lesson follows Dr. Rogers's 2025 slides, <a href="../../legacy/L03-signal-space.pdf" target="_blank" rel="noopener">Signal Space</a>, for its topics and order. The hands-on steps follow these tutorials:
 
-- GNU Radio wiki, <a href="https://wiki.gnuradio.org/index.php/QPSK_Mod_and_Demod" target="_blank" rel="noopener">QPSK Mod and Demod</a>: a QPSK constellation through a Channel Model, onto a constellation sink.
+- GNU Radio wiki, <a href="https://wiki.gnuradio.org/index.php/QPSK_Mod_and_Demod" target="_blank" rel="noopener">QPSK Mod and Demod</a>: the Try It flowgraph is adapted from its first half, without pulse shaping.
 - PySDR, <a href="https://pysdr.org/content/digital_modulation.html" target="_blank" rel="noopener">Digital Modulation</a>: ASK, PSK, and FSK, constellations, and Gray coding.
 
 Downloads:

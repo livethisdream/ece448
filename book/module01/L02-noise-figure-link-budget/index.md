@@ -45,7 +45,7 @@ Lesson 2 · Module 1: Foundations of Detection & Link Budgets · Dr. Neil Rogers
 :::
 :::{present}
 <img src="../../viz/img/L02-link-ledger.svg"
-     alt="Level diagram of a 2.45 GHz drone link: 28.0 dBm leaves the transmitter, the 3 km path removes 109.8 dB, and minus 82.8 dBm reaches the receiver, 10.2 dB above the minus 93.0 dBm sensitivity and 24.2 dB above the minus 107.0 dBm noise floor"
+     alt="Level diagram of a 2.45 GHz drone link: 28.0 dBm leaves the transmitter, the 3 km path removes 109.8 dB, and minus 82.8 dBm reaches the receiver, 10.2 dB above the receiver's minus 93.0 dBm datasheet sensitivity"
      style="max-width: 720px; width: 100%; display: block; margin: 0 auto;">
 :::
 
@@ -133,8 +133,7 @@ For the system in the table, at 3.7 GHz over 80 km, the path loss is $191.4 + 98
 ::::
 ::::{frame} Path Loss Rules of Thumb
 :::{present}
-- Doubling the distance adds 6 dB of path loss.
-- Doubling the frequency adds 6 dB with fixed-gain antennas.
+- Doubling the distance or the frequency adds 6 dB of path loss.
 
 | 3 km at | Path loss |
 | :-- | :-- |
@@ -143,22 +142,24 @@ For the system in the table, at 3.7 GHz over 80 km, the path loss is $191.4 + 98
 | 5.8 GHz | 117.3 dB |
 :::
 
-Path loss grows as $20\log_{10} R$, so every doubling of distance adds $20\log_{10}2 = 6.0$ dB, and every factor of ten adds 20 dB. The frequency term behaves the same way. That is why a 915 MHz telemetry radio outranges a 2.4 GHz radio at the same power and antenna gain: at 3 km the 915 MHz link loses 8.6 dB less, which is a factor of 2.7 in distance for the same received power.
-
-The 6 dB rule also runs in reverse. If a link has 6 dB of margin, it will still close at twice the distance, with nothing left over. If it has 12 dB, it reaches four times as far. We will use that to read the range of a link straight off its margin.
+Path loss grows as $20\log_{10} R$, so every doubling of distance adds 6 dB, and every factor of ten adds 20 dB. The frequency term behaves the same way with fixed-gain antennas. That is why a 915 MHz telemetry radio outranges a 2.4 GHz radio at the same power and antenna gain: at 3 km the 915 MHz link loses 8.6 dB less.
 ::::
 
 ::::{frame} Part 3: Antennas
 :::{present}
+<img src="../../viz/img/L02-antenna-patterns.svg"
+     alt="Three antenna gain patterns in dB. An omnidirectional dipole's vertical cut is a figure eight with nulls straight up and down; its horizontal cut is a circle. A directional antenna has one narrow main beam with its half-power edges marked 10 degrees either side of the peak, for a 20 degree beamwidth"
+     style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
+:::
+:::{present}
 - **Gain** is directivity times efficiency, in dBi.
-- Gain applies along the main beam; at the half-power **beamwidth** edge it is 3 dB lower.
+- At the half-power **beamwidth** edge the gain is 3 dB lower.
 - Orientation matters: a banking drone points its beam away.
-- Each cable and connector subtracts its insertion loss.
 :::
 
 An antenna turns the voltages and currents in a circuit into a radiated wave, and back again, and it comes in many forms: wire dipoles, horns, parabolic dishes, slotted waveguides, and phased arrays. A good one does two jobs: it sends energy in the directions we want and suppresses it elsewhere, and it moves as much power as possible between the circuit and space. **Directivity** measures the first, how much stronger the radiation is in the best direction than on average. **Gain** is directivity times efficiency, quoted in dBi against an isotropic antenna, and it is the number that goes in the Friis equation.
 
-The gain on a datasheet is the peak, along the main beam. The **beamwidth** is the angle between the points where the pattern falls 3 dB below that peak. An antenna pointed away from the other end of the link delivers less: at the edge of the half-power beamwidth, 3 dB less by definition, and in a null almost nothing. A drone that banks, a handheld radio held sideways, or two linear antennas at right angles to each other can each lose several dB, so a budget either assumes the worst orientation or states the one it assumes. Every cable, connector, filter, and switch between the radio and its antenna also subtracts its **insertion loss**; a few meters of thin coax at 2.4 GHz loses a dB or more.
+The figure shows the two kinds the course uses. An omnidirectional antenna, like the whip on an SDR, radiates equally in every horizontal direction but not straight up or down. A directional antenna puts its gain into one beam. The gain on a datasheet is the peak, along that beam, and the **beamwidth** is the angle between the points where the pattern falls 3 dB below the peak. A drone that banks, a handheld radio held sideways, or two linear antennas at right angles to each other can each lose several dB, so a budget either assumes the worst orientation or states the one it assumes. Every cable, connector, and filter between the radio and its antenna also subtracts its **insertion loss**; a few meters of thin coax at 2.4 GHz loses a dB or more.
 ::::
 ::::{frame} Part 4: SNR and Noise Figure
 :::{present}
@@ -203,32 +204,37 @@ $$N_\text{floor} = -174 + 10\log_{10}B + \text{NF}$$
 
 Where does the noise come from? Electrons moving at random in every resistor produce **thermal noise**, a noise power $kTB$ in a bandwidth $B$, where $k = 1.38\times10^{-23}$ J/K is Boltzmann's constant and $T$ is the temperature. At the standard 290 K that is $-174$ dBm in each hertz, the number to remember. **Shot noise**, from current flowing through semiconductor junctions, and smaller sources such as generation-recombination, temperature-fluctuation, and quantum noise add to it; a receiver lumps them all into one **noise temperature**, the $T$ that would give the same $kTB$.
 
-The noise a receiver sees grows with the bandwidth it lets through, and its own noise figure adds on top, so its **noise floor** in dBm is the sum on the slide. For the drone link, 1 MHz of bandwidth and a 7 dB noise figure put the floor at $-174 + 60 + 7 = -107.0$ dBm. Narrowing the bandwidth lowers the floor, 3 dB for every halving, which is one reason narrowband signals such as CW reach so far.
+The noise a receiver sees grows with the bandwidth it lets through, and its own noise figure adds on top, so its **noise floor** in dBm is the sum on the slide. For example, 1 MHz of bandwidth and a 7 dB noise figure put the floor at $-174 + 60 + 7 = -107.0$ dBm. Narrowing the bandwidth lowers the floor, 3 dB for every halving, which is one reason narrowband signals such as CW reach so far.
 ::::
 
 ::::{frame} The Atmosphere
 :::{present}
+<img src="../../viz/img/L02-atmosphere.svg"
+     alt="Sea-level attenuation from 1 to 350 GHz on log axes. Below 6 GHz, where the course SDRs work, oxygen and water vapor each absorb less than 0.01 dB per km. Water vapor peaks near 22 and 183 GHz, and oxygen peaks at 15 dB per km near 60 GHz"
+     style="max-width: 640px; width: 100%; display: block; margin: 0 auto;">
+:::
+:::{present}
 - Below about 10 GHz the clear atmosphere adds little.
-- Water vapor and rain add loss above that; oxygen absorbs strongly near 60 GHz.
-- Foliage and walls add loss at any frequency.
+- Oxygen absorbs strongly near 60 GHz; water vapor, near 22 and 183 GHz.
 :::
 
-Free space absorbs nothing, but the atmosphere does, and how much depends on frequency. Below about 10 GHz, which covers every band our SDRs reach, the clear atmosphere is nearly transparent. Above that, water vapor and rain add loss, and near 60 GHz oxygen absorbs about 15 dB/km at sea level. Foliage, walls, and people in the path add loss at any frequency, and an indoor Wi-Fi budget can lose 10 dB or more through a couple of walls. These losses are hard to predict exactly, which is one reason a link budget carries margin.
+Free space absorbs nothing, but the atmosphere does, and how much depends on frequency. The chart is the clear-air absorption at sea level from the ITU-R model. Below about 10 GHz, which covers every band our SDRs reach, the clear atmosphere is nearly transparent: less than 0.01 dB/km. Above that, water vapor adds loss, and near 60 GHz oxygen absorbs about 15 dB/km. Rain, foliage, walls, and people in the path add loss at any frequency, and an indoor Wi-Fi budget can lose 10 dB or more through a couple of walls. These losses are hard to predict exactly, which is one reason a link budget carries margin.
 ::::
+
 ::::{frame} Part 5: SNR and Margin
 :::{present}
 $$\begin{aligned}
 \text{SNR} &= P_r - N_\text{floor} \\
-P_\text{sens} &= N_\text{floor} + \text{SNR}_\text{req} \\
 \text{margin} &= P_r - P_\text{sens}
 \end{aligned}$$
 
+- $P_\text{sens}$ is the datasheet **sensitivity**.
 - Design for about 10 dB of margin.
 :::
 
-The received SNR is the received power minus the noise floor, both in dBm. Every demodulator needs some minimum SNR to decode reliably, and the radio's datasheet states it. Adding it to the floor gives the receiver's **sensitivity**, the weakest signal it can use, which radio datasheets usually quote directly. The **margin** is how far the received power sits above the sensitivity.
+The received SNR is the received power minus the noise floor, both in dBm. Every receiver needs some minimum SNR to decode reliably, and that sets its **sensitivity**, the weakest signal it can use, which radio datasheets quote directly in dBm. The **margin** is how far the received power sits above the sensitivity.
 
-A link with 0 dB of margin works only on a good day. Fading, a bad antenna angle, a wet radome, or a warmer receiver all take a few dB at unpredictable times, so a typical design goal is about 10 dB of margin. Because path loss grows 6 dB per doubling of distance, 10 dB of margin also says the link would close, with nothing to spare, at about three times the distance.
+A link with 0 dB of margin works only on a good day. Fading, a bad antenna angle, a wet radome, or a warmer receiver all take a few dB at unpredictable times, so a typical design goal is about 10 dB of margin.
 ::::
 
 ::::{frame} Worked Example: A Drone Link
@@ -238,16 +244,29 @@ A link with 0 dB of margin works only on a good day. Fading, a bad antenna angle
 | EIRP | $30.5$ dBm |
 | Path loss, 3 km | $109.8$ dB |
 | Received | $-82.8$ dBm |
-| Floor, 1 MHz | $-107.0$ dBm |
+| Sensitivity | $-93$ dBm |
 | Margin | $10.2$ dB |
 :::
 :::{present}
-- The radio needs 14 dB of SNR, so its sensitivity is $-93.0$ dBm.
+- Goal: at least 10 dB of margin.
 :::
 
 :::{admonition} Worked example — a 2.45 GHz drone link
 :class: tip
-A drone's 2.45 GHz telemetry radio transmits 630 mW into a 4 dBi antenna, and the ground station uses a 1 dBi antenna at up to 3 km. Each side has 1.5 dB of cable and connector loss, and the drone may bank until the ground station sits at the edge of its antenna's half-power beamwidth, a 3 dB pointing loss. The radio uses 1 MHz of bandwidth, has a 7 dB noise figure, and needs 14 dB of SNR.
+From the 2025 slides. The goal is at least 10 dB of margin.
+
+| Parameter | Value |
+| :-- | :-- |
+| $P_t$ | 630 mW |
+| $P_{rx,\text{min}}$ (sensitivity) | $-93$ dBm |
+| $G_{tx}$ | 4 dBi |
+| $G_{rx}$ | 1 dBi |
+| $f$ | 2.45 GHz |
+| $R_\text{max}$ | 3 km |
+| Max bank angle (HPBW) | $20^\circ$ |
+| Insertion loss (radio to antenna) | 1.5 dB each side |
+
+The drone may bank until the ground station sits at the edge of its antenna's half-power beamwidth, which costs 3 dB.
 
 | Quantity | Work | Result |
 | :-- | :-- | :-- |
@@ -255,12 +274,9 @@ A drone's 2.45 GHz telemetry radio transmits 630 mW into a 4 dBi antenna, and th
 | EIRP | $28.0 - 1.5 + 4.0$ | $30.5$ dBm |
 | Path loss | $20\log_{10}(2.45\times10^9) + 20\log_{10}3000 - 147.55$ | $109.8$ dB |
 | Received | $30.5 - 109.8 - 3.0 + 1.0 - 1.5$ | $-82.8$ dBm |
-| Noise floor | $-174 + 10\log_{10}(10^6) + 7$ | $-107.0$ dBm |
-| SNR | $-82.8 - (-107.0)$ | $24.2$ dB |
-| Sensitivity | $-107.0 + 14$ | $-93.0$ dBm |
-| Margin | $-82.8 - (-93.0)$ | $10.2$ dB |
+| Margin | $-82.8 - (-93)$ | $10.2$ dB |
 
-The link meets the 10 dB goal. The effective isotropic radiated power, **EIRP**, is the transmit power plus the antenna gain minus the transmit-side losses, the power an isotropic antenna would need to produce the same signal along the beam; regulators limit it in the ISM bands. With all 10.2 dB used, the range could stretch by $10^{10.2/20} = 3.2$ times, to about 9.7 km, before the link fails.
+The link meets the 10 dB goal. The effective isotropic radiated power, **EIRP**, is the transmit power plus the antenna gain minus the transmit-side losses, the power an isotropic antenna would need to produce the same signal along the beam; regulators limit it in the ISM bands.
 :::
 ::::
 
@@ -268,7 +284,7 @@ The link meets the 10 dB goal. The effective isotropic radiated power, **EIRP**,
 :class: viz-frame
 
 :::{depth}
-The widget starts on the drone link above. The four steps are the transmitter, the level after the transmit antenna, the level after the path, and the receiver input after the remaining losses; the dashed red line is the noise floor and the dotted line is the sensitivity. Drag the distance to 6 km and watch the margin drop by 6.0 dB. Raise the bandwidth to 20 MHz and watch the floor rise by 13 dB, so a wideband link loses range for the same power. Then try the two other presets. The Wi-Fi link loses 10 dB to walls and needs 25 dB of SNR for a fast modulation, so it has little margin even at 50 m. The GPS link arrives about 18 dB *below* the noise floor; a GPS receiver still works because it correlates the signal against a known 1023-chip code, which recovers about 30 dB.
+The widget starts on the drone link above. The four steps are the transmitter, the level after the transmit antenna, the level after the path, and the receiver input after the remaining losses; the dashed red line is the noise floor and the dotted line is the sensitivity. The widget builds the sensitivity from a bandwidth, a noise figure, and a required SNR; for the drone, 1 MHz, 7 dB, and 14 dB land on the datasheet's $-93$ dBm. Drag the distance to 6 km and watch the margin drop by 6.0 dB. Raise the bandwidth to 20 MHz and watch the floor rise by 13 dB, so a wideband link loses range for the same power. Then try the two other presets. The Wi-Fi link loses 10 dB to walls and needs 25 dB of SNR for a fast modulation, so it has little margin even at 50 m. The GPS link arrives about 18 dB *below* the noise floor; a GPS receiver still works because it correlates the signal against a code it already knows, which pulls the signal back out of the noise.
 :::
 
 :::{present}
@@ -283,14 +299,18 @@ The widget starts on the drone link above. The four steps are the transmitter, t
 
 ::::{frame} Reading SNR on an SDR
 :::{present}
-1. Tune GQRX to a broadcast FM station.
-2. Read the peak and the floor beside it, in dBFS.
-3. Double the FFT size: the floor drops 3 dB, and so does the wide station.
+1. Open an FM capture in SDR Flex; read the peak and the floor.
+2. Live in GQRX: 99.9 MHz, WFM, AGC off, RF gain 30 dB.
+3. FFT Settings → FFT size 4096 → 8192.
 :::
 
-From Lesson 5 on we read signals off a spectrum display, and this step is an instructor demo in GQRX with an RTL-SDR; cadets repeat it in GNU Radio's frequency sink once the Lesson 5 install is done. The vertical axis is in **dBFS**, decibels relative to the full scale of the analog-to-digital converter, not in dBm. Turning dBFS into dBm takes a calibration against a known source, but an SNR does not need one: it is the difference between two levels on the same axis, so the peak minus the floor gives it directly. A strong FM station and a weak one show the difference a link budget predicts.
+This is an instructor demo, following PySDR's *Noise and dB* chapter; cadets repeat it in GNU Radio's frequency sink once the Lesson 5 install is done. Start in <a href="https://livethisdream.github.io/sdr-flex/" target="_blank" rel="noopener">SDR Flex</a>, in the browser: right-click the source chip, open one of its example FM captures, and read the level of a station's peak and of the floor beside it. Then go live with an RTL-SDR in GQRX, the fallback, since SDR Flex in the browser has no live radio:
 
-The bandwidth needs one more step. A display with an $N$-point FFT at sample rate $f_s$ splits the band into bins $f_s/N$ wide, and each bin holds only that much of the noise. Change the FFT size from 4096 to 8192 and the floor drops 3 dB. A 200 kHz FM station spans many bins, so its level drops 3 dB too and the displayed SNR stays the same; a narrow carrier, all in one bin, would stay where it was and its SNR would rise. Either way, the SNR read off the display is per bin. To find the SNR a demodulator sees for a narrow carrier, scale the floor to the signal bandwidth $B$ by adding $10\log_{10}(B N/f_s)$ dB to it, approximately, since the display's window widens each bin a little.
+1. Device: the RTL-SDR. Frequency 99.9 MHz (or any local station), mode WFM, AGC off, RF gain 30 dB.
+2. Read the station's peak and the floor beside it, in dBFS. The difference is the SNR. Tune a weak station and compare.
+3. FFT Settings → FFT size from 4096 to 8192. The floor drops 3 dB.
+
+The vertical axis is in **dBFS**, decibels relative to the full scale of the analog-to-digital converter, not in dBm. Turning dBFS into dBm takes a calibration against a known source, but an SNR does not need one: it is the difference between two levels on the same axis. In step 3 each FFT bin gets half as wide and holds half the noise, so the floor drops 3 dB. A 200 kHz FM station spans many bins, so its level drops 3 dB too and the displayed SNR stays the same; a narrow carrier, all in one bin, would stay where it was and its SNR would rise.
 ::::
 
 ::::{frame} Key Point
@@ -308,7 +328,7 @@ This lesson follows Dr. Rogers's 2025 slides, <a href="../../legacy/L02-noise-fi
 - PySDR, <a href="https://pysdr.org/content/noise.html" target="_blank" rel="noopener">Noise and dB</a>: decibels, noise power, and SNR.
 - PySDR, <a href="https://pysdr.org/content/link_budgets.html" target="_blank" rel="noopener">Link Budgets</a>: path loss, noise figure, and an end-to-end budget.
 
-The hands-on step, reading SNR off a spectrum display, is an instructor demo in GQRX with an RTL-SDR, repeated in GNU Radio from Lesson 5.
+The hands-on step, reading SNR off a spectrum display, is an instructor demo in SDR Flex and then GQRX with an RTL-SDR, repeated in GNU Radio from Lesson 5.
 ::::
 
 ::::{frame} Summary
@@ -340,7 +360,7 @@ The hands-on step, reading SNR off a spectrum display, is an instructor demo in 
 - Lesson 4 opens the SDR and its front end, where the noise figure is set.
 :::
 
-Today we took the receiver's required SNR from its datasheet, the 14 dB in the drone example. Lesson 3 shows what that number protects. A digital modulation places its symbols at points, and the noise floor we computed today spreads each received symbol into a cloud around its point. Turn the noise up and the clouds grow until samples land on a neighbor's point; the SNR a radio needs is whatever keeps that from happening too often.
+Today we took the receiver's sensitivity from its datasheet, the $-93$ dBm in the drone example, and that number rests on the SNR the receiver needs. Lesson 3 shows what that SNR protects. A digital modulation places its symbols at points, and the noise floor we computed today spreads each received symbol into a cloud around its point. Turn the noise up and the clouds grow until samples land in a neighbor's region; the SNR a radio needs is whatever keeps that from happening too often.
 
-Lesson 4 then opens the SDRs themselves: the RF front end, the mixer and filters, and the analog-to-digital converter, which together set the noise figure, the bandwidth, and the dynamic range we used in today's budget. Before the next lesson, be able to compute a free-space path loss and a noise floor in your head to within a dB, because every lab in this course starts by checking that the signal will be there to receive.
+Lesson 4 then opens the SDRs themselves: the RF front end, the mixer and filters, and the analog-to-digital converter, which together set the noise figure, the bandwidth, and the dynamic range we used in today's budget. Before the next lesson, be able to compute a free-space path loss and a noise floor to within a dB. Every lab in this course starts by checking the signal is there on the display.
 ::::

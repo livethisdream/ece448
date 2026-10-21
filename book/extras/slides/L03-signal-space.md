@@ -131,14 +131,14 @@ QPSK at three SNRs. At 20 dB nothing crosses; at 10 dB a few do; at 4 dB the clo
 
 ## Try It in GNU Radio
 
-<img src="./img/03-signal-space/L03-grc-snr6.png" alt="The L3 noise flowgraph at an SNR of 6 dB: four wide QPSK clouds" style="max-height:380px; display:block; margin:0 auto;">
+<div style="display:flex; gap:16px; justify-content:center;"><img src="./img/03-signal-space/L03-grc-snr20.png" alt="The L3 noise flowgraph at an SNR of 20 dB: four tight QPSK dots" style="max-height:340px;"><img src="./img/03-signal-space/L03-grc-snr6.png" alt="The same flowgraph at 6 dB: four wide QPSK clouds" style="max-height:340px;"></div>
 
 1. Open `L03-noise-constellation.grc` and run it.
 2. Drag the SNR from 20 dB down to 6 dB.
 3. Add a phase offset and watch the clouds rotate.
 
 Note:
-Instructor demo; no SDR needed. Random Source, Chunks to Symbols with a Gray-coded QPSK table, and a Channel Model whose noise voltage comes from the SNR slider. Open Chunks to Symbols and show the symbol table: that list is the constellation.
+Instructor demo; no SDR needed. Adapted from the GNU Radio wiki's QPSK Mod and Demod tutorial, its first half, without pulse shaping. Random Source, Chunks to Symbols with a Gray-coded QPSK table, and a Channel Model whose noise voltage comes from the SNR slider. Open Chunks to Symbols and show the symbol table: that list is the constellation.
 
 ---
 
@@ -147,7 +147,7 @@ Instructor demo; no SDR needed. Random Source, Chunks to Symbols with a Gray-cod
 ## Constellation Explorer
 
 - QPSK at 12 dB, then 8-PSK at 12 dB: the clouds reach the boundaries.
-- Raise the SNR until 8-PSK is clean again.
+- Raise the SNR until 8-PSK is clean, then step up to 16-PSK.
 - Add a phase offset to QPSK: the clouds rotate toward the boundaries.
 
 <p class="viz-cue">↗ Interactive on the lesson page</p>

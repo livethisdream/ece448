@@ -7,6 +7,10 @@
                       tuning ranges of the course SDRs
   L02-noise-cascade : the same three parts in two orders, with the system
                       noise figure of each
+  L02-antenna-patterns : an omnidirectional and a directional antenna's
+                      gain patterns, with the half-power beamwidth marked
+  L02-atmosphere    : sea-level attenuation by oxygen and water vapor,
+                      1 to 350 GHz (ITU-R P.676, through the itur package)
 
 Every plotted number is computed here and printed for checking against the
 lesson text. Words and numbers only, no equations, so one SVG serves both the
@@ -57,8 +61,8 @@ def M(v: float, nd: int = 1) -> str:
 # ---------------------------------------------------------------- the link ---
 # The drone link of the lesson: 630 mW at 2.45 GHz over 3 km, 1.5 dB of cable
 # on each side, 4 dBi and 1 dBi antennas, 3 dB of pointing loss at the edge of
-# the beam, 1 MHz of bandwidth, a 7 dB noise figure, and a modem that needs
-# 14 dB of SNR.
+# the beam, and a receiver whose datasheet sensitivity is -93 dBm (the 2025
+# slides' P_rx,min).
 PT = db(630)                      # dBm
 LINK = [
     ("Transmitter", None, PT),
@@ -69,8 +73,7 @@ LINK = [
     ("Rx antenna", +1.0, None),
     ("Rx cable", -1.5, None),
 ]
-FLOOR = -174 + db(1e6) + 7.0      # dBm in 1 MHz with NF 7 dB
-SENS = FLOOR + 14.0
+SENS = -93.0                      # dBm, datasheet sensitivity
 
 
 def link_ledger() -> None:
@@ -81,7 +84,7 @@ def link_ledger() -> None:
     pr = levels[-1][2]
     for name, d, lv in levels:
         print(f"  {name:12s} {'' if d is None else f'{d:+7.2f}'} -> {lv:7.2f} dBm")
-    print(f"  floor {FLOOR:.1f}  sensitivity {SENS:.1f}  margin {pr - SENS:.1f}  SNR {pr - FLOOR:.1f}")
+    print(f"  sensitivity {SENS:.1f}  margin {pr - SENS:.1f}")
 
     W, H = 900, 440
     x0, x1, y0, y1 = 96, 740, 40, 380           # plot box; margin bracket to the right
@@ -95,11 +98,9 @@ def link_ledger() -> None:
         parts.append(f'<line x1="{x0}" y1="{Y(v):.1f}" x2="{x1}" y2="{Y(v):.1f}" stroke="{RULE}" stroke-width="1"/>')
         parts.append(f'<text x="{x0 - 10}" y="{Y(v) + 4:.1f}" font-size="13" fill="{GRAY}" text-anchor="end">{M(v, 0) if v else "0"}</text>')
     parts.append(f'<text x="22" y="{(y0 + y1) / 2:.0f}" font-size="13" fill="{GRAY}" text-anchor="middle" transform="rotate(-90 22 {(y0 + y1) / 2:.0f})">level (dBm)</text>')
-    # floor and sensitivity
-    parts.append(f'<line x1="{x0}" y1="{Y(FLOOR):.1f}" x2="{x1}" y2="{Y(FLOOR):.1f}" stroke="{RED}" stroke-width="2" stroke-dasharray="7 5"/>')
-    parts.append(f'<text x="{x0 + 8}" y="{Y(FLOOR) + 18:.1f}" font-size="13" fill="{RED}">noise floor {M(FLOOR)} dBm (1 MHz, NF 7 dB)</text>')
+    # sensitivity
     parts.append(f'<line x1="{x0}" y1="{Y(SENS):.1f}" x2="{x1}" y2="{Y(SENS):.1f}" stroke="{AMBER}" stroke-width="2" stroke-dasharray="3 4"/>')
-    parts.append(f'<text x="{x0 + 8}" y="{Y(SENS) - 8:.1f}" font-size="13" fill="{AMBER}">sensitivity {M(SENS)} dBm (14 dB above the floor)</text>')
+    parts.append(f'<text x="{x0 + 8}" y="{Y(SENS) - 8:.1f}" font-size="13" fill="{AMBER}">sensitivity {M(SENS)} dBm (datasheet)</text>')
     # staircase
     prev = None
     for i, (name, d, lv) in enumerate(levels):
@@ -125,8 +126,7 @@ def link_ledger() -> None:
     parts.append(f'<text x="{xm + 8}" y="{(Y(pr) + Y(SENS)) / 2 + 5:.1f}" font-size="13" font-weight="700" fill="{GREEN}">margin {pr - SENS:.1f} dB</text>')
     svg = (f'<svg viewBox="0 0 {W} {H}" xmlns="http://www.w3.org/2000/svg" role="img" '
            f'aria-label="Level diagram of a 2.45 GHz drone link: 28.0 dBm leaves the transmitter, the 3 km path removes '
-           f'{-LINK[3][1]:.1f} dB, and {M(pr)} dBm reaches the receiver, {pr - SENS:.1f} dB above the {M(SENS)} dBm sensitivity '
-           f'and {pr - FLOOR:.1f} dB above the {M(FLOOR)} dBm noise floor">'
+           f'{-LINK[3][1]:.1f} dB, and {M(pr)} dBm reaches the receiver, {pr - SENS:.1f} dB above the receiver\'s {M(SENS)} dBm datasheet sensitivity">'
            + "".join(parts) + "</svg>")
     write("L02-link-ledger", svg)
 
@@ -225,7 +225,100 @@ def noise_cascade() -> None:
     write("L02-noise-cascade", svg)
 
 
+# --------------------------------------------------------- antenna patterns ---
+def _polar(ax, th, g_db, title, col, floor=-30):
+    """Plot a pattern in dB, normalized to its peak, on a polar axis."""
+    import numpy as np
+    r = np.clip(g_db - g_db.max(), floor, 0) - floor
+    ax.plot(th, r, color=col, lw=2)
+    ax.set_ylim(0, -floor)
+    ax.set_yticks([-floor - 3, -floor - 10, -floor - 20])
+    ax.set_yticklabels(["−3", "−10", "−20"], fontsize=8, color=GRAY)
+    ax.set_xticks(np.radians(range(0, 360, 45)))
+    ax.set_xticklabels([f"{a}°" for a in range(0, 360, 45)], fontsize=8, color=GRAY)
+    ax.set_rlabel_position(112)
+    ax.grid(color=RULE, lw=0.8)
+    ax.spines["polar"].set_color(RULE)
+    ax.set_title(title, color=NAVY, fontsize=11.5, fontweight="bold", pad=12)
+
+
+def antenna_patterns() -> None:
+    import io
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    import numpy as np
+    plt.rcParams.update({"svg.fonttype": "none", "font.family": "sans-serif"})
+    th = np.linspace(0, 2 * np.pi, 721)
+    # Half-wave dipole, vertical: elevation cut, angle from the horizon.
+    el = th
+    c = np.cos(el)
+    with np.errstate(divide="ignore", invalid="ignore"):
+        e = np.where(np.abs(c) < 1e-6, 0.0, np.cos(np.pi / 2 * np.sin(el)) / c)
+    e = np.abs(e)
+    dip = 20 * np.log10(np.maximum(e, 1e-4))
+    # A directional antenna with a 20 degree half-power beamwidth: a Gaussian
+    # main beam with a -25 dB back and side level.
+    hpbw = 20.0
+    off = np.degrees(np.angle(np.exp(1j * th)))
+    beam = 10 * np.log10(np.maximum(np.exp(-4 * np.log(2) * (off / hpbw) ** 2), 10 ** -2.5))
+    fig, axs = plt.subplots(1, 3, figsize=(11.0, 3.8), subplot_kw={"projection": "polar"})
+    fig.subplots_adjust(wspace=0.45)
+    _polar(axs[0], th, dip, "omni: vertical cut", NAVY)
+    _polar(axs[1], th, np.zeros_like(th), "omni: horizontal cut", NAVY)
+    _polar(axs[2], th, beam, f"directional: {hpbw:.0f}° beamwidth", NAVY)
+    for a in (-hpbw / 2, hpbw / 2):
+        axs[2].plot([np.radians(a)] * 2, [0, 30], color=AMBER, lw=1.4, ls=(0, (4, 3)))
+    axs[2].text(np.radians(28), 31, "−3 dB", color=AMBER, fontsize=10, fontweight="bold")
+    print(f"  directional HPBW {hpbw:.0f} deg; dipole HPBW 78 deg (vertical cut)")
+    buf = io.StringIO()
+    fig.savefig(buf, format="svg", transparent=True, bbox_inches="tight", pad_inches=0.06)
+    plt.close(fig)
+    t = buf.getvalue()
+    write("L02-antenna-patterns", t[t.index("<svg"):])
+
+
+# ------------------------------------------------------------- atmosphere ---
+def atmosphere() -> None:
+    import io
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    import numpy as np
+    import itur
+    plt.rcParams.update({"svg.fonttype": "none", "font.family": "sans-serif",
+                         "axes.spines.top": False, "axes.spines.right": False})
+    f = np.logspace(0, np.log10(350), 700)
+    # Sea level: 1013.25 hPa, 15 C, 7.5 g/m^3 of water vapor (ITU-R P.835 mean).
+    o2 = np.asarray(itur.models.itu676.gamma0_exact(f, 1013.25, 7.5, 288.15).value)
+    h2o = np.asarray(itur.models.itu676.gammaw_exact(f, 1013.25, 7.5, 288.15).value)
+    fig, ax = plt.subplots(figsize=(7.6, 4.2))
+    ax.loglog(f, o2, color=GREEN, lw=2.2, label="oxygen")
+    ax.loglog(f, h2o, color=RED, lw=2.2, ls=(0, (5, 2)), label="water vapor")
+    ax.axvspan(1, 6, color=PALE, zorder=0)
+    ax.text(2.45, 2e-3, "course SDRs", color=NAVY, fontsize=10.5, ha="center")
+    i60 = np.argmax(o2 * (f < 70))
+    ax.text(f[i60], 35, f"{o2[i60]:.0f} dB/km at {f[i60]:.0f} GHz", ha="center",
+            color=GREEN, fontsize=10.5, fontweight="bold")
+    ax.set_xlim(1, 350)
+    ax.set_ylim(1e-3, 100)
+    ax.set_xlabel("frequency (GHz)")
+    ax.set_ylabel("attenuation (dB/km)")
+    ax.grid(True, which="major", color=RULE, lw=0.8)
+    ax.legend(frameon=False, loc="upper left", bbox_to_anchor=(0.32, 1.0))
+    for fx in (2.45, 10, 22.2, 60, 183):
+        k = np.argmin(abs(f - fx))
+        print(f"  {fx:6.2f} GHz: O2 {o2[k]:.4f}  H2O {h2o[k]:.4f} dB/km")
+    buf = io.StringIO()
+    fig.savefig(buf, format="svg", transparent=True, bbox_inches="tight", pad_inches=0.06)
+    plt.close(fig)
+    t = buf.getvalue()
+    write("L02-atmosphere", t[t.index("<svg"):])
+
+
 if __name__ == "__main__":
     link_ledger()
     ism_bands()
     noise_cascade()
+    antenna_patterns()
+    atmosphere()
