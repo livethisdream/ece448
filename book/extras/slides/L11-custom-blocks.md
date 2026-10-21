@@ -110,10 +110,10 @@ Sync like Multiply Const, decimator like a decimating filter, interpolator like 
 
 <div class="fig" data-inline-svg="./fig/L11-energy-steps.svg" style="max-width:720px; margin:0 auto;"></div>
 
-$$P = \frac{1}{N}\sum_{n=1}^{N} \vert x[n]\vert^2$$
+Average power of each $N$ samples, in dB, then a key with hysteresis.
 
 Note:
-Key on above the threshold, off below the threshold minus the hysteresis. With N = 32 at 32 kHz, one output per millisecond. Noise of amplitude sigma has power sigma squared, so the floor sits near 20 log10 sigma.
+Key on above the threshold, off below the threshold minus the hysteresis. With N = 32 at 32 kHz, one output per millisecond. A tone of amplitude 1 reads 0 dB; with the carrier off, read the noise floor off the Power plot.
 
 ---
 
@@ -186,7 +186,7 @@ Search the library for Energy Detector, under ECE 448. The rest of the flowgraph
 
 <img src="./img/11-custom-blocks/L11-keyed-chatter.png" alt="At noise amplitude 0.3 the noise floor sits on the minus 10 dB threshold, and the key chatters through every gap" style="max-height:420px; display:block; margin:0 auto;">
 
-The floor sits at $-10.5$ dB, on the threshold.
+On the Power plot the floor sits near $-10.5$ dB, on the threshold.
 
 Note:
 Move the noise slider to 0.3 and the hysteresis to 0 live. Then add 3 dB of hysteresis with the threshold left at minus 10: the key turns on and rarely turns off. The threshold must move up before hysteresis can help.
@@ -197,10 +197,10 @@ Move the noise slider to 0.3 and the hysteresis to 0 live. Then add 3 dB of hyst
 
 <img src="./img/11-custom-blocks/L11-keyed-fixed.png" alt="With the threshold at minus 5 dB and 3 dB of hysteresis, both levels sit between the floor and the carrier and the key follows the keying" style="max-height:420px; display:block; margin:0 auto;">
 
-Set the threshold halfway between the floor and the signal, and the hysteresis above the floor's spread.
+Read both levels off the plot. Set the threshold halfway between them, and the hysteresis above the floor's ragged edge.
 
 Note:
-Carrier on: 10 log10 of 1.09, plus 0.4 dB. Carrier off: minus 10.5 dB. On level minus 5, off level minus 8. Hysteresis should be a few times the floor's spread, which shrinks as the square root of N.
+On the plot the carrier sits just above 0 dB and the floor near minus 10.5 dB. On level minus 5, off level minus 8. Averaging more samples smooths the floor, so the levels can sit closer to the noise, but each output covers more time.
 
 ---
 

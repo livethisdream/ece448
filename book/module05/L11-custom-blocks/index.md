@@ -120,11 +120,7 @@ GNU Radio's scheduler calls a block's `work()` function with a buffer of input s
 - The key turns on above the threshold and off below threshold minus hysteresis.
 :::
 
-For each run of $N$ input samples, the block computes the average power
-
-$$P = \frac{1}{N}\sum_{n=1}^{N} \vert x[n]\vert^2,$$
-
-and outputs $10\log_{10} P$ on its first output. A tone of amplitude 1 has power 1, or 0 dB, and GNU Radio's Noise Source with amplitude $\sigma$ has power $\sigma^2$, so with the carrier off the output sits near $20\log_{10}\sigma$ dB. The second output is the key. It switches to 1 when the power rises above the threshold, and back to 0 only when the power falls below the threshold minus the **hysteresis**. With $N = 32$ at 32 kHz, the block makes one output per millisecond.
+For each run of $N$ input samples, the block averages the magnitude squared, which is the average power, and outputs it in dB on its first output. A tone of amplitude 1 reads 0 dB, and with the carrier off the output sits at the noise floor, which the Power plot shows. The second output is the key. It switches to 1 when the power rises above the threshold, and back to 0 only when the power falls below the threshold minus the **hysteresis**. With $N = 32$ at 32 kHz, the block makes one output per millisecond.
 ::::
 
 ::::{frame} The work() Function
@@ -224,7 +220,7 @@ Once installed, the Energy Detector is an ordinary block: you search for it in G
 - Hysteresis alone cannot fix a threshold in the wrong place.
 :::
 
-At a noise amplitude of 0.3, the noise floor is $20\log_{10} 0.3 = -10.5$ dB, right at the $-10$ dB threshold. With no hysteresis, every averaged output that crosses the line flips the key, so the key **chatters** through every gap, and a Morse decoder downstream would read each flip as a dit. Adding 3 dB of hysteresis with the threshold where it is makes things worse: the key turns on and then rarely falls below $-13$ dB, so it stays on nearly all the time, and the threshold must move up before hysteresis can help.
+At a noise amplitude of 0.3, the Power plot shows the noise floor near $-10.5$ dB, right at the $-10$ dB threshold. With no hysteresis, every averaged output that crosses the line flips the key, so the key **chatters** through every gap, and a Morse decoder downstream would read each flip as a dit. Adding 3 dB of hysteresis with the threshold where it is makes things worse: the key turns on and then rarely falls below $-13$ dB, so it stays on nearly all the time, and the threshold must move up before hysteresis can help.
 ::::
 
 ::::{frame} Setting the Levels
@@ -238,11 +234,7 @@ At a noise amplitude of 0.3, the noise floor is $20\log_{10} 0.3 = -10.5$ dB, ri
 - Hysteresis then keeps noise near the threshold from switching the key.
 :::
 
-With the carrier on, the power is
-
-$$P_\text{on} = 10\log_{10}(1 + \sigma^2)\ \text{dB},$$
-
-which is $+0.4$ dB at $\sigma = 0.3$, and with it off the power is about $-10.5$ dB. Raising the threshold to $-5$ dB puts the on level at $-5$ dB and the off level at $-8$ dB, both well inside that 11 dB gap, and the key follows the keying exactly. A good rule is to set the threshold about halfway between the floor and the signal in dB, and the hysteresis to a few times the spread of the floor, which the frame How Many Samples to Average works out.
+Read the two levels off the Power plot: with the carrier on, the power sits just above 0 dB, and with it off, near $-10.5$ dB. Raising the threshold to $-5$ dB puts the on level at $-5$ dB and the off level at $-8$ dB, both well inside that 11 dB gap, and the key follows the keying exactly. A good rule is to set the threshold about halfway between the floor and the signal on the plot, and the hysteresis a little larger than the floor's ragged up-and-down, so noise near the threshold cannot switch the key.
 ::::
 
 ::::{frame} Energy Detector Explorer
@@ -265,15 +257,7 @@ The top panel is the detector's power output for one sending of "ECE", and the b
 ::::{frame} How Many Samples to Average
 :class: read-only
 
-The noise power in one sample varies as much as its mean, so a single sample of noise tells us little. Averaging $N$ samples divides that spread by $\sqrt N$, so the average has a mean of $\sigma^2$ and a standard deviation of
-
-$$\sigma_P = \frac{\sigma^2}{\sqrt N}.$$
-
-In dB, one standard deviation above and below the mean is
-
-$$10\log_{10}\left(1 \pm \frac{1}{\sqrt N}\right)\ \text{dB},$$
-
-which for $N = 8$ is $+1.3$ dB and $-1.9$ dB. Four times as many samples halves the spread.
+The power of one noise sample jumps around a lot, so a single sample tells us little. Averaging more samples smooths it: in the explorer above, 8 samples give a ragged floor that wanders a dB or two, and 64 give a floor that barely moves. A smoother floor lets the threshold and hysteresis sit closer to the noise.
 
 Averaging more samples takes more time: each output covers $N/f_s$ seconds, and an edge in the keying can land anywhere inside one output. At 32 kHz, $N = 32$ gives 1 ms outputs. A dit at 20 words per minute is 60 ms, so it spans 60 outputs, and even $N = 64$, 2 ms, leaves 30 outputs per dit. A faster signal needs a shorter average: the 433 MHz remotes below send pulses a few hundred microseconds long, so their flowgraph averages 4 samples at 128 kHz, about 31 $\mu$s per output.
 ::::
@@ -332,8 +316,8 @@ Unzip the module, then follow its `README.md` from the radioconda prompt. Open a
 | Block types | sync, decimator, interpolator, general | 1:1, $N$:1, 1:$N$, any ratio |
 | Block files | `.py`, `.block.yml`, `qa_*.py` | check `gr_python_install` on 3.10.9 |
 | Build | CMake, `ctest`, install | install into the radioconda environment |
-| Energy Detector | average power in dB, keyed with hysteresis | floor near $20\log_{10}\sigma$ dB |
-| Levels | threshold halfway, hysteresis above the spread | spread shrinks as $\sqrt N$ |
+| Energy Detector | average power in dB, keyed with hysteresis | read the floor off the Power plot |
+| Levels | threshold halfway, hysteresis above the floor's ragged edge | more samples: smoother floor, coarser timing |
 | Windows | CMake needs Visual Studio 2022 Build Tools | fallbacks: WSL2 Ubuntu, then an Embedded Python Block |
 ::::
 

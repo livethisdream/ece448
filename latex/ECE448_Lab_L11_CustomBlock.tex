@@ -113,7 +113,7 @@ scratch and integrate it into a GNU Radio flowgraph.}
 
 This packet is the L\labLesson\ Lab, in three parts, and you turn it in once, complete,
 before the midterm. Do \textbf{Part 1} on your own before the lab period: check your
-laptop's tools and make the predictions you will check at the bench. \textbf{Part 2} is
+laptop's tools and work out the Morse timing you will check at the bench. \textbf{Part 2} is
 your own work in class: build and test the course module, set the Energy Detector's
 levels, and then write a block of your own, the \textbf{Key Timer}, in a module of your
 own. Do \textbf{Part 3} on your own after the lab.
@@ -127,8 +127,7 @@ Nothing in this lab transmits: every flowgraph is a simulation on your laptop.
 The files are on the L11 lesson page: \texttt{L11-gr-ece448.zip},
 \texttt{L11-keyed-carrier.grc}, and \texttt{L11-keyed-carrier-epy.grc}. Every number
 below assumes the flowgraph's settings: \texttt{samp\_rate} = 32 kHz, a tone of
-amplitude 1, Morse ``ECE'' repeating, and GNU Radio's Noise Source, whose power is
-$\sigma^2$ at amplitude $\sigma$. One Morse unit lasts $1.2/\text{WPM}$ seconds: a dit
+amplitude 1, and Morse ``ECE'' repeating. One Morse unit lasts $1.2/\text{WPM}$ seconds: a dit
 is 1 unit, a dah 3, the gap inside a letter 1, the gap between letters 3, and the gap
 after a word 7.
 
@@ -175,53 +174,11 @@ resort build the two modules on a teammate's laptop for Questions 3(a) and 5.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newpage
-\question \textbf{Predictions.} You will check each of these at the bench.
+\question \textbf{Timing.} You will check these at the bench.
 
 \begin{parts}
 
-	\part The bench uses a noise amplitude of 0.5. Predict the Energy Detector's power
-	output with the carrier off and on, and a threshold halfway between them in dB.
-	Repeat for a noise amplitude of 0.8.
-
-	\begin{center}
-	\renewcommand{\arraystretch}{1.25}
-	\begin{tabular}{| l | K{1.1in} | K{1.1in} | K{1.1in} |}
-	\hline
-	$\sigma$ & Carrier off (dB) & Carrier on (dB) & Threshold (dB) \\\hline
-	0.5 & \kv{$-6.0$} & \kv{$+1.0$} & \kv{$-2.5$} \\\hline
-	0.8 & \kv{$-1.9$} & \kv{$+2.1$} & \kv{$+0.1$} \\\hline
-	\end{tabular}
-	\end{center}
-
-		\begin{solution}[0.6in]
-		Off: $20\log_{10}\sigma$. On: $10\log_{10}(1 + \sigma^2)$, which is
-		$10\log_{10} 1.25 = 0.97$ dB and $10\log_{10} 1.64 = 2.15$ dB.
-		\end{solution}
-
-	\begin{minipage}[t]{0.58\linewidth}
-		\part Averaging $N$ samples divides the floor's spread by $\sqrt N$, so one standard
-		deviation above and below the floor is
-		\[ 10\log_{10}\left(1 \pm \tfrac{1}{\sqrt N}\right)\ \text{dB}. \]
-		Find it for $N = 32$ and $N = 128$, and the gap between the two levels at
-		$\sigma = 0.8$.
-		\begin{solution}[1.2in]
-		\eq{ N = 32:&\quad 10\log_{10}(1 \pm 0.177) = +0.71,\ -0.85\db \\
-		N = 128:&\quad 10\log_{10}(1 \pm 0.088) = +0.37,\ -0.40\db \\
-		2.15 - (-1.94) &= 4.1\db }
-		\end{solution}
-	\end{minipage}\hfill%
-	\begin{minipage}[t]{0.37\linewidth}
-		\raggedleft \vspace{12pt}
-		$N=32$: \ansbox[1.0in]{$\approx \pm 0.8$ dB}
-
-		\vspace{4pt}
-		$N=128$: \ansbox[1.0in]{$\approx \pm 0.4$ dB}
-
-		\vspace{4pt}
-		gap: \ansbox[1.0in]{4.1 dB}
-	\end{minipage}
-
-	\part At 15 words per minute, predict the length of a dit, a dah, the gap inside a
+	\part At 15 words per minute, find the length of a dit, a dah, the gap inside a
 	letter, the gap between letters, and the gap after the word, and the number of
 	samples in one unit at 32 kHz.
 
@@ -294,16 +251,16 @@ resort build the two modules on a teammate's laptop for Questions 3(a) and 5.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \question \textbf{Set the levels.} In the running flowgraph, set the noise amplitude to
 0.5. Then stop it, set \texttt{wpm} to 15 and both Time Sinks' Number of Points to one sending of ECE at
-1 kHz, from your Question 2(d) answer, and run it again.
+1 kHz, from your Question 2(b) answer, and run it again.
 
 \begin{parts}
 
 	\begin{minipage}[t]{0.58\linewidth}
-		\part Read the floor and the carrier-on level from the power plot, and compare
-		them with Question 2(a).
+		\part Read the floor and the carrier-on level from the power plot, and describe
+		how much the floor jumps up and down.
 		\begin{solution}[0.8in]
-		The floor sits near $-6$ dB with about $\pm 0.8$ dB of spread, and the carrier
-		near $+1$ dB, as predicted.
+		The floor sits near $-6$ dB and wanders by about a dB either way, and the carrier
+		sits near $+1$ dB.
 		\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
@@ -380,7 +337,7 @@ through Function Probes.
 \begin{parts}
 
 	\part Watch the labels for a few sendings and record the mark and space lengths you
-	see. Compare them with Question 2(c).
+	see. Compare them with Question 2(a).
 
 	\begin{center}
 	\renewcommand{\arraystretch}{1.25}
@@ -415,13 +372,15 @@ through Function Probes.
 		The best settings sit near a threshold of $+0.5$ dB with 2 dB of hysteresis, and
 		even there the count runs a few marks high, about 89 to 95 for 87 to 88 sent, because
 		the noise now and then makes a mark of 1 to 3 ms in a gap. At a threshold of 0 dB the
-		count rises to about 130. The 4 dB gap is only about five times the 0.77 dB spread.
+		count rises to about 130. The floor (near $-2$ dB) and the carrier (near $+2$ dB) are
+		only about 4 dB apart, and the floor's ragged edge fills much of that gap.
 		\end{solution}
 
-	\part Stop the flowgraph, set \texttt{decim} to 128, and repeat. Record your settings,
-	the count after 30 s, and the dit length the Key Timer reports.
+	\part Stop the flowgraph, set \texttt{decim} to 128, and repeat. Describe how the
+	floor on the power plot changed. Record your settings, the count after 30 s, and the
+	dit length the Key Timer reports.
 		\begin{solution}[1.0in]
-		With a threshold of 0.5 to 1 dB and 1.5 to 2 dB of hysteresis the count matches the
+		The floor is visibly smoother, wandering about half as far. With a threshold of 0.5 to 1 dB and 1.5 to 2 dB of hysteresis the count matches the
 		marks sent, 87 to 88, and the dit reads 80 ms, sometimes 84 ms, one 4 ms output
 		long.
 		\end{solution}
@@ -432,16 +391,16 @@ through Function Probes.
 \newpage
 \fullwidth{\large\textbf{Part 3: Writeup} \normalsize(individual, after the lab)}
 
-\question \textbf{Hysteresis and timing.} With $\sigma = 0.5$, a $-2.5$ dB threshold, and
+\question \textbf{Hysteresis and timing.} At a noise amplitude of 0.5, with a $-2.5$ dB threshold, and
 3 dB of hysteresis, some dits read 81 or 82 ms; with no hysteresis, they read 80 ms.
 Explain why, and what Question 7 says about choosing $N$.
 		\begin{solution}[1.5in]
 		With 3 dB of hysteresis the off level is $-5.5$ dB, only 0.5 dB above the $-6$ dB
 		floor, so after the carrier stops, the averaged noise can stay above the off level
-		for an output or two and the key turns off late. A larger $N$ shrinks the floor's
-		spread by $\sqrt N$, which lets the levels sit further from the noise, but each
-		output then lasts longer, $N/f_s$, so the edges move in larger steps: averaging
-		more samples gives a cleaner key with coarser edge timing.
+		for an output or two and the key turns off late. Question 7 showed that a larger
+		$N$ smooths the floor, which leaves more room between the noise and the levels,
+		but each output then lasts longer, $N/f_s$, so the edges move in larger steps:
+		averaging more samples gives a cleaner key with coarser edge timing.
 		\end{solution}
 
 \question \textbf{Module or Embedded Python Block?} Lesson 12 builds a Morse decoder that
