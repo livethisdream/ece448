@@ -1,0 +1,481 @@
+\documentclass{exam}
+
+\newif\ifA
+\newif\ifkey
+\newif\ifprintselected   % required by exam_config's \ansbox
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% SET THESE IF VARIABLES
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Lab name -- labs are named by the lesson they belong to, never by a
+% sequential lab number (Neil, 2026-10-12): this is the L14 Lab.
+\def\labLesson{14}
+
+% is this the key or not?
+\ifdefined\iskey
+	\ifnum\iskey=1
+		\keytrue
+	\else
+		\keyfalse
+	\fi
+\else
+	%% Pick one manually
+	\keyfalse % if this is NOT the key
+%	\keytrue     % if this IS the key
+\fi
+
+% set up the header and footer - change for every term
+\ifdefined\thisTermIn
+	\def\thisterm{\thisTermIn}
+\else
+	\def\thisterm{Spring 2027}
+\fi
+%
+\def\thisclass{ECE 448}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% END SET THESE IF VARIABLES
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% packages and shortcuts
+\input{myPackages_gr}
+\usepackage[hidelinks, linkcolor=red]{hyperref}
+\input{myShortcuts}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt}
+
+%% exam class customization
+\input{exam_config}
+\input{ece448_fonts}   % Barlow body text (needs lualatex)
+\printselectedfalse      % full worked solutions in the key, not answers-only
+\CorrectChoiceEmphasis{\color{red}}
+\SolutionEmphasis{\color{red}}
+\renewcommand\questionlabel{\textbf{\thequestion.}}
+\renewcommand{\thepartno}{\alph{partno}}
+\renewcommand{\partlabel}{(\thepartno)}
+
+% Fillable table cell: blank in the student copy, the expected value in red on
+% the KEY. Fixed-width centered columns keep the blank cells writable.
+\newcolumntype{K}[1]{>{\centering\arraybackslash}p{#1}}
+\newcommand{\kv}[1]{\ifkey{\color{red}#1}\fi\rule[-0.10in]{0pt}{0.34in}}
+
+% print the answers if this is the key
+\ifkey
+	\printanswers % if this IS the key
+\else
+	\noprintanswers  %if this is NOT the key
+\fi
+
+% print the header and footer
+% need to print key on top if this is the key
+\ifkey
+	\firstpageheader{}{\color{red}{ KEY}}{}
+	\runningheader{\thisclass\hspace{1pt} -- \thisterm }{L\labLesson\ Lab\hspace{1pt}\color{red}{ KEY}}{\thepage\hspace{1pt} of\hspace{1pt} \numpages}
+	\firstpagefooter{}{}{}
+	\runningfooter{}{}{}
+\else
+	\firstpageheader{}{}{}
+	\runningheader{\thisclass \hspace{1pt} -- \thisterm }{L\labLesson\ Lab\hspace{1pt}}{\thepage\hspace{1pt} of\hspace{1pt} \numpages}
+	\firstpagefooter{}{}{}
+	\runningfooter{}{}{}
+\fi
+
+\runningheadrule
+
+
+
+
+\begin{document}
+\pagestyle{headandfoot}   % exam class
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% title block
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{center}
+USAF ACADEMY \\
+DEPARTMENT OF ELECTRICAL AND COMPUTER ENGINEERING \\
+LESSON \labLesson\ LAB - HD RADIO \\
+\textbf{Lab Packet} \\
+\thisterm \\[4mm]
+\end{center}
+
+\vspace{-4pt}
+\textbf{Name:} \rule[-2pt]{2.6in}{0.4pt} \hfill
+\textbf{Section:} \rule[-2pt]{0.9in}{0.4pt} \hfill
+\textbf{Date:} \rule[-2pt]{1.1in}{0.4pt}
+
+\vspace{4pt}
+
+\fullwidth{\textbf{Learning Objective 6.3: } I can describe how HD Radio works and
+demodulate an HD Radio signal.}
+
+\vspace{2pt}
+
+This packet is the L\labLesson\ Lab, in three parts, and you turn it in once, complete,
+before Lesson 15. Do \textbf{Part 1} on your own before the lab period: run the sideband
+finder and make the predictions you will use at the bench. \textbf{Part 2} is your own
+measurements, recorded in class on your own laptop with your RTL-SDR. Do \textbf{Part 3}
+on your own after the lab: compare the measurements with the rules and answer the
+analysis questions.
+
+\textbf{Grading.} One submission, graded against Objective 6.3 on the course's
+1 / 0 scale, with revision allowed under course policy. Paste screenshots where a
+question asks for one.
+
+\textbf{Transmitting.} Nothing in this lab transmits. The RTL-SDR receives only, and both
+captures came from GNU Radio flowgraphs, not from an antenna.
+
+The flowgraphs are on the L14 lesson page, \texttt{L14-hd-test-tx.grc} and
+\texttt{L14-hd-find.grc}, and the capture \texttt{L14-lab-capture.cu8} is on the L14 Lab
+page. Both captures are simulated: unsigned 8-bit I and Q at 1,488,375 samples per second,
+the format the RTL-SDR and nrsc5 record. Every number below uses the hybrid values from
+the lesson: subcarrier spacing $\Delta f = 1{,}488{,}375/4096 = 363.37$ Hz, sidebands from
+subcarrier 356 to 546 on each side, partitions of 19 subcarriers, and an extended hybrid
+station adding one, two, or four partitions inside subcarrier 356 on each side.
+
+\begin{questions}
+
+\fullwidth{\large\textbf{Part 1: Pre-Lab} \normalsize(individual, before the lab period)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{Run the sideband finder.} Put both L14 flowgraphs in one folder. Run
+\texttt{L14-hd-test-tx.grc} once, then open and run \texttt{L14-hd-find.grc}.
+
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part After about 5 s, record the two meter readings.
+		\begin{solution}[0.5in]
+		Upper $-23.05$ dBc and lower $-23.04$ dBc, the $-23$ dBc each sideband was built with.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		upper \ansbox[1.1in]{$-23.05$ dBc}
+
+		\vspace{4pt}
+		lower \ansbox[1.1in]{$-23.04$ dBc}
+	\end{minipage}
+
+	\part Paste a screenshot of the running flowgraph's window.
+		\begin{solution}[1.6in]
+		The spectrum shows the host at 100.3 MHz, two flat shelves from 100.1016 to
+		100.1706 MHz and from 100.4294 to 100.4984 MHz, and an analog-only station at
+		99.9 MHz. The waterfall shows the shelves as straight bands.
+		\end{solution}
+
+\end{parts}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\question \textbf{Predictions.} You will use each of these at the bench.
+
+\begin{parts}
+
+	\part A station adds one, two, or four partitions inside subcarrier 356 on each side.
+	For each, find the new inner subcarrier number, its frequency from the channel center,
+	and the number of subcarriers in one sideband.
+
+	\begin{center}
+	\renewcommand{\arraystretch}{1.25}
+	\begin{tabular}{| l | K{1.0in} | K{1.0in} | K{1.0in} |}
+	\hline
+	Added partitions & 1 & 2 & 4 \\\hline
+	Inner subcarrier & \kv{337} & \kv{318} & \kv{280} \\\hline
+	Inner edge (kHz) & \kv{122.5} & \kv{115.6} & \kv{101.7} \\\hline
+	Subcarriers per side & \kv{210} & \kv{229} & \kv{267} \\\hline
+	\end{tabular}
+	\end{center}
+
+		\begin{solution}[0.5in]
+		Each partition is 19 subcarriers, so the inner edge moves to $356 - 19n$, and the
+		sideband gains $19n$ subcarriers over its 191. With four partitions the digital
+		signal starts 101.7 kHz from center.
+		\end{solution}
+
+	\part Find the frequency sink's bin width, the number of bins one 69,041 Hz sideband
+	spans, and the number of subcarriers per bin, for an FFT of 1024 points and of 8192
+	points at 1,488,375 samples per second.
+
+	\begin{center}
+	\renewcommand{\arraystretch}{1.25}
+	\begin{tabular}{| l | K{1.1in} | K{1.1in} | K{1.3in} |}
+	\hline
+	FFT size & Bin width (Hz) & Bins per sideband & Subcarriers per bin \\\hline
+	1024 & \kv{1453.5} & \kv{47.5} & \kv{4} \\\hline
+	8192 & \kv{181.7} & \kv{380} & \kv{0.5} \\\hline
+	\end{tabular}
+	\end{center}
+
+		\begin{solution}[0.4in]
+		$1{,}488{,}375/N$; with 8192 points each subcarrier spans two bins, so an edge can be
+		read to within about one subcarrier.
+		\end{solution}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part A hybrid station runs its digital signal at the FCC's $-14$ dBc limit, with equal
+		sidebands. Find each sideband's level and each subcarrier's level in dBc. If its analog
+		signal is 6 kW, how many watts is the digital signal in total?
+		\begin{solution}[1.2in]
+		\eq{ -14 - 10\log_{10} 2 &= -17.0\ \text{dBc} \\
+			-14 - 10\log_{10} 382 &= -39.8\ \text{dBc} \\
+			6000 \times 10^{-1.4} &= 239\ \text{W} }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		sideband \ansbox[1.1in]{$-17.0$ dBc}
+
+		\vspace{4pt}
+		subcarrier \ansbox[1.1in]{$-39.8$ dBc}
+
+		\vspace{4pt}
+		total \ansbox[1.1in]{239 W}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part An extended hybrid sideband with two added partitions has the same power in every
+		subcarrier. A meter set to subcarriers 356 to 546 measures only part of it. By how many
+		dB does that meter read low?
+		\begin{solution}[0.8in]
+		The meter sees 191 of the 229 subcarriers:
+		\eq{ 10\log_{10}(191/229) = -0.79\ \text{dB} }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.1in]{0.79 dB low}
+	\end{minipage}
+
+\end{parts}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\fullwidth{\large\textbf{Part 2: Measurements} \normalsize(in class)}
+
+\question \textbf{Build the sideband meter.} Start GRC with an empty canvas. Do not open
+\texttt{L14-hd-find.grc}: build the meter yourself as the lab page lists.
+
+\begin{parts}
+
+	\part Paste a screenshot of your flowgraph on the GRC canvas. Every connection must be
+	black, not red.
+		\begin{solution}[1.6in]
+		The flowgraph matches the lab page: the byte File Source, Throttle, UChar To Float,
+		Add Const, Multiply Const, Deinterleave, and Float To Complex; a frequency sink; three
+		Frequency Xlating FFT Filters, each followed by Complex to Mag\^{}2, Moving Average,
+		Keep 1 in N, and Log10; two Subtract blocks; and a Number Sink.
+		\end{solution}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Run it on \texttt{L14-hd-test.cu8} and record both readings. Paste a screenshot
+		of the running window.
+		\begin{solution}[1.2in]
+		Within 0.1 dB of $-23.05$ and $-23.04$ dBc, the values of the lesson's finder, which
+		uses the same filters and averaging.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		upper \ansbox[1.1in]{$-23.05$ dBc}
+
+		\vspace{4pt}
+		lower \ansbox[1.1in]{$-23.04$ dBc}
+	\end{minipage}
+
+\end{parts}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\question \textbf{Identify the lab capture.} Run your meter on
+\texttt{L14-lab-capture.cu8}, as the lab page lists. Treat the center as 100.3 MHz.
+
+\begin{parts}
+
+	\part Read each sideband's edges with an FFT of 8192 points, convert each to a
+	subcarrier number, and name the configuration.
+
+	\begin{center}
+	\renewcommand{\arraystretch}{1.25}
+	\begin{tabular}{| l | K{1.0in} | K{1.0in} | K{1.0in} | K{1.0in} |}
+	\hline
+	 & Lower outer & Lower inner & Upper inner & Upper outer \\\hline
+	Edge (MHz) & \kv{100.1016} & \kv{100.1844} & \kv{100.4156} & \kv{100.4984} \\\hline
+	Subcarrier & \kv{$-546$} & \kv{$-318$} & \kv{318} & \kv{546} \\\hline
+	\end{tabular}
+	\end{center}
+
+		\begin{solution}[0.6in]
+		Within about one subcarrier. The inner edges are 38 subcarriers, two partitions,
+		inside 356, so the station runs extended hybrid with two added partitions on each
+		side.
+		\end{solution}
+
+	\part Record both meter readings with \texttt{inner} at 356 and with \texttt{inner} set
+	to the inner edge you found.
+
+	\begin{center}
+	\renewcommand{\arraystretch}{1.25}
+	\begin{tabular}{| l | K{1.4in} | K{1.4in} |}
+	\hline
+	\texttt{inner} & Upper (dBc) & Lower (dBc) \\\hline
+	356 & \kv{$-17.8$} & \kv{$-21.8$} \\\hline
+	your inner edge & \kv{$-17.0$} & \kv{$-21.0$} \\\hline
+	\end{tabular}
+	\end{center}
+
+		\begin{solution}[0.5in]
+		Setting \texttt{inner} to 318 raises both readings by 0.8 dB, as Question 2(d)
+		predicted for two added partitions.
+		\end{solution}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Find the total digital power in dBc, and the difference between the sidebands.
+		\begin{solution}[1.0in]
+		\eq{ 10\log_{10}\left(10^{-1.70} + 10^{-2.10}\right) = -15.5\ \text{dBc} }
+		The upper sideband is 4.0 dB stronger than the lower: asymmetric sidebands.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		total \ansbox[1.1in]{$-15.5$ dBc}
+
+		\vspace{4pt}
+		difference \ansbox[1.1in]{4.0 dB}
+	\end{minipage}
+
+	\part Does the station 400 kHz above the center carry HD Radio? How can you tell?
+		\begin{solution}[0.6in]
+		No. The station at 100.7 MHz has a rounded host and no flat shelves on either side,
+		so it is analog only.
+		\end{solution}
+
+\end{parts}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\question \textbf{A live station.} Add the RTL-SDR Source to your meter and find a local
+station with HD Radio, as the lab page lists.
+
+\begin{parts}
+
+	\part Paste a screenshot with the shelves visible, and record the station, the RF
+	gain, and the height of the shelves above the floor.
+		\begin{solution}[1.6in]
+		Answers vary. The shelves should look like the test file's, with a rougher host whose
+		width changes with the audio on the waterfall.
+		\end{solution}
+
+	\part Record the inner and outer edges, the subcarrier numbers, and the configuration.
+		\begin{solution}[0.8in]
+		Answers vary. Most stations are hybrid, with edges at subcarriers 356 and 546; an
+		inner edge inside 129.4 kHz means extended hybrid.
+		\end{solution}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Record both meter readings and the total digital power in dBc.
+		\begin{solution}[0.9in]
+		Answers vary, between about $-23$ dBc per sideband for a station at the original
+		$-20$ dBc and $-17$ dBc for one at $-14$ dBc. A weak station reads high, by 0.4 dB
+		when the shelves stand only 10 dB above the floor.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		upper \ansbox[1.1in]{}
+
+		\vspace{4pt}
+		lower \ansbox[1.1in]{}
+
+		\vspace{4pt}
+		total \ansbox[1.1in]{}
+	\end{minipage}
+
+\end{parts}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\question \textbf{Decode it.} Decode the same station with nrsc5, as the lab page lists.
+
+\begin{parts}
+
+	\part Record the station name, the title and artist of what is playing, and the
+	programs the station carries.
+		\begin{solution}[1.0in]
+		Answers vary. nrsc5 prints the station name and the title and artist as they arrive,
+		and lists the station's audio programs; HD1 is program 0.
+		\end{solution}
+
+	\part Lower the gain until the audio stops. At what gain does it stop, and how high do
+	the shelves stand above the floor at that gain in your meter?
+		\begin{solution}[1.0in]
+		Answers vary. The digital audio stops abruptly, not gradually as analog FM does, once
+		too many bits are in error for the code to correct. A car radio would blend back to
+		the analog program at that point.
+		\end{solution}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Record 10 s with \texttt{nrsc5 -w}, open the recording in your meter, and
+		record both readings. Do they match Question 5(c)?
+		\begin{solution}[0.9in]
+		Answers vary. They should match within about 0.5 dB if the gain is the same, because
+		the file holds the same samples the RTL-SDR delivers live.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		upper \ansbox[1.1in]{}
+
+		\vspace{4pt}
+		lower \ansbox[1.1in]{}
+	\end{minipage}
+
+\end{parts}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\fullwidth{\large\textbf{Part 3: Writeup} \normalsize(individual, after the lab)}
+
+\question \textbf{Analysis.}
+
+\begin{parts}
+
+	\part Compare the live station's sideband levels with the $-20$ dBc and $-14$ dBc
+	rules and the 10 dB limit on asymmetry. How is the station configured?
+		\begin{solution}[1.5in]
+		Answers vary. A total near $-20$ dBc means the original level; near $-14$ dBc, the
+		increase the FCC allowed in 2010. Equal sidebands within about 1 dB are symmetric; a
+		larger difference, up to 10 dB, means the station lowered one side, usually to
+		protect a neighbor on that side.
+		\end{solution}
+
+	\part Explain how the lab capture's edges and meter readings identified its
+	configuration, and give one reason a station would choose each feature you found.
+		\begin{solution}[1.5in]
+		The inner edges at subcarriers $\pm 318$ are two partitions inside 356, which is
+		extended hybrid; a station adds partitions for more data capacity, which leaves less room
+		for the analog signal. The upper sideband is 4 dB above the lower, which is asymmetric;
+		a station lowers one sideband to protect a neighbor on that side. The total of
+		$-15.5$ dBc is above the original $-20$ dBc and within the FCC's $-14$ dBc limit.
+		\end{solution}
+
+	\part nrsc5 cannot decode \texttt{L14-hd-test.cu8}, although its sidebands have the right
+	subcarriers, spacing, and guard. Name two things nrsc5 needs from a signal that the test
+	file does not provide.
+		\begin{solution}[1.5in]
+		Any two: reference subcarriers that carry NRSC-5's known synchronization and control
+		bits, which nrsc5 uses to find the timing, frequency, and phase; data subcarriers
+		that carry real NRSC-5 frames, scrambled, coded, and interleaved as the standard
+		specifies, rather than random QPSK; compressed audio and station data inside those
+		frames; and the standard's own symbol shaping rather than the test file's cyclic
+		prefix with a short rolloff.
+		\end{solution}
+
+\end{parts}
+
+\end{questions}
+
+\vspace{1.0em}
+\noindent\textbf{Documentation:} \rule[-2pt]{0.6\linewidth}{0.4pt}
+
+\end{document}

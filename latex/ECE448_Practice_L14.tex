@@ -1,0 +1,239 @@
+% !TEX root =./ECE448_Practice_main.tex
+%
+% L14 practice set (HD Radio). Every question is a step in finding, measuring,
+% or decoding the hybrid sidebands: locating subcarriers on a real station,
+% choosing an FFT size, the OFDM timing and data rate, and reading sideband
+% power. The L14 Lab asks for the extended hybrid edges, the FFT sizes 1024 and
+% 8192 at 1,488,375 samples per second, and the -14 dBc case, so none of
+% those appear here.
+% Blank copy: \begin{solution}[h] reserves h of work space.
+% SOLUTIONS copy (\iskey=1) prints the red worked solutions.
+
+\fullwidth{\textbf{Learning Objective 6.3: } I can describe how HD Radio works and
+demodulate an HD Radio signal.
+\\[4pt]\normalfont\small Show your work. Write a \textbf{Documentation} line at the
+end (\textbf{None} if you did not collaborate). Use the hybrid numbers from the lesson:
+subcarrier spacing $\Delta f = 1{,}488{,}375/4096$ Hz, sidebands from subcarrier 356 to 546
+on each side, ten partitions of 19 subcarriers per sideband, and a guard of $7/128$ of the
+useful symbol time.}
+
+\begin{questions}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{Finding the sidebands.} A hybrid station broadcasts at 98.5 MHz.
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Find the frequency of subcarriers 356, 450, and 546, in kHz from the channel
+		center, to 0.1 kHz.
+		\begin{solution}[0.9in]
+		\eq{ \Delta f &= 1{,}488{,}375/4096 = 363.37\ \text{Hz} \\
+			356\,\Delta f &= 129.4\ \text{kHz} \\
+			450\,\Delta f &= 163.5\ \text{kHz} \\
+			546\,\Delta f &= 198.4\ \text{kHz} }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.6in]{129.4, 163.5, 198.4 kHz}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Between which two radio frequencies, in MHz, should the upper sideband appear on
+		a spectrum display? The lower sideband?
+		\begin{solution}[0.8in]
+		Upper: $98.5 + 0.1294 = 98.6294$ MHz to $98.5 + 0.1984 = 98.6984$ MHz. Lower:
+		98.3016 to 98.3706 MHz.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		upper \ansbox[1.5in]{98.6294 to 98.6984}
+
+		\vspace{4pt}
+		lower \ansbox[1.5in]{98.3016 to 98.3706}
+	\end{minipage}
+
+	\part Counting the partition that starts at subcarrier 356 as the first, which partition
+	holds subcarrier 450? The reference subcarriers are 356, 375, 394, and every 19th after
+	that, up to 546. Is subcarrier 451 a reference subcarrier?
+		\begin{solution}[0.9in]
+		Partition $p$ covers subcarriers $356 + 19(p-1)$ to $356 + 19p - 1$. Since
+		$450 - 356 = 94 = 4 \times 19 + 18$, subcarrier 450 is the last subcarrier of the fifth
+		partition, 432 to 450. Since $451 - 356 = 95 = 5 \times 19$, subcarrier 451 is a
+		reference subcarrier, the first subcarrier of the sixth partition.
+		\end{solution}
+
+\end{parts}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{Choosing an FFT size.} You record the band with an RTL-SDR at
+2.4 MS/s and look at it with a QT GUI Frequency Sink.
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Find the bin width and the number of bins one 69,041 Hz sideband spans, for an
+		FFT of 2048 points and of 16384 points.
+		\begin{solution}[1.1in]
+		\eq{ 2048:&\ 2.4\ \text{MHz}/2048 = 1171.9\ \text{Hz} \\
+			&\ 69{,}041/1171.9 = 58.9\ \text{bins} \\
+			16384:&\ 146.5\ \text{Hz},\ 471\ \text{bins} }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		2048 \ansbox[1.3in]{1171.9 Hz, 59}
+
+		\vspace{4pt}
+		16384 \ansbox[1.3in]{146.5 Hz, 471}
+	\end{minipage}
+
+	\part Which FFT size could show individual subcarriers? Which one would you use to find
+	the sidebands' edges quickly on a live band, and why?
+		\begin{solution}[1.0in]
+		Only 16384: its bins are 146.5 Hz, about 2.5 bins per 363.4 Hz subcarrier, while a
+		2048-point bin is 3.2 subcarriers wide and averages them together. To find the edges
+		quickly, the 2048-point FFT is enough: 59 bins still draw a clear flat shelf, the
+		display updates and averages faster, and the edges are already within 1.2 kHz.
+		\end{solution}
+
+\end{parts}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{OFDM timing and data rate.}
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Find the useful symbol time $T_u$, the guard $T_g$, the whole symbol time, and
+		the symbol rate.
+		\begin{solution}[1.2in]
+		\eq{ T_u &= 1/\Delta f = 2.752\ \text{ms} \\
+			T_g &= (7/128)\,T_u = 150.5\ \mu\text{s} \\
+			T_s &= T_u + T_g = 2.902\ \text{ms} \\
+			R_s &= 1/T_s = 344.5\ \text{symbols/s} }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		$T_u$ \ansbox[1.2in]{2.752 ms}
+
+		\vspace{4pt}
+		$T_g$ \ansbox[1.2in]{150.5 $\mu$s}
+
+		\vspace{4pt}
+		$R_s$ \ansbox[1.2in]{344.5 /s}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Each data subcarrier carries one QPSK symbol per OFDM symbol. Find the raw bit
+		rate of the 360 data subcarriers in both sidebands.
+		\begin{solution}[0.8in]
+		\eq{ 360 \times 2\ \text{bits} \times 344.53\ \text{/s} = 248\ \text{kbit/s} }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.2in]{248 kbit/s}
+	\end{minipage}
+
+	\part The hybrid mode delivers about 98 kbit/s of program data. What fraction of the raw
+	rate is that, and what do you think the rest carries?
+		\begin{solution}[0.9in]
+		$98/248 = 0.40$, so about 40\%. The rest is redundancy: the bits pass through an
+		error-correcting code before the transmitter maps them to subcarriers, and the code lets the
+		receiver correct the errors that noise and fading cause. The reference subcarriers
+		are not in the 360, so they are extra again.
+		\end{solution}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part A reflection from a mountain travels 30 km farther than the direct path. Find
+		its delay. Does it fit inside the guard? How many symbols would it span if the
+		sideband were one carrier with a 14.5 $\mu$s symbol?
+		\begin{solution}[1.0in]
+		\eq{ \tau = 30\ \text{km}/(3\times10^8\ \text{m/s}) = 100\ \mu\text{s} }
+		It fits inside the 150.5 $\mu$s guard with 50 $\mu$s to spare. On one carrier it
+		would span $100/14.5 \approx 7$ symbols.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		$\tau$ \ansbox[1.1in]{100 $\mu$s}
+
+		\vspace{4pt}
+		symbols \ansbox[1.1in]{about 7}
+	\end{minipage}
+
+\end{parts}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{Sideband power.} An FM station's analog signal is 6 kW effective
+radiated power.
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part At $-20$ dBc, find the total digital power in watts, the power of each sideband
+		in watts and in dBc, and the power of each of the 382 subcarriers in dBc.
+		\begin{solution}[1.1in]
+		\eq{ 6000 \times 10^{-2} &= 60\ \text{W total, 30 W per sideband} \\
+			-20 - 10\log_{10}2 &= -23.0\ \text{dBc} \\
+			-20 - 10\log_{10}382 &= -45.8\ \text{dBc} }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		total \ansbox[1.2in]{60 W}
+
+		\vspace{4pt}
+		sideband \ansbox[1.2in]{30 W, $-23.0$ dBc}
+
+		\vspace{4pt}
+		subcarrier \ansbox[1.2in]{$-45.8$ dBc}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part The station raises its digital power to $-10$ dBc total. Repeat (a).
+		\begin{solution}[0.9in]
+		600 W total and 300 W per sideband, which is $-13.0$ dBc each and $-35.8$ dBc per
+		subcarrier.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.6in]{600 W, $-13.0$, $-35.8$ dBc}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part The L14 meters read $-26.5$ dBc for the upper sideband and $-23.1$ dBc for the
+		lower on another station. Find the total digital power in dBc, and say what the
+		difference between the two tells you.
+		\begin{solution}[1.0in]
+		\eq{ 10\log_{10}\left(10^{-2.65} + 10^{-2.31}\right) = -21.5\ \text{dBc} }
+		The sidebands differ by 3.4 dB, so the station runs asymmetric sidebands, most likely
+		to protect a neighbor above it.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.2in]{$-21.5$ dBc}
+	\end{minipage}
+
+	\part On a weak station the shelves stand only 10 dB above the noise floor. Does the
+	meter read the sideband high or low, and by about how much? Why does the frequency sink
+	show the shelves about 25 dB under the host's peak when each sideband is $-23$ dBc?
+		\begin{solution}[1.3in]
+		High: the meter adds the noise in the band to the sideband's power, and noise 10 dB
+		down adds 10\%, which is
+		\eq{ 10\log_{10}1.1 = 0.41\ \text{dB} }
+		The frequency sink shows power per bin, not power per band. The host's power is
+		concentrated in the bins near its center, while each sideband spreads its power evenly
+		over 191 bins, so the host's peak bin is higher relative to a sideband bin than the
+		host's total power is relative to the sideband's total.
+		\end{solution}
+
+\end{parts}
+
+\end{questions}
+
