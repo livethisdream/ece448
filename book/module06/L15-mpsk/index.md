@@ -200,25 +200,7 @@ The time a loop takes to lock is its **acquisition time**, and the range of offs
 
 At 450 Hz the QPSK loop does not lock. Its estimate settles near −50 Hz, 500 Hz from the true offset. The symbols then keep turning by $360° \times 500/4000 = 45°$ each, so they alternate between the four QPSK positions and the four positions between them, and the plot shows eight clusters. The detector's error averages to zero there, so the loop stays. This is a **false lock**, and no packet arrives.
 
-The detector sees the constellation repeat every $360°/M$, so it can only sort out a phase error smaller than $180°/M$. With more points that limit is smaller, and the pull-in range shrinks as $M$ grows. A real receiver therefore corrects most of the frequency error before the Costas Loop, often with a frequency-locked loop such as GNU Radio's **FLL Band-Edge** block, and leaves the Costas Loop only the last few tens of hertz.
-::::
-
-::::{frame} Measured Pull-In
-:class: read-only
-
-We measured the loop with the flowgraph's blocks running headless at the default noise amplitude of 0.5, starting cold six times at each offset with a different channel phase and noise, and counted a lock when the frequency estimate stayed within 10% of the offset to the end of a 15 s run.
-
-| Offset | BPSK locks | Median time | QPSK locks | Median time |
-| :-: | :-: | :-: | :-: | :-: |
-| 300 Hz | 6 of 6 | 3.1 s | 6 of 6 | 2.0 s |
-| 400 Hz | 6 of 6 | 5.7 s | 4 of 6 | 3.3 s |
-| 450 Hz | – | – | 0 of 6 | – |
-| 500 Hz | 6 of 6 | 9.4 s | – | – |
-| 600 Hz | 0 of 6 | – | – | – |
-
-At 4,000 symbols per second, BPSK pulls in from about 500 Hz and QPSK from about 375 Hz, roughly a tenth of the symbol rate. The acquisition time grows steeply near the limit. Noise changes the range too: the sign-based QPSK detector gives almost no correction to a fast-turning constellation without noise, and with the noise amplitude at 0.2 the same loop pulled in reliably only from about 200 Hz.
-
-The PlutoSDR's own oscillator is accurate to about 25 ppm, so two radios at 915 MHz can differ by up to about 46 kHz, a hundred times the Costas Loop's range. The L15 Lab uses one Pluto, whose transmitter and receiver share the same reference, so its frequency offset is close to zero.
+The detector sees the constellation repeat every $360°/M$, so it can only sort out a phase error smaller than $180°/M$. With more points that limit is smaller, and the pull-in range shrinks as $M$ grows. A real receiver therefore corrects most of the frequency error before the Costas Loop, often with a frequency-locked loop such as GNU Radio's **FLL Band-Edge** block, and leaves the Costas Loop only the last few tens of hertz. The PlutoSDR's own oscillator is accurate to about 25 ppm, so two radios at 915 MHz can differ by up to about 46 kHz, far beyond any Costas Loop's range. The L15 Lab uses one Pluto, whose transmitter and receiver share the same reference, so its frequency offset is close to zero.
 ::::
 
 ::::{frame} Step 5: Phase Ambiguity
@@ -251,7 +233,7 @@ This is the **phase ambiguity** that Lesson 10's PlutoSDR link met as a polarity
 
 **Differential coding** removes the ambiguity. The **Differential Encoder** adds each new phase index to the last one it sent, mod $M$, so the data rides on the change in phase from one symbol to the next. The **Differential Decoder** subtracts the index before it from each received index, mod $M$. A loop that locked one step off adds 1 to every received index, and the differences do not change. The table shows QPSK: the data 1, 2, 0, 3 arrives as the changes whatever the rotation. The differential-encoding tutorial in the references works the same idea for bits.
 
-Differential coding has one drawback in noise. One wrong decision corrupts two differences, the one into it and the one out of it, so a noisy link makes about twice as many errors with it as without. It also has a second advantage: noise can make the Costas Loop slip to another rotation now and then, and without differential coding every later decision is then wrong, while with it the slip corrupts only the symbols where it happens. In the flowgraph the encoder and decoder each sit beside a **Selector**, and the variable `diff`, 1 or 0, picks the coded or the uncoded path at both ends; change it and run the flowgraph again.
+Differential coding has one drawback in noise. One wrong decision corrupts two differences, the one into it and the one out of it, so one wrong decision corrupts two symbols of data. It also has a second advantage: noise can make the Costas Loop slip to another rotation now and then, and without differential coding every later decision is then wrong, while with it the slip corrupts only the symbols where it happens. In the flowgraph the encoder and decoder each sit beside a **Selector**, and the variable `diff`, 1 or 0, picks the coded or the uncoded path at both ends; change it and run the flowgraph again.
 ::::
 
 ::::{frame} Carrier Recovery Explorer
@@ -274,7 +256,7 @@ The explorer runs GNU Radio's Costas Loop at one sample per symbol for 10 s at 4
 ::::{frame} Noise
 :::{present}
 <img src="../../viz/img/L15-noise-compare.png"
-     alt="The Costas Loop output of the L15 link at the same noise amplitude, 0.8, for three runs: BPSK shows two tight, well-separated clouds and 130 of 130 lines correct; QPSK shows four clouds that nearly touch and 217 of 235 lines correct; 8PSK shows eight clouds merged into a ring and 1 of 120 lines correct"
+     alt="The Costas Loop output of the L15 link at the same noise amplitude, 0.8, for three runs: BPSK shows two tight, well-separated clouds and 130 of 130 lines correct; QPSK shows four larger clouds with gaps between them and 217 of 235 lines correct; 8PSK shows eight clouds merged into a ring and 1 of 120 lines correct"
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
@@ -282,9 +264,9 @@ The explorer runs GNU Radio's Costas Loop at one sample per symbol for 10 s at 4
 - Points that sit closer together need a quieter channel.
 :::
 
-The figure runs the link three times with the noise amplitude at 0.8 and no frequency offset, changing only `M`. The noise spreads every point into a cloud of the same size. BPSK's two points are far apart, so its clouds stay separate and every line arrives. QPSK's four clouds nearly touch, and a few lines arrive with a wrong character. 8PSK's eight clouds merge into a ring, the decoder picks the wrong point again and again, and almost no line arrives intact.
+The figure runs the link three times with the noise amplitude at 0.8 and no frequency offset, changing only `M`. The noise spreads every point into a cloud of the same size. BPSK's two points are far apart, so its clouds stay separate and every line arrives. QPSK's clouds grow toward each other, a few symbols cross, and a few lines arrive with a wrong character. 8PSK's eight clouds merge into a ring, the decoder picks the wrong point again and again, and almost no line arrives intact.
 
-This is the cost of more bits per symbol, seen on the screen: the same channel that carries BPSK cleanly can be too noisy for 8PSK. Try it in `L15-psk-link.grc` by raising the noise amplitude a step at a time and watching the clouds grow and the Received label break up; the L15 Lab records where each constellation stops delivering text.
+More bits per symbol put the points closer together, so the same channel that carries BPSK cleanly can be too noisy for 8PSK. Try it in `L15-psk-link.grc` by raising the noise amplitude a step at a time and watching the clouds grow and the Received label break up; the L15 Lab records where each constellation stops delivering text.
 ::::
 
 ::::{frame} mPSK on a Real Radio
@@ -328,9 +310,9 @@ Open a `.grc` file from GRC's File menu, or run `gnuradio-companion L15-psk-link
 | Gray map | neighbors differ in one bit | label of index $i$ is $i \oplus (i \gg 1)$ |
 | Receiver order | matched filter, Symbol Sync, Costas Loop, decoder | timing before carrier |
 | Frequency offset | turns the points $360° \Delta f/R_s$ a symbol | 50 Hz is 4.5° a symbol at 4 kbaud |
-| Costas Loop | phase detector of order $M$, loop filter | QPSK pulls in from about 375 Hz at noise 0.5 |
+| Costas Loop | phase detector of order $M$, loop filter | pull-in range shrinks as $M$ grows |
 | Phase ambiguity | the loop can lock in any of $M$ rotations | $360°/M$ apart |
-| Differential coding | data on the change of phase | about twice as many errors in noise |
+| Differential coding | data on the change of phase | one wrong decision corrupts two symbols |
 | Noise | spreads each point into a cloud | 8PSK breaks first, BPSK last |
 ::::
 

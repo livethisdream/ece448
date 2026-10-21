@@ -6,7 +6,7 @@ options:
     cmake_opt: ''
     comment: ''
     copyright: ''
-    description: 'L15: a line of ASCII text in packets over an RRC M-PSK link (M =
+    description: 'L15: a line of ASCII text in packets over an RRC mPSK link (M =
       2, 4, or 8), with differential coding, through a channel with noise, frequency
       offset, phase, and clock error, then a matched filter, Symbol Sync, a Costas
       Loop, and a constellation decoder. Change M and run again; move the sliders

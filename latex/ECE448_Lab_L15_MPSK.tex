@@ -174,17 +174,6 @@ with every slider at its default.
 
 \begin{parts}
 
-	\begin{minipage}[t]{0.58\linewidth}
-		\part A faster version of the link sends 6,000 symbols per second. Find the bit
-		rate of BPSK, QPSK, and 8PSK.
-		\begin{solution}[0.8in]
-		The bit rate is $k R_s$ with $k = \log_2 M$: 6, 12, and 18 kb/s.
-		\end{solution}
-	\end{minipage}\hfill%
-	\begin{minipage}[t]{0.37\linewidth}
-		\raggedleft \vspace{12pt}
-		\ansbox[1.5in]{6, 12, 18 kb/s}
-	\end{minipage}
 
 	\part Question 3 builds an 8PSK flowgraph whose Chunks to Symbols block needs the
 	eight points. They sit on a circle of radius 1 at $22.5^\circ$ plus multiples of
@@ -338,9 +327,9 @@ each step, and watch the Costas Loop's output and the Lines label.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newpage
 \question \textbf{Carrier recovery.} Follow the lab page's steps at the default noise
-amplitude of 0.5, with differential coding on. Before each offset, type 0 into the frequency offset box,
-wait until lines arrive, and then type the new offset in one jump. Watch the frequency
-estimate for up to 15 s.
+amplitude of 0.5, with differential coding on. Before each offset, start from a loop locked at 0 Hz,
+as the lab page describes, and then type the new offset in one jump. Watch the frequency
+estimate for up to 15 s, or 20 s at 200 Hz and above.
 
 \begin{parts}
 
@@ -351,15 +340,16 @@ estimate for up to 15 s.
 	\renewcommand{\arraystretch}{1.25}
 	\begin{tabular}{| l | K{1.1in} | K{1.1in} | K{1.1in} |}
 	\hline
-	Offset (Hz) & 250 & 350 & 425 \\\hline
-	Locks? & \kv{yes} & \kv{yes} & \kv{usually not} \\\hline
-	Time & \kv{$\approx 1.2$ s} & \kv{$\approx 4$ s} & \kv{--} \\\hline
-	Settles at (Hz) & \kv{250} & \kv{350} & \kv{$\approx -75$} \\\hline
+	Offset (Hz) & 250 & 350 & 400 \\\hline
+	Locks? & \kv{yes} & \kv{yes} & \kv{sometimes} \\\hline
+	Time & \kv{$\approx 1.5$ s} & \kv{$\approx 4$ s} & \kv{$\approx 6$ s} \\\hline
+	Settles at (Hz) & \kv{250} & \kv{350} & \kv{400 or $-100$} \\\hline
 	\end{tabular}
 	\end{center}
 		\begin{solution}[0.6in]
-		At 425 Hz the loop usually settles 500 Hz away, near $-75$ Hz, a false lock, and the
-		constellation shows eight clusters; it locked correctly in 1 of 6 measured runs.
+		At 400 Hz the loop locked in about two runs of three, in 5 to 7 s. The other runs
+		settled 500 Hz away, near $-100$ Hz, a false lock with eight clusters on the
+		constellation; accept either.
 		\end{solution}
 
 	\part Set \texttt{M} to 8 and run the flowgraph again. Record the same for 8PSK, and
@@ -370,14 +360,14 @@ estimate for up to 15 s.
 	\begin{tabular}{| l | K{0.9in} | K{0.9in} | K{0.9in} | K{0.9in} |}
 	\hline
 	Offset (Hz) & 100 & 150 & 200 & 250 \\\hline
-	Locks? & \kv{yes} & \kv{usually} & \kv{sometimes} & \kv{no} \\\hline
-	Time & \kv{$\approx 3$ s} & \kv{$\approx 7$ s} & \kv{$\approx 11$ s} & \kv{--} \\\hline
+	Locks? & \kv{yes} & \kv{yes} & \kv{usually} & \kv{no} \\\hline
+	Time & \kv{$\approx 3$ s} & \kv{$\approx 9$ s} & \kv{10 to 14 s} & \kv{--} \\\hline
 	\end{tabular}
 	\end{center}
 		\begin{solution}[0.6in]
-		The 8PSK loop pulls in from about 150 to 175 Hz at this noise. In six measured runs
-		it locked within 15 s at 150 Hz five times, at 200 Hz twice, and at 250 Hz never, so
-		accept yes or sometimes at 150 and 200 Hz.
+		The 8PSK loop pulls in from about 175 to 200 Hz at this noise. In measured runs it
+		locked at 150 Hz every time, at 200 Hz in about five runs of six, taking 10 to 14 s,
+		and at 250 Hz never; accept yes or sometimes at 200 Hz.
 		\end{solution}
 
 \end{parts}
@@ -386,8 +376,8 @@ estimate for up to 15 s.
 \newpage
 \question \textbf{Phase ambiguity.} Follow the lab page's steps: set \texttt{diff} to 0 and run
 the flowgraph again, so that the loop locks with no frequency offset and the channel phase
-at 0, and leave the noise amplitude at 0.5. For each channel phase, type 0 first, wait
-until lines arrive, and then type the phase in one jump. Mark each setting at which
+at 0, and leave the noise amplitude at 0.5. For each channel phase, start from a loop locked at
+0 degrees, as the lab page describes, and then type the phase in one jump. Mark each setting at which
 the Lines count keeps rising.
 
 \begin{parts}
@@ -406,7 +396,9 @@ the Lines count keeps rising.
 	\end{center}
 		\begin{solution}[0.5in]
 		QPSK delivers text at 5 settings, those within $45^\circ$ of 0, and 8PSK at 3, those within
-		$22.5^\circ$: the loop locks to the nearest of $M$ rotations, $360^\circ/M$ apart.
+		$22.5^\circ$: the loop locks to the nearest of $M$ rotations, $360^\circ/M$ apart. At 20
+		and 340 degrees 8PSK is within $2.5^\circ$ of the boundary, and noise sometimes slips the
+		loop to the next rotation, so accept either result there.
 		\end{solution}
 
 	\part Set \texttt{diff} to 1, run the flowgraph again, and repeat three settings that failed. Record
@@ -494,8 +486,7 @@ before you disconnect the cable.
 		\begin{solution}[1.5in]
 		The noise spreads every point into a cloud of the same size. The points sit 2.00
 		apart for BPSK, 1.41 for QPSK, and 0.77 for 8PSK, so 8PSK's clouds touch their
-		neighbors first and BPSK's last, and the noise limits come in the same order, close
-		to the same ratio. More bits per symbol put more points on the same circle, closer
+		neighbors first and BPSK's last, and the noise limits come in the same order. More bits per symbol put more points on the same circle, closer
 		together, so the link tolerates less noise; to keep the clouds apart it needs a
 		stronger signal, which a link budget from Lesson 2 has to supply.
 		\end{solution}
@@ -503,10 +494,10 @@ before you disconnect the cable.
 	\part Compare the 8PSK pull-in range with QPSK's, explain why it is smaller, and say what a link between two different Plutos,
 	each accurate to 25 ppm at 915 MHz, would need before its Costas Loop.
 		\begin{solution}[1.5in]
-		The 8PSK loop pulled in from about 150 to 175 Hz against about 375 Hz for QPSK. Its
+		The 8PSK loop pulled in from about 175 to 200 Hz, while QPSK locked at 350 Hz and sometimes at 400 Hz. Its
 		detector measures an error only up to $22.5^\circ$, so a spinning constellation
 		leaves that range sooner. Two Plutos can be up to $2 \times 25 \times 10^{-6}
-		\times 915\ \text{MHz} \approx 46$ kHz apart, hundreds of times the range, so the
+		\times 915\ \text{MHz} \approx 46$ kHz apart, more than a hundred times the range, so the
 		receiver needs a coarse frequency correction first, such as an FLL Band-Edge
 		block, or a higher symbol rate with the loop scaled to it.
 		\end{solution}
@@ -521,7 +512,7 @@ before you disconnect the cable.
 		settings for QPSK and 3 for 8PSK. On the Pluto the phase is random at every
 		start, so about one run in four locks the right way. Differential coding makes
 		every rotation work and limits a cycle slip to a symbol or two, which matters more
-		than the extra errors it causes in noise.
+		than the second symbol each wrong decision corrupts.
 		\end{solution}
 
 \end{parts}

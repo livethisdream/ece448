@@ -26,7 +26,7 @@ Spring 2027 · Dr. Neil Rogers
 - Lesson 9: RRC pulses, the matched filter, and Symbol Sync
 - Lessons 8 and 10: text in packets, and a PlutoSDR link that could lock upside down
 
-Today: BPSK, QPSK, and 8PSK, with carrier recovery.
+Today we build BPSK, QPSK, and 8PSK links with carrier recovery.
 
 Note:
 Open L15-psk-tx.grc and L15-psk-link.grc in GRC before class. The link runs in the first five minutes and again for the pull-in and ambiguity parts. This lesson runs about two periods with its lab; the lab takes most of the second.
@@ -51,7 +51,7 @@ Steps 1 to 5 follow the GNU Radio wiki's Guided Tutorial PSK Demodulation, with 
 
 <img src="./img/15-mpsk/L15-link-clean.png" alt="The L15 link running QPSK at noise amplitude 0.5 with a 50 Hz offset: a ring before carrier recovery, four clusters after, and every line of text received" style="max-height:440px; display:block; margin:0 auto;">
 
-A ring before the Costas Loop, four clusters after it, and the text arrives.
+The points form a ring before the Costas Loop and four clusters after it, and the text arrives.
 
 Note:
 Run L15-psk-link.grc live and type 50 into the frequency offset box; the slider opens at 0. The left plot is Symbol Sync's output: the 50 Hz offset turns the constellation 4.5 degrees a symbol, so the points fill a ring. The middle plot is after the Costas Loop.
@@ -73,7 +73,7 @@ Switch the chooser in L15-psk-tx.grc. QPSK sits at 45 degrees plus multiples of 
 
 <img src="./img/15-mpsk/L15-grc-tx.png" alt="The L15 transmitter in GRC: Random Source, Chunks to Symbols, Throttle, and the RRC Interpolating FIR Filter, with constellation, time, and frequency sinks" style="max-height:330px; display:block; margin:0 auto;">
 
-Chunks to Symbols, then Lesson 9's RRC filter. Every $M$ fills 5.4 kHz.
+Chunks to Symbols picks each point, and Lesson 9's RRC filter shapes it. Every $M$ fills 5.4 kHz.
 
 Note:
 The band is (1 + alpha) times the symbol rate, 1.35 times 4 kHz, whatever M is. More bits per symbol move more data in the same band, but the points sit closer together. GNU Radio's Constellation Modulator packs this chain into one block.
@@ -99,7 +99,7 @@ The phase index is in amber and the Gray label in blue. Neighbors differ in one 
 | QPSK | 2 | 8 kb/s | 1.41 |
 | 8PSK | 3 | 12 kb/s | 0.77 |
 
-At 4,000 symbols per second, in the same 5.4 kHz.
+All three run at 4,000 symbols per second in the same 5.4 kHz.
 
 Note:
 QPSK doubles BPSK's rate in the same band; 8PSK adds half again. The spacing is Lesson 3's, on a circle of radius 1: more points sit closer together, so less noise pushes a symbol to a neighbor. The link's Noise amplitude slider is the same for every M.
@@ -124,7 +124,7 @@ These are Lesson 3's four problems. Two oscillators are never equal, and the pat
 
 <img src="./img/15-mpsk/L15-grc-link.png" alt="The L15 link in GRC: packet transmitter, Gray map, differential encoder, Chunks to Symbols, RRC, Channel Model, matched filter, Symbol Sync, Costas Loop, Constellation Decoder, differential decoder, map, access-code search, and Text Sink" style="max-height:400px; display:block; margin:0 auto;">
 
-Matched filter, Symbol Sync, Costas Loop, Constellation Decoder.
+The matched filter and Symbol Sync come first, then the Costas Loop and the Constellation Decoder.
 
 Note:
 The Channel Model adds noise, a frequency offset, a fixed phase, and a clock error. Symbol Sync keeps Lesson 9's settings: Gardner, 8 samples per symbol, loop bandwidth 0.045.
@@ -145,7 +145,7 @@ Gardner's detector compares samples half a symbol apart, and a carrier turning a
 
 <div class="fig" data-inline-svg="./fig/L15-costas.svg" style="max-width:760px; margin:0 auto;"></div>
 
-Rotate back, measure the error to the nearest point, and update phase and frequency.
+The loop rotates each symbol back, measures its error to the nearest point, and updates its phase and frequency.
 
 Note:
 For BPSK the detector is I times Q. For QPSK GNU Radio's detector uses the signs of I and Q, and for 8PSK it also checks which of the two is larger, which is why the loop needs the order M. The loop bandwidth here is 0.02: wider locks faster from farther away but lets in more noise.
@@ -156,7 +156,7 @@ For BPSK the detector is I times Q. For QPSK GNU Radio's detector uses the signs
 
 <img src="./img/15-mpsk/L15-link-acquire.png" alt="QPSK at noise amplitude 0.5 with a 200 Hz offset: the frequency estimate climbs from 0 to 200 Hz in about 0.7 s and the text arrives" style="max-height:400px; display:block; margin:0 auto;">
 
-From 0 Hz to the 200 Hz offset in about 0.7 s.
+The loop climbs from 0 Hz to the 200 Hz offset in about 0.7 s.
 
 Note:
 Type 200 into the frequency offset box. Until the estimate settles the packets fail; after that every line arrives. That time is the acquisition time.
@@ -167,26 +167,10 @@ Type 200 into the frequency offset box. Until the estimate settles the packets f
 
 <img src="./img/15-mpsk/L15-link-nolock.png" alt="QPSK at noise amplitude 0.5 with a 450 Hz offset: the estimate settles near minus 50 Hz, the output shows eight clusters, and no packet arrives" style="max-height:380px; display:block; margin:0 auto;">
 
-At 450 Hz the QPSK loop settles at −50 Hz: a false lock.
+At 450 Hz the QPSK loop settles at −50 Hz, which is a false lock.
 
 Note:
-Left 500 Hz off, the points turn 45 degrees a symbol and alternate between eight positions, where the detector's error averages to zero. At the default noise of 0.5, BPSK pulls in from about 500 Hz and QPSK from about 375 Hz. The range shrinks as M grows.
-
----
-
-## Measured Pull-In
-
-| Offset | BPSK | QPSK |
-| :-: | :-: | :-: |
-| 300 Hz | 6 of 6, 3.1 s | 6 of 6, 2.0 s |
-| 400 Hz | 6 of 6, 5.7 s | 4 of 6, 3.3 s |
-| 500 Hz | 6 of 6, 9.4 s | 0 of 6 |
-| 600 Hz | 0 of 6 | 0 of 6 |
-
-Noise amplitude 0.5, 4,000 symbols per second, cold starts.
-
-Note:
-Lock counts out of six runs and median times to lock. Real receivers remove most of the offset first, often with an FLL Band-Edge block. Two Plutos at 915 MHz can differ by tens of kilohertz; one Pluto looped back has almost none.
+Left 500 Hz off, the points turn 45 degrees a symbol and alternate between eight positions, where the detector's error averages to zero. The range shrinks as M grows. Real receivers remove most of the offset first, often with an FLL Band-Edge block; two Plutos at 915 MHz can differ by tens of kilohertz, while one Pluto looped back has almost none.
 
 ---
 
@@ -211,7 +195,7 @@ A QPSK constellation turned 90 degrees looks the same, so the loop locks to whic
 Send the change in phase; a rotation shifts every index but leaves the differences unchanged.
 
 Note:
-The Differential Encoder adds each index to the last one sent, mod M; the decoder subtracts. One wrong decision corrupts two changes, so a noisy link makes about twice as many errors. In the flowgraph the variable diff picks the coded or uncoded path at both ends; change it and run again.
+The Differential Encoder adds each index to the last one sent, mod M; the decoder subtracts. One wrong decision corrupts two changes, so it corrupts two symbols of data. In the flowgraph the variable diff picks the coded or uncoded path at both ends; change it and run again.
 
 ---
 
@@ -234,7 +218,7 @@ The explorer runs GNU Radio's Costas Loop algorithm at one sample per symbol for
 
 <img src="./img/15-mpsk/L15-noise-compare.png" alt="The Costas output at noise amplitude 0.8: BPSK two separate clouds and every line correct, QPSK four clouds nearly touching and most lines correct, 8PSK clouds merged into a ring and almost no line correct" style="max-height:360px; display:block; margin:0 auto;">
 
-Same noise, three constellations: 8PSK breaks first.
+At the same noise, the 8PSK clouds merge first.
 
 Note:
 Run the link with noise amplitude 0.8 and change only M. The clouds are the same size each time; the points are not the same distance apart. Raise the noise a step at a time and watch the Received label break up. The lab records where each one stops.

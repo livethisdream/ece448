@@ -29,7 +29,7 @@ L15 Lab · Module 6: Waveform Applications & RF Reverse Engineering · Dr. Neil 
 :::{present}
 - **Pre-Lab:** run the link and work out the settings the bench needs.
 - **Bench:** build a Costas Loop, find the noise, offset, and phase limits, then use a PlutoSDR.
-- **Writeup:** explain the losses, the limits, and differential coding.
+- **Writeup:** explain the noise order, the pull-in limits, and differential coding.
 :::
 
 Lesson 15 built an mPSK text link with timing and carrier recovery, following the GNU Radio wiki's Guided Tutorial PSK Demodulation. Today you first build an 8PSK carrier-recovery loop yourself, then raise the noise until each constellation stops delivering text, find the Costas Loop's pull-in range, map its phase ambiguity, and then run QPSK on a PlutoSDR. The lab takes most of the lesson's second period. The lab packet has three parts, and you turn it in once, complete, before Lesson 16. **Part 1, the Pre-Lab**, is on your own before the period: run `L15-psk-link.grc` once and work out the block settings Part 2 needs. **Part 2** is your own measurements in class. **Part 3, the Writeup**, explains them.
@@ -40,20 +40,18 @@ Questions 1 to 6 run on your laptop and transmit nothing. Question 7 transmits, 
 ::::{frame} Part 1: Before the Period
 :::{present}
 - `L15-psk-link.grc` runs and shows the received line.
-- Work out bit rates at 6,000 symbols per second.
 - Work out the 8PSK point angles and the Costas frequency scale for your build.
 :::
 
 Do the Pre-Lab before you arrive. Question 1 checks that the link flowgraph opens and runs on your laptop, and has you type a 50 Hz frequency offset to see the ring of the lesson's opening figure: if GRC reports an error, the L5 lesson page lists the install checks, and EI before the lab is the place to fix it.
 
-Question 2 asks for the settings the bench needs: the bit rates of BPSK, QPSK, and 8PSK at 6,000 symbols per second, the angles of the eight 8PSK points for your Chunks to Symbols table, the constant that turns the Costas Loop's frequency output into hertz, and how far a 20 Hz offset turns the constellation each symbol.
+Question 2 asks for the settings the bench needs: the angles of the eight 8PSK points for your Chunks to Symbols table, the constant that turns the Costas Loop's frequency output into hertz, and how far a 20 Hz offset turns the constellation each symbol.
 ::::
 
 ::::{frame} Expected Numbers
 :::{present}
 | Check | Source |
 | :-- | :-- |
-| Bit rate | $k = \log_2 M$ bits per symbol |
 | 8PSK points | 22.5° plus multiples of 45° |
 | Costas frequency in Hz | radians per symbol $\times R_s / 2\pi$ |
 | Rotation per symbol | $360° \times \Delta f / R_s$ |
@@ -94,19 +92,19 @@ These follow from Lesson 15 and are exact. Everything in Part 2 is something you
 
 1. Stop the flowgraph, set `M` to 4 and `diff` to 1, and run it again, with the noise amplitude at its default of 0.5.
 2. With the frequency offset at 0 and lines arriving, type 250 into the frequency offset box in one jump. Watch the frequency estimate for up to 15 s, and record whether the loop locks, about how long it takes, and the frequency it settles at, for Question 5(a).
-3. Type 0, wait until lines arrive again, and repeat step 2 for 350 and then 425 Hz. At 425 Hz, also count the clusters in the Costas Loop's output.
-4. Stop the flowgraph, set `M` to 8, and run it again. Repeat steps 2 and 3 for 100, 150, 200, and 250 Hz, for Question 5(b). At 200 Hz and above, give the loop the full 15 s.
+3. Type 0, wait until lines arrive again, and repeat step 2 for 350 and then 400 Hz. If the loop does not lock at 400 Hz, read where its estimate settles and count the clusters in the Costas Loop's output.
+4. Stop the flowgraph, set `M` to 8, and run it again. Type 100 into the frequency offset box and record the same three things for Question 5(b). For 150, 200, and 250 Hz, stop the flowgraph and run it again before each one, so the loop starts locked at 0 Hz; returning to 0 by typing can leave the 8PSK loop stuck. At 200 Hz and above, give the loop 20 s.
 ::::
 
 ::::{frame} Part 2: Phase Ambiguity
 :class: read-only
 
 1. Stop the flowgraph, set `M` to 4 and `diff` to 0, and run it again, so the loop locks with no frequency offset and the channel phase at 0. Do not move the frequency offset or the noise in this part. Lines should keep arriving.
-2. Type 20 into the channel phase box. Record whether the Lines count keeps rising after about 5 s. Then type 0, wait until lines arrive again, and type the next phase.
+2. Type 20 into the channel phase box. Record whether the Lines count keeps rising after about 5 s. Then type 0, wait until the Lines count rises again, and type the next phase.
 3. Repeat for every phase from 20 to 340 in steps of 20, returning to 0 between them, for Question 6(a).
-4. Stop the flowgraph, set `M` to 8, keep `diff` at 0, and run it again. Repeat steps 2 and 3.
+4. Stop the flowgraph, set `M` to 8, keep `diff` at 0, and run it again. Repeat steps 2 and 3, but stop the flowgraph and run it again before each phase instead of typing 0: the 8PSK loop can slip to another rotation, and typing 0 does not bring it back.
 5. Stop the flowgraph, set `diff` to 1, run it again, and repeat three of the phases that failed, for Question 6(b).
-6. Stop the flowgraph, set `M` to 4 and `diff` to 0, and run it again. Step the phase from 0 to 100 by 20 at a time without returning to 0, and record what happens. Set `diff` back to 1 when you finish.
+6. Stop the flowgraph, set `M` to 4 and `diff` to 0, and run it again. Step the phase from 0 to 100 by 20 at a time without returning to 0, and record what happens for Question 6(b). Set `diff` back to 1 when you finish.
 ::::
 
 ::::{frame} If No Text Arrives

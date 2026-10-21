@@ -174,7 +174,7 @@ are $d = 2, 1, 1, 3, 0$.
 		It makes the link work at any of the $M$ lock positions, because a rotation adds
 		the same amount to every index and the differences do not change. In exchange,
 		every wrong decision corrupts two differences, the one into it and the one out
-		of it, so a noisy link makes about twice as many errors.
+		of it, so one wrong decision corrupts two symbols of data.
 		\end{solution}
 
 \end{parts}
@@ -182,10 +182,9 @@ are $d = 2, 1, 1, 3, 0$.
 \newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \question \textbf{The frequency offset.} A frequency offset $\Delta f$ turns the
-constellation by $360^\circ \times \Delta f / R_s$ every symbol. Lesson 15 measured the
-pull-in range of the QPSK Costas Loop at about 375 Hz for $R_s = 4{,}000$ symbols per
-second and the default noise amplitude of 0.5. The loop works once per symbol, so with the same
-loop settings its pull-in range scales with the symbol rate.
+constellation by $360^\circ \times \Delta f / R_s$ every symbol. In Lesson 15, a QPSK
+Costas Loop at 4,000 symbols per second locked from a 200 Hz offset in under a second and
+false-locked from 450 Hz.
 \begin{parts}
 
 	\begin{minipage}[t]{0.58\linewidth}
@@ -206,14 +205,13 @@ loop settings its pull-in range scales with the symbol rate.
 
 	\begin{minipage}[t]{0.58\linewidth}
 		\part Two radios use oscillators accurate to 2.5 ppm and transmit at 2.4 GHz. Find
-		the largest frequency offset between them. Can a 4 kbaud QPSK Costas Loop lock
-		to it? Can a 1 Mbaud one?
+		the largest frequency offset between them, and how many times larger it is than
+		the 200 Hz offset in Lesson 15.
 		\begin{solution}[1.4in]
 		Each can be off by $2.5 \times 10^{-6} \times 2.4\ \text{GHz} = 6$ kHz, in
 		opposite directions:
 		\eq{ \Delta f_\text{max} &= 2 \times 6\ \text{kHz} = 12\ \text{kHz} }
-		At 4 kbaud the loop pulls in from about 375 Hz, 32 times too little. At 1 Mbaud
-		the range scales to $375 \times 250 \approx 94$ kHz, which covers 12 kHz.
+		That is 60 times the 200 Hz offset the lesson's loop locked from.
 		\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
@@ -221,15 +219,12 @@ loop settings its pull-in range scales with the symbol rate.
 		\ansbox[1.0in]{12 kHz}
 
 		\vspace{4pt}
-		4 kbaud: \ansbox[0.8in]{no}
-
-		\vspace{4pt}
-		1 Mbaud: \ansbox[0.8in]{yes}
+		\ansbox[1.0in]{60 times}
 	\end{minipage}
 
 	\part In words, explain why an 8PSK Costas Loop pulls in from a smaller offset than
-	a BPSK loop with the same bandwidth, and what the 4 kbaud receiver in part (b)
-	needs before its Costas Loop.
+	a BPSK loop with the same bandwidth, and what a 4 kbaud receiver for the radios in
+	part (b) needs before its Costas Loop.
 		\begin{solution}[1.2in]
 		The phase detector cannot tell one constellation point from another, so it can
 		only measure a phase error up to half the spacing, $180^\circ/M$: $90^\circ$ for
