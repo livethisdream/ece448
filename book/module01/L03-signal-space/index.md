@@ -153,6 +153,23 @@ The receiver decides each symbol the way it did for binary PAM: it picks the nea
 The figure sends 600 QPSK symbols at three SNRs. Noise adds a random offset to both $I$ and $Q$, so each point arrives as a round cloud. At 20 dB the clouds are tight and every symbol lands in its own quadrant. At 10 dB a few stray across. At 4 dB the clouds overlap and the red samples, the ones in the wrong region, are everywhere. This is what the GNU Radio constellation sink will show us from Lesson 5 on.
 ::::
 
+::::{frame} Try It in GNU Radio
+:::{present}
+<img src="../../viz/img/L03-grc-snr6.png"
+     alt="The L3 noise flowgraph running in GNU Radio Companion with the SNR slider at 6 dB: the constellation sink shows four wide QPSK clouds that spread across the axes"
+     style="max-width: 520px; width: 100%; display: block; margin: 0 auto;">
+:::
+:::{present}
+1. Open `L03-noise-constellation.grc` and run it.
+2. Drag the SNR from 20 dB down to 6 dB.
+3. Add a phase offset and watch the clouds rotate.
+:::
+
+This is the same demonstration as the figures, built from four GNU Radio blocks, and it needs no SDR. A **Random Source** picks symbols 0 to 3, **Chunks to Symbols** maps each one to a QPSK point through a Gray-coded table, and a **Channel Model** adds noise; its noise voltage is set from the SNR slider. A **QT GUI Constellation Sink** plots the result. A Multiply Const block between them rotates every point by the phase offset.
+
+Start at 20 dB, where the four points are tight dots, and drag the slider down. Somewhere below 10 dB the clouds start to reach the axes, which are QPSK's decision boundaries, and at 6 dB, the screenshot, they run into each other. Then put the SNR back at 20 dB and raise the phase offset toward 45°. Open Chunks to Symbols and read its symbol table: that list of four complex numbers is the constellation, in Gray order.
+::::
+
 ::::{frame} Constellation Explorer
 :class: viz-frame
 
@@ -207,6 +224,19 @@ Lesson 9 recovers symbol timing for PAM, and Lesson 15 recovers carrier phase an
 :class: callout
 A modulation is a set of points. Noise turns each point into a cloud, and a sample that lands in a neighbor's region is decided wrong. Points farther apart, or a higher SNR, keep the clouds in their own regions.
 :::
+::::
+
+::::{frame} Sources and Downloads
+:class: read-only doc-links
+
+This lesson follows Dr. Rogers's 2025 slides, <a href="../../legacy/L03-signal-space.pdf" target="_blank" rel="noopener">Signal Space</a>, for its topics and order. The hands-on steps follow these tutorials:
+
+- GNU Radio wiki, <a href="https://wiki.gnuradio.org/index.php/QPSK_Mod_and_Demod" target="_blank" rel="noopener">QPSK Mod and Demod</a>: a QPSK constellation through a Channel Model, onto a constellation sink.
+- PySDR, <a href="https://pysdr.org/content/digital_modulation.html" target="_blank" rel="noopener">Digital Modulation</a>: ASK, PSK, and FSK, constellations, and Gray coding.
+
+Downloads:
+
+- <a class="doc-link" href="../../grc/L03-noise-constellation.grc" download>L03-noise-constellation.grc</a>: random QPSK symbols through noise onto a constellation sink, with SNR and phase-offset sliders. No hardware needed.
 ::::
 
 ::::{frame} Summary

@@ -283,14 +283,14 @@ The widget starts on the drone link above. The four steps are the transmitter, t
 
 ::::{frame} Reading SNR on an SDR
 :::{present}
-- An SDR spectrum display reads in dBFS, relative to full scale, not dBm.
-- SNR is a difference, so read the peak and the floor.
-- Each FFT bin holds $f_s/N$ Hz of noise; doubling $N$ lowers the floor 3 dB.
+1. In GQRX, tune an RTL-SDR to a broadcast FM station.
+2. Read the peak and the floor beside it, in dBFS.
+3. Double the FFT size: the floor drops 3 dB.
 :::
 
-From Lesson 5 on we will read signals off the GNU Radio frequency sink. Its vertical axis is in **dBFS**, decibels relative to the full scale of the analog-to-digital converter, not in dBm. Turning dBFS into dBm takes a calibration against a known source, but an SNR does not need one: it is the difference between two levels on the same axis, so the peak minus the floor gives it directly.
+From here on we read signals off a spectrum display, GQRX's or the GNU Radio frequency sink's, and its vertical axis is in **dBFS**, decibels relative to the full scale of the analog-to-digital converter, not in dBm. Turning dBFS into dBm takes a calibration against a known source, but an SNR does not need one: it is the difference between two levels on the same axis, so the peak minus the floor gives it directly. Try it in GQRX on a strong FM station and on a weak one, and the difference is the link budget of this lesson showing up on the screen.
 
-The bandwidth needs one more step. A spectrum display with an $N$-point FFT at sample rate $f_s$ splits the band into bins $f_s/N$ wide, and each bin holds only that much of the noise. A narrow tone puts all of its power in one bin, so doubling the FFT size lowers the displayed noise floor by 3 dB and leaves the tone where it was. The SNR read off the display is the SNR in one bin, not in the signal's full bandwidth. To find the SNR the demodulator sees, scale the floor to the signal bandwidth $B$ by adding $10\log_{10}(B N/f_s)$ dB to it.
+The bandwidth needs one more step. A display with an $N$-point FFT at sample rate $f_s$ splits the band into bins $f_s/N$ wide, and each bin holds only that much of the noise. Change GQRX's FFT size from 4096 to 8192 and watch: the floor drops 3 dB, while a narrow carrier stays where it was. The SNR read off the display is the SNR in one bin, not in the signal's full bandwidth. To find the SNR a demodulator sees, scale the floor to the signal bandwidth $B$ by adding $10\log_{10}(B N/f_s)$ dB to it.
 ::::
 
 ::::{frame} Key Point
@@ -298,6 +298,17 @@ The bandwidth needs one more step. A spectrum display with an $N$-point FFT at s
 :class: callout
 A link closes when the received power clears the noise floor by the SNR the receiver needs. Path loss sets the size of the problem, and the first stage of the receiver sets the floor.
 :::
+::::
+
+::::{frame} Sources
+:class: read-only doc-links
+
+This lesson follows Dr. Rogers's 2025 slides, <a href="../../legacy/L02-noise-figure-link-budget.pdf" target="_blank" rel="noopener">Link Budget</a>, for its topics, order, and worked examples. Background reading:
+
+- PySDR, <a href="https://pysdr.org/content/noise.html" target="_blank" rel="noopener">Noise and dB</a>: decibels, noise power, and SNR.
+- PySDR, <a href="https://pysdr.org/content/link_budgets.html" target="_blank" rel="noopener">Link Budgets</a>: path loss, noise figure, and an end-to-end budget.
+
+The hands-on step, reading SNR off a spectrum display, uses GQRX with an RTL-SDR.
 ::::
 
 ::::{frame} Summary
