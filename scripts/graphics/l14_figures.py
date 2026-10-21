@@ -17,7 +17,8 @@ shots first, in one folder:
 
     grcc -o DIR book/extras/grc/L14-hd-test-tx.grc book/extras/grc/L14-hd-find.grc
     (cd DIR && python3.12 L14_hd_test_tx.py)               # writes L14-hd-test.cu8
-    (cd DIR && xvfb-run python3.12 scripts/grc/grc_shot.py --size 1060x900 L14_hd_find.py find.png 12)
+    (cd DIR && xvfb-run python3.12 scripts/grc/grc_shot.py --size 1060x1000 L14_hd_find.py find.png 12)
+    # find_noise.png: the same, on a test file written with noise_amp = 0.15
     scripts/grc/grc_canvas.sh book/extras/grc/L14-hd-find.grc DIR/canvas_find.png 1800x1000
     scripts/grc/grc_canvas.sh book/extras/grc/L14-hd-test-tx.grc DIR/canvas_tx.png 1800x1000
 
@@ -122,8 +123,10 @@ def shots(raw: Path):
         print(f"wrote {name}.png ({(SHOTS[0] / f'{name}.png').stat().st_size // 1024} KB)")
 
     find = Image.open(raw / "find.png").convert("RGB")
-    save(stamp(find.copy(), (1020, 380)), "L14-hd-find", colors=24)
-    save(stamp(find.crop((0, 0, 1060, 330)), (1020, 90)), "L14-hd-meters", colors=32)
+    save(stamp(find.copy(), (1020, 412)), "L14-hd-find", colors=16)
+    save(stamp(find.crop((0, 0, 1060, 362)), (1020, 70)), "L14-hd-meters", colors=32)
+    noisy = Image.open(raw / "find_noise.png").convert("RGB")
+    save(stamp(noisy, (1020, 412), "Simulated: test file, noise_amp 0.15"), "L14-hd-noise", colors=16)
     gq = Image.open(raw / "gqrx.png").convert("RGB").crop((0, 0, 1060, 666))
     save(stamp(gq, (745, 128)).resize((848, 533)), "L14-gqrx", colors=32)
     save(Image.open(raw / "canvas_find.png").crop((0, 68, 1700, 1000)), "L14-grc-find", colors=64)

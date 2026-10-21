@@ -58,19 +58,19 @@
 \newcolumntype{K}[1]{>{\centering\arraybackslash}p{#1}}
 \newcommand{\kv}[1]{\ifkey{\color{red}#1}\fi\rule[-0.10in]{0pt}{0.34in}}
 
-% Question 2 (the Pre-Lab), Question 4 (the lab capture), and Question 7(b) take their answers from
+% Questions 1 to 3 (on the test file), Question 4 (the lab capture), and Question 7(b) take their answers from
 % L14_capture_key.tex, which lives in ECE448-faculty and is never committed
 % here. Without it, even a KEY build prints placeholders.
 \newcommand{\capfk}{(faculty key)}
+\newcommand{\qOneUpper}{\capfk}\newcommand{\qOneLower}{\capfk}\newcommand{\qOneDiff}{\capfk}
+\newcommand{\qOneSol}{\capfk}\newcommand{\qOneShot}{\capfk}
+\newcommand{\qTwoCell}{\capfk}\newcommand{\qTwoSol}{\capfk}
 \newcommand{\capEdgeLo}{\capfk}\newcommand{\capEdgeLi}{\capfk}
 \newcommand{\capEdgeUi}{\capfk}\newcommand{\capEdgeUo}{\capfk}
-\newcommand{\capScLo}{\capfk}\newcommand{\capScLi}{\capfk}
-\newcommand{\capScUi}{\capfk}\newcommand{\capScUo}{\capfk}
 \newcommand{\capUpperHybrid}{\capfk}\newcommand{\capLowerHybrid}{\capfk}
+\newcommand{\capInnerStop}{\capfk}
 \newcommand{\capUpperInner}{\capfk}\newcommand{\capLowerInner}{\capfk}
 \newcommand{\capDiff}{\capfk}
-\newcommand{\preInnerA}{\capfk}\newcommand{\preInnerB}{\capfk}\newcommand{\preInnerC}{\capfk}
-\newcommand{\preSolInner}{\capfk}\newcommand{\preFFT}{\capfk}\newcommand{\preSolFFT}{\capfk}
 \newcommand{\capSolEdges}{\capfk}\newcommand{\capSolMeters}{\capfk}
 \newcommand{\capSolTotal}{\capfk}\newcommand{\capSolNeighbor}{\capfk}
 \newcommand{\capSolWriteup}{\capfk}
@@ -156,71 +156,56 @@ station adding one, two, or four partitions inside subcarrier 356 on each side.
 \fullwidth{\large\textbf{Part 1: Pre-Lab} \normalsize(individual, before the lab period)}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\question \textbf{Run the sideband finder.} Put both L14 flowgraphs in one folder. Run
-\texttt{L14-hd-test-tx.grc} once, then open and run \texttt{L14-hd-find.grc}.
+\question \textbf{Change a setting and read the finder.} Put both L14 flowgraphs in one
+folder. Open \texttt{L14-hd-test-tx.grc}, change the Variable \texttt{upper\_dbc} from $-23$
+to $-18$, and run it once to write \texttt{L14-hd-test.cu8}. Then open and run
+\texttt{L14-hd-find.grc}.
 
 \begin{parts}
 
 	\begin{minipage}[t]{0.58\linewidth}
-		\part After about 5 s, record the two meter readings.
-		\begin{solution}[0.5in]
-		Upper $-23.05$ dBc and lower $-23.04$ dBc, the $-23$ dBc the test transmitter sets.
+		\part After about 5 s, record the three meter readings.
+		\begin{solution}[0.6in]
+		\qOneSol
 		\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
 		\raggedleft \vspace{12pt}
-		upper \ansbox[1.1in]{$-23.05$ dBc}
+		upper \ansbox[1.1in]{\qOneUpper}
 
 		\vspace{4pt}
-		lower \ansbox[1.1in]{$-23.04$ dBc}
+		lower \ansbox[1.1in]{\qOneLower}
+
+		\vspace{4pt}
+		upper $-$ lower \ansbox[1.1in]{\qOneDiff}
 	\end{minipage}
 
-	\part Paste a screenshot of the running flowgraph's window.
+	\part Paste a screenshot of the running flowgraph's window. What changed on the frequency
+	sink compared with the lesson's figure?
 		\begin{solution}[1.6in]
-		The spectrum shows the host at 100.3 MHz, two flat shelves from 100.1016 to
-		100.1706 MHz and from 100.4294 to 100.4984 MHz, and an analog-only station at
-		99.9 MHz. The waterfall shows the shelves as straight bands.
+		\qOneShot
 		\end{solution}
 
 \end{parts}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newpage
-\question \textbf{Block settings.} You will use each of these at the bench.
-
-\begin{parts}
-
-	\part The sideband meter takes its band from the Variables \texttt{inner} and
-	\texttt{outer}, in subcarrier numbers. A station adds one, two, or four partitions of 19
-	subcarriers inside subcarrier 356 on each side. What value of \texttt{inner} covers each?
+\question \textbf{The Inner subcarrier slider.} Keep the finder running on the same file.
+Slide \textbf{Inner subcarrier} from 356 down to 280, one step at a time, and record the
+upper sideband reading at each step.
 
 	\begin{center}
 	\renewcommand{\arraystretch}{1.25}
-	\begin{tabular}{| l | K{1.0in} | K{1.0in} | K{1.0in} |}
+	\begin{tabular}{| l | K{0.8in} | K{0.8in} | K{0.8in} | K{0.8in} | K{0.8in} |}
 	\hline
-	Added partitions & 1 & 2 & 4 \\\hline
-	\texttt{inner} & \kv{\preInnerA} & \kv{\preInnerB} & \kv{\preInnerC} \\\hline
+	Inner subcarrier & 356 & 337 & 318 & 299 & 280 \\\hline
+	Upper (dBc) & \kv{\qTwoCell} & \kv{\qTwoCell} & \kv{\qTwoCell} & \kv{\qTwoCell} & \kv{\qTwoCell} \\\hline
 	\end{tabular}
 	\end{center}
 
-		\begin{solution}[0.4in]
-		\preSolInner
-		\end{solution}
-
-	\begin{minipage}[t]{0.58\linewidth}
-		\part nrsc5 also reads complex float files (\texttt{--iq-input-format cf32}) at
-		744,187.5 samples per second. What FFT size in the frequency sink makes each bin
-		exactly one 363.4 Hz subcarrier at that rate?
-		\begin{solution}[0.6in]
-		\preSolFFT
-		\end{solution}
-	\end{minipage}\hfill%
-	\begin{minipage}[t]{0.37\linewidth}
-		\raggedleft \vspace{12pt}
-		\ansbox[1.1in]{\preFFT}
-	\end{minipage}
-
-\end{parts}
+	\begin{solution}[0.8in]
+	\qTwoSol
+	\end{solution}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newpage
@@ -237,23 +222,26 @@ station adding one, two, or four partitions inside subcarrier 356 on each side.
 		The flowgraph matches the lab page: the byte File Source, Throttle, UChar To Float,
 		Add Const, Multiply Const, Deinterleave, and Float To Complex; a frequency sink; three
 		Frequency Xlating FFT Filters, each followed by Complex to Mag\^{}2, Moving Average,
-		Keep 1 in N, and Log10; two Subtract blocks; and a Number Sink.
+		Keep 1 in N, and Log10; three Subtract blocks; and a Number Sink with three inputs.
 		\end{solution}
 
 	\begin{minipage}[t]{0.58\linewidth}
-		\part Run it on \texttt{L14-hd-test.cu8} and record both readings. Paste a screenshot
-		of the running window.
+		\part Run it on the file you wrote in Question 1 and record the three readings. Paste
+		a screenshot of the running window.
 		\begin{solution}[1.2in]
-		Within 0.1 dB of $-23.05$ and $-23.04$ dBc, the values of the lesson's finder, which
-		uses the same filters and averaging.
+		Within 0.1 dB of the finder's readings in Question 1(a), because the meter uses the
+		same filters and averaging.
 		\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
 		\raggedleft \vspace{12pt}
-		upper \ansbox[1.1in]{$-23.05$ dBc}
+		upper \ansbox[1.1in]{\qOneUpper}
 
 		\vspace{4pt}
-		lower \ansbox[1.1in]{$-23.04$ dBc}
+		lower \ansbox[1.1in]{\qOneLower}
+
+		\vspace{4pt}
+		upper $-$ lower \ansbox[1.1in]{\qOneDiff}
 	\end{minipage}
 
 \end{parts}
@@ -265,8 +253,8 @@ station adding one, two, or four partitions inside subcarrier 356 on each side.
 
 \begin{parts}
 
-	\part Zoom in on each sideband's edges with an FFT of 8192 points, read them, convert
-	each to a subcarrier number, and name the configuration.
+	\part Zoom in on each sideband's edges with an FFT of 8192 points and read them. Are the
+	inner edges at 129.4 kHz from the center, or closer to the host?
 
 	\begin{center}
 	\renewcommand{\arraystretch}{1.25}
@@ -274,7 +262,6 @@ station adding one, two, or four partitions inside subcarrier 356 on each side.
 	\hline
 	 & Lower outer & Lower inner & Upper inner & Upper outer \\\hline
 	Edge (MHz) & \kv{\capEdgeLo} & \kv{\capEdgeLi} & \kv{\capEdgeUi} & \kv{\capEdgeUo} \\\hline
-	Subcarrier & \kv{\capScLo} & \kv{\capScLi} & \kv{\capScUi} & \kv{\capScUo} \\\hline
 	\end{tabular}
 	\end{center}
 
@@ -282,16 +269,17 @@ station adding one, two, or four partitions inside subcarrier 356 on each side.
 		\capSolEdges
 		\end{solution}
 
-	\part Record both meter readings with \texttt{inner} at 356 and with \texttt{inner} set
-	to the inner edge you found.
+	\part Record both meter readings with Inner subcarrier at 356. If the inner edge is not at
+	129.4 kHz, slide Inner subcarrier down until the readings stop rising, and record the
+	setting and both readings there.
 
 	\begin{center}
 	\renewcommand{\arraystretch}{1.25}
 	\begin{tabular}{| l | K{1.4in} | K{1.4in} |}
 	\hline
-	\texttt{inner} & Upper (dBc) & Lower (dBc) \\\hline
+	Inner subcarrier & Upper (dBc) & Lower (dBc) \\\hline
 	356 & \kv{\capUpperHybrid} & \kv{\capLowerHybrid} \\\hline
-	your inner edge & \kv{\capUpperInner} & \kv{\capLowerInner} \\\hline
+	\kv{\capInnerStop} & \kv{\capUpperInner} & \kv{\capLowerInner} \\\hline
 	\end{tabular}
 	\end{center}
 
@@ -300,7 +288,8 @@ station adding one, two, or four partitions inside subcarrier 356 on each side.
 		\end{solution}
 
 	\begin{minipage}[t]{0.58\linewidth}
-		\part Which sideband is stronger, and by how many dB?
+		\part Do the two sidebands read the same? If not, which is stronger, and by how many
+		dB on the Upper minus lower meter?
 		\begin{solution}[1.0in]
 		\capSolTotal
 		\end{solution}

@@ -39,51 +39,50 @@ Nothing in this lab transmits. The RTL-SDR receives only, and both captures came
 
 ::::{frame} Part 1: Before the Period
 :::{present}
-- Run `L14-hd-test-tx.grc` once, then `L14-hd-find.grc`.
-- Find the meter's `inner` setting for extended hybrid stations.
-- Find the FFT size that makes each bin one subcarrier at nrsc5's float rate.
+- Change one setting in `L14-hd-test-tx.grc`, run it, and read the finder.
+- Slide the finder's Inner subcarrier and watch the readings.
 :::
 
-Do the Pre-Lab before you arrive. Put both flowgraphs from the Lesson 14 page in one folder, run `L14-hd-test-tx.grc` once to write `L14-hd-test.cu8`, and then run `L14-hd-find.grc`. Question 1 checks that the meters read what the lesson showed; if GRC reports an error, the L5 lesson page lists the install checks.
+Do the Pre-Lab before you arrive. Put both flowgraphs from the Lesson 14 page in one folder. Question 1 has you open `L14-hd-test-tx.grc`, change the Variable `upper_dbc` from −23 to −18, run it once to write `L14-hd-test.cu8`, and then run `L14-hd-find.grc` and record what its three meters read; if GRC reports an error, the L5 lesson page lists the install checks.
 
-Question 2 asks for two block settings: the value of the meter's `inner` Variable for a station that adds one, two, or four partitions, and the frequency sink's FFT size that puts one subcarrier in each bin for a complex float file at 744,187.5 samples per second, a rate nrsc5 reads. Part 2 uses the first one.
+Question 2 uses the same run: slide the finder's **Inner subcarrier** from 356 down to 280, one step at a time, and record what the meters do at each step. Part 2 uses the same slider on a capture whose configuration you do not know.
 ::::
 
 ::::{frame} Expected Numbers
 :::{present}
 | Check | Expected |
 | :-- | :-- |
-| `L14-hd-test.cu8`, both meters | −23.0 dBc, within 0.1 dB |
-| Hybrid sideband edges | subcarriers 356 and 546 |
-| Partition | 19 subcarriers |
+| Your meter on the Question 1 file | matches the lesson's finder |
+| Hybrid sideband edges | about 129.4 and 198.4 kHz from the center |
 | A sideband on the display | at least 10 dB above the floor |
 :::
 
-Your meter should read the lesson's test file within 0.1 dB of the finder's −23.05 and −23.04 dBc; a larger difference means a filter setting or a center frequency is off. The lab capture comes from a different station, and you identify its configuration from its spectrum and its meter readings.
+Your meter should match the finder's readings on the same file within 0.1 dB; a larger difference means a filter setting or a center frequency is off. The lab capture comes from a different station, and you identify its configuration from its spectrum and its meter readings.
 ::::
 
 ::::{frame} Part 2: Build the Meter
 :class: read-only
 
 1. Start GRC and choose File, New, QT GUI. Do not open `L14-hd-find.grc`; build the meter yourself.
-2. Set `samp_rate` to 1488375. Add Variables `df` = `1488375 / 4096`, `inner` = `356`, `outer` = `546`, `sb_center` = `(inner + outer) / 2 * df`, `sb_half` = `((outer - inner) / 2 + 0.5) * df`, `decim` = `6`, and `avg_len` = `int(0.2 * samp_rate / decim)`. Add a **QT GUI Entry** with ID `fc`, label Center (Hz), type real, and default value `100.3e6`, and a **QT GUI Range** with ID `rf_gain`, label RF gain (dB), from 0 to 49.6 in steps of 0.1, default 30.
+2. Set `samp_rate` to 1488375. Add Variables `df` = `1488375 / 4096`, `outer` = `546`, `sb_center` = `(inner + outer) / 2 * df`, `sb_half` = `((outer - inner) / 2 + 0.5) * df`, `decim` = `6`, and `avg_len` = `int(0.2 * samp_rate / decim)`. Add a **QT GUI Entry** with ID `fc`, label Center (Hz), type real, and default value `100.3e6`, a **QT GUI Range** with ID `rf_gain`, label RF gain (dB), from 0 to 49.6 in steps of 0.1, default 30, and a **QT GUI Range** with ID `inner`, label Inner subcarrier, type int, from 280 to 356 in steps of 19, default 356.
 3. Read the file: a **File Source** (type byte, file `'L14-hd-test.cu8'` with the quotes, repeat Yes), a **Throttle** (byte, `2 * samp_rate`), **UChar To Float**, **Add Const** (float, −127.5), **Multiply Const** (float, `1 / 128`), **Deinterleave** (float, 2 streams), and **Float To Complex**.
 4. On the Float To Complex output, add a **QT GUI Frequency Sink**: complex, FFT size 4096, center frequency `fc`, bandwidth `samp_rate`, average Medium, Y axis from −110 to −10.
 5. Add two **Low-pass Filter Taps** variables at `samp_rate`: `host_taps` with cutoff `100e3` and transition `10e3`, and `sb_taps` with cutoff `sb_half` and transition `2e3`.
 6. Add three **Frequency Xlating FFT Filters**, each with decimation `decim` and sample rate `samp_rate`: the host with taps `host_taps` and center 0, the upper sideband with `sb_taps` and center `sb_center`, and the lower sideband with `sb_taps` and center `-sb_center`. Connect Float To Complex to all three.
 7. After each filter add **Complex to Mag^2**, a **Moving Average** (float, length `avg_len`, scale `1 / avg_len`), **Keep 1 in N** (float, N `avg_len // 10`), and **Log10** (n = 10).
-8. Add two **Subtract** blocks (float): upper minus host, and lower minus host. Connect them to a **QT GUI Number Sink** with 2 inputs, minimum −40, maximum 0, and labels Upper and Lower in dBc. Every arrow must be black.
-9. Run it, wait 5 s, and record both readings and a screenshot for Question 3.
+8. Add three **Subtract** blocks (float): upper minus host, lower minus host, and upper minus lower, each taking the Log10 outputs. Connect them to a **QT GUI Number Sink** with 3 inputs, minimum −40, maximum 0, and labels Upper and Lower in dBc and Upper minus lower in dB. Every arrow must be black.
+9. Run it on the file you wrote in Question 1, wait 5 s, and record the three readings and a screenshot for Question 3.
 ::::
 
 ::::{frame} Part 2: The Lab Capture
 :class: read-only
 
 1. Stop your meter and change the File Source's file to `'L14-lab-capture.cu8'`. The File Source reads the file only when the flowgraph starts.
-2. Change the frequency sink's FFT size to 8192 and run it. Drag a box around one edge of a sideband on the frequency sink to zoom in, read the edge's frequency in MHz, and right-click to zoom back out. Do the same for the inner and outer edge of each sideband, and convert each edge to a subcarrier number for Question 4(a).
-3. Record both meter readings with `inner` at 356 for Question 4(b).
-4. Stop it, change `inner` to the subcarrier number you found for the inner edge, run it again, and record both readings.
-5. Find the other station in the capture, give its offset from the center, and say whether it carries HD Radio, for Question 4(d).
+2. Change the frequency sink's FFT size to 8192 and run it. Drag a box around one edge of a sideband on the frequency sink to zoom in, read the edge's frequency in MHz, and right-click to zoom back out. Do the same for the inner and outer edge of each sideband, for Question 4(a).
+3. Record the meter readings with Inner subcarrier at 356 for Question 4(b).
+4. If the inner edges sit closer to the host than 129.4 kHz, slide Inner subcarrier down one step at a time until the readings stop rising, and record the setting and the readings there.
+5. Read the Upper minus lower meter for Question 4(c).
+6. Find the other station in the capture, give its offset from the center, and say whether it carries HD Radio, for Question 4(d).
 ::::
 
 ::::{frame} Part 2: A Live Station
@@ -98,7 +97,7 @@ The figure shows the lesson's simulated test file; a live station's host is roug
 1. Add a **Soapy RTLSDR Source** to your meter: sample rate `samp_rate`, center frequency `fc`, gain `rf_gain`. Connect it to the frequency sink and the three filters. Then select the File Source and the six blocks after it, through Float To Complex, and press D to disable all seven; GRC will not run with both sources connected.
 2. Plug in the RTL-SDR and antenna. If you have SDR Flex or GQRX, find a station with two flat shelves there first, and close it before you run your meter, because only one program can hold the RTL-SDR; otherwise run your meter and type each strong station's frequency in hertz into Center in turn, and stop at one with two flat shelves beside it.
 3. Raise the gain until the shelves stand at least 10 dB above the floor, but lower it if the floor rises everywhere or copies of other stations appear.
-4. Record the station, its sideband edges, and both meter readings, with a screenshot, for Question 5. If its inner edge is inside 129.4 kHz, set `inner` to match before you read the meters.
+4. Record the station, its sideband edges, and both meter readings, with a screenshot, for Question 5. If its inner edges sit closer to the host than 129.4 kHz, slide Inner subcarrier down until the readings stop rising before you record them.
 5. Lower the RF gain slider in steps and watch the shelves and the readings as the floor rises toward them, for Question 5(c).
 ::::
 

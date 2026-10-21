@@ -24,11 +24,11 @@ spaced 363.4 Hz apart.}
 \begin{parts}
 
 	\begin{minipage}[t]{0.58\linewidth}
-		\part Between which two frequencies, in MHz, should the upper sideband appear on the
-		frequency sink? The lower sideband?
+		\part Type 98.5 into the finder's Center, zoom in on the frequency sink, and read
+		where each shelf starts and ends, in MHz.
 		\begin{solution}[0.8in]
-		Upper: $98.5 + 0.1294 = 98.6294$ MHz to $98.5 + 0.1984 = 98.6984$ MHz. Lower:
-		98.3016 to 98.3706 MHz.
+		Upper: about 98.629 to 98.698 MHz. Lower: about 98.302 to 98.371 MHz. As a check,
+		the lesson's offsets give $98.5 \pm 0.1294$ and $98.5 \pm 0.1984$ MHz.
 		\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
@@ -74,13 +74,12 @@ spaced 363.4 Hz apart.}
 		the center, and 546 is its outer edge, 198.4 kHz above the center.
 		\end{solution}
 
-	\part A Multiply Const after each OFDM Cyclic Prefixer sets that sideband's level. You
-	halve the lower sideband's constant. What changes on the frequency sink and on the
-	finder's meters?
+	\part A Multiply Const after each OFDM Cyclic Prefixer sets that sideband's level. Halve
+	the lower sideband's constant, rerun both flowgraphs, and record how far the lower shelf
+	and the lower meter drop. What happens to the upper side?
 		\begin{solution}[0.8in]
-		Halving the amplitude lowers the power to a quarter, 6 dB down. The lower shelf drops
-		about 6 dB on the frequency sink, the lower meter reads about 6 dB lower, and the
-		upper shelf and meter do not change.
+		The lower shelf and the lower meter both drop by about 6 dB, and the Upper minus lower
+		meter rises by the same amount. The upper shelf and the upper meter do not change.
 		\end{solution}
 
 	\part You set the OFDM Cyclic Prefixer's rolloff from 112 to 0. What do you expect to
@@ -115,11 +114,11 @@ samples (0.2 s), Keep 1 in N, and Log10 for each band.
 		and the lower sideband is not measured at all.
 		\end{solution}
 
-	\part On an extended hybrid station, you leave \texttt{inner} at 356. Does the meter read
-	high or low, and what setting fixes it?
+	\part On an extended hybrid station, you leave Inner subcarrier at 356. Does the meter read
+	high or low, and what do you do with the slider?
 		\begin{solution}[0.6in]
-		Low: the filter leaves out the added partitions inside 356. Setting \texttt{inner} to
-		the inner edge you see on the display includes them.
+		Low: the filter leaves out the added partitions inside 356. Slide Inner subcarrier down
+		until the readings stop rising; there the meter covers the whole sideband.
 		\end{solution}
 
 \end{parts}

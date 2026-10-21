@@ -40,7 +40,7 @@ Before class, run L14-hd-test-tx.grc once so L14-hd-test.cu8 sits next to L14-hd
 5. Decoding with nrsc5
 
 Note:
-This follows the 2025 deck: overview, spectrum, RBDS, sidebands, the OFDM concept and implementation, then tools.
+This follows the slides: overview, spectrum, RBDS, sidebands, the OFDM concept and implementation, then tools.
 
 ---
 
@@ -76,14 +76,13 @@ NRSC-5 defines all three. Hybrid keeps about 130 kHz of analog signal on each si
 | Digital sidebands | ±129.4 to ±198.4 kHz | OFDM, QPSK on each subcarrier |
 
 Note:
-RBDS is the US name for RDS: differentially encoded BPSK at 1187.5 bits per second on 57 kHz, carrying the station name, time, and text. gr-rds decoded it in Lesson 7.
+RBDS is the US name for RDS: differentially encoded BPSK at 1187.5 bits per second on 57 kHz, carrying the station name, time, and text. Demo: rerun Lesson 7's L07-rds-rx.grc on the same station to show its name; PySDR's RDS chapter, the slides' activity, decodes it in Python.
 
 ---
 
 ## The Digital Sidebands
 
-$$\Delta f = \frac{1{,}488{,}375}{4096} = 363.4\ \text{Hz}$$
-
+- Subcarriers are 363.4 Hz apart: one FFT bin at `fft_len` 4096.
 - Each sideband is many narrow subcarriers, numbered 356 to 546.
 - Partitions hold 18 data subcarriers and 1 reference subcarrier.
 - The sidebands are much weaker than the host.
@@ -111,7 +110,7 @@ OFDM divides a wide channel among many slow subcarriers. Orthogonality is the O 
 - The guard, `cp_len` = 224 samples, goes in front of each symbol.
 
 Note:
-The blocks are the OFDM Carrier Allocator, a reverse FFT, and the OFDM Cyclic Prefixer, as in the GNU Radio wiki's Basic OFDM Tutorial, which the 2025 slides link. The receiver drops the guard, takes a forward FFT, and reads each subcarrier's point.
+The blocks are the OFDM Carrier Allocator, a reverse FFT, and the OFDM Cyclic Prefixer, as in the GNU Radio wiki's Basic OFDM Tutorial, which the slides link. The receiver drops the guard, takes a forward FFT, and reads each subcarrier's point.
 
 ---
 
@@ -151,7 +150,7 @@ Subtract 127.5, scale by 1/128, pair the bytes. GRC shows the RTL-SDR Source gra
 
 ## Finding the Sidebands
 
-<img src="./img/14-hd-radio/L14-hd-find.png" alt="Simulated: the sideband finder with meters at -23.05 and -23.04 dBc, the spectrum with two flat shelves, and the waterfall with two straight bands" style="max-height:440px; display:block; margin:0 auto;">
+<img src="./img/14-hd-radio/L14-hd-find.png" alt="Simulated: the sideband finder with meters at -23.04 and -23.06 dBc and 0.02 dB between them, the spectrum with two flat shelves, and the waterfall with two straight bands" style="max-height:440px; display:block; margin:0 auto;">
 
 The shelves have flat tops and sharp edges, and their width never changes on the waterfall.
 
@@ -162,13 +161,24 @@ The figure comes from the simulated test file. The shelves start at 100.1706 and
 
 ## Measuring Sideband Power
 
-<img src="./img/14-hd-radio/L14-hd-meters.png" alt="Simulated: Upper sideband -23.05 dBc, Lower sideband -23.04 dBc" style="max-height:200px; display:block; margin:0 auto;">
+<img src="./img/14-hd-radio/L14-hd-meters.png" alt="Simulated: Upper sideband -23.04 dBc, Lower sideband -23.06 dBc, Upper minus lower 0.02 dB" style="max-height:200px; display:block; margin:0 auto;">
 
 - Each meter shifts its band to 0 Hz, filters it, and averages $\vert x\vert^2$ for 0.2 s.
-- The sideband meter minus the host meter gives dBc.
+- The sideband meter minus the host meter gives dBc; a third reading compares the sides.
 
 Note:
 The host band is plus or minus 100 kHz, each sideband is plus or minus 34.7 kHz around plus or minus 163.9 kHz, and every filter decimates by 6. The nrsc5 project's real sample file reads about −24.3 and −23.7 dBc in the same flowgraph, close to the test file. On a live station the two meters need not agree.
+
+---
+
+## What Noise Does
+
+<img src="./img/14-hd-radio/L14-hd-noise.png" alt="Simulated: the finder with noise_amp 0.15: the floor near -66 dB, the shelves about 8 dB above it, and the meters reading -22.26 and -22.30 dBc" style="max-height:440px; display:block; margin:0 auto;">
+
+With `noise_amp` raised to 0.15, the shelves sink toward the floor and the meters read high.
+
+Note:
+Demo: change noise_amp from 0.03 to 0.15 in L14-hd-test-tx.grc, rerun it, rerun the finder. The floor rises about 14 dB and the meters read about 0.7 dB high, because the noise in each band adds to the sideband's power.
 
 ---
 
