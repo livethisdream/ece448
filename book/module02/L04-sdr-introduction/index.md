@@ -191,18 +191,16 @@ The plot is a simulated band, and the shaded region is the part of it the chosen
 :::
 ::::
 
-::::{frame} Part 3: Bits and Dynamic Range
+::::{frame} Part 3: Bits and Clipping
 :::{present}
 - An $N$-bit ADC has $2^N$ levels between $-$full scale and $+$full scale.
-- Each bit adds about 6 dB: 8 bits span about 48 dB, 12 bits about 72 dB.
+- More bits put the converter's own noise floor lower.
 - Above full scale, the ADC clips.
 :::
 
-An ADC rounds each voltage to the nearest of $2^N$ levels between its negative and positive **full scale**. The rounding error acts like a small noise added to every sample, and each extra bit halves the step size, which lowers that noise by 6 dB. The **dynamic range**, the span from the strongest signal the converter can take without clipping to its own noise, is therefore about 6 dB per bit:
+An ADC rounds each voltage to the nearest of $2^N$ levels between its negative and positive **full scale**: 256 levels for the 8-bit RTL-SDR and HackRF, 4096 for the 12-bit PlutoSDR. The rounding error acts like a small noise added to every sample, and finer steps mean less of it, so a radio with more bits has a lower floor. The span from the strongest signal the converter can take to that floor is its **dynamic range**, and it decides how weak a signal can be and still show up next to a strong one.
 
-$$\text{DR} \approx 6N\ \text{dB}$$
-
-which is 48 dB for the 8-bit RTL-SDR and HackRF and 72 dB for the 12-bit PlutoSDR. That figure compares the strong signal with the converter's noise across the whole window. On an FFT plot, a narrow signal stands out from that noise by about $10\log_{10}(f_s/\Delta f)$ more, where $\Delta f$ is the bin width: 36 dB for the 4096-bin FFT of the flowgraph below. We measure signal levels against full scale in **dBFS**: 0 dBFS is full scale, and a signal at $-6$ dBFS has half the full-scale amplitude. The ADC cannot represent a signal above 0 dBFS, so it **clips** it.
+We measure signal levels against full scale in **dBFS**: 0 dBFS is full scale, and a signal at $-6$ dBFS has half the full-scale amplitude. The ADC cannot represent a signal above 0 dBFS, so it **clips** it. The flowgraph below shows both limits on GNU Radio's plots.
 ::::
 
 ::::{frame} The Quantizer Flowgraph
@@ -232,7 +230,7 @@ The **ADC** block is an Embedded Python Block, about 15 lines of code saved insi
 - The weak tone, 64 dB down, lies below the spurs.
 :::
 
-With 8 bits and 0 dB gain, the strong tone stands near $-15$ dB on the sink's scale, and the ADC's rounding error fills the rest of the band with a ragged floor between about $-100$ and $-75$ dB. Because the input is a pure tone, much of that error repeats with the tone and shows up as discrete spurs rather than smooth noise. The highest of them come within about 60 dB of the strong tone. The smooth part of the floor sits about 85 dB below the tone, deeper than 48 dB, because the FFT spreads the rounding noise over 4096 bins; the spurs do not spread, so they set what we can see.
+With 8 bits and 0 dB gain, the strong tone stands near $-15$ dB on the sink's scale, and the ADC's rounding error fills the rest of the band with a ragged floor between about $-100$ and $-75$ dB. Because the input is a pure tone, much of that error repeats with the tone and shows up as discrete spurs rather than smooth noise. The highest of them come within about 60 dB of the strong tone.
 
 The weak tone at $-0.49$ MHz is 64 dB below the strong one, below the spurs, and it is not visible, although nothing about the weak signal has changed. The time sink shows why the strong tone is safe: its peaks reach about 0.5, half of full scale.
 ::::
@@ -248,9 +246,9 @@ The weak tone at $-0.49$ MHz is 64 dB below the strong one, below the spurs, and
 - The weak tone appears about 40 dB above the floor.
 :::
 
-Switching the menu to 12 bits, the PlutoSDR's resolution, changes nothing about the input. The floor drops to about $-118$ dB and becomes smooth, and the weak tone appears at $-0.49$ MHz near $-79$ dB, about 64 dB below the strong tone and about 40 dB above the floor. Four more bits add about 24 dB of dynamic range. The floor on the plot drops by a little less, about 20 dB, because at 8 bits part of the rounding error sits in the spurs rather than the floor.
+Switching the menu to 12 bits, the PlutoSDR's resolution, changes nothing about the input. The floor drops to about $-118$ dB and becomes smooth, and the weak tone appears at $-0.49$ MHz near $-79$ dB, about 40 dB above the floor. The extra bits did not make the weak signal stronger; they lowered the floor beneath it.
 
-Lowering the weak-signal slider until the tone disappears measures how far below the strong tone a narrow signal can sit: about 100 dB at 12 bits, the 72 dB of the 6 dB rule plus the FFT's 30-odd dB. With 16 bits the floor drops only to about $-134$ dB, 16 dB lower rather than 24, because the Noise Source's noise is now larger than the converter's error and sets the floor. That is the situation a well-adjusted receiver aims for: the antenna's noise, amplified by the front end, should sit above the converter's own floor.
+Lowering the weak-signal slider until the tone disappears shows how far below the strong tone a weak signal can sit on this radio. Switching to 16 bits lowers the floor again, but by less, because the Noise Source's noise now sits above the converter's own error and sets the floor. That is the situation a well-adjusted receiver aims for: the antenna's noise, amplified by the front end, should sit above the converter's own floor.
 ::::
 
 ::::{frame} Too Much Gain
@@ -299,7 +297,7 @@ GNU Radio is the course's tool, but every radio in this course also works with s
 ::::{frame} Key Point
 :::{present}
 :class: callout
-An SDR mixes a band to 0 Hz and digitizes $I$ and $Q$. The sample rate sets the visible spectrum; the ADC's bits, about 6 dB each, set how weak a signal can be near a strong one.
+An SDR mixes a band to 0 Hz and digitizes $I$ and $Q$. The sample rate sets the visible spectrum; the ADC's bits and the gain set how weak a signal can be near a strong one.
 :::
 ::::
 
@@ -324,7 +322,7 @@ Open it from GRC's File menu, or run `gnuradio-companion L04-adc-bits.grc` from 
 | Mixer | $f_{LO} + \Delta$ comes out at $\Delta$ | center frequency = $f_{LO}$ |
 | $I$ and $Q$ | two mixers 90° apart | tell $+\Delta$ from $-\Delta$ |
 | Sample rate | window $f_s$ wide | $8 f_s$ bytes per second in GNU Radio |
-| ADC bits | about 6 dB of dynamic range each | 8 bits: 48 dB; 12 bits: 72 dB |
+| ADC bits | more bits, lower floor | 8 bits: 256 levels; 12 bits: 4096 |
 | Clipping | strongest signal above 0 dBFS | false signals across the band |
 ::::
 
