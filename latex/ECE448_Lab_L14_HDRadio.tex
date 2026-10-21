@@ -131,7 +131,7 @@ demodulate an HD Radio signal.}
 
 This packet is the L\labLesson\ Lab, in three parts, and you turn it in once, complete,
 before Lesson 15. Do \textbf{Part 1} on your own before the lab period: run the sideband
-finder and work out the block settings you will use at the bench. \textbf{Part 2} is your own
+finder, change one test-file setting, and slide Inner subcarrier to see what it does. \textbf{Part 2} is your own
 measurements, recorded in class on your own laptop with your RTL-SDR. Do \textbf{Part 3}
 on your own after the lab: explain what you measured and answer the
 analysis questions.
@@ -147,7 +147,7 @@ The flowgraphs are on the L14 lesson page, \texttt{L14-hd-test-tx.grc} and
 \texttt{L14-hd-find.grc}, and the capture \texttt{L14-lab-capture.cu8}, which your instructor posts on
 the L14 Lab page before the lab. Both captures are simulated: unsigned 8-bit I and Q at 1,488,375 samples per second,
 the format the RTL-SDR and nrsc5 record. Every number below uses the hybrid values from
-the lesson: subcarrier spacing $\Delta f = 1{,}488{,}375/4096 = 363.37$ Hz, sidebands from
+the lesson: subcarriers 363.4 Hz apart, one FFT bin at \texttt{fft\_len} 4096, sidebands from
 subcarrier 356 to 546 on each side, partitions of 19 subcarriers, and an extended hybrid
 station adding one, two, or four partitions inside subcarrier 356 on each side.
 
@@ -321,10 +321,12 @@ station with HD Radio, as the lab page lists.
 		width changes with the audio on the waterfall.
 		\end{solution}
 
-	\part Record the inner and outer edges, the subcarrier numbers, and the configuration.
+	\part Record the inner and outer edges in MHz, the Inner subcarrier setting where the
+	readings stop rising, and the configuration.
 		\begin{solution}[0.8in]
-		Answers vary. Most stations are hybrid, with edges at subcarriers 356 and 546; an
-		inner edge inside 129.4 kHz means extended hybrid.
+		Answers vary. Most stations are hybrid: edges about 129.4 and 198.4 kHz from the
+		center, and readings that do not rise below 356. Edges closer to the host, with
+		readings that rise as the slider moves down, mean extended hybrid.
 		\end{solution}
 
 	\begin{minipage}[t]{0.58\linewidth}
@@ -362,8 +364,8 @@ this course.
 		and lists the station's audio programs; HD1 is program 0.
 		\end{solution}
 
-	\part Lower the gain until the audio stops. At what gain does it stop, and how high do
-	the shelves stand above the floor at that gain in your meter?
+	\part Lower the gain until the audio stops. At what gain does it stop? Then stop nrsc5,
+	run your meter at that gain, and record how high the shelves stand above the floor.
 		\begin{solution}[1.0in]
 		Answers vary. The digital audio stops abruptly, not gradually as analog FM does, while
 		the shelves still stand a little above the floor.

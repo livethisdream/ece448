@@ -51,7 +51,7 @@ This follows the slides: overview, spectrum, RBDS, sidebands, the OFDM concept a
 Tune SDR Flex, or GQRX, to an FM station: flat bands beside it are HD Radio.
 
 Note:
-Live demo: the RTL-SDR in SDR Flex's full version, or GQRX as the fallback, at 1,488,375 samples per second, tuned to a strong local station. In SDR Flex, drag a box across one shelf and choose Tune here. hdradio.com/stations lists the local HD stations. The figure is GQRX playing the simulated test file.
+Live demo: the RTL-SDR in SDR Flex's full version (its radio drivers are not yet tried with a real radio, so GQRX is the tested path), at 1,488,375 samples per second, tuned to a strong local station. In SDR Flex, drag a box across one shelf and choose Tune here. hdradio.com/stations lists the local HD stations. The figure is GQRX playing the simulated test file.
 
 ---
 
@@ -150,7 +150,7 @@ Subtract 127.5, scale by 1/128, pair the bytes. GRC shows the RTL-SDR Source gra
 
 ## Finding the Sidebands
 
-<img src="./img/14-hd-radio/L14-hd-find.png" alt="Simulated: the sideband finder with meters at -23.04 and -23.06 dBc and 0.02 dB between them, the spectrum with two flat shelves, and the waterfall with two straight bands" style="max-height:440px; display:block; margin:0 auto;">
+<img src="./img/14-hd-radio/L14-hd-find.png" alt="Simulated: the sideband finder with meters at -23.02 and -23.05 dBc and 0.02 dB between them, the spectrum with two flat shelves, and the waterfall with two straight bands" style="max-height:440px; display:block; margin:0 auto;">
 
 The shelves have flat tops and sharp edges, and their width never changes on the waterfall.
 
@@ -161,13 +161,13 @@ The figure comes from the simulated test file. The shelves start at 100.1706 and
 
 ## Measuring Sideband Power
 
-<img src="./img/14-hd-radio/L14-hd-meters.png" alt="Simulated: Upper sideband -23.04 dBc, Lower sideband -23.06 dBc, Upper minus lower 0.02 dB" style="max-height:200px; display:block; margin:0 auto;">
+<img src="./img/14-hd-radio/L14-hd-meters.png" alt="Simulated: Upper sideband -23.02 dBc, Lower sideband -23.05 dBc, Upper minus lower 0.02 dB" style="max-height:200px; display:block; margin:0 auto;">
 
 - Each meter shifts its band to 0 Hz, filters it, and averages $\vert x\vert^2$ for 0.2 s.
 - The sideband meter minus the host meter gives dBc; a third reading compares the sides.
 
 Note:
-The host band is plus or minus 100 kHz, each sideband is plus or minus 34.7 kHz around plus or minus 163.9 kHz, and every filter decimates by 6. The nrsc5 project's real sample file reads about −24.3 and −23.7 dBc in the same flowgraph, close to the test file. On a live station the two meters need not agree.
+The host band is plus or minus 100 kHz, each sideband is plus or minus 34.7 kHz around plus or minus 163.9 kHz, and every filter decimates by 6. The nrsc5 project's real sample file reads about −24.3 and −23.8 dBc in the same flowgraph, close to the test file. On a live station the two meters need not agree.
 
 ---
 

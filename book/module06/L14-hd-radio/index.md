@@ -47,14 +47,14 @@ Lesson 14 · Module 6: Waveform Applications & RF Reverse Engineering · Dr. Nei
 - Look for flat bands on either side, and select one to look at it alone.
 :::
 
-We start on the air, in **SDR Flex**, the course's explore tool, or in **GQRX** if SDR Flex is not set up. Live radios need SDR Flex's full version, run from its Docker image or as a server against your own GNU Radio; its browser version has no live radios. In either program:
+We start on the air, in **SDR Flex**, the course's explore tool, or in **GQRX** if SDR Flex is not set up. Live radios need SDR Flex's full version, run from its Docker image or as a server against your own GNU Radio; its browser version has no live radios. SDR Flex's README says its radio drivers have not yet been tried with a real radio, and we have not tested it live in this course, so GQRX is the tested path for now. In either program:
 
 1. Set the input to the RTL-SDR and the sample rate to 1,488,375 samples per second. In GQRX, also set the mode to WFM.
 2. Tune to a strong local FM station; the station list at hdradio.com shows which local stations carry HD Radio.
 3. Watch the waterfall. The station is a rounded band whose width changes with the audio, and a station with HD Radio also shows two flat bands of constant width on either side of it, which an ordinary FM radio ignores.
 4. Select one of those bands to look at it alone: in SDR Flex, drag a box across it and choose **Tune here**; in GQRX, click it.
 
-Those bands are **HD Radio**, a digital broadcast that carries the station's program, and often extra programs, on the same channel. The GQRX steps follow GQRX's own documentation at gqrx.dk, and the SDR Flex steps follow its README.
+Those bands are **HD Radio**, a digital broadcast that carries the station's program, and often extra programs, on the same channel. The GQRX steps follow GQRX's own documentation at gqrx.dk; the SDR Flex steps follow its README and its web README, which describes the drag and **Tune here**.
 
 The figure is GQRX playing the lesson's test file rather than an antenna, so it carries a "Simulated" label; SDR Flex shows the same shelves on its own waterfall: the station at 100.3 MHz has the two bands, and the one at 99.9 MHz has none. The rest of the lesson builds that test signal in GNU Radio, finds and measures the bands, and decodes a real station with **nrsc5**.
 ::::
@@ -85,7 +85,7 @@ The digital signal carries the main program, called HD1, and a station can add H
 | Digital sidebands | ±129.4 to ±198.4 kHz | OFDM, QPSK on each subcarrier |
 :::
 
-Each part of an HD Radio station's spectrum uses a different modulation. The host is analog FM, and Lesson 7's demodulator turned it into the **multiplex**: mono audio up to 15 kHz, the 19 kHz stereo pilot, the stereo difference signal as DSB-SC around 38 kHz, and **RBDS**, the US name for RDS, as differentially encoded BPSK at 1187.5 bits per second on 57 kHz, carrying the station name, the time, and text. To see it on the same station, open Lesson 7's `L07-rds-rx.grc`, set Station to the station's frequency, enable its RTL-SDR Source, and run it: the panel fills with the station's name. PySDR's RDS chapter, which the slides list as an activity, decodes the same signal step by step in Python.
+Each part of an HD Radio station's spectrum uses a different modulation. The host is analog FM, and Lesson 7's demodulator turned it into the **multiplex**: mono audio up to 15 kHz, the 19 kHz stereo pilot, the stereo difference signal as DSB-SC around 38 kHz, and **RBDS**, the US name for RDS, as differentially encoded BPSK at 1187.5 bits per second on 57 kHz, carrying the station name, the time, and text. To see it on the same station, open Lesson 7's `L07-rds-rx.grc`, type the station's frequency into both SDR center and Station, disable its File Source, enable its RTL-SDR Source, and run it: the panel fills with the station's name. PySDR's RDS chapter, which the slides list as an activity, decodes the same signal step by step in Python.
 
 :::{depth}
 <img src="../../viz/img/L07-fm-multiplex.svg"
@@ -170,7 +170,7 @@ The sidebands carry random symbols, not NRSC-5 data, so nrsc5 cannot decode this
 ::::{frame} The Sideband Finder
 :::{present}
 <img src="../../viz/img/L14-grc-find.png"
-     alt="GNU Radio Companion with L14-hd-find.grc open: a File Source of bytes, a Throttle, UChar To Float, Add Const minus 127.5, Multiply Const 1/128, Deinterleave, and Float To Complex, and a disabled Soapy RTLSDR Source, both feeding a frequency sink, a waterfall sink, and three Frequency Xlating FFT Filters for the host and the two sidebands, each followed by Complex to Mag squared, a Moving Average, Keep 1 in N, and Log10, with two Subtract blocks feeding a number sink"
+     alt="GNU Radio Companion with L14-hd-find.grc open: a File Source of bytes, a Throttle, UChar To Float, Add Const minus 127.5, Multiply Const 1/128, Deinterleave, and Float To Complex, and a disabled Soapy RTLSDR Source, both feeding a frequency sink, a waterfall sink, and three Frequency Xlating FFT Filters for the host and the two sidebands, each followed by Complex to Mag squared, a Moving Average, Keep 1 in N, and Log10, with three Subtract blocks feeding a number sink"
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
@@ -186,7 +186,7 @@ The **QT GUI Frequency Sink** and **Waterfall Sink** use an FFT of 4096 points, 
 ::::{frame} Finding the Sidebands
 :::{present}
 <img src="../../viz/img/L14-hd-find.png"
-     alt="The L14 sideband finder window labeled Simulated: L14 test file: controls for Center, RF gain, and Inner subcarrier at 356; the number sink reads minus 23.04 dBc for the upper sideband, minus 23.06 dBc for the lower, and 0.02 dB for upper minus lower; the frequency sink shows the host at 100.3 MHz peaking near minus 33 dB, flat shelves near minus 58 dB on both sides, a floor near minus 80 dB, and the analog neighbor at 99.9 MHz; the waterfall shows the shelves as two straight bands of constant width beside the host"
+     alt="The L14 sideband finder window labeled Simulated: L14 test file: controls for Center, RF gain, and Inner subcarrier at 356; the number sink reads minus 23.02 dBc for the upper sideband, minus 23.05 dBc for the lower, and 0.02 dB for upper minus lower; the frequency sink shows the host at 100.3 MHz peaking near minus 33 dB, flat shelves near minus 58 dB on both sides, a floor near minus 80 dB, and the analog neighbor at 99.9 MHz; the waterfall shows the shelves as two straight bands of constant width beside the host"
      style="max-width: 760px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
@@ -202,7 +202,7 @@ The shelves sit about 25 dB under the top of the host on the display, but the me
 ::::{frame} Measuring Sideband Power
 :::{present}
 <img src="../../viz/img/L14-hd-meters.png"
-     alt="The controls and number sink of the L14 sideband finder, labeled Simulated: L14 test file: Center 100.3, RF gain 30, Inner subcarrier 356; Upper sideband minus 23.04 dBc, Lower sideband minus 23.06 dBc, and Upper minus lower 0.02 dB, each with a bar on a scale from minus 40 to 0"
+     alt="The controls and number sink of the L14 sideband finder, labeled Simulated: L14 test file: Center 100.3, RF gain 30, Inner subcarrier 356; Upper sideband minus 23.02 dBc, Lower sideband minus 23.05 dBc, and Upper minus lower 0.02 dB, each with a bar on a scale from minus 40 to 0"
      style="max-width: 640px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
@@ -212,7 +212,7 @@ The shelves sit about 25 dB under the top of the host on the display, but the me
 
 A band-power meter is four blocks we have used before. A **Frequency Xlating FFT Filter** moves the band's center to 0 Hz and keeps only the band, $\pm 100$ kHz for the host and $\pm 34.7$ kHz around $\pm 163.9$ kHz for each sideband, and decimates by 6. **Complex to Mag^2** gives each sample's power, a **Moving Average** over 0.2 s averages it, **Keep 1 in N** slows the result to 50 readings a second, and **Log10** with a factor of 10 converts each reading to dB. Subtracting the host's meter from a sideband's meter gives that sideband in dBc, and a third Subtract shows the upper sideband minus the lower.
 
-On the test file the meters read $-23.04$ and $-23.06$ dBc, the level the test transmitter sets, and the sides differ by 0.02 dB. The same flowgraph on the real station recorded in the nrsc5 project's sample file reads about $-24.3$ and $-23.7$ dBc, close to the test file. On a live station the two meters need not agree, and the lab compares them. The **Inner subcarrier** slider steps the meters' inner edge down one partition at a time, from 356 to 280, so the same meters work on an extended hybrid station: slide it down until the readings stop rising. On the hybrid test file they do not change at all.
+On the test file the meters read $-23.02$ and $-23.05$ dBc, the level the test transmitter sets, and the sides differ by 0.02 dB. The same flowgraph on the real station recorded in the nrsc5 project's sample file reads about $-24.3$ and $-23.8$ dBc, close to the test file. On a live station the two meters need not agree, and the lab compares them. The **Inner subcarrier** slider steps the meters' inner edge down one partition at a time, from 356 to 280, so the same meters work on an extended hybrid station: slide it down until the readings stop rising.
 ::::
 
 ::::{frame} What Noise Does
@@ -285,6 +285,8 @@ Put both flowgraphs in one folder and run the test transmitter first; GRC runs a
 - <a href="https://hdradio.com/stations/" target="_blank" rel="noopener">hdradio.com station list</a>, to find local HD Radio stations.
 - <a class="doc-link" href="../../legacy/refs/nrsc-1011s_hd-radio.pdf" target="_blank" rel="noopener">NRSC-5 Layer 1 FM specification, SY_IDD_1011s (PDF)</a>: Section 3.5 and Table 5-1 give the spacing and subcarriers.
 - For more practice, the slides point to the GRCon 2023 CTF challenge "Not Really Superior Clatter-V", built on an HD Radio signal.
+::::
+
 ::::{frame} Summary
 :class: read-only
 

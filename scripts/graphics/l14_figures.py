@@ -126,7 +126,7 @@ def shots(raw: Path):
     save(stamp(find.copy(), (1020, 412)), "L14-hd-find", colors=16)
     save(stamp(find.crop((0, 0, 1060, 362)), (1020, 70)), "L14-hd-meters", colors=32)
     noisy = Image.open(raw / "find_noise.png").convert("RGB")
-    save(stamp(noisy, (1020, 412), "Simulated: test file, noise_amp 0.15"), "L14-hd-noise", colors=16)
+    save(stamp(noisy, (1020, 412), "Simulated: test file, noise_amp 0.15"), "L14-hd-noise", colors=12)
     gq = Image.open(raw / "gqrx.png").convert("RGB").crop((0, 0, 1060, 666))
     save(stamp(gq, (745, 128)).resize((848, 533)), "L14-gqrx", colors=32)
     save(Image.open(raw / "canvas_find.png").crop((0, 68, 1700, 1000)), "L14-grc-find", colors=64)
