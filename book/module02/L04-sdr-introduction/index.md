@@ -281,10 +281,10 @@ The gain comes last, set against the strongest signal in the window, not the one
 
 ::::{frame} Walkthrough: The FM Band in GQRX
 :::{present}
-1. Plug in the RTL-SDR, open GQRX, and pick the RTL-SDR as the device.
-2. Tune to 98 MHz at 2.4 MS/s and read the spectrum and the waterfall.
-3. Click a station, set the mode to WFM, and listen.
-4. Raise the gain until false stations appear; back it off.
+1. Open GQRX and pick the RTL-SDR.
+2. Tune to 98 MHz; read the spectrum and waterfall.
+3. Click a station, set WFM, and listen.
+4. Raise the gain until false stations appear; back off.
 :::
 
 Before building a flowgraph for a signal, we find it in a standalone receiver. Plug the RTL-SDR into a USB port, open GQRX, and choose the RTL-SDR in the device dialog at its default rate; SDR++ has the same controls if GQRX is not on your laptop. Set the frequency to 98 MHz and press the power button to start.

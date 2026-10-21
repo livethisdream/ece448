@@ -84,9 +84,9 @@ Plug in only the radio you are testing. A command that reports no device usually
 
 ::::{frame} Part 2: Your First Flowgraph
 :::{present}
-- File, New: GRC starts with an **Options** block and a `samp_rate` variable.
-- Add a **Signal Source**, a **Throttle**, and a **QT GUI Time Sink**; wire them and run.
-- A **Throttle** paces a flowgraph that has no hardware; real hardware sets its own pace.
+- File, New: an **Options** block and a `samp_rate` variable.
+- Add a **Signal Source**, **Throttle**, and **QT GUI Time Sink**; wire and run.
+- **Throttle** paces a flowgraph with no hardware.
 :::
 
 This follows the wiki's "Your First Flowgraph." Every flowgraph starts with an **Options** block, which sets the flowgraph's title, the name of the Python file GRC generates, and the kind of window it opens; "QT GUI" gives the windows with plots and sliders we use all semester. Add a Signal Source, a Throttle, and a QT GUI Time Sink, connect them in that order, and press run: a window opens with the tone on the time plot. Then add a **QT GUI Frequency Sink** off the same throttle output to see the tone in frequency too.
@@ -134,7 +134,7 @@ A **QT GUI Range** is a variable with a slider. Add one with ID `freq`, from $-4
 :::
 :::{present}
 - Connected ports must match; a mismatch draws the arrow red.
-- Do: put a **Complex to Float** before a float Time Sink and watch $I$ and $Q$ on two inputs.
+- Do: add **Complex to Float**; watch $I$ and $Q$ as two traces.
 :::
 
 This is the wiki's "Signal Data Types" and "Converting Data Types." Each block port carries one data type, and GRC colors the port to show which. A **complex** sample is a pair of 32-bit floats, the $I$ and $Q$ of Lesson 3, so it takes 8 bytes; a **float** is one 32-bit value; and the integer types carry bits, symbols, and audio samples in later lessons. Two connected ports must have the same type. When they do not, GRC draws the connection in red and refuses to run, which is the most common error in a first flowgraph. Most blocks have a type setting that changes their port color, and conversion blocks sit between types when we need both. Try it on the tone flowgraph: add a second Time Sink with its type set to float and see the red arrow, then insert **Complex to Float** and connect its two outputs to two sink inputs. The plot shows $I$ and $Q$ as separate traces, the same two curves the complex sink drew. Packing bits, vectors, and hierarchical blocks, the next wiki tutorials, come back when later lessons need them.
