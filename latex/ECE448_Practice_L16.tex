@@ -1,0 +1,312 @@
+% !TEX root =./ECE448_Practice_main.tex
+%
+% L16 practice set (frequency hopping). Every question is a step in the L16
+% link: the hop synthesizer's settings, hop timing, the FCC dwell rule,
+% jamming, and hop-sequence synchronization.
+% Blank copy: \begin{solution}[h] reserves h of work space.
+% SOLUTIONS copy (\iskey=1) prints the red worked solutions.
+
+\fullwidth{\textbf{Learning Objective 6.5: } I can implement FHSS transmission and
+reception, including hop-sequence synchronization.
+\\[4pt]\normalfont\small Show your work. Write a \textbf{Documentation} line at the
+end (\textbf{None} if you did not collaborate).}
+
+\begin{questions}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{The hop synthesizer.} A hopper like the L16 transmitter runs at
+$f_s = 128$ kHz. A Vector Source lists the hop frequencies, a Repeat block holds each
+one for one hop, and a VCO (complex) with sensitivity $2\pi$ turns each value, in
+hertz, into a tone. The hopper uses 6 channels spaced 12 kHz apart and centered on
+0 Hz, and each hop lasts 125 ms.
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Find the frequency of each channel, $k = 0$ to 5.
+		\begin{solution}[1.0in]
+		Centered on 0 Hz, channel $k$ sits at
+		\eq{ f_k = 12\ \text{kHz} \times (k - 2.5) }
+		which gives $-30$, $-18$, $-6$, $+6$, $+18$, and $+30$ kHz.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.4in]{$\pm 6$, $\pm 18$, $\pm 30$ kHz}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Find the Repeat block's interpolation, and the time for one cycle that
+		visits every channel once.
+		\begin{solution}[1.0in]
+		\eq{ 128{,}000 \times 0.125\ \text{s} &= 16{,}000\ \text{samples} \\
+		6 \times 125\ \text{ms} &= 750\ \text{ms} }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		Repeat: \ansbox[1.0in]{16{,}000}
+
+		\vspace{4pt}
+		cycle: \ansbox[1.0in]{750 ms}
+	\end{minipage}
+
+	\part The FSK signal on each hop is about 4 kHz wide. In words, explain why a
+	channel spacing of 3 kHz would not work, and what the receiver's low-pass filter
+	after de-hopping does with the other channels at 12 kHz.
+		\begin{solution}[1.1in]
+		At 3 kHz spacing each 4 kHz-wide signal would overlap its neighbors, so a
+		receiver tuned to one channel would also pick up energy from the next one, and a
+		jammer on one channel would spill into two. At 12 kHz the channels do not overlap:
+		after de-hopping, the wanted hop sits at 0 Hz and every other channel sits 12 kHz
+		or more away, outside a low-pass filter of about $\pm 2$ kHz, which removes them.
+		\end{solution}
+
+\end{parts}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{Hop timing.} A hopper sends one packet per hop, as the L16 link does:
+2 guard bytes, the 12-byte access code and header, a payload of $N$ bytes, and 2 more
+guard bytes. It runs at $R_s = 2000$ baud, with 16 channels.
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part For a 26-byte payload, find the bits per hop, the time on one hop, and the
+		hop rate.
+		\begin{solution}[1.2in]
+		\eq{ n &= 8 \times (2 + 12 + 26 + 2) = 336\ \text{bits} \\
+		T_\text{hop} &= \dfrac{336}{2000\ \text{baud}} = 168\ \text{ms} \\
+		\text{hop rate} &= \dfrac{1}{0.168\ \text{s}} = 5.95\ \text{hops/s} }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		bits: \ansbox[1.0in]{336}
+
+		\vspace{4pt}
+		hop: \ansbox[1.0in]{168 ms}
+
+		\vspace{4pt}
+		rate: \ansbox[1.0in]{5.95 hops/s}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Find the time for one cycle of the 16 channels, and the share of each hop
+		that carries the payload.
+		\begin{solution}[1.0in]
+		\eq{ T_\text{cycle} &= 16 \times 168\ \text{ms} = 2.69\ \text{s} \\
+		\dfrac{8 \times 26}{336} &= 0.62 = 62\% }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		cycle: \ansbox[1.0in]{2.69 s}
+
+		\vspace{4pt}
+		payload: \ansbox[1.0in]{62\%}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part How long is each guard, in milliseconds, and roughly what range of receiver
+		timing error should it absorb?
+		\begin{solution}[0.9in]
+		Each guard is 16 bits, $16/2000 = 8$ ms, so the receiver can change channel about
+		8 ms early or 8 ms late and still catch the access code, header, and payload.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.1in]{about $\pm 8$ ms}
+	\end{minipage}
+
+	\part In words, explain why the hopper makes each packet exactly one hop long
+	instead of letting packets run across hop boundaries.
+		\begin{solution}[1.0in]
+		If a packet ran across a boundary, part of it would be on one channel and part on
+		the next, so a jammer on either channel, or a receiver whose timing is a little
+		off, would lose the whole packet. With one packet per hop the boundaries fall in
+		the guard bits between packets, a lost hop costs exactly one packet, and the
+		receiver can count packets to check it is on the right hops.
+		\end{solution}
+
+\end{parts}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{The FCC dwell rule.} FCC Part 15.247 lets a narrowband hopper at
+915 MHz transmit without a license if it hops over at least 50 channels, uses every
+channel equally, and stays on any one channel no more than 0.4 s in any 20 s. The L16
+link hops over 8 channels with 240 ms hops, each channel once per cycle.
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Find how long the L16 link spends on one channel in 20 s.
+		\begin{solution}[1.2in]
+		The link makes $20 / 0.240 = 83.3$ hops in 20 s, and each channel gets one in 8:
+		\eq{ \dfrac{83.3}{8} \times 0.240\ \text{s} = 2.5\ \text{s} }
+		which is more than six times the 0.4 s limit.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.1in]{2.5 s}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Show that, with every channel used equally, the time on one channel in 20 s
+		is $20\ \text{s}/N$ whatever the hop length, and find the smallest $N$ that meets
+		the 0.4 s limit.
+		\begin{solution}[1.2in]
+		With hops of length $T$, there are $20/T$ hops in 20 s and each channel gets
+		$1/N$ of them, so the time on one channel is
+		\eq{ \dfrac{20}{T} \cdot \dfrac{1}{N} \cdot T = \dfrac{20\ \text{s}}{N} \le 0.4\ \text{s}
+		\quad\Rightarrow\quad N \ge 50 }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.1in]{$N \ge 50$}
+	\end{minipage}
+
+	\part The rule also limits each single visit: a hop longer than 0.4 s breaks it
+	even with 50 channels. In words, explain why a permutation sequence, like the
+	L16 link's, makes the equal-use rule easy to meet, and what a sequence drawn
+	independently at random each hop would do instead.
+		\begin{solution}[1.1in]
+		A permutation visits every channel exactly once per cycle, so every channel gets
+		exactly the same time in every cycle, and the average use is equal by
+		construction. A channel drawn at random each hop is equal only on average: over a
+		short window some channels come up more often than others, and one could exceed
+		0.4 s in a 20 s window even when the long-run average is fine. It could also
+		repeat a channel on consecutive hops.
+		\end{solution}
+
+\end{parts}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{Jamming.} A hopper uses 20 channels, each equally. A jammer
+transmits a strong tone on each of 3 channels, strong enough that any hop on those
+channels is lost. On a channel it covers, the jammer needs a power at least equal to
+the signal's to take the hop, as in the L16 jammer sweep.
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Find the fraction of packets delivered.
+		\begin{solution}[0.8in]
+		\eq{ P = 1 - \dfrac{3}{20} = 0.85 = 85\% }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.1in]{85\%}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part To take every hop, the jammer must put at least the signal's power on all 20
+		channels. How much more total power, in dB, does that take than jamming one
+		channel?
+		\begin{solution}[0.8in]
+		\eq{ 10\log_{10} 20 = 13\ \text{dB} }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.1in]{13 dB}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part The jammer spreads its 3-channel power evenly over all 20 channels instead.
+		Is any hop lost? Find the jammer-to-signal ratio on each channel.
+		\begin{solution}[1.0in]
+		Each of the 3 tones had at least the signal's power, so their total is at least 3
+		times it. Spread over 20 channels, each gets $3/20$ of the signal's power:
+		\eq{ 10\log_{10}(3/20) = -8.2\ \text{dB} }
+		That is below the 0 dB a jammer needs, so no hop is lost.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.1in]{none; $-8.2$ dB}
+	\end{minipage}
+
+	\part Bluetooth's adaptive frequency hopping lets the receiver mark channels that
+	keep losing packets as bad and drop them from the sequence. In words, explain what
+	happens to the delivered fraction when this hopper drops the 3 jammed channels, and
+	why the jammer cannot simply follow.
+		\begin{solution}[1.2in]
+		With the 3 jammed channels dropped, the hopper uses the other 17, none of which is
+		jammed, so every packet arrives again. The jammer does not know the sequence, so it
+		cannot tell which channels are now in use except by listening; to hit the hops it
+		would have to move to new channels and cover them too, and then the receiver drops
+		those. Each channel the hopper drops makes it a little easier to find, which is why
+		Bluetooth keeps at least 20.
+		\end{solution}
+
+\end{parts}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{Synchronization.} The L16 link hops over 8 channels with key 448, in
+the order 7, 2, 0, 6, 4, 1, 3, 5, with 240 ms hops and 16 guard bits, 16 ms, at each end
+of every hop. Its receiver parks on the sync channel, channel 7, until hop 0 arrives
+there.
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part A receiver with the right timing tunes one hop behind the transmitter. List
+		the transmitter's and the receiver's channels for hops 1 to 4, and find how many
+		packets arrive in a full cycle.
+		\begin{solution}[1.2in]
+		On hop $k$ the transmitter is on entry $k$ of the list and the receiver on entry
+		$k-1$: hop 1 is 2 and 7, hop 2 is 0 and 2, hop 3 is 6 and 0, hop 4 is 4 and 6.
+		Consecutive entries of a permutation are never equal, so they never match, and no
+		packet arrives in any cycle.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.1in]{0}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part A receiver starts and parks on channel 7 at 0.70 s after the start of a
+		hop 0. How long does it wait before it locks?
+		\begin{solution}[0.9in]
+		The next hop 0 starts one cycle after the last, at $8 \times 0.240 = 1.92$ s:
+		\eq{ 1.92 - 0.70 = 1.22\ \text{s} }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.1in]{1.22 s}
+	\end{minipage}
+
+	\part After locking, the receiver changes channel 10 ms late on every hop. A
+	teammate's receiver changes channel 20 ms early. Explain what each one misses and
+	whether its packets arrive.
+		\begin{solution}[1.2in]
+		The late receiver spends the first 10 ms of each hop on the previous channel, so it
+		misses 10 of the 16 leading guard bits; the access code, header, and payload all
+		arrive, and so does every packet. The early receiver leaves 20 ms before the hop
+		ends, so it misses the 16 trailing guard bits and the last 4 bits of the newline;
+		the payload is wrong, and almost no packet arrives intact.
+		\end{solution}
+
+	\part In words, explain why parking on one channel tells the receiver which hop the
+	transmitter is on, and what would go wrong if the sequence visited channel 7 twice in
+	each cycle.
+		\begin{solution}[1.1in]
+		The sequence is a permutation, so the transmitter is on channel 7 only on hop 0;
+		power appearing there means hop 0 has just started, which gives both the hop
+		number and the hop boundary. If channel 7 appeared twice, the receiver could not
+		tell which of the two visits it heard, and half the time it would lock to the
+		wrong hop number, off by several hops, and receive nothing until it parked again.
+		\end{solution}
+
+\end{parts}
+
+\vspace{1.5em}
+\noindent\textbf{Documentation:} \rule[-2pt]{0.6\linewidth}{0.4pt}
+
+\end{questions}

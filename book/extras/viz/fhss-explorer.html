@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FHSS Explorer — hop sequence, receiver sync, and a jammer</title>
+<style>
+  :root { --navy:#004a85; --mid:#0067b9; --edge:#cddce9; --edge2:#b9d2e5; --bg:#f5f9fc;
+          --ink:#15202b; --ink3:#5b6573; --amber:#8a5a00; --red:#b01e24; --grn:#3f7d34; }
+  html,body { margin:0; padding:0; font-family:'Inter',system-ui,-apple-system,sans-serif; color:var(--ink); background:#fff; }
+  .app { display:flex; flex-direction:column; gap:8px; padding:12px; }
+  canvas { display:block; box-sizing:border-box; width:100%; height:auto; background:#fff; border:1px solid var(--edge); border-radius:6px; }
+  .controls { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px 16px; align-items:center;
+              padding:8px 12px; background:var(--bg); border:1px solid var(--edge); border-radius:6px; }
+  @media (max-width:620px) { .controls { grid-template-columns:1fr 1fr; } }
+  .ctl { display:grid; grid-template-columns:auto 1fr; column-gap:8px; row-gap:2px; align-items:center; min-width:0; }
+  .ctl label { font-size:10.5px; text-transform:uppercase; letter-spacing:0.05em; color:var(--ink3); font-weight:700; white-space:nowrap; }
+  .ctl .val { color:var(--navy); font-size:12px; font-weight:600; font-variant-numeric:tabular-nums; text-align:right; white-space:nowrap; }
+  .ctl input[type=range]{ grid-column:1 / span 2; width:100%; margin:0; accent-color:var(--mid); }
+  .ctl button { grid-column:1 / span 2; font:inherit; font-size:12px; font-weight:600; color:var(--navy); background:#fff;
+                border:1px solid var(--edge2); border-radius:4px; padding:3px 6px; cursor:pointer; }
+  .readouts { display:grid; gap:6px; grid-template-columns:repeat(4,minmax(0,1fr)); }
+  @media (max-width:620px) { .readouts { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+  .ro { display:flex; flex-direction:column; align-items:center; gap:2px; padding:5px 4px 6px; min-width:0;
+        border:1px solid var(--edge2); border-radius:6px; background:#eef4fa; }
+  .ro .k { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:var(--ink3); white-space:nowrap; }
+  .ro .v { font-size:14px; font-weight:700; white-space:nowrap; font-variant-numeric:tabular-nums; color:var(--navy); }
+</style>
+</head>
+<body>
+<div class="app">
+  <canvas id="grid" aria-label="Sixteen hops on a grid of channel against hop number: the transmitter's channel on each hop as a filled cell, the receiver's channel as an outlined box, and the jammed channels as a red band; a delivered hop is filled navy and a lost hop gray"></canvas>
+  <div class="controls">
+    <div class="ctl"><label for="nch">Channels</label><span class="val" id="nch-v"></span>
+      <input type="range" id="nch" min="2" max="16" step="1" value="8"></div>
+    <div class="ctl"><label for="jw">Jammed channels</label><span class="val" id="jw-v"></span>
+      <input type="range" id="jw" min="0" max="16" step="1" value="1"></div>
+    <div class="ctl"><label for="jc">Jammer position</label><span class="val" id="jc-v"></span>
+      <input type="range" id="jc" min="0" max="15" step="1" value="2"></div>
+    <div class="ctl"><label for="off">Receiver offset</label><span class="val" id="off-v"></span>
+      <input type="range" id="off" min="-2" max="2" step="1" value="0"></div>
+    <div class="ctl"><label for="key">Hop key</label><span class="val" id="key-v"></span>
+      <input type="range" id="key" min="1" max="99" step="1" value="7"></div>
+    <div class="ctl"><label>Receiver</label><span class="val" id="lk-v"></span>
+      <button type="button" id="lk">acquire from the sync channel</button></div>
+  </div>
+  <div class="readouts">
+    <div class="ro"><span class="k">delivered, long run</span><span class="v" id="o-del">—</span></div>
+    <div class="ro"><span class="k">1 − jammed / channels</span><span class="v" id="o-th">—</span></div>
+    <div class="ro"><span class="k">sync channel</span><span class="v" id="o-sync">—</span></div>
+    <div class="ro"><span class="k">hop sequence</span><span class="v" id="o-seq">—</span></div>
+  </div>
+</div>
+
+<script>
+'use strict';
+// One hop carries one packet. The transmitter visits every channel once per
+// cycle, in a pseudo-random order drawn from the key (this page's own random
+// order, not numpy's). A hop is delivered when the receiver is on the
+// transmitter's channel and that channel is not jammed. The receiver either
+// starts locked, or parks on the sync channel, the channel of hop 0, and
+// locks when the transmitter arrives there; a jammed sync channel keeps it
+// from ever locking.
+const SANS = 'Inter, system-ui, -apple-system, sans-serif', SHOW = 16;
+const C = { navy:'#004a85', gray:'#c3ccd6', rule:'#e3ebf2', ink3:'#5b6573', amber:'#8a5a00', red:'#b01e24' };
+const $ = id => document.getElementById(id);
+let acquire = false;
+
+function perm(n, key) {             // Fisher-Yates driven by mulberry32(key)
+  let a = key * 2654435761 >>> 0;
+  const rnd = () => { a = a + 0x6D2B79F5 >>> 0; let t = a; t = Math.imul(t ^ t >>> 15, t | 1);
+    t ^= t + Math.imul(t ^ t >>> 7, t | 61); return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+  const p = Array.from({ length: n }, (_, i) => i);
+  for (let i = n - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [p[i], p[j]] = [p[j], p[i]]; }
+  return p;
+}
+
+function state() {
+  const n = +$('nch').value; $('jw').max = n; $('jc').max = n - 1;
+  const jw = Math.min(+$('jw').value, n), jc = Math.min(+$('jc').value, n - 1);
+  const jam = new Set(); for (let i = 0; i < jw; i++) jam.add((jc + i) % n);
+  return { n, jw, jc, jam, off: +$('off').value, seq: perm(n, +$('key').value) };
+}
+
+// Hop h of the transmitter, and what the receiver does on it. With acquire on,
+// the receiver starts parked at hop 3 of the cycle and locks on the next hop 0.
+function hops(s, count) {
+  const out = []; let locked = !acquire;
+  for (let h = 0; h < count; h++) {
+    const k = (h + 3) % s.n, tx = s.seq[k];
+    if (!locked && k === 0 && !s.jam.has(s.seq[0])) locked = true;
+    const rx = locked ? s.seq[((k + s.off) % s.n + s.n) % s.n] : s.seq[0];
+    out.push({ tx, rx, locked, ok: rx === tx && !s.jam.has(tx) });
+  }
+  return out;
+}
+
+function setup(cv) {
+  const dpr = window.devicePixelRatio || 1, w = Math.max(200, cv.clientWidth || 300);
+  const narrow = window.matchMedia && window.matchMedia('(max-width:620px)').matches;
+  const h = narrow ? 230 : Math.round(Math.min(w * 0.42, 290));
+  cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); cv.style.height = h + 'px';
+  const bh = cv.offsetHeight - cv.clientHeight; if (bh) cv.style.height = (h + bh) + 'px';
+  const ctx = cv.getContext('2d'); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); return { ctx, w, h };
+}
+function txt(ctx, s, x, y, px, col, align, bold) { ctx.fillStyle = col; ctx.font = (bold ? '700 ' : '') + px + 'px ' + SANS;
+  ctx.textAlign = align || 'left'; ctx.textBaseline = 'middle'; ctx.fillText(s, x, y); }
+
+function draw(s, hs) {
+  const { ctx, w, h } = setup($('grid'));
+  ctx.clearRect(0, 0, w, h);
+  const mL = 30, mR = 8, top = 22, bot = h - 22, cw = (w - mL - mR) / SHOW, ch = (bot - top) / s.n;
+  const Y = c => bot - (c + 1) * ch;
+  for (const c of s.jam) { ctx.fillStyle = 'rgba(176,30,36,0.16)'; ctx.fillRect(mL, Y(c), w - mL - mR, ch); }
+  ctx.strokeStyle = C.rule; ctx.lineWidth = 1;
+  for (let c = 0; c <= s.n; c++) { ctx.beginPath(); ctx.moveTo(mL, bot - c * ch); ctx.lineTo(w - mR, bot - c * ch); ctx.stroke(); }
+  for (let i = 0; i <= SHOW; i++) { ctx.beginPath(); ctx.moveTo(mL + i * cw, top); ctx.lineTo(mL + i * cw, bot); ctx.stroke(); }
+  const lab = Math.max(1, Math.ceil(12 / ch));
+  for (let c = 0; c < s.n; c += lab) txt(ctx, String(c), mL - 5, Y(c) + ch / 2, 10, c === s.seq[0] ? C.amber : C.ink3, 'right', c === s.seq[0]);
+  hs.forEach((p, i) => {
+    const x = mL + i * cw;
+    ctx.fillStyle = p.ok ? C.navy : C.gray; ctx.fillRect(x + 2, Y(p.tx) + 2, cw - 4, ch - 4);
+    ctx.strokeStyle = C.amber; ctx.lineWidth = 2; ctx.setLineDash(p.locked ? [] : [3, 2]);
+    ctx.strokeRect(x + 1, Y(p.rx) + 1, cw - 2, ch - 2); ctx.setLineDash([]);
+  });
+  txt(ctx, 'channel', 4, 10, 10.5, C.ink3, 'left', true);
+  txt(ctx, 'filled: transmitter (navy = delivered)   box: receiver', mL + 30, 10, 10.5, C.ink3, 'left');
+  txt(ctx, 'hop →', w - mR, h - 10, 10.5, C.ink3, 'right');
+  txt(ctx, 'sync channel in amber', mL, h - 10, 10.5, C.amber, 'left');
+}
+
+function update() {
+  const s = state();
+  $('nch-v').textContent = s.n; $('jw-v').textContent = s.jw; $('jc-v').textContent = 'from ' + s.jc;
+  $('off-v').textContent = (s.off > 0 ? '+' : '') + s.off + ' hops'; $('key-v').textContent = $('key').value;
+  $('lk-v').textContent = acquire ? 'acquiring' : 'starts locked';
+  $('lk').textContent = acquire ? 'start already locked' : 'acquire from the sync channel';
+  const hs = hops(s, SHOW); draw(s, hs);
+  const long = hops(s, 66 * s.n).slice(2 * s.n), good = long.filter(p => p.ok).length;
+  $('o-del').textContent = (100 * good / long.length).toFixed(0) + '%';
+  $('o-th').textContent = (100 * (1 - s.jw / s.n)).toFixed(0) + '%';
+  $('o-sync').textContent = s.seq[0] + (s.jam.has(s.seq[0]) ? ', jammed' : ', clear');
+  $('o-seq').textContent = s.n <= 10 ? s.seq.join(' ') : s.seq.slice(0, 8).join(' ') + ' …';
+}
+
+for (const id of ['nch', 'jw', 'jc', 'off', 'key']) $(id).addEventListener('input', update);
+$('lk').addEventListener('click', () => { acquire = !acquire; update(); });
+window.addEventListener('resize', update);
+update();
+</script>
+</body>
+</html>
