@@ -48,9 +48,9 @@ Lesson 6 · Module 3: Analog Modulation · Dr. Neil Rogers
 - Today's signal: a two-tone message on a 10 kHz carrier, as DSB-AM.
 :::
 
-An antenna cannot radiate audio efficiently, and two stations sending audio directly would land on top of each other. **Modulation** solves both problems: it moves the message up to a **carrier** frequency, so each transmitter gets its own channel. The simplest way to do that is to vary the carrier's amplitude with the message, which is **amplitude modulation** (AM). It is still on the air in AM broadcast, in every aircraft radio, and in HF voice links.
+**Modulation** moves an audio message up to a **carrier** frequency, so each transmitter gets its own channel. Varying the carrier's amplitude with the message is **amplitude modulation** (AM), still on the air in AM broadcast, every aircraft radio, and HF voice links.
 
-The figure is the spectrum of the first flowgraph of this lesson, running in GNU Radio with no hardware. The message is two tones, 1 kHz and 2.5 kHz, and the carrier is 10 kHz. The tall line in the middle is the carrier, and each tone produces a pair of lines on either side of it. By the end of the lesson we will build this signal, two relatives of it, and a receiver for each, and check the receiver's output against the message.
+Open `L06-dsb-am.grc` and run it; no hardware is needed. The figure is its frequency sink. The message is two tones, 1 kHz and 2.5 kHz, on a 10 kHz carrier. The tall line in the middle is the carrier, and each tone makes a pair of lines on either side of it. Today we build this signal and two relatives, receive each one, and check the output against the message.
 ::::
 
 ::::{frame} Part 1: DSB-AM
@@ -63,7 +63,7 @@ $$s(t) = A_c\left[1 + m\,x(t)\right]\cos(2\pi f_c t)$$
 - The bandwidth is $2W$, here 5 kHz (7.5 to 12.5 kHz).
 :::
 
-**Double-sideband AM** (DSB-AM, or simply AM) multiplies a carrier at frequency $f_c$ by one plus the scaled message. We scale the message $x(t)$ so its magnitude never exceeds 1, and the **modulation index** $m$ sets how far the carrier's amplitude swings: at $m = 0.5$ it swings between 0.5 and 1.5 times $A_c$. Keeping $m \le 1$ guarantees that the bracket never goes negative, whatever the message. The quantity in brackets is the **envelope**, the outline the carrier's peaks trace out, and it is a copy of the message riding on a constant.
+**Double-sideband AM** (DSB-AM, or simply AM) multiplies a carrier at $f_c$ by one plus the scaled message. The message $x(t)$ stays between $-1$ and 1, and the **modulation index** $m$ is the slider that sets how far the carrier's amplitude swings: at $m = 0.5$, between 0.5 and 1.5 times $A_c$. The bracket is the **envelope**, the outline of the carrier's peaks, which is a copy of the message riding on a constant.
 
 Multiplying by the carrier shifts the message's spectrum up to $f_c$. The constant 1 becomes the carrier line, and each message tone at $f$ becomes two lines, one at $f_c + f$ in the **upper sideband** and one at $f_c - f$ in the **lower sideband**. On the opening figure the sideband lines sit well below the carrier, and the louder 1 kHz tone makes the taller pair; raise $m$ and every sideband line grows while the carrier stays put. The signal occupies $f_c - W$ to $f_c + W$, where $W$ is the highest message frequency, so its **bandwidth** is $2W$, 5 kHz for our message. The FCC spaces US AM broadcast stations 10 kHz apart for the same reason: each carries about 5 kHz of audio.
 ::::
@@ -107,7 +107,7 @@ The right time sink compares the receiver's output, in red, with the envelope in
 - Multiply by $\pi/2$ to restore the level.
 :::
 
-An AM receiver only has to recover the envelope, and a circuit as simple as a diode and a capacitor does that, which is why AM was the first broadcast standard. The flowgraph does the same thing with blocks. **Abs** is the diode: it flips the negative half-cycles of the carrier up. A **low-pass filter** is the capacitor: it averages the rectified carrier, keeping the slowly varying envelope and removing the rest. After Abs, the envelope sits near 0 Hz and the rest of the signal sits at higher frequencies, which the filter of the next frame removes.
+An AM receiver only has to recover the envelope; a diode and a capacitor do it in hardware. The bottom row of the flowgraph does the same with blocks. **Abs** is the diode: it flips the carrier's negative half-cycles up. The **low-pass filter** is the capacitor: it keeps the slowly varying envelope and removes the rest. After Abs, the envelope sits near 0 Hz and the rest of the signal sits at higher frequencies, which the filter of the next frame removes.
 
 Averaging the rectified carrier leaves $2/\pi$ of its peak, so a Multiply Const of $\pi/2$ restores the envelope's original level. The DC Blocker then removes the constant 1, which carries no information, before the audio reaches the speaker.
 ::::
@@ -135,9 +135,9 @@ GNU Radio sets the number of taps from the transition width: a narrower transiti
 - The audio distorts, and the spectrum spreads.
 :::
 
-Keeping $m \le 1$ guarantees no overmodulation for any message with $\vert x(t)\vert \le 1$. Past that, the bracket $1 + m\,x(t)$ goes negative at the message's deepest troughs. Our message never quite reaches $-1$, so on the slider the trouble starts a little above $m = 1$. The carrier's amplitude cannot be negative, so the detector sees the dips fold back up, as the right panel's red trace shows at $m = 1.4$, and the output no longer matches the message. This is **overmodulation**. It sounds harsh, and it also adds new frequencies that spread the signal outside its channel and into a neighbor's.
+Keeping $m \le 1$ guarantees no overmodulation for any message with $\vert x(t)\vert \le 1$. Past that, the bracket $1 + m\,x(t)$ goes negative at the message's deepest troughs. Our message never quite reaches $-1$, so on the slider the trouble starts a little above $m = 1$. The carrier's amplitude cannot be negative, so the detector sees the dips fold back up, as the right panel's red trace shows at $m = 1.4$, and the output no longer matches the message. This is **overmodulation**.
 
-AM transmitters therefore keep $m$ at or below 1, usually well below it, with a limiter on the audio. Listen to the flowgraph's audio as you drag $m$ from 0.5 to 1.4 and back; the distortion is easy to hear.
+Drag $m$ slowly from 0.5 to 1.4 with the audio on. Watch for the red trace to split from the envelope, listen for the tones to turn harsh, and watch new lines appear on the frequency sink, spreading into the neighboring channel. That is why AM transmitters keep $m$ below 1.
 ::::
 
 ::::{frame} Part 2: DSB-SC
@@ -153,9 +153,9 @@ $$s(t) = A_c\,x(t)\cos(2\pi f_c t)$$
 - No carrier line: all of the power goes into the sidebands.
 :::
 
-**Double-sideband suppressed carrier** (DSB-SC) drops the 1 from the bracket and multiplies the carrier by the message alone. The flowgraph `L06-dsb-sc.grc` is the DSB-AM transmitter with the Multiply Const and Add Const removed. Its spectrum has the same four sideband lines and the same 5 kHz bandwidth, but no carrier line at 10 kHz, so all of the power is in the sidebands. DSB-AM cannot do that: on its spectrum the carrier is the tallest line, yet it carries no information. The carrier keeps the receiver simple, which mattered for broadcasting in 1920 and still matters for aircraft radios, where a receiver that always works is more important than transmitter power.
+**Double-sideband suppressed carrier** (DSB-SC) drops the 1 from the bracket and multiplies the carrier by the message alone. Open and run `L06-dsb-sc.grc`: its transmitter is the DSB-AM one with the Multiply Const and Add Const removed. The frequency sink shows the same four sideband lines and the same 5 kHz bandwidth, and nothing at 10 kHz. On the DSB-AM spectrum the carrier was the tallest line, yet it carries no information; it is there to keep the receiver simple.
 
-Removing the carrier complicates the receiver. The envelope of $x(t)\cos(2\pi f_c t)$ is $\vert x(t)\vert$, not $x(t)$, because the message itself goes negative. An envelope detector recovers $\vert x(t)\vert$, which is the same folding as overmodulation and sounds just as bad. DSB-SC needs a different receiver.
+Without the carrier, the envelope is $\vert x(t)\vert$, because the message itself goes negative. An envelope detector outputs that folded signal, the same as overmodulation, so DSB-SC needs a different receiver.
 ::::
 
 ::::{frame} Coherent Demodulation
@@ -175,9 +175,9 @@ Removing the carrier complicates the receiver. The envelope of $x(t)\cos(2\pi f_
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
 :::
 
-A **coherent receiver**, also called a product detector, multiplies the received signal by its own copy of the carrier, a **local oscillator** (LO), and low-pass filters the product. The figure is a frequency sink on that Multiply's output. The message is back near 0 Hz, at 1 and 2.5 kHz, and a copy of the whole DSB signal sits around $2f_c = 20$ kHz. The low-pass filter keeps the message and removes the copy, and a Multiply Const of 2 restores the level, because the mixing leaves only half the message's amplitude near 0 Hz.
+A **coherent receiver**, also called a product detector, multiplies the received signal by its own copy of the carrier, a **local oscillator** (LO), and low-pass filters the product. The figure is a frequency sink on that Multiply's output: the message is back at 1 and 2.5 kHz, with a copy around 20 kHz that the filter removes. A Multiply Const of 2 restores the level.
 
-The flowgraph builds both receivers side by side, and its time sink, above, shows the message in blue, the coherent receiver in red on top of it, and the envelope detector in green. The green trace is $\vert x(t)\vert$ after the low-pass filter, which does not match the message. The Listen To menu switches the audio between them.
+The flowgraph builds both receivers side by side. On its time sink, above, the message is blue, the coherent receiver is red on top of it, and the envelope detector is green and does not match. Switch the Listen To menu between Coherent and Envelope and hear the difference.
 ::::
 
 ::::{frame} The LO Must Match
@@ -191,9 +191,9 @@ The flowgraph builds both receivers side by side, and its time sink, above, show
 - At $90°$ the output is zero.
 :::
 
-The coherent receiver works only if its LO matches the transmitter's carrier in both frequency and phase. Drag the LO phase slider and watch the red trace: a small phase error lowers the volume, and at $90°$ the output vanishes, as the flat red trace shows. A frequency error is worse, because the phase then drifts continuously and the output fades in and out.
+The coherent receiver works only if its LO matches the transmitter's carrier in both frequency and phase. Drag the LO phase slider and watch the red trace: a small phase error lowers the volume, and at $90°$ the output vanishes, as the flat red trace shows. A frequency error is worse: the phase drifts continuously and the output fades in and out.
 
-In a simulation, both oscillators come from the same `fc` variable, so they match exactly. A real receiver has to recover the carrier's frequency and phase from the signal, and since DSB-SC transmits no carrier, it needs help. FM stereo is a working example: its left-minus-right audio is DSB-SC on a 38 kHz subcarrier, and the station sends a 19 kHz **pilot tone** so receivers can rebuild the 38 kHz LO. Lesson 7 shows it in the FM multiplex.
+Here both oscillators come from the same `fc` variable, so they match. A real DSB-SC receiver has no carrier to copy, so the transmitter has to help. FM stereo sends a 19 kHz **pilot tone** so receivers can rebuild the 38 kHz LO for its DSB-SC subcarrier; Lesson 7 shows it in the FM multiplex.
 ::::
 
 ::::{frame} Part 3: SSB
@@ -207,9 +207,9 @@ In a simulation, both oscillators come from the same `fc` variable, so they matc
 - Its bandwidth is $W$ = 2.5 kHz, half that of DSB.
 :::
 
-The upper and lower sidebands of a DSB signal are mirror images, so either one alone carries the whole message. **Single sideband** (SSB) sends one of them: the **upper sideband** (USB) or the **lower sideband** (LSB). An SSB signal has no carrier, needs half the bandwidth of DSB, and puts all of its power into the one sideband it sends, which is why it is the standard for long-range HF voice in military, maritime, and amateur radio.
+The two sidebands are mirror images, so either one alone carries the whole message. **Single sideband** (SSB) sends one: the **upper sideband** (USB) or the **lower sideband** (LSB). It has no carrier and needs half the bandwidth, which is why it is the standard for long-range HF voice.
 
-The figure shows `L06-ssb.grc` with each setting of its Sideband menu. With USB selected, the lines at 11 and 12.5 kHz remain and the lower pair is about 60 dB down. With LSB selected, only the lines at 9 and 7.5 kHz remain. Note that the LSB reverses the message's spectrum: the higher tone is the line farther below the carrier.
+Open and run `L06-ssb.grc` and switch its Sideband menu; the figure shows both settings. With USB selected, the lines at 11 and 12.5 kHz remain and the lower pair is about 60 dB down. With LSB selected, only the lines at 9 and 7.5 kHz remain. Note that the LSB reverses the message's spectrum: the higher tone is the line farther below the carrier.
 ::::
 
 ::::{frame} The Phasing Method
@@ -222,9 +222,9 @@ The figure shows `L06-ssb.grc` with each setting of its Sideband menu. With USB 
 $$s(t) = \mathrm{Re}\left\{z(t)\,e^{\pm j2\pi f_c t}\right\}$$
 :::
 
-The flowgraph makes SSB by the **phasing method**. The **Hilbert** block shifts the phase of every frequency in the message by $90°$, which turns each cosine into a sine, and outputs the complex signal $z(t) = x(t) + j\hat{x}(t)$. That signal has only positive frequencies: it is the message with its negative-frequency half removed, the same idea as the complex tone of Lesson 5 that turned in only one direction.
+The flowgraph makes SSB by the **phasing method**, as in the GNU Radio wiki's SSB transceiver example. The **Hilbert** block turns the message into a complex signal with only positive frequencies, like Lesson 5's complex tone that turned in one direction.
 
-Multiplying by a complex carrier $e^{+j2\pi f_c t}$ moves those positive frequencies up to just above $f_c$, and taking the real part gives the USB. Using $e^{-j2\pi f_c t}$ instead gives the LSB, so the Sideband menu changes only the sign of the carrier's frequency. The Hilbert block is an FIR filter with 129 taps, and its imperfection is what leaves the unwanted sideband 60 dB down instead of gone.
+A Multiply by a complex Signal Source at $+f_c$ moves those frequencies to just above $f_c$, and Complex To Real gives the USB. The Sideband menu just flips the source's frequency to $-f_c$ for LSB. The Hilbert block is a 129-tap filter, and its imperfection is why the unwanted sideband is 60 dB down rather than gone.
 ::::
 
 ::::{frame} Receiving SSB
@@ -238,9 +238,9 @@ Multiplying by a complex carrier $e^{+j2\pi f_c t}$ moves those positive frequen
 - A tuning error $\Delta f$ shifts every audio tone by $\Delta f$.
 :::
 
-The SSB receiver is the same product detector as DSB-SC: multiply by a cosine at $f_c$, low-pass filter, and multiply by 2. With the receiver tuned exactly, its output lies on the message, for USB and LSB alike. The figure shows what happens with USB selected and the LO 200 Hz high: every tone in the output moves down by 200 Hz, so 1 kHz becomes 800 Hz and 2.5 kHz becomes 2.3 kHz, and the traces drift apart. On LSB the same error raises the tones to 1.2 and 2.7 kHz.
+The SSB receiver is the same product detector as DSB-SC: multiply by a cosine at $f_c$, low-pass filter, and multiply by 2. Tuned exactly, its output lies on the message for USB and LSB alike. Now select USB and drag the tuning slider to $+200$ Hz: every tone moves down by 200 Hz, so the traces drift apart, as in the figure. On LSB the same error raises the tones.
 
-A frequency error in SSB shifts the audio rather than fading it. Most listeners notice the pitch change once the error reaches a few tens of hertz, but a voice stays intelligible out to an error of about 100 Hz. Phase does not matter to the ear. That is why an SSB receiver needs no carrier recovery: the operator turns the tuning knob until the voice sounds natural. Drag the tuning slider and listen.
+Listen while you drag. The pitch shifts, but the audio never fades, and a voice stays intelligible out to about 100 Hz of error. That is why an SSB receiver needs no carrier recovery: the operator turns the tuning knob until the voice sounds natural.
 ::::
 
 ::::{frame} AM Explorer
@@ -269,9 +269,9 @@ The left panel plots 2 ms of the signal, its envelope in red, and the message in
 | SSB | no | one | $W$ | product |
 :::
 
-We can identify every signal in this lesson on a spectrum display by asking two questions. Is there a steady line at the center of the signal? Only DSB-AM has one. Is the signal symmetric about its center? DSB-AM and DSB-SC are, because they carry both sidebands, while SSB sits entirely on one side of its carrier frequency, above it for USB and below it for LSB. With a voice message, an SSB signal on a waterfall is a band about 3 kHz wide that comes and goes with speech, with no line beside it.
+On any spectrum display, ask two questions. Is there a steady line at the center? Only DSB-AM has one. Is the signal symmetric about its center? DSB-AM and DSB-SC are; SSB sits on one side, above the carrier frequency for USB and below for LSB. A voice SSB signal on a waterfall is a band about 3 kHz wide that comes and goes with speech, with no line beside it.
 
-The table also says what to build to receive each one. An envelope detector is enough for DSB-AM, DSB-SC needs a coherent receiver with carrier recovery, and SSB needs a product detector tuned by ear.
+The last column says what to build to receive each one.
 ::::
 
 ::::{frame} Key Point
@@ -293,7 +293,7 @@ Each of today's signals is on the air. AM broadcast fills 540 to 1700 kHz, and e
 An SDR delivers complex samples centered on its tuned frequency, so a signal arrives with its carrier already at 0 Hz. The envelope is then the magnitude of each sample, and the whole envelope detector is one **Complex to Mag** block, which is what GNU Radio's AM Demod block contains. An SSB receiver on an SDR keeps the real part after a frequency shift. Lesson 7 builds the AM receiver around an RTL-SDR.
 ::::
 
-::::{frame} Downloads
+::::{frame} Downloads and Sources
 :class: read-only doc-links
 
 - <a class="doc-link" href="../../grc/L06-dsb-am.grc" download>L06-dsb-am.grc</a>: a two-tone message as DSB-AM on a 10 kHz carrier, with an envelope detector, a modulation-index slider, and audio out. No hardware needed.
@@ -301,6 +301,11 @@ An SDR delivers complex samples centered on its tuned frequency, so a signal arr
 - <a class="doc-link" href="../../grc/L06-ssb.grc" download>L06-ssb.grc</a>: the same message as USB or LSB by the phasing method, with a product detector and a tuning-error slider.
 
 Each flowgraph plays its receiver's output through your laptop's speakers; start with the volume low. Open a `.grc` file from GRC's File menu, or run `gnuradio-companion L06-dsb-am.grc` from the radioconda prompt.
+
+This lesson follows Dr. Rogers's 2025 slides, *AM Simulation*, which set the topics, and these pages:
+
+- <a class="doc-link" href="https://wiki.gnuradio.org/index.php?title=Simulation_example:_Single_Sideband_transceiver" target="_blank" rel="noopener">GNU Radio wiki, Simulation example: Single Sideband transceiver</a>, for the SSB build
+- <a class="doc-link" href="https://wiki.gnuradio.org/index.php?title=Your_First_Flowgraph" target="_blank" rel="noopener">GNU Radio wiki, Your First Flowgraph</a> and <a class="doc-link" href="https://wiki.gnuradio.org/index.php?title=Runtime_Updating_Variables" target="_blank" rel="noopener">Runtime Updating Variables</a>, for the sliders that set $m$, the LO phase, and the tuning error
 ::::
 
 ::::{frame} Summary
