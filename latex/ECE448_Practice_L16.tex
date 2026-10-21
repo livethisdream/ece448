@@ -107,16 +107,14 @@ guard bytes. It runs at $R_s = 2000$ baud, with 16 channels.
 	\end{minipage}
 
 	\begin{minipage}[t]{0.58\linewidth}
-		\part How long is each guard, in milliseconds, and roughly what range of receiver
-		timing error should it absorb?
-		\begin{solution}[0.9in]
-		Each guard is 16 bits, $16/2000 = 8$ ms, so the receiver can change channel about
-		8 ms early or 8 ms late and still catch the access code, header, and payload.
+		\part How long is each guard, in milliseconds?
+		\begin{solution}[0.7in]
+		Each guard is 16 bits, and at 2000 baud it lasts $16/2000 = 8$ ms.
 		\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
 		\raggedleft \vspace{12pt}
-		\ansbox[1.1in]{about $\pm 8$ ms}
+		\ansbox[1.1in]{8 ms}
 	\end{minipage}
 
 	\part In words, explain why the hopper makes each packet exactly one hop long
@@ -153,19 +151,16 @@ link hops over 8 channels with 240 ms hops, each channel once per cycle.
 	\end{minipage}
 
 	\begin{minipage}[t]{0.58\linewidth}
-		\part Show that, with every channel used equally, the time on one channel in 20 s
-		is $20\ \text{s}/N$ whatever the hop length, and find the smallest $N$ that meets
-		the 0.4 s limit.
-		\begin{solution}[1.2in]
-		With hops of length $T$, there are $20/T$ hops in 20 s and each channel gets
-		$1/N$ of them, so the time on one channel is
-		\eq{ \dfrac{20}{T} \cdot \dfrac{1}{N} \cdot T = \dfrac{20\ \text{s}}{N} \le 0.4\ \text{s}
-		\quad\Rightarrow\quad N \ge 50 }
+		\part Set \texttt{nch} to 50, with the same 240 ms hops and each channel once per
+		cycle. Find how long the link now spends on one channel in 20 s.
+		\begin{solution}[1.0in]
+		\eq{ \dfrac{83.3}{50} \times 0.240\ \text{s} = 0.4\ \text{s} }
+		which just meets the limit.
 		\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
 		\raggedleft \vspace{12pt}
-		\ansbox[1.1in]{$N \ge 50$}
+		\ansbox[1.1in]{0.4 s}
 	\end{minipage}
 
 	\part The rule also limits each single visit: a hop longer than 0.4 s breaks it
@@ -185,55 +180,52 @@ link hops over 8 channels with 240 ms hops, each channel once per cycle.
 
 \newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\question \textbf{Jamming.} A hopper uses 20 channels, each equally. A jammer
-transmits a strong tone on each of 3 channels, strong enough that any hop on those
-channels is lost. On a channel it covers, the jammer needs a power at least equal to
-the signal's to take the hop, as in the L16 jammer sweep.
+\question \textbf{Jamming.} The L16 link hops over 8 channels, channel $k$ at
+$10\ \text{kHz} \times (k - 3.5)$, in the order 7, 2, 0, 6, 4, 1, 3, 5. A jammer tone sits
+at $+5$ kHz, on channel 4. On each hop, Hop Sync multiplies the band by a tone at minus
+that hop's channel frequency, and the low-pass filter after it keeps $\pm 2$ kHz.
 \begin{parts}
 
 	\begin{minipage}[t]{0.58\linewidth}
-		\part Find the fraction of packets delivered.
-		\begin{solution}[0.8in]
-		\eq{ P = 1 - \dfrac{3}{20} = 0.85 = 85\% }
-		\end{solution}
-	\end{minipage}\hfill%
-	\begin{minipage}[t]{0.37\linewidth}
-		\raggedleft \vspace{12pt}
-		\ansbox[1.1in]{85\%}
-	\end{minipage}
-
-	\begin{minipage}[t]{0.58\linewidth}
-		\part To take every hop, the jammer must put at least the signal's power on all 20
-		channels. How much more total power, in dB, does that take than jamming one
-		channel?
-		\begin{solution}[0.8in]
-		\eq{ 10\log_{10} 20 = 13\ \text{dB} }
-		\end{solution}
-	\end{minipage}\hfill%
-	\begin{minipage}[t]{0.37\linewidth}
-		\raggedleft \vspace{12pt}
-		\ansbox[1.1in]{13 dB}
-	\end{minipage}
-
-	\begin{minipage}[t]{0.58\linewidth}
-		\part The jammer spreads its 3-channel power evenly over all 20 channels instead.
-		Is any hop lost? Find the jammer-to-signal ratio on each channel.
+		\part Find where the jammer appears after Hop Sync on the hop to channel 7, and on
+		the hop to channel 4.
 		\begin{solution}[1.0in]
-		Each of the 3 tones had at least the signal's power, so their total is at least 3
-		times it. Spread over 20 channels, each gets $3/20$ of the signal's power:
-		\eq{ 10\log_{10}(3/20) = -8.2\ \text{dB} }
-		That is below the 0 dB a jammer needs, so no hop is lost.
+		Hop Sync subtracts the hop's frequency. Channel 7 is at $+35$ kHz, so the jammer
+		lands at $5 - 35 = -30$ kHz; channel 4 is at $+5$ kHz, so it lands at 0 Hz.
 		\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
 		\raggedleft \vspace{12pt}
-		\ansbox[1.1in]{none; $-8.2$ dB}
+		ch 7: \ansbox[1.0in]{$-30$ kHz}
+
+		\vspace{4pt}
+		ch 4: \ansbox[1.0in]{0 Hz}
 	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part On which hops of the cycle does the jammer get through the low-pass filter?
+		\begin{solution}[1.0in]
+		Only on the hop to channel 4. On every other hop the jammer lands at a multiple of
+		10 kHz away from 0 Hz, at least 10 kHz, far outside $\pm 2$ kHz.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.1in]{1 hop in 8}
+	\end{minipage}
+
+	\part A cadet turns the jammer amplitude up from 1 to 10, and the Packets label stays
+	near 88\%. Explain in words why the extra power takes no more packets.
+		\begin{solution}[1.0in]
+		The jammer already takes every hop on channel 4 at amplitude 1. On the other 7 hops
+		of the cycle the filter removes it however strong it is, so raising its power
+		cannot reach those hops; only a jammer on more channels could.
+		\end{solution}
 
 	\part Bluetooth's adaptive frequency hopping lets the receiver mark channels that
-	keep losing packets as bad and drop them from the sequence. In words, explain what
-	happens to the delivered fraction when this hopper drops the 3 jammed channels, and
-	why the jammer cannot simply follow.
+	keep losing packets as bad and drop them from the sequence. A hopper with 20 channels
+	has 3 of them jammed. In words, explain what happens to the packets delivered when it
+	drops the 3 jammed channels, and why the jammer cannot simply follow.
 		\begin{solution}[1.2in]
 		With the 3 jammed channels dropped, the hopper uses the other 17, none of which is
 		jammed, so every packet arrives again. The jammer does not know the sequence, so it

@@ -150,7 +150,7 @@ Our link hops slowly so that the waterfall can show each hop. A real hopper send
 :class: viz-frame
 
 :::{depth}
-Each column is one hop. The filled cell is the transmitter's channel and the amber box the receiver's; a navy cell is a delivered hop and a gray one is lost. The red band is the jammer. Start with 8 channels and 1 jammed channel: 1 hop in 8 is lost, and the long-run delivery matches $1 - 1/8$. Widen the jammer or reduce the channels and watch the delivered fraction follow $1 -$ jammed/channels. Set the receiver offset to +1: the box is always one step ahead, and nothing arrives. Then press the acquire button: the receiver waits on the sync channel, in amber on the axis, and locks when the transmitter arrives there. Move the jammer onto the sync channel, and the receiver never locks.
+Each column is one hop. The filled cell is the transmitter's channel and the amber box the receiver's; a navy cell is a delivered hop and a gray one is lost. The red band is the jammer. Start with 8 channels and 1 jammed channel: 1 hop in 8 is lost. Widen the jammer or reduce the channels and watch the delivered fraction fall with the share of hops that land on jammed channels. Set the receiver offset to +1: the box is always one step ahead, and nothing arrives. Then press the acquire button: the receiver waits on the sync channel, in amber on the axis, and locks when the transmitter arrives there. Move the jammer onto the sync channel, and the receiver never locks.
 :::
 
 :::{present}
@@ -191,7 +191,7 @@ The receiver starts with **Hop Sync**, an Embedded Python Block. It multiplies t
 - With no jammer, every packet arrives.
 :::
 
-The transmitter multiplied by $e^{j2\pi f_k t}$ on hop $k$; Hop Sync multiplies by $e^{-j2\pi f_k t}$ on the same hop, and the two cancel. The right waterfall shows the result: one steady trace at 0 Hz, the FSK signal of Lesson 8, while the noise stays spread across the band. The Low Pass Filter keeps only the 4 kHz around 0 Hz, so the receiver sees the same signal-to-noise ratio as a fixed-channel link with the same noise density. At noise amplitude 1, every packet arrives; at 2, 97% did, and at 2.5, 70%.
+The transmitter multiplied by $e^{j2\pi f_k t}$ on hop $k$; Hop Sync multiplies by $e^{-j2\pi f_k t}$ on the same hop, and the two cancel. The right waterfall shows the result: one steady trace at 0 Hz, the FSK signal of Lesson 8, while the noise stays spread across the band. The Low Pass Filter keeps only the 4 kHz around 0 Hz, so from there on the receiver sees what Lesson 8's receiver saw, and noise affects it the same way. Turn the Noise amplitude slider up and watch: at 1, every packet arrives; at 2, a few are lost; at 2.5, about a third are.
 
 FSK suits a hopper because the receiver does not need the carrier's phase. The transmitter's and receiver's synthesizers do not start each hop at the same phase on a real radio, and the Quadrature Demod measures only the change of phase from sample to sample, so a phase jump at a hop boundary corrupts at most one bit, inside the guard. Bluetooth uses GFSK for the same reason.
 ::::
@@ -207,7 +207,7 @@ FSK suits a hopper because the receiver does not need the carrier's phase. The t
 - When the power there jumps, hop 0 has started: it locks and hops from then on.
 :::
 
-A receiver that knows the key still does not know two things when it starts: which hop the transmitter is on, and when that hop began. The path delay alone is unknown, and on a real radio so are the latency of USB buffers and the instant the transmitter started. We use **sync on a known hop**. Hop Sync parks on the **sync channel**, `seq[0]`, channel 7 for key 448, and measures the power in it every 0.5 ms. Because the sequence visits each channel once per cycle, the transmitter can appear on channel 7 only on hop 0. When the power in the last 2 ms rises 6 dB above its average over an 18 ms window ending 4 ms earlier, hop 0 has just begun, and Hop Sync takes that instant as its hop boundary and starts hopping. It waits at most one cycle, 1.92 s.
+A receiver that knows the key still does not know two things when it starts: which hop the transmitter is on, and when that hop began. The path delay alone is unknown, and on a real radio so are the latency of USB buffers and the instant the transmitter started. We use **sync on a known hop**. Hop Sync parks on the **sync channel**, `seq[0]`, channel 7 for key 448, and measures the power in it every 0.5 ms. Because the sequence visits each channel once per cycle, the transmitter can appear on channel 7 only on hop 0. When the power in the last 2 ms rises to four times its average over an 18 ms window ending 4 ms earlier, hop 0 has just begun, and Hop Sync takes that instant as its hop boundary and starts hopping. It waits at most one cycle, 1.92 s.
 
 Other designs were possible. A **start-of-hop marker**, such as the access code alone, gives timing within a hop but not which hop it is. **Time of day**, which SINCGARS uses, needs a clock shared to within the guard time. Sync on a known hop needs neither, only the key. It has two weaknesses. It listens on one channel to acquire, which the Jammer frames below measure. And once locked, Hop Sync keeps hopping on its own count of samples and never adjusts its timing; the packets only keep it from parking again. On one Pluto, whose transmitter and receiver share a clock, that does no harm, but between two radios whose clocks differ by a few parts per million, the hop boundaries would drift apart until they left the guard time.
 ::::
@@ -272,13 +272,9 @@ The window runs from −16 to +18 ms, about the 16 ms of guard at each end. It r
 - It reaches the receiver on 1 hop in 8: 88% of packets arrive.
 :::
 
-The jammer is a tone of amplitude 3 at the center of channel 4, 9.5 dB stronger than our signal. The receiver multiplies the whole band by the hop tone, so the jammer moves to a new frequency every hop; on most hops it lands outside the Low Pass Filter. Only on the hop where the receiver tunes to channel 4 does the jammer land at 0 Hz, between the FSK tones at ±1 kHz, and capture the Quadrature Demod.
+The jammer is a tone of amplitude 3 at the center of channel 4, three times the amplitude of our signal. The receiver multiplies the whole band by the hop tone, so the jammer moves to a new frequency every hop; on most hops it lands outside the Low Pass Filter. Only on the hop where the receiver tunes to channel 4 does the jammer land at 0 Hz, between the FSK tones at ±1 kHz, and capture the Quadrature Demod.
 
-With one of $N$ channels jammed, the fraction of packets delivered is about
-
-$$P = 1 - \frac{1}{N},$$
-
-which is 7/8, or 88%, for our 8 channels. We measured 280 of 319 packets, 87.8%, at jammer amplitudes of 1, 3, and 10: once the jammer is strong enough to take a hop, more power does not take more hops.
+The sequence visits channel 4 once in every 8 hops, so the receiver loses 1 hop in 8 and the other 7 arrive. We measured 280 of 319 packets, 87.8%, at jammer amplitudes of 1, 3, and 10: once the jammer is strong enough to take a hop, more power does not take more hops.
 ::::
 
 ::::{frame} Jammer Sweep
@@ -286,14 +282,14 @@ which is 7/8, or 88%, for our 8 channels. We measured 280 of 319 packets, 87.8%,
 
 We measured the link headless at noise amplitude 1, with two noise seeds at each setting: 320 hops when hopping over 8 channels, and 160 when the transmitter and receiver stay on one channel with the jammer on it.
 
-| Jammer amplitude | Jammer vs. signal | One fixed channel | Hopping, 8 channels |
-| :-: | :-: | :-: | :-: |
-| 0.5 | −6 dB | 100% | 100% |
-| 1 | 0 dB | 0% | 88% |
-| 3 | +9.5 dB | 0% | 88% |
-| 10 | +20 dB | 0% | 88% |
+| Jammer amplitude | One fixed channel | Hopping, 8 channels |
+| :-: | :-: | :-: |
+| 0.5 | 100% | 100% |
+| 1 | 0% | 88% |
+| 3 | 0% | 88% |
+| 10 | 0% | 88% |
 
-A jammer equal in power to the signal stops a fixed-channel link completely, and the hopping link still delivers 7 packets in 8. To take every hop, the jammer has to cover all 8 channels. The same transmitter power spread over 8 channels puts $10 \log_{10} 8 = 9$ dB less on each: eight tones of amplitude 0.354, together equal in power to one tone of amplitude 1, blocked no packets at all. Eight tones of amplitude 1, 8 times the power, took every hop: no packet arrived after they came on, and with the sync channel jammed too, the receiver never locked again.
+A jammer as strong as the signal stops a fixed-channel link completely, and the hopping link still delivers 7 packets in 8. To take every hop, the jammer has to cover all 8 channels. The same transmitter power spread over 8 channels puts only an eighth of it on each: eight tones of amplitude 0.354, together as strong as one tone of amplitude 1, blocked no packets at all. Eight tones of amplitude 1, 8 times the power, took every hop: no packet arrived after they came on, and with the sync channel jammed too, the receiver never locked again.
 
 The receiver has one weak point, the sync channel. With the tone of amplitude 3 on the sync channel, channel 7, from the start, Hop Sync never saw the power jump and never locked: 0 packets. Turned on after the receiver had locked, the same jammer took only its 1 hop in 8, and 88% of the packets after it came on arrived, because the receiver kept hopping on its own count. But if that receiver ever lost lock, it would park on the jammed channel and never lock again. A real system protects acquisition too; the lab asks how.
 ::::
@@ -341,7 +337,7 @@ Open a `.grc` file from GRC's File menu, or run `gnuradio-companion L16-fhss-lin
 | Sync on a known hop | park on `seq[0]`, lock when the power jumps | at most one cycle, 1.92 s |
 | Sync error | off by one hop | 0 packets |
 | Timing error | absorbed by the guard bits | −16 to +18 ms |
-| Narrowband jammer | takes the hops on its channel | $1 - 1/N$ delivered |
+| Narrowband jammer | takes the hops on its channel | 1 hop in 8 lost |
 ::::
 
 ::::{frame} Practice

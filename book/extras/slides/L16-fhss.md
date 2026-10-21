@@ -159,7 +159,7 @@ The transmitter multiplied by e to the j 2 pi f k t; Hop Sync multiplies by its 
 Park on the sync channel; lock when hop 0 arrives.
 
 Note:
-Each channel appears once per cycle, so power on channel 7 means hop 0. Hop Sync locks when the last 2 ms rises 6 dB over the 18 ms before. It waits at most one cycle, 1.92 s. A start-of-hop marker gives timing but not the hop number; time of day needs a shared clock.
+Each channel appears once per cycle, so power on channel 7 means hop 0. Hop Sync locks when the power over the last 2 ms reaches four times its earlier average. It waits at most one cycle, 1.92 s. A start-of-hop marker gives timing but not the hop number; time of day needs a shared clock.
 
 ---
 
@@ -206,21 +206,21 @@ Positive means the receiver changes channel late. The late side reaches a little
 
 <img src="./img/16-fhss/L16-link-jam.png" alt="The L16 link with a jammer of amplitude 3 on channel 4: after Hop Sync the jammer hops and the signal stays at 0 Hz; 88% of packets arrive" style="max-height:340px; display:block; margin:0 auto;">
 
-$$P = 1 - \frac{1}{N}$$
+The jammer takes only the hops on its own channel: 1 in 8.
 
 Note:
-The jammer is 9.5 dB stronger than the signal. It reaches the receiver only on the hop tuned to channel 4. We measured 87.8% at jammer amplitudes 1, 3, and 10.
+The jammer's amplitude is three times the signal's. It reaches the receiver only on the hop tuned to channel 4. We measured 87.8% at jammer amplitudes 1, 3, and 10.
 
 ---
 
 ## Jammer Sweep
 
-| Jammer | One fixed channel | Hopping, 8 channels |
+| Jammer amplitude | One fixed channel | Hopping, 8 channels |
 | :-: | :-: | :-: |
-| −6 dB | 100% | 100% |
-| 0 dB | 0% | 88% |
-| +9.5 dB | 0% | 88% |
-| +20 dB | 0% | 88% |
+| 0.5 | 100% | 100% |
+| 1 | 0% | 88% |
+| 3 | 0% | 88% |
+| 10 | 0% | 88% |
 
 The same power spread over 8 channels blocked nothing.
 

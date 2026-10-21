@@ -27,12 +27,12 @@ L16 Lab · Module 6: Waveform Applications & RF Reverse Engineering · Dr. Neil 
 
 ::::{frame} From Lesson to Bench
 :::{present}
-- **Pre-Lab:** run the link and predict hop timing, jamming, and the guard window.
+- **Pre-Lab:** run the link and work out your hopper's settings.
 - **Bench:** build a hopper and a de-hopper, measure jamming and sync, then use a PlutoSDR.
 - **Writeup:** explain the jamming results, the guard bits, and the sync channel.
 :::
 
-Lesson 16 hopped Lesson 8's FSK packets over eight channels and kept a receiver on the same hops. Today you first build a hop synthesizer and a de-hopper yourself from standard blocks, then measure how the link holds up against a jammer and against sync errors, and then run the same link on a PlutoSDR. The lab packet has three parts, and you turn it in once, complete, before Lesson 17. **Part 1, the Pre-Lab**, is on your own before the period: run `L16-fhss-link.grc` once and make the predictions Part 2 checks. **Part 2** is your own measurements in class. **Part 3, the Writeup**, explains them.
+Lesson 16 hopped Lesson 8's FSK packets over eight channels and kept a receiver on the same hops. Today you first build a hop synthesizer and a de-hopper yourself from standard blocks, then measure how the link holds up against a jammer and against sync errors, and then run the same link on a PlutoSDR. The lab packet has three parts, and you turn it in once, complete, before Lesson 17. **Part 1, the Pre-Lab**, is on your own before the period: run `L16-fhss-link.grc` once and work out the settings Part 2 uses. **Part 2** is what you build and observe in class. **Part 3, the Writeup**, explains them.
 
 Questions 1 to 5 run on your laptop and transmit nothing. Question 6 transmits, into a cable only, as the PlutoSDR frame below describes.
 ::::
@@ -40,29 +40,27 @@ Questions 1 to 5 run on your laptop and transmit nothing. Question 6 transmits, 
 ::::{frame} Part 1: Before the Period
 :::{present}
 - `L16-fhss-link.grc` runs, locks, and decodes `USAFA ECE 448`.
-- Predict the hop timing and the timing window with 4 guard bytes.
-- Predict your own hopper's hop frequencies and timing.
-- Predict the packets delivered past a jammer with 2 and 4 channels.
+- Work out the hop timing and the guard time with 4 guard bytes.
+- Choose your hopper's channel order, and work out its frequencies and timing.
 :::
 
 Do the Pre-Lab before you arrive. Question 1 checks that the link flowgraph opens, locks, and decodes on your laptop: if GRC reports an error, the L5 lesson page lists the install checks, and EI before the lab is the place to fix it.
 
-Question 2 asks for predictions from the lesson: the length of a hop, the hop rate, the cycle time, and the samples per hop when each packet carries 4 guard bytes at each end instead of 2; the range of receiver timing errors those guard bytes should absorb; the hop frequencies, hop time, and cycle time of the hopper you build in Question 3; and the fraction of packets that should arrive past a strong jammer on one channel when the link hops over 2 or 4 channels, and over 8 channels when a weaker jammer lets a fraction $p$ through on its own channel.
+Question 2 is the arithmetic the flowgraphs need: the length of a hop, the hop rate, the cycle time, and the samples per hop when each packet carries 4 guard bytes at each end instead of 2, and how long each guard lasts; and the hop frequencies, hop time, and cycle time of the hopper you build in Question 3. How many packets get through a jammer, and how far the receiver's timing can be off, you find at the bench.
 ::::
 
-::::{frame} Expected Numbers
+::::{frame} Pre-Lab Arithmetic
 :::{present}
-| Check | Source |
+| Setting | How to get it |
 | :-- | :-- |
-| Hop length | bits / 1000 baud |
+| Hop length | bits per hop / 1000 baud |
 | Cycle time | channels × hop length |
+| Guard time | guard bits / 1000 baud |
 | Your hop time | `dwell` / `samp_rate` |
-| Timing window | guard time per end |
-| Strong jammer | share of hops on its channel |
-| Weak jammer | its own-channel loss, over 8 |
+| Your hop frequencies | 10 kHz × (k − 3.5) |
 :::
 
-These follow from Lesson 16. The hop timing is exact. The timing window and the jamming fractions are approximate: the access-code search tolerates 2 wrong bits, which stretches the window a little on the late side, and the count of packets in a short run varies with the noise. That is why the packet records the delivered fraction over at least 30 s at each setting.
+These are exact, from the flowgraph's settings. Everything else in the lab, such as how many packets get through a jammer or how far the receiver's timing can be off before packets are lost, you observe at the bench and record.
 ::::
 
 ::::{frame} Part 2: Build a Hopper and a De-Hopper
@@ -147,12 +145,12 @@ The figure is the PlutoSDR flowgraph run in simulation, with the Pluto Sink and 
 
 ::::{frame} Part 3: After the Lab
 :::{present}
-- Compare the jamming results with $1 - 1/N$, and explain why more jammer power did not take more packets.
-- Explain what the guard bytes allow and what they take from each hop.
+- Describe how the jammer and the channel count changed the packets delivered, and why more jammer power took no more.
+- Explain what the guard bytes allow and what they take.
 - Explain the sync channel's weakness, and propose a fix.
 :::
 
-The Writeup is Question 7, in three parts. Part (a) compares your jamming measurements with your predictions and explains, from the De-hopped waterfall of Question 3, why a jammer stronger than the signal still takes only the hops on its own channel. Part (b) compares the timing windows with 2 and 4 guard bytes and finds the share of each hop that carries the payload in each case. Part (c) explains, from Question 4(d), why one jammed channel can keep a receiver from ever locking, and proposes a change to Hop Sync or to the packet that removes that weakness.
+The Writeup is Question 7, in three parts. Part (a) describes what happened to the packets delivered as you changed the number of channels and the jammer, and explains, from the De-hopped waterfall of Question 3, why a jammer stronger than the signal still takes only the hops on its own channel. Part (b) compares the timing errors the link tolerated with 2 and 4 guard bytes and explains what the extra guard bytes take from each hop. Part (c) explains, from Question 4(d), why one jammed channel can keep a receiver from ever locking, and proposes a change to Hop Sync or to the packet that removes that weakness.
 ::::
 
 ::::{frame} Lab Packet
