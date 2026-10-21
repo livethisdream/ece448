@@ -23,7 +23,7 @@
   .seg { grid-column:1 / span 2; display:flex; gap:4px; flex-wrap:wrap; }
   .seg button { font:inherit; font-size:11.5px; font-weight:600; color:var(--navy); background:#fff; border:1px solid var(--edge2); border-radius:14px; padding:3px 10px; cursor:pointer; }
   .seg button.on { background:var(--navy); color:#fff; border-color:var(--navy); }
-  .readouts { display:grid; gap:6px; grid-template-columns:repeat(4,minmax(0,1fr)); }
+  .readouts { display:grid; gap:6px; grid-template-columns:repeat(3,minmax(0,1fr)); }
   @media (max-width:430px) { .readouts { grid-template-columns:repeat(2,minmax(0,1fr)); } }
   .ro { display:flex; flex-direction:column; align-items:center; gap:2px; padding:5px 4px 6px; min-width:0;
         border:1px solid var(--edge2); border-radius:6px; background:#eef4fa; }
@@ -40,31 +40,31 @@
   </div>
   <div class="controls">
     <div class="ctl"><label for="dev">Deviation</label><span class="val" id="dev-v"></span>
-      <input type="range" id="dev" min="250" max="4000" step="250" value="1000"></div>
+      <input type="range" id="dev" min="200" max="4000" step="100" value="600"></div>
     <div class="ctl"><span class="lab">Symbol rate</span><span class="val" id="baud-v"></span>
-      <div class="seg" id="baud"><button data-b="500">500</button><button data-b="1000" class="on">1000</button><button data-b="2000">2000</button></div></div>
+      <div class="seg" id="baud"><button data-b="600">600</button><button data-b="1200" class="on">1200</button><button data-b="2400">2400</button></div></div>
     <div class="ctl"><label for="noise">Noise voltage</label><span class="val" id="noise-v"></span>
-      <input type="range" id="noise" min="0" max="2.5" step="0.05" value="0.5"></div>
+      <input type="range" id="noise" min="0" max="2.5" step="0.05" value="0.3"></div>
   </div>
   <div class="readouts">
     <div class="ro"><span class="k">index h</span><span class="v" id="o-h">—</span></div>
     <div class="ro"><span class="k">Carson BW</span><span class="v" id="o-bw">—</span></div>
-    <div class="ro"><span class="k">SNR in BW</span><span class="v" id="o-snr">—</span></div>
     <div class="ro" id="ro-e"><span class="k">bit errors</span><span class="v" id="o-e">—</span></div>
   </div>
 </div>
 
 <script>
 'use strict';
-// The sample rate is the L8 flowgraphs' 32 kHz, and the receiver is theirs:
+// The link is not the L8 flowgraphs' (48 kHz and 600 to 2400 baud, not 32 kHz
+// and 1000 baud), so its numbers do not answer the lab. The receiver is theirs:
 // a low-pass filter of half-width deviation + symbol rate, a quadrature
 // demodulator scaled so the two tones come out at +1 and -1, and a one-symbol
 // moving average. The one difference is the clock: here an ideal clock samples
 // each symbol at its end, where the GNU Radio Symbol Sync block has to find it.
-const FS = 32000, NBITS = 1000, SANS = 'Inter, system-ui, -apple-system, sans-serif';
+const FS = 48000, NBITS = 1000, SANS = 'Inter, system-ui, -apple-system, sans-serif';
 const C = { navy:'#004a85', mid:'#0067b9', red:'#b01e24', amber:'#8a5a00', rule:'#cddce9', ink:'#15202b', ink3:'#5b6573', band:'#eef4fa' };
 const devEl = document.getElementById('dev'), noiseEl = document.getElementById('noise');
-let baud = 1000;
+let baud = 1200;
 document.querySelectorAll('#baud button').forEach(b => b.onclick = () => {
   baud = +b.dataset.b; document.querySelectorAll('#baud button').forEach(x => x.classList.toggle('on', x === b)); update(); });
 devEl.oninput = update; noiseEl.oninput = update;
@@ -191,7 +191,6 @@ function update() {
   const bw = 2*(dev + baud);
   document.getElementById('o-h').textContent = (2*dev/baud).toFixed(2).replace(/\.?0+$/, '');
   document.getElementById('o-bw').textContent = (bw/1000).toFixed(1) + ' kHz';
-  document.getElementById('o-snr').textContent = sigma === 0 ? '∞' : (10*Math.log10(FS/(sigma*sigma*bw))).toFixed(1) + ' dB';
   document.getElementById('o-e').textContent = r.errs + ' / ' + r.counted;
   document.getElementById('ro-e').className = 'ro' + (r.errs > 0 ? ' bad' : '');
   drawSpec(psd(r.re, r.im), dev); drawDemod(r, sps);

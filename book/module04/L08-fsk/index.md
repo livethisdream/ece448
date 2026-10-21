@@ -127,7 +127,7 @@ At 1 kHz and 1000 baud that is 4 kHz, and at 3 kHz it is 8 kHz. We use the numbe
 - The **Channel Model** adds noise and a frequency offset, each on a slider.
 :::
 
-Close the transmitter and open `L08-fsk-link.grc`. Its top row is the transmitter you just ran. After the Throttle, a **Channel Model** block stands in for the air: it adds noise of a chosen voltage and shifts the signal by a chosen frequency offset. Run it and drag the noise slider: the tones on the spectrum stay put while the noise floor rises and falls. Leave the noise at 0.5 and the offset at 0 while we walk through the receiver.
+Close the transmitter and open `L08-fsk-link.grc`. Its top row is the transmitter you just ran. After the Throttle, a **Channel Model** block stands in for the air: it adds noise of a chosen voltage and shifts the signal by a chosen frequency offset. Run it and drag the noise slider: the tones on the spectrum stay put while the noise floor rises and falls. Set the noise to 0.3 and leave the offset at 0 while we walk through the receiver.
 ::::
 
 ::::{frame} Part 3: The Receiver
@@ -156,10 +156,19 @@ $$g = \frac{f_s}{2\pi \Delta f}$$
 which is $32000 / (2\pi \times 1000) = 5.09$ here, and the tone at $+\Delta f$ comes out as $+1$ and the tone at $-\Delta f$ as $-1$. The gain is the reciprocal of the transmitter's sensitivity: the demodulator undoes the modulator, and out comes the square wave of bits, with noise on it.
 ::::
 
+::::{frame} Save It and Look in Audacity
+:::{present}
+- Add a **File Sink** (float) on the Quadrature Demod output.
+- Open the file in Audacity as raw 32-bit float: the bits are the square wave.
+:::
+
+Do this live. Drag a **File Sink** onto the canvas, set its type to float and its file to `demod.f32`, and connect it to the Quadrature Demod output. Run for a few seconds and stop. In Audacity choose File, Import, Raw Data: 32-bit float, little-endian, 1 channel, sample rate 32000. Zoom in until single bits show: each is a flat step near $+1$ or $-1$, `sps` samples long, with the noise riding on it.
+::::
+
 ::::{frame} Finding the Bits
 :::{present}
 <img src="../../viz/img/L08-link-clean.png"
-     alt="The L8 link running at noise voltage 0.5: the received spectrum shows the two tones about 25 dB above the noise floor, the eye diagram of the demodulator output is wide open with traces at plus 1 and minus 1, and the labels read Received: USAFA ECE 448: FSK over a noisy channel, and 21 correct of 21 received in 10 s"
+     alt="The L8 link running at noise voltage 0.3: the received spectrum shows the two tones standing well above the noise floor, the eye diagram of the demodulator output is wide open with traces at plus 1 and minus 1, and the labels show the received line of text with every line correct"
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
@@ -169,7 +178,7 @@ which is $32000 / (2\pi \times 1000) = 5.09$ here, and the tone at $+\Delta f$ c
 
 A **Moving Average** over `sps` samples smooths each bit. **Symbol Sync** picks one sample per bit, at the peak, and keeps adjusting its timing because the two clocks never quite match. The **Binary Slicer** decides: above 0 is a 1, below 0 is a 0.
 
-Now look at the **eye diagram** on the right, many two-bit stretches of the moving average overlaid. The traces cross at the bit edges; the gap between $+1$ and $-1$ is the **eye opening**. A wide-open eye means every decision is easy. At a noise voltage of 0.5, all 21 lines in the first 10 s arrive intact.
+Now look at the **eye diagram** on the right, many two-bit stretches of the moving average overlaid. The traces cross at the bit edges; the gap between $+1$ and $-1$ is the **eye opening**. A wide-open eye means every decision is easy, and at this noise setting every line arrives intact.
 ::::
 
 ::::{frame} Part 4: Packets
@@ -186,20 +195,15 @@ At the receiver, **Correlate Access Code - Tag Stream** watches for the access c
 ::::{frame} Turn Up the Noise
 :::{present}
 <img src="../../viz/img/L08-link-noisy.png"
-     alt="The L8 link at noise voltage 1.3: the noise floor is about 8 dB higher, the eye diagram is still mostly open, with a few traces spiking across zero, and the labels show a line with two wrong characters and 7 correct of 29 received in 13 s"
+     alt="The L8 link at noise voltage 1.3: the noise floor is higher, the eye diagram is still mostly open, with a few traces spiking across zero, and the labels show a line with two wrong characters and most lines received with an error"
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
-- At 0.5 V: a wide-open eye, and every line arrives.
-- At 1.3 V: spikes cross zero, and most lines have an error.
+- Low noise: a wide-open eye, and every line arrives.
+- More noise: spikes cross zero, and lines start to have errors.
 :::
 
-Drag the noise slider up slowly and watch three things: the floor on the spectrum, the eye, and the text.
-
-- **0.5 V:** the tones stand about 25 dB above the floor, the eye is wide open, and every line arrives.
-- **1.0 V:** the eye's traces thicken, and an occasional character goes wrong.
-- **1.3 V:** the floor is about 8 dB higher. Now and then a sharp spike, an FM click, crosses zero; one that lands on a sampling instant is a bit error. Only 7 of 29 lines arrive clean.
-- **2 V:** the receiver almost never finds the access code.
+Drag the noise slider up slowly from 0.3 and watch three things: the floor on the spectrum, the eye, and the text. First the floor climbs toward the tones and the eye's traces thicken. Then now and then a sharp spike, an FM click, crosses zero; one that lands on a sampling instant is a bit error, and lines start to arrive with wrong characters. The figure is at 1.3, where most lines have an error. Keep going and the receiver stops finding the access code at all.
 
 The whole change, from clean text to no text, takes a small turn of the slider. That is why Lesson 2's link margin matters: a link that only just works fails on the first fade.
 ::::
@@ -208,7 +212,7 @@ The whole change, from clean text to no text, takes a small turn of the slider. 
 :class: viz-frame
 
 :::{depth}
-The explorer repeats the noise experiment with the receiver's output in view. The left panel is the spectrum, with the Carson bandwidth shaded and the two tones dashed. The right panel is the receiver's output for 16 bits, with the sent levels in gray and a dot at each decision; a red dot is a wrong bit. Raise the deviation: the tones move apart and the band widens. Set it back to 1000 Hz and raise the noise slowly; note the noise voltage, and the SNR the panel shows, when the first red dot appears. Then try 2000 baud: the band widens, more noise gets through, and red dots appear at a lower noise voltage.
+The explorer repeats the noise experiment with the receiver's output in view. The left panel is the spectrum, with the Carson bandwidth shaded and the two tones dashed. The right panel is the receiver's output for 16 bits, with the sent levels in gray and a dot at each decision; a red dot is a wrong bit. Raise the deviation: the tones move apart and the band widens. Set it back to 600 Hz and raise the noise slowly until the first red dot appears. Then try 2400 baud: the band widens, more noise gets through, and red dots appear at a lower noise voltage. The explorer runs its own link, 48 kHz at 1200 baud, so its numbers are not the flowgraph's.
 :::
 
 :::{present}
@@ -216,7 +220,7 @@ The explorer repeats the noise experiment with the receiver's output in view. Th
         width="100%" height="403"
         style="border: 1px solid #cddce9; border-radius: 6px;"
         loading="lazy"
-        title="FSK explorer: the spectrum and demodulator output of a 32 kHz FSK link as the deviation, symbol rate, and noise change, with the bit errors counted">
+        title="FSK explorer: the spectrum and demodulator output of a 48 kHz FSK link as the deviation, symbol rate, and noise change, with the bit errors counted">
 </iframe>
 :::
 ::::
@@ -224,17 +228,17 @@ The explorer repeats the noise experiment with the receiver's output in view. Th
 ::::{frame} Frequency Offset
 :::{present}
 <img src="../../viz/img/L08-link-offset.png"
-     alt="The L8 link with a 600 Hz frequency offset: the two tones in the spectrum have moved right, and the eye diagram is still open but shifted up, with levels at about plus 1.6 and minus 0.4"
+     alt="The L8 link at noise voltage 0.3 with a 400 Hz frequency offset: the two tones in the spectrum have moved right, and the eye diagram is still open but shifted up, with levels at about plus 1.4 and minus 0.6"
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
 - An offset shifts both tones, so the demodulator output shifts by $f_\text{off}/\Delta f$.
-- This link tolerates about $\pm 600$ Hz, a little over half the deviation.
+- Once the lower level nears zero, the text breaks.
 :::
 
-No two radios agree exactly on frequency: their crystals are off by a few parts per million, and at 915 MHz 2 ppm is 1.8 kHz. Set the noise back to 0.5 and drag the offset slider to 600 Hz. Both tones move right, and the eye moves up to about $+1.6$ and $-0.4$. Both levels are still on the correct side of zero, so the text still arrives.
+No two radios agree exactly on frequency: their crystals are off by a few parts per million, and at 915 MHz 2 ppm is 1.8 kHz. With the noise at 0.3, drag the offset slider to 400 Hz. Both tones move right, and the whole eye moves up, as in the figure. Both levels are still on the correct side of zero, so the text still arrives.
 
-Keep going. At 800 Hz the lower level is near zero and the filter starts to cut off the upper tone: lines arrive, but every one has errors. At 1000 Hz none arrive. Real receivers either use a deviation much larger than the expected offset, as key fobs do, or measure the offset and remove it before the demodulator. The L8 Lab measures both effects.
+Keep going. As the lower level nears zero, and the filter starts to cut off the upper tone, lines arrive with errors and then stop. Real receivers either use a deviation much larger than the expected offset, as key fobs do, or measure the offset and remove it before the demodulator. The L8 Lab measures both effects.
 ::::
 
 ::::{frame} FSK on a Real Radio
@@ -245,12 +249,12 @@ Keep going. At 800 Hz the lower level is near zero and the filter starts to cut 
 :::
 :::{present}
 - Tone spacing gives $2\Delta f$; the shortest dwell gives $1/R_s$.
-- To transmit, use a cable, a shielded box, or low power in an ISM band, and only when the lesson says to; nothing in L8 transmits.
+- To transmit, use a cable through the 30 dB attenuator, and only when the lesson says to; nothing in L8 transmits.
 :::
 
 On a waterfall, FSK is two tracks side by side with the signal jumping between them. The figure simulates a 433.92 MHz remote, the kind Lesson 17 decodes. Read two numbers off it: the tracks are 40 kHz apart, so $\Delta f = 20$ kHz, and the shortest stay on one track, in the preamble, is 1 ms, so the symbol rate is 1000 baud. A live waterfall row often lasts longer than one bit, so measure the dwell in URH or on the Quadrature Demod output. Those two numbers set the receiver's filter, gain, and samples per symbol.
 
-To run this link over the air, replace the Throttle and Channel Model with a PlutoSDR or HackRF sink on one side and a source on the other, with a resampler to raise the 32 kHz stream to a rate the radio supports. In class we transmit only into a cable, into a shielded enclosure, or at very low power in an ISM band, and only when the lesson says to. Nothing in this lesson or its lab transmits.
+To run this link over the air, replace the Throttle and Channel Model with a PlutoSDR or HackRF sink on one side and a source on the other, with a resampler to raise the 32 kHz stream to a rate the radio supports. In class we transmit only into a cable through the 30 dB attenuator, and only when the lesson says to. Nothing in this lesson or its lab transmits.
 ::::
 
 ::::{frame} Key Point
@@ -287,8 +291,6 @@ This lesson follows:
 | Quadrature Demod | gain $f_s/(2\pi\Delta f)$ | 5.09 |
 | Bandwidth | $B \approx 2(\Delta f + R_s)$, sets the filter | 4 kHz |
 | Access code | marks the start of each packet | 64 bits, 2 errors allowed |
-| Noise | the eye thickens, then FM clicks cross zero | errors start near 1.0 V on the slider |
-| Offset tolerance | levels shift by $f_\text{off}/\Delta f$ | about 600 Hz at $\Delta f$ = 1 kHz |
 ::::
 
 ::::{frame} Practice

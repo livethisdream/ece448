@@ -37,7 +37,7 @@ Have L08-fsk-link.grc open and running on the projector before class. The text l
 
 1. The transmitter: bits to tones with Frequency Mod
 2. The channel: noise and frequency offset on sliders
-3. The receiver: filter, quadrature demodulator, symbol timing, slicer
+3. The receiver: filter, quadrature demodulator, symbol timing, slicer; save the bits and view them in Audacity
 4. Packets: from bits back to text
 5. Turn up the noise, then the offset
 6. FSK on a real radio
@@ -78,7 +78,7 @@ Ask who has a car key fob on them. Lesson 17 records and decodes those. GFSK is 
 Bytes become bits, bits become $\pm 1$, and **Frequency Mod** turns each $\pm 1$ into a tone.
 
 Note:
-Walk the chain left to right. Frequency Mod is the FM transmitter block; the only difference between FM and FSK is that the message is a square wave of bits. The block keeps the phase continuous between bits, which keeps the spectrum compact.
+Walk the chain left to right. Frequency Mod is the FM transmitter block; the only difference between FM and FSK is that the message is a square wave of bits. The VCO (complex) block, which the 2025 class used, does the same job. The block keeps the phase continuous between bits, which keeps the spectrum compact.
 
 ---
 
@@ -115,7 +115,7 @@ Drag the deviation slider live from 1 kHz to 3 kHz and let the class watch the s
 - Drag the noise slider: the tones stay put, the floor moves.
 
 Note:
-The top row is the transmitter they just saw. Run it, drag the noise slider up and down so they see the floor move, then leave it at 0.5 and the offset at 0 while walking the receiver.
+The top row is the transmitter they just saw. Run it, drag the noise slider up and down so they see the floor move, then set it to 0.3 and leave the offset at 0 while walking the receiver.
 
 ---
 
@@ -144,9 +144,20 @@ The gain is the reciprocal of the transmitter's sensitivity, so the demodulator 
 
 ---
 
+## Save It and Look in Audacity
+
+- Add a **File Sink** (float) on the Quadrature Demod output.
+- Run a few seconds, then import in Audacity as raw 32-bit float, 32000 Hz.
+- Zoom in: the bits are the square wave.
+
+Note:
+Do this live; it is the end of the 2025 FSK agenda. File Sink type float, file demod.f32. Audacity: File, Import, Raw Data, 32-bit float, little-endian, 1 channel. Each bit is a flat step near plus or minus 1, sps samples long, with the noise on it.
+
+---
+
 ## Finding the Bits
 
-<img src="./img/08-fsk/L08-link-clean.png" alt="The L8 link at noise voltage 0.5: two tones well above the noise, a wide-open eye diagram, and every line of text correct" style="max-height:380px; display:block; margin:0 auto;">
+<img src="./img/08-fsk/L08-link-clean.png" alt="The L8 link at noise voltage 0.3: two tones well above the noise, a wide-open eye diagram, and every line of text correct" style="max-height:380px; display:block; margin:0 auto;">
 
 A moving average, **Symbol Sync**, and a **Binary Slicer** at zero decide each bit.
 
@@ -168,14 +179,16 @@ Without the access code the receiver has bits but no idea where a byte starts. T
 
 ## Turn Up the Noise
 
-<img src="./img/08-fsk/L08-link-noisy.png" alt="The L8 link at noise voltage 1.3: a higher noise floor, a mostly open eye with occasional spikes, and 7 of 29 lines correct" style="max-height:330px; display:block; margin:0 auto;">
+<img src="./img/08-fsk/L08-link-noisy.png" alt="The L8 link at noise voltage 1.3: a higher noise floor, a mostly open eye with occasional spikes, and most lines with an error" style="max-height:330px; display:block; margin:0 auto;">
 
-- 0.5 V: the eye is wide open and every line arrives.
-- 1.3 V: the floor is about 8 dB higher, spikes cross zero, and most lines have an error.
-- 2 V: almost no packets.
+- Low noise: the eye is wide open and every line arrives.
+- More noise: the floor climbs, spikes cross zero, and lines have errors.
+- More still: almost no packets.
+
+The figure is at 1.3.
 
 Note:
-Drag the noise slider up slowly and let the class watch the eye thicken, the FM clicks appear, and the line count fall. The fall from clean text to no text takes a small turn of the slider. Tie it back to Lesson 2: a link that only just works fails on the first fade.
+Start from 0.3. Drag the noise slider up slowly and let the class watch the eye thicken, the FM clicks appear, and the line count fall. The fall from clean text to no text takes a small turn of the slider. Tie it back to Lesson 2: a link that only just works fails on the first fade.
 
 ---
 
@@ -190,18 +203,18 @@ Drag the noise slider up slowly and let the class watch the eye thicken, the FM 
 <p class="viz-cue">↗ Interactive on the lesson page</p>
 
 Note:
-The widget uses the same receiver as the flowgraph but an ideal clock, so its error counts run slightly better than the flowgraph's.
+The widget uses the same receiver as the flowgraph but its own link, 48 kHz at 600 to 2400 baud, and an ideal clock, so its numbers are not the flowgraph's or the lab's.
 
 ---
 
 ## Frequency Offset
 
-<img src="./img/08-fsk/L08-link-offset.png" alt="The L8 link with a 600 Hz offset: the tones shifted right and the eye shifted up to plus 1.6 and minus 0.4" style="max-height:330px; display:block; margin:0 auto;">
+<img src="./img/08-fsk/L08-link-offset.png" alt="The L8 link at noise 0.3 with a 400 Hz offset: the tones shifted right and the eye shifted up to about plus 1.4 and minus 0.6" style="max-height:330px; display:block; margin:0 auto;">
 
-The levels shift by $f_\text{off}/\Delta f$; this link tolerates about $\pm 600$ Hz.
+The levels shift by $f_\text{off}/\Delta f$; once the lower level nears zero, the text breaks.
 
 Note:
-2 ppm at 915 MHz is 1.8 kHz, more than this link tolerates. Real receivers use a wide deviation or remove the offset before demodulating. The lab measures both.
+Demo at noise 0.3 and 400 Hz, then keep dragging until lines start to have errors and then stop. 2 ppm at 915 MHz is 1.8 kHz. Real receivers use a wide deviation or remove the offset before demodulating. The lab measures both.
 
 ---
 
@@ -212,7 +225,7 @@ Note:
 Tone spacing gives $2\Delta f$; the shortest dwell gives $1/R_s$.
 
 Note:
-This waterfall is simulated. The tracks are 40 kHz apart, so the deviation is 20 kHz, and the preamble's shortest dwell is 1 ms, so the symbol rate is 1000 baud. On a live waterfall a row often lasts longer than a bit, so measure the dwell in URH or on the Quadrature Demod output. To run today's link over the air, replace the Channel Model with a Pluto or HackRF sink and source. Transmit only into a cable, a shielded enclosure, or at very low power in an ISM band, and only when the lesson says to. Nothing today transmits.
+This waterfall is simulated. The tracks are 40 kHz apart, so the deviation is 20 kHz, and the preamble's shortest dwell is 1 ms, so the symbol rate is 1000 baud. On a live waterfall a row often lasts longer than a bit, so measure the dwell in URH or on the Quadrature Demod output. To run today's link over the air, replace the Channel Model with a Pluto or HackRF sink and source. In class we transmit only into a cable through the 30 dB attenuator, and only when the lesson says to. Nothing today transmits.
 
 ---
 

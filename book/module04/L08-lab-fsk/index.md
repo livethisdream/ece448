@@ -40,26 +40,13 @@ This lab needs no SDR, and nothing in it transmits. The Channel Model block stan
 ::::{frame} Part 1: Before the Period
 :::{present}
 - `L08-fsk-link.grc` runs and shows the received line.
-- Work out $k$, $g$, $B$, and the filter cutoff for $\Delta f$ = 1 and 2 kHz.
+- Work out $k$, $g$, $B$, and the filter cutoff for $\Delta f$ = 1.5 and 2 kHz.
 - Read how far the tones sit above the noise at two noise settings.
 :::
 
 Do the Pre-Lab before you arrive. Question 1 is a check that `L08-fsk-link.grc` opens and runs on your laptop: if GRC reports an error, the L5 lesson page lists the install checks, and EI before the lab is the place to fix it.
 
-Question 2 asks for the block settings the lesson gives: the transmitter's sensitivity, the receiver's gain, the bandwidth, and the filter cutoff for two deviations, and the length and duration of one packet. It also asks you to read, on the running link's spectrum, how far the two tones stand above the noise floor at two noise settings. Part 2 uses the settings when you build and the packet time when you count lines.
-::::
-
-::::{frame} Expected Numbers
-:::{present}
-| Check | Expected |
-| :-- | :-- |
-| Peaks at $\Delta f$ = 1 kHz | $\pm 1$ kHz |
-| Tones above the floor at $\sigma$ = 0.5 | about 25 dB |
-| One packet | 424 bits, 0.424 s |
-| First wrong line | near a noise voltage of 1.0 |
-:::
-
-These come from Lesson 8. The block settings and the spectral peaks are exact, because the flowgraph computes them. The other two are what the lesson's link showed; your readings should be close. The count of correct lines at each noise voltage is random and changes from run to run, which is why the packet records it over 30 s.
+Question 2 asks for block settings from the lesson's formulas: the transmitter's sensitivity, the receiver's gain, the bandwidth, and the filter cutoff for deviations of 1500 and 2000 Hz, and the length and duration of one packet. It also asks you to read, on the running link's spectrum, how far the two tones stand above the noise floor at two noise settings. Part 2 uses the settings when you build and the packet time when you count lines.
 ::::
 
 ::::{frame} Part 2: Build the Transmitter
@@ -72,7 +59,7 @@ These come from Lesson 8. The block settings and the spectral peaks are exact, b
 5. Add **Unpack K Bits** with K = 8, then **Chunks to Symbols**: input byte, output float, symbol table `[-1, 1]`.
 6. Add **Repeat**: type float, interpolation `sps`. Then add **Frequency Mod** with sensitivity `2*math.pi*dev/samp_rate`.
 7. Add a **Throttle** (complex, `samp_rate`) and a **QT GUI Frequency Sink** (complex, bandwidth `samp_rate`), and connect the chain. Every arrow must be black.
-8. Run it. Screenshot the canvas for Question 3(a), then record the two peaks at a deviation of 1000 and 2000 Hz for Question 3(b).
+8. Run it. Screenshot the canvas for Question 3(a), then record the two peaks at a deviation of 1500 and 2000 Hz for Question 3(b).
 ::::
 
 ::::{frame} Part 2: Noise and Offset
@@ -88,6 +75,7 @@ These come from Lesson 8. The block settings and the spectral peaks are exact, b
 4. Set the noise back to 0.5 and raise it in steps of 0.1 until a wrong line appears. Record that noise voltage and how far the tones stand above the floor for Question 4(c).
 5. Set the noise back to 0.5. Set the offset to 0, 300, 600, 800, and 1000 Hz in turn. At each, wait about 20 s and record the eye's two levels and the Lines label for Question 5(a).
 6. Still at a noise voltage of 0.5, set the offset to 1200 Hz, wait about 20 s, and record the Lines label in the $\Delta f$ = 1000 row of Question 5(b); its $\sigma$ = 1.2 cell comes from your noise table. Then stop the flowgraph and change the `dev` variable from 1000 to 2000. The transmitter's sensitivity, the receiver's filter, and the demodulator's gain all follow it. Run the two settings of Question 5(b) and record the Lines label for each.
+7. Optional, from the 2025 class: add a **File Sink** (float, file `demod.f32`) on the Quadrature Demod output, run for a few seconds, and stop. In Audacity choose File, Import, Raw Data: 32-bit float, little-endian, 1 channel, sample rate 32000. Zoom in until you can read single bits. Nothing in the packet asks for it.
 ::::
 
 ::::{frame} If No Text Arrives
