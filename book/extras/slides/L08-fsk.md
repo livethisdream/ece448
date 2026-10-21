@@ -36,14 +36,14 @@ Have L08-fsk-link.grc open and running on the projector before class. The text l
 ## Today's Plan
 
 1. The transmitter: bits to tones with Frequency Mod
-2. Symbol rate, deviation, modulation index, and bandwidth
+2. The channel: noise and frequency offset on sliders
 3. The receiver: filter, quadrature demodulator, symbol timing, slicer
-4. Packets: finding where each line starts
-5. Noise and frequency offset
+4. Packets: from bits back to text
+5. Turn up the noise, then the offset
 6. FSK on a real radio
 
 Note:
-Everything today runs from two flowgraphs with no hardware. Items one and two use L08-fsk-tx.grc; items three to five use L08-fsk-link.grc.
+Everything today runs from two flowgraphs with no hardware, in the order of the GNU Radio wiki's Simulation example: FSK. Item one uses L08-fsk-tx.grc; items two to five use L08-fsk-link.grc.
 
 ---
 
@@ -108,18 +108,14 @@ Drag the deviation slider live from 1 kHz to 3 kHz and let the class watch the s
 
 ---
 
-<!-- .slide: class="viz-cue-slide" -->
+## The Channel
 
-## FSK Explorer
-
-- Raise the deviation: the tones separate and the band widens
-- Raise the noise slowly: note where the first red dot appears
-- Double the symbol rate: red dots appear at a lower noise voltage
-
-<p class="viz-cue">↗ Interactive on the lesson page</p>
+- Open `L08-fsk-link.grc`: transmitter, channel, and receiver in one file.
+- The **Channel Model** adds noise and a frequency offset, each on a slider.
+- Drag the noise slider: the tones stay put, the floor moves.
 
 Note:
-The widget uses the same receiver as the flowgraph but an ideal clock, so its error counts run slightly better than the flowgraph's.
+The top row is the transmitter they just saw. Run it, drag the noise slider up and down so they see the floor move, then leave it at 0.5 and the offset at 0 while walking the receiver.
 
 ---
 
@@ -130,7 +126,7 @@ The widget uses the same receiver as the flowgraph but an ideal clock, so its er
 Filter to the signal, turn frequency into a number, and decide each bit.
 
 Note:
-The Channel Model is the air: noise and frequency offset on sliders. The low-pass cutoff is deviation plus symbol rate, 2 kHz: the filter passes minus 2 to plus 2 kHz, the 4 kHz band.
+The low-pass cutoff is deviation plus symbol rate, 2 kHz: the filter passes minus 2 to plus 2 kHz, the 4 kHz band.
 
 ---
 
@@ -170,7 +166,7 @@ Without the access code the receiver has bits but no idea where a byte starts. T
 
 ---
 
-## Noise
+## Turn Up the Noise
 
 <img src="./img/08-fsk/L08-link-noisy.png" alt="The L8 link at noise voltage 1.3: a higher noise floor, a mostly open eye with occasional spikes, and 7 of 29 lines correct" style="max-height:330px; display:block; margin:0 auto;">
 
@@ -180,6 +176,21 @@ Without the access code the receiver has bits but no idea where a byte starts. T
 
 Note:
 Drag the noise slider up slowly and let the class watch the eye thicken, the FM clicks appear, and the line count fall. The fall from clean text to no text takes a small turn of the slider. Tie it back to Lesson 2: a link that only just works fails on the first fade.
+
+---
+
+<!-- .slide: class="viz-cue-slide" -->
+
+## FSK Explorer
+
+- Raise the deviation: the tones separate and the band widens
+- Raise the noise slowly: note where the first red dot appears
+- Double the symbol rate: red dots appear at a lower noise voltage
+
+<p class="viz-cue">↗ Interactive on the lesson page</p>
+
+Note:
+The widget uses the same receiver as the flowgraph but an ideal clock, so its error counts run slightly better than the flowgraph's.
 
 ---
 
