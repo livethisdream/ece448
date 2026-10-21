@@ -111,10 +111,10 @@ an FSK transmitter and receiver in GNU Radio.}
 
 This packet is the L\labLesson\ Lab, in three parts, and you turn it in once, complete,
 before Lesson 9. Do \textbf{Part 1} on your own before the lab period: run the link
-flowgraph and make the predictions you will check at the bench. \textbf{Part 2} is
-your own measurements, on your own laptop, recorded in class. Do \textbf{Part 3} on
-your own after the lab: compare the measurements with the predictions and answer the
-analysis questions.
+flowgraph, read its display, and work out the block settings you will use at the
+bench. \textbf{Part 2} is your own measurements, on your own laptop, recorded in
+class. Do \textbf{Part 3} on your own after the lab: explain what you saw and answer
+the analysis questions.
 
 \textbf{Grading.} One submission, graded against Objective 4.1 on the course's
 1 / 0 scale, with revision allowed under course policy. Paste screenshots where a
@@ -158,7 +158,7 @@ with the sliders at their defaults.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newpage
-\question \textbf{Predictions.} You will check each of these at the bench.
+\question \textbf{Settings and readings.} You will use these at the bench.
 
 \begin{parts}
 
@@ -166,36 +166,37 @@ with the sliders at their defaults.
 
 	\begin{center}
 	\renewcommand{\arraystretch}{1.25}
-	\begin{tabular}{| l | K{0.82in} | K{0.82in} | K{0.82in} | K{0.82in} | K{0.82in} |}
+	\begin{tabular}{| l | K{0.95in} | K{0.95in} | K{0.95in} | K{0.95in} |}
 	\hline
-	$\Delta f$ & sensitivity $k$ & demod gain $g$ & index $h$ & Carson $B$ & LPF cutoff \\\hline
-	1000 Hz & \kv{0.196} & \kv{5.09} & \kv{2} & \kv{4 kHz} & \kv{2 kHz} \\\hline
-	2000 Hz & \kv{0.393} & \kv{2.55} & \kv{4} & \kv{6 kHz} & \kv{3 kHz} \\\hline
+	$\Delta f$ & sensitivity $k$ & demod gain $g$ & bandwidth $B$ & LPF cutoff \\\hline
+	1000 Hz & \kv{0.196} & \kv{5.09} & \kv{4 kHz} & \kv{2 kHz} \\\hline
+	2000 Hz & \kv{0.393} & \kv{2.55} & \kv{6 kHz} & \kv{3 kHz} \\\hline
 	\end{tabular}
 	\end{center}
 
 		\begin{solution}[0.9in]
-		$k = 2\pi\Delta f/f_s$, $g = f_s/(2\pi\Delta f)$, $h = 2\Delta f/R_s$ with
-		$R_s = 32000/32 = 1000$ baud, $B = 2(\Delta f + R_s)$, and the cutoff is
-		$\Delta f + R_s$.
+		$k = 2\pi\Delta f/f_s$, $g = f_s/(2\pi\Delta f)$, $B = 2(\Delta f + R_s)$
+		with $R_s = 32000/32 = 1000$ baud, and the cutoff is $\Delta f + R_s$, half
+		of $B$.
 		\end{solution}
 
-	\part With $\Delta f = 1$ kHz, predict the SNR at the demodulator for each noise
-	voltage. The signal has power 1, and noise of voltage $\sigma$ has power
-	$\sigma^2$ over the full 32 kHz.
+	\part Run \texttt{L08-fsk-link.grc}. On its spectrum, read how far the two tones
+	stand above the noise floor with the noise slider at 0.5, then at 1.0. Describe
+	what the eye diagram does between the two.
 
 	\begin{center}
 	\renewcommand{\arraystretch}{1.25}
-	\begin{tabular}{| l | K{0.6in} | K{0.6in} | K{0.6in} | K{0.6in} | K{0.6in} | K{0.6in} |}
+	\begin{tabular}{| l | K{1.4in} | K{1.4in} |}
 	\hline
-	$\sigma$ & $0.5$ & $0.8$ & $1.0$ & $1.2$ & $1.5$ & $2.0$ \\\hline
-	SNR (dB) & \kv{$15.1$} & \kv{$11.0$} & \kv{$9.0$} & \kv{$7.4$} & \kv{$5.5$} & \kv{$3.0$} \\\hline
+	Noise voltage & $0.5$ & $1.0$ \\\hline
+	Tones above floor (dB) & \kv{$\approx 25$} & \kv{$\approx 19$} \\\hline
 	\end{tabular}
 	\end{center}
 
-		\begin{solution}[0.6in]
-		The filter keeps $4/32$ of the noise, so
-		$\text{SNR} = 1/(\sigma^2 \times 4/32) = 8/\sigma^2$.
+		\begin{solution}[0.8in]
+		Doubling the noise voltage raises the floor about 6 dB; the tones stay where
+		they are. The eye's traces thicken but the eye stays open. Readings within a few
+		dB are fine, since the floor on the plot is ragged.
 		\end{solution}
 
 	\begin{minipage}[t]{0.58\linewidth}
@@ -219,22 +220,6 @@ with the sliders at their defaults.
 		in 30 s = \ansbox[1.0in]{71}
 	\end{minipage}
 
-	\part With $\Delta f = 1$ kHz, predict the two demodulator levels for each
-	frequency offset.
-
-	\begin{center}
-	\renewcommand{\arraystretch}{1.25}
-	\begin{tabular}{| l | K{0.75in} | K{0.75in} | K{0.75in} | K{0.75in} | K{0.75in} |}
-	\hline
-	Offset (Hz) & $0$ & $300$ & $600$ & $800$ & $1000$ \\\hline
-	Levels & \kv{$\pm 1$} & \kv{$1.3, -0.7$} & \kv{$1.6, -0.4$} & \kv{$1.8, -0.2$} & \kv{$2.0, 0$} \\\hline
-	\end{tabular}
-	\end{center}
-
-		\begin{solution}[0.5in]
-		An offset moves both tones by $f_\text{off}$, which adds $f_\text{off}/\Delta f$
-		to both levels.
-		\end{solution}
 
 \end{parts}
 
@@ -271,7 +256,7 @@ Throttle, and a QT GUI Frequency Sink, with a QT GUI Range named \texttt{dev}.
 
 		\begin{solution}[1.6in]
 		The peaks sit at $\pm\Delta f$. At 2000 Hz the spectrum is visibly wider, about
-		6 kHz between its shoulders, as Carson's rule predicts.
+		6 kHz between its shoulders, the bandwidth from Question 2(a).
 		\end{solution}
 
 \end{parts}
@@ -300,9 +285,9 @@ packet time from Question 2(c).
 	\end{center}
 
 		\begin{solution}[0.6in]
-		Every line arrives correctly down to about 9 dB. Between 9 and 3 dB the link
-		goes from almost no errors to almost no packets. Counts vary from run to run
-		because the noise is random.
+		Every line arrives correctly up to a noise voltage of about 1.0. Between 1.0
+		and 2.0 the link goes from almost no errors to almost no packets. Counts vary
+		from run to run because the noise is random.
 		\end{solution}
 
 	\part Paste a screenshot of the eye diagram at $\sigma = 1.2$, and describe how it
@@ -314,6 +299,23 @@ packet time from Question 2(c).
 		closed eye, is acceptable. At 0.5 the traces stay tight at $\pm 1$ and the eye
 		is wide open.
 		\end{solution}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Set the noise back to 0.5 and raise it in steps of 0.1 until a wrong
+		line appears. Record that noise voltage and how far the tones stand above the
+		floor on the spectrum.
+		\begin{solution}[0.7in]
+		Near 1.0, with the tones about 19 dB above the floor. A run can give 0.9 to
+		1.1, because the noise is random.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		$\sigma$ = \ansbox[1.0in]{$\approx 1.0$}
+
+		\vspace{4pt}
+		above floor = \ansbox[1.0in]{$\approx 19$ dB}
+	\end{minipage}
 
 \end{parts}
 
@@ -338,9 +340,10 @@ and the Lines label.
 	\end{center}
 
 		\begin{solution}[0.6in]
-		The levels match Question 2(d). The link works to 600 Hz. At 800 Hz lines still arrive but every one has
-		errors, because the lower level is near zero and the filter begins to cut off
-		the upper tone. At 1000 Hz no line arrives.
+		Both levels move up together as the offset grows, by about the offset divided
+		by the 1000 Hz deviation. The link works to 600 Hz. At 800 Hz lines still
+		arrive but every one has errors, because the lower level is near zero and the
+		filter begins to cut off the upper tone. At 1000 Hz no line arrives.
 		\end{solution}
 
 	\part Stop the flowgraph and change the \texttt{dev} variable to 2000; the
@@ -360,7 +363,7 @@ and the Lines label.
 		\begin{solution}[0.6in]
 		Use the $\Delta f = 1000$ Hz row from parts (a) and Question 4. Doubling the
 		deviation doubles the offset the link tolerates and slightly improves the noise
-		result, even though the SNR in the wider 6 kHz bandwidth is 1.8 dB lower.
+		result, even though the wider 6 kHz filter lets in more noise.
 		\end{solution}
 
 \end{parts}
@@ -373,17 +376,18 @@ and the Lines label.
 
 \begin{parts}
 
-	\part Find the SNR from Question 2(b) at which your link first lost a line, and
-	the SNR at which it received almost nothing. Explain why the change takes only a
-	few dB, and what that means for the link margin of Lesson 2.
+	\part From your table in Question 4 and your screenshots, describe in words what
+	the eye and the received text did as you raised the noise from 0.5 to 2.0. Explain
+	why a small turn of the slider takes the link from clean text to no text, and what
+	that means for the link margin of Lesson 2.
 		\begin{solution}[1.5in]
-		Errors start near 9 dB ($\sigma \approx 1.0$) and packets stop near 3 dB
-		($\sigma = 2.0$), about 6 dB apart. Below about 10 dB the noise begins to swing
-		the phase of the received signal by large amounts, and each large swing makes
-		a spike in the demodulator output; the number of spikes grows rapidly as the
-		SNR falls. A packet also needs every one of its 424 bits right, so a small rise
-		in bit errors loses many packets. A link designed at the threshold fails on the
-		first fade of a few dB, so it needs margin above 9 dB.
+		Clean text and a wide-open eye up to about 1.0; then the eye thickens and
+		sharp spikes, FM clicks, begin to cross zero, and lines start to have errors;
+		by 2.0 almost no packets arrive. Once the noise is large enough to swing the
+		phase by a lot, each swing makes a spike, and the spikes grow quickly with a
+		little more noise. A packet also needs every one of its 424 bits right, so a
+		few bit errors lose many packets. A link that only just works fails on the
+		first fade, so it needs margin.
 		\end{solution}
 
 	\part Your link tolerated an offset of about 600 Hz. Convert that to parts per

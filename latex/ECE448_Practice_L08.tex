@@ -106,76 +106,60 @@ and Binary Slicer.
 		nearly flat line.
 		\end{solution}
 
-	\begin{minipage}[t]{0.58\linewidth}
-		\part The classmate also sets the filter cutoff to 8 kHz. By how many dB does
-		that lower the SNR at the demodulator?
-		\begin{solution}[0.9in]
-		The filter now passes 16 kHz of noise instead of 3.6 kHz, and the signal is
-		unchanged:
-		\eq{ 10\mylog{\dfrac{16}{3.6}} = 6.5\db }
+	\part The classmate also sets the filter cutoff to 8 kHz. Explain what changes
+	on the eye diagram, and what happens to the noise voltage at which the text first
+	breaks.
+		\begin{solution}[1.0in]
+		The signal still fits through the filter, but the filter now passes far more
+		noise, everything from $-8$ to $+8$ kHz instead of $-1.8$ to $+1.8$ kHz. The eye's
+		traces are thicker at the same noise setting, and the text breaks at a lower
+		noise voltage than with the 1800 Hz cutoff.
 		\end{solution}
-	\end{minipage}\hfill%
-	\begin{minipage}[t]{0.37\linewidth}
-		\raggedleft \vspace{12pt}
-		\ansbox[1.3in]{$6.5\db$}
-	\end{minipage}
 
 \end{parts}
 
 \newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \question \textbf{Noise.} The L8 link samples at 32 kHz, sends 1000 baud with
-$\Delta f = 1$ kHz, and filters to the 4 kHz Carson bandwidth. The signal has power
-1, and the Channel Model's noise of voltage $\sigma$ has power $\sigma^2$ spread over
-the full 32 kHz.
+$\Delta f = 1$ kHz, and filters to 4 kHz. Its Channel Model has a noise voltage
+slider. At 0.5 the two tones stand about 25 dB above the noise floor on the spectrum,
+the eye is wide open, and every line arrives.
 \begin{parts}
 
-	\begin{minipage}[t]{0.58\linewidth}
-		\part Find the SNR at the demodulator for $\sigma = 0.8$.
-		\begin{solution}[0.9in]
-		\eq{ \text{SNR} = \dfrac{1}{\sigma^2 \times 4/32} = \dfrac{8}{0.64} = 12.5 = 11.0\db }
-		\end{solution}
-	\end{minipage}\hfill%
-	\begin{minipage}[t]{0.37\linewidth}
-		\raggedleft \vspace{12pt}
-		\ansbox[1.3in]{$11.0\db$}
-	\end{minipage}
-
-	\begin{minipage}[t]{0.58\linewidth}
-		\part The text starts to show errors below about 9 dB. Find the largest noise
-		voltage that keeps the SNR at 9 dB.
-		\begin{solution}[0.9in]
-		\eq{ \sigma^2 = \dfrac{8}{10^{0.9}} = 1.01, \qquad \sigma = 1.0 }
-		\end{solution}
-	\end{minipage}\hfill%
-	\begin{minipage}[t]{0.37\linewidth}
-		\raggedleft \vspace{12pt}
-		\ansbox[1.3in]{$\sigma = 1.0$}
-	\end{minipage}
-
-	\begin{minipage}[t]{0.58\linewidth}
-		\part The link doubles its symbol rate to 2000 baud and keeps $\Delta f = 1$ kHz.
-		Find the new Carson bandwidth and the largest noise voltage for 9 dB.
+	\part The noise slider moves from 0.5 to 1.3. Describe what you expect to see on
+	the spectrum, on the eye diagram, and in the received text.
 		\begin{solution}[1.1in]
-		\eq{ B &= 2(1000 + 2000) = 6\ \text{kHz} \\
-			\sigma^2 &= \dfrac{32/6}{10^{0.9}} = 0.67, \qquad \sigma = 0.82 }
+		The tones stay where they are and the floor rises, about 8 dB, so the tones
+		stand closer to it. The eye's traces thicken, and now and then a sharp spike,
+		an FM click, crosses zero. Most lines now arrive with one or two wrong
+		characters.
 		\end{solution}
-	\end{minipage}\hfill%
-	\begin{minipage}[t]{0.37\linewidth}
-		\raggedleft \vspace{12pt}
-		$B$ = \ansbox[1.0in]{6 kHz}
 
-		\vspace{4pt}
-		$\sigma$ = \ansbox[1.0in]{0.82}
-	\end{minipage}
+	\part A spike crosses zero on the eye diagram, but away from the sampling instant.
+	Explain whether it causes a bit error.
+		\begin{solution}[0.9in]
+		No. The Binary Slicer only sees the one sample per bit that Symbol Sync picks
+		at the peak of each bit. A spike that crosses zero between those instants never
+		reaches the slicer; only one at a sampling instant flips a bit.
+		\end{solution}
 
-	\part Lesson 2 designs a link with margin above the SNR it needs. Explain, from
-	what the L8 link does between 9 dB and 3 dB, why margin matters for FSK.
+	\part The link doubles its symbol rate to 2000 baud and keeps $\Delta f = 1$ kHz.
+	Find the new bandwidth and filter cutoff, and explain whether the text breaks at
+	a higher or a lower noise setting than before.
+		\begin{solution}[1.1in]
+		\eq{ B = 2(1000 + 2000) = 6\ \text{kHz}, \qquad f_c = 3\ \text{kHz} }
+		The wider filter lets in more of the noise, so the eye is noisier at the same
+		slider setting and the text breaks at a lower noise voltage.
+		\end{solution}
+
+	\part On the L8 link, the text goes from clean to almost no packets between noise
+	voltages of about 1.0 and 2.0. Lesson 2 designs a link with margin. Explain, from
+	that observation, why margin matters for FSK.
 		\begin{solution}[1.0in]
-		The link goes from almost no errors at 9 dB to almost no packets at 3 dB, a
-		range of about 6 dB. A link designed exactly at 9 dB therefore fails completely
-		after a fade of a few dB. Margin keeps the SNR above the threshold when the
-		path loss changes.
+		The change from clean text to no text takes only a small turn of the slider. A
+		link that only just works at its design distance therefore fails completely
+		when the signal fades a little. Margin keeps the link on the clean side when
+		the path loss changes.
 		\end{solution}
 
 \end{parts}

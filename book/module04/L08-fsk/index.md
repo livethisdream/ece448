@@ -105,22 +105,23 @@ which is $2\pi \times 1000 / 32000 = 0.196$ rad per sample here. The **modulatio
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
-- Carson's rule, taking the message bandwidth as $R_s$: $B \approx 2(\Delta f + R_s)$.
+- The signal takes about $B \approx 2(\Delta f + R_s)$.
 - 1 kHz deviation at 1000 baud takes about 4 kHz.
+- The receiver's filter is set to pass this band.
 :::
 
-Dragging the deviation slider to 3 kHz moves the two peaks to $\pm 3$ kHz. The signal's bandwidth grows with the deviation, and it also grows with the symbol rate, because faster switching between the tones spreads each one. **Carson's rule**, the standard bandwidth estimate for FM, accounts for both, taking the message bandwidth as the symbol rate, a conservative choice:
+Dragging the deviation slider to 3 kHz moves the two peaks to $\pm 3$ kHz, and the spectrum gets wider. It also gets wider when the symbol rate goes up, because faster switching between the tones spreads each one. A rule of thumb for the width, **Carson's rule** from FM, adds the two:
 
 $$B \approx 2(\Delta f + R_s)$$
 
-At 1 kHz and 1000 baud that is 4 kHz, and at 3 kHz it is 8 kHz. Other references take the message bandwidth as half the symbol rate and write $2\Delta f + R_s$, which gives 3 kHz here; the larger estimate leaves the receiver filter some room. The rule sets the receiver's first filter, which should pass this band and reject everything else. Wider deviation makes the tones easier to tell apart, but every extra hertz of bandwidth also lets in more noise, so the choice of deviation balances the two.
+At 1 kHz and 1000 baud that is 4 kHz, and at 3 kHz it is 8 kHz. We use the number for one thing: setting the receiver's first filter, which should pass this band and reject everything else. Wider deviation makes the tones easier to tell apart, but a wider filter also lets in more noise, so the choice of deviation balances the two.
 ::::
 
 ::::{frame} FSK Explorer
 :class: viz-frame
 
 :::{depth}
-The left panel is the spectrum of the received signal, with the Carson bandwidth shaded and the two tone frequencies dashed. The right panel is the receiver's output for 16 bits, with the transmitted levels in gray and a dot where the receiver decides each bit; a red dot is a wrong decision. Start at the defaults and raise the deviation: the tones move apart and the shaded band widens. Then set the deviation back to 1000 Hz and raise the noise voltage until red dots appear, near an SNR of 9 dB in the Carson bandwidth. Try a symbol rate of 2000: the signal widens, so the same noise gives a lower SNR and more errors.
+The left panel is the spectrum of the received signal, with the Carson bandwidth shaded and the two tone frequencies dashed. The right panel is the receiver's output for 16 bits, with the transmitted levels in gray and a dot where the receiver decides each bit; a red dot is a wrong decision. Start at the defaults and raise the deviation: the tones move apart and the shaded band widens. Then set the deviation back to 1000 Hz and raise the noise voltage slowly. Watch the output get ragged, and note the noise voltage, and the SNR the panel shows, when the first red dot appears. Try a symbol rate of 2000: the band widens, more noise gets through the filter, and red dots appear at a lower noise voltage.
 :::
 
 :::{present}
@@ -144,7 +145,7 @@ The left panel is the spectrum of the received signal, with the Carson bandwidth
 - The **Channel Model** adds the noise and the frequency offset.
 :::
 
-The second flowgraph, `L08-fsk-link.grc`, puts the transmitter, a channel, and a receiver in one file. The **Channel Model** block stands in for the air: it adds complex Gaussian noise of a chosen voltage and shifts the signal by a chosen frequency offset, both on sliders. The receiver then works in three steps. A **Low Pass Filter** with a cutoff of $\Delta f + R_s = 2$ kHz keeps the Carson bandwidth and removes the noise outside it. A **Quadrature Demod** turns the frequency of each sample into a number. The last three blocks find each bit's sampling instant and decide whether it is a 0 or a 1.
+The second flowgraph, `L08-fsk-link.grc`, puts the transmitter, a channel, and a receiver in one file. The **Channel Model** block stands in for the air: it adds complex Gaussian noise of a chosen voltage and shifts the signal by a chosen frequency offset, both on sliders. The receiver then works in three steps. A **Low Pass Filter** with a cutoff of $\Delta f + R_s = 2$ kHz passes the 4 kHz band from $-2$ to $+2$ kHz and removes the noise outside it. A **Quadrature Demod** turns the frequency of each sample into a number. The last three blocks find each bit's sampling instant and decide whether it is a 0 or a 1.
 ::::
 
 ::::{frame} The Quadrature Demodulator
@@ -194,15 +195,13 @@ At the receiver, **Correlate Access Code - Tag Stream** compares the incoming bi
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
-- At 0.5 V: SNR 15 dB in 4 kHz, and every line arrives.
-- At 1.3 V: 6.7 dB, and most lines have an error.
+- At 0.5 V: a wide-open eye, and every line arrives.
+- At 1.3 V: spikes cross zero, and most lines have an error.
 :::
 
-The Channel Model's signal has power 1, and noise of voltage $\sigma$ has power $\sigma^2$ spread over the whole 32 kHz. The receiver's filter keeps only 4 kHz of it, an eighth, so the SNR at the demodulator is
+Dragging the Channel Model's noise slider up is the experiment. At 0.5 V the two tones stand about 25 dB above the noise floor on the spectrum, the eye is wide open, and every line arrives. At 1.0 V the eye's traces thicken and an occasional character goes wrong. At 1.3 V the floor has risen about 8 dB. The eye is still mostly open, but now and then the noise swings the phase far enough to make a spike, an FM click, in the demodulator output, and a spike that crosses zero at a sampling instant is a bit error. Only 7 of 29 lines arrive without an error. By 2 V the receiver almost never finds the access code.
 
-$$\text{SNR} = \frac{1}{\sigma^2 \times 4/32} = \frac{8}{\sigma^2}$$
-
-At 0.5 V that is 32, or 15 dB, and every line arrives. At 1.0 V it is 9 dB and an occasional character goes wrong. At 1.3 V it is 6.7 dB. The eye is still mostly open, but now and then the noise swings the phase far enough to make a spike, an FM click, in the demodulator output, and a spike that crosses zero at a sampling instant is a bit error. Only 7 of 29 lines arrive without an error. By 2 V the receiver almost never finds the access code. The change from no errors to no packets happens within about 6 dB, which is typical of an FM-type demodulator, and it is why Lesson 2's link margin matters: a link designed right at 9 dB fails on the first fade.
+The whole change, from clean text to no text, takes a small turn of the slider. That is typical of an FM-type demodulator, and it is why Lesson 2's link margin matters: a link that only just works fails on the first fade.
 ::::
 
 ::::{frame} Frequency Offset
@@ -263,9 +262,9 @@ Open a `.grc` file from GRC's File menu, or run `gnuradio-companion L08-fsk-link
 | Modulation index | $h = 2\Delta f/R_s$ | $h = 2$ |
 | Frequency Mod | sensitivity $2\pi\Delta f/f_s$ | 0.196 rad per sample |
 | Quadrature Demod | gain $f_s/(2\pi\Delta f)$ | 5.09 |
-| Carson's rule | $B \approx 2(\Delta f + R_s)$ | 4 kHz |
+| Bandwidth | $B \approx 2(\Delta f + R_s)$, sets the filter | 4 kHz |
 | Access code | marks the start of each packet | 64 bits, 2 errors allowed |
-| Noise threshold | SNR in the Carson bandwidth | errors start near 9 dB |
+| Noise | the eye thickens, then FM clicks cross zero | errors start near 1.0 V on the slider |
 | Offset tolerance | levels shift by $f_\text{off}/\Delta f$ | about 600 Hz at $\Delta f$ = 1 kHz |
 ::::
 

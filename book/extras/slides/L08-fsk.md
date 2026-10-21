@@ -101,10 +101,10 @@ Symbol rate, deviation, and modulation index. k is what Frequency Mod calls its 
 
 $$B \approx 2(\Delta f + R_s)$$
 
-This takes the message bandwidth as $R_s$, a conservative choice. At 1000 baud, 1 kHz of deviation takes about 4 kHz and 3 kHz takes about 8 kHz.
+At 1000 baud, 1 kHz of deviation takes about 4 kHz and 3 kHz takes about 8 kHz. The number sets the receiver's filter.
 
 Note:
-Drag the deviation slider live from 1 kHz to 3 kHz. Carson's rule sets the receiver's first filter. Some references write 2Δf + Rs instead, taking the message bandwidth as half the symbol rate. Wider deviation separates the tones but lets in more noise.
+Drag the deviation slider live from 1 kHz to 3 kHz and let the class watch the spectrum widen. This is Carson's rule from FM, used only to set the receiver's first filter. Wider deviation separates the tones but a wider filter lets in more noise.
 
 ---
 
@@ -113,8 +113,8 @@ Drag the deviation slider live from 1 kHz to 3 kHz. Carson's rule sets the recei
 ## FSK Explorer
 
 - Raise the deviation: the tones separate and the band widens
-- Raise the noise: errors start near 9 dB in the Carson bandwidth
-- Double the symbol rate: the same noise gives more errors
+- Raise the noise slowly: note where the first red dot appears
+- Double the symbol rate: red dots appear at a lower noise voltage
 
 <p class="viz-cue">↗ Interactive on the lesson page</p>
 
@@ -130,7 +130,7 @@ The widget uses the same receiver as the flowgraph but an ideal clock, so its er
 Filter to the signal, turn frequency into a number, and decide each bit.
 
 Note:
-The Channel Model is the air: noise and frequency offset on sliders. The low-pass cutoff is deviation plus symbol rate, 2 kHz, which is half the Carson bandwidth.
+The Channel Model is the air: noise and frequency offset on sliders. The low-pass cutoff is deviation plus symbol rate, 2 kHz: the filter passes minus 2 to plus 2 kHz, the 4 kHz band.
 
 ---
 
@@ -174,12 +174,12 @@ Without the access code the receiver has bits but no idea where a byte starts. T
 
 <img src="./img/08-fsk/L08-link-noisy.png" alt="The L8 link at noise voltage 1.3: a higher noise floor, a mostly open eye with occasional spikes, and 7 of 29 lines correct" style="max-height:330px; display:block; margin:0 auto;">
 
-$$\text{SNR} = \frac{1}{\sigma^2 \times 4/32} = \frac{8}{\sigma^2}$$
-
-At 0.5 V the SNR is 15 dB and every line arrives; at 1.3 V it is 6.7 dB and most lines have an error.
+- 0.5 V: the eye is wide open and every line arrives.
+- 1.3 V: the floor is about 8 dB higher, spikes cross zero, and most lines have an error.
+- 2 V: almost no packets.
 
 Note:
-Drag the noise slider up slowly and let the class watch the eye close and the line count fall. The fall happens within about 6 dB. Tie it back to Lesson 2: a link designed right at the threshold fails on the first fade.
+Drag the noise slider up slowly and let the class watch the eye thicken, the FM clicks appear, and the line count fall. The fall from clean text to no text takes a small turn of the slider. Tie it back to Lesson 2: a link that only just works fails on the first fade.
 
 ---
 
