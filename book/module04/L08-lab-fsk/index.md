@@ -44,7 +44,7 @@ This lab needs no SDR, and nothing in it transmits. The Channel Model block stan
 - Read how far the tones sit above the noise at two noise settings.
 :::
 
-Do the Pre-Lab before you arrive. Question 1 is a check that both flowgraphs open and run on your laptop: if GRC reports an error, the L5 lesson page lists the install checks, and EI before the lab is the place to fix it.
+Do the Pre-Lab before you arrive. Question 1 is a check that `L08-fsk-link.grc` opens and runs on your laptop: if GRC reports an error, the L5 lesson page lists the install checks, and EI before the lab is the place to fix it.
 
 Question 2 asks for the block settings the lesson gives: the transmitter's sensitivity, the receiver's gain, the bandwidth, and the filter cutoff for two deviations, and the length and duration of one packet. It also asks you to read, on the running link's spectrum, how far the two tones stand above the noise floor at two noise settings. Part 2 uses the settings when you build and the packet time when you count lines.
 ::::
@@ -87,7 +87,7 @@ These come from Lesson 8. The block settings and the spectral peaks are exact, b
 3. At 0.5 and at 1.2, screenshot the eye diagram for Question 4(b).
 4. Set the noise back to 0.5 and raise it in steps of 0.1 until a wrong line appears. Record that noise voltage and how far the tones stand above the floor for Question 4(c).
 5. Set the noise back to 0.5. Set the offset to 0, 300, 600, 800, and 1000 Hz in turn. At each, wait about 20 s and record the eye's two levels and the Lines label for Question 5(a).
-6. Stop the flowgraph and change the `dev` variable from 1000 to 2000. The transmitter's sensitivity, the receiver's filter, and the demodulator's gain all follow it. Run the two settings of Question 5(b) and record the Lines label for each.
+6. Still at a noise voltage of 0.5, set the offset to 1200 Hz, wait about 20 s, and record the Lines label in the $\Delta f$ = 1000 row of Question 5(b); its $\sigma$ = 1.2 cell comes from your noise table. Then stop the flowgraph and change the `dev` variable from 1000 to 2000. The transmitter's sensitivity, the receiver's filter, and the demodulator's gain all follow it. Run the two settings of Question 5(b) and record the Lines label for each.
 ::::
 
 ::::{frame} If No Text Arrives

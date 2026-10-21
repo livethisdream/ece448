@@ -81,7 +81,7 @@ Walk the chain left to right on the canvas:
 4. **Repeat** holds each symbol for `sps` samples, the **samples per symbol**.
 5. **Frequency Mod** turns $+1$ into a tone at $+\Delta f$ and $-1$ into a tone at $-\Delta f$.
 
-Frequency Mod is the FM transmitter block; FSK is FM with a square wave of bits as the message. It keeps the phase continuous from bit to bit, which keeps the spectrum compact.
+Frequency Mod is the FM transmitter block, and FSK is FM with a square wave of bits as the message; the **VCO (complex)** block, which the 2025 class used, does the same job. It keeps the phase continuous from bit to bit, which keeps the spectrum compact.
 ::::
 
 ::::{frame} Three Numbers Set the Signal
@@ -272,6 +272,7 @@ This lesson follows:
 
 - <a class="doc-link" href="https://wiki.gnuradio.org/index.php?title=Simulation_example:_FSK" target="_blank" rel="noopener">GNU Radio wiki, Simulation example: FSK</a>
 - <a class="doc-link" href="https://pysdr.org/content/digital_modulation.html" target="_blank" rel="noopener">PySDR, Digital Modulation</a>, the FSK section.
+- <a class="doc-link" href="../../legacy/L08-am-fm-receivers.pdf#page=9" target="_blank" rel="noopener">Dr. Rogers's 2025 slides, AM and FM Receivers, p. 9, FSK agenda</a>: FSK in GNU Radio, parallel-to-serial conversion with byte data, the VCO block, and saving to a file to view in Audacity.
 ::::
 
 ::::{frame} Summary

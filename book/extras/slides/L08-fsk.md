@@ -54,7 +54,7 @@ Everything today runs from two flowgraphs with no hardware, in the order of the 
 A 1 is a tone at $+\Delta f$ and a 0 is a tone at $-\Delta f$; here $\Delta f = 1$ kHz.
 
 Note:
-Run L08-fsk-tx.grc. Point at the two spectral peaks first, then at the time plot. I is the same 1 kHz cosine during every bit, because at h = 2 each bit turns the phase through one full circle. Q is what changes: it flips relative to I when the direction of rotation changes, which is the complex-tone idea from Lesson 5.
+Run L08-fsk-tx.grc. Point at the two spectral peaks first, then at the time plot. I is the same 1 kHz cosine during every bit, because a cosine cannot tell which way the phase turns. Q can: it flips relative to I each time the bit changes, the complex-tone idea from Lesson 5.
 
 ---
 

@@ -194,8 +194,8 @@ with the sliders at their defaults.
 	\end{center}
 
 		\begin{solution}[0.8in]
-		Doubling the noise voltage raises the floor about 6 dB; the tones stay where
-		they are. The eye's traces thicken but the eye stays open. Readings within a few
+		The floor rose about 6 dB from 0.5 to 1.0; the tones stayed where they
+		were. The eye's traces thicken but the eye stays open. Readings within a few
 		dB are fine, since the floor on the plot is ragged.
 		\end{solution}
 
@@ -346,9 +346,11 @@ and the Lines label.
 		filter begins to cut off the upper tone. At 1000 Hz no line arrives.
 		\end{solution}
 
-	\part Stop the flowgraph and change the \texttt{dev} variable to 2000; the
-	transmitter, the filter, and the demodulator all follow it. Run it at each setting
-	below for about 20 s and record the Lines label.
+	\part Fill the $\Delta f = 1000$ Hz row from Question 4(a) ($\sigma = 1.2$) and
+	from one run at $\sigma = 0.5$ and an offset of 1200 Hz before changing
+	\texttt{dev}. Then stop the flowgraph and change the \texttt{dev} variable to
+	2000; the transmitter, the filter, and the demodulator all follow it. Run it at
+	each setting below for about 20 s and record the Lines label.
 
 	\begin{center}
 	\renewcommand{\arraystretch}{1.25}
@@ -361,7 +363,7 @@ and the Lines label.
 	\end{center}
 
 		\begin{solution}[0.6in]
-		Use the $\Delta f = 1000$ Hz row from parts (a) and Question 4. Doubling the
+		The $\Delta f = 1000$ Hz row comes from Question 4(a) and the 1200 Hz run, which, like part (a) at 1000 Hz, receives nothing. Doubling the
 		deviation doubles the offset the link tolerates and slightly improves the noise
 		result, even though the wider 6 kHz filter lets in more noise.
 		\end{solution}
