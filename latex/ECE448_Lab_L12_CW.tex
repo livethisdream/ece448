@@ -134,7 +134,7 @@ hardware.
 The flowgraphs are on the L12 lesson page, \texttt{L12-cw-tx.grc} and
 \texttt{L12-cw-link.grc}, and on the L12 Lab page, \texttt{L12-cw-pluto.grc}. Every
 number below assumes their settings: the keyed carrier at 5 kHz in a 32 kHz band,
-noise spread evenly over that band, a 700 Hz BFO, 5 ms edges, and the default message
+a 700 Hz BFO, 5 ms edges, and the default message
 \texttt{USAFA ECE 448}.
 
 \begin{questions}
@@ -330,8 +330,8 @@ message, and count the wrong, missing, and extra characters among those 39.
 
 		\begin{solution}[0.8in]
 		Counts over 39 characters vary from run to run because the noise is random; over
-		long runs, the 200 Hz filter at 6.5 lost about 1 letter in 7 and the 1000 Hz filter
-		more than half. The space level rises with the noise and with the filter width,
+		long runs, the 200 Hz filter at 6.5 garbles a few letters in every line and the 1000 Hz
+		filter most of them. The space level rises with the noise and with the filter width,
 		so the threshold has to move with it.
 		\end{solution}
 
@@ -423,7 +423,7 @@ unplug the Pluto before you disconnect the cable.
 
 	\part Record the mark and space levels and whether the text decodes at each TX
 	attenuation. Explain why the mark level hardly changes while the received power falls
-	by 10 dB a step, and what does change.
+	by about 10 dB a step, and what does change.
 
 	\begin{center}
 	\renewcommand{\arraystretch}{1.25}
@@ -458,8 +458,8 @@ unplug the Pluto before you disconnect the cable.
 	rising noise did to the envelope and to the decoded text with the 200 Hz filter, and
 	explain in words why the threshold had to move as the noise rose.
 		\begin{solution}[1.5in]
-		The link copied without errors at 4.5, lost a letter or two at 5.5, and lost about
-		1 in 7 at 6.5. Noise passing the filter raises the envelope during the spaces, from
+		The link copied without errors at 4.5, lost a letter or two at 5.5, and garbled a few
+		letters in every line at 6.5. Noise passing the filter raises the envelope during the spaces, from
 		about 0.04 at a noise amplitude of 1 to 0.28 at 6.5, while the mark level hardly
 		moves, so a fixed threshold of 0.3 lets noise peaks through as dits. The threshold
 		must sit halfway between the space and mark levels, so it has to rise with the
@@ -471,9 +471,9 @@ unplug the Pluto before you disconnect the cable.
 	up.
 		\begin{solution}[1.5in]
 		The signal is only about 100 Hz wide, so a wider filter adds noise without adding
-		signal: the 1000 Hz filter passed five times the noise of the 200 Hz filter and lost
-		more than half the characters, while the 50 Hz filter passed a quarter of it and lost
-		under 1\%. The tone must stay
+		signal: the 1000 Hz filter let through much more noise than the 200 Hz filter and lost
+		more than half the characters, while the 50 Hz filter passes much less noise and
+		copied almost every letter. The tone must stay
 		inside the filter: the 200 Hz filter decoded out to 80 Hz of tuning error and
 		failed at 100 Hz, so a 50 Hz filter would need the receiver within about 25 Hz of
 		the carrier, and transmitter drift would matter four times as much.

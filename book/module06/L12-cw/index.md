@@ -138,7 +138,7 @@ Drag the edge-time slider while the flowgraph runs and watch the red spectrum: a
 :class: viz-frame
 
 :::{depth}
-The left panel shows the whole message as marks and spaces, and below it the first key-down edge enlarged, hard keying in gray and the shaped edge in blue. The right panel shows the spectrum within 1 kHz of the carrier. Start with PARIS at 20 WPM: the readouts give a 60 ms dit and a 3.00 s message. Drag the edge time from 5 ms to 0 and watch the blue spectrum rise until it overlaps the gray one, while the "1 kHz away, vs hard" readout climbs to 0 dB. Then raise the speed: the dits get shorter, the spectrum widens, and the 99% bandwidth readout grows.
+The left panel shows the whole message as marks and spaces, and below it the first key-down edge enlarged, hard keying in gray and the shaped edge in blue. The right panel shows the spectrum within 1 kHz of the carrier. Start with PARIS at 20 WPM: the readouts give a 60 ms dit and a 3.00 s message. Drag the edge time from 5 ms to 0 and watch the blue spectrum rise until it overlaps the gray one, while the "1 kHz away, vs hard" readout climbs to 0 dB. Then raise the speed: the dits get shorter, the spectrum widens, and the 99% bandwidth readout, the width that holds 99% of the power, grows.
 :::
 
 :::{present}
@@ -245,29 +245,31 @@ A narrow filter has two limits. The tone must stay inside it, so a narrower filt
 ::::{frame} What We Saw
 :class: read-only
 
-We ran the link headless, without the Throttle, on long runs of random five-letter groups at 20 WPM, and at each setting set the threshold halfway between the space and mark levels on the envelope plot.
+We ran the link headless, without the Throttle, on long runs of random five-letter groups at 20 WPM, and at each setting set the threshold halfway between the measured space and mark levels.
 
 | Noise amplitude | 50 Hz filter | 200 Hz filter | 1 kHz filter |
 | :-: | :-: | :-: | :-: |
 | 3 | clean | clean | clean |
-| 4 | clean | clean | a few errors |
-| 5 | clean | a few errors | about 1 letter in 7 wrong |
-| 6 | a rare error | about 1 letter in 12 wrong | about 4 letters in 10 wrong |
-| 7 | a few errors | about 1 letter in 4 wrong | mostly wrong |
+| 4 | clean | clean | an occasional wrong letter |
+| 5 | clean | an occasional wrong letter | a wrong letter every line |
+| 6 | an occasional wrong letter | a wrong letter every line | mostly wrong |
+| 7 | an occasional wrong letter | many wrong letters | mostly wrong |
 
-Every column breaks the same way as the noise rises, and the narrower the filter, the later it breaks. That is Lesson 2's point: the noise that reaches the detector grows with the bandwidth. The threshold matters as much as the filter. Left at 0.3, the 200 Hz receiver lost about a fifth of the letters at a noise amplitude of 5 and most of them at 6.
+Every column breaks the same way as the noise rises, and the narrower the filter, the later it breaks. That is Lesson 2's point: the noise that reaches the detector grows with the bandwidth. The threshold matters as much as the filter. Left at 0.3, the 200 Hz receiver garbled many letters at a noise amplitude of 5 and most of them at 6.
 ::::
 
 ::::{frame} CW on a Real Radio
 :::{present}
-- The L12 Lab sends CW through one PlutoSDR, TX port to RX port, with a 30 dB attenuator.
-- The Pluto blocks and an AGC are the only changes.
+- The L12 Lab sends CW through a PlutoSDR, TX to RX, with a 30 dB attenuator.
 - Nothing in L12 transmits over the air.
+- In GQRX, an RTL-SDR hears a VOR's Morse identifier in AM mode.
 :::
 
 The L12 Lab moves this link onto a PlutoSDR. The transmit half ends at a PlutoSDR Sink at 915 MHz instead of the Noise Source, and the receive half starts at a PlutoSDR Source, with the same Xlating filter, product detector, CW filter, envelope detector, threshold, and decoder. As in L10, a Rational Resampler raises the 32 kHz stream by 32, to 1.024 MS/s, on the way out and lowers it again on the way in. The received level depends on the cable, the attenuator, and the Pluto's gain, and at the course's settings it is thousands of times smaller than in the simulation, so the lab flowgraph adds an **AGC** after the Xlating filter. It holds the tuned carrier near amplitude 1, which puts the envelope's mark level back near 0.64 at any attenuation, and the envelope plot shows the threshold as a red line so you can check it sits halfway between the space and mark levels.
 
 In class we transmit only into a cable, into a shielded enclosure, or at very low power in an ISM band, and only when the lesson says to. Nothing in this lesson transmits; the L12 Lab transmits from the Pluto's TX port through an inline 30 dB attenuator into its own RX port. We have run the PlutoSDR flowgraph only in simulation, with a model of the cable in place of the radio, so the lab is its first run on hardware.
+
+To hear real Morse, open GQRX with an RTL-SDR, tune a nearby VOR between 108 and 118 MHz, and choose AM mode. Every few seconds the station keys its two- or three-letter identifier as a 1020 Hz tone, and the waterfall shows each mark as a short dash beside the carrier. GQRX's CW modes, CW-U and CW-L, work like today's product detector: they turn a keyed carrier into a tone you can hear. Amateur CW sits on HF, below the RTL-SDR's range, so it needs an HF receiver or an upconverter. Listening is receive-only.
 ::::
 
 ::::{frame} Key Point
@@ -284,6 +286,11 @@ CW keys a carrier on and off, and a dit lasts $1.2/W$ s at $W$ WPM. Shaped edges
 - <a class="doc-link" href="../../grc/L12-cw-link.grc" download>L12-cw-link.grc</a>: the whole CW link, with sliders for the noise, the CW filter, the threshold, the tuning, and both speeds, a waterfall, the envelope, the audio, and the decoded text. No hardware needed.
 
 Open a `.grc` file from GRC's File menu, or run `gnuradio-companion L12-cw-link.grc` from the radioconda prompt. The Morse Keyer and the CW Decoder are Embedded Python Blocks, saved inside the `.grc` file; double-click one and choose Open in Editor to read its code. The L12 Lab page has the PlutoSDR version of the link.
+
+Tutorials this lesson follows:
+
+- GNU Radio wiki: <a class="doc-link" href="https://wiki.gnuradio.org/index.php/Embedded_Python_Block" target="_blank" rel="noopener">Embedded Python Block</a>, <a class="doc-link" href="https://wiki.gnuradio.org/index.php/Frequency_Shifting" target="_blank" rel="noopener">Frequency Shifting</a>, <a class="doc-link" href="https://wiki.gnuradio.org/index.php/Low_Pass_Filter_Example" target="_blank" rel="noopener">Low Pass Filter Example</a>, and <a class="doc-link" href="https://wiki.gnuradio.org/index.php/Runtime_Updating_Variables" target="_blank" rel="noopener">Runtime Updating Variables</a>.
+- PySDR: <a class="doc-link" href="https://pysdr.org/content/filters.html" target="_blank" rel="noopener">Filters</a> and <a class="doc-link" href="https://pysdr.org/content/noise.html" target="_blank" rel="noopener">Noise and dB</a>.
 ::::
 
 ::::{frame} Summary

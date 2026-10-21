@@ -27,7 +27,7 @@ L12 Lab · Module 6: Waveform Applications & RF Reverse Engineering · Dr. Neil 
 
 ::::{frame} From Lesson to Bench
 :::{present}
-- **Pre-Lab:** run the link, watch what noise does, and work out the timing and the decoder's windows.
+- **Pre-Lab:** run the link, watch the noise, and work out the timing and windows.
 - **Bench:** build a keyer, sweep noise, speed, and tuning, then use a PlutoSDR.
 - **Writeup:** explain the threshold, the filter width, and the speed limits.
 :::
@@ -145,9 +145,9 @@ The figure is the PlutoSDR flowgraph run in simulation, with the Pluto Sink and 
 
 ::::{frame} Part 3: After the Lab
 :::{present}
-- Describe what noise did to the envelope and the text, and explain the threshold.
+- Describe what noise did to the envelope and text, and explain the threshold.
 - Compare the 50 Hz, 200 Hz, and 1 kHz filters, and the tuning each requires.
-- Explain which decoder window failed at each speed, and propose a better decoder.
+- Explain which window failed at each speed, and propose a better decoder.
 :::
 
 The Writeup is Question 7, in three parts. Part (a) describes what rising noise did to the envelope and the decoded text, and explains why the threshold had to move. Part (b) compares the three filter widths and connects your tuning measurement to the narrowest one. Part (c) uses the windows from Question 2(d) to say which one failed at each end of the speeds you tried, and proposes a change that would let the decoder follow any sender's speed.
@@ -159,6 +159,11 @@ The Writeup is Question 7, in three parts. Part (a) describes what rising noise 
 - <a class="doc-link" href="../../labs/ECE448_Lab_L12_CW_blank.pdf" target="_blank" rel="noopener">L12 Lab packet (PDF)</a>
 - <a class="doc-link" href="../../grc/L12-cw-link.grc" download>L12-cw-link.grc</a>: the whole CW link with sliders for the noise, filter, threshold, tuning, and both speeds. No hardware needed.
 - <a class="doc-link" href="../../grc/L12-cw-pluto.grc" download>L12-cw-pluto.grc</a>: the link on one PlutoSDR, transmitting at 915 MHz into a cable from its TX port to its RX port through a 30 dB attenuator. Needs a PlutoSDR.
+
+Tutorials this lesson follows:
+
+- GNU Radio wiki: <a class="doc-link" href="https://wiki.gnuradio.org/index.php/Embedded_Python_Block" target="_blank" rel="noopener">Embedded Python Block</a>, <a class="doc-link" href="https://wiki.gnuradio.org/index.php/Frequency_Shifting" target="_blank" rel="noopener">Frequency Shifting</a>, <a class="doc-link" href="https://wiki.gnuradio.org/index.php/Low_Pass_Filter_Example" target="_blank" rel="noopener">Low Pass Filter Example</a>, and <a class="doc-link" href="https://wiki.gnuradio.org/index.php/Runtime_Updating_Variables" target="_blank" rel="noopener">Runtime Updating Variables</a>.
+- PySDR: <a class="doc-link" href="https://pysdr.org/content/filters.html" target="_blank" rel="noopener">Filters</a> and <a class="doc-link" href="https://pysdr.org/content/noise.html" target="_blank" rel="noopener">Noise and dB</a>.
 ::::
 
 ::::{frame} Looking Ahead
