@@ -203,24 +203,17 @@ false-locked from 450 Hz.
 		\ansbox[1.0in]{53.3}
 	\end{minipage}
 
-	\begin{minipage}[t]{0.58\linewidth}
-		\part Two radios use oscillators accurate to 2.5 ppm and transmit at 2.4 GHz. Find
-		the largest frequency offset between them, and how many times larger it is than
-		the 200 Hz offset in Lesson 15.
-		\begin{solution}[1.4in]
-		Each can be off by $2.5 \times 10^{-6} \times 2.4\ \text{GHz} = 6$ kHz, in
-		opposite directions:
-		\eq{ \Delta f_\text{max} &= 2 \times 6\ \text{kHz} = 12\ \text{kHz} }
-		That is 60 times the 200 Hz offset the lesson's loop locked from.
+	\part In words, explain why a link between two separate radios has a frequency offset
+	even when both are tuned to the same frequency, and why it needs a coarse frequency
+	correction before its Costas Loop.
+		\begin{solution}[1.3in]
+		Each radio makes its carrier from its own oscillator, and no two oscillators run at
+		exactly the same rate, so the received carrier sits off from the receiver's by the
+		difference. At a carrier of hundreds of megahertz or more, even a small error in
+		each oscillator adds up to kilohertz, while a Costas Loop pulls in from only a few
+		hundred hertz. A coarse correction, such as an FLL Band-Edge block or a frequency
+		measured from a known preamble, brings the offset inside that range first.
 		\end{solution}
-	\end{minipage}\hfill%
-	\begin{minipage}[t]{0.37\linewidth}
-		\raggedleft \vspace{12pt}
-		\ansbox[1.0in]{12 kHz}
-
-		\vspace{4pt}
-		\ansbox[1.0in]{60 times}
-	\end{minipage}
 
 	\part In words, explain why a receiver that sees the Lesson 15 constellation settle into
 	clusters has not necessarily locked, and what you would check on its constellation, its
