@@ -408,7 +408,8 @@ before you disconnect the cable.
 
 		\begin{solution}[1.0in]
 		The AGC holds the band's level steady, but the noise does not fall with the signal,
-		so each 10 dB of attenuation lowers the SNR by 10 dB. In a simulation with estimated
+		so as the attenuation rises the AGC raises the noise along with the signal, and on
+		the waterfall the hops sink into the noise until packets fail. In a simulation with estimated
 		Pluto levels, every packet arrived at 60, 70, and 80 dB, and at 89 dB the receiver
 		locked but no packet decoded. The real levels, and where the link fails, depend on
 		the hardware.
@@ -430,22 +431,23 @@ before you disconnect the cable.
 	raising its power further does not take more.
 		\begin{solution}[1.5in]
 		About 50\%, 75\%, and 88\% arrived with 2, 4, and 8 channels: the jammer took the
-		hops on its own channel, 1 in 2, 1 in 4, or 1 in 8, whatever its amplitude above 1. After de-hopping, the wanted signal sits at 0 Hz on every hop, but the
+		hops on its own channel, 1 in 2, 1 in 4, or 1 in 8, at any amplitude of 1 or
+		more. After de-hopping, the wanted signal sits at 0 Hz on every hop, but the
 		jammer moves to $f_\text{jam} - f_k$, which lies inside the receiver's $\pm 2$ kHz
 		filter only on the hops tuned to the jammer's channel. On every other hop the filter
 		removes it however strong it is, so more power takes no more hops; it only makes
 		sure the hops on its own channel are lost.
 		\end{solution}
 
-	\part Compare the timing errors the link tolerated with 2 and 4 guard bytes. Find the
-	share of each hop that carries the payload in each case, and explain the tradeoff.
+	\part Compare the timing errors the link tolerated with 2 guard bytes, from the
+	lesson's Timing Error frame, and with 4, from Question 5(b). Explain in words what the
+	extra guard bytes take from each hop, and when they are worth it.
 		\begin{solution}[1.5in]
-		With 2 guard bytes the window was about $-16$ to $+18$ ms; with 4 it was about
-		$-31$ to $+34$ ms, twice as wide. The payload is 112 bits of $240$, 47\%, with
-		2 guard bytes, and 112 of $272$, 41\%, with 4, and the guard bits take 13\% and
-		24\% of each hop. More guard tolerates a receiver with worse timing, or a synthesizer
-		that takes longer to settle, but each hop carries less data and the link's
-		throughput falls.
+		With 2 guard bytes every packet arrived from about $-16$ to $+18$ ms; with 4, from
+		about $-31$ to $+34$ ms, twice as wide. The extra guard bytes carry no data, so each
+		hop is longer for the same payload, the hop rate falls, and the link carries less
+		text per second. They are worth it when the receiver's timing is poor, or when a
+		radio's synthesizer needs time to settle at each hop.
 		\end{solution}
 
 	\part From Question 4(d), explain why one jammed channel can keep a receiver from

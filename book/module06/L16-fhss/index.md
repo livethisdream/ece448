@@ -47,9 +47,9 @@ Lesson 16 · Module 6: Waveform Applications & RF Reverse Engineering · Dr. Nei
 - A jammer parked on one channel stops only one hop in eight.
 :::
 
-The figure is today's flowgraph, `L16-fhss-link.grc`, running. The transmitter is Lesson 8's FSK modem sending Lesson 8's packets, one packet per **hop**, and it moves to a new channel for every hop. The left waterfall is the band the receiver sees: the signal appears as short dashes that step around eight channels, and a **jammer**, a strong tone parked on one channel, is the solid vertical line at +5 kHz.
+Open `L16-fhss-link.grc`, run it, and set the Jammer amplitude slider to 3. The figure is that window. The transmitter is Lesson 8's FSK modem sending Lesson 8's packets, one packet per **hop**, on a new channel every hop. On the left waterfall, the band the receiver sees, the signal is a trail of short dashes stepping around eight channels, and the **jammer**, a strong tone parked on one channel, is the solid line at +5 kHz.
 
-The receiver follows the same sequence of channels. The right waterfall is its output after the **Hop Sync** block: the signal stands still at 0 Hz, and now the jammer appears to hop. The receiver loses only the hops that land on the jammed channel, 1 in 8, and the Packets label shows 88% of the packets arriving intact. This is **frequency-hopping spread spectrum** (FHSS).
+Now look at the right waterfall, the output of the receiver's **Hop Sync** block. The signal stands still at 0 Hz, and the jammer is the one that hops. Watch the Packets label: about 88% of the packets arrive, because only the hops on the jammer's channel, 1 in 8, are lost. This is **frequency-hopping spread spectrum** (FHSS).
 ::::
 
 ::::{frame} Where Frequency Hopping Is Used
@@ -59,9 +59,9 @@ The receiver follows the same sequence of channels. The right waterfall is its o
 - **ISM-band hoppers** at 915 MHz use at least 50 channels.
 :::
 
-Hopping solves two problems at once. Interference on one channel, from a microwave oven, a Wi-Fi network, or a jammer, takes from a hopping link only the hops that land there. And a listener who does not know the sequence hears only short bursts scattered across the band.
+Interference on one channel, from a microwave oven, a Wi-Fi network, or a jammer, takes from a hopping link only the hops that land there, and a listener without the sequence hears only short bursts scattered across the band.
 
-Bluetooth Classic hops among 79 channels 1 MHz apart, from 2402 MHz up, in slots of 625 µs, up to 1600 hops a second, and its **adaptive frequency hopping** (AFH) drops channels that stay busy. SINCGARS, the Army's VHF-FM combat net radio, hops about 100 times a second among up to 2320 channels 25 kHz apart; its sequence comes from a transmission security key and the time of day, so a radio without the key cannot follow it. Unlicensed hoppers at 915 MHz fall under FCC Part 15.247, which requires a pseudo-random sequence that uses every channel equally, at least 50 channels for a narrowband signal, and no more than 0.4 s on any one channel in 20 s.
+Bluetooth Classic hops among 79 channels 1 MHz apart at 2.4 GHz, in 625 µs slots, and its **adaptive frequency hopping** (AFH) drops channels that stay busy. SINCGARS, the Army's VHF-FM radio, hops among up to 2320 channels 25 kHz apart and takes its sequence from a security key and the time of day. Unlicensed hoppers at 915 MHz follow FCC Part 15.247: a pseudo-random sequence that uses every channel equally, at least 50 channels for a narrowband signal, and an average of no more than 0.4 s on any one channel within a 20 s period.
 ::::
 
 ::::{frame} Part 1: The Hopping Transmitter
@@ -76,9 +76,9 @@ Bluetooth Classic hops among 79 channels 1 MHz apart, from 2402 MHz up, in slots
 - **Multiply** moves the FSK signal to each hop's channel.
 :::
 
-`L16-fhss-tx.grc` builds the transmitter. The top row is the FSK transmitter of Lesson 8 at 1000 baud with a 1 kHz deviation, running at 128 kHz so the hops have room. A **Tagged Stream Mux** with four inputs assembles each packet: 2 guard bytes, the 12-byte access code and header from the **Protocol Formatter**, the 14-byte line `USAFA ECE 448` with its newline, and 2 more guard bytes.
+Open `L16-fhss-tx.grc`. The top row is Lesson 8's FSK transmitter, 1000 baud with a 1 kHz deviation, running at 128 kHz so the hops have room. Its **Tagged Stream Mux** now has four inputs: 2 guard bytes, the access code and header from the **Protocol Formatter**, the line `USAFA ECE 448`, and 2 more guard bytes.
 
-The bottom row is the **hop synthesizer**. A **Vector Source** repeats the list of hop frequencies, a **Repeat** block holds each one for 30,720 samples, one hop, and a **VCO** turns each value into a tone at that many hertz. Multiplying the FSK signal by that tone moves it to the hop's channel, the way a radio's synthesizer and mixer move a signal to its carrier.
+The bottom row is the **hop synthesizer**. A **Vector Source** lists the hop frequencies, a **Repeat** holds each one for 30,720 samples, one hop, and a **VCO** with sensitivity $2\pi$ turns each value into a tone at that many hertz. The **Multiply** moves the FSK signal to that tone's frequency, which is the frequency shift of the GNU Radio wiki's Frequency Shifting tutorial, done once per hop.
 ::::
 
 ::::{frame} One Packet per Hop
@@ -92,9 +92,7 @@ The bottom row is the **hop synthesizer**. A **Vector Source** repeats the list 
 - Guard bits at each end let the receiver's timing be off a little.
 :::
 
-The packet and the hop have the same length, so every hop boundary falls between two packets and no packet is ever split across two channels. Bluetooth works the same way: each packet fits in one 625 µs slot or in several slots on one frequency.
-
-The **guard bits** at each end are the alternating pattern 01010101. They carry no data. If the receiver changes channel a few milliseconds late, it misses part of the leading guard, and if it changes early, part of the trailing guard; in both cases the access code, header, and payload still arrive on the right channel. The Timing Error frame below measures how much error the 16 guard bits at each end absorb.
+The packet and the hop are the same length, so no packet is ever split across two channels; Bluetooth does the same, one packet per slot. The **guard bits** at each end, the pattern 01010101, carry no data. A receiver that changes channel a few milliseconds early or late loses only guard bits, and the Timing Error frame below shows how far that goes.
 ::::
 
 ::::{frame} The Hop Sequence
@@ -112,9 +110,9 @@ Channel $k$, for $k = 0$ to 7, sits at
 
 $$f_k = 10\text{ kHz} \times (k - 3.5),$$
 
-so channel 0 is at −35 kHz and channel 7 at +35 kHz. The FSK signal is about 4 kHz wide, so neighboring channels do not overlap. The variable `seq` holds the **hop sequence**, `np.random.default_rng(key).permutation(8)`: a shuffled list of the 8 channels, set by the **key**. Key 448 gives 7, 2, 0, 6, 4, 1, 3, 5, and the time sink on the right shows the same order as frequencies, starting partway through a cycle. Moving the Hop key slider gives a different order.
+so channel 0 is at −35 kHz and channel 7 at +35 kHz, far enough apart that the 4 kHz-wide FSK signals do not overlap. Run `L16-fhss-tx.grc` and watch: the waterfall shows the dashes stepping around the band, and the time sink on the right shows the hop frequency as a staircase. The variable `seq`, `np.random.default_rng(key).permutation(8)`, is the **hop sequence**, a shuffled list of the 8 channels set by the **key**. Key 448 gives 7, 2, 0, 6, 4, 1, 3, 5; drag the Hop key slider and the staircase changes order.
 
-A permutation uses each channel exactly once per **cycle** of 8 hops, which meets Part 15's equal-use rule and, as Part 3 shows, makes acquiring sync simple. Real systems use much longer sequences: Bluetooth computes each hop from the master's 28-bit clock and its address, and its sequence takes about 23 hours to repeat.
+A shuffled list uses each channel exactly once per **cycle** of 8 hops, which meets Part 15's equal-use rule and, as Part 3 shows, makes sync simple. Real systems use far longer sequences; Bluetooth's takes about 23 hours to repeat.
 ::::
 
 ::::{frame} Hop Timing
@@ -143,7 +141,7 @@ T_\text{cycle} &= N\,T_\text{hop} \\
 | Hop rate | 4.17 hops/s | up to 1600 hops/s | about 100 hops/s |
 | Time on one hop | 240 ms | 625 µs | about 10 ms |
 
-Our link hops slowly so that the waterfall can show each hop. A real hopper sends the same kind of packet in a much shorter hop; the blocks and the synchronization problem are the same. The guard bits take 32 of the 240 bits, 13% of each hop.
+Our link hops slowly so that the waterfall can show each hop; the blocks and the synchronization problem are the same at any hop rate.
 ::::
 
 ::::{frame} FHSS Explorer
@@ -175,9 +173,9 @@ Each column is one hop. The filled cell is the transmitter's channel and the amb
 - The Text Sink tells Hop Sync each time a packet arrives.
 :::
 
-`L16-fhss-link.grc` adds a channel and a receiver to the transmitter. The channel delays the signal by a path delay the receiver does not know, adds noise, and adds the jammer, a tone of adjustable amplitude at the center of one channel.
+Open `L16-fhss-link.grc`. The top half is the transmitter you just ran, then a channel: a **Delay** for a path delay the receiver does not know, a **Noise Source**, and the jammer, a **Signal Source** at the center of one channel.
 
-The receiver starts with **Hop Sync**, an Embedded Python Block. It multiplies the received band by a tone at minus the current hop frequency, which **de-hops** the signal: every hop comes out at 0 Hz. A **Low Pass Filter** then keeps ±2 kHz and decimates by 4 to 32 kHz, which removes the other seven channels, and from the **Quadrature Demod** on, the receiver is Lesson 8's, with the same Symbol Sync, access-code search, and Text Sink. The Text Sink sends a message to Hop Sync each time a packet arrives, which tells Hop Sync it is still on the right hops.
+The receiver starts with **Hop Sync**, an Embedded Python Block. It multiplies the band by a tone at minus the current hop frequency, which **de-hops** it: every hop comes out at 0 Hz. A **Low Pass Filter** keeps ±2 kHz and decimates by 4, which removes the other seven channels, and from the **Quadrature Demod** on, the receiver is Lesson 8's. The Text Sink sends a message out its `pkt` port each time a packet arrives, and the dashed line back to Hop Sync carries it.
 ::::
 
 ::::{frame} De-Hopping
@@ -191,9 +189,9 @@ The receiver starts with **Hop Sync**, an Embedded Python Block. It multiplies t
 - With no jammer, every packet arrives.
 :::
 
-The transmitter multiplied by $e^{j2\pi f_k t}$ on hop $k$; Hop Sync multiplies by $e^{-j2\pi f_k t}$ on the same hop, and the two cancel. The right waterfall shows the result: one steady trace at 0 Hz, the FSK signal of Lesson 8, while the noise stays spread across the band. The Low Pass Filter keeps only the 4 kHz around 0 Hz, so from there on the receiver sees what Lesson 8's receiver saw, and noise affects it the same way. Turn the Noise amplitude slider up and watch: at 1, every packet arrives; at 2, a few are lost; at 2.5, about a third are.
+Run it with the sliders at their defaults. The Receiver label reads "locked" within a fraction of a second, and the right waterfall shows one steady trace at 0 Hz: the transmitter multiplied by $e^{j2\pi f_k t}$ on hop $k$, Hop Sync multiplies by $e^{-j2\pi f_k t}$, and the two cancel. Every packet arrives.
 
-FSK suits a hopper because the receiver does not need the carrier's phase. The transmitter's and receiver's synthesizers do not start each hop at the same phase on a real radio, and the Quadrature Demod measures only the change of phase from sample to sample, so a phase jump at a hop boundary corrupts at most one bit, inside the guard. Bluetooth uses GFSK for the same reason.
+Now drag the Noise amplitude slider up and watch the Packets label: at 1 every packet arrives, at 2 a few are lost, and at 2.5 about a third are. After the Low Pass Filter the receiver sees what Lesson 8's receiver saw, so noise affects it the same way. FSK suits a hopper because the Quadrature Demod needs no carrier phase, so a phase jump at a hop boundary does no harm.
 ::::
 
 ::::{frame} Part 3: Finding the Hops
@@ -207,9 +205,9 @@ FSK suits a hopper because the receiver does not need the carrier's phase. The t
 - When the power there jumps, hop 0 has started: it locks and hops from then on.
 :::
 
-A receiver that knows the key still does not know two things when it starts: which hop the transmitter is on, and when that hop began. The path delay alone is unknown, and on a real radio so are the latency of USB buffers and the instant the transmitter started. We use **sync on a known hop**. Hop Sync parks on the **sync channel**, `seq[0]`, channel 7 for key 448, and measures the power in it every 0.5 ms. Because the sequence visits each channel once per cycle, the transmitter can appear on channel 7 only on hop 0. When the power in the last 2 ms rises to four times its average over an 18 ms window ending 4 ms earlier, hop 0 has just begun, and Hop Sync takes that instant as its hop boundary and starts hopping. It waits at most one cycle, 1.92 s.
+That lock at startup is Hop Sync finding the hops. A receiver with the key still does not know which hop the transmitter is on or when it began, because the path delay is unknown, and on a radio so is the USB latency. We use **sync on a known hop**: Hop Sync parks on the **sync channel**, `seq[0]`, channel 7 for key 448. The sequence visits each channel once per cycle, so the transmitter appears there only on hop 0. When the power on channel 7 jumps to four times its recent average, hop 0 has begun; Hop Sync takes that instant as its hop boundary and hops from then on. It waits at most one cycle, 1.92 s.
 
-Other designs were possible. A **start-of-hop marker**, such as the access code alone, gives timing within a hop but not which hop it is. **Time of day**, which SINCGARS uses, needs a clock shared to within the guard time. Sync on a known hop needs neither, only the key. It has two weaknesses. It listens on one channel to acquire, which the Jammer frames below measure. And once locked, Hop Sync keeps hopping on its own count of samples and never adjusts its timing; the packets only keep it from parking again. On one Pluto, whose transmitter and receiver share a clock, that does no harm, but between two radios whose clocks differ by a few parts per million, the hop boundaries would drift apart until they left the guard time.
+After that, Hop Sync hops on its own count of samples; the packets only stop it from parking again. That leaves two weak points. A jammer on the sync channel keeps a receiver from locking, which the Jammer frames show. And the timing never follows clock drift: harmless on one Pluto, whose transmitter and receiver share a clock, but between two radios a few parts per million apart, the hop boundaries would slowly drift out of the guard time. A start-of-hop marker alone would give timing but not the hop number, and time of day, which SINCGARS uses, needs a shared clock.
 ::::
 
 ::::{frame} Losing and Regaining Sync
@@ -223,9 +221,9 @@ Other designs were possible. A **start-of-hop marker**, such as the access code 
 - It locks on the next hop 0; here the receiver lost 17 packets.
 :::
 
-The figure moves the path delay from 100 to 400 ms while the link runs, as if the buffering between the two radios had changed. The receiver's hop boundaries now fall 300 ms, more than a whole hop, away from the transmitter's, so it lands on the wrong channels and the scattered stretch on the right waterfall appears. Hop Sync counts the hops since the last packet, and when more than 9 pass, a cycle and a hop, with none, it parks on the sync channel again. It locks when hop 0 next arrives, and the steady trace returns. The waterfall's time axis is only approximate, because the GUI scrolls one row per display update; on it, an 8-hop cycle of 1.92 s spans about 1.5 s. We read times from the Packets label instead.
+While the link runs, drag the Path delay slider from 100 to 400 ms, as if the buffering between two radios had changed. Watch the right waterfall: the steady trace breaks up into scattered dashes, because the receiver's hop boundaries are now 300 ms, more than a hop, off. The Receiver label goes back to "searching" after more than 9 hops with no packet, and when hop 0 next reaches the sync channel it locks again and the trace returns. In the figure the Packets label shows 20 of 37 packets since the slider moved: the receiver lost 17 hops, about 4 s.
 
-The receiver loses about 10 hops, 2.4 s, plus up to one more cycle and a hop, 2.2 s, depending on where in the cycle the transmitter is when Hop Sync parks. Here the Packets label shows 20 of 37 packets since the slider moved: the receiver lost 17 hops, 4.1 s, near the long end of that range.
+The waterfall's time axis is only approximate, because the GUI scrolls one row per display update; on it, an 8-hop cycle of 1.92 s spans about 1.5 s. Read times from the Packets label instead.
 ::::
 
 ::::{frame} Off by One Hop
@@ -239,9 +237,9 @@ The receiver loses about 10 hops, 2.4 s, plus up to one more cycle and a hop, 2.
 - Not one packet in 98 arrives.
 :::
 
-The Receiver hop offset slider moves the receiver's sequence ahead of the transmitter's by whole hops. At +1, Hop Sync locks at the right moment but tunes to `seq[k+1]` while the transmitter is on `seq[k]`. Consecutive entries of a permutation are always different channels, so the receiver is never on the right one: the right waterfall shows the signal scattered at the differences between channels, as far as 60 kHz from 0 Hz for key 448, and nothing passes the Low Pass Filter. With no packets, Hop Sync parks again every 10 hops and locks one hop off again, and the parked stretches add more dashes to the waterfall. Offsets of −1, +2, and −2 gave the same result, no packets at all.
+Set the Receiver hop offset slider to +1. Hop Sync now tunes to `seq[k+1]` while the transmitter is on `seq[k]`. Watch the right waterfall: the steady trace is gone, and the signal lands at the difference between two channels, a different place every hop, never inside the Low Pass Filter. The Packets label stays at 0, because consecutive entries of a shuffled list are never the same channel. Try −1 and +2: still nothing.
 
-The watchdog does not fix it, because Hop Sync applies the offset after every lock. A receiver with the right timing on the wrong hop receives nothing, while a fixed-channel receiver tuned to any one of the 8 channels would still catch 1 packet in 8.
+Hop Sync keeps parking and relocking, but it applies the offset after every lock, so it never recovers. A receiver with the right timing on the wrong hop receives nothing, while a fixed receiver parked on any one channel would still catch 1 packet in 8.
 ::::
 
 ::::{frame} Timing Error
@@ -258,7 +256,7 @@ The Receiver timing error slider shifts every hop boundary of the receiver by a 
 | +20 ms | 68% | the leading guard and 4 bits of the access code |
 | +24 ms | 16% | the leading guard and 8 bits of the access code |
 
-The window runs from −16 to +18 ms, about the 16 ms of guard at each end. It reaches a little further on the late side because the access-code search accepts a packet with up to 2 wrong bits of its 64, and a missed bit is wrong only half the time. More guard bits widen the window and lower the share of each hop that carries data: the guard takes 13% of each hop here, and a one-slot Bluetooth packet lasts at most 366 µs, which leaves about 40% of the 625 µs slot for the synthesizer to settle.
+The window runs from −16 to +18 ms, about the 16 ms of guard at each end, a little further on the late side because the access-code search accepts up to 2 wrong bits. More guard bits widen the window but leave less of each hop for data.
 ::::
 
 ::::{frame} Part 4: A Narrowband Jammer
@@ -272,9 +270,9 @@ The window runs from −16 to +18 ms, about the 16 ms of guard at each end. It r
 - It reaches the receiver on 1 hop in 8: 88% of packets arrive.
 :::
 
-The jammer is a tone of amplitude 3 at the center of channel 4, three times the amplitude of our signal. The receiver multiplies the whole band by the hop tone, so the jammer moves to a new frequency every hop; on most hops it lands outside the Low Pass Filter. Only on the hop where the receiver tunes to channel 4 does the jammer land at 0 Hz, between the FSK tones at ±1 kHz, and capture the Quadrature Demod.
+Set the Jammer amplitude to 3, three times the signal's amplitude, on channel 4. Watch the right waterfall: Hop Sync shifts the jammer along with the band, so it lands somewhere new every hop, usually outside the Low Pass Filter. Only on the hop to channel 4 does it land at 0 Hz and capture the Quadrature Demod. Watch the Packets label settle near 88%, 7 hops in 8.
 
-The sequence visits channel 4 once in every 8 hops, so the receiver loses 1 hop in 8 and the other 7 arrive. We measured 280 of 319 packets, 87.8%, at jammer amplitudes of 1, 3, and 10: once the jammer is strong enough to take a hop, more power does not take more hops.
+Now drag the amplitude up to 10. The Packets label hardly moves: once the jammer takes the hops on its own channel, more power takes no more. Then set the amplitude to 0.5, and every packet arrives again.
 ::::
 
 ::::{frame} Jammer Sweep
@@ -289,9 +287,9 @@ We measured the link headless at noise amplitude 1, with two noise seeds at each
 | 3 | 0% | 88% |
 | 10 | 0% | 88% |
 
-A jammer as strong as the signal stops a fixed-channel link completely, and the hopping link still delivers 7 packets in 8. To take every hop, the jammer has to cover all 8 channels. The same transmitter power spread over 8 channels puts only an eighth of it on each: eight tones of amplitude 0.354, together as strong as one tone of amplitude 1, blocked no packets at all. Eight tones of amplitude 1, 8 times the power, took every hop: no packet arrived after they came on, and with the sync channel jammed too, the receiver never locked again.
+A jammer as strong as the signal stops a fixed-channel link completely, while the hopping link still delivers 7 packets in 8. To take every hop, the jammer has to cover all 8 channels with the same strength on each. Spreading one tone's power over 8 channels did nothing: eight weaker tones, of amplitude 0.354, whose powers add up to one tone of amplitude 1, blocked no packets. Eight tones of amplitude 1 took every hop.
 
-The receiver has one weak point, the sync channel. With the tone of amplitude 3 on the sync channel, channel 7, from the start, Hop Sync never saw the power jump and never locked: 0 packets. Turned on after the receiver had locked, the same jammer took only its 1 hop in 8, and 88% of the packets after it came on arrived, because the receiver kept hopping on its own count. But if that receiver ever lost lock, it would park on the jammed channel and never lock again. A real system protects acquisition too; the lab asks how.
+The sync channel is the weak point. With the jammer on channel 7 from the start, Hop Sync never saw the power jump and never locked. Turned on after the receiver locked, the same jammer took only its 1 hop in 8, but a receiver that later lost lock would park on the jammed channel and never lock again. A real system protects acquisition too; the lab asks how.
 ::::
 
 ::::{frame} Frequency Hopping on a Real Radio
@@ -322,6 +320,11 @@ A hopper sends each packet on a new channel in a keyed order. A receiver with th
 - <a class="doc-link" href="../../grc/L16-fhss-link.grc" download>L16-fhss-link.grc</a>: the whole link, with sliders for the noise, the jammer, the path delay, and the receiver's hop offset and timing error, waterfalls before and after Hop Sync, and the received text. No hardware needed.
 
 Open a `.grc` file from GRC's File menu, or run `gnuradio-companion L16-fhss-link.grc` from the radioconda prompt. Hop Sync and the Text Sink are Embedded Python Blocks, saved inside the `.grc` file; double-click one and choose Open in Editor to read its code. The number of channels, `nch`, the guard bytes, `guard`, and the receiver's key, `rx_key`, are variables you can edit on the canvas. The L16 Lab page has the PlutoSDR version of the link.
+
+The GNU Radio wiki has no frequency-hopping tutorial, so this lesson follows the tutorials whose blocks it uses:
+- <a href="https://wiki.gnuradio.org/index.php?title=Frequency_Shifting" target="_blank" rel="noopener">Frequency Shifting</a>, for the hop synthesizer and de-hopper: multiply by a complex tone.
+- <a href="https://wiki.gnuradio.org/index.php?title=Simulation_example:_FSK" target="_blank" rel="noopener">Simulation example: FSK</a> and <a href="https://wiki.gnuradio.org/index.php/Packet_Communications" target="_blank" rel="noopener">Packet Communications</a>, for Lesson 8's modem and packets.
+- <a href="https://wiki.gnuradio.org/index.php/Embedded_Python_Block" target="_blank" rel="noopener">Embedded Python Block</a>, <a href="https://wiki.gnuradio.org/index.php/Message_Passing" target="_blank" rel="noopener">Message Passing</a>, and <a href="https://wiki.gnuradio.org/index.php/Stream_Tags" target="_blank" rel="noopener">Stream Tags</a>, for Hop Sync, the Text Sink's `pkt` messages, and the `packet_len` tags.
 ::::
 
 ::::{frame} Summary

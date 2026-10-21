@@ -126,7 +126,7 @@ The blocks and the synchronization problem are the same at any hop rate. The gua
 <p class="viz-cue">↗ Interactive on the lesson page</p>
 
 Note:
-Start at 8 channels with 1 jammed channel. The long-run delivered fraction tracks 1 minus jammed over channels.
+Start at 8 channels with 1 jammed channel. The delivered fraction falls as more of the hops land on jammed channels.
 
 ---
 
@@ -148,7 +148,7 @@ Hop Sync is an Embedded Python Block. The Low Pass Filter keeps plus and minus 2
 Multiply by the conjugate hop tone: every hop returns to 0 Hz.
 
 Note:
-The transmitter multiplied by e to the j 2 pi f k t; Hop Sync multiplies by its conjugate. FSK needs no carrier phase, so a phase jump at a hop boundary is harmless. At noise amplitude 1 every packet arrives, at 2 about 97%.
+The transmitter multiplied by e to the j 2 pi f k t; Hop Sync multiplies by its conjugate. FSK needs no carrier phase, so a phase jump at a hop boundary is harmless. Drag the noise slider: at 1 every packet arrives, at 2 a few are lost, at 2.5 about a third.
 
 ---
 
@@ -225,7 +225,7 @@ The jammer's amplitude is three times the signal's. It reaches the receiver only
 The same power spread over 8 channels blocked nothing.
 
 Note:
-Eight tones of amplitude 0.354, together as strong as one tone of amplitude 1, blocked no packets. A jammer on the sync channel before the receiver locks keeps it from ever locking; after lock it takes only its 1 hop in 8.
+Eight tones of amplitude 0.354, whose powers add up to one tone of amplitude 1, blocked no packets. A jammer on the sync channel before the receiver locks keeps it from ever locking; after lock it takes only its 1 hop in 8.
 
 ---
 

@@ -46,7 +46,7 @@ Questions 1 to 5 run on your laptop and transmit nothing. Question 6 transmits, 
 
 Do the Pre-Lab before you arrive. Question 1 checks that the link flowgraph opens, locks, and decodes on your laptop: if GRC reports an error, the L5 lesson page lists the install checks, and EI before the lab is the place to fix it.
 
-Question 2 is the arithmetic the flowgraphs need: the length of a hop, the hop rate, the cycle time, and the samples per hop when each packet carries 4 guard bytes at each end instead of 2, and how long each guard lasts; and the hop frequencies, hop time, and cycle time of the hopper you build in Question 3. How many packets get through a jammer, and how far the receiver's timing can be off, you find at the bench.
+Question 2 is the arithmetic the flowgraphs need: the length of a hop, the hop rate, the cycle time, and the samples per hop when each packet carries 4 guard bytes at each end instead of 2, and how long each guard lasts; and the hop frequencies, hop time, and cycle time of the hopper you build in Question 3.
 ::::
 
 ::::{frame} Pre-Lab Arithmetic
@@ -146,11 +146,11 @@ The figure is the PlutoSDR flowgraph run in simulation, with the Pluto Sink and 
 ::::{frame} Part 3: After the Lab
 :::{present}
 - Describe how the jammer and the channel count changed the packets delivered, and why more jammer power took no more.
-- Explain what the guard bytes allow and what they take.
-- Explain the sync channel's weakness, and propose a fix.
+- Explain what the guard bytes allow and take from each hop.
+- Explain the sync channel's weakness and propose a fix.
 :::
 
-The Writeup is Question 7, in three parts. Part (a) describes what happened to the packets delivered as you changed the number of channels and the jammer, and explains, from the De-hopped waterfall of Question 3, why a jammer stronger than the signal still takes only the hops on its own channel. Part (b) compares the timing errors the link tolerated with 2 and 4 guard bytes and explains what the extra guard bytes take from each hop. Part (c) explains, from Question 4(d), why one jammed channel can keep a receiver from ever locking, and proposes a change to Hop Sync or to the packet that removes that weakness.
+The Writeup is Question 7, in three parts. Part (a) describes what happened to the packets delivered as you changed the number of channels and the jammer, and explains, from the De-hopped waterfall of Question 3, why a jammer stronger than the signal still takes only the hops on its own channel. Part (b) compares the timing errors the link tolerated with 2 guard bytes, from the lesson's Timing Error frame, and with 4, from Question 5(b), and explains in words what the extra guard bytes take from each hop. Part (c) explains, from Question 4(d), why one jammed channel can keep a receiver from ever locking, and proposes a change to Hop Sync or to the packet that removes that weakness.
 ::::
 
 ::::{frame} Lab Packet

@@ -133,7 +133,8 @@ guard bytes. It runs at $R_s = 2000$ baud, with 16 channels.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \question \textbf{The FCC dwell rule.} Among its limits on power and bandwidth, FCC Part 15.247 lets a narrowband hopper at
 915 MHz transmit without a license only if it hops over at least 50 channels, uses every
-channel equally, and stays on any one channel no more than 0.4 s in any 20 s. The L16
+channel equally, and keeps its average time on any one channel to no more than 0.4 s
+within a 20 s period. The L16
 link hops over 8 channels with 240 ms hops, each channel once per cycle.
 \begin{parts}
 
@@ -151,11 +152,11 @@ link hops over 8 channels with 240 ms hops, each channel once per cycle.
 	\end{minipage}
 
 	\begin{minipage}[t]{0.58\linewidth}
-		\part Set \texttt{nch} to 50, with the same 240 ms hops and each channel once per
-		cycle. Find how long the link now spends on one channel in 20 s.
+		\part A link like L16's hops over 50 channels instead, with the same 240 ms hops,
+		each channel once per cycle. Find its average time on one channel in 20 s.
 		\begin{solution}[1.0in]
 		\eq{ \dfrac{83.3}{50} \times 0.240\ \text{s} = 0.4\ \text{s} }
-		which just meets the limit.
+		on average, which just meets the limit.
 		\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
@@ -211,7 +212,7 @@ that hop's channel frequency, and the low-pass filter after it keeps $\pm 2$ kHz
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
 		\raggedleft \vspace{12pt}
-		\ansbox[1.1in]{1 hop in 8}
+		\ansbox[1.1in]{only channel 4}
 	\end{minipage}
 
 	\part A cadet turns the jammer amplitude up from 1 to 10, and the Packets label stays
@@ -219,7 +220,7 @@ that hop's channel frequency, and the low-pass filter after it keeps $\pm 2$ kHz
 		\begin{solution}[1.0in]
 		The jammer already takes every hop on channel 4 at amplitude 1. On the other 7 hops
 		of the cycle the filter removes it however strong it is, so raising its power
-		cannot reach those hops; only a jammer on more channels could.
+		cannot reach those hops.
 		\end{solution}
 
 	\part Bluetooth's adaptive frequency hopping lets the receiver mark channels that
