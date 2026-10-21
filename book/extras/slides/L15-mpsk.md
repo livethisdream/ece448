@@ -24,7 +24,7 @@ Spring 2027 · Dr. Neil Rogers
 
 - Lesson 3: constellations, Gray coding, and the BER curves
 - Lesson 9: RRC pulses, the matched filter, and Symbol Sync
-- Lesson 10: text in packets, and a PlutoSDR link that could lock upside down
+- Lessons 8 and 10: text in packets, and a PlutoSDR link that could lock upside down
 
 Today: BPSK, QPSK, and 8PSK, with carrier recovery.
 
@@ -208,10 +208,10 @@ A QPSK constellation turned 90 degrees looks the same, so the loop locks to whic
 | Received, one step off | 1 | 2 | 0 | 0 | 3 |
 | Change, mod 4 | – | 1 | 2 | 0 | 3 |
 
-Send the change in phase; a rotation does not change the changes.
+Send the change in phase; a rotation shifts every index but leaves the differences unchanged.
 
 Note:
-The Differential Encoder adds each index to the last one sent, mod M; the decoder subtracts. One wrong decision spoils two changes, so the BER roughly doubles. In the flowgraph the variable diff picks the coded or uncoded path at both ends; change it and run again.
+The Differential Encoder adds each index to the last one sent, mod M; the decoder subtracts. One wrong decision corrupts two changes, so the BER roughly doubles. In the flowgraph the variable diff picks the coded or uncoded path at both ends; change it and run again.
 
 ---
 

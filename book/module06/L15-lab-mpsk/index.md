@@ -56,11 +56,11 @@ Question 2 asks for predictions from the lesson: the bit rate and $E_s/N_0$ of B
 | :-- | :-- |
 | Bit rate and $E_s/N_0$ | $k = \log_2 M$; $E_s/N_0 = E_b/N_0 + 10 \log_{10} k$ |
 | BER | Lesson 3's formulas; about twice that with differential coding |
-| Phases that decode | the loop's lock points, $360°/M$ apart |
+| Phases that decode | within $180°/M$ of 0° |
 | 8PSK pull-in | the trend from BPSK to QPSK |
 :::
 
-These follow from Lessons 3 and 15. The bit rates and $E_s/N_0$ are exact, and so is the count of phases that decode, once you know where the loop locks. The measured BER is random and sits a little above theory, which is why the packet records it over 60 s and the number of bits counted, and the pull-in range is an estimate that the bench measures.
+These follow from Lessons 3 and 15. The bit rates and $E_s/N_0$ are exact, and so is the count of phases that decode: the loop locks to the nearest of $M$ rotations, $360°/M$ apart, so the text arrives only for phases within $180°/M$ of 0°. The measured BER is random and sits a little above theory, which is why the packet records it over 60 s and the number of bits counted, and the pull-in range is an estimate that the bench measures.
 ::::
 
 ::::{frame} Part 2: Build a Carrier-Recovery Loop
@@ -94,7 +94,7 @@ These follow from Lessons 3 and 15. The bit rates and $E_s/N_0$ are exact, and s
 ::::{frame} Part 2: Carrier Recovery
 :class: read-only
 
-1. With `M` = 4 and differential coding on, set $E_b/N_0$ to 12 dB.
+1. Stop the flowgraph, set `diff` to 1, and run it again. With `M` = 4, set $E_b/N_0$ to 12 dB.
 2. With the frequency offset at 0 and lines arriving, type 250 into the frequency offset box in one jump. Watch the frequency estimate for up to 15 s, and record whether the loop locks, about how long it takes, and the frequency it settles at, for Question 5(a).
 3. Type 0, wait until lines arrive again, and repeat step 2 for 350 and then 425 Hz. At 425 Hz, also count the clusters in the Costas Loop's output.
 4. Stop the flowgraph, set `M` to 8, and run it again. Set $E_b/N_0$ to 12 dB and repeat steps 2 and 3 for 100, 150, 200, and 250 Hz, for Question 5(b). At 200 Hz and above, give the loop the full 15 s.
@@ -104,7 +104,7 @@ These follow from Lessons 3 and 15. The bit rates and $E_s/N_0$ are exact, and s
 :class: read-only
 
 1. Stop the flowgraph, set `M` to 4 and `diff` to 0, and run it again, so the loop locks with no frequency offset and the channel phase at 0. Do not move the frequency offset in this part. Set $E_b/N_0$ to 12 dB. Lines should keep arriving.
-2. Type 20 into the channel phase box. Record whether lines still arrive after about 5 s. Then type 0, wait until lines arrive again, and type the next phase.
+2. Type 20 into the channel phase box. Record whether the Lines count keeps rising after about 5 s. Then type 0, wait until lines arrive again, and type the next phase.
 3. Repeat for every phase from 20 to 340 in steps of 20, returning to 0 between them, for Question 6(a).
 4. Stop the flowgraph, set `M` to 8, keep `diff` at 0, and run it again. Set $E_b/N_0$ to 12 dB and repeat steps 2 and 3.
 5. Stop the flowgraph, set `diff` to 1, run it again, and repeat three of the phases that failed, for Question 6(b).
@@ -116,7 +116,7 @@ These follow from Lessons 3 and 15. The bit rates and $E_s/N_0$ are exact, and s
 
 :::{admonition} If the Received label stays at "(waiting for a packet)"
 :class: tip
-Close the flowgraph and run it again with the sliders at their defaults, where every line should arrive within a second. With `diff` = 0, text arrives only when the loop has locked in the right rotation, and any frequency offset or phase jump you applied during the run can leave it locked in another one; run the flowgraph again with the sliders at their defaults. If the Costas Loop's output keeps turning, the frequency offset is beyond its pull-in range: type 0 and wait. If you changed `M`, check that it is 2, 4, or 8 and that you ran the flowgraph again. In your own carrier-recovery flowgraph, check that the Costas Loop's order is 8 and that the Signal Source's sample rate is `samp_rate`.
+Close the flowgraph and run it again with the sliders at their defaults, where every line should arrive within a second. With `diff` = 0, text arrives only when the loop has locked in the right rotation, and any frequency offset or phase jump you applied during the run can leave it locked in another one; run the flowgraph again with the sliders at their defaults. After a phase jump, judge by whether the Lines count keeps rising, not by the Received label: one packet already in the receiver can still arrive after a jump that fails. If the Costas Loop's output keeps turning, the frequency offset is beyond its pull-in range: type 0 and wait. If you changed `M`, check that it is 2, 4, or 8 and that you ran the flowgraph again. In your own carrier-recovery flowgraph, check that the Costas Loop's order is 8 and that the Signal Source's sample rate is `samp_rate`.
 :::
 ::::
 
@@ -153,8 +153,8 @@ The figure is the PlutoSDR flowgraph run in simulation, with the Pluto Sink and 
 2. Plug the Pluto into USB and run `iio_info -s` at the radioconda prompt; it should list a PlutoSDR context. The flowgraph uses the Pluto's default address, `ip:192.168.2.1`.
 3. Open and run `L15-psk-pluto.grc`. Within a few seconds the Costas Loop's output should show four clusters and lines should arrive. If the clusters do not form, raise the RX gain a few dB at a time. Never set TX attenuation below 30 dB or change the slider's range.
 4. Once lines arrive, screenshot the window for Question 7(a).
-5. Stop and start the flowgraph three times with `diff` = 1, and record whether text arrives each time. Then set the variable `diff` to 0 and stop and start it eight more times, recording whether text arrives each time, for Question 7(b). Set `diff` back to 1.
-6. With `diff` = 1, set the TX attenuation to 60, 70, 80, and 89 dB in turn. At each, wait 30 s and record the BER for Question 7(c). Stop the flowgraph and unplug the Pluto before you disconnect the cable.
+5. Stop and start the flowgraph three times with `diff` = 1, and record whether text arrives each time. Then set the variable `diff` to 0 and stop and start it eight more times, recording whether text arrives each time, for Question 7(b). Set `diff` back to 1, and stop and start the flowgraph.
+6. With `diff` = 1, set the TX attenuation to 70, 80, and 89 dB in turn. At each, wait 30 s and record the BER for Question 7(c). Stop the flowgraph and unplug the Pluto before you disconnect the cable.
 ::::
 
 ::::{frame} Part 3: After the Lab

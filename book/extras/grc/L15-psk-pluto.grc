@@ -8,7 +8,8 @@ options:
     copyright: ''
     description: 'L15 Lab: the L15 mPSK text link through one PlutoSDR at 915 MHz,
       from its TX port to its RX port through a cable and an inline 30 dB attenuator.
-      Never connect an antenna, and never set TX attenuation below 30 dB.'
+      Never connect an antenna, and never set TX attenuation below 30 dB. Transmit
+      only into the cable.'
     gen_cmake: 'On'
     gen_linking: dynamic
     generate_options: qt_gui
