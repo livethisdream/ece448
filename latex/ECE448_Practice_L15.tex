@@ -1,0 +1,301 @@
+% !TEX root =./ECE448_Practice_main.tex
+%
+% L15 practice set (mPSK). Every question is a step in the L15 link: bits per
+% symbol and Es/N0, the Gray map, differential coding by hand, the frequency
+% offset the Costas Loop has to remove, and choosing between QPSK and 8PSK.
+% Blank copy: \begin{solution}[h] reserves h of work space.
+% SOLUTIONS copy (\iskey=1) prints the red worked solutions.
+
+\fullwidth{\textbf{Learning Objective 6.4: } I can implement an mPSK modulator and
+demodulator (BPSK, QPSK, 8PSK), recover carrier and symbol timing, and verify
+constellation behavior against theory.
+\\[4pt]\normalfont\small Show your work. Write a \textbf{Documentation} line at the
+end (\textbf{None} if you did not collaborate).}
+
+\begin{questions}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{Bits per symbol.} A telemetry radio sends 25,000 symbols per second
+with RRC pulses of roll-off $\alpha = 0.25$. Lesson 3 gives the $E_b/N_0$ each
+modulation needs for a bit error rate of $10^{-5}$: 9.6 dB for BPSK and QPSK, and
+13.0 dB for 8PSK.
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Find the occupied bandwidth, and the bit rate with BPSK, QPSK, and 8PSK.
+		\begin{solution}[1.2in]
+		\eq{ B &= (1 + \alpha) R_s = 1.25 \times 25\ \text{kHz} = 31.25\ \text{kHz} }
+		The bandwidth does not depend on $M$. The bit rate is $k R_s$ with $k = \log_2 M$:
+		25, 50, and 75 kb/s.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		$B$: \ansbox[1.0in]{31.25 kHz}
+
+		\vspace{4pt}
+		bits: \ansbox[1.3in]{25, 50, 75 kb/s}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part The link budget delivers $E_s/N_0 = 15$ dB at the receiver. Find
+		$E_b/N_0$ for each modulation, and say which ones reach a bit error rate of
+		$10^{-5}$.
+		\begin{solution}[1.4in]
+		$E_b/N_0 = E_s/N_0 - 10\log_{10} k$:
+		\eq{ \text{BPSK: } & 15 - 0 = 15.0\ \text{dB} \\
+		\text{QPSK: } & 15 - 3.0 = 12.0\ \text{dB} \\
+		\text{8PSK: } & 15 - 4.8 = 10.2\ \text{dB} }
+		BPSK and QPSK clear 9.6 dB. 8PSK needs 13.0 dB and falls 2.8 dB short.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.3in]{BPSK and QPSK}
+	\end{minipage}
+
+	\part In words, explain why this radio would use QPSK rather than BPSK, and what
+	it would give up by moving to 8PSK.
+		\begin{solution}[1.0in]
+		QPSK needs the same $E_b/N_0$ as BPSK for the same error rate and sends twice the
+		bits in the same 31.25 kHz, so BPSK has no advantage here. 8PSK would send 50\%
+		more bits again in the same band, but it needs 3.4 dB more $E_b/N_0$, and this
+		link does not have it: the error rate would rise well above $10^{-5}$.
+		\end{solution}
+
+\end{parts}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{The Gray map.} The L15 transmitter numbers the QPSK points by
+\emph{phase index} $i = 0, 1, 2, 3$, counterclockwise from the point at $45^\circ$.
+The Gray label of index $i$ is $i \oplus (i \gg 1)$, the index XORed with itself
+shifted right one bit.
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Write the 2-bit Gray label of each index. Then find the indices the
+		transmitter sends for the bits \texttt{01 11 10 00}.
+		\begin{solution}[1.4in]
+		\eq{ 0 \oplus 0 = 00, &\quad 1 \oplus 0 = 01 \\
+		2 \oplus 1 = 11, &\quad 3 \oplus 1 = 10 }
+		The labels are 00, 01, 11, 10. The transmitter's Map sends the index whose label
+		matches each pair: \texttt{01} is 1, \texttt{11} is 2, \texttt{10} is 3, and
+		\texttt{00} is 0, so it sends 1, 2, 3, 0.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		labels: \ansbox[1.3in]{00, 01, 11, 10}
+
+		\vspace{4pt}
+		indices: \ansbox[1.3in]{1, 2, 3, 0}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Noise moves a symbol sent as index 1 into the region of index 2. How many
+		bits are wrong with the Gray labels? How many would be wrong if index $i$
+		simply carried the binary number $i$?
+		\begin{solution}[1.0in]
+		Gray: \texttt{01} becomes \texttt{11}, one bit. Natural binary: \texttt{01}
+		becomes \texttt{10}, two bits.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		Gray: \ansbox[1.0in]{1}
+
+		\vspace{4pt}
+		binary: \ansbox[1.0in]{2}
+	\end{minipage}
+
+	\part In words, explain why the BER of a Gray-coded 8PSK link is close to its
+	symbol error rate divided by 3.
+		\begin{solution}[1.0in]
+		Almost every symbol error is a slip to one of the two neighbors, because the
+		noise rarely reaches farther. With Gray labels a neighbor differs in one of the
+		three bits, so each symbol error corrupts about one bit out of three, and the bit
+		error rate is about a third of the symbol error rate.
+		\end{solution}
+
+\end{parts}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{Differential coding by hand.} The L15 Differential Encoder sends
+$e_n = (e_{n-1} + d_n) \bmod M$, where $d_n$ is the phase index from the Gray map and
+$e_{n-1}$ starts at 0. The decoder outputs $(r_n - r_{n-1}) \bmod M$, where $r_n$ is the
+received index and $r_{n-1}$ also starts at 0. The link uses QPSK, and the data indices
+are $d = 2, 1, 1, 3, 0$.
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Find the five indices the encoder sends.
+		\begin{solution}[1.0in]
+		\eq{ e_0 &= 0 + 2 = 2, \quad e_1 = 2 + 1 = 3 \\
+		e_2 &= (3 + 1) \bmod 4 = 0 \\
+		e_3 &= 0 + 3 = 3, \quad e_4 = 3 + 0 = 3 }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.3in]{2, 3, 0, 3, 3}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part The receiver's Costas Loop locks $180^\circ$ off, so every received index
+		is 2 more than the one sent, mod 4. Decode the five received indices and compare
+		them with $d$.
+		\begin{solution}[1.4in]
+		Received: $r = 0, 1, 2, 1, 1$. Decoded, with $r_{-1} = 0$:
+		\eq{ 0 - 0 = 0,\ 1 - 0 = 1,\ 2 - 1 = 1,\ 1 - 2 \equiv 3,\ 1 - 1 = 0 }
+		The output is 0, 1, 1, 3, 0. Every symbol after the first is right; the first is
+		wrong only because the decoder's starting reference was not rotated.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.3in]{0, 1, 1, 3, 0}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Now the loop locks correctly, but noise turns the third received index from
+		0 into 1. Decode the five indices and count the wrong symbols.
+		\begin{solution}[1.2in]
+		Received: $r = 2, 3, 1, 3, 3$.
+		\eq{ 2,\ 3 - 2 = 1,\ 1 - 3 \equiv 2,\ 3 - 1 = 2,\ 3 - 3 = 0 }
+		The output is 2, 1, 2, 2, 0: the third and fourth symbols are wrong, two errors
+		from one wrong decision.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.0in]{2 wrong}
+	\end{minipage}
+
+	\part In words, use parts (b) and (c) to explain what differential coding does for
+	a link and what it does to the bit error rate.
+		\begin{solution}[1.0in]
+		It makes the link work at any of the $M$ lock positions, because a rotation adds
+		the same amount to every index and the differences do not change. In exchange,
+		every wrong decision spoils two differences, the one into it and the one out
+		of it, so the bit error rate roughly doubles, about 0.4 dB in Lesson 15's
+		measurements.
+		\end{solution}
+
+\end{parts}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{The frequency offset.} A frequency offset $\Delta f$ turns the
+constellation by $360^\circ \times \Delta f / R_s$ every symbol. Lesson 15 measured the
+pull-in range of the QPSK Costas Loop at about 375 Hz for $R_s = 4{,}000$ symbols per
+second and an $E_b/N_0$ of 12 dB. The loop works once per symbol, so with the same
+loop settings its pull-in range scales with the symbol rate.
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part A 4 kbaud QPSK link has a 75 Hz offset. Find the rotation per symbol and the
+		number of symbols in one full turn of the constellation.
+		\begin{solution}[1.0in]
+		\eq{ 360^\circ \times \dfrac{75}{4000} &= 6.75^\circ \\
+		\dfrac{360^\circ}{6.75^\circ} &= 53.3\ \text{symbols} }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.0in]{$6.75^\circ$}
+
+		\vspace{4pt}
+		\ansbox[1.0in]{53.3}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Two radios use oscillators accurate to 2.5 ppm and transmit at 2.4 GHz. Find
+		the largest frequency offset between them. Can a 4 kbaud QPSK Costas Loop lock
+		to it? Can a 1 Mbaud one?
+		\begin{solution}[1.4in]
+		Each can be off by $2.5 \times 10^{-6} \times 2.4\ \text{GHz} = 6$ kHz, in
+		opposite directions:
+		\eq{ \Delta f_\text{max} &= 2 \times 6\ \text{kHz} = 12\ \text{kHz} }
+		At 4 kbaud the loop pulls in from about 375 Hz, 32 times too little. At 1 Mbaud
+		the range scales to $375 \times 250 \approx 94$ kHz, which covers 12 kHz.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.0in]{12 kHz}
+
+		\vspace{4pt}
+		4 kbaud: \ansbox[0.8in]{no}
+
+		\vspace{4pt}
+		1 Mbaud: \ansbox[0.8in]{yes}
+	\end{minipage}
+
+	\part In words, explain why an 8PSK Costas Loop pulls in from a smaller offset than
+	a BPSK loop with the same bandwidth, and what the 4 kbaud receiver in part (b)
+	needs before its Costas Loop.
+		\begin{solution}[1.2in]
+		The phase detector cannot tell one constellation point from another, so it can
+		only measure a phase error up to half the spacing, $180^\circ/M$: $90^\circ$ for
+		BPSK but $22.5^\circ$ for 8PSK. A spinning constellation leaves the detector's
+		range faster when $M$ is larger, so the 8PSK loop has less time to correct and
+		locks only from a smaller offset. The 4 kbaud receiver needs a coarse frequency
+		correction first, such as an FLL Band-Edge block or a frequency measured from a
+		known preamble, to bring the offset inside the Costas Loop's range.
+		\end{solution}
+
+\end{parts}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{QPSK or 8PSK?} A link must carry 12 kb/s in a channel 6.25 kHz wide,
+with RRC pulses of roll-off $\alpha = 0.35$ and differential coding. Lesson 15 measured
+the $E_b/N_0$ the differential link needs for a bit error rate of $10^{-4}$: 8.9 dB for
+QPSK and 12.4 dB for 8PSK.
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Find the symbol rate and the occupied bandwidth with QPSK and with 8PSK.
+		Which fits the channel?
+		\begin{solution}[1.4in]
+		\eq{ \text{QPSK: } R_s &= 12/2 = 6\ \text{kbaud}, \quad B = 1.35 \times 6 = 8.1\ \text{kHz} \\
+		\text{8PSK: } R_s &= 12/3 = 4\ \text{kbaud}, \quad B = 1.35 \times 4 = 5.4\ \text{kHz} }
+		Only 8PSK fits in 6.25 kHz.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		QPSK: \ansbox[1.0in]{8.1 kHz}
+
+		\vspace{4pt}
+		8PSK: \ansbox[1.0in]{5.4 kHz}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part The bit rate is the same either way. How much more received power does the
+		8PSK link need for a bit error rate of $10^{-4}$?
+		\begin{solution}[1.0in]
+		At the same bit rate the received power is proportional to $E_b$, so the
+		difference in $E_b/N_0$ is the difference in power:
+		\eq{ 12.4 - 8.9 &= 3.5\ \text{dB} }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.0in]{3.5 dB}
+	\end{minipage}
+
+	\part In words, state which modulation you would choose and what the link budget of
+	Lesson 2 has to show before you commit to it.
+		\begin{solution}[1.0in]
+		8PSK, because QPSK does not fit the channel at 12 kb/s. The link budget has to
+		show at least 12.4 dB of $E_b/N_0$, or 17.2 dB of $E_s/N_0$, plus an allowance
+		for the real radio and a fade margin, which is 3.5 dB more than QPSK would have
+		needed.
+		\end{solution}
+
+\end{parts}
+
+\end{questions}
