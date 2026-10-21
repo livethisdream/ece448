@@ -170,42 +170,44 @@ same transmitted power and the same noise. Its Input SNR slider sets the noise, 
 meters show each receiver's output SNR.
 \begin{parts}
 
-	\part At 30~dB Input SNR and 25~kHz deviation, the meters read 29.5~dB for AM and
-	48.4~dB for FM. Say which output is cleaner and by about how much, and explain in
-	words how FM wins although its wider channel lets in more noise.
+	\part Run it at 15~kHz deviation with Input SNR at 25~dB, as in the lesson figure.
+	Say which output is cleaner, on the meters and on the frequency sink, and explain
+	in words how FM wins although its wider channel lets in more noise.
 		\begin{solution}[1.1in]
-		FM, by about 19 dB. The demodulator's output follows how far the frequency
-		swings, and a 25 kHz swing is large next to the small jitter that the noise adds
-		to a strong carrier. FM trades bandwidth for a cleaner output.
+		FM, clearly: its meter reads well above AM's and its noise floor sits well under
+		AM's. The demodulator's output follows how far the frequency swings, and a
+		15 kHz swing is large next to the small jitter that the noise adds to a strong
+		carrier. FM trades bandwidth for a cleaner output.
 		\end{solution}
 
-	\part With the speaker on FM, you drag Input SNR from 30 down to 10~dB. Describe
-	what you expect to hear, and what the FM meter does compared with the AM meter.
+	\part Keep 15~kHz deviation, put the speaker on FM, and drag Input SNR down
+	slowly. Describe what you hear, and what the FM meter does compared with the AM
+	meter.
 		\begin{solution}[1.1in]
-		The tone stays clean at first. Below about 15 dB, clicks start and get more
-		frequent, and the FM meter falls quickly; near 10 dB it reads about the same as
-		AM's, about 9 dB. That collapse is the point where FM breaks into clicks. AM only hisses more as the
-		slider comes down.
+		The tone stays clean at first. Then clicks start and get more frequent, and the
+		FM meter falls quickly until it reads about the same as AM's. That collapse is
+		the point where FM breaks into clicks. AM only hisses more as the slider comes
+		down.
 		\end{solution}
 
-	\part You raise the deviation from 25 to 50~kHz. Say what happens to the FM meter
-	at 30~dB, and to the Input SNR at which the clicks begin. Explain the trade in
-	words.
+	\part You raise the deviation from 20 to 40~kHz. Say, in words, what happens to
+	the FM meter while the signal is strong, and to where the clicks begin as the
+	noise rises. Explain the trade.
 		\begin{solution}[1.1in]
-		The meter at 30 dB rises, to about 53 dB. The clicks start sooner as the noise
-		goes up, near 20 dB instead of near 15. The wider deviation needs a wider channel,
-		which lets in more noise, so the cleaner output lasts only while the signal is
-		strong.
+		With a strong signal the FM meter climbs. The clicks start sooner as the noise
+		goes up, at a higher Input SNR. The wider deviation needs a wider channel, which
+		lets in more noise, so the cleaner output lasts only while the signal is strong.
 		\end{solution}
 
-	\part Set Input SNR to 10~dB and listen to the FM output at 5, 25, and 50~kHz
+	\part Set Input SNR to 8~dB and listen to the FM output at 10, 20, and 40~kHz
 	deviation. Say which sounds cleanest and why, in words. Then say which you would
 	choose for a weak link to a distant receiver.
 		\begin{solution}[1.1in]
-		5 kHz sounds cleanest: a steady tone under some hiss, while 25 kHz crackles with
-		clicks and 50 kHz is mostly clicks. The narrow channel lets in the least noise, so
-		at 5 kHz FM has not yet broken up. The wider deviations would sound cleaner on a
-		strong link, but on a weak one the narrow deviation is the better choice.
+		10 kHz sounds cleanest: a steady tone under hiss, a little better than AM, while
+		20 kHz crackles with clicks and 40 kHz is mostly clicks. The narrow channel lets
+		in the least noise, so at 10 kHz FM has not yet broken up. The wider deviations
+		would sound cleaner on a strong link, but on a weak one the narrow deviation is
+		the better choice.
 		\end{solution}
 
 \end{parts}

@@ -54,7 +54,7 @@ By the end of the lesson we will turn that file into audio, read the station's n
 
 :::{depth}
 <img src="../../viz/img/L07-grc-fm-test-tx.png"
-     alt="GNU Radio Companion with L07-fm-test-tx.grc open: two tones, pre-emphasis, and a level for station A's audio; an RDS Encoder, Differential Encoder, Map, Unpack K Bits, Chunks to Symbols, root raised cosine filter, resampler, and a 57 kHz Signal Source for RDS; an Add forming the multiplex, a resampler, a Frequency Mod, and a 300 kHz shift; a second station with a 600 Hz tone shifted to minus 500 kHz; a Noise Source; and an Add, Head, and File Sink"
+     alt="GNU Radio Companion with L07-fm-test-tx.grc open: two tones, pre-emphasis, and a level for station A's audio; an RDS Encoder, Differential Encoder, Map, Unpack K Bits, Chunks to Symbols, root raised cosine filter, resampler, and a 57 kHz Signal Source for RDS; an Add forming the multiplex, a resampler, a Frequency Mod, and a 300 kHz shift; a second station with a different test tone shifted to minus 500 kHz; a Noise Source; and an Add, Head, and File Sink"
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
 
 The test file comes from `L07-fm-test-tx.grc`. It builds each station the way a broadcaster does, with pre-emphasis, an RDS encoder from gr-rds, and levels set for 75 kHz of deviation, about 71 kHz at the peaks of this audio, then adds noise and writes 4 s of samples, 76.8 MB, to `L07-fm-test.cfile`. Nothing in it transmits: its last block is a File Sink. `L07-am-test-tx.grc` does the same for the AM receiver, with one station at 126.2 MHz. Run both once before class, in the folder that holds the receivers.
@@ -72,7 +72,7 @@ The test file comes from `L07-fm-test-tx.grc`. It builds each station the way a 
 
 $$f(t) = f_c + \Delta f\,x(t)$$
 
-where the message $x(t)$ stays between $-1$ and 1, and the **peak deviation** $\Delta f$ is the farthest the carrier ever moves. Broadcast FM sets $\Delta f$ = 75 kHz and carries audio up to $W$ = 15 kHz, which makes it **wideband FM** (WBFM). Two-way radios use narrowband FM, with $\Delta f$ near 2.5 or 5 kHz.
+where the message $x(t)$ stays between $-1$ and 1, and the **peak deviation** $\Delta f$ is the farthest the carrier ever moves. Broadcast FM sets $\Delta f$ = 75 kHz and carries audio up to $W$ = 15 kHz, which makes it **wideband FM** (WBFM). Two-way radios use narrowband FM, with $\Delta f$ near 2.5 or 5 kHz. The ratio of the deviation to the message frequency $f_m$ is the **modulation index**, $\beta = \Delta f / f_m$; for broadcast FM at its top audio frequency it is 75/15 = 5.
 
 An FM signal is a little wider than $2\Delta f$, because the frequency swings at audio rates. A rule of thumb, **Carson's rule**, puts the width at about $2(\Delta f + W)$, which is the number we need to set the receiver's channel filter. For broadcast audio that is $2(75 + 15)$ = 180 kHz, which fits the 200 kHz spacing of US FM channels, 88.1 to 107.9 MHz. An AM signal carrying the same audio would be 30 kHz wide.
 ::::
@@ -164,10 +164,10 @@ The transmitter boosts the treble of its audio before modulating, a step called 
 :::
 :::{present}
 - The audio shows the two tones at 1 and 2.5 kHz.
-- Setting Station to 99.5 plays a 600 Hz tone.
+- Setting Station to 99.5 plays a different test tone.
 :::
 
-The figure is the receiver running on the test file. The bottom right sink is the audio after de-emphasis, with the 1 kHz and 2.5 kHz tones of the message and nothing else above the floor, which is the check that the receiver works: the demodulated audio matches what the test transmitter sent. Type 99.5 into Station and the audio changes to the second station's single 600 Hz tone.
+The figure is the receiver running on the test file. The bottom right sink is the audio after de-emphasis, with the 1 kHz and 2.5 kHz tones of the message and nothing else above the floor, which is the check that the receiver works: the demodulated audio matches what the test transmitter sent. Type 99.5 into Station and the audio changes to the second station's single, different test tone.
 
 To use your own L5 capture, set the File Source's file to `fm_capture.cfile`, type the center frequency you recorded at into SDR center, and set Station to the station you centered. To receive live, disable the File Source, enable the RTL-SDR Source, and run it again. A real station's audio sink will show music or speech rather than two lines.
 ::::
@@ -231,16 +231,16 @@ After the filter, the AM station is a complex signal with its carrier at 0 Hz, a
 
 ::::{frame} AM and FM in the Same Noise
 :::{present}
-<img src="../../viz/img/L07-amfm-30.png"
-     alt="L07-am-vs-fm.grc at an input SNR of 30 dB and 25 kHz deviation: output SNR meters read 29.5 dB for AM and 48.4 dB for FM; the outputs' spectrum shows the 1 kHz tone with the AM noise floor near minus 64 dB and the FM floor near minus 85 dB rising toward 5 kHz; the time sink shows both outputs as clean 1 kHz sine waves"
+<img src="../../viz/img/L07-amfm-25.png"
+     alt="L07-am-vs-fm.grc at an input SNR of 25 dB and 15 kHz deviation: the FM output SNR bar reaches well past the AM bar; the outputs' spectrum shows the 1 kHz tone with FM's noise floor well under AM's and rising toward 5 kHz; the time sink shows both outputs as clean 1 kHz sine waves"
      style="max-width: 760px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
 - Both carry the same tone at the same power in the same noise.
-- At 30 dB in, the AM meter reads about 29 dB and the FM meter about 48 dB.
+- With a strong signal, FM's meter reads well above AM's.
 :::
 
-`L07-am-vs-fm.grc` sends one 1 kHz tone two ways with the same transmitted power: as AM at $m$ = 1, the best case from Lesson 6, and as FM with 25 kHz deviation. Both go through the same noise. Each receiver filters to its own channel, 10 kHz for AM and 60 kHz for FM, and then the same 5 kHz audio filter. The **Input SNR** slider sets how strong the signal is against the noise in a 10 kHz channel, and two meters show each receiver's **output SNR**, the tone against everything else in its audio. The Listen to buttons switch the speaker between the two.
+`L07-am-vs-fm.grc` sends one 1 kHz tone two ways with the same transmitted power: as AM at $m$ = 1, the best case from Lesson 6, and as FM. The figure runs FM at 15 kHz deviation with the Input SNR at 25 dB. Both go through the same noise. Each receiver filters to its own channel, 10 kHz for AM and a wider one for FM, and then the same 5 kHz audio filter. The **Input SNR** slider sets how strong the signal is against the noise in a 10 kHz channel, and two meters show each receiver's **output SNR**, the tone against everything else in its audio. The Listen to buttons switch the speaker between the two.
 
 :::{depth}
 <img src="../../viz/img/L07-grc-am-vs-fm.png"
@@ -248,22 +248,22 @@ After the filter, the AM station is a complex signal with its carrier at 0 Hz, a
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
 :::
 
-At 30 dB the FM output is clearly the cleaner one, even though the FM receiver's wider channel lets in more noise. The spectrum shows it: FM's noise floor sits about 20 dB under AM's. Drag the deviation up and FM's meter climbs further; drag it down to 5 kHz and most of the advantage goes away. FM buys a cleaner output with bandwidth.
+With this strong signal the FM output is clearly the cleaner one, even though the FM receiver's wider channel lets in more noise. The spectrum shows it: FM's noise floor sits well under AM's. Drag the deviation up and FM's meter climbs further; drag it down and most of the advantage goes away. FM buys a cleaner output with bandwidth.
 ::::
 
 ::::{frame} Turning the Noise Up
 :::{present}
-<img src="../../viz/img/L07-amfm-10.png"
-     alt="L07-am-vs-fm.grc at an input SNR of 10 dB and 25 kHz deviation: output SNR meters read 9.2 dB for AM and 9.4 dB for FM; the AM and FM noise floors sit together near minus 47 dB; the time sink shows both tones ragged"
+<img src="../../viz/img/L07-amfm-08.png"
+     alt="L07-am-vs-fm.grc at an input SNR of 8 dB and 15 kHz deviation: the AM and FM output SNR bars are about the same length; the AM and FM noise floors sit together; the time sink shows both tones ragged"
      style="max-width: 760px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
 - Drag Input SNR down with the speaker on FM.
-- Near 10 dB, FM breaks into clicks and its advantage is gone.
+- Far enough down, FM breaks into clicks and its advantage is gone.
 - AM only gets steadily noisier.
 :::
 
-Now drag the Input SNR slider down with the speaker on FM. The FM output stays clean longer than AM's does, and then, below about 15 dB, it starts to crackle with clicks and its meter drops quickly. At 10 dB, shown in the figure, the two meters read about the same, and both tones on the time sink are ragged. That sudden collapse is the point where FM breaks into clicks: FM's advantage lasts only while the signal stays well above the noise in its own, wider channel. AM has no such point; its hiss rises steadily as the slider comes down, and the tone stays recognizable. Repeat the sweep at 5 kHz and 50 kHz deviation: the wider the deviation, the cleaner FM sounds when the signal is strong, and the sooner it breaks up as the noise rises.
+Now drag the Input SNR slider down with the speaker on FM. The FM output stays clean longer than AM's does, and then it starts to crackle with clicks and its meter drops quickly. In the figure, at 8 dB with 15 kHz deviation, the two meters read about the same, and both tones on the time sink are ragged. That sudden collapse is the point where FM breaks into clicks: FM's advantage lasts only while the signal stays well above the noise in its own, wider channel. AM has no such point; its hiss rises steadily as the slider comes down, and the tone stays recognizable. Repeat the sweep at a narrower and a wider deviation: the wider the deviation, the cleaner FM sounds when the signal is strong, and the sooner it breaks up as the noise rises.
 
 That trade is why broadcast FM and aircraft radios chose differently. A broadcast station is strong and has a 200 kHz channel to fill, so it uses FM. Aircraft use AM because a weak AM signal stays intelligible, and because two aircraft transmitting at once are both heard, where an FM receiver would lock onto the stronger one.
 ::::

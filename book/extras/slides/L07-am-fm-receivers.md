@@ -40,7 +40,7 @@ Before class, run L07-fm-test-tx.grc and L07-am-test-tx.grc once, in the folder 
 The goal is audio from the station at 100.3 MHz, and its station name.
 
 Note:
-This is a test file from a GNU Radio transmitter flowgraph, the same kind of file as their L5 capture. The station at 100.3 carries the L6 two-tone message and RDS; 99.5 carries a 600 Hz tone. The figure carries a Simulated label.
+This is a test file from a GNU Radio transmitter flowgraph, the same kind of file as their L5 capture. The station at 100.3 carries the L6 two-tone message and RDS; 99.5 carries a different test tone. The figure carries a Simulated label.
 
 ---
 
@@ -51,7 +51,7 @@ This is a test file from a GNU Radio transmitter flowgraph, the same kind of fil
 - US stations sit 200 kHz apart.
 
 Note:
-The width rule is Carson's rule, a rule of thumb; we use it only to set the channel filter. Narrowband FM on two-way radios uses 2.5 or 5 kHz of deviation. AM carrying the same 15 kHz audio would be 30 kHz wide, so broadcast FM is six times wider.
+The width rule is Carson's rule, a rule of thumb; we use it only to set the channel filter. The 2025 slides' modulation index is beta = deviation / message frequency; broadcast FM at 15 kHz audio has beta = 75/15 = 5. Narrowband FM on two-way radios uses 2.5 or 5 kHz of deviation. AM carrying the same 15 kHz audio would be 30 kHz wide, so broadcast FM is six times wider.
 
 ---
 
@@ -127,7 +127,7 @@ The transmitter boosts the treble; the receiver cuts it back, and the noise with
 <img src="./img/07-am-fm-receivers/L07-wbfm-rx.png" alt="Simulated: the WBFM receiver window, received band, multiplex, and audio with lines at 1 and 2.5 kHz" style="max-height:420px; display:block; margin:0 auto;">
 
 Note:
-Play the audio. The audio sink shows exactly the two message tones. Type 99.5 into Station and the 600 Hz tone plays. Then show how to point the File Source at fm_capture.cfile and type its center frequency.
+Play the audio. The audio sink shows exactly the two message tones. Type 99.5 into Station and a different test tone plays. Then show how to point the File Source at fm_capture.cfile and type its center frequency.
 
 ---
 
@@ -166,24 +166,24 @@ Aircraft and ATIS are AM between 118 and 137 MHz. After Complex to Mag it is the
 
 ## AM and FM in the Same Noise
 
-<img src="./img/07-am-fm-receivers/L07-amfm-30.png" alt="At an input SNR of 30 dB: AM output SNR 29.5 dB, FM 48.4 dB" style="max-height:340px; display:block; margin:0 auto;">
+<img src="./img/07-am-fm-receivers/L07-amfm-25.png" alt="At an input SNR of 25 dB and 15 kHz deviation: the FM output SNR bar reaches well past the AM bar" style="max-height:340px; display:block; margin:0 auto;">
 
-Same tone, power, and noise: at 30 dB in, the AM meter reads about 29 dB and the FM meter about 48 dB.
+Same tone, power, and noise: with a strong signal, FM's meter reads well above AM's.
 
 Note:
-L07-am-vs-fm.grc sends AM at m = 1 and FM at 25 kHz deviation with the same transmitted power and the same noise. The FM receiver's wider channel lets in more noise, and its output is still the cleaner one; FM's noise floor sits about 20 dB under AM's. Drag the deviation up and FM's meter climbs; drag it to 5 kHz and most of the advantage goes away.
+L07-am-vs-fm.grc sends AM at m = 1 and FM with the same transmitted power and the same noise. Demo at 15 kHz deviation and 25 dB Input SNR; the lab uses other settings, so don't read the meters at the lab's. The FM receiver's wider channel lets in more noise, and its output is still the cleaner one; FM's noise floor sits well under AM's. Drag the deviation up and FM's meter climbs; drag it down and most of the advantage goes away.
 
 ---
 
 ## Turning the Noise Up
 
-<img src="./img/07-am-fm-receivers/L07-amfm-10.png" alt="At an input SNR of 10 dB: AM and FM output SNR both near 9 dB, both tones ragged" style="max-height:300px; display:block; margin:0 auto;">
+<img src="./img/07-am-fm-receivers/L07-amfm-08.png" alt="At an input SNR of 8 dB and 15 kHz deviation: AM and FM output SNR bars about equal, both tones ragged" style="max-height:300px; display:block; margin:0 auto;">
 
-- Near 10 dB, FM breaks into clicks and its advantage is gone.
+- Far enough down, FM breaks into clicks and its advantage is gone.
 - AM only gets steadily noisier.
 
 Note:
-Drag Input SNR down with the speaker on FM and let them hear the clicks start below about 15 dB. That is the point where FM breaks into clicks. Repeat at 5 kHz and 50 kHz deviation: wider deviation sounds cleaner when the signal is strong and breaks up sooner as the noise rises. Near that point the live meters wander by about 1 dB.
+At 15 kHz deviation, drag Input SNR down with the speaker on FM and let them hear the clicks start; don't call out the slider value, which the lab asks them to find at other deviations. Repeat at a narrower and a wider deviation: wider deviation sounds cleaner when the signal is strong and breaks up sooner as the noise rises. Near that point the live meters wander by about 1 dB.
 
 ---
 

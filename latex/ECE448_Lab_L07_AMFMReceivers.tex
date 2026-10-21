@@ -143,58 +143,60 @@ period, run \texttt{L07-fm-test-tx.grc}, which also uses an RDS block, and
 
 \begin{parts}
 
-	\part Fill in the receiver settings for the test file and for your own L5
-	capture. The shift is the Frequency Xlating FIR Filter's center frequency.
+	\part Fill in the receiver settings for a capture centered on 101.5~MHz, and for
+	your own L5 capture. The shift is the Frequency Xlating FIR Filter's center
+	frequency.
 
 	\begin{center}
 	\renewcommand{\arraystretch}{1.25}
 	\begin{tabular}{| l | K{1.2in} | K{1.2in} | K{1.2in} |}
 	\hline
 	Recording & SDR center (MHz) & Station (MHz) & Shift (kHz) \\\hline
-	\texttt{L07-fm-test.cfile} & $100.0$ & $100.3$ & \kv{$+300$} \\\hline
+	Example capture & $101.5$ & $101.1$ & \kv{$-400$} \\\hline
 	\texttt{fm\_capture.cfile} & & & \\\hline
 	\end{tabular}
 	\end{center}
 
 		\begin{solution}[0.5in]
-		Shift = station $-$ center. For the L5 capture, answers vary; the shift is
+		Shift = station $-$ center, so the example is $101.1 - 101.5 = -0.4$~MHz. For the L5 capture, answers vary; the shift is
 		usually 100 to 400 kHz, because the L5 Lab centered the station slightly off the
 		DC spike. A shift under about 100 kHz leaves the DC spike inside the channel
 		filter, where it shows up as a tone or hum.
 		\end{solution}
 
 	\begin{minipage}[t]{0.58\linewidth}
-		\part The FM receiver decimates 2.4~MS/s by 10 and then by 5. Find the two
-		rates, and the Quadrature Demod gain that makes 75~kHz of deviation an output
-		of 1.
+		\part The receiver you build at the bench decimates 2.4~MS/s by 5 at the
+		channel filter and then by 10 at the audio filter. Find the two rates, and the
+		Quadrature Demod gain that makes 75~kHz of deviation an output of 1.
 		\begin{solution}[0.9in]
-		The rates are 240 kS/s, then 48 kS/s.
-		\eq{ \dfrac{240\ \text{kHz}}{2\pi \times 75\ \text{kHz}} = 0.509 }
+		The rates are 480 kS/s, then 48 kS/s.
+		\eq{ \dfrac{480\ \text{kHz}}{2\pi \times 75\ \text{kHz}} = 1.02 }
 		\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
 		\raggedleft \vspace{12pt}
-		\ansbox[1.3in]{240 and 48 kS/s}
+		\ansbox[1.3in]{480 and 48 kS/s}
 
 		\vspace{4pt}
-		gain = \ansbox[1.0in]{$0.509$}
+		gain = \ansbox[1.0in]{$1.02$}
 	\end{minipage}
 
 	\part Find the ATIS frequency of an airport near you in the FAA Chart Supplement
-	or on a sectional chart. Choose an SDR center 250~kHz below it, and fill in the AM
+	or on a sectional chart. Choose an SDR center 200~kHz above it, and fill in the AM
 	receiver's settings.
 
 	\begin{center}
 	\renewcommand{\arraystretch}{1.25}
-	\begin{tabular}{| l | K{1.0in} | K{1.0in} | K{1.0in} | K{1.0in} |}
+	\begin{tabular}{| l | K{1.1in} | K{1.1in} | K{1.1in} |}
 	\hline
-	Airport & ATIS (MHz) & SDR center (MHz) & Shift (kHz) & Decimation \\\hline
-	& & & \kv{$+250$} & \kv{$50$} \\\hline
+	Airport & ATIS (MHz) & SDR center (MHz) & Shift (kHz) \\\hline
+	& & & \kv{$-200$} \\\hline
 	\end{tabular}
 	\end{center}
 
 		\begin{solution}[0.4in]
-		The decimation is $2.4\ \text{MS/s} \div 48\ \text{kS/s} = 50$ for any station.
+		The shift is ATIS $-$ center $= -200$~kHz for any airport; the SDR center is the
+		ATIS frequency plus 0.2~MHz.
 		\end{solution}
 
 \end{parts}
@@ -209,12 +211,12 @@ open \texttt{L07-wbfm-rx.grc}: build the receiver yourself.
 	\item \texttt{samp\_rate} 2.4e6, a QT GUI Entry \texttt{fc\_mhz} (100.0), a QT GUI
 	Entry \texttt{station\_mhz} (100.3), and a QT GUI Range \texttt{vol} from 0 to 1.
 	\item A File Source on \texttt{L07-fm-test.cfile}, repeat on.
-	\item A Frequency Xlating FIR Filter, decimation 10, center frequency
+	\item A Frequency Xlating FIR Filter, decimation 5, center frequency
 	\texttt{(station\_mhz - fc\_mhz) * 1e6}, with a Low-pass Filter Taps variable
 	\texttt{chan\_taps}: cutoff 105 kHz, transition 30 kHz, at \texttt{samp\_rate}.
 	\item A Quadrature Demod with the gain of Question 1(b).
-	\item A Decimating FIR Filter, decimation 5, with taps
-	\texttt{firdes.low\_pass(1, samp\_rate/10, 15e3, 3e3)}.
+	\item A Decimating FIR Filter, decimation 10, with taps
+	\texttt{firdes.low\_pass(1, samp\_rate/5, 15e3, 3e3)}.
 	\item FM Deemphasis at 48 kHz with $\tau$ = 75~$\mu$s, a Multiply Const
 	\texttt{vol}, an Audio Sink at 48 kHz, and a float QT GUI Frequency Sink on the
 	de-emphasis output. Do not add a Throttle.
@@ -225,13 +227,14 @@ open \texttt{L07-wbfm-rx.grc}: build the receiver yourself.
 	\part Paste a screenshot of your flowgraph on the GRC canvas. Every connection
 	must be black, not red.
 		\begin{solution}[1.6in]
-		Matches the L7 lesson figure: File Source, Frequency Xlating FIR Filter (complex
-		ports), Quadrature Demod, then float blocks: the decimating audio filter, FM
+		Like the L7 lesson figure, but decimating by 5 and then by 10: File Source,
+		Frequency Xlating FIR Filter (complex ports), Quadrature Demod, then float blocks: the decimating audio filter, FM
 		Deemphasis, Multiply Const, and the Audio Sink.
 		\end{solution}
 
-	\part Run it. Read the audio frequency sink, and record the frequency of each line and how far the
-	2.5~kHz line sits below the 1~kHz line.
+	\part Run it. Read the audio frequency sink. Check that its lines match the L6
+	two-tone message the test station sends, and record how far the higher-frequency
+	line sits below the lower one.
 		\begin{solution}[0.6in]
 		The sink shows lines at 1 and 2.5 kHz, about 3.5 to 4 dB apart, and nothing else
 		above the floor. That is the 0.6-to-0.4 amplitude ratio of the test message:
@@ -252,7 +255,7 @@ open \texttt{L07-wbfm-rx.grc}: build the receiver yourself.
 \question \textbf{Your L5 capture.} In your receiver from Question 2, set the File
 Source to \texttt{fm\_capture.cfile}, SDR center to the frequency you recorded it at,
 and Station to the station you centered. Add a float QT GUI Frequency Sink on the
-Quadrature Demod output, with bandwidth \texttt{samp\_rate/10}.
+Quadrature Demod output, with bandwidth \texttt{samp\_rate/5}.
 
 \begin{parts}
 
