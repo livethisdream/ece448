@@ -29,7 +29,7 @@ L7 Lab · Module 3: Analog Modulation · Dr. Neil Rogers
 ::::{frame} From Lesson to Bench
 :::{present}
 - **Pre-Lab:** work out the receiver settings for the test file, your capture, and ATIS.
-- **Bench:** build the WBFM receiver, then receive your L5 capture, live FM with RDS, and ATIS, and turn the noise up on AM and FM.
+- **Bench:** build the WBFM receiver; receive your L5 capture, live FM with RDS, and ATIS; turn up the noise.
 - **Writeup:** explain what you saw and heard.
 :::
 

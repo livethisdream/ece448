@@ -13,7 +13,7 @@ frame_view: true
 
 <div class="title-rule"></div>
 
-Build a flowgraph from an empty canvas, measure aliasing, then find the broadcast FM band in GQRX and record and plot it in GNU Radio.
+Build a flowgraph from an empty canvas, measure aliasing, then find an FM station in GQRX and record the band in GNU Radio.
 
 L5 Lab · Module 2: SDR & GNU Radio Foundations · Dr. Neil Rogers
 ::::
