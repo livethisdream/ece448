@@ -45,9 +45,9 @@ Questions 1 to 6 run on your laptop and transmit nothing. Question 7 transmits, 
 - Estimate the 8PSK loop's pull-in range.
 :::
 
-Do the Pre-Lab before you arrive. Question 1 checks that the link flowgraph opens and runs on your laptop: if GRC reports an error, the L5 lesson page lists the install checks, and EI before the lab is the place to fix it.
+Do the Pre-Lab before you arrive. Question 1 checks that the link flowgraph opens and runs on your laptop, and has you type a 50 Hz frequency offset to see the ring of the lesson's opening figure: if GRC reports an error, the L5 lesson page lists the install checks, and EI before the lab is the place to fix it.
 
-Question 2 asks for predictions from the lesson: the bit rate and $E_s/N_0$ of BPSK, QPSK, and 8PSK; Lesson 3's bit error rate at the six settings of Question 4, with and without differential coding; the number of channel phases at which QPSK and 8PSK decode with differential coding off; and an estimate of the 8PSK loop's pull-in range from the lesson's BPSK and QPSK measurements.
+Question 2 asks for predictions from the lesson: the bit rate and $E_s/N_0$ of BPSK, QPSK, and 8PSK at 6,000 symbols per second; Lesson 3's bit error rate at the six settings of Question 4, with and without differential coding; the number of channel phases at which QPSK and 8PSK decode with differential coding off; and an estimate of the 8PSK loop's pull-in range from the lesson's BPSK and QPSK measurements.
 ::::
 
 ::::{frame} Expected Numbers
@@ -84,30 +84,31 @@ These follow from Lessons 3 and 15. The bit rates and $E_s/N_0$ are exact, and s
      alt="The L15 link flowgraph in GNU Radio Companion: the variable M and the sliders for Eb/N0, frequency offset, channel phase, and clock error at the top; the packet transmitter, Gray map, differential encoder, Chunks to Symbols, and RRC filter; the Channel Model; and the receiver from the matched filter through Symbol Sync, the Costas Loop, the Constellation Decoder, the differential decoder, and the access-code search to the Text Sink"
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto 12px;">
 
-1. Open and run `L15-psk-link.grc` with every slider at its default. The Lines label counts the lines received and the bit errors in them since a slider last moved.
+1. Open and run `L15-psk-link.grc` with every slider at its default: no frequency offset, channel phase 0, and `diff` = 1, differential coding on. The Lines label counts the lines received and the bit errors in them since a slider last moved.
 2. Type 5 into the $E_b/N_0$ box and press Enter. Wait 60 s, then record the BER and the number of bits counted for Question 4(a).
 3. Repeat at 7 and 9 dB.
 4. Stop the flowgraph. Double-click the variable `M`, set it to 8, and run it again. Repeat steps 2 and 3 at 9, 11, and 13 dB. Screenshot the window at 11 dB for Question 4(c).
-5. Stop it, set `M` back to 4, and run it again. Set $E_b/N_0$ to 7 dB, switch Differential coding to Off, wait 60 s, and record the BER for Question 4(b).
+5. Stop it, set `M` back to 4 and the variable `diff` to 0, and run it again with the sliders at their defaults. Set $E_b/N_0$ to 7 dB, wait 60 s, and record the BER for Question 4(b). Set `diff` back to 1 afterward.
 ::::
 
 ::::{frame} Part 2: Carrier Recovery
 :class: read-only
 
 1. With `M` = 4 and differential coding on, set $E_b/N_0$ to 12 dB.
-2. Type 0 into the frequency offset box and wait until lines arrive. Then type 200 in one jump. Watch the frequency estimate for up to 15 s, and record whether the loop locks, about how long it takes, and the frequency it settles at, for Question 5(a).
-3. Repeat step 2 for 300 and 450 Hz, returning to 0 each time. At 450 Hz, also count the clusters in the Costas Loop's output.
-4. Stop the flowgraph, set `M` to 8, run it again, and repeat steps 1 to 3 for 100, 150, 200, and 250 Hz, for Question 5(b). At 200 Hz and above, give the loop the full 15 s.
+2. With the frequency offset at 0 and lines arriving, type 250 into the frequency offset box in one jump. Watch the frequency estimate for up to 15 s, and record whether the loop locks, about how long it takes, and the frequency it settles at, for Question 5(a).
+3. Type 0, wait until lines arrive again, and repeat step 2 for 350 and then 425 Hz. At 425 Hz, also count the clusters in the Costas Loop's output.
+4. Stop the flowgraph, set `M` to 8, and run it again. Set $E_b/N_0$ to 12 dB and repeat steps 2 and 3 for 100, 150, 200, and 250 Hz, for Question 5(b). At 200 Hz and above, give the loop the full 15 s.
 ::::
 
 ::::{frame} Part 2: Phase Ambiguity
 :class: read-only
 
-1. With `M` = 4, set $E_b/N_0$ to 12 dB and the frequency offset to 0, and switch Differential coding to Off. Lines should arrive.
+1. Stop the flowgraph, set `M` to 4 and `diff` to 0, and run it again, so the loop locks with no frequency offset and the channel phase at 0. Do not move the frequency offset in this part. Set $E_b/N_0$ to 12 dB. Lines should keep arriving.
 2. Type 20 into the channel phase box. Record whether lines still arrive after about 5 s. Then type 0, wait until lines arrive again, and type the next phase.
 3. Repeat for every phase from 20 to 340 in steps of 20, returning to 0 between them, for Question 6(a).
-4. Stop the flowgraph, set `M` to 8, run it again, and repeat steps 1 to 3.
-5. Switch Differential coding to On, and repeat three of the phases that failed, for Question 6(b). Then, with `M` = 4 and the coding off, step the phase from 0 to 100 by 20 at a time without returning to 0, and record what happens.
+4. Stop the flowgraph, set `M` to 8, keep `diff` at 0, and run it again. Set $E_b/N_0$ to 12 dB and repeat steps 2 and 3.
+5. Stop the flowgraph, set `diff` to 1, run it again, and repeat three of the phases that failed, for Question 6(b).
+6. Stop the flowgraph, set `M` to 4 and `diff` to 0, and run it again. Step the phase from 0 to 100 by 20 at a time without returning to 0, and record what happens. Set `diff` back to 1 when you finish.
 ::::
 
 ::::{frame} If No Text Arrives
@@ -115,14 +116,14 @@ These follow from Lessons 3 and 15. The bit rates and $E_s/N_0$ are exact, and s
 
 :::{admonition} If the Received label stays at "(waiting for a packet)"
 :class: tip
-Close the flowgraph and run it again with the sliders at their defaults, where every line should arrive within a second. With differential coding off, text arrives only when the loop locks in the right rotation; switch it on, or return the channel phase to 0. If the Costas Loop's output keeps turning, the frequency offset is beyond its pull-in range: type 0 and wait. If you changed `M`, check that it is 2, 4, or 8 and that you ran the flowgraph again. In your own carrier-recovery flowgraph, check that the Costas Loop's order is 8 and that the Signal Source's sample rate is `samp_rate`.
+Close the flowgraph and run it again with the sliders at their defaults, where every line should arrive within a second. With `diff` = 0, text arrives only when the loop has locked in the right rotation, and any frequency offset or phase jump you applied during the run can leave it locked in another one; run the flowgraph again with the sliders at their defaults. If the Costas Loop's output keeps turning, the frequency offset is beyond its pull-in range: type 0 and wait. If you changed `M`, check that it is 2, 4, or 8 and that you ran the flowgraph again. In your own carrier-recovery flowgraph, check that the Costas Loop's order is 8 and that the Signal Source's sample rate is `samp_rate`.
 :::
 ::::
 
 ::::{frame} Part 2: QPSK on a PlutoSDR
 :::{present}
 <img src="../../viz/img/L15-grc-pluto.png"
-     alt="The L15 PlutoSDR flowgraph in GNU Radio Companion: sliders for TX attenuation and RX gain and the differential coding switch; the packet transmitter, Gray map, differential encoder, Chunks to Symbols, and RRC filter feed a Multiply Const of 0.5, a Rational Resampler up by 32, and a PlutoSDR Sink at 915 MHz; a PlutoSDR Source feeds a Rational Resampler down by 32, an AGC3, and the L15 receiver from the matched filter to the Text Sink"
+     alt="The L15 PlutoSDR flowgraph in GNU Radio Companion: sliders for TX attenuation and RX gain and the variables M and diff; the packet transmitter, Gray map, differential encoder, Chunks to Symbols, and RRC filter feed a Multiply Const of 0.5, a Rational Resampler up by 32, and a PlutoSDR Sink at 915 MHz; a PlutoSDR Source feeds a Rational Resampler down by 32, an AGC3, and the L15 receiver from the matched filter to the Text Sink"
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
@@ -139,7 +140,7 @@ In class we transmit only into a cable, into a shielded enclosure, or at very lo
 :class: read-only
 
 <img src="../../viz/img/L15-pluto-sim.png"
-     alt="L15-psk-pluto.grc run in simulation, labeled SIMULATED on the figure, with a model of the cable and of the Pluto's estimated levels and noise in place of the PlutoSDR: at 60 dB TX attenuation and 40 dB RX gain the Symbol Sync output shows four tight clusters turned by the cable's phase, the Costas Loop output shows them at 45 degrees plus multiples of 90, the frequency estimate sits at 0 Hz, and the Lines label reads 339 correct of 339 received in 15 s with no bit errors"
+     alt="L15-psk-pluto.grc run in simulation, labeled SIMULATED on the figure, with a model of the cable and of the Pluto's estimated levels and noise in place of the PlutoSDR: at 60 dB TX attenuation and 40 dB RX gain the Symbol Sync output shows four tight clusters turned by the cable's phase, the Costas Loop output shows them at 45 degrees plus multiples of 90, the frequency estimate sits at 0 Hz, and the Lines label reads 328 correct of 328 received in 15 s with no bit errors"
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto 12px;">
 
 The figure is the PlutoSDR flowgraph run in simulation, with the Pluto Sink and Source replaced by a model of the cable that uses our estimate of the Pluto's levels: a signal about 50 dB below full scale at 60 dB TX attenuation and 40 dB RX gain, with receiver noise 13 dB below it across the 1.024 MHz band, and a fixed phase. The real levels can differ, but the AGC should give the same picture. On the bench, look for the same three things: four tight clusters before and after the Costas Loop, a frequency estimate near 0 Hz, and lines arriving in the Lines label.
@@ -152,8 +153,8 @@ The figure is the PlutoSDR flowgraph run in simulation, with the Pluto Sink and 
 2. Plug the Pluto into USB and run `iio_info -s` at the radioconda prompt; it should list a PlutoSDR context. The flowgraph uses the Pluto's default address, `ip:192.168.2.1`.
 3. Open and run `L15-psk-pluto.grc`. Within a few seconds the Costas Loop's output should show four clusters and lines should arrive. If the clusters do not form, raise the RX gain a few dB at a time. Never set TX attenuation below 30 dB or change the slider's range.
 4. Once lines arrive, screenshot the window for Question 7(a).
-5. Stop and start the flowgraph three times with differential coding on, and record whether text arrives each time. Then do it eight more times, switching differential coding to Off within a few seconds of each start, and record whether text arrives, for Question 7(b).
-6. With differential coding on, set the TX attenuation to 60, 70, 80, and 89 dB in turn. At each, wait 30 s and record the BER for Question 7(c). Stop the flowgraph and unplug the Pluto before you disconnect the cable.
+5. Stop and start the flowgraph three times with `diff` = 1, and record whether text arrives each time. Then set the variable `diff` to 0 and stop and start it eight more times, recording whether text arrives each time, for Question 7(b). Set `diff` back to 1.
+6. With `diff` = 1, set the TX attenuation to 60, 70, 80, and 89 dB in turn. At each, wait 30 s and record the BER for Question 7(c). Stop the flowgraph and unplug the Pluto before you disconnect the cable.
 ::::
 
 ::::{frame} Part 3: After the Lab
@@ -170,7 +171,7 @@ The Writeup is Question 8, in three parts. Part (a) compares your BER measuremen
 :class: read-only doc-links
 
 - <a class="doc-link" href="../../labs/ECE448_Lab_L15_MPSK_blank.pdf" target="_blank" rel="noopener">L15 Lab packet (PDF)</a>
-- <a class="doc-link" href="../../grc/L15-psk-link.grc" download>L15-psk-link.grc</a>: the whole mPSK text link with sliders for $E_b/N_0$, frequency offset, channel phase, and clock error, and a differential coding switch. No hardware needed.
+- <a class="doc-link" href="../../grc/L15-psk-link.grc" download>L15-psk-link.grc</a>: the whole mPSK text link with sliders for $E_b/N_0$, frequency offset, channel phase, and clock error, and a variable that turns differential coding on or off. No hardware needed.
 - <a class="doc-link" href="../../grc/L15-psk-pluto.grc" download>L15-psk-pluto.grc</a>: the link on one PlutoSDR, transmitting at 915 MHz into a cable from its TX port to its RX port through a 30 dB attenuator. Needs a PlutoSDR.
 ::::
 

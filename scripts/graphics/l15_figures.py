@@ -15,7 +15,7 @@ samples per symbol, Symbol Sync with Gardner at loop bandwidth 0.045, Costas
 Loop at 0.02, 100 ppm left out), each point over 2.9e5 to 1.2e7 bits, aligned
 against the transmitted bits. Without differential coding, a cycle slip of the
 Costas Loop rotates every later decision, so QPSK below 4 dB and 8PSK below
-10 dB measured near 0.5 and are left off the plot. The points are typed in below rather than re-measured
+10 dB measured a third or more of their bits wrong and are left off the plot. The points are typed in below rather than re-measured
 here, so this script needs only matplotlib.
 
 The GNU Radio screenshots (L15-grc-*.png, L15-tx-*.png, L15-link-*.png,
@@ -103,7 +103,7 @@ def ber_measured():
             pts = MEASURED[(mod, diff)]
             ax.semilogy(list(pts), list(pts.values()), mk, color=col, ms=7,
                         mfc="white" if diff else col, mew=1.8,
-                        label=f"{mod}, measured" + (", differential" if diff else ""))
+                        label=f"{mod}, simulated link" + (", differential" if diff else ""))
         for target in (1e-4,):
             th = next(v for v in np.arange(0, 20, 0.001) if theory(mod, v) <= target)
             print(f"  {mod} BER {target:.0e}: theory {th:5.2f} dB, measured "
@@ -124,7 +124,7 @@ def ber_measured():
 def map_8psk():
     fig, ax = plt.subplots(figsize=(4.6, 4.6))
     ax.set_aspect("equal")
-    ax.set_xlim(-1.75, 1.75)
+    ax.set_xlim(-1.8, 1.9)
     ax.set_ylim(-1.75, 1.75)
     for s in ("left", "bottom"):
         ax.spines[s].set_position("zero")
@@ -140,7 +140,7 @@ def map_8psk():
         ax.text(1.36 * math.cos(a), 1.36 * math.sin(a), f"{gray[i]:03b}", ha="center", va="center",
                 color=NAVY, fontsize=13, fontweight="bold", family="monospace")
         ax.text(0.74 * math.cos(a), 0.74 * math.sin(a), str(i), ha="center", va="center", color=AMBER, fontsize=11)
-    ax.text(1.72, -0.12, "I", color=GRAY, ha="right", va="top")
+    ax.text(1.85, -0.12, "I", color=GRAY, ha="right", va="top")
     ax.text(0.08, 1.72, "Q", color=GRAY, ha="left", va="top")
     print("  8PSK phase index -> Gray label:", [f"{i}:{gray[i]:03b}" for i in range(8)])
     print("  8PSK Gray value -> phase index (the transmitter's Map):", [gray.index(b) for b in range(8)])

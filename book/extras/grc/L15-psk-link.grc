@@ -40,7 +40,7 @@ blocks:
 - name: M
   id: variable
   parameters:
-    comment: 2, 4, or 8; run again after changing it
+    comment: 2, 4, or 8
     value: '4'
   states:
     bus_sink: false
@@ -86,33 +86,15 @@ blocks:
     rotation: 0
     state: enabled
 - name: diff
-  id: variable_qtgui_chooser
+  id: variable
   parameters:
-    comment: ''
-    gui_hint: 1,1,1,2
-    label: Differential coding
-    label0: 'On'
-    label1: 'Off'
-    label2: ''
-    label3: ''
-    label4: ''
-    labels: '[]'
-    num_opts: '2'
-    option0: '1'
-    option1: '0'
-    option2: '2'
-    option3: '3'
-    option4: '4'
-    options: '[0, 1, 2]'
-    orient: Qt.QHBoxLayout
-    type: int
+    comment: 1 on, 0 off
     value: '1'
-    widget: radio_buttons
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1500, 8]
+    coordinate: [872, 168]
     rotation: 0
     state: enabled
 - name: ebn0
@@ -148,7 +130,7 @@ blocks:
     start: '-500'
     step: '10'
     stop: '500'
-    value: '50'
+    value: '0'
     widget: counter_slider
   states:
     bus_sink: false
@@ -596,7 +578,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [240, 500]
+    coordinate: [336, 500]
     rotation: 0
     state: enabled
 - name: blocks_vector_source_x_0
@@ -637,7 +619,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [624, 476]
+    coordinate: [696, 476]
     rotation: 0
     state: enabled
 - name: digital_chunks_to_symbols_xx_0
@@ -657,7 +639,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [16, 500]
+    coordinate: [128, 500]
     rotation: 0
     state: enabled
 - name: digital_constellation_decoder_cb_0
@@ -673,7 +655,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [232, 764]
+    coordinate: [264, 764]
     rotation: 0
     state: enabled
 - name: digital_correlate_access_code_xx_ts_0
@@ -710,7 +692,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [8, 740]
+    coordinate: [88, 740]
     rotation: 0
     state: enabled
 - name: digital_diff_decoder_bb_0
@@ -820,7 +802,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1048, 476]
+    coordinate: [1088, 476]
     rotation: 0
     state: enabled
 - name: epy_block_0
@@ -864,7 +846,7 @@ blocks:
     expected: msg
     maxoutbuf: '0'
     minoutbuf: '0'
-    settings: (ebn0, foff, phase, ppm, diff)
+    settings: (ebn0, foff, phase, ppm)
   states:
     _io_cache: ('Text Sink', 'blk', [('expected', "''"), ('settings', 'None')], [('0',
       'byte', 1)], [], '', ['expected', 'settings'])
@@ -890,7 +872,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [848, 500]
+    coordinate: [904, 500]
     rotation: 0
     state: enabled
 - name: import_0
@@ -922,7 +904,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [416, 500]
+    coordinate: [496, 500]
     rotation: 0
     state: enabled
 - name: qtgui_const_sink_x_0
@@ -1014,7 +996,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1336, 500]
+    coordinate: [1376, 500]
     rotation: 0
     state: enabled
 - name: qtgui_const_sink_x_1

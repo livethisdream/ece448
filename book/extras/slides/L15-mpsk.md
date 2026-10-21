@@ -54,11 +54,11 @@ Parts 1 and 2 are the transmitter, 3 to 5 the receiver. Part 6 compares the link
 A ring before the Costas Loop, four clusters after it, and the text arrives.
 
 Note:
-Run L15-psk-link.grc live. The left plot is Symbol Sync's output: the 50 Hz offset turns the constellation 4.5 degrees a symbol, so the points fill a ring. The middle plot is after the Costas Loop.
+Run L15-psk-link.grc live and type 50 into the frequency offset box; the slider opens at 0. The left plot is Symbol Sync's output: the 50 Hz offset turns the constellation 4.5 degrees a symbol, so the points fill a ring. The middle plot is after the Costas Loop.
 
 ---
 
-## Phase Carries the Bits
+## Phase-Shift Keying
 
 <img src="./img/15-mpsk/L15-tx-constellations.png" alt="BPSK, QPSK, and 8PSK symbol constellations from L15-psk-tx.grc, all on the unit circle" style="max-height:330px; display:block; margin:0 auto;">
 
@@ -97,7 +97,7 @@ The phase index is in amber and the Gray label in blue. Neighbors differ in one 
 | :-- | :-: | :-: | :-: | :-: |
 | BPSK | 1 | 4 kb/s | 9.6 dB | 9.6 dB |
 | QPSK | 2 | 8 kb/s | 9.6 dB | 12.6 dB |
-| 8PSK | 3 | 12 kb/s | 13.0 dB | 17.8 dB |
+| 8PSK | 3 | 12 kb/s | 13.0 dB | 17.7 dB |
 
 At 4,000 symbols per second, in the same 5.4 kHz.
 
@@ -131,7 +131,7 @@ These are Lesson 3's four problems. Two oscillators are never equal, and the pat
 
 ---
 
-## Timing First, Then the Carrier
+## Order of Recovery
 
 - Symbol Sync locks with the carrier still spinning.
 - The Costas Loop then works on one sample per symbol.
@@ -148,7 +148,7 @@ Gardner's detector compares samples half a symbol apart, and a carrier turning a
 Rotate back, measure the error to the nearest point, and update phase and frequency.
 
 Note:
-For BPSK the detector is I times Q. For QPSK and 8PSK GNU Radio's detectors use the signs of I and Q, which is why the loop needs the order M. The loop bandwidth here is 0.02: wider locks faster from farther away but lets in more noise.
+For BPSK the detector is I times Q. For QPSK GNU Radio's detector uses the signs of I and Q, and for 8PSK it also checks which of the two is larger, which is why the loop needs the order M. The loop bandwidth here is 0.02: wider locks faster from farther away but lets in more noise.
 
 ---
 
@@ -211,7 +211,7 @@ A QPSK constellation turned 90 degrees looks the same, so the loop locks to whic
 Send the change in phase; a rotation does not change the changes.
 
 Note:
-The Differential Encoder adds each index to the last one sent, mod M; the decoder subtracts. One wrong decision spoils two changes, so the BER roughly doubles. In the flowgraph two Selectors switch the coding in and out at both ends.
+The Differential Encoder adds each index to the last one sent, mod M; the decoder subtracts. One wrong decision spoils two changes, so the BER roughly doubles. In the flowgraph the variable diff picks the coded or uncoded path at both ends; change it and run again.
 
 ---
 
@@ -219,7 +219,7 @@ The Differential Encoder adds each index to the last one sent, mod M; the decode
 
 ## Carrier Recovery Explorer
 
-- Raise the offset until the loop stops locking, for each $M$.
+- Raise the offset until the loop stops locking.
 - Turn differential coding off and step the channel phase.
 - At 30 dB, watch the QPSK loop fail to pull in.
 
@@ -234,10 +234,10 @@ The explorer runs GNU Radio's Costas Loop algorithm at one sample per symbol for
 
 <div class="fig" data-inline-svg="./fig/L15-ber-measured.svg" style="max-width:640px; margin:0 auto;"></div>
 
-Within 0.3 dB of Lesson 3 at $10^{-4}$; differential coding adds about 0.4 dB.
+Within 0.3 dB of Lesson 3 at $10^{-4}$; differential coding adds 0.3 to 0.4 dB.
 
 Note:
-Filled points have coding off and the phase at zero; open points have coding on. At 1e-4 the theory needs 8.4 dB for QPSK and 11.7 dB for 8PSK; the coherent link needed 8.6 and 12.0, and the differential link 8.9 and 12.4.
+These are the simulated link. Filled points have coding off and the phase at zero; open points have coding on. At 1e-4 the theory needs 8.4 dB for QPSK and 11.7 dB for 8PSK; the coherent link needed 8.6 and 12.0, and the differential link 8.9 and 12.4.
 
 ---
 
