@@ -58,6 +58,24 @@ written before this date.
   2025 deck) follow the GNU Radio tutorials and PySDR for scope, and stay at
   the level of the lessons that do have decks.
 
+### How Neil teaches it (2026-10-21)
+
+Neil taught 2025 by walking through the GNU Radio tutorials
+(wiki.gnuradio.org) with GNU Radio Companion or GQRX on screen the whole
+period. That is why several lessons have no 2025 deck: the tutorials were
+the material. A lesson is a guided walkthrough, not a chapter.
+
+- **Name the tutorial.** Each lesson lists the GNU Radio wiki tutorial
+  pages it follows (and PySDR chapters, if any) and follows their sequence.
+  Where a lesson has a 2025 deck, the deck sets the topics and the tutorials
+  supply the hands-on steps.
+- **The page is a demo script.** Frames walk through what to build, run, and
+  watch in GRC or GQRX, in the order Neil does it live. Explanation is the
+  minimum needed to know what to look at.
+- **GQRX counts.** For receive-and-explore topics (a band, an unknown
+  signal, HD Radio, ADS-B, AIS), GQRX on a real SDR is a first-class tool,
+  alongside GRC.
+
 This rule is meant to stand out. ECE 444's conventions (shell, voice,
 budgets, checks) still apply. Where 444 would put a derivation on screen,
 448 puts a flowgraph there.
