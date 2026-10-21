@@ -40,7 +40,7 @@ notes and slides replace these on the lesson page.
 | AM Simulation | L6 | <a class="doc-link" href="legacy/L07-am-simulation.pdf" target="_blank" rel="noopener">slides</a> |
 | AM and FM Receivers | L7 | <a class="doc-link" href="legacy/L08-am-fm-receivers.pdf" target="_blank" rel="noopener">slides</a> |
 | PAM Theory | L9 | <a class="doc-link" href="legacy/L13-pam-theory.pdf" target="_blank" rel="noopener">slides</a> |
-| ASCII over PAM | L10 | <a class="doc-link" href="legacy/L14-ascii-pam.pdf" target="_blank" rel="noopener">slides</a> |
+| ASCII over PAM | L10 | <a class="doc-link" href="legacy/L14-ascii-pam.pdf" target="_blank" rel="noopener">Mathys (2016), Motivating Undergraduate Communication Theory Using GNU Radio</a> |
 | DTMF | L13 | <a class="doc-link" href="legacy/L22-dtmf.pdf" target="_blank" rel="noopener">slides</a> |
 | HD Radio | L14 | <a class="doc-link" href="legacy/L24-hd-radio.pdf" target="_blank" rel="noopener">slides</a> |
 | RF Reverse Engineering | L17 | <a class="doc-link" href="legacy/L31-rf-reverse-engineering.pdf" target="_blank" rel="noopener">slides</a> |

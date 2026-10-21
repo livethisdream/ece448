@@ -51,13 +51,13 @@
     </div>
     <div class="ctl"><label for="msg">Message</label><span class="val" id="msg-v"></span>
       <input type="text" id="msg" maxlength="40" value="USAFA ECE 448: ASCII over PAM." spellcheck="false"></div>
-    <div class="ctl"><label for="snr">SNR at the slicer</label><span class="val" id="snr-v"></span>
+    <div class="ctl"><label for="snr">SNR</label><span class="val" id="snr-v"></span>
       <input type="range" id="snr" min="0" max="20" step="0.5" value="12"></div>
   </div>
   <div class="readouts">
     <div class="ro" id="ro-ac"><span class="k">access code</span><span class="v" id="o-ac">—</span></div>
     <div class="ro" id="ro-be"><span class="k">bit errors</span><span class="v" id="o-be">—</span></div>
-    <div class="ro"><span class="k">predicted BER</span><span class="v" id="o-ber">—</span></div>
+    <div class="ro" id="ro-ch"><span class="k">wrong characters</span><span class="v" id="o-ch">—</span></div>
   </div>
   <div class="text" id="out"><span class="k">Received</span></div>
 </div>
@@ -84,11 +84,6 @@ $('snr').oninput = update; $('msg').oninput = update;
 
 function rng(s0) { let s = s0 >>> 0; return () => { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296; }; }
 function gauss(r) { let u = 0; while (u === 0) u = r(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * r()); }
-function Q(x) { // Q-function, Abramowitz and Stegun 7.1.26 on erfc
-  const z = x / Math.SQRT2, t = 1 / (1 + 0.3275911 * z);
-  const e = t * (0.254829592 + t * (-0.284496736 + t * (1.421413741 + t * (-1.453152027 + t * 1.061405429)))) * Math.exp(-z * z);
-  return 0.5 * e;
-}
 function bytesOf(s) { return Array.from(new TextEncoder().encode(s)); }
 function bitsOf(bytes) { const b = []; for (const v of bytes) for (let i = 7; i >= 0; i--) b.push((v >> i) & 1); return b; }
 
@@ -190,8 +185,9 @@ function update() {
   $('ro-ac').className = 'ro' + (ok ? '' : ' bad');
   $('o-be').textContent = sim.errs + ' / ' + sim.pkt.length;
   $('ro-be').className = 'ro' + (sim.errs ? ' bad' : '');
-  const p = Q(Math.sqrt(sim.snr));
-  $('o-ber').textContent = p < 1e-6 ? '< 1e-6' : p.toExponential(1);
+  const wrong = sim.out && ok ? sim.out.filter((v, k) => v !== sim.payload[k] && v !== 10).length : null;
+  $('o-ch').textContent = wrong === null ? '—' : wrong + ' / ' + (sim.payload.length - 1);
+  $('ro-ch').className = 'ro' + (wrong ? ' bad' : '');
   let html = '<span class="k">Received</span>';
   if (!sim.out) html += '<span style="color:#5b6573">(' + (sim.found < 0 ? 'no packet found' : sim.why) + ')</span>';
   else sim.out.forEach((v, k) => {

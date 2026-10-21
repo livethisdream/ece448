@@ -13,7 +13,7 @@ frame_view: true
 
 <div class="title-rule"></div>
 
-Build the packet transmitter, find where noise and clock error stop the text, and send your own line through a PlutoSDR.
+Build the packet transmitter, watch noise break the text and the matched filter repair it, and send your own line through a PlutoSDR.
 
 L10 Lab · Module 4: Digital Modulation · Dr. Neil Rogers
 ::::
@@ -27,12 +27,12 @@ L10 Lab · Module 4: Digital Modulation · Dr. Neil Rogers
 
 ::::{frame} From Lesson to Bench
 :::{present}
-- **Pre-Lab:** run the link and predict the packet, the SNR, and the lines that arrive.
-- **Bench:** find the bytes by hand, build the transmitter, sweep noise and clock error, then use a PlutoSDR.
-- **Writeup:** explain the limits and the polarity.
+- **Pre-Lab:** run the link and work out one packet.
+- **Bench:** find the bytes by hand, build the transmitter, turn up the noise and the clock error, then use a PlutoSDR.
+- **Writeup:** explain what you saw, in words.
 :::
 
-Lesson 10 sent a line of text over the PAM link of Lesson 9. Today you first line up the bytes by hand, with no packets, to see the problem the access code solves. Then you build the packet transmitter yourself, measure where the simulated link breaks, and then run the same link on a PlutoSDR. The lab packet has three parts, and you turn it in once, complete, before Lesson 11. **Part 1, the Pre-Lab**, is on your own before the period: run `L10-pam-link.grc` once and predict the packet size, the SNR at each noise level, and the share of lines that should arrive. **Part 2** is your own measurements in class. **Part 3, the Writeup**, explains them.
+Lesson 10 sent a line of text over the PAM link of Lesson 9. Today you first line up the bytes by hand, with no packets, to see the problem the access code solves. Then you build the packet transmitter yourself, turn up the noise until the simulated link breaks, switch the matched filter off and on, and then run the same link on a PlutoSDR. The lab packet has three parts, and you turn it in once, complete, before Lesson 11. **Part 1, the Pre-Lab**, is on your own before the period: run `L10-pam-link.grc` once and work out the bits and time in one packet and the length field of a line of your own. **Part 2** is what you observe in class. **Part 3, the Writeup**, explains it in words.
 
 Questions 1 to 6 run on your laptop and transmit nothing. Question 7 transmits, into a cable only, as the PlutoSDR frame below describes.
 ::::
@@ -40,27 +40,25 @@ Questions 1 to 6 run on your laptop and transmit nothing. Question 7 transmits, 
 ::::{frame} Part 1: Before the Period
 :::{present}
 - `L10-pam-link.grc` runs and shows the received line.
-- Predict one packet's bits and time, and your line's length field.
-- Predict SNR, BER, and lines intact at six noise amplitudes.
-- Predict how fast 10,000 ppm slips a fixed sampling point.
+- Work out one packet's bits and time.
+- Write your own line's length field and first byte.
 :::
 
 Do the Pre-Lab before you arrive. Question 1 checks that the link flowgraph opens and runs on your laptop: if GRC reports an error, the L5 lesson page lists the install checks, and EI before the lab is the place to fix it.
 
-Question 2 asks for predictions from the lesson's formulas: the bits and time in one packet of the default line, the length field and first character of a line of your own choosing, the SNR at the slicer, the bit error rate, and the share of lines intact at each noise amplitude, and how fast a 10,000 ppm clock error would move a fixed sampling point. Part 2 checks each one.
+Question 2 is the packet arithmetic from the lesson: the bits and time in one packet of the default line and how many packets 30 s holds, and the length field and first character of a line of your own choosing. You will see both on the time sink of the transmitter you build in Part 2.
 ::::
 
-::::{frame} Expected Numbers
+::::{frame} Pre-Lab Check
 :::{present}
 | Check | Expected |
 | :-- | :-- |
 | One packet | 344 bits, 86 ms |
-| SNR at $\sigma$ = 0.95 | 9.5 dB |
-| Lines intact at $\sigma$ = 0.95 | about two thirds |
-| Slip at 10,000 ppm | 25 ms |
+| Packets in 30 s | about 349 |
+| Length field for 31 bytes | `0000000000011111` |
 :::
 
-These follow from Lesson 10. The packet size is exact: 64 bits of access code, 32 of header, and 8 per byte of the line. The SNR at the slicer is $8/\sigma^2$, and a line arrives intact only when all 280 bits of its header and payload are right. The count of correct lines at each setting is random and changes from run to run, which is why the packet records it over 20 to 30 s rather than predicting it exactly.
+These follow from Lesson 10. The packet size is exact: 64 bits of access code, 32 of header, and 8 per byte of the line. The bench is where you find out how much noise the link takes, by turning the noise up and watching.
 ::::
 
 ::::{frame} Part 2: Bytes Without Packets
@@ -84,9 +82,9 @@ These follow from Lesson 10. The packet size is exact: 64 bits of access code, 3
 - The access-code search finds the right offset by itself.
 :::
 
-The figure shows one run of `L10-pam-raw.grc`. At an offset of 0 the receiver groups the bits one to seven bits away from the true byte boundary, and almost nothing it prints is a character. At an offset of 3 the same bits read as the line of text. The right offset depends on the bit at which the receiver started listening, so it changes from run to run, and a person has to find it again each time. The original version of this lesson used this kind of hand-set delay.
+The figure shows one run of `L10-pam-raw.grc`. At an offset of 0 the receiver groups the bits one to seven bits away from the true byte boundary, and almost nothing it prints is a character. At an offset of 3 the same bits read as the line of text. The right offset depends on the bit at which the receiver started listening, so it changes from run to run, and a person has to find it again each time. The receiver in the 2025 reading, <a class="doc-link" href="../../legacy/L14-ascii-pam.pdf" target="_blank" rel="noopener">Mathys (2016), Motivating Undergraduate Communication Theory Using GNU Radio</a>, used this kind of hand-set delay.
 
-The access code removes that step. Correlate Access Code - Tag Stream compares every 64-bit window of the received bits with the code, so it finds the first bit of each packet wherever the receiver started, and Repack Bits starts each byte there. That is why `L10-pam-link.grc` shows text within a fraction of a second every time it starts.
+The access code removes that step. Correlate Access Code - Tag Stream compares every 64-bit window of the received bits with the code, so it finds the first bit of each packet wherever the receiver started, and Repack Bits starts each byte there. That is why `L10-pam-link.grc` shows text within about a second every time it starts.
 ::::
 
 ::::{frame} Part 2: Build the Transmitter
@@ -102,18 +100,19 @@ The access code removes that step. Correlate Access Code - Tag Stream compares e
 8. Run it. Screenshot the canvas for Question 4(a) and the time sink for Question 4(b), and read the spectrum's edges for Question 4(c).
 ::::
 
-::::{frame} Part 2: Noise and Clock Error
+::::{frame} Part 2: Noise, Matched Filter, and Clock Error
 :class: read-only
 
 <img src="../../viz/img/L10-grc-link.png"
-     alt="The whole L10 link flowgraph in GNU Radio Companion: the variables and sliders at the top, the packet transmitter from Vector Source to Chunks to Symbols, then Throttle, the RRC filter, the Fractional Resampler and Noise Source of the channel, and the receiver from the matched filter through Symbol Sync, Binary Slicer, Correlate Access Code - Tag Stream, and Repack Bits to the Text Sink"
+     alt="The whole L10 link flowgraph in GNU Radio Companion: the variables, sliders, and matched-filter chooser at the top, the packet transmitter from Vector Source to Chunks to Symbols, then Throttle, the RRC filter, the Fractional Resampler and Noise Source of the channel, and the receiver from the matched filter through Symbol Sync, Binary Slicer, Correlate Access Code - Tag Stream, and Repack Bits to the Text Sink"
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto 12px;">
 
-1. Open and run `L10-pam-link.grc`. The Lines label counts the lines received since a slider last moved.
-2. With the clock error at 500 ppm, set the noise amplitude to 0.6, 0.75, 0.85, 0.95, 1.1, and 1.3 in turn. At each, wait about 30 s and record the time and the Lines label for Question 5(a).
-3. At 1.1, wait for a line with a wrong character in the Received label and screenshot it for Question 5(b).
-4. Set the noise back to 0.3. Set the clock error to 0, then raise it to 10,000, 20,000, 30,000, and 40,000 ppm in that order, without stopping the flowgraph. At each, wait about 20 s and record the Lines label and the eye's appearance for Question 6(a). Screenshot 10,000 ppm for Question 6(b).
-5. Stop the flowgraph, run it again so the loop locks at the default 500 ppm, and then type 40,000 into the clock-error box in one jump. Record the Lines label after 20 s in the last column of Question 6(a).
+1. Open and run `L10-pam-link.grc`. The Lines label counts the lines received since a slider or the switch last moved.
+2. Note the eye and the Symbol Sync output at the default noise, 0.3. Then, with the clock error at 500 ppm and the matched filter on, set the noise amplitude to 0.5 and raise it by 0.1 at a time. At each step, wait about 20 s and watch the Lines label, the eye, and the Symbol Sync output. Record for Question 5(a) the setting where lines start to break and the setting where no line arrives intact, and describe the displays for Question 5(b).
+3. Near 1.1, wait for a line with a wrong character in the Received label and screenshot it for Question 5(c).
+4. Set the noise to 0.5. Switch the matched filter off, wait 20 s, and record the Lines label and the eye for Question 5(d). Switch it back on and record them again.
+5. Set the noise back to 0.3. Set the clock error to 0, then raise it to 10,000, 20,000, 30,000, and 40,000 ppm in that order, without stopping the flowgraph. At each, wait about 20 s and record the Lines label and the eye's appearance for Question 6(a). Screenshot 10,000 ppm for Question 6(b).
+6. Stop the flowgraph, run it again so the loop locks at the default 500 ppm, and then type 40,000 into the clock-error box in one jump. Record the Lines label after 20 s in the last column of Question 6(a).
 ::::
 
 ::::{frame} If No Text Arrives
@@ -121,7 +120,7 @@ The access code removes that step. Correlate Access Code - Tag Stream compares e
 
 :::{admonition} If the Received label stays at "(waiting for a packet)"
 :class: tip
-Close the flowgraph and run it again with the sliders at their defaults, a noise amplitude of 0.3 and a clock error of 500 ppm, where every line should arrive within a second. In your own transmitter, check that the Stream to Tagged Stream packet length is `len(msg) + 1`, so that it counts the newline, and that all three tag names are `"packet_len"`, with the quotes. If you changed the message, keep it on one line.
+Close the flowgraph and run it again with the sliders at their defaults, a noise amplitude of 0.3 and a clock error of 500 ppm, where every line should arrive within about a second. In your own transmitter, check that the Stream to Tagged Stream packet length is `len(msg) + 1`, so that it counts the newline, and that all three tag names are `"packet_len"`, with the quotes. If you changed the message, keep it on one line.
 :::
 ::::
 
@@ -154,12 +153,12 @@ In class we transmit only into a cable, into a shielded enclosure, or at very lo
 
 ::::{frame} Part 3: After the Lab
 :::{present}
-- Compare the noise table with your predictions and set a link budget target.
-- Compare the clock-error limit with a real crystal.
-- Explain why the working polarity changes, and remove the need for the switch.
+- Explain why the text goes from all to none so quickly.
+- Explain what the matched filter did.
+- Compare the clock-error limit with a real crystal, and explain the polarity.
 :::
 
-The Writeup is three questions. The first compares your noise measurements with Question 2(c) and turns them into the SNR a Lesson 2 link budget should deliver at the slicer. The second compares the clock error your link tolerated with the error between two real crystals, and asks what would happen without Symbol Sync. The third asks why the polarity that works on the Pluto changes from run to run, and what change to the receiver would make the switch unnecessary.
+The Writeup is four questions, answered in words. The first asks why your link went from every line to none over a small change in the noise, and what that means for a real radio. The second asks why switching off the matched filter broke the text. The third compares the clock error your link tolerated with the error between two real crystals, and asks what would happen without Symbol Sync. The fourth asks why the polarity that works on the Pluto changes from run to run, and what change to the receiver would make the switch unnecessary.
 ::::
 
 ::::{frame} Lab Packet

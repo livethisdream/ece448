@@ -61,3 +61,6 @@ Final/
 PP/
 latex/*Assessment*.tex
 latex/*.pdf
+
+# Lab answers live in ECE448-faculty/lab-keys/src, never here
+*_solutions.tex
