@@ -239,7 +239,7 @@ Broadcast FM: RTL-SDR at 2.4 MS/s. A 20 MHz Wi-Fi channel: HackRF at its 20 MS/s
 4. Raise the gain until false stations appear; back it off.
 
 Note:
-Run this live. SDR Flex is at livethisdream.github.io/sdr-flex: right-click the source chip for an example capture, drag a box across a signal, pick a demodulator. Its browser version has no live radio, so switch to GQRX for the band. Each station is a steady stripe about 200 kHz wide in the waterfall. Raise the gain in steps: weak stations rise first, then new stripes appear where nothing transmits, the clipping from the flowgraph on a real radio. SDR++ has the same controls if a laptop lacks GQRX.
+Run this live. SDR Flex is at livethisdream.github.io/sdr-flex: right-click the source chip for an example capture, drag a box across a signal, pick a demodulator. Its browser version has no live radio, so switch to GQRX for the band. Each station is a steady stripe about 200 kHz wide in the waterfall. Raise the gain in steps: weak stations rise first, then new stripes appear where nothing transmits, the clipping from the flowgraph on a real radio. GQRX comes with radioconda; if it does not start on a laptop, SDR++ has the same controls.
 
 ---
 
