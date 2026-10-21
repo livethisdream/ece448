@@ -47,7 +47,7 @@ Nothing in this lab transmits. Bring a phone whose keypad plays tones, and headp
 
 Do the Pre-Lab before you arrive. Put every file from the Lesson 13 and L13 Lab pages in one folder. Question 1 checks that the receiver opens, runs, and reads 7195550148 from `L13-capture.wav`; if GRC reports an error, the L5 lesson page lists the install checks.
 
-Question 2 sets up the bench. Look up the two tones of each key in a number you choose, and work out the block time $N/f_s$ and the null spacing $f_s/N$ at the two other block lengths Part 2 uses. Then open `L13-dtmf-link.grc`, lower the SNR slider a step at a time, and record where the Numbers label first shows a number missed or wrong.
+Question 2 sets up the bench. Look up the two tones of each key in a number you choose, and work out the block time $N/f_s$ and the bin spacing $f_s/N$ at the two other block lengths Part 2 uses. Then open `L13-dtmf-link.grc`, lower the SNR slider a step at a time, and record where the Numbers label first shows a number missed or wrong.
 ::::
 
 ::::{frame} Expected Numbers
@@ -56,7 +56,7 @@ Question 2 sets up the bench. Look up the two tones of each key in a number you 
 | :-- | :-- |
 | `L13-capture.wav` | 7195550148, every 1.5 s |
 | Key '9' | 852 Hz and 1477 Hz |
-| Block at N = 205 | 25.6 ms, nulls 39 Hz out |
+| Block at N = 205 | 25.6 ms, bins 39 Hz apart |
 | Repeated digits | each one counts |
 :::
 
@@ -99,10 +99,10 @@ The receiver should decode every repetition of the lesson's capture with no wron
 :class: read-only
 
 <img src="../../viz/img/L13-grc-link.png"
-     alt="The L13 link flowgraph in GNU Radio Companion: a QT GUI Entry for the number, a Round k check box, and sliders for SNR, twist, tone, gap, and frequency error; the DTMF Dialer and a Noise Source feed an Add, a Throttle, the DTMF Decoder, and a frequency sink; two Function Probes feed the Digits and Numbers labels"
+     alt="The L13 link flowgraph in GNU Radio Companion: a QT GUI Entry for the number, a "Round k to an integer" check box, left unchecked, and sliders for SNR, twist, tone, gap, and frequency error; the DTMF Dialer and a Noise Source feed an Add, a Throttle, the DTMF Decoder, and a frequency sink; two Function Probes feed the Digits and Numbers labels"
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto 12px;">
 
-1. Open and run `L13-dtmf-link.grc`. The Numbers label counts the dialings decoded correctly since a setting last changed, and the dialings that decoded at all; 0 of 0 means none decoded. Each dialing of the default number takes 1.5 s.
+1. Open and run `L13-dtmf-link.grc`. Leave "Round k to an integer" unchecked for the whole lab. The Numbers label counts the dialings decoded correctly since a setting last changed, and the dialings that decoded at all; 0 of 0 means none decoded. Each dialing of the default number takes 1.5 s.
 2. Type `123A456B789C*0#D` into Number and press Enter, so that the link tests every key. Set the twist to each value in the Question 5(a) table, wait about 30 s, and record the Numbers label.
 3. Set the twist back to 0 and the number back to `7195550148`. Set Gap to 60 ms, set Tone to each value in Question 5(b), wait about 30 s at each, and record the Numbers label.
 4. Set Tone to 60 ms, set Gap to each value in Question 5(c), and record the Numbers label.
@@ -161,6 +161,14 @@ The Writeup is three questions. The first compares where the decoder started to 
 - <a class="doc-link" href="../../grc/L13-lab-capture.wav" download>L13-lab-capture.wav</a>: the lab's synthetic capture, a number you decode in Question 4.
 - <a class="doc-link" href="../../grc/L13-dtmf-mic.grc" download>L13-dtmf-mic.grc</a>: the receiver on the laptop's microphone. Needs a microphone. Compiled only; not yet tested with a real microphone.
 - The Lesson 13 page has `L13-dtmf-rx.grc`, `L13-dtmf-link.grc`, `L13-capture.wav`, and the keypad flowgraph to check your build against after Question 3.
+
+Tutorials this lesson follows:
+
+- <a class="doc-link" href="https://wiki.gnuradio.org/index.php/Embedded_Python_Block" target="_blank" rel="noopener">Embedded Python Block</a>, GNU Radio wiki: how the DTMF Dialer and DTMF Decoder are written.
+- <a class="doc-link" href="https://wiki.gnuradio.org/index.php/Goertzel" target="_blank" rel="noopener">Goertzel</a>, GNU Radio wiki: the block behind the receiver's eight bins.
+- <a class="doc-link" href="https://wiki.gnuradio.org/index.php/Signal_Source" target="_blank" rel="noopener">Signal Source</a>, GNU Radio wiki: the two tones of the keypad.
+- <a class="doc-link" href="https://wiki.gnuradio.org/index.php/Wav_File_Source" target="_blank" rel="noopener">Wav File Source</a>, GNU Radio wiki: how the receiver reads a capture.
+- <a class="doc-link" href="https://github.com/EliasOenal/multimon-ng" target="_blank" rel="noopener">multimon-ng</a>: the ready-made decoder from the 2025 deck.
 ::::
 
 ::::{frame} Looking Ahead

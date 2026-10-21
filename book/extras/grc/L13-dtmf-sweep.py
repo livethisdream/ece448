@@ -7,7 +7,7 @@ dialings of a number the decoder gets exactly right as one setting at a time
 moves away from a clean signal. Each setting is the same as the slider of that
 name in L13-dtmf-link.grc.
 
-    python L13-dtmf-sweep.py            # both tables on the lesson page, about a minute
+    python L13-dtmf-sweep.py            # the noise and frequency-error sweeps behind the lesson page
     python L13-dtmf-sweep.py snr        # one table: snr or offset
 
 Put it in the same folder as L13-dtmf-link.grc. Run it from the radioconda
@@ -76,8 +76,7 @@ def table(name, values, **fixed):
 
 TABLES = {
     'snr': lambda: table('snr_db', [6, 4, 3, 2, 1, 0, -1], number=PHONE),
-    'offset': lambda: (table('offset_pct', [-3.5, -2.5, -2.0, -1.5, -1.0, 1.0, 1.5, 2.0, 2.5, 3.5], number=ALL16),
-                       table('offset_pct', [-1.5, -1.0, -0.5, 0.5, 1.0, 1.5], number=ALL16, round_k=True)),
+    'offset': lambda: table('offset_pct', [-3.5, -2.5, -2.0, -1.5, -1.0, 1.0, 1.5, 2.0, 2.5, 3.5], number=ALL16),
 }
 
 if __name__ == '__main__':

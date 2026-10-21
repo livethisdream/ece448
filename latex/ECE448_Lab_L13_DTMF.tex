@@ -191,7 +191,7 @@ blocks in a row agree.
 
 	\begin{minipage}[t]{0.58\linewidth}
 		\part The bench changes the Goertzel Length $N$. Find the block time $N/f_s$ and the
-		null spacing $f_s/N$ for $N = 102$ and $N = 410$. For each, say whether a 50 ms tone
+		bin spacing $f_s/N$, which is also the distance to the first null, for $N = 102$ and $N = 410$. For each, say whether a 50 ms tone
 		can fill a whole block.
 		\begin{solution}[1.2in]
 		\eq{ N = 102:&\ 12.75\ \text{ms},\ 78.4\ \text{Hz} \\
@@ -466,8 +466,9 @@ $N$ & Setting & Correct \\\hline
 	Question 5. Where does the decoder start to miss digits, and why there?
 		\begin{solution}[1.5in]
 		Twist: every number decoded from $-9$ to $+5$ dB and none at $-10$ or $+6$, the
-		edges of the twist test. Tone: every 35 and 40 ms tone decoded and none at 28 ms,
-		because a tone must outlast about one 25.6 ms block, three blocks in a row; 40 ms
+		edges of the twist test. Tone: every 35 and 40 ms tone decoded and none at 28 ms;
+		the edge fell near 30 ms. Three overlapping blocks, 102 samples apart, must each hold
+		mostly tone, so the tone must last a little longer than one 25.6 ms block. 40 ms
 		tones are safe. Gap: 25 ms and longer always worked, but at 20 ms a few numbers
 		failed, because a repeated digit such as the 555 merged into one. The decoder is
 		right at the edge of the 20 ms gap.
@@ -477,10 +478,10 @@ $N$ & Setting & Correct \\\hline
 	lose, and why $N = 205$ is the usual choice at 8 kHz.
 		\begin{solution}[1.5in]
 		A short block responds quickly, so it catches short tones, but its bins are wide,
-		78 Hz at $N = 102$, so it accepts tones farther off frequency, and it lets some
+		bins 78 Hz apart, nulls 78 Hz either side, at $N = 102$, so it accepts tones farther off frequency, and it lets some
 		22 ms bursts through, which makes speech more likely to look like a digit. A long block
-		has narrow bins, 19.5 Hz at $N = 410$, but lasts 51 ms, longer than a 40 ms tone, and
-		misses a tone only 1\% off. $N = 205$ gives 39 Hz bins and a 25.6 ms block, short
+		has narrow bins, 19.5 Hz apart at $N = 410$, but lasts 51 ms, longer than a 40 ms tone, and
+		misses a tone only 1\% off. $N = 205$ gives bins 39 Hz apart, nulls 39 Hz either side, and a 25.6 ms block, short
 		enough for a 40 ms tone and wide enough for a tone slightly off frequency.
 		\end{solution}
 

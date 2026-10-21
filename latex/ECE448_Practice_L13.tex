@@ -101,7 +101,7 @@ samples at $f_s = 8$ kHz in \texttt{L13-dtmf-rx.grc} instead of the lesson's 205
 \begin{parts}
 
 	\begin{minipage}[t]{0.58\linewidth}
-		\part Find the block time and the distance from a bin's center to its first null.
+		\part Find the block time and the bin spacing, which is also the distance from a bin to its first null.
 		\begin{solution}[0.8in]
 		\eq{ N / f_s &= 136 / 8000 = 17\ \text{ms} \\
 			f_s / N &= 8000 / 136 = 58.8\ \text{Hz} }
@@ -112,7 +112,7 @@ samples at $f_s = 8$ kHz in \texttt{L13-dtmf-rx.grc} instead of the lesson's 205
 		block: \ansbox[1.1in]{17 ms}
 
 		\vspace{4pt}
-		null: \ansbox[1.1in]{58.8 Hz}
+		spacing: \ansbox[1.1in]{58.8 Hz}
 	\end{minipage}
 
 	\part Which parameter do you change in each of the eight Goertzel blocks, and what
@@ -161,8 +161,8 @@ amplitude 0.20 and a column tone of amplitude 0.12.
 	further the same way?
 		\begin{solution}[1.0in]
 		The column tone, 1477 Hz, is weaker. The Twist slider sets it; negative twist makes the
-		column tone weaker. Digits keep decoding for a while, then stop once the twist passes
-		the decoder's test 3 limit of $-10$ dB.
+		column tone weaker. Digits keep decoding for a while, then stop at about $-10$ dB, the
+		edge of test 3.
 		\end{solution}
 
 	\part Why does the column tone often arrive weaker over a telephone line? Answer in
@@ -236,7 +236,7 @@ Block B & 0.12 & 0.10 & 0.02 & 0.01 & 0.03 & 0.30 & 0.02 & 0.01 \\\hline
 	\part At 3 dB the tones barely show above the noise on the spectrum, yet every number
 	still decodes. Explain in words why the decoder can still hear them.
 		\begin{solution}[1.0in]
-		Each Goertzel bin is only about 39 Hz wide, so it sees only a small slice of the
+		With bins 39 Hz apart, nulls 39 Hz either side, each Goertzel bin sees only a small slice of the
 		noise spread across the 4 kHz band, while it still sees the whole of its tone. Inside
 		its bin, the tone stands well above the noise.
 		\end{solution}

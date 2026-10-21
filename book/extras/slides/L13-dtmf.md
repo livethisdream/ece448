@@ -110,6 +110,16 @@ L13-dtmf-capture.grc chains the DTMF Dialer Embedded Python Block, a Noise Sourc
 
 ---
 
+## Ready-Made Decoders
+
+- multimon-ng and Android DTMF apps read the capture.
+- How else could we decode it?
+
+Note:
+From the 2025 deck: the transmitter is easy, the decoder not so easy. Play L13-capture.wav into multimon-ng or a phone app to show the digits, then ask how we would build the decoder ourselves.
+
+---
+
 ## Separating Neighboring Tones
 
 - Eight band-pass filters, each followed by an energy detector
@@ -129,7 +139,7 @@ A 40 ms tone leaves room for a block of about 25 ms, with margin for the tone's 
 | Length | 205 |
 | Frequency | one DTMF tone |
 
-205 samples at 8 kHz last 25.6 ms; nulls sit 39 Hz either side.
+205 samples at 8 kHz last 25.6 ms: bins 39 Hz apart, nulls 39 Hz either side.
 
 Note:
 The Goertzel algorithm measures the energy at one frequency over a block, far cheaper than an FFT when only eight frequencies matter. GNU Radio has it as a stock block. 205/8000 = 25.6 ms fits in a 40 ms tone; 8000/205 = 39 Hz.
@@ -140,7 +150,7 @@ The Goertzel algorithm measures the energy at one frequency over a block, far ch
 
 <div class="fig" data-inline-svg="./fig/L13-goertzel.svg" style="max-width:720px; margin:0 auto;"></div>
 
-Each bin has nulls 39 Hz either side; each neighbor lands far down.
+Bins 39 Hz apart, nulls 39 Hz either side; each neighbor lands far down.
 
 Note:
 Each bin is a band-pass filter read once per block. A longer block narrows the bins but outlasts a short tone; a shorter one widens them. The lab changes N and watches both.
@@ -189,23 +199,24 @@ Start at key 5, N 205, 20 dB. Raise twist past +6 dB to show test 3. The explore
 
 <img src="./img/13-dtmf/L13-link-noisy.png" alt="The link flowgraph at 1 dB SNR with 15 of 26 numbers correct" style="max-height:380px; display:block; margin:0 auto;">
 
-| SNR | 3 dB | 2 dB | 1 dB | 0 dB |
-| :-- | :-: | :-: | :-: | :-: |
-| Correct | 40/40 | 40/40 | 25/40 | 5/40 |
+Every number arrives to about 2 dB; some drop near 1 dB; almost none at 0 dB.
 
 Note:
-Run the link live and pull the SNR slider down. Each 39 Hz bin sees only a small slice of the noise, so digits survive to a few dB. Ten minutes of noise alone produced no false digits.
+Run the link live and pull the SNR slider down. With bins 39 Hz apart, nulls 39 Hz either side, each bin sees only a small slice of the noise. Ten minutes of noise alone produced no false digits. With no noise, every key decodes at 1.5% frequency error and none at 2%.
 
 ---
 
 ## DTMF on a Real Radio
 
 - Repeaters and remote sites take DTMF over FM.
-- An RTL-SDR and an FM receiver can feed 8 kHz audio to the decoder.
+- Listen in GQRX on an RTL-SDR, Narrow FM; UDP audio can feed multimon-ng.
+- Or feed 8 kHz FM audio to the DTMF Decoder.
 - The L13 Lab decodes a phone through the laptop microphone.
 
 Note:
 Nothing in this lesson transmits. In class we transmit only into a cable, into a shielded enclosure, or at very low power in an ISM band, and only when the lesson says to.
+
+Tutorials this lesson follows: GNU Radio wiki Embedded Python Block, Goertzel, Signal Source, and Wav File Source pages; multimon-ng is the deck's ready-made decoder.
 
 ---
 
