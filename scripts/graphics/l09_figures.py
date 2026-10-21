@@ -15,8 +15,9 @@
                      little noise; the decision thresholds are dashed and every
                      wrong decision is red. No error-rate numbers: noise is
                      something to watch (ROADMAP, "Sources and noise").
-  L09-constellations : 2-PAM, Gray-coded 4-PAM, and Gray-coded QPSK on the
-                     I/Q plane, as on the 2025 deck's constellation slides.
+  L09-constellations : 2-PAM, Gray-coded 4-PAM, Gray-coded QPSK, and unlabeled
+                     8-PSK on the I/Q plane, as on the 2025 deck's constellation
+                     slides; the 8-PSK Gray code is left for the class to fill in.
 
 The GNU Radio screenshots (L09-grc-*.png, L09-pulse-shaping.png,
 L09-matched-filter.png, L09-timing.png) are not generated here: they are taken
@@ -203,12 +204,13 @@ def pam_noise():
 
 
 def constellations():
-    fig, axes = plt.subplots(1, 3, figsize=(8.4, 3.0))
+    fig, axes = plt.subplots(1, 4, figsize=(10, 2.9))
     l4 = np.array([-3, -1, 1, 3]) / np.sqrt(5)
     sets = (("2-PAM", [(-1, 0, "0"), (1, 0, "1")]),
             ("4-PAM, Gray coded", [(x, 0, b) for x, b in zip(l4, ["00", "01", "11", "10"])]),
             ("QPSK, Gray coded", [(np.cos(a), np.sin(a), b) for a, b in
-                                  zip(np.pi / 4 * np.array([1, 3, 5, 7]), ["00", "01", "11", "10"])]))
+                                  zip(np.pi / 4 * np.array([1, 3, 5, 7]), ["00", "01", "11", "10"])]),
+            ("8-PSK: label it", [(np.cos(a), np.sin(a), "") for a in np.pi / 4 * np.arange(8)]))
     for ax, (title, pts) in zip(axes, sets):
         ax.axhline(0, color=RULE, lw=1)
         ax.axvline(0, color=RULE, lw=1)

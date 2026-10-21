@@ -58,7 +58,7 @@ Question 2 is the packet arithmetic from the lesson: the bits and time in one pa
 | Length field for 31 bytes | `0000000000011111` |
 :::
 
-These follow from Lesson 10. The packet size is exact: 64 bits of access code, 32 of header, and 8 per byte of the line. Nothing in the Pre-Lab asks how many lines noise will break; the bench is where you find that out, by turning the noise up and watching.
+These follow from Lesson 10. The packet size is exact: 64 bits of access code, 32 of header, and 8 per byte of the line. The bench is where you find out how much noise the link takes, by turning the noise up and watching.
 ::::
 
 ::::{frame} Part 2: Bytes Without Packets
@@ -82,9 +82,9 @@ These follow from Lesson 10. The packet size is exact: 64 bits of access code, 3
 - The access-code search finds the right offset by itself.
 :::
 
-The figure shows one run of `L10-pam-raw.grc`. At an offset of 0 the receiver groups the bits one to seven bits away from the true byte boundary, and almost nothing it prints is a character. At an offset of 3 the same bits read as the line of text. The right offset depends on the bit at which the receiver started listening, so it changes from run to run, and a person has to find it again each time. The original version of this lesson used this kind of hand-set delay.
+The figure shows one run of `L10-pam-raw.grc`. At an offset of 0 the receiver groups the bits one to seven bits away from the true byte boundary, and almost nothing it prints is a character. At an offset of 3 the same bits read as the line of text. The right offset depends on the bit at which the receiver started listening, so it changes from run to run, and a person has to find it again each time. The receiver in the Mathys reading used this kind of hand-set delay.
 
-The access code removes that step. Correlate Access Code - Tag Stream compares every 64-bit window of the received bits with the code, so it finds the first bit of each packet wherever the receiver started, and Repack Bits starts each byte there. That is why `L10-pam-link.grc` shows text within a fraction of a second every time it starts.
+The access code removes that step. Correlate Access Code - Tag Stream compares every 64-bit window of the received bits with the code, so it finds the first bit of each packet wherever the receiver started, and Repack Bits starts each byte there. That is why `L10-pam-link.grc` shows text within about a second every time it starts.
 ::::
 
 ::::{frame} Part 2: Build the Transmitter
@@ -120,7 +120,7 @@ The access code removes that step. Correlate Access Code - Tag Stream compares e
 
 :::{admonition} If the Received label stays at "(waiting for a packet)"
 :class: tip
-Close the flowgraph and run it again with the sliders at their defaults, a noise amplitude of 0.3 and a clock error of 500 ppm, where every line should arrive within a second. In your own transmitter, check that the Stream to Tagged Stream packet length is `len(msg) + 1`, so that it counts the newline, and that all three tag names are `"packet_len"`, with the quotes. If you changed the message, keep it on one line.
+Close the flowgraph and run it again with the sliders at their defaults, a noise amplitude of 0.3 and a clock error of 500 ppm, where every line should arrive within about a second. In your own transmitter, check that the Stream to Tagged Stream packet length is `len(msg) + 1`, so that it counts the newline, and that all three tag names are `"packet_len"`, with the quotes. If you changed the message, keep it on one line.
 :::
 ::::
 

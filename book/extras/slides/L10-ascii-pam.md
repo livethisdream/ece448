@@ -22,10 +22,9 @@ Spring 2027 · Dr. Neil Rogers
 
 ## Where We Were
 
-- Lesson 9: a slicer decides each 2-PAM symbol at zero
 - Lesson 8: text in packets behind an access code
-- Lesson 9: the PAM link, from bits to one clean sample per symbol
-- The 2025 reading: Mathys, four acts from text to matched filter
+- Lesson 9: the PAM link, from bits to one clean sample per symbol; decide by the sign
+- The reading: Mathys, four acts from text to matched filter
 
 Today: text in at one end of the PAM link and out the other.
 
@@ -39,7 +38,7 @@ Open both L10 flowgraphs in GRC before class. The link flowgraph runs in the fir
 1. Text to bits: ASCII and bit order
 2. Packets: access code, header, payload
 3. The receiver: slicer, access-code search, bytes
-4. Turn up the noise
+4. Noise without a matched filter
 5. The matched filter, then clock error and a real radio
 
 Note:
@@ -91,7 +90,7 @@ The packet uses the same format as the L8 link. The access code and header add 9
 
 ---
 
-## The Transmitter in GNU Radio
+## Bits to a Waveform
 
 <img src="./img/10-ascii-pam/L10-grc-tx.png" alt="The L10 transmitter flowgraph in GRC" style="max-height:400px; display:block; margin:0 auto;">
 
@@ -152,31 +151,31 @@ Start at 12 dB, where the search finds the packet at bit 40. Press new noise a f
 
 ---
 
-## Turn Up the Noise
+## Noise Without a Matched Filter
 
-<img src="./img/10-ascii-pam/L10-link-noisy.png" alt="The L10 link at noise 1.0: a mostly closed eye, spread symbol bands, and 95 of 199 lines correct" style="max-height:380px; display:block; margin:0 auto;">
+<img src="./img/10-ascii-pam/L10-link-mf-off.png" alt="The L10 link at noise 0.5 with the matched filter off: no eye opening and 4 of 110 lines correct" style="max-height:380px; display:block; margin:0 auto;">
 
-The eye closes, the bands spread, and characters go wrong.
+Matched filter off, noise 0.5: 4 of 110 lines intact.
 
 Note:
-Drag the noise slider up from 0.3 live. Lines start to break near 0.7, about half survive at 1.0, and none arrive by 1.4. A line needs all of its header and payload bits right, which is why the change from all to none is so quick. No formulas: point at the eye and the bands.
+Click the Matched filter switch off, then set the noise to 0.5. The noise across the whole 32 kHz reaches the slicer, the eye has no opening, and the symbols scatter across zero. This is the third act of the Mathys reading.
 
 ---
 
 ## The Matched Filter
 
-<img src="./img/10-ascii-pam/L10-link-mf-off.png" alt="The L10 link at noise 0.5 with the matched filter off: no eye opening and 4 of 110 lines correct" style="max-height:380px; display:block; margin:0 auto;">
+<img src="./img/10-ascii-pam/L10-link-noisy.png" alt="The L10 link at noise 1.0 with the matched filter on: a mostly closed eye, spread symbol bands, and 94 of 198 lines correct" style="max-height:380px; display:block; margin:0 auto;">
 
-Off at noise 0.5: 4 of 110 lines. On: every line.
+On at 0.5: every line. Raised to 1.0: about half.
 
 Note:
-Set noise to 0.5 and click the Matched filter switch off. The noise across the whole 32 kHz reaches the slicer. Switch it back on and the eye opens again. This is the fourth act of the 2025 reading.
+Switch the filter back on at 0.5 and every line arrives. Then drag the noise up live. Lines start to break near 0.7, about half survive at 1.0, and none arrive by 1.4. A line needs all of its header and payload bits right, which is why the change from all to none is so quick. Point at the eye and the bands.
 
 ---
 
 ## Clock Error
 
-<img src="./img/10-ascii-pam/L10-link-clock.png" alt="The L10 link at a 10,000 ppm clock error: a smeared eye but tight Symbol Sync output and 211 of 213 lines correct" style="max-height:380px; display:block; margin:0 auto;">
+<img src="./img/10-ascii-pam/L10-link-clock.png" alt="The L10 link at a 10,000 ppm clock error: a smeared eye but tight Symbol Sync output and 210 of 212 lines correct" style="max-height:380px; display:block; margin:0 auto;">
 
 Symbol Sync locks cold to about 25,000 ppm; two 20 ppm crystals differ by up to 40 ppm.
 
@@ -214,7 +213,7 @@ In class we transmit only into a cable, into a shielded enclosure, or at very lo
 
 ## Key Point
 
-<div class="callout">Text becomes bytes, bytes become bits, and each line goes out as a packet behind a 64-bit access code. The receiver slices each symbol to a bit, finds the access code, and reads the length and the bytes that follow.</div>
+<div class="callout">Each line goes out as bits in a packet behind an access code. The receiver slices each symbol, finds the access code, and reads the bytes. The matched filter keeps the text alive in noise.</div>
 
 Note:
 Every packet link in the rest of the course finds its packets by searching for a known pattern.

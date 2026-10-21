@@ -236,7 +236,7 @@ receiver starts listening at a random bit.
 	line takes to appear, and explain in words how the receiver finds the byte boundary
 	that you had to find by hand in part (a).
 		\begin{solution}[1.3in]
-		A line appears within a couple of seconds every time, with nothing to adjust.
+		A line appears within about a second every time, with nothing to adjust.
 		Correlate Access Code - Tag Stream compares every 64-bit window of the received
 		bits with the access code, so wherever the receiver starts listening, it finds the
 		bit where a packet begins, and Repack Bits groups the bytes from that bit. The
@@ -292,14 +292,15 @@ with your line of text from Question 2(b) in \texttt{msg}.
 default, 500 ppm, and the matched filter on. Start the noise amplitude at 0.5 and raise
 it by 0.1 at a time, waiting about 20 s at each step and watching the Lines label, the
 eye, and the Symbol Sync output, which is the 2-PAM constellation drawn against time.
-The count restarts each time a slider moves.
+Note the displays at the default 0.3 first. The count restarts each time a slider
+moves.
 
 \begin{parts}
 
 	\begin{minipage}[t]{0.58\linewidth}
-		\part Record the noise amplitude at which lines start to break, the first
-		setting where the correct count falls behind the lines sent, and the setting at
-		which no line arrives intact in 20 s.
+		\part Record the noise amplitude at which lines start to break, where the correct
+		count first falls behind the lines sent, and the setting at which no line arrives
+		intact in 20 s.
 		\begin{solution}[1.0in]
 		Lines start to break near 0.7 (between 0.6 and 0.8, depending on the run): a
 		few lines in a hundred arrive with a wrong character or not at all. About half

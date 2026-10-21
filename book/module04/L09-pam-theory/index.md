@@ -50,7 +50,7 @@ Lesson 9 · Module 4: Digital Modulation · Dr. Neil Rogers
 
 Lesson 10 sends text over a PAM link. Before that works, the link has to carry random bits reliably, and the figure is the flowgraph that does it. Bits become **symbols**, a filter shapes each symbol into a pulse that fits a fixed bandwidth, the channel adds noise and a clock error, and the receiver filters, finds the right instant to sample, and recovers one number per symbol.
 
-Part 1 follows the 2025 PAM slides: what a PAM symbol is, what noise does to it, and how its levels look on a constellation. The parts after that build the flowgraph one block at a time, and every block has a parameter we have to choose.
+Part 1 covers what a PAM symbol is, what noise does to it, and how its levels look on a constellation. The parts after that build the flowgraph one block at a time, and every block has a parameter we have to choose.
 ::::
 
 ::::{frame} Part 1: Binary and M-ary PAM
@@ -86,23 +86,24 @@ where $R_b$ is the bit rate. The figure sends the same eight bits both ways: 4-P
 
 Each strip shows what the receiver gets, one sample per symbol, after the channel adds noise. The receiver picks the nearest level, so the dashed lines halfway between the levels are its **decision thresholds**. With a little noise, the 2-PAM samples stay in two tight bands and none crosses zero. Turn the noise up and the bands spread until a few samples land on the wrong side, and each red dot is a wrong bit.
 
-The bottom strip is 4-PAM at the same transmit power and the same little noise as the top strip. Four levels in the same power sit closer together, so bands that were harmless for 2-PAM now cross the thresholds. That is the trade the rest of the course keeps meeting: more levels carry more bits per symbol, and they need a quieter channel. We will not calculate how many errors to expect; we watch them, on a constellation sink, on an eye diagram, and in the text a link delivers.
+The bottom strip is 4-PAM at the same transmit power and the same little noise as the top strip, so its levels are scaled from $\pm 1, \pm 3$ to about $\pm 0.45, \pm 1.34$. Four levels in the same power sit closer together, so bands that were harmless for 2-PAM now cross the thresholds. That is the trade the rest of the course keeps meeting: more levels carry more bits per symbol, and they need a quieter channel. Every link in the course shows this on its displays: on a constellation sink, on an eye diagram, and in the text it delivers.
 ::::
 
 ::::{frame} Constellations and Gray Coding
 :::{present}
 <img src="../../viz/img/L09-constellations.svg"
-     alt="Three constellation diagrams on I and Q axes: 2-PAM with points at minus 1, labeled 0, and plus 1, labeled 1; Gray-coded 4-PAM with four points on the real axis labeled 00, 01, 11, 10; and Gray-coded QPSK with four points on a circle, one per quadrant, labeled 00, 01, 11, 10 going around"
+     alt="Four constellation diagrams on I and Q axes: 2-PAM with points at minus 1, labeled 0, and plus 1, labeled 1; Gray-coded 4-PAM with four points on the real axis labeled 00, 01, 11, 10; and Gray-coded QPSK with four points on a circle, one per quadrant, labeled 00, 01, 11, 10 going around; and 8-PSK with eight unlabeled points evenly around a circle"
      style="max-width: 760px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
 - PAM's levels lie on the real axis; PSK's points lie on a circle.
 - **Gray coding**: neighboring points differ in one bit.
+- Now label the 8-PSK points.
 :::
 
-A **constellation diagram** plots each symbol as a point on the I/Q plane, the view GNU Radio's constellation sink gives. PAM changes only the height of a real pulse, so all its points sit on the real axis: two for 2-PAM, four for 4-PAM. **m-PSK**, the subject of Lesson 15, keeps the height fixed and moves the points around a circle instead, so it uses both axes.
+A **constellation diagram** plots each symbol as a point on the I/Q plane, the view GNU Radio's constellation sink gives. PAM changes only the height of a real pulse, so all its points sit on the real axis: two for 2-PAM, four for 4-PAM. **m-PSK**, the subject of Lesson 15, keeps the height fixed and moves the points around a circle instead, so it uses both axes. The figure ends with 8-PSK, eight points at 45° spacing, unlabeled.
 
-The labels show which bits each point carries. In a **Gray code**, each point differs from its neighbors in exactly one bit, so 4-PAM goes 00, 01, 11, 10 rather than counting 00, 01, 10, 11. Noise almost always pushes a sample to a neighboring point, not across the constellation, so with Gray coding a wrong decision usually costs one bit rather than two. The practice set asks you to Gray-code 8-PSK.
+The labels show which bits each point carries. In a **Gray code**, each point differs from its neighbors in exactly one bit, so 4-PAM goes 00, 01, 11, 10 rather than counting 00, 01, 10, 11. Noise almost always pushes a sample to a neighboring point, not across the constellation, so with Gray coding a wrong decision usually costs one bit rather than two. Label the 8-PSK points with a Gray code before the next frame: each point must differ from both its neighbors in one bit, all the way around. The practice set checks your answer.
 ::::
 
 ::::{frame} Part 2: Why Not Rectangular Pulses?

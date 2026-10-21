@@ -75,7 +75,7 @@ Binary PAM sends plus A for a 1 and minus A for a 0, and the receiver decides by
 A sample past a dashed threshold is a wrong decision.
 
 Note:
-This replaces the 2025 slides' error-probability derivation: we watch noise, we don't calculate it. Top: a little noise, no errors. Middle: more noise, a few red dots. Bottom: 4-PAM at the same power and the same little noise as the top; the levels are closer, so it already makes errors.
+Top: a little noise, no errors. Middle: more noise, a few red dots. Bottom: 4-PAM at the same power, so its levels are about plus or minus 0.45 and 1.34, and the same little noise as the top; the levels are closer, so it already makes errors.
 
 ---
 
@@ -83,10 +83,10 @@ This replaces the 2025 slides' error-probability derivation: we watch noise, we 
 
 <div class="fig" data-inline-svg="./fig/L09-constellations.svg" style="max-width:740px; margin:0 auto;"></div>
 
-Neighboring points differ in one bit.
+Neighboring points differ in one bit. Now label the 8-PSK points.
 
 Note:
-PAM's points lie on the real axis; m-PSK's lie on a circle and come back in Lesson 15. Noise usually pushes a sample to a neighbor, so with Gray coding a wrong decision usually costs one bit. Have the class Gray-code 8-PSK, the last 2025 slide; it is also in the practice set.
+PAM's points lie on the real axis; m-PSK's lie on a circle and come back in Lesson 15. Noise usually pushes a sample to a neighbor, so with Gray coding a wrong decision usually costs one bit. Give the class two minutes to Gray-code the blank 8-PSK; one answer going around is 000, 001, 011, 010, 110, 111, 101, 100. It is also in the practice set.
 
 ---
 
