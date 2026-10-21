@@ -62,7 +62,7 @@
 <script>
 'use strict';
 // The Costas Loop of GNU Radio 3.10 (digital.costas_loop_cc) at one sample
-// per symbol, as in L15-psk-link.grc after Symbol Sync: loop bandwidth 0.02,
+// per symbol, as in L15-psk-link.grc after Symbol Sync, but with loop bandwidth 0.04,
 // damping 0.707, the order-2, -4, and -8 phase detectors, the error clipped
 // to +-1. Symbols arrive at 4 kbaud with the chosen frequency offset, channel
 // phase, and Gaussian noise; the noise amplitude means what it means in
@@ -70,7 +70,7 @@
 // 10 s, 40,000 symbols, and
 // the loop starts at zero phase and zero frequency. Timing is ideal here, so
 // the numbers come close to the flowgraph's but do not match it exactly.
-const RS = 4000, N = 40000, BW = 0.02, ZETA = Math.SQRT1_2, SANS = 'Inter, system-ui, -apple-system, sans-serif';
+const RS = 4000, N = 40000, BW = 0.04, ZETA = Math.SQRT1_2, SANS = 'Inter, system-ui, -apple-system, sans-serif';
 const C = { navy:'#004a85', gray:'#9aa5b1', rule:'#cddce9', ink3:'#5b6573', amber:'#8a5a00', red:'#b01e24', grn:'#3f7d34' };
 const $ = id => document.getElementById(id);
 let M = 4, diff = 1, seed = 1;

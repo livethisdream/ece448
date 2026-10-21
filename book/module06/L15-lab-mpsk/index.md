@@ -48,28 +48,16 @@ Do the Pre-Lab before you arrive. Question 1 checks that the link flowgraph open
 Question 2 asks for the settings the bench needs: the angles of the eight 8PSK points for your Chunks to Symbols table, the constant that turns the Costas Loop's frequency output into hertz, and how far a 20 Hz offset turns the constellation each symbol.
 ::::
 
-::::{frame} Expected Numbers
-:::{present}
-| Check | Source |
-| :-- | :-- |
-| 8PSK points | 22.5° plus multiples of 45° |
-| Costas frequency in Hz | radians per symbol $\times R_s / 2\pi$ |
-| Rotation per symbol | $360° \times \Delta f / R_s$ |
-:::
-
-These follow from Lesson 15 and are exact. Everything in Part 2 is something you observe: where the text stops as the noise rises, how long the loop takes to lock, and which channel phases decode. Those results change a little from run to run, which is why the packet asks you to wait and watch rather than read a single value.
-::::
-
 ::::{frame} Part 2: Build a Carrier-Recovery Loop
 :class: read-only
 
 1. Start GRC and choose File, New, QT GUI. Do not open the lesson's flowgraphs; build this one yourself.
-2. Set `samp_rate` to 4000, one sample per symbol. Add an **Import** block with `import math, cmath`, a Variable `pts` = `[cmath.exp(1j*(math.pi/8 + math.pi/4*i)) for i in range(8)]`, the 8PSK points, and a **QT GUI Range** `foff`: label Frequency offset (Hz), default 20, start $-200$, stop 200, step 5.
+2. Set `samp_rate` to 4000, one sample per symbol. Add an **Import** block with `import math, cmath`, a Variable `pts` holding the eight 8PSK points from your Question 2(a) table, in order, as a list of complex numbers (`cmath.exp(1j*math.radians(a))` is the point at angle `a` degrees), and a **QT GUI Range** `foff`: label Frequency offset (Hz), default 20, start $-200$, stop 200, step 5.
 3. Add a **Random Source**: type byte, minimum 0, maximum 8, number of samples 10000, repeat Yes. Then **Chunks to Symbols**: input byte, output complex, symbol table `pts`. Then a **Throttle**: type complex, sample rate `samp_rate`.
 4. Add a **Signal Source**: type complex, sample rate `samp_rate`, waveform Cosine, frequency `foff`, amplitude 1. Add a **Multiply** with 2 complex inputs and connect the Throttle and the Signal Source to it. This is the frequency offset.
 5. Add a **Noise Source**: type complex, Gaussian, amplitude 0.2, and an **Add** with 2 complex inputs. Connect the Multiply and the Noise Source to the Add.
 6. Add a **Costas Loop**: loop bandwidth 0.02, order 8. Connect the Add's output to it.
-7. Add a **QT GUI Constellation Sink** with 2 inputs: the Add's output to input 0 and the Costas Loop's first output to input 1. Add a **Multiply Const**: type float, constant `samp_rate/(2*math.pi)`, on the Costas Loop's frequency output, and a **QT GUI Number Sink** on that, with minimum $-200$ and maximum 200. Every arrow must be black.
+7. Add a **QT GUI Constellation Sink** with 2 inputs: the Add's output to input 0 and the Costas Loop's first output to input 1. Add a **Multiply Const**: type float, constant your Question 2(b) constant, written in terms of `samp_rate`, on the Costas Loop's frequency output, and a **QT GUI Number Sink** on that, with minimum $-200$ and maximum 200. Every arrow must be black.
 8. Run it. Screenshot the canvas for Question 3(a) and the window for Question 3(b). Record the frequency reading at 20 Hz, then type $-60$ into the offset box and record it again.
 9. Stop the flowgraph, set the Costas Loop's order to 2, run it again, and describe the output for Question 3(c).
 ::::
@@ -139,7 +127,7 @@ In class we transmit only into a cable, into a shielded enclosure, or at very lo
      alt="L15-psk-pluto.grc run in simulation, labeled SIMULATED on the figure, with a model of the cable and of the Pluto's estimated levels and noise in place of the PlutoSDR: at 60 dB TX attenuation and 40 dB RX gain the Symbol Sync output shows four tight clusters turned by the cable's phase, the Costas Loop output shows them at 45 degrees plus multiples of 90, the frequency estimate sits at 0 Hz, and the Lines label reads 328 correct of 328 received in 15 s"
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto 12px;">
 
-The figure is the PlutoSDR flowgraph run in simulation, with the Pluto Sink and Source replaced by a model of the cable that uses our estimate of the Pluto's levels: a signal about 50 dB below full scale at 60 dB TX attenuation and 40 dB RX gain, with receiver noise 13 dB below it across the 1.024 MHz band, and a fixed phase. The real levels can differ, but the AGC should give the same picture. On the bench, look for the same three things: four tight clusters before and after the Costas Loop, a frequency estimate near 0 Hz, and lines arriving in the Lines label.
+The figure is the PlutoSDR flowgraph run in simulation, with the Pluto Sink and Source replaced by a model of the cable using our estimate of the Pluto's levels and noise. The real levels can differ, but the AGC should give the same picture. On the bench, look for the same three things: four tight clusters before and after the Costas Loop, a frequency estimate near 0 Hz, and lines arriving in the Lines label.
 ::::
 
 ::::{frame} PlutoSDR Steps

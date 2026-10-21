@@ -17,7 +17,7 @@ end (\textbf{None} if you did not collaborate).}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \question \textbf{Bits per symbol.} A telemetry radio sends 25,000 symbols per second
 with RRC pulses of roll-off $\alpha = 0.25$. On a circle of radius 1, neighboring points
-sit 2.00 apart for BPSK, 1.41 apart for QPSK, and 0.77 apart for 8PSK (Lesson 3).
+sit 2.00 apart for BPSK, 1.41 apart for QPSK, and 0.77 apart for 8PSK.
 \begin{parts}
 
 	\begin{minipage}[t]{0.58\linewidth}
@@ -222,17 +222,15 @@ false-locked from 450 Hz.
 		\ansbox[1.0in]{60 times}
 	\end{minipage}
 
-	\part In words, explain why an 8PSK Costas Loop pulls in from a smaller offset than
-	a BPSK loop with the same bandwidth, and what a 4 kbaud receiver for the radios in
-	part (b) needs before its Costas Loop.
+	\part In words, explain why a receiver that sees the Lesson 15 constellation settle into
+	clusters has not necessarily locked, and what you would check on its constellation, its
+	frequency estimate, and its Received label to tell a true lock from a false one.
 		\begin{solution}[1.2in]
-		The phase detector cannot tell one constellation point from another, so it can
-		only measure a phase error up to half the spacing, $180^\circ/M$: $90^\circ$ for
-		BPSK but $22.5^\circ$ for 8PSK. A spinning constellation leaves the detector's
-		range faster when $M$ is larger, so the 8PSK loop has less time to correct and
-		locks only from a smaller offset. The 4 kbaud receiver needs a coarse frequency
-		correction first, such as an FLL Band-Edge block or a frequency measured from a
-		known preamble, to bring the offset inside the Costas Loop's range.
+		A loop can settle at the wrong frequency, a false lock: in Lesson 15, QPSK started
+		450 Hz off settled at $-50$ Hz. The points still form clusters, but twice as many as
+		the constellation has, and no text arrives. A true lock shows $M$ tight clusters at
+		the transmitted angles, a frequency estimate equal to the offset that stays put, and
+		lines arriving in the Received label.
 		\end{solution}
 
 \end{parts}

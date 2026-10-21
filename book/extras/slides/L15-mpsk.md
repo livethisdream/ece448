@@ -38,12 +38,13 @@ Open L15-psk-tx.grc and L15-psk-link.grc in GRC before class. The link runs in t
 1. Transmit: the constellations, the RRC filter, the Gray map
 2. The channel
 3. Timing recovery: Symbol Sync
-4. Carrier recovery: the Costas Loop, pull-in, false lock
-5. Decoding: phase ambiguity and differential decoding
-6. Noise: which constellation breaks first
+4. Multipath and the equalizer
+5. Carrier recovery: the Costas Loop, pull-in, false lock
+6. Decoding: phase ambiguity and differential decoding
+7. Noise: what happens as it rises
 
 Note:
-Steps 1 to 5 follow the GNU Radio wiki's Guided Tutorial PSK Demodulation, with PySDR's Digital Modulation and Synchronization chapters as background. Keep GRC open the whole period. Part 6 turns up the noise and compares BPSK, QPSK, and 8PSK by eye.
+Steps 1 to 6 follow the GNU Radio wiki's Guided Tutorial PSK Demodulation, with PySDR's Digital Modulation and Synchronization chapters as background. Keep GRC open the whole period. Part 7 turns up the noise and compares BPSK, QPSK, and 8PSK by eye.
 
 ---
 
@@ -102,7 +103,7 @@ The phase index is in amber and the Gray label in blue. Neighbors differ in one 
 All three run at 4,000 symbols per second in the same 5.4 kHz.
 
 Note:
-QPSK doubles BPSK's rate in the same band; 8PSK adds half again. The spacing is Lesson 3's, on a circle of radius 1: more points sit closer together, so less noise pushes a symbol to a neighbor. The link's Noise amplitude slider is the same for every M.
+QPSK doubles BPSK's rate in the same band; 8PSK adds half again. The spacing is for points on a circle of radius 1: more points sit closer together. The link's Noise amplitude slider is the same for every M.
 
 ---
 
@@ -137,11 +138,22 @@ The Channel Model adds noise, a frequency offset, a fixed phase, and a clock err
 - The Costas Loop then works on one sample per symbol.
 
 Note:
-Gardner's detector compares samples half a symbol apart, and a carrier turning a few degrees per symbol barely changes that comparison. A carrier loop placed first would see samples between symbols, which are not on the constellation. The tutorial uses the Polyphase Clock Sync block and a Linear Equalizer for multipath here; we keep Lesson 9's Symbol Sync, and our channel has no multipath.
+Gardner's detector compares samples half a symbol apart, and a carrier turning a few degrees per symbol barely changes that comparison. A carrier loop placed first would see samples between symbols, which are not on the constellation. The tutorial uses the Polyphase Clock Sync block here; we keep Lesson 9's Symbol Sync, the one departure from the tutorial.
 
 ---
 
-## Step 4: The Costas Loop
+## Step 4: Multipath and the Equalizer
+
+<img src="./img/15-mpsk/L15-multipath.png" alt="The multipath flowgraph: a tilted spectrum, smeared clusters without an equalizer, and four tight points after the Linear Equalizer and Costas Loop" style="max-height:380px; display:block; margin:0 auto;">
+
+Lowering a tap tilts the spectrum and smears the clusters, and the equalizer pulls them tight.
+
+Note:
+Run L15-psk-multipath.grc. The four sliders follow Neil's 2025 multipath demo: each sets the channel's gain in one part of the band, and 1 means flat. The Linear Equalizer uses CMA, which needs only the fact that every QPSK point has the same amplitude. Very deep dips are beyond it. This is the tutorial's fourth stage.
+
+---
+
+## Step 5: The Costas Loop
 
 <div class="fig" data-inline-svg="./fig/L15-costas.svg" style="max-width:760px; margin:0 auto;"></div>
 
@@ -170,22 +182,22 @@ Type 200 into the frequency offset box. Until the estimate settles the packets f
 At 450 Hz the QPSK loop settles at −50 Hz, which is a false lock.
 
 Note:
-Left 500 Hz off, the points turn 45 degrees a symbol and alternate between eight positions, where the detector's error averages to zero. The range shrinks as M grows. Real receivers remove most of the offset first, often with an FLL Band-Edge block; two Plutos at 915 MHz can differ by tens of kilohertz, while one Pluto looped back has almost none.
+Left 500 Hz off, the points turn 45 degrees a symbol and alternate between eight positions, where the detector's error averages to zero. Real receivers remove most of the offset first, often with an FLL Band-Edge block; two Plutos at 915 MHz can differ by tens of kilohertz, while one Pluto looped back has almost none.
 
 ---
 
-## Step 5: Phase Ambiguity
+## Step 6: Phase Ambiguity
 
 <img src="./img/15-mpsk/L15-link-ambiguity.png" alt="QPSK with differential coding off and the channel phase at 90 degrees: four clean clusters, but no packet arrives" style="max-height:400px; display:block; margin:0 auto;">
 
 The loop locked one point away. The constellation looks perfect, but no text arrives.
 
 Note:
-A QPSK constellation turned 90 degrees looks the same, so the loop locks to whichever rotation is nearest. BPSK has 2 lock positions, QPSK 4, and 8PSK 8. This is Lesson 10's polarity switch.
+A QPSK constellation turned 90 degrees looks the same, so the loop can lock in any of M positions. BPSK has 2 lock positions, QPSK 4, and 8PSK 8. This is Lesson 10's polarity switch.
 
 ---
 
-## Step 5: Differential Decoding
+## Step 6: Differential Decoding
 
 | Index sent | 0 | 1 | 3 | 3 | 2 |
 | :-- | :-: | :-: | :-: | :-: | :-: |
@@ -251,4 +263,4 @@ More points carry more bits but need a quieter channel.
 - Lesson 16: frequency hopping.
 
 Note:
-Before the lab, run L15-psk-link.grc and be able to compute a bit rate from a symbol rate and M.
+Before the lab, run L15-psk-link.grc with a 50 Hz offset, and be ready to set the 8PSK table and the Costas Loop's Hz scale.

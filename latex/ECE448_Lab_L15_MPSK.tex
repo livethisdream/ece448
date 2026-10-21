@@ -176,8 +176,8 @@ with every slider at its default.
 
 
 	\part Question 3 builds an 8PSK flowgraph whose Chunks to Symbols block needs the
-	eight points. They sit on a circle of radius 1 at $22.5^\circ$ plus multiples of
-	$45^\circ$, numbered counterclockwise. List the angle of each point in degrees.
+	eight points on a circle of radius 1. Using the lesson's 8PSK map, list the angle
+	of each point in degrees, by phase index.
 
 	\begin{center}
 	\renewcommand{\arraystretch}{1.25}
@@ -189,7 +189,8 @@ with every slider at its default.
 	\end{tabular}
 	\end{center}
 		\begin{solution}[0.4in]
-		In Python, \texttt{cmath.exp(1j*(math.pi/8 + math.pi/4*i))} for \texttt{i} from 0 to 7.
+		$22.5^\circ$ plus multiples of $45^\circ$. In Python,
+		\texttt{cmath.exp(1j*(math.pi/8 + math.pi/4*i))} for \texttt{i} from 0 to 7.
 		\end{solution}
 
 	\begin{minipage}[t]{0.58\linewidth}
@@ -300,19 +301,16 @@ each step, and watch the Costas Loop's output and the Lines label.
 		a neighbor's region.
 		\end{solution}
 
-	\begin{minipage}[t]{0.58\linewidth}
-		\part Which constellation stopped delivering text first, and which last?
-		\begin{solution}[0.8in]
-		8PSK first, at the least noise, then QPSK, and BPSK last.
+	\part At each constellation's limit, describe the Lines label and the Received label:
+	how many lines arrive, and what the wrong characters look like. Do the three limits look
+	different?
+		\begin{solution}[1.2in]
+		Answers vary. Lines still arrive, about half of them correct, and some packets are
+		lost outright. A wrong line is mostly right, with a few characters replaced: with
+		Gray coding a slip to a neighbor flips one bit, so a letter often becomes a nearby
+		letter or a symbol. The three limits look alike, because each is where about the
+		same share of symbols lands in a neighbor's region.
 		\end{solution}
-	\end{minipage}\hfill%
-	\begin{minipage}[t]{0.37\linewidth}
-		\raggedleft \vspace{12pt}
-		first: \ansbox[0.9in]{8PSK}
-
-		\vspace{4pt}
-		last: \ansbox[0.9in]{BPSK}
-	\end{minipage}
 
 	\part Paste a screenshot of the window for 8PSK at its limit, and mark one wrong
 	character in the Received label.
