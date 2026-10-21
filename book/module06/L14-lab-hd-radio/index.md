@@ -46,7 +46,7 @@ Nothing in this lab transmits. The RTL-SDR receives only, and both captures came
 
 Do the Pre-Lab before you arrive. Put both flowgraphs from the Lesson 14 page in one folder, run `L14-hd-test-tx.grc` once to write `L14-hd-test.cu8`, and then run `L14-hd-find.grc`. Question 1 checks that the meters read what the lesson showed; if GRC reports an error, the L5 lesson page lists the install checks.
 
-Question 2 asks for two block settings: the value of the meter's `inner` Variable for a station that adds one, two, or four partitions, and the frequency sink's FFT size that puts one subcarrier in each bin for a recording at 744,187.5 samples per second. Part 2 uses the first one.
+Question 2 asks for two block settings: the value of the meter's `inner` Variable for a station that adds one, two, or four partitions, and the frequency sink's FFT size that puts one subcarrier in each bin for a complex float file at 744,187.5 samples per second, a rate nrsc5 reads. Part 2 uses the first one.
 ::::
 
 ::::{frame} Expected Numbers
@@ -59,14 +59,14 @@ Question 2 asks for two block settings: the value of the meter's `inner` Variabl
 | A sideband on the display | at least 10 dB above the floor |
 :::
 
-Your meter should read the lesson's test file within 0.1 dB of the finder's −23.05 and −23.04 dBc; a larger difference means a filter setting or a center frequency is off. The lab capture is harder: a different station, with a configuration you identify from its spectrum and its meter readings.
+Your meter should read the lesson's test file within 0.1 dB of the finder's −23.05 and −23.04 dBc; a larger difference means a filter setting or a center frequency is off. The lab capture comes from a different station, and you identify its configuration from its spectrum and its meter readings.
 ::::
 
 ::::{frame} Part 2: Build the Meter
 :class: read-only
 
 1. Start GRC and choose File, New, QT GUI. Do not open `L14-hd-find.grc`; build the meter yourself.
-2. Set `samp_rate` to 1488375. Add Variables `df` = `1488375 / 4096`, `inner` = `356`, `outer` = `546`, `sb_center` = `(inner + outer) / 2 * df`, `sb_half` = `((outer - inner) / 2 + 0.5) * df`, `decim` = `6`, and `avg_len` = `int(0.2 * samp_rate / decim)`. Add a **QT GUI Entry** with ID `fc`, label Center (Hz), type real, and default value `100.3e6`.
+2. Set `samp_rate` to 1488375. Add Variables `df` = `1488375 / 4096`, `inner` = `356`, `outer` = `546`, `sb_center` = `(inner + outer) / 2 * df`, `sb_half` = `((outer - inner) / 2 + 0.5) * df`, `decim` = `6`, and `avg_len` = `int(0.2 * samp_rate / decim)`. Add a **QT GUI Entry** with ID `fc`, label Center (Hz), type real, and default value `100.3e6`, and a **QT GUI Range** with ID `rf_gain`, label RF gain (dB), from 0 to 49.6 in steps of 0.1, default 30.
 3. Read the file: a **File Source** (type byte, file `'L14-hd-test.cu8'` with the quotes, repeat Yes), a **Throttle** (byte, `2 * samp_rate`), **UChar To Float**, **Add Const** (float, −127.5), **Multiply Const** (float, `1 / 128`), **Deinterleave** (float, 2 streams), and **Float To Complex**.
 4. On the Float To Complex output, add a **QT GUI Frequency Sink**: complex, FFT size 4096, center frequency `fc`, bandwidth `samp_rate`, average Medium, Y axis from −110 to −10.
 5. Add two **Low-pass Filter Taps** variables at `samp_rate`: `host_taps` with cutoff `100e3` and transition `10e3`, and `sb_taps` with cutoff `sb_half` and transition `2e3`.
@@ -95,11 +95,11 @@ Your meter should read the lesson's test file within 0.1 dB of the finder's −2
 
 The figure shows the lesson's simulated test file; a live station's host is rougher, and its shelves may stand closer to the floor. We have compiled this step but not yet tested it on a live station, so expect to adjust the gain.
 
-1. Add a **Soapy RTLSDR Source** to your meter: sample rate `samp_rate`, center frequency `fc`, gain 30. Connect it to the frequency sink and the three filters. Then select the File Source and the six blocks after it, through Float To Complex, and press D to disable all seven; GRC will not run with both sources connected.
+1. Add a **Soapy RTLSDR Source** to your meter: sample rate `samp_rate`, center frequency `fc`, gain `rf_gain`. Connect it to the frequency sink and the three filters. Then select the File Source and the six blocks after it, through Float To Complex, and press D to disable all seven; GRC will not run with both sources connected.
 2. Plug in the RTL-SDR and antenna, and run it. Type each strong station's frequency in hertz into Center in turn, and stop at one with two flat shelves beside it.
 3. Raise the gain until the shelves stand at least 10 dB above the floor, but lower it if the floor rises everywhere or copies of other stations appear.
 4. Record the station, its sideband edges, and both meter readings, with a screenshot, for Question 5. If its inner edge is inside 129.4 kHz, set `inner` to match before you read the meters.
-5. Lower the gain in steps and watch the shelves and the readings as the floor rises toward them, for Question 5(c).
+5. Lower the RF gain slider in steps and watch the shelves and the readings as the floor rises toward them, for Question 5(c).
 ::::
 
 ::::{frame} Part 2: Decoding with nrsc5
@@ -118,7 +118,7 @@ nrsc5 is not part of radioconda. Use a laptop that has nrsc5 installed, your own
 
 :::{admonition} If the meters read below −40 dBc or the shelves never appear
 :class: tip
-For a file, check that the file name in the File Source is in quotes, that the file sits in the same folder as the flowgraph, and that the File Source's type is byte, not complex. If the shelves appear but a meter reads wrong, check the sign of each filter's center frequency and that both Subtract blocks take the host on their second input. For a live station, check that the RTL-SDR Source's sample rate is `samp_rate`, that you have centered on the station, and that the station carries HD Radio at all; many do not. Shelves of unequal height can mean asymmetric sidebands (up to 10 dB); a missing shelf usually means a weak signal or a neighbor covering it.
+For a file, check that the file name in the File Source is in quotes, that the file sits in the same folder as the flowgraph, and that the File Source's type is byte, not complex. If the shelves appear but a meter reads wrong, check the sign of each filter's center frequency and that both Subtract blocks take the host on their second input. For a live station, check that the RTL-SDR Source's sample rate is `samp_rate`, that you have centered on the station, and that the station carries HD Radio at all; many do not. Shelves of unequal height can mean the station runs one sideband weaker than the other; a missing shelf usually means a weak signal or a neighbor covering it.
 :::
 ::::
 
@@ -136,7 +136,7 @@ The Writeup is three questions. The first compares the live station with the les
 :class: read-only doc-links
 
 - <a class="doc-link" href="../../labs/ECE448_Lab_L14_HDRadio_blank.pdf" target="_blank" rel="noopener">L14 Lab packet (PDF)</a>
-- `L14-lab-capture.cu8`, the lab's simulated capture for Question 4, will be posted here before the lab.
+- `L14-lab-capture.cu8`, the lab's simulated capture for Question 4: your instructor posts it here before the lab.
 - The Lesson 14 page has `L14-hd-test-tx.grc`, which writes the lesson's test file, and `L14-hd-find.grc`, to check your meter against after Question 3.
 - nrsc5 is at <a href="https://github.com/theori-io/nrsc5" target="_blank" rel="noopener">github.com/theori-io/nrsc5</a>.
 ::::

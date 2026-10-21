@@ -21,6 +21,12 @@ shots first, in one folder:
     scripts/grc/grc_canvas.sh book/extras/grc/L14-hd-find.grc DIR/canvas_find.png 1800x1000
     scripts/grc/grc_canvas.sh book/extras/grc/L14-hd-test-tx.grc DIR/canvas_tx.png 1800x1000
 
+GQRX (apt install gqrx-sdr) plays the same test file, converted to complex
+float, through its file input, device string
+"file=hd.cf32,rate=1488375,freq=100300000,repeat=true,throttle=true", in WFM
+mode with DSP started; its window at 1060x666 is DIR/gqrx.png. GQRX needs a
+PulseAudio server, so run it under xvfb-run with pulseaudio and a null sink.
+
     python3 scripts/graphics/l14_figures.py [DIR]
 """
 
@@ -117,8 +123,9 @@ def shots(raw: Path):
 
     find = Image.open(raw / "find.png").convert("RGB")
     save(stamp(find.copy(), (1020, 380)), "L14-hd-find", colors=24)
-    save(stamp(find.crop((0, 330, 1060, 605)), (1020, 50)), "L14-hd-band")
     save(stamp(find.crop((0, 0, 1060, 330)), (1020, 90)), "L14-hd-meters", colors=32)
+    gq = Image.open(raw / "gqrx.png").convert("RGB").crop((0, 0, 1060, 666))
+    save(stamp(gq, (745, 128)).resize((848, 533)), "L14-gqrx", colors=32)
     save(Image.open(raw / "canvas_find.png").crop((0, 68, 1700, 1000)), "L14-grc-find", colors=64)
     save(Image.open(raw / "canvas_tx.png").crop((0, 68, 1760, 940)), "L14-grc-test-tx", colors=64)
 

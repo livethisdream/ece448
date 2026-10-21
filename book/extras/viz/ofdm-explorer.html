@@ -48,7 +48,7 @@
   <div class="readouts">
     <div class="ro"><span class="k">spacing Δf</span><span class="v" id="o-df">—</span></div>
     <div class="ro"><span class="k">neighbors at a center</span><span class="v" id="o-ici">—</span></div>
-    <div class="ro"><span class="k">echo path difference</span><span class="v" id="o-km">—</span></div>
+    <div class="ro"><span class="k">echo delay</span><span class="v" id="o-km">—</span></div>
     <div class="ro"><span class="k">echo vs. guard</span><span class="v" id="o-isi">—</span></div>
   </div>
 </div>
@@ -147,20 +147,15 @@ function update() {
   document.getElementById('sp-v').textContent = sp.toFixed(2);
   document.getElementById('tau-v').textContent = tau.toFixed(0) + ' μs';
   document.getElementById('o-df').textContent = (sp * DF).toFixed(1) + ' Hz';
-  // leakage from every other subcarrier: the sum of sinc^2(k sp) over k != 0,
-  // which is 1/sp - 1 in closed form for sp <= 1
-  let p = 0;
-  if (sp <= 1) p = 1 / sp - 1;
-  else for (let k = 1; k <= 20000; k++) p += 2 * sinc(k * sp) ** 2;
+  // what the four neighbors add at the center subcarrier's frequency
+  let p = 0; for (let k = 1; k <= 2; k++) p += Math.abs(sinc(k * sp));
   const ici = document.getElementById('o-ici');
-  if (p < 1e-12) { ici.textContent = 'none'; ici.className = 'v ok'; }
-  else { ici.textContent = (10 * Math.log10(p)).toFixed(1) + ' dB'; ici.className = 'v bad'; }
-  document.getElementById('o-km').textContent = (tau * 0.2998).toFixed(1) + ' km';
+  if (p < 1e-9) { ici.textContent = 'all zero'; ici.className = 'v ok'; }
+  else { ici.textContent = 'leaking in'; ici.className = 'v bad'; }
+  document.getElementById('o-km').textContent = tau.toFixed(0) + ' μs';
   const isi = document.getElementById('o-isi');
-  // NRSC-5 tapers the symbol edges, so an echo late in the guard is marginal
-  if (tau <= TG / 2) { isi.textContent = 'inside, ' + (TG - tau).toFixed(0) + ' μs spare'; isi.className = 'v ok'; }
-  else if (tau <= TG) { isi.textContent = 'marginal, ' + (TG - tau).toFixed(0) + ' μs left'; isi.className = 'v warn'; }
-  else { isi.textContent = (tau - TG).toFixed(0) + ' μs over'; isi.className = 'v bad'; }
+  if (tau <= TG) { isi.textContent = 'inside the guard'; isi.className = 'v ok'; }
+  else { isi.textContent = 'spills into symbol 2'; isi.className = 'v bad'; }
   drawSpec(sp); drawTime(tau);
 }
 

@@ -58,7 +58,7 @@
 \newcolumntype{K}[1]{>{\centering\arraybackslash}p{#1}}
 \newcommand{\kv}[1]{\ifkey{\color{red}#1}\fi\rule[-0.10in]{0pt}{0.34in}}
 
-% Question 4 (the lab capture) and Question 7(b) take their answers from
+% Question 2 (the Pre-Lab), Question 4 (the lab capture), and Question 7(b) take their answers from
 % L14_capture_key.tex, which lives in ECE448-faculty and is never committed
 % here. Without it, even a KEY build prints placeholders.
 \newcommand{\capfk}{(faculty key)}
@@ -68,7 +68,9 @@
 \newcommand{\capScUi}{\capfk}\newcommand{\capScUo}{\capfk}
 \newcommand{\capUpperHybrid}{\capfk}\newcommand{\capLowerHybrid}{\capfk}
 \newcommand{\capUpperInner}{\capfk}\newcommand{\capLowerInner}{\capfk}
-\newcommand{\capTotal}{\capfk}\newcommand{\capDiff}{\capfk}
+\newcommand{\capDiff}{\capfk}
+\newcommand{\preInnerA}{\capfk}\newcommand{\preInnerB}{\capfk}\newcommand{\preInnerC}{\capfk}
+\newcommand{\preSolInner}{\capfk}\newcommand{\preFFT}{\capfk}\newcommand{\preSolFFT}{\capfk}
 \newcommand{\capSolEdges}{\capfk}\newcommand{\capSolMeters}{\capfk}
 \newcommand{\capSolTotal}{\capfk}\newcommand{\capSolNeighbor}{\capfk}
 \newcommand{\capSolWriteup}{\capfk}
@@ -129,9 +131,9 @@ demodulate an HD Radio signal.}
 
 This packet is the L\labLesson\ Lab, in three parts, and you turn it in once, complete,
 before Lesson 15. Do \textbf{Part 1} on your own before the lab period: run the sideband
-finder and make the predictions you will use at the bench. \textbf{Part 2} is your own
+finder and work out the block settings you will use at the bench. \textbf{Part 2} is your own
 measurements, recorded in class on your own laptop with your RTL-SDR. Do \textbf{Part 3}
-on your own after the lab: compare the measurements with the rules and answer the
+on your own after the lab: explain what you measured and answer the
 analysis questions.
 
 \textbf{Grading.} One submission, graded against Objective 6.3 on the course's
@@ -142,7 +144,7 @@ question asks for one.
 captures came from GNU Radio flowgraphs, not from an antenna.
 
 The flowgraphs are on the L14 lesson page, \texttt{L14-hd-test-tx.grc} and
-\texttt{L14-hd-find.grc}, and the capture \texttt{L14-lab-capture.cu8} will be posted on
+\texttt{L14-hd-find.grc}, and the capture \texttt{L14-lab-capture.cu8}, which your instructor posts on
 the L14 Lab page before the lab. Both captures are simulated: unsigned 8-bit I and Q at 1,488,375 samples per second,
 the format the RTL-SDR and nrsc5 record. Every number below uses the hybrid values from
 the lesson: subcarrier spacing $\Delta f = 1{,}488{,}375/4096 = 363.37$ Hz, sidebands from
@@ -162,7 +164,7 @@ station adding one, two, or four partitions inside subcarrier 356 on each side.
 	\begin{minipage}[t]{0.58\linewidth}
 		\part After about 5 s, record the two meter readings.
 		\begin{solution}[0.5in]
-		Upper $-23.05$ dBc and lower $-23.04$ dBc, the $-23$ dBc each sideband was built with.
+		Upper $-23.05$ dBc and lower $-23.04$ dBc, the $-23$ dBc the test transmitter sets.
 		\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
@@ -197,25 +199,25 @@ station adding one, two, or four partitions inside subcarrier 356 on each side.
 	\begin{tabular}{| l | K{1.0in} | K{1.0in} | K{1.0in} |}
 	\hline
 	Added partitions & 1 & 2 & 4 \\\hline
-	\texttt{inner} & \kv{337} & \kv{318} & \kv{280} \\\hline
+	\texttt{inner} & \kv{\preInnerA} & \kv{\preInnerB} & \kv{\preInnerC} \\\hline
 	\end{tabular}
 	\end{center}
 
 		\begin{solution}[0.4in]
-		Each partition is 19 subcarriers, so \texttt{inner} moves to $356 - 19n$.
+		\preSolInner
 		\end{solution}
 
 	\begin{minipage}[t]{0.58\linewidth}
-		\part nrsc5 also records complex float files at 744,187.5 samples per second. What
-		FFT size in the frequency sink makes each bin exactly one 363.4 Hz subcarrier at that
-		rate?
+		\part nrsc5 also reads complex float files (\texttt{--iq-input-format cf32}) at
+		744,187.5 samples per second. What FFT size in the frequency sink makes each bin
+		exactly one 363.4 Hz subcarrier at that rate?
 		\begin{solution}[0.6in]
-		\eq{ 744{,}187.5/363.4 = 2048 }
+		\preSolFFT
 		\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
 		\raggedleft \vspace{12pt}
-		\ansbox[1.1in]{2048}
+		\ansbox[1.1in]{\preFFT}
 	\end{minipage}
 
 \end{parts}
@@ -298,8 +300,7 @@ station adding one, two, or four partitions inside subcarrier 356 on each side.
 		\end{solution}
 
 	\begin{minipage}[t]{0.58\linewidth}
-		\part Which sideband is stronger, and by how many dB? What does that tell you about
-		the station?
+		\part Which sideband is stronger, and by how many dB?
 		\begin{solution}[1.0in]
 		\capSolTotal
 		\end{solution}
@@ -375,17 +376,16 @@ this course.
 	\part Lower the gain until the audio stops. At what gain does it stop, and how high do
 	the shelves stand above the floor at that gain in your meter?
 		\begin{solution}[1.0in]
-		Answers vary. The digital audio stops abruptly, not gradually as analog FM does, once
-		too many bits are in error for the code to correct. A car radio would blend back to
-		the analog program at that point.
+		Answers vary. The digital audio stops abruptly, not gradually as analog FM does, while
+		the shelves still stand a little above the floor.
 		\end{solution}
 
 	\begin{minipage}[t]{0.58\linewidth}
 		\part Record 10 s with \texttt{nrsc5 -w}, open the recording in your meter, and
 		record both readings. Do they match Question 5(c)?
 		\begin{solution}[0.9in]
-		Answers vary. They should match within about 0.5 dB if the gain is the same, because
-		the file holds the same samples the RTL-SDR delivers live.
+		Answers vary. They should be close if the gain is the same, because the file holds the
+		same samples the RTL-SDR delivers live.
 		\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
@@ -408,17 +408,16 @@ this course.
 
 	\part Compare the live station with the lesson's test file: where its shelves sit,
 	how high they stand, and whether the two sides match. What does each difference tell
-	you about how the station runs its HD Radio signal?
+	you about the station's HD Radio signal?
 		\begin{solution}[1.5in]
 		Answers vary. Edges at 129.4 and 198.4 kHz mean hybrid; an inner edge closer to the
-		host means extended hybrid. Shelves higher than the test file's mean the station runs
-		its digital signal stronger than the original level, as many now do. Sidebands within
-		about 1 dB of each other are symmetric; a larger difference means the station lowered
-		one side, usually to protect a neighbor on that side.
+		host means extended hybrid. Shelves that read higher in dBc than the test file's mean
+		the station runs its digital signal stronger than the test file. Two sides that read
+		differently mean the station runs one sideband weaker than the other.
 		\end{solution}
 
-	\part Explain how the lab capture's edges and meter readings identified its
-	configuration, and give one reason a station would choose each feature you found.
+	\part Explain how the lab capture's waterfall, edges, and meter readings identified its
+	configuration.
 		\begin{solution}[1.5in]
 		\capSolWriteup
 		\end{solution}

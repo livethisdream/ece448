@@ -3,9 +3,9 @@
 % L14 practice set (HD Radio). Every question is about the L14 flowgraphs:
 % reading the sidebands on a display, setting the OFDM blocks, setting the
 % sideband meter, and watching what noise does. No power sums or timing
-% arithmetic (Neil, 2026-10-21). The L14 Lab asks for the meter's inner
-% setting for extended stations and the FFT size at 744,187.5 S/s, so neither
-% appears here.
+% arithmetic (Neil, 2026-10-21). The L14 Lab's Pre-Lab asks for the meter's
+% inner setting for extended stations and an FFT size for one subcarrier per
+% bin, so no question here asks for either or shows how to find them.
 % Blank copy: \begin{solution}[h] reserves h of work space.
 % SOLUTIONS copy (\iskey=1) prints the red worked solutions.
 
@@ -50,8 +50,8 @@ spaced 363.4 Hz apart.}
 		stop at fixed numbers, so the shelves are flat, sharp-edged, and constant in width.
 		\end{solution}
 
-	\part A second station shows shelves that start much closer to its host, about
-	102 kHz out, and end at 198.4 kHz. A third shows a rounded host and nothing beside it.
+	\part A second station shows shelves that start much closer to its host than
+	129.4 kHz and end at 198.4 kHz. A third shows a rounded host and nothing beside it.
 	Name the mode of each.
 		\begin{solution}[0.8in]
 		The second is extended hybrid: it has added partitions on the inside edge of each
@@ -62,36 +62,25 @@ spaced 363.4 Hz apart.}
 
 \newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\question \textbf{Setting the OFDM blocks.} You adapt \texttt{L14-hd-test-tx.grc}, which
-runs at 1,488,375 samples per second with \texttt{fft\_len} = 4096 and \texttt{cp\_len} =
-224, to a different sample rate.
+\question \textbf{Reading the OFDM blocks.} Open \texttt{L14-hd-test-tx.grc}.
 \begin{parts}
 
-	\begin{minipage}[t]{0.58\linewidth}
-		\part At 2,976,750 samples per second, what \texttt{fft\_len} keeps each FFT bin one
-		363.4 Hz subcarrier, and what \texttt{cp\_len} keeps the guard the same length in
-		time?
-		\begin{solution}[0.9in]
-		The rate doubles, so both double:
-		\eq{ \texttt{fft\_len} &= 2{,}976{,}750/363.4 = 8192 \\
-			\texttt{cp\_len} &= 2 \times 224 = 448 }
-		\end{solution}
-	\end{minipage}\hfill%
-	\begin{minipage}[t]{0.37\linewidth}
-		\raggedleft \vspace{12pt}
-		\texttt{fft\_len} \ansbox[1.1in]{8192}
-
-		\vspace{4pt}
-		\texttt{cp\_len} \ansbox[1.1in]{448}
-	\end{minipage}
-
 	\part The OFDM Carrier Allocator's occupied carriers for the upper sideband are
-	\texttt{list(range(356, 547))}. To build an extended hybrid station, which number do you
-	change, in which direction, and what changes on the frequency sink?
+	\texttt{list(range(356, 547))}. Which subcarrier numbers does that list hold, and where
+	does each end of the list appear on the frequency sink?
 		\begin{solution}[0.8in]
-		Lower the first number, 356, by 19 for each added partition, and change the lower
-		sideband's list to match. On the frequency sink each shelf grows toward the host,
-		while its outer edge stays at 198.4 kHz.
+		\texttt{range(356, 547)} holds 356 through 546; Python's range stops one short of its
+		second number. Subcarrier 356 is the inner edge of the upper shelf, 129.4 kHz above
+		the center, and 546 is its outer edge, 198.4 kHz above the center.
+		\end{solution}
+
+	\part A Multiply Const after each OFDM Cyclic Prefixer sets that sideband's level. You
+	halve the lower sideband's constant. What changes on the frequency sink and on the
+	finder's meters?
+		\begin{solution}[0.8in]
+		Halving the amplitude lowers the power to a quarter, 6 dB down. The lower shelf drops
+		about 6 dB on the frequency sink, the lower meter reads about 6 dB lower, and the
+		upper shelf and meter do not change.
 		\end{solution}
 
 	\part You set the OFDM Cyclic Prefixer's rolloff from 112 to 0. What do you expect to
@@ -155,12 +144,12 @@ samples (0.2 s), Keep 1 in N, and Log10 for each band.
 		so the reading rises as the floor comes up to the shelves.
 		\end{solution}
 
-	\part On a real station, what would you expect nrsc5, and a car radio, to do as the
-	shelves sink into the floor?
+	\part On a real station, what would you expect to hear from nrsc5, and from the analog
+	station in GQRX, as the shelves sink into the floor?
 		\begin{solution}[0.9in]
-		nrsc5 would report errors and then lose the digital audio, which stops abruptly rather
-		than getting gradually noisier. A car radio would blend back to the analog program,
-		which is still well above the noise.
+		nrsc5's digital audio stops abruptly once the shelves sink too far, rather than getting
+		gradually noisier. The analog station in GQRX, which is much stronger than the
+		shelves, keeps playing, with more hiss as the floor rises.
 		\end{solution}
 
 \end{parts}

@@ -44,14 +44,14 @@ This follows the 2025 deck: overview, spectrum, RBDS, sidebands, the OFDM concep
 
 ---
 
-## Two Shelves Beside a Station
+## Open GQRX on an FM Station
 
-<img src="./img/14-hd-radio/L14-hd-band.png" alt="Simulated: an FM station at 100.3 MHz with a flat shelf on each side, and an analog-only station at 99.9 MHz" style="max-height:300px; display:block; margin:0 auto;">
+<img src="./img/14-hd-radio/L14-gqrx.png" alt="Simulated: GQRX on the L14 test file at 100.3 MHz, with a flat shelf on each side of the station on the spectrum and two straight bands on the waterfall; the station at 99.9 MHz has none" style="max-height:400px; display:block; margin:0 auto;">
 
-Each shelf is a digital signal about 69 kHz wide. The station at 99.9 MHz has none.
+Two straight, flat bands beside a station on the waterfall are HD Radio.
 
 Note:
-The figure comes from the simulated test file. The shelves are HD Radio, which carries the same program in better quality and often an HD2 or HD3 as well. An ordinary FM radio ignores them.
+Live demo: RTL-SDR in GQRX at 1,488,375 samples per second, WFM mode, tuned to a strong local station. hdradio.com/stations lists the local HD stations. The figure is GQRX playing the simulated test file.
 
 ---
 
@@ -63,7 +63,7 @@ The figure comes from the simulated test file. The shelves are HD Radio, which c
 - Extended hybrid widens the sidebands inward; all digital drops the host.
 
 Note:
-NRSC-5 defines all three. Extended hybrid limits the analog signal to about 100 kHz each side. A receiver plays analog first, blends to digital once it decodes it, and blends back to analog when the digital signal fades.
+NRSC-5 defines all three. Hybrid keeps about 130 kHz of analog signal on each side; extended hybrid limits it to about 100 kHz.
 
 ---
 
@@ -71,7 +71,7 @@ NRSC-5 defines all three. Extended hybrid limits the analog signal to about 100 
 
 | Part | Where | Modulation |
 | :-- | :-- | :-- |
-| Analog host | 0 to about ±100 kHz | FM |
+| Analog host | within about ±130 kHz | FM |
 | Inside the host | 0 to 57 kHz after demodulation | audio, pilot, stereo DSB-SC, RBDS BPSK |
 | Digital sidebands | ±129.4 to ±198.4 kHz | OFDM, QPSK on each subcarrier |
 
@@ -86,7 +86,7 @@ $$\Delta f = \frac{1{,}488{,}375}{4096} = 363.4\ \text{Hz}$$
 
 - Each sideband is many narrow subcarriers, numbered 356 to 546.
 - Partitions hold 18 data subcarriers and 1 reference subcarrier.
-- The sidebands carry about 1% of the host's power.
+- The sidebands are much weaker than the host.
 
 Note:
 Subcarrier k sits at k times 363.4 Hz from the center. The reference subcarriers are 356, 375, 394, and every 19th up to 546. The meter's inner and outer Variables use these numbers.
@@ -100,7 +100,7 @@ Subcarrier k sits at k times 363.4 Hz from the center. The reference subcarriers
 - An FFT at the receiver separates them again.
 
 Note:
-Many slow subcarriers instead of one fast carrier means an echo blurs only the edge of each long symbol. Orthogonality is the O in OFDM.
+OFDM divides a wide channel among many slow subcarriers. Orthogonality is the O in OFDM.
 
 ---
 
@@ -111,7 +111,7 @@ Many slow subcarriers instead of one fast carrier means an echo blurs only the e
 - The guard, `cp_len` = 224 samples, goes in front of each symbol.
 
 Note:
-The blocks are the OFDM Carrier Allocator, a reverse FFT, and the OFDM Cyclic Prefixer. The receiver drops the guard, takes a forward FFT, and reads each subcarrier's point.
+The blocks are the OFDM Carrier Allocator, a reverse FFT, and the OFDM Cyclic Prefixer, as in the GNU Radio wiki's Basic OFDM Tutorial, which the 2025 slides link. The receiver drops the guard, takes a forward FFT, and reads each subcarrier's point.
 
 ---
 
@@ -168,7 +168,7 @@ The figure comes from the simulated test file. The shelves start at 100.1706 and
 - The sideband meter minus the host meter gives dBc.
 
 Note:
-The host band is plus or minus 100 kHz, each sideband is plus or minus 34.7 kHz around plus or minus 163.9 kHz, and every filter decimates by 6. The nrsc5 project's real sample file reads about −24.3 and −23.7 dBc in the same flowgraph, close to the test file.
+The host band is plus or minus 100 kHz, each sideband is plus or minus 34.7 kHz around plus or minus 163.9 kHz, and every filter decimates by 6. The nrsc5 project's real sample file reads about −24.3 and −23.7 dBc in the same flowgraph, close to the test file. On a live station the two meters need not agree.
 
 ---
 
