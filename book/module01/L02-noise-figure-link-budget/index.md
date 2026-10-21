@@ -85,49 +85,52 @@ In the United States the FCC (and the NTIA, for federal users) allocates the rad
 Two rules govern what we do with the SDRs. Receiving is unrestricted: we can tune anywhere the hardware reaches and look at whatever is there, which is most of this course. Transmitting is not: in class we transmit only into a cable, into a shielded enclosure, or at very low power in an ISM band, and only when the lesson says to. The figure shows where the ISM bands fall against the tuning range of each course SDR. The RTL-SDR receives only, and it reaches 915 MHz but not 2.4 GHz; the PlutoSDR and the HackRF cover all three of the common ISM bands.
 ::::
 
-::::{frame} Decibels
+::::{frame} Part 2: The Friis Equation
 :::{present}
-| Change | In dB |
-| :-- | :-- |
-| ×2 power | $+3$ dB |
-| ×10 power | $+10$ dB |
-| 1 mW | $0$ dBm |
-| 1 W | $+30$ dBm |
-:::
-:::{present}
-- Gains and losses add in dB.
-- dBm is power relative to 1 mW; dBi is gain relative to an isotropic antenna.
+$$P_r = \frac{P_t\ G_t\ G_r\ \lambda^2}{(4\pi R)^2}$$
+
+- Check line of sight first.
+- Then power, antenna gains, wavelength, and distance set the received power.
 :::
 
-A link budget multiplies a long chain of gains and losses, and the numbers span many orders of magnitude: a transmitter puts out a watt, and the receiver collects a few picowatts. Decibels turn those products into sums and keep the numbers readable. A power ratio $P_2/P_1$ in decibels is
+Every wireless link depends on the same few factors, and the first one to check is **line of sight**: if the path is blocked by terrain, buildings, or the curve of the Earth, nothing else in the budget matters. With a clear path, four things set how much power arrives: the power transmitted, the gains of the two antennas, the wavelength, and the distance.
 
-$$\text{dB} = 10\log_{10}\frac{P_2}{P_1}$$
-
-An absolute power takes a reference: **dBm** is power relative to 1 mW, so 630 mW is $10\log_{10}(630) = 28.0$ dBm and 1 pW is $-90$ dBm. **dBi** is antenna gain relative to an isotropic antenna. With every quantity in dB, a received power is the transmitter power plus the gains minus the losses, and we can do most link budgets in our heads. The four rows of the table are worth memorizing: a factor of two is 3 dB, a factor of ten is 10 dB, and 0 dBm and $+30$ dBm are 1 mW and 1 W.
+The **Friis transmission equation** puts them together. $P_r$ is the power the receiving antenna collects and $P_t$ the power the transmitter delivers to its antenna, both in watts. $G_t$ and $G_r$ are the antenna gains, $\lambda$ is the wavelength, and $R$ is the distance between the antennas. The $(4\pi R)^2$ is the power spreading over a growing sphere. The $\lambda^2$ appears because an antenna of fixed gain has an effective receiving area proportional to $\lambda^2$, so the same antenna collects less power at a higher frequency. That is spreading, not absorption: free space absorbs nothing.
 ::::
 
-::::{frame} Part 2: Friis in Decibels
+::::{frame} Decibels
+:::{present}
+| Parameter | Linear | dB |
+| :-- | :-- | :-- |
+| $P_t$ | 120 W | $50.8$ dBm |
+| $G_t$ | 1201.2 | $30.8$ dB |
+| $G_r$ | 281.5 | $24.5$ dB |
+:::
+:::{present}
+- Products become sums in dB; $\times 2$ is $+3$ dB.
+- dBm is relative to 1 mW; dBi, to an isotropic antenna.
+:::
+
+A link budget multiplies a long chain of gains and losses, and the numbers span many orders of magnitude: a transmitter puts out watts, and a receiver collects picowatts. Decibels turn those products into sums and keep the numbers readable. A power ratio in decibels is $10\log_{10}(P_2/P_1)$, so a factor of two is 3 dB and a factor of ten is 10 dB.
+
+An absolute power takes a reference: **dBm** is power relative to 1 mW, so 120 W is $10\log_{10}(120{,}000) = 50.8$ dBm, and 1 W is $+30$ dBm. **dBi** is antenna gain relative to an isotropic antenna, one that radiates equally in every direction. The table converts the system in the Friis example on the next slide; with every quantity in dB, the received power is the transmitter power plus the gains minus the losses.
+::::
+::::{frame} Friis in Decibels
 :::{present}
 $$P_r = P_t + G_t + G_r - L_p$$
 
 $$\begin{aligned}
-L_p &= 20\log_{10}\frac{4\pi d}{\lambda} \\
-&= 20\log_{10} d_{\text{km}} \\
-&\quad + 20\log_{10} f_{\text{MHz}} + 32.45
+L_p = {} &20\log_{10} f_\text{Hz} \\
+&+ 20\log_{10} R_\text{m} - 147.55
 \end{aligned}$$
 
 - $L_p$ is the **free-space path loss** in dB.
 :::
 
-The Friis transmission equation gives the power one antenna collects from another in free space:
+Taking $10\log_{10}$ of both sides of the Friis equation turns the product into the sum on the slide, with the wavelength and distance factor collected into the **free-space path loss** $L_p$. Writing $\lambda = c/f$ with the frequency in hertz and the distance in meters collects every constant into the $-147.55$ dB term, $20\log_{10}(4\pi/c)$, which is the form to use with a calculator.
 
-$$P_r = P_t\ G_t\ G_r \left(\frac{\lambda}{4\pi d}\right)^2$$
-
-with $P_t$ the transmitted power, $G_t$ and $G_r$ the antenna gains, $d$ the distance, and $\lambda$ the wavelength. Taking $10\log_{10}$ of both sides turns the product into the sum on the slide, with the last factor collected into the **free-space path loss** $L_p$. Writing $\lambda = c/f$ and putting the distance in kilometers and the frequency in megahertz collects every constant into the 32.45 dB term, which is the form to use with a calculator.
-
-Free-space path loss is not absorption. The energy spreads over a sphere that grows as $d^2$, and the receiving antenna captures a fixed area of it. The $\lambda^2$ appears because a fixed-gain antenna has an effective area proportional to $\lambda^2$, so the same 1 dBi antenna collects less power at a higher frequency.
+For the system in the table, at 3.7 GHz over 80 km, the path loss is $191.4 + 98.1 - 147.55 = 141.9$ dB. The received power is then $50.8 + 30.8 + 24.5 - 141.9 = -35.8$ dBm. Every link budget in this course is this sum, with more terms for the losses a real link adds.
 ::::
-
 ::::{frame} Path Loss Rules of Thumb
 :::{present}
 - Doubling the distance adds 6 dB of path loss.
@@ -140,112 +143,79 @@ Free-space path loss is not absorption. The energy spreads over a sphere that gr
 | 5.8 GHz | 117.3 dB |
 :::
 
-Path loss grows as $20\log_{10} d$, so every doubling of distance adds $20\log_{10}2 = 6.0$ dB, and every factor of ten adds 20 dB. The frequency term behaves the same way. That is why a 915 MHz telemetry radio outranges a 2.4 GHz radio at the same power and antenna gain: at 3 km the 915 MHz link loses 8.6 dB less, which is a factor of 2.7 in distance for the same received power.
+Path loss grows as $20\log_{10} R$, so every doubling of distance adds $20\log_{10}2 = 6.0$ dB, and every factor of ten adds 20 dB. The frequency term behaves the same way. That is why a 915 MHz telemetry radio outranges a 2.4 GHz radio at the same power and antenna gain: at 3 km the 915 MHz link loses 8.6 dB less, which is a factor of 2.7 in distance for the same received power.
 
 The 6 dB rule also runs in reverse. If a link has 6 dB of margin, it will still close at twice the distance, with nothing left over. If it has 12 dB, it reaches four times as far. We will use that to read the range of a link straight off its margin.
 ::::
 
-::::{frame} Antennas, Pointing, and Other Losses
+::::{frame} Part 3: Antennas
 :::{present}
-- Antenna gain applies only along the main beam; at the half-power edge it is 3 dB lower.
+- **Gain** is directivity times efficiency, in dBi.
+- Gain applies along the main beam; at the half-power **beamwidth** edge it is 3 dB lower.
+- Orientation matters: a banking drone points its beam away.
 - Each cable and connector subtracts its insertion loss.
-- Below about 10 GHz the clear atmosphere adds little; rain and foliage add more.
 :::
 
-The gain on a datasheet is the peak gain, along the antenna's main beam. A directional antenna pointed away from the other end of the link delivers less: at the edge of the half-power beamwidth it delivers 3 dB less by definition, and in a null it delivers almost nothing. A drone that banks, a handheld radio held sideways, or two linear antennas at right angles to each other can each lose several dB. A budget either assumes worst-case pointing or states the pointing it assumes.
+An antenna turns the voltages and currents in a circuit into a radiated wave, and back again. A good one does two jobs: it sends energy in the directions we want and suppresses it elsewhere, and it moves as much power as possible between the circuit and space. **Directivity** measures the first, how much stronger the radiation is in the best direction than on average. **Gain** is directivity times efficiency, quoted in dBi against an isotropic antenna, and it is the number that goes in the Friis equation.
 
-Every cable, connector, filter, and switch between the radio and its antenna subtracts its **insertion loss**. A few meters of thin coax at 2.4 GHz loses a dB or more, which is why cable length belongs in the budget.
-
-The atmosphere is nearly transparent below about 10 GHz. Above that, water vapor and rain add loss, and near 60 GHz oxygen absorbs about 15 dB/km at sea level (ITU-R P.676). Foliage, walls, and people in the path add loss at any frequency, and an indoor Wi-Fi budget can lose 10 dB or more through a couple of walls. These losses are hard to predict exactly, which is one reason a link budget carries margin.
+The gain on a datasheet is the peak, along the main beam. The **beamwidth** is the angle between the points where the pattern falls 3 dB below that peak. An antenna pointed away from the other end of the link delivers less: at the edge of the half-power beamwidth, 3 dB less by definition, and in a null almost nothing. A drone that banks, a handheld radio held sideways, or two linear antennas at right angles to each other can each lose several dB, so a budget either assumes the worst orientation or states the one it assumes. Every cable, connector, filter, and switch between the radio and its antenna also subtracts its **insertion loss**; a few meters of thin coax at 2.4 GHz loses a dB or more.
 ::::
-
-::::{frame} Part 3: The Noise Floor
+::::{frame} Part 4: SNR and Noise Figure
 :::{present}
 $$\begin{aligned}
-N &= kTB \\
-kT_0 &= -174\ \text{dBm/Hz}
+\text{SNR} &= \frac{P_\text{sig}}{P_\text{noise}} \\
+\text{NF} &= 10\log_{10}\frac{\text{SNR}_\text{in}}{\text{SNR}_\text{out}}
 \end{aligned}$$
 
-$$N_\text{floor} = -174 + 10\log_{10}B + \text{NF}$$
-
-- $T_0 = 290$ K; the floor is in dBm.
-- 1 MHz with NF 7 dB gives $-107.0$ dBm.
+- Every stage lowers the SNR; NF says by how many dB.
+- Typical receivers: 2 to 8 dB.
 :::
 
-Every resistor at temperature $T$ produces thermal noise power $kTB$ in a bandwidth $B$, where $k = 1.38\times10^{-23}$ J/K is Boltzmann's constant. At the standard reference temperature of 290 K that is $4.0\times10^{-21}$ W in each hertz, or $-174$ dBm/Hz, and it is the number to remember. The noise a receiver sees grows with the bandwidth it lets through, so a receiver that uses 1 MHz starts from $-174 + 60 = -114$ dBm.
+The **signal-to-noise ratio** (SNR) is the signal power over the noise power, and it is the one noise number this course uses. It decides whether a receiver can decode: Lesson 3 shows what a digital signal looks like as the SNR falls, and every lab after that turns a noise slider and watches.
 
-A real receiver adds noise of its own on top of that, and its **noise figure** NF measures how much, in dB. The receiver's noise floor is the sum of the three terms on the slide. For the drone link, 1 MHz of bandwidth and a 7 dB noise figure put the floor at $-107.0$ dBm. Two consequences follow. Narrowing the bandwidth lowers the floor, 3 dB for every halving, and that is one reason narrowband signals such as CW and FSK reach so far. And a lower noise figure lowers the floor dB for dB, which is the job of a low-noise amplifier.
+Every stage of a receiver adds a little noise of its own, so the SNR always gets worse on the way through. The **noise figure** NF says by how much, in dB: it is the SNR at a stage's input over the SNR at its output. A perfect, noiseless stage has NF $= 0$ dB, and typical receivers fall between 2 and 8 dB. Two cases are worth knowing. A passive loss at room temperature, a cable or a filter, has a noise figure equal to its loss: 3 dB of coax lowers the SNR by 3 dB. A **low-noise amplifier (LNA)** is built to add as little noise as possible while it raises the signal, and a good one is near 1 dB. A general-purpose SDR front end trades noise performance for frequency coverage and usually lands at several dB.
 ::::
-
-::::{frame} Noise Figure
-:::{present}
-$$\begin{aligned}
-F &= \frac{\text{SNR}_\text{in}}{\text{SNR}_\text{out}} \\
-\text{NF} &= 10\log_{10}F
-\end{aligned}$$
-
-- Every stage lowers the SNR; NF says by how much.
-- A passive loss of $L$ dB at room temperature has $\text{NF} = L$.
-- A good LNA is about 1 dB; an SDR front end is several dB.
-:::
-
-The **noise factor** $F$ is the ratio of the SNR at a stage's input to the SNR at its output, and the **noise figure** is the same ratio in dB. A perfect, noiseless stage has $F = 1$ and NF $= 0$ dB. Every real stage adds some noise, so the SNR always gets worse through it, and NF states by how many dB.
-
-Two cases are worth knowing by heart. A passive loss at room temperature, a cable or a filter, has a noise figure equal to its loss: 3 dB of coax lowers the SNR by 3 dB. A **low-noise amplifier (LNA)** is built to add as little noise as possible while it raises the signal, and a good one has a noise figure near 1 dB. The front end of a general-purpose SDR trades noise performance for frequency coverage and usually lands at several dB, which is why an external LNA often improves a weak-signal receiver.
-::::
-
 ::::{frame} Cascaded Noise Figure
 :::{present}
 $$\begin{aligned}
 F &= F_1 + \frac{F_2 - 1}{G_1} \\
 &\quad + \frac{F_3 - 1}{G_1 G_2} + \cdots
 \end{aligned}$$
-
-- The gain ahead of each stage divides down its noise.
-- The first stage sets the floor, so it should have low NF and high gain.
 :::
-
-A receiver is a chain of stages, and the Friis formula for noise combines their noise factors $F_n$ and linear gains $G_n$ into the noise factor of the whole chain. The terms must be linear ratios, not dB, so convert before adding. Each stage after the first contributes its excess noise $F_n - 1$ divided by all of the gain ahead of it. Behind a 20 dB LNA, a stage's excess noise counts one hundred times less than it would at the antenna.
-
-The design rule follows directly. The first stage dominates the noise figure of the whole receiver, so it should be a low-noise stage with enough gain to make everything after it unimportant. Any loss in front of that stage adds to the system noise figure dB for dB, because nothing ahead of it divides it down.
-::::
-
-::::{frame} Where the LNA Goes
 :::{present}
 <img src="../../viz/img/L02-noise-cascade.svg"
      alt="The same LNA, 3 dB cable, and SDR in three arrangements. With the LNA at the antenna the system noise figure is 1.4 dB; with the cable ahead of the LNA it is 4.2 dB; with no LNA it is 11.0 dB"
      style="max-width: 720px; width: 100%; display: block; margin: 0 auto;">
 :::
-:::{present}
-- The same three parts give 1.4, 4.2, or 11.0 dB.
-- Mount the LNA at the antenna, ahead of the cable.
-:::
 
-:::{admonition} Worked example — the LNA at the antenna
-:class: tip
-An LNA with NF 1 dB and 20 dB of gain, a coax run with 3 dB of loss, and an SDR with NF 8 dB. In linear terms the LNA is $F_1 = 1.26$, $G_1 = 100$; the cable is $F_2 = 2.00$, $G_2 = 0.50$; the SDR is $F_3 = 6.31$.
+A receiver is a chain of stages, and the formula on the slide combines their noise factors $F_n$, the noise figures as linear ratios, and their linear gains $G_n$ into the noise factor of the whole chain. Each stage after the first contributes its extra noise divided by all of the gain ahead of it, so behind a 20 dB LNA a stage's noise counts one hundred times less than it would at the antenna. The first stage sets the floor, so it should have a low noise figure and enough gain to make everything after it unimportant.
 
-$$\begin{aligned}
-F &= 1.26 + \frac{2.00 - 1}{100} \\
-&\quad + \frac{6.31 - 1}{100 \times 0.50} \\
-&= 1.26 + 0.01 + 0.11 \\
-&= 1.38
-\end{aligned}$$
-
-which is NF $= 1.4$ dB. With the cable first, the cable's 3 dB sits in front of everything and the LNA's gain cannot divide it down:
-
-$$\begin{aligned}
-F &= 2.00 + \frac{1.26 - 1}{0.50} \\
-&\quad + \frac{6.31 - 1}{0.50 \times 100} \\
-&= 2.00 + 0.52 + 0.11 \\
-&= 2.62
-\end{aligned}$$
-
-which is NF $= 4.2$ dB. Without the LNA the cable and the SDR alone give 11.0 dB. The same three parts span almost 10 dB of noise figure, and 10 dB of noise floor is a factor of $\sqrt{10} = 3.2$ in range.
-:::
+The figure shows what that means in practice. The same three parts, an LNA with NF 1 dB and 20 dB of gain, 3 dB of coax, and an SDR with NF 8 dB, give a system noise figure of 1.4 dB with the LNA at the antenna, 4.2 dB with the cable ahead of the LNA, and 11.0 dB with no LNA at all. Any loss in front of the first amplifier adds to the noise figure dB for dB, because nothing ahead of it divides it down. Mount the LNA at the antenna.
 ::::
 
-::::{frame} Part 4: SNR and Margin
+::::{frame} Noise Sources and the Noise Floor
+:::{present}
+$$N_\text{floor} = -174 + 10\log_{10}B + \text{NF}$$
+
+- $kTB$ at 290 K is $-174$ dBm in each hertz.
+- 1 MHz with NF 7 dB gives $-107.0$ dBm.
+:::
+
+Where does the noise come from? Electrons moving at random in every resistor and semiconductor produce **thermal** and **shot noise**, and both deliver a noise power $kTB$ in a bandwidth $B$, where $k = 1.38\times10^{-23}$ J/K is Boltzmann's constant and $T$ is the **noise temperature**. At the standard 290 K that is $-174$ dBm in each hertz, the number to remember. Other sources, such as generation-recombination, temperature-fluctuation, and quantum noise, add smaller amounts.
+
+The noise a receiver sees grows with the bandwidth it lets through, and its own noise figure adds on top, so its **noise floor** in dBm is the sum on the slide. For the drone link, 1 MHz of bandwidth and a 7 dB noise figure put the floor at $-174 + 60 + 7 = -107.0$ dBm. Narrowing the bandwidth lowers the floor, 3 dB for every halving, which is one reason narrowband signals such as CW reach so far.
+::::
+
+::::{frame} The Atmosphere
+:::{present}
+- Below about 10 GHz the clear atmosphere adds little.
+- Water vapor and rain add loss above that; oxygen absorbs strongly near 60 GHz.
+- Foliage and walls add loss at any frequency.
+:::
+
+Free space absorbs nothing, but the atmosphere does, and how much depends on frequency. Below about 10 GHz, which covers every band our SDRs reach, the clear atmosphere is nearly transparent. Above that, water vapor and rain add loss, and near 60 GHz oxygen absorbs about 15 dB/km at sea level. Foliage, walls, and people in the path add loss at any frequency, and an indoor Wi-Fi budget can lose 10 dB or more through a couple of walls. These losses are hard to predict exactly, which is one reason a link budget carries margin.
+::::
+::::{frame} Part 5: SNR and Margin
 :::{present}
 $$\begin{aligned}
 \text{SNR} &= P_r - N_\text{floor} \\
@@ -256,7 +226,7 @@ P_\text{sens} &= N_\text{floor} + \text{SNR}_\text{req} \\
 - Design for about 10 dB of margin.
 :::
 
-The received SNR is the received power minus the noise floor, both in dBm. The demodulator needs some minimum SNR to deliver an acceptable error rate, and Lesson 3 shows how that requirement follows from the modulation. Adding it to the floor gives the receiver's **sensitivity**, the weakest signal it can use, which radio datasheets usually quote directly. The **margin** is how far the received power sits above the sensitivity.
+The received SNR is the received power minus the noise floor, both in dBm. Every demodulator needs some minimum SNR to decode reliably, and the radio's datasheet states it. Adding it to the floor gives the receiver's **sensitivity**, the weakest signal it can use, which radio datasheets usually quote directly. The **margin** is how far the received power sits above the sensitivity.
 
 A link with 0 dB of margin works only on a good day. Fading, a bad antenna angle, a wet radome, or a warmer receiver all take a few dB at unpredictable times, so a typical design goal is about 10 dB of margin. Because path loss grows 6 dB per doubling of distance, 10 dB of margin also says the link would close, with nothing to spare, at about three times the distance.
 ::::
@@ -283,7 +253,7 @@ A drone's 2.45 GHz telemetry radio transmits 630 mW into a 4 dBi antenna, and th
 | :-- | :-- | :-- |
 | Transmit power | $10\log_{10}(630)$ | $28.0$ dBm |
 | EIRP | $28.0 - 1.5 + 4.0$ | $30.5$ dBm |
-| Path loss | $20\log_{10}3 + 20\log_{10}2450 + 32.45$ | $109.8$ dB |
+| Path loss | $20\log_{10}(2.45\times10^9) + 20\log_{10}3000 - 147.55$ | $109.8$ dB |
 | Received | $30.5 - 109.8 - 3.0 + 1.0 - 1.5$ | $-82.8$ dBm |
 | Noise floor | $-174 + 10\log_{10}(10^6) + 7$ | $-107.0$ dBm |
 | SNR | $-82.8 - (-107.0)$ | $24.2$ dB |
@@ -335,12 +305,14 @@ A link closes when the received power clears the noise floor by the SNR the rece
 
 | Idea | What it is | Number to remember |
 | :-- | :-- | :-- |
-| Path loss | $20\log_{10}(4\pi d/\lambda)$ | $+6$ dB per doubling of $d$ or $f$ |
-| Thermal noise | $kTB$ at 290 K | $-174$ dBm/Hz |
-| Noise floor | $-174 + 10\log_{10}B + \text{NF}$ | $-114$ dBm in 1 MHz before NF |
+| Friis | $P_r = P_t + G_t + G_r - L_p$ | check line of sight first |
+| Path loss | $20\log_{10}f + 20\log_{10}R - 147.55$ | $+6$ dB per doubling of $R$ or $f$ |
+| Antenna gain | directivity $\times$ efficiency, in dBi | 3 dB down at the beamwidth edge |
 | Noise figure | $\text{SNR}_\text{in}/\text{SNR}_\text{out}$ in dB | LNA about 1 dB; passive loss NF $=$ loss |
 | Cascade | $F_1 + (F_2 - 1)/G_1 + \cdots$ | the first stage dominates |
-| Sensitivity | floor $+$ required SNR | from the datasheet or the modulation |
+| Thermal noise | $kTB$ at 290 K | $-174$ dBm/Hz |
+| Noise floor | $-174 + 10\log_{10}B + \text{NF}$ | $-114$ dBm in 1 MHz before NF |
+| Sensitivity | floor $+$ required SNR | from the radio's datasheet |
 | Margin | received $-$ sensitivity | design for about 10 dB |
 ::::
 
@@ -353,11 +325,11 @@ A link closes when the received power clears the noise floor by the SNR the rece
 
 ::::{frame} Looking Ahead
 :::{present}
-- Lesson 3 shows where the required SNR comes from: the modulation's signal space.
+- Lesson 3 shows what a digital signal looks like as the SNR falls.
 - Lesson 4 opens the SDR and its front end, where the noise figure is set.
 :::
 
-Today we took the receiver's required SNR as a given, the 14 dB in the drone example. Lesson 3 explains where it comes from. A modulation places its symbols at points in a signal space, and the noise floor we computed today spreads each received symbol into a cloud around its point; the SNR a modem needs is whatever keeps those clouds from overlapping too often.
+Today we took the receiver's required SNR from its datasheet, the 14 dB in the drone example. Lesson 3 shows what that number protects. A digital modulation places its symbols at points, and the noise floor we computed today spreads each received symbol into a cloud around its point. Turn the noise up and the clouds grow until samples land on a neighbor's point; the SNR a radio needs is whatever keeps that from happening too often.
 
 Lesson 4 then opens the SDRs themselves: the RF front end, the mixer and filters, and the analog-to-digital converter, which together set the noise figure, the bandwidth, and the dynamic range we used in today's budget. Before the next lesson, be able to compute a free-space path loss and a noise floor in your head to within a dB, because every lab in this course starts by checking that the signal will be there to receive.
 ::::

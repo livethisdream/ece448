@@ -77,8 +77,8 @@ delivers 1 W to its antenna.
 	\begin{minipage}[t]{0.58\linewidth}
 		\part Find the free-space path loss at 915 MHz and 10 km.
 		\begin{solution}[1.0in]
-		\eq{ L_p &= 20\mylog{10} + 20\mylog{915} + 32.45 \\
-			&= 20.0 + 59.2 + 32.45 = 111.7\db }
+		\eq{ L_p &= 20\mylog{915\times10^{6}} + 20\mylog{10^{4}} - 147.55 \\
+			&= 179.2 + 80.0 - 147.55 = 111.7\db }
 		\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
@@ -106,7 +106,8 @@ delivers 1 W to its antenna.
 		Doubling the distance adds 6.0 dB. The frequency ratio adds
 		$20\mylog{2450/915} = 8.6$ dB. So
 		\eq{ L_p &\approx 111.7 + 6.0 + 8.6 = 126.3\db \\
-			L_p &= 20\mylog{20} + 20\mylog{2450} + 32.45 = 126.3\db }
+			L_p &= 20\mylog{2.45\times10^{9}} + 20\mylog{2\times10^{4}} \\
+			&\quad - 147.55 = 126.3\db }
 		\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
@@ -253,9 +254,10 @@ bandwidth.
 
 	\begin{minipage}[t]{0.58\linewidth}
 		\part Find the free-space path loss and the received power in dBm.
-		\begin{solution}[1.3in]
-		\eq{ L_p &= 20\mylog{20200} + 20\mylog{1575.42} + 32.45 \\
-			&= 86.1 + 63.9 + 32.45 = 182.5\db \\
+		\begin{solution}[1.5in]
+		\eq{ L_p &= 20\mylog{1.57542\times10^{9}} \\
+			&\quad + 20\mylog{2.02\times10^{7}} - 147.55 \\
+			&= 183.9 + 146.1 - 147.55 = 182.5\db \\
 			\text{EIRP} &= 27\ \text{dBW} = 57\ \text{dBm} \\
 			P_r &= 57 - 182.5 + 0 - 2 = -127.5\ \text{dBm} }
 		\end{solution}
@@ -306,6 +308,60 @@ bandwidth.
 		noise floor, and the correlation leaves only about 12 dB of SNR, so every dB of
 		cable loss in front of the first amplifier would come straight out of that.
 		\end{solution}
+
+\end{parts}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{Reading SNR on an SDR.} A GNU Radio frequency sink shows an
+unmodulated carrier from a signal generator, received by an RTL-SDR running at
+$f_s = 2.4$ MHz with an FFT size of 2048. The carrier's peak reads $-32$ dBFS and
+the noise floor beside it reads $-78$ dBFS.
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Find the SNR the display shows, and the width of one FFT bin.
+		\begin{solution}[1.0in]
+		\eq{ \text{SNR} &= -32 - (-78) = 46\db \\
+			\dfrac{f_s}{N} &= \dfrac{2.4\ \text{MHz}}{2048} = 1.17\ \text{kHz} }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		SNR = \ansbox[1.3in]{$46\db$}
+
+		\vspace{4pt}
+		bin = \ansbox[1.3in]{$1.17$ kHz}
+	\end{minipage}
+
+	\part The display reads dBFS, not dBm. Why can you still read an SNR off it?
+		\begin{solution}[0.8in]
+		SNR is a difference between two levels on the same axis, so the unknown offset
+		between dBFS and dBm cancels.
+		\end{solution}
+
+	\part You change the FFT size from 2048 to 8192. What happens to the noise floor,
+	to the carrier's peak, and to the SNR the display shows?
+		\begin{solution}[1.0in]
+		Each bin is four times narrower and holds a quarter of the noise, so the floor
+		drops by about 6 dB, 3 dB for each doubling. The carrier's power is all in one
+		bin, so its peak stays at $-32$ dBFS, and the displayed SNR rises to about
+		52 dB. Nothing about the signal changed; only the display did.
+		\end{solution}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Back at 2048 points, the receiver filters to 2 kHz before it
+		demodulates. Find the SNR in that bandwidth.
+		\begin{solution}[1.1in]
+		Scale the floor from one bin to 2 kHz:
+		\eq{ 10\mylog{\dfrac{2000}{1172}} &= 2.3\db \\
+			\text{SNR} &= 46 - 2.3 = 43.7\db }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		SNR = \ansbox[1.3in]{$43.7\db$}
+	\end{minipage}
 
 \end{parts}
 

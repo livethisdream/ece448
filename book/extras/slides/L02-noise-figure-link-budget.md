@@ -36,14 +36,14 @@ Open with the question every radio engineer asks first: will the link close? Tod
 ## Today's Plan
 
 1. The allocated spectrum and the ISM bands
-2. Decibels and the Friis equation in dB
-3. The noise floor and the noise figure
-4. Cascaded noise figure, and where the LNA goes
+2. The Friis equation, in watts and in dB
+3. Antennas: gain, beamwidth, and orientation
+4. Noise: SNR, noise figure, the cascade, and the noise floor
 5. SNR, sensitivity, and margin: a drone link end to end
 6. Reading SNR off an SDR display
 
 Note:
-Six items, and items two through five are one calculation built in pieces. The drone link at the end uses all of them.
+The same order as the 2025 slides. Items two through five are one calculation built in pieces, and the drone link at the end uses all of them.
 
 ---
 
@@ -81,19 +81,30 @@ Pull up the NTIA allocation chart on the screen if there is time. Point out that
 
 ---
 
-## Decibels
+## The Friis Equation
 
-| Change | In dB |
-| :-- | :-- |
-| ×2 power | $+3$ dB |
-| ×10 power | $+10$ dB |
-| 1 mW | $0$ dBm |
-| 1 W | $+30$ dBm |
+$$P_r = \frac{P_t\ G_t\ G_r\ \lambda^2}{(4\pi R)^2}$$
 
-Gains and losses add in dB; dBm is power relative to 1 mW, and dBi is gain relative to an isotropic antenna.
+- Line of sight: always check first!
+- Then power, antenna gains, wavelength, and distance.
 
 Note:
-Quick drill: 630 milliwatts is about 28 dBm; 1 picowatt is minus 90 dBm. Have them do two or three in their heads.
+Build the equation one factor at a time, as in the 2025 slides: power transmitted, then the gains, then wavelength, then distance. The 4 pi R squared is spreading over a sphere; the lambda squared is there because a fixed-gain antenna has an effective area proportional to lambda squared.
+
+---
+
+## Decibels
+
+| Parameter | Linear | dB |
+| :-- | :-- | :-- |
+| $P_t$ | 120 W | $50.8$ dBm |
+| $G_t$ | 1201.2 | $30.8$ dB |
+| $G_r$ | 281.5 | $24.5$ dB |
+
+Products become sums in dB: $\times 2$ is $+3$ dB, 1 mW is 0 dBm, 1 W is $+30$ dBm.
+
+Note:
+Have them convert the table before revealing the dB column. dBm is relative to 1 mW and dBi is gain relative to an isotropic antenna.
 
 ---
 
@@ -101,12 +112,12 @@ Quick drill: 630 milliwatts is about 28 dBm; 1 picowatt is minus 90 dBm. Have th
 
 $$P_r = P_t + G_t + G_r - L_p$$
 
-$$L_p = 20\log_{10} d_{\text{km}} + 20\log_{10} f_{\text{MHz}} + 32.45$$
+$$L_p = 20\log_{10} f_\text{Hz} + 20\log_{10} R_\text{m} - 147.55$$
 
-<div class="callout">The free-space path loss \(L_p\) is spreading, not absorption.</div>
+At 3.7 GHz over 80 km: $L_p = 141.9$ dB, so $P_r = 50.8 + 30.8 + 24.5 - 141.9 = -35.8$ dBm.
 
 Note:
-Start from the linear Friis equation they saw in ECE 444 or 447, P r equals P t G t G r times lambda over four pi d squared, and take ten log of both sides. The 32.45 collects four pi over c with kilometers and megahertz. The lambda squared is there because a fixed-gain antenna has an effective area proportional to lambda squared.
+The minus 147.55 is twenty log of four pi over c, with frequency in hertz and distance in meters. The path loss is spreading, not absorption.
 
 ---
 
@@ -126,40 +137,27 @@ The 6 dB rule runs in reverse: 6 dB of margin means the link still closes at twi
 
 ---
 
-## Antennas, Pointing, and Other Losses
+## Antennas
 
-- Gain applies along the main beam; at the half-power edge it is 3 dB lower.
+- **Gain** is directivity times efficiency, in dBi.
+- At the half-power **beamwidth** edge the gain is 3 dB lower.
+- Orientation matters: a banking drone points its beam away.
 - Each cable and connector subtracts its insertion loss.
-- Below about 10 GHz the clear atmosphere adds little; rain, foliage, and walls add more.
 
 Note:
-A drone that banks puts the ground station off its antenna's beam. A budget either assumes the worst pointing or states the pointing it assumes. Near 60 GHz oxygen absorbs about 15 dB per kilometer, which is why short links use that band.
+Show the antenna types and the gain pattern from the 2025 slides if there is time. A budget either assumes the worst orientation or states the one it assumes.
 
 ---
 
-## The Noise Floor
+## SNR and Noise Figure
 
-$$N_\text{floor} = -174 + 10\log_{10}B + \text{NF} \quad \text{(dBm)}$$
+$$\text{SNR} = \frac{P_\text{sig}}{P_\text{noise}} \qquad \text{NF} = 10\log_{10}\frac{\text{SNR}\_\text{in}}{\text{SNR}\_\text{out}}$$
 
-- $kT$ at 290 K is $-174$ dBm/Hz.
-- 1 MHz with NF 7 dB gives $-107.0$ dBm.
-- Halving the bandwidth lowers the floor 3 dB.
-
-Note:
-Minus 174 dBm per hertz is the number to remember. Sixty dB for one megahertz takes it to minus 114, and the receiver's noise figure adds the rest. Narrowband signals such as CW reach far because their floor is low.
-
----
-
-## Noise Figure
-
-$$F = \frac{\text{SNR}\_\text{in}}{\text{SNR}\_\text{out}} \qquad \text{NF} = 10\log_{10}F$$
-
-- Every stage lowers the SNR; NF says by how much.
-- A passive loss of $L$ dB at room temperature has NF $= L$.
-- A good LNA is about 1 dB; an SDR front end is several dB.
+- Every stage lowers the SNR; NF says by how many dB.
+- Typical receivers: 2 to 8 dB. A good LNA is about 1 dB.
 
 Note:
-Three dB of coax lowers the SNR by three dB. A general-purpose SDR covers gigahertz of spectrum and does not have the best noise figure anywhere in it, which is why an external LNA helps a weak-signal receiver.
+SNR is the one noise number this course uses. A passive loss at room temperature has a noise figure equal to its loss: three dB of coax lowers the SNR by three dB.
 
 ---
 
@@ -170,7 +168,7 @@ $$F = F_1 + \frac{F_2 - 1}{G_1} + \frac{F_3 - 1}{G_1 G_2} + \cdots$$
 <div class="callout">The first stage sets the floor. It should have a low noise figure and enough gain to make the rest unimportant.</div>
 
 Note:
-Use linear ratios only. All of the gain ahead of a stage divides down its excess noise. Any loss in front of the first amplifier adds to the noise figure dB for dB.
+Use linear ratios. All of the gain ahead of a stage divides down its extra noise. Any loss in front of the first amplifier adds to the noise figure dB for dB.
 
 ---
 
@@ -181,7 +179,31 @@ Use linear ratios only. All of the gain ahead of a stage divides down its excess
 The same three parts give 1.4, 4.2, or 11.0 dB; mount the LNA at the antenna.
 
 Note:
-Work the top row on the board: 1.26 plus 1 over 100 plus 5.31 over 50 is 1.38, or 1.4 dB. Then swap the cable to the front and it is 4.2 dB. Ten dB of noise figure is a factor of 3.2 in range.
+Read the three rows off the figure; no need to work the arithmetic on the board. Ten dB of noise figure is a factor of 3.2 in range.
+
+---
+
+## Noise Sources and the Noise Floor
+
+$$N_\text{floor} = -174 + 10\log_{10}B + \text{NF} \quad \text{(dBm)}$$
+
+- Thermal and shot noise give $kTB$: $-174$ dBm/Hz at 290 K.
+- 1 MHz with NF 7 dB gives $-107.0$ dBm.
+- Halving the bandwidth lowers the floor 3 dB.
+
+Note:
+Minus 174 dBm per hertz is the number to remember. Sixty dB for one megahertz takes it to minus 114, and the noise figure adds the rest. Other sources, generation-recombination, temperature fluctuation, and quantum noise, add smaller amounts.
+
+---
+
+## The Atmosphere
+
+- Below about 10 GHz the clear atmosphere adds little.
+- Water vapor and rain add loss above that; oxygen absorbs strongly near 60 GHz.
+- Foliage and walls add loss at any frequency.
+
+Note:
+Show the atmospheric attenuation chart from the 2025 slides. Every band our SDRs reach is below 10 GHz. Near 60 GHz oxygen absorbs about 15 dB per kilometer.
 
 ---
 
@@ -196,7 +218,7 @@ $$\text{margin} = P_r - P_\text{sens}$$
 Design for about 10 dB of margin.
 
 Note:
-The required SNR comes from the modulation, which is Lesson 3. Datasheets usually quote the sensitivity directly. Ten dB of margin covers fading, pointing, weather, and a warm receiver, and it means the link would still close at about three times the distance.
+The required SNR comes from the radio's datasheet, which usually quotes the sensitivity directly. Ten dB of margin covers fading, pointing, weather, and a warm receiver, and it means the link would still close at about three times the distance.
 
 ---
 
@@ -252,9 +274,9 @@ If they remember one formula, it is minus 174 plus ten log B plus NF.
 
 ## Looking Ahead
 
-- Lesson 3: where the required SNR comes from, the modulation's signal space
+- Lesson 3: what a digital signal looks like as the SNR falls
 - Lesson 4: inside the SDR, where the noise figure and bandwidth are set
 - Practice set: path loss, noise floor, cascade, and a GPS link budget
 
 Note:
-Before next time they should be able to compute a path loss and a noise floor in their heads to within a dB. The GPS question on the practice set deserves the most time.
+Before next time they should be able to compute a path loss and a noise floor in their heads to within a dB. The GPS question on the practice set is the 2025 homework, and it deserves the most time.

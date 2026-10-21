@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Constellation explorer — symbols, noise, decision regions, and errors</title>
+<title>Constellation explorer — symbols, noise, and decision regions</title>
 <style>
   :root { --navy:#004a85; --mid:#0067b9; --edge:#cddce9; --edge2:#b9d2e5; --bg:#f5f9fc;
           --ink:#15202b; --ink3:#5b6573;
@@ -22,7 +22,7 @@
   .mods button { font:inherit; font-size:11.5px; font-weight:600; color:var(--navy); background:#fff; border:1px solid var(--edge2); border-radius:14px; padding:3px 9px; cursor:pointer; }
   .mods button.on { background:var(--navy); color:#fff; border-color:var(--navy); }
   .readouts { display:grid; gap:6px; grid-template-columns:repeat(2,minmax(0,1fr)); }
-  @media (max-width:620px) { .readouts { grid-template-columns:repeat(3,minmax(0,1fr)); } }
+  @media (max-width:620px) { .readouts { grid-template-columns:repeat(4,minmax(0,1fr)); } }
   .ro { display:flex; flex-direction:column; align-items:center; gap:2px; padding:5px 4px 6px; min-width:0;
         border:1px solid var(--edge2); border-radius:6px; background:#eef4fa; }
   .ro .k { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:var(--ink3); white-space:nowrap; }
@@ -34,20 +34,18 @@
 </head>
 <body>
 <div class="app">
-  <canvas id="iq" aria-label="Received symbols on the I-Q plane with decision regions; errors in red"></canvas>
+  <canvas id="iq" aria-label="Received symbols on the I-Q plane with decision regions; symbols in the wrong region in red"></canvas>
   <div class="side">
     <div class="controls">
       <div class="ctl"><label>Modulation</label><span></span>
         <div class="mods" id="mods"></div></div>
-      <div class="ctl"><label for="eb">Eb/N0</label><span class="val" id="eb-v"></span><input type="range" id="eb" min="0" max="20" step="0.5" value="8"></div>
+      <div class="ctl"><label for="snr">SNR</label><span class="val" id="snr-v"></span><input type="range" id="snr" min="0" max="25" step="0.5" value="12"></div>
       <div class="ctl"><label for="ph">Phase offset</label><span class="val" id="ph-v"></span><input type="range" id="ph" min="0" max="45" step="1" value="0"></div>
     </div>
     <div class="readouts">
-      <div class="ro"><span class="k">Es/N0</span><span class="v" id="o-es">—</span></div>
       <div class="ro"><span class="k">symbols</span><span class="v" id="o-n">—</span></div>
-      <div class="ro err"><span class="k">symbol errors</span><span class="v" id="o-se">—</span></div>
-      <div class="ro err"><span class="k">measured BER</span><span class="v" id="o-ber">—</span></div>
-      <div class="ro"><span class="k">predicted BER</span><span class="v" id="o-th">—</span></div>
+      <div class="ro err"><span class="k">wrong region</span><span class="v" id="o-se">—</span></div>
+      <div class="ro err"><span class="k">wrong, %</span><span class="v" id="o-pct">—</span></div>
       <div class="ro"><span class="k">bits/symbol</span><span class="v" id="o-k">—</span></div>
     </div>
     <div class="row"><button id="pause">pause</button><button id="clear">clear</button></div>
@@ -68,34 +66,15 @@ function build(name) {
   if (name === 'QPSK') for (let i = 0; i < 4; i++) { const a = Math.PI/4 + i*Math.PI/2; pts.push([Math.cos(a), Math.sin(a), gray(i)]); }
   if (name === '8-PSK') for (let i = 0; i < 8; i++) { const a = i*Math.PI/4; pts.push([Math.cos(a), Math.sin(a), gray(i)]); }
   if (name === '4-PAM') [-3,-1,1,3].forEach((x,i) => pts.push([x, 0, gray(i)]));
-  if (name === '16-QAM') { const ax = [-3,-1,1,3];
-    for (let i = 0; i < 4; i++) for (let q = 0; q < 4; q++) pts.push([ax[i], ax[q], (gray(i) << 2) | gray(q)]); }
   const e = pts.reduce((s,p) => s + p[0]*p[0] + p[1]*p[1], 0) / pts.length;
   const s = 1 / Math.sqrt(e);
   return pts.map(p => ({ x: p[0]*s, y: p[1]*s, b: p[2] }));
 }
-const MODS = { 'BPSK':1, 'QPSK':2, '8-PSK':3, '4-PAM':2, '16-QAM':4 };
+const MODS = { 'BPSK':1, 'QPSK':2, '8-PSK':3, '4-PAM':2 };
 
-// Predicted bit error rate (Gray coding, nearest-neighbor approximation) with
-// no phase offset -- the curves of the lesson.
-function Q(x){ return 0.5 * erfc(x / Math.SQRT2); }
-function erfc(x){ // Numerical Recipes erfcc, fractional error < 1.2e-7
-  const z = Math.abs(x), t = 1 / (1 + 0.5*z);
-  const r = t*Math.exp(-z*z-1.26551223+t*(1.00002368+t*(0.37409196+t*(0.09678418+t*(-0.18628806+
-            t*(0.27886807+t*(-1.13520398+t*(1.48851587+t*(-0.82215223+t*0.17087277)))))))));
-  return x >= 0 ? r : 2 - r;
-}
-function berTheory(mod, ebn0) {
-  const k = MODS[mod], es = ebn0 * k;
-  if (mod === 'BPSK' || mod === 'QPSK') return Q(Math.sqrt(2*ebn0));
-  if (mod === '8-PSK') return 2*Q(Math.sqrt(2*es)*Math.sin(Math.PI/8)) / k;
-  if (mod === '16-QAM') { const p = 1.5*Q(Math.sqrt(3*es/15)); return (1-(1-p)*(1-p)) / k; }
-  if (mod === '4-PAM') return 1.5*Q(Math.sqrt(6*es/15)) / k;
-}
-
-const state = { mod: 'QPSK', pts: build('QPSK'), rx: [], nSym: 0, nSymErr: 0, nBitErr: 0, running: true };
+const state = { mod: 'QPSK', pts: build('QPSK'), rx: [], nSym: 0, nSymErr: 0, running: true };
 const MAXPTS = 1500;
-const ebEl = document.getElementById('eb'), phEl = document.getElementById('ph');
+const snrEl = document.getElementById('snr'), phEl = document.getElementById('ph');
 const modsEl = document.getElementById('mods');
 for (const m of Object.keys(MODS)) {
   const b = document.createElement('button'); b.textContent = m; b.dataset.m = m;
@@ -103,33 +82,31 @@ for (const m of Object.keys(MODS)) {
 }
 function setMod(m){ state.mod = m; state.pts = build(m); clear();
   [...modsEl.children].forEach(b => b.classList.toggle('on', b.dataset.m === m)); }
-function clear(){ state.rx = []; state.nSym = state.nSymErr = state.nBitErr = 0; drawRegions(); draw(); }
-ebEl.oninput = () => { labels(); clear(); };
+function clear(){ state.rx = []; state.nSym = state.nSymErr = 0; drawRegions(); draw(); }
+snrEl.oninput = () => { labels(); clear(); };
 phEl.oninput = () => { labels(); clear(); };
 document.getElementById('clear').onclick = clear;
 document.getElementById('pause').onclick = (e) => { state.running = !state.running; e.target.textContent = state.running ? 'pause' : 'run'; };
 function labels(){
-  document.getElementById('eb-v').textContent = (+ebEl.value).toFixed(1) + ' dB';
+  document.getElementById('snr-v').textContent = (+snrEl.value).toFixed(1) + ' dB';
   document.getElementById('ph-v').textContent = phEl.value + '°';
 }
 
 function gauss(){ let u = 0, v = 0; while (u === 0) u = Math.random(); v = Math.random();
   return Math.sqrt(-2*Math.log(u)) * Math.cos(2*Math.PI*v); }
-function popcount(n){ let c = 0; while (n) { c += n & 1; n >>= 1; } return c; }
 function nearest(x, y){ let best = 0, bd = Infinity;
   state.pts.forEach((p,i) => { const d = (p.x-x)*(p.x-x) + (p.y-y)*(p.y-y); if (d < bd) { bd = d; best = i; } });
   return best; }
 
 function step(n) {
-  const k = MODS[state.mod];
-  const esn0 = Math.pow(10, +ebEl.value/10) * k;
-  const sigma = Math.sqrt(1 / esn0 / 2);            // N0/2 per axis, Es = 1
+  // Unit signal power, so the noise power is 1/SNR, half on each axis.
+  const sigma = Math.sqrt(Math.pow(10, -snrEl.value/10) / 2);
   const ph = (+phEl.value) * Math.PI / 180, c = Math.cos(ph), s = Math.sin(ph);
   for (let j = 0; j < n; j++) {
     const i = Math.floor(Math.random() * state.pts.length), p = state.pts[i];
     const x = p.x*c - p.y*s + sigma*gauss(), y = p.x*s + p.y*c + sigma*gauss();
     const d = nearest(x, y), wrong = d !== i;
-    state.nSym++; if (wrong) { state.nSymErr++; state.nBitErr += popcount(p.b ^ state.pts[d].b); }
+    state.nSym++; if (wrong) state.nSymErr++;
     state.rx.push([x, y, wrong]);
   }
   if (state.rx.length > MAXPTS) state.rx.splice(0, state.rx.length - MAXPTS);
@@ -163,8 +140,8 @@ function drawRegions() {
   const img = bgx.createImageData(w, h), step = 3;
   const tint = REGION.map(c => [parseInt(c.slice(1,3),16), parseInt(c.slice(3,5),16), parseInt(c.slice(5,7),16)]);
   // Alternate the tint between neighboring regions: by index around a PSK
-  // circle or along the PAM line, and as a checkerboard on the QAM grid.
-  const colorOf = i => tint[(state.mod === '16-QAM' ? (Math.floor(i/4) + i%4) : i) % 2];
+  // circle or along the PAM line.
+  const colorOf = i => tint[i % 2];
   for (let py = 0; py < h; py += step) for (let px = 0; px < w; px += step) {
     const x = (px/dpr - W/2) / S(), y = (H()/2 - py/dpr) / S();
     const t = colorOf(nearest(x, y));
@@ -183,7 +160,7 @@ function draw() {
   ctx.fillStyle = COL.ink3; ctx.font = '11px ' + SANS; ctx.textBaseline = 'top';
   ctx.textAlign = 'right'; ctx.fillText('I', W - 4, Y(0) + 3);
   ctx.textAlign = 'left'; ctx.fillText('Q', X(0) + 4, 3);
-  // received symbols: correct in blue, errors in red on top
+  // received symbols: right region in blue, wrong region in red on top
   for (const pass of [false, true]) {
     ctx.fillStyle = pass ? COL.red : 'rgba(0,103,185,0.45)';
     for (const r of state.rx) if (r[2] === pass) { ctx.beginPath(); ctx.arc(X(r[0]), Y(r[1]), pass ? 2.2 : 1.6, 0, 2*Math.PI); ctx.fill(); }
@@ -196,23 +173,18 @@ function draw() {
   readout();
 }
 
-function sci(v){ if (v === 0) return '0'; if (v >= 0.01) return v.toFixed(3);
-  const e = Math.floor(Math.log10(v)), m = v / Math.pow(10, e); return m.toFixed(1) + 'e' + e; }
 function readout() {
-  const k = MODS[state.mod], eb = +ebEl.value;
-  document.getElementById('o-es').textContent = (eb + 10*Math.log10(k)).toFixed(1) + ' dB';
   document.getElementById('o-n').textContent = state.nSym.toLocaleString();
   document.getElementById('o-se').textContent = state.nSymErr.toLocaleString();
-  document.getElementById('o-ber').textContent = state.nSym ? sci(state.nBitErr / (state.nSym*k)) : '—';
-  document.getElementById('o-th').textContent = sci(berTheory(state.mod, Math.pow(10, eb/10)));
-  document.getElementById('o-k').textContent = k;
+  document.getElementById('o-pct').textContent = state.nSym ? (100 * state.nSymErr / state.nSym).toFixed(1) : '—';
+  document.getElementById('o-k').textContent = MODS[state.mod];
 }
 
 function tick() { if (state.running) { step(40); draw(); } requestAnimationFrame(tick); }
 window.addEventListener('resize', fit);
-// A preset by query string: constellation-explorer.html?mod=16-QAM&eb=12
+// A preset by query string: constellation-explorer.html?mod=8-PSK&snr=12
 const q = new URLSearchParams(location.search);
-if (q.get('eb')) ebEl.value = q.get('eb');
+if (q.get('snr')) snrEl.value = q.get('snr');
 labels(); setMod(MODS[q.get('mod')] ? q.get('mod') : 'QPSK'); fit();
 step(400); draw();
 requestAnimationFrame(tick);

@@ -22,39 +22,76 @@ Spring 2027 · Dr. Neil Rogers
 
 ## Where We Were
 
-- Lesson 2: a link closes when the received power clears the noise floor by the SNR the modem needs
-- The drone link delivered 24.2 dB of SNR at 3 km
-- We took the modem's 14 dB requirement on faith
+- Lesson 2: a link closes when the received power clears the noise floor by the SNR the receiver needs
+- The SDR display reads that SNR as the peak minus the floor
+- What does the noise actually do to a digital signal?
 
-Today: **where the required SNR comes from**, and which modulation the drone should use.
+Today: **a modulation is a set of points**, and noise decides how often the receiver picks the wrong one.
 
 Note:
-Open by putting the Lesson 2 ledger back on the screen and pointing at the sensitivity line. Today we replace "the modem needs 14 dB" with a number we can look up for any modulation.
+Open by putting the Lesson 2 ledger back on the screen and pointing at the noise floor. Today we look at what that noise does to the samples a receiver decides on. No error-rate formulas: we watch.
 
 ---
 
 ## Today's Plan
 
-1. What the receiver sees: complex samples and constellations
-2. Basis functions, energy, and distance
-3. Noise, decision regions, and errors
-4. Eb/N0, BER curves, and Gray coding
-5. Choosing the drone's modulation
-6. Reading a constellation in GNU Radio
+1. Four ways to carry bits: ASK/PAM, PSK, FSK
+2. Binary PAM and the decision threshold
+3. What noise does: antipodal and orthogonal signals
+4. Basis functions and constellation diagrams
+5. Decision regions, and the constellation explorer
+6. Gray coding, and reading a constellation in GNU Radio
 
 Note:
-The derivations live in ECE 447. We take the error-rate results as given and spend the time on what they mean for a link.
+The same order as the 2025 slides: binary PAM first, then constellations, then Gray coding.
 
 ---
 
-## What the Receiver Sees
+## Four Ways to Carry Bits
 
-<div class="fig" data-inline-svg="./fig/L03-noise-clouds.svg" style="max-width:900px; margin:0 auto;"></div>
+| Family | What changes per symbol | In this course |
+| :-- | :-- | :-- |
+| ASK / PAM | amplitude | Lessons 9 and 10 |
+| PSK | phase | Lesson 15 |
+| FSK | frequency | Lesson 8 |
 
-One complex sample per symbol, plotted on the I-Q plane, is a constellation; noise turns each point into a cloud.
+$M$ choices per symbol carry $\log_2 M$ bits.
 
 Note:
-QPSK at three SNRs. At 20 dB nothing crosses a boundary; at 10 dB, 2 of 600; at 4 dB, 69 of 600. Ask them to guess which SNR a modem would need before we compute it.
+Two choices carry one bit, four carry two, eight carry three. "M-ary" just means M choices. Each family gets its own flowgraph later in the course.
+
+---
+
+## Binary PAM
+
+<div class="fig" data-inline-svg="./fig/L03-binary-pam.svg" style="max-width:1000px; margin:0 auto;"></div>
+
+A 1 is a pulse at $+A$, a 0 a pulse at $-A$. Sample once per pulse and decide by sign.
+
+Note:
+The two pulses are the same shape with opposite signs, so they are antipodal. Zero, halfway between, is the decision threshold. GNU Radio's Binary Slicer is exactly this threshold, and Lesson 10 builds the receiver.
+
+---
+
+## Noise and the Threshold
+
+<div class="fig" data-inline-svg="./fig/L03-pam-noise.svg" style="max-width:1000px; margin:0 auto;"></div>
+
+As the SNR falls, the spreads widen, and more samples cross zero.
+
+Note:
+This replaces the 2025 probability-of-error derivation with the picture behind it. At 14 dB nothing comes near zero. At 4 dB the tails cross, and every red sample is a wrong bit. The threshold never moves; the samples just stray farther.
+
+---
+
+## Antipodal and Orthogonal
+
+<div class="fig" data-inline-svg="./fig/L03-antipodal-orthogonal.svg" style="max-width:780px; margin:0 auto;"></div>
+
+Same energy, same noise: the orthogonal points sit closer together, and more samples cross.
+
+Note:
+Binary FSK sends one of two tones, which are orthogonal, one per axis. Antipodal points are as far apart as the energy allows. That is why PAM and PSK get more out of the same power than FSK.
 
 ---
 
@@ -70,41 +107,25 @@ The SDR mixes with a cosine and a sine and hands GNU Radio the pair as one compl
 
 ---
 
-## Constellations
+## Constellation Diagrams
 
-<div class="fig" data-inline-svg="./fig/L03-constellations.svg" style="max-width:1100px; margin:0 auto;"></div>
+<div class="fig" data-inline-svg="./fig/L03-constellations.svg" style="max-width:1000px; margin:0 auto;"></div>
 
-$M$ points carry $\log_2 M$ bits; at the same energy, more points sit closer together.
+PAM puts its points on a line, PSK on a circle; at the same energy, more points sit closer together.
 
 Note:
-Same transmitter power for all five; the dashed circle is that power. Point at the spacing under each one: 2.00 for BPSK down to 0.63 for 16-QAM. Spacing, not the number of points, sets how much noise a modulation tolerates.
+Same transmitter power for all four; the dashed circle is that power. BPSK is 2-PAM on a carrier. QPSK and 4-PAM carry the same two bits, but QPSK uses both axes and keeps its points farther apart. 4-PAM comes back in Lesson 9 as a baseband signal.
 
 ---
 
-## Energy and Distance
+## Noise and Decision Regions
 
-| Modulation | Bits/symbol | Closest spacing |
-| :-- | :-: | :-: |
-| BPSK | 1 | 2.00 |
-| QPSK | 2 | 1.41 |
-| 4-PAM | 2 | 0.89 |
-| 8-PSK | 3 | 0.77 |
-| 16-QAM | 4 | 0.63 |
+<div class="fig" data-inline-svg="./fig/L03-noise-clouds.svg" style="max-width:900px; margin:0 auto;"></div>
+
+The receiver picks the nearest point; for QPSK the decision regions are the quadrants.
 
 Note:
-Unit average symbol energy. QPSK and 4-PAM carry the same two bits, but QPSK uses both axes and spaces its points farther apart. 4-PAM comes back in Lesson 9 as a baseband signal, where only one axis exists.
-
----
-
-## Noise and Decisions
-
-$$r = s + n$$
-
-- Thermal noise adds an independent Gaussian offset to $I$ and to $Q$, each with variance $N_0/2$.
-- The receiver picks the nearest point; the set of samples nearest each point is its **decision region**.
-
-Note:
-For QPSK the regions are the quadrants, so the receiver only needs the signs of I and Q. An error is a sample carried across a boundary.
+QPSK at three SNRs. At 20 dB nothing crosses; at 10 dB a few do; at 4 dB the clouds overlap. Red is a sample in the wrong region. This is what the constellation sink shows from Lesson 5 on.
 
 ---
 
@@ -112,50 +133,14 @@ For QPSK the regions are the quadrants, so the receiver only needs the signs of 
 
 ## Constellation Explorer
 
-- QPSK at 8 dB, then 16-QAM at 8 dB: the grid fills its regions.
-- About 4 dB more brings 16-QAM back to QPSK's error rate.
+- QPSK at 12 dB, then 8-PSK at 12 dB: the clouds reach the boundaries.
+- Raise the SNR until 8-PSK is clean again.
 - Add a phase offset to QPSK: the clouds rotate toward the boundaries.
 
 <p class="viz-cue">↗ Interactive on the lesson page</p>
 
 Note:
-Demo live. Let the measured BER settle onto the predicted value so they see the theory hold. End on the phase offset: at 45 degrees every symbol is wrong with no noise at all, which motivates carrier recovery in Lesson 15.
-
----
-
-## Error Rate
-
-$$P_s \approx N_\text{nb}\ Q\left(\frac{d_\text{min}}{\sqrt{2N_0}}\right)$$
-
-$$P_b^\text{BPSK} = Q\left(\sqrt{\frac{2E_b}{N_0}}\right)$$
-
-$Q(x)$ is the probability that a unit Gaussian exceeds $x$; $Q(3) = 1.3\times10^{-3}$, $Q(4) = 3.2\times10^{-5}$.
-
-Note:
-An error needs the noise to cover half the spacing. The Q function is that Gaussian tail, and it falls by orders of magnitude for each few dB. We use the result; ECE 447 derives it.
-
----
-
-## Eb/N0, Es/N0, and SNR
-
-$$\frac{E_s}{N_0} = \frac{E_b}{N_0} + 10\log_{10}k \quad \text{(dB)}$$
-
-- $E_b/N_0$ compares modulations fairly, per bit.
-- With the receiver bandwidth equal to the symbol rate, $E_s/N_0$ is the SNR of Lesson 2.
-
-Note:
-Add 3.0 dB for QPSK, 4.8 dB for 8-PSK, 6.0 dB for 16-QAM. We assume B equals the symbol rate from here on unless a lesson says otherwise.
-
----
-
-## Bit Error Rate Curves
-
-<div class="fig" data-inline-svg="./fig/L03-ber-curves.svg" style="max-width:720px; margin:0 auto;"></div>
-
-At one error in $10^5$ bits: BPSK and QPSK 9.6 dB, 8-PSK 13.0 dB, 16-QAM 13.4 dB.
-
-Note:
-QPSK is two BPSK signals, so per bit it matches BPSK while carrying twice the data. 16-QAM doubles the rate again but needs 3.8 dB more Eb/N0, or 6.9 dB more Es/N0.
+Demo live. Let the class call out what they see as the SNR slider moves. End on the phase offset: at 45 degrees every symbol is in the wrong region with no noise at all, which motivates carrier recovery in Lesson 15.
 
 ---
 
@@ -164,32 +149,20 @@ QPSK is two BPSK signals, so per bit it matches BPSK while carrying twice the da
 <div class="two-col">
 <div class="col-text">
 
-- Neighbors differ in exactly one bit.
-- The likely error, to a neighbor, corrupts one bit, so $P_b \approx P_s/k$.
+- Each label differs from its neighbors by one bit.
+- A slip to a neighbor then costs one bit, not three.
+- Map it out for 8-PSK, starting from 000.
 
 </div>
 <div class="col-fig">
+
 <div class="fig" data-inline-svg="./fig/L03-gray-8psk.svg" style="max-width:360px; margin:0 auto;"></div>
+
 </div>
 </div>
 
 Note:
-Have them label 8-PSK in natural binary and find the neighbors that differ in all three bits: 011 and 100. Gray coding removes that case. Every curve today assumes it.
-
----
-
-## Choosing the Drone's Modulation
-
-| Modulation | $E_s/N_0$ needed | Margin at 24.2 dB |
-| :-- | :-: | :-: |
-| QPSK | 12.6 dB | 11.6 dB |
-| 8-PSK | 17.7 dB | 6.5 dB |
-| 16-QAM | 19.5 dB | 4.7 dB |
-
-Only QPSK keeps 10 dB of margin at 3 km.
-
-Note:
-This closes the loop with Lesson 2. The radio's 14 dB matches QPSK's 12.6 dB plus about 1.4 dB for a real demodulator's losses. 16-QAM would double the data rate in the same 1 MHz but would fail first when the drone banks.
+Hide the figure first and have them map out the 8-PSK Gray code, as in the 2025 slides. Then label it in natural binary and find the neighbors that differ in all three bits: 011 and 100. Every modulator we build uses a Gray code.
 
 ---
 
@@ -206,10 +179,10 @@ The constellation sink is the first place to look when a receiver fails. Lesson 
 
 ## Key Point
 
-<div class="callout">A modulation is a set of points in the I-Q plane. Noise turns each point into a cloud, and the error rate depends on the spacing between points measured against the noise, so more bits per symbol need more SNR.</div>
+<div class="callout">A modulation is a set of points. Noise turns each point into a cloud, and a sample that lands in a neighbor's region is decided wrong. Points farther apart, or a higher SNR, keep the clouds in their own regions.</div>
 
 Note:
-If they keep one number, it is 9.6 dB of Eb/N0 for QPSK at ten to the minus five.
+If they keep one picture, it is the noise clouds at three SNRs.
 
 ---
 
@@ -220,4 +193,4 @@ If they keep one number, it is 9.6 dB of Eb/N0 for QPSK at ten to the minus five
 - Lessons 9, 10, and 15: PAM and PSK receivers built on these ideas
 
 Note:
-Before next time: sketch BPSK, QPSK, 8-PSK, and 16-QAM, Gray-label 8-PSK, and look up the Es/N0 a modulation needs for ten to the minus five.
+Before next time: sketch 2-PAM, 4-PAM, QPSK, and 8-PSK, mark their decision regions, and Gray-label 8-PSK.
