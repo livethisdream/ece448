@@ -114,7 +114,7 @@ The wiki's variables and runtime-updating tutorials. Change samp_rate from 32000
 | Yellow | short | 2 |
 | Purple | byte | 1 |
 
-Do: **Complex to Float** into a float Time Sink shows $I$ and $Q$ as two traces.
+Do: **Complex to Float** into a two-input float Time Sink shows $I$ and $Q$ as two traces.
 
 Note:
 Connect a complex output to a float input on purpose and show the red arrow. That is the most common error they will hit this week. Then insert Complex to Float and wire both outputs to a two-input float sink.
@@ -155,7 +155,7 @@ This is the wagon-wheel effect from movies. Each sample advances more than half 
 - Note the frequency; quit GQRX before opening GRC.
 
 Note:
-SDR Flex (livethisdream.github.io/sdr-flex) on an example capture shows the select-and-demodulate moves; its browser version has no live radio, so GQRX does the live part. Explore first, so they hear the station before they build anything. Only one program can open the RTL-SDR at a time, so quit GQRX before running the flowgraph.
+SDR Flex (livethisdream.github.io/sdr-flex) on an example capture shows the select-and-demodulate moves; its browser version has no live radio, so GQRX does the live part. Explore first, so they hear the station before they build anything. Only one program can open the RTL-SDR at a time, so quit GQRX before running the flowgraph. GQRX comes with radioconda; if GQRX does not start on a laptop, SDR++ has the same controls.
 
 ---
 

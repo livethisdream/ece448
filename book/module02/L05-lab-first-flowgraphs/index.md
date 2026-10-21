@@ -78,7 +78,7 @@ These are the answers to Question 2, worked from Lesson 5. The tone aliases are 
 ::::{frame} Part 2: The FM Band
 :class: read-only
 
-1. Connect the antenna to the RTL-SDR and plug it in. Run `gqrx`, choose the RTL-SDR, set the mode to WFM (stereo), and press the power button.
+1. Connect the antenna to the RTL-SDR and plug it in. Run `gqrx`, choose the RTL-SDR, set the mode to WFM (stereo), and press the power button. GQRX comes with radioconda; if GQRX does not start on your laptop, SDR++ has the same controls.
 2. Click across the FM band until you hear a station clearly. Record its frequency for Question 4(a), then quit GQRX; only one program can open the RTL-SDR at a time.
 3. Open `L05-fm-spectrum.grc`, set the center frequency to the station you found, and run it. Drag the center frequency across 88 to 108 MHz. Record the three strongest stations' frequencies, peak levels, and widths for Question 4(b).
 4. Center a station exactly on the spike in the middle of the display, then tune 300 kHz away. Note what moves for Question 4(c).
@@ -89,7 +89,7 @@ These are the answers to Question 2, worked from Lesson 5. The tone aliases are 
 :class: read-only
 
 1. Stop the flowgraph. Right-click the gray File Sink and choose Enable. Set its file name to `fm_capture.cfile` in a folder you can find.
-2. Center the strongest station slightly off the DC spike and set the gain you chose in step 5 of the FM band.
+2. Center the strongest station slightly off the DC spike and set the highest gain in your 4(d) table at which no spurs appeared.
 3. Run the flowgraph for about 2 s and stop it. Record the file size for Question 5(a).
 4. Disable the File Sink again so the next run does not overwrite the capture.
 5. From the radioconda prompt, run `python L05-psd.py fm_capture.cfile --fs 2.4e6 --fc` followed by your center frequency in hertz. Paste the plot for Question 5(b).

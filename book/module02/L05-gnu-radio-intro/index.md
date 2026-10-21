@@ -73,7 +73,7 @@ Open the radioconda prompt (on Windows, "Radioconda Prompt" in the Start menu; o
 | Command | Checks | A working result |
 | :-- | :-- | :-- |
 | `gnuradio-companion` | GRC itself | the GRC window opens |
-| `gqrx` | GQRX, the stand-alone receiver | the GQRX window opens |
+| `gqrx` | GQRX, the stand-alone receiver | the GQRX window opens; if GQRX does not start on your laptop, SDR++ has the same controls |
 | `rtl_test` | an RTL-SDR on USB | `Found 1 device(s)` and a tuner name |
 | `hackrf_info` | a HackRF on USB | a serial number and firmware version |
 | `iio_info -s` | a PlutoSDR on USB | a context listing `PlutoSDR` |
@@ -133,11 +133,11 @@ A **QT GUI Range** is a variable with a slider. Add one with ID `freq`, from $-4
 | Purple | byte | 1 |
 :::
 :::{present}
-- Connected ports must match; a mismatch draws the arrow red.
-- Do: add **Complex to Float**; watch $I$ and $Q$ as two traces.
+- Mismatched ports draw a red arrow.
+- Do: **Complex to Float** into a float Time Sink with 2 inputs.
 :::
 
-This is the wiki's "Signal Data Types" and "Converting Data Types." Each block port carries one data type, and GRC colors the port to show which. A **complex** sample is a pair of 32-bit floats, the $I$ and $Q$ of Lesson 3, so it takes 8 bytes; a **float** is one 32-bit value; and the integer types carry bits, symbols, and audio samples in later lessons. Two connected ports must have the same type. When they do not, GRC draws the connection in red and refuses to run, which is the most common error in a first flowgraph. Most blocks have a type setting that changes their port color, and conversion blocks sit between types when we need both. Try it on the tone flowgraph: add a second Time Sink with its type set to float and see the red arrow, then insert **Complex to Float** and connect its two outputs to two sink inputs. The plot shows $I$ and $Q$ as separate traces, the same two curves the complex sink drew. Packing bits, vectors, and hierarchical blocks, the next wiki tutorials, come back when later lessons need them.
+This is the wiki's "Signal Data Types" and "Converting Data Types." Each block port carries one data type, and GRC colors the port to show which. A **complex** sample is a pair of 32-bit floats, the $I$ and $Q$ of Lesson 3, so it takes 8 bytes; a **float** is one 32-bit value; and the integer types carry bits and symbols in later lessons; audio in GNU Radio is float. Two connected ports must have the same type. When they do not, GRC draws the connection in red and refuses to run, which is the most common error in a first flowgraph. Most blocks have a type setting that changes their port color, and conversion blocks sit between types when we need both. Try it on the tone flowgraph: add a second Time Sink with its type set to float and see the red arrow, then set that sink's Number of Inputs to 2, insert **Complex to Float**, and connect its two outputs to the two sink inputs. The plot shows $I$ and $Q$ as separate traces, the same two curves the complex sink drew. Packing bits, vectors, and hierarchical blocks, the next wiki tutorials, come back in later lessons.
 ::::
 
 ::::{frame} Complex Sampling and Aliasing
@@ -182,7 +182,7 @@ The left panel plots the tone's last eight samples on the unit circle, one new s
 - Note its frequency for the flowgraph.
 :::
 
-Before building a receiver, find a signal with one that already works. <a href="https://livethisdream.github.io/sdr-flex/" target="_blank" rel="noopener">SDR Flex</a>, in the browser, has the same moves on its example captures: drag across a signal on the waterfall and choose a demodulator, and it builds the GNU Radio flowgraph for you. Its browser version has no live radio, so for the RTL-SDR use the fallback. **GQRX**, installed with radioconda, is a spectrum, waterfall, and receiver in one window. Start it from the radioconda prompt with `gqrx`, pick the RTL-SDR in the device dialog, set the frequency to about 100 MHz, and press the power button at the top left. Set the mode to WFM (stereo), click on one of the tall bands in the spectrum, and the station plays through the speaker.
+Before building a receiver, find a signal with one that already works. <a href="https://livethisdream.github.io/sdr-flex/" target="_blank" rel="noopener">SDR Flex</a>, in the browser, has the same moves on its example captures: drag across a signal on the waterfall and choose a demodulator, and it builds the GNU Radio flowgraph for you. Its browser version has no live radio, so for the RTL-SDR use the fallback. **GQRX** comes with radioconda and is a spectrum, waterfall, and receiver in one window; if GQRX does not start on your laptop, SDR++ has the same controls. Start it from the radioconda prompt with `gqrx`, pick the RTL-SDR in the device dialog, set the frequency to about 100 MHz, and press the power button at the top left. Set the mode to WFM (stereo), click on one of the tall bands in the spectrum, and the station plays through the speaker.
 
 Write down the frequency of the strongest station you can hear, then quit GQRX; only one program can open the RTL-SDR at a time. The next flowgraph uses that frequency as its center frequency, so the station we just heard is the one we look at in GRC.
 ::::
@@ -279,7 +279,7 @@ An SDR hands GNU Radio a stream of complex samples that shows $f_s$ of spectrum 
 
 Open a `.grc` file from GRC's File menu, or run `gnuradio-companion L05-tone.grc` from the radioconda prompt.
 
-**Follows.** This lesson walks the GNU Radio wiki's Beginner Tutorials, in order, and two chapters of PySDR:
+**Follows.** This lesson walks the GNU Radio wiki's Beginner Tutorials 1 to 6, in order, and two chapters of PySDR:
 
 1. <a class="doc-link" href="https://wiki.gnuradio.org/index.php?title=Your_First_Flowgraph" target="_blank" rel="noopener">Your First Flowgraph</a>
 2. <a class="doc-link" href="https://wiki.gnuradio.org/index.php?title=Python_Variables_in_GRC" target="_blank" rel="noopener">Python Variables in GRC</a>
@@ -287,9 +287,10 @@ Open a `.grc` file from GRC's File menu, or run `gnuradio-companion L05-tone.grc
 4. <a class="doc-link" href="https://wiki.gnuradio.org/index.php?title=Runtime_Updating_Variables" target="_blank" rel="noopener">Runtime Updating Variables</a>
 5. <a class="doc-link" href="https://wiki.gnuradio.org/index.php?title=Signal_Data_Types" target="_blank" rel="noopener">Signal Data Types</a>
 6. <a class="doc-link" href="https://wiki.gnuradio.org/index.php?title=Converting_Data_Types" target="_blank" rel="noopener">Converting Data Types</a>
-7. <a class="doc-link" href="https://wiki.gnuradio.org/index.php?title=Packing_Bits" target="_blank" rel="noopener">Packing Bits</a>
-8. <a class="doc-link" href="https://wiki.gnuradio.org/index.php?title=Streams_and_Vectors" target="_blank" rel="noopener">Streams and Vectors</a>
-9. <a class="doc-link" href="https://wiki.gnuradio.org/index.php?title=Hier_Blocks_and_Parameters" target="_blank" rel="noopener">Hier Blocks and Parameters</a>
+
+The next three Beginner Tutorials come back in later lessons: <a class="doc-link" href="https://wiki.gnuradio.org/index.php?title=Packing_Bits" target="_blank" rel="noopener">Packing Bits</a>, <a class="doc-link" href="https://wiki.gnuradio.org/index.php?title=Streams_and_Vectors" target="_blank" rel="noopener">Streams and Vectors</a>, and <a class="doc-link" href="https://wiki.gnuradio.org/index.php?title=Hier_Blocks_and_Parameters" target="_blank" rel="noopener">Hier Blocks and Parameters</a>.
+
+PySDR and receivers:
 
 - <a class="doc-link" href="https://pysdr.org/content/sampling.html" target="_blank" rel="noopener">PySDR: IQ Sampling</a>
 - <a class="doc-link" href="https://pysdr.org/content/frequency_domain.html" target="_blank" rel="noopener">PySDR: Frequency Domain</a>
