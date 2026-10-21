@@ -111,11 +111,11 @@ GNU Radio and decode a received CW stream.}
 
 This packet is the L\labLesson\ Lab, in three parts, and you turn it in once, complete,
 before Lesson 13. Do \textbf{Part 1} on your own before the lab period: run the link
-flowgraph and make the predictions you will check at the bench. \textbf{Part 2} is
+flowgraph, watch what noise does to it, and work out the timing and settings the bench
+uses. \textbf{Part 2} is
 your own measurements, recorded in class: Questions 3 to 5 on your own laptop, and
 Question 6 at a PlutoSDR station with your team. Do \textbf{Part 3} on your own after
-the lab: compare the measurements with the predictions and answer the analysis
-questions.
+the lab: explain what you saw in the analysis questions.
 
 \textbf{Grading.} You submit the packet once, we grade it against Objective 6.1 on
 the course's 1 / 0 scale, and you may revise it under course policy. Paste screenshots where a
@@ -135,9 +135,7 @@ The flowgraphs are on the L12 lesson page, \texttt{L12-cw-tx.grc} and
 \texttt{L12-cw-link.grc}, and on the L12 Lab page, \texttt{L12-cw-pluto.grc}. Every
 number below assumes their settings: the keyed carrier at 5 kHz in a 32 kHz band,
 noise spread evenly over that band, a 700 Hz BFO, 5 ms edges, and the default message
-\texttt{USAFA ECE 448}. The SNR in a CW filter of width $B$ at noise amplitude $\sigma$
-is
-\[ \text{SNR} = \frac{32{,}000}{\sigma^2 B}. \]
+\texttt{USAFA ECE 448}.
 
 \begin{questions}
 
@@ -172,7 +170,7 @@ with every slider at its default.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newpage
-\question \textbf{Predictions.} You will check each of these at the bench.
+\question \textbf{Timing, noise, and settings.} The bench builds on each of these.
 
 \begin{parts}
 
@@ -208,38 +206,32 @@ with every slider at its default.
 		or $30 \times 92.3\ \text{ms} = 2.77$ s.
 		\end{solution}
 
-	\part Predict the SNR in the CW filter at each setting you will measure in
-	Question 4.
-
-	\begin{center}
-	\renewcommand{\arraystretch}{1.25}
-	\begin{tabular}{| l | K{0.75in} | K{0.75in} | K{0.75in} | K{0.75in} | K{0.75in} |}
-	\hline
-	$\sigma$ & $4.5$ & $5.5$ & $6.5$ & $6.5$ & $6.5$ \\\hline
-	Filter width & 200 Hz & 200 Hz & 200 Hz & 1000 Hz & 50 Hz \\\hline
-	SNR (dB) & \kv{$9.0$} & \kv{$7.2$} & \kv{$5.8$} & \kv{$-1.2$} & \kv{$11.8$} \\\hline
-	\end{tabular}
-	\end{center}
-
-		\begin{solution}[0.4in]
-		For example, $32{,}000/(4.5^2 \times 200) = 7.90$, which is 9.0 dB.
+	\part In the running link, drag the noise amplitude slider slowly from 1 up to 7,
+	with the other sliders at their defaults. Describe what happens to the waterfall,
+	to the envelope's level between marks, and to the Received label, and say roughly
+	where the text starts to break.
+		\begin{solution}[1.2in]
+		The noise fills the waterfall until it hides the carrier, around 5 or 6. The
+		envelope's level between marks climbs toward the 0.3 threshold, the key starts to
+		chatter between marks, and the Received label fills with extra Es and Ts and \#
+		marks. With the threshold left at 0.3, the text is badly broken by about 5.
 		\end{solution}
 
-	\part The decoder is set to 20 WPM, so its unit is 60 ms. It calls a mark under
-	2 units a dit, ends a letter when a space reaches 2 units, and ends a word when a
-	space reaches 5. A sender at $W$ WPM keys perfect timing. Find the slowest and the
-	fastest $W$ the decoder should copy, and say which window sets each limit.
-		\begin{solution}[1.6in]
-		The sender's dit is $d = 1.2/W$ s. Its letter gap, $3d$, must be at least 120 ms
-		and under 300 ms, and its word gap, $7d$, must reach 300 ms. Its dit must stay
-		under 120 ms and its dah, $3d$, must reach 120 ms.
-		\eq{ 3d < 300\ \text{ms} &\Rightarrow d < 100\ \text{ms},\ W > 12 \\
-			7d \ge 300\ \text{ms} &\Rightarrow d \ge 42.9\ \text{ms},\ W \le 28 }
-		The other windows allow a wider range. Below 12 WPM every letter gap reads as a
-		word gap; above 28 WPM the word gaps read as letter gaps. Both limits sit on a
-		boundary, so the decoder may fail at exactly 12 and 28 WPM, where a gap falls on
-		the 5-unit boundary.
+	\begin{minipage}[t]{0.58\linewidth}
+		\part The decoder is set to 20 WPM, so its unit is 60 ms. It calls a mark under
+		2 units a dit, ends a letter when a space reaches 2 units, and ends a word when a
+		space reaches 5. Find those two boundaries in milliseconds.
+		\begin{solution}[0.6in]
+		$2 \times 60 = 120$ ms and $5 \times 60 = 300$ ms.
 		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		2 units = \ansbox[1.0in]{120 ms}
+
+		\vspace{4pt}
+		5 units = \ansbox[1.0in]{300 ms}
+	\end{minipage}
 
 	\begin{minipage}[t]{0.58\linewidth}
 		\part The CW filter is 200 Hz wide and centered on the 700 Hz tone. How far can
@@ -290,8 +282,8 @@ list from Question 2(b) in the Vector Source.
 	\end{minipage}
 
 	\part Read the highest peak of the hard and shaped spectra within 100 Hz of 1 kHz and of
-	2 kHz from 0 Hz, where the carrier would sit. How far below hard keying is your ramp at each? Lesson 12's 5 ms raised
-	cosine was 40 dB and 53 dB below; explain the difference.
+	2 kHz from 0 Hz, where the carrier would sit. How far below hard keying is your ramp
+	at each? In words, what would a receiver tuned 1 kHz away hear from each?
 
 	\begin{center}
 	\renewcommand{\arraystretch}{1.25}
@@ -305,9 +297,9 @@ list from Question 2(b) in the Vector Source.
 
 		\begin{solution}[1.0in]
 		The ramp is about 23 to 26 dB below hard keying 1 kHz away and 29 to 31 dB below
-		2 kHz away. A straight ramp still has a sharp corner where it starts and where
-		it ends, and those corners spread energy farther than the smooth start and end
-		of a raised cosine of the same length, which is 15 to 23 dB lower.
+		2 kHz away. A receiver tuned 1 kHz away hears a click at every edge of the hard
+		keying, and a much fainter one from the ramp. The ramp still has a corner where it
+		starts and where it ends, which is why Lesson 12's keyer rounds its edges instead.
 		\end{solution}
 
 \end{parts}
@@ -327,7 +319,7 @@ message, and count the wrong, missing, and extra characters among those 39.
 	\renewcommand{\arraystretch}{1.25}
 	\begin{tabular}{| l | K{0.75in} | K{0.75in} | K{0.75in} | K{0.75in} | K{0.75in} |}
 	\hline
-	$\sigma$ & $4.5$ & $5.5$ & $6.5$ & $6.5$ & $6.5$ \\\hline
+	Noise & $4.5$ & $5.5$ & $6.5$ & $6.5$ & $6.5$ \\\hline
 	Filter width & 200 Hz & 200 Hz & 200 Hz & 1000 Hz & 50 Hz \\\hline
 	Space level & \kv{$0.19$} & \kv{$0.24$} & \kv{$0.28$} & \kv{$0.62$} & \kv{$0.14$} \\\hline
 	Mark level & \kv{$0.67$} & \kv{$0.68$} & \kv{$0.69$} & \kv{$0.86$} & \kv{$0.64$} \\\hline
@@ -337,13 +329,13 @@ message, and count the wrong, missing, and extra characters among those 39.
 	\end{center}
 
 		\begin{solution}[0.8in]
-		Averaged over four runs of 600 characters, the wrong characters were 0.2\%, 4.3\%,
-		14\%, 55\%, and 0.8\%. Counts over 39 characters vary from run to run because the
-		noise is random. The space level rises with the noise and with the filter width,
+		Counts over 39 characters vary from run to run because the noise is random; over
+		long runs, the 200 Hz filter at 6.5 lost about 1 letter in 7 and the 1000 Hz filter
+		more than half. The space level rises with the noise and with the filter width,
 		so the threshold has to move with it.
 		\end{solution}
 
-	\part Paste a screenshot at $\sigma = 6.5$ with the 200 Hz filter, and mark one wrong
+	\part Paste a screenshot at a noise amplitude of 6.5 with the 200 Hz filter, and mark one wrong
 	character in the Received label.
 		\begin{solution}[1.4in]
 		Answers vary. Each error comes from a mark that noise splits, shortens, or invents,
@@ -445,10 +437,9 @@ unplug the Pluto before you disconnect the cable.
 	\end{center}
 
 		\begin{solution}[1.0in]
-		Each 10 dB step divides the received amplitude by $10^{10/20} = 3.16$, and the AGC
-		raises its gain by the same factor, so the mark level stays near 0.6. The noise
-		does not fall with the signal, so the AGC raises it too, and the space level climbs
-		as the SNR drops. With estimated Pluto levels, a simulation decoded at every step,
+		Each step weakens the received signal, and the AGC raises its gain to make up for
+		it, so the mark level stays near 0.6. The noise does not fall with the signal, so
+		the AGC raises it too, and the space level climbs as the signal gets weaker. With estimated Pluto levels, a simulation decoded at every step,
 		with the space level rising from about 0.04 to 0.05; the real levels, and whether
 		the text still decodes at 89 dB, depend on the hardware.
 		\end{solution}
@@ -463,20 +454,19 @@ unplug the Pluto before you disconnect the cable.
 
 \begin{parts}
 
-	\part Compare your noise table with Question 2(c). Find the lowest SNR in the 200 Hz
-	filter at which the link copied without errors, explain why the threshold had to
-	move as the noise rose, and say what SNR a Lesson 2 link budget for this link
-	should deliver in the CW filter.
+	\part Using your noise table and what you saw in Question 2(c), describe what
+	rising noise did to the envelope and to the decoded text with the 200 Hz filter, and
+	explain in words why the threshold had to move as the noise rose.
 		\begin{solution}[1.5in]
-		The link copied without errors at 9.0 dB ($\sigma = 4.5$), lost about 1 in 25 at
-		7.2 dB, and lost about 1 in 7 at 5.8 dB. Noise passing the filter raises
-		the envelope during the spaces, from about 0.04 at $\sigma = 1$ to 0.28 at
-		$\sigma = 6.5$, so a fixed threshold of 0.3 lets noise peaks through as dits; the
-		threshold must sit halfway between the space and mark levels. A budget should
-		deliver at least 10 dB in the 200 Hz filter, plus a fade margin.
+		The link copied without errors at 4.5, lost a letter or two at 5.5, and lost about
+		1 in 7 at 6.5. Noise passing the filter raises the envelope during the spaces, from
+		about 0.04 at a noise amplitude of 1 to 0.28 at 6.5, while the mark level hardly
+		moves, so a fixed threshold of 0.3 lets noise peaks through as dits. The threshold
+		must sit halfway between the space and mark levels, so it has to rise with the
+		space level.
 		\end{solution}
 
-	\part Compare the 1000, 200, and 50 Hz filters at $\sigma = 6.5$. Explain why the
+	\part Compare the 1000, 200, and 50 Hz filters at a noise amplitude of 6.5. Explain why the
 	narrowest filter did best, and use your tuning measurement to say what it gives
 	up.
 		\begin{solution}[1.5in]
@@ -489,13 +479,13 @@ unplug the Pluto before you disconnect the cable.
 		the carrier, and transmitter drift would matter four times as much.
 		\end{solution}
 
-	\part Compare the sender speeds that decoded with Question 2(d), say which window
-	failed at each end, and propose a change to the decoder that would let it copy any
-	sender's speed.
+	\part Use your boundaries from Question 2(d) to say which window failed at each end
+	of the sender speeds you tried, and propose a change to the decoder that would let it
+	copy any sender's speed.
 		\begin{solution}[1.5in]
-		The prediction was $12 < W \le 28$, and the link decoded from 13 to 27 WPM.
-		At the slow end the letter-gap window failed first, as letter gaps reached the
-		5-unit word boundary; at the fast end the word gaps fell to that same boundary.
+		The link decoded from 13 to 27 WPM. At 12 WPM a letter gap lasts 300 ms, the
+		5-unit word boundary, so letter gaps read as word gaps; at 28 WPM a word gap lasts
+		about 300 ms, so word gaps fell to that same boundary and the words ran together.
 		At both edge speeds a gap lands exactly on the 5-unit boundary, and the noise's
 		jitter of a few hundredths of a unit pushes it to either side, so the text breaks up. A decoder can measure the sender's speed instead of
 		assuming it: keep a running average of the short marks, take it as the dit

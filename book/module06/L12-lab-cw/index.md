@@ -27,12 +27,12 @@ L12 Lab · Module 6: Waveform Applications & RF Reverse Engineering · Dr. Neil 
 
 ::::{frame} From Lesson to Bench
 :::{present}
-- **Pre-Lab:** run the link and predict timing, SNR, and the decoder's limits.
+- **Pre-Lab:** run the link, watch what noise does, and work out the timing and the decoder's windows.
 - **Bench:** build a keyer, sweep noise, speed, and tuning, then use a PlutoSDR.
 - **Writeup:** explain the threshold, the filter width, and the speed limits.
 :::
 
-Lesson 12 keyed, received, and decoded CW in one flowgraph. Today you first build a keyer yourself from standard blocks and see its key clicks, then measure where the simulated link stops decoding, and then run the same link on a PlutoSDR. The lab packet has three parts, and you turn it in once, complete, before Lesson 13. **Part 1, the Pre-Lab**, is on your own before the period: run `L12-cw-link.grc` once and make the predictions Part 2 checks. **Part 2** is your own measurements in class. **Part 3, the Writeup**, explains them.
+Lesson 12 keyed, received, and decoded CW in one flowgraph. Today you first build a keyer yourself from standard blocks and see its key clicks, then measure where the simulated link stops decoding, and then run the same link on a PlutoSDR. The lab packet has three parts, and you turn it in once, complete, before Lesson 13. **Part 1, the Pre-Lab**, is on your own before the period: run `L12-cw-link.grc`, watch what the noise slider does, and work out the timing and settings Part 2 uses. **Part 2** is your own measurements in class. **Part 3, the Writeup**, explains them.
 
 Questions 1 to 5 run on your laptop and transmit nothing. Question 6 transmits, into a cable only, as the PlutoSDR frame below describes.
 ::::
@@ -40,26 +40,25 @@ Questions 1 to 5 run on your laptop and transmit nothing. Question 6 transmits, 
 ::::{frame} Part 1: Before the Period
 :::{present}
 - `L12-cw-link.grc` runs and decodes `USAFA ECE 448`.
-- Predict the timing at 13 WPM and write your initials as units.
-- Predict the SNR at five settings, and the decoder's speed and tuning limits.
+- Find the timing at 13 WPM and write your initials as units.
+- Turn up the noise and watch the envelope and the text; find the decoder's windows in ms.
 :::
 
 Do the Pre-Lab before you arrive. Question 1 checks that the link flowgraph opens and runs on your laptop: if GRC reports an error, the L5 lesson page lists the install checks, and EI before the lab is the place to fix it.
 
-Question 2 asks for predictions from the lesson: the dit, dah, and gap lengths at 13 WPM; your initials in Morse code, written as one 0 or 1 per unit, which is the list you type into your keyer in Question 3; the SNR in the CW filter at the noise and filter settings of Question 4; the slowest and fastest senders a decoder set to 20 WPM should copy; and how far you can mistune the receiver before the tone leaves a 200 Hz filter.
+Question 2 is the arithmetic and watching the bench builds on: the dit, dah, and gap lengths at 13 WPM; your initials in Morse code, written as one 0 or 1 per unit, which is the list you type into your keyer in Question 3; what you see on the envelope plot and in the Received label as you raise the noise slider; the decoder's 2-unit and 5-unit boundaries in milliseconds at 20 WPM; and how far you can mistune the receiver before the tone leaves a 200 Hz filter.
 ::::
 
-::::{frame} Expected Numbers
+::::{frame} Settings to Work Out
 :::{present}
-| Check | Source |
+| Setting | From |
 | :-- | :-- |
 | Timing at 13 WPM | dit $1.2/W$; dah and letter gap 3 dits; word gap 7 |
-| SNR in the filter | $32{,}000/(\sigma^2 B)$ |
-| Speed limits | where a gap meets the 5-unit window |
-| Tuning limit | half the filter width |
+| Decoder windows at 20 WPM | 2 units and 5 units of 60 ms |
+| Tuning room | half the filter width |
 :::
 
-These follow from Lesson 12. The timing and the SNR are exact, and the speed and tuning limits follow from the decoder's windows and the CW filter's edges. The count of wrong characters at each noise setting is random and changes from run to run, which is why the packet records it over three repeats of the message rather than predicting it exactly.
+These come straight from Lesson 12 and the block settings. Everything else you find by watching: how the envelope and the text change as noise rises, which sender speeds the decoder copies, and where the tone leaves the filter. The count of wrong characters at each noise setting is random and changes from run to run, which is why the packet records it over three repeats of the message.
 ::::
 
 ::::{frame} Part 2: Build a Hand Keyer
@@ -146,12 +145,12 @@ The figure is the PlutoSDR flowgraph run in simulation, with the Pluto Sink and 
 
 ::::{frame} Part 3: After the Lab
 :::{present}
-- Compare the noise table with your predictions, and explain the threshold.
+- Describe what noise did to the envelope and the text, and explain the threshold.
 - Compare the 50 Hz, 200 Hz, and 1 kHz filters, and the tuning each requires.
-- Compare the speed limits with your prediction, and propose a better decoder.
+- Explain which decoder window failed at each speed, and propose a better decoder.
 :::
 
-The Writeup is Question 7, in three parts. Part (a) compares your noise measurements with Question 2(c), explains why the threshold had to move, and asks what SNR a Lesson 2 link budget should deliver in the CW filter. Part (b) compares the three filter widths and connects your tuning measurement to the narrowest one. Part (c) compares the speeds that decoded with your prediction from the decoder's windows, says which window failed at each end, and proposes a change that would let the decoder follow any sender's speed.
+The Writeup is Question 7, in three parts. Part (a) describes what rising noise did to the envelope and the decoded text, and explains why the threshold had to move. Part (b) compares the three filter widths and connects your tuning measurement to the narrowest one. Part (c) uses the windows from Question 2(d) to say which one failed at each end of the speeds you tried, and proposes a change that would let the decoder follow any sender's speed.
 ::::
 
 ::::{frame} Lab Packet

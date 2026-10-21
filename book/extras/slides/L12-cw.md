@@ -111,26 +111,10 @@ The Morse Keyer is an Embedded Python Block. It outputs 1 while the key is down 
 
 <img src="./img/12-cw/L12-tx-clicks.png" alt="One key-down edge, hard and shaped, and their spectra: hard keying stays above minus 80 dB out to 4 kHz, shaped keying falls below minus 120 dB beyond about 2 kHz" style="max-height:400px; display:block; margin:0 auto;">
 
-The edges look alike in time; 1 kHz away, the shaped one is 40 dB lower.
+The edges look alike in time; in frequency, the shaped one stays close to the carrier.
 
 Note:
-A receiver tuned near a hard-keyed transmitter hears a click at every edge.
-
----
-
-## Bandwidth and Edge Time
-
-| Edge time | 99% bandwidth | 99.9% bandwidth | 1 kHz away, vs hard |
-| :-: | :-: | :-: | :-: |
-| hard | 183 Hz | 1.7 kHz | 0 dB |
-| 1 ms | 150 Hz | 676 Hz | −10 dB |
-| 5 ms | 87 Hz | 247 Hz | −40 dB |
-| 10 ms | 64 Hz | 150 Hz | −52 dB |
-
-20 WPM, measured over about 700 characters.
-
-Note:
-The edge has to stay well under a dit. At 40 WPM a dit is 30 ms, and 5 ms edges still leave 25 ms at full power.
+A receiver tuned near a hard-keyed transmitter hears a click at every edge. Drag the edge-time slider live: at 0 ms the two spectra match, and the skirts fall as the edge grows. The edge has to stay well under a dit; at 40 WPM a dit is 30 ms, and 5 ms edges still leave 25 ms at full power.
 
 ---
 
@@ -138,8 +122,8 @@ The edge has to stay well under a dit. At 40 WPM a dit is 30 ms, and 5 ms edges 
 
 ## CW Keyer Explorer
 
-- Drag the edge time to 0: the skirts rise 40 dB at 1 kHz.
-- Raise the speed: the 99% bandwidth grows, fastest with hard keying.
+- Drag the edge time to 0: the shaped spectrum rises to meet hard keying.
+- Raise the speed: the spectrum widens.
 - Type your own message and read its length.
 
 <p class="viz-cue">↗ Interactive on the lesson page</p>
@@ -180,7 +164,7 @@ Tuned 40 Hz low, the tone comes out at 740 Hz, and a narrower filter leaves less
 Set the threshold halfway between the space and mark levels.
 
 Note:
-The Threshold block switches up at 1.2 times thr and down at 0.8 times thr; that hysteresis stops chatter near the threshold. At noise 6 the space level rises to 0.26, so thr must move from 0.3 to 0.47.
+The envelope reads about 0.64 during a mark on the plot. The Threshold block switches up at 1.2 times thr and down at 0.8 times thr; that hysteresis stops chatter near the threshold. At noise 6 the space level rises to 0.26, so thr must move from 0.3 to 0.47.
 
 ---
 
@@ -199,28 +183,21 @@ Each boundary sits between two values a perfect sender produces. A pattern not i
 
 <img src="./img/12-cw/L12-link-noisy.png" alt="At noise amplitude 6 with the threshold at 0.47, the decoded text has a few wrong letters" style="max-height:340px; display:block; margin:0 auto;">
 
-$$\text{SNR} = \frac{32{,}000}{\sigma^2 B}$$
-
-At $\sigma$ = 6 and 200 Hz: 6.5 dB, about 8 characters in 100 wrong.
+Noise at 6 hides the carrier on the waterfall, yet most of the text arrives.
 
 Note:
-The noise is spread over 32 kHz and the CW filter passes B of it. For 200 Hz the SNR is 160 over sigma squared: 6.5 dB at sigma 6, where 8.2% of characters came out wrong, averaged over four runs.
+Raise the noise slider live and watch the waterfall fill, the envelope's space level rise, and the first wrong letters appear. Each one is a mark that noise split, shortened, or invented: here A read as S and 8 as 7.
 
 ---
 
 ## Filter Width
 
-| $\sigma$ | SNR in 200 Hz | 50 Hz | 200 Hz | 1 kHz |
-| :-: | :-: | :-: | :-: | :-: |
-| 4 | 10.0 dB | 0% | 0% | 1.4% |
-| 5 | 8.1 dB | 0% | 1.6% | 15% |
-| 6 | 6.5 dB | 0.3% | 8.2% | 40% |
-| 7 | 5.1 dB | 1.7% | 24% | 67% |
+<img src="./img/12-cw/L12-link-wide.png" alt="At noise amplitude 6 with the CW filter widened to 1000 Hz, the space level rises, the key chatters, and about half the letters are wrong" style="max-height:340px; display:block; margin:0 auto;">
 
-A narrower filter passes less noise but needs more accurate tuning.
+1 kHz: much of the text breaks. 50 Hz: nearly all of it arrives.
 
 Note:
-A narrower filter passes less noise, which is Lesson 2's point. Its limit is tuning: the tone must stay inside the filter. At 40 WPM the 50 Hz filter still got about 99% right at sigma 5.5.
+Same noise, three filters: drag the CW filter slider live. A narrower filter passes less noise, which is Lesson 2's point. Its limit is tuning: the tone must stay inside the filter.
 
 ---
 

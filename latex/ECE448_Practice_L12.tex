@@ -2,7 +2,8 @@
 %
 % L12 practice set (CW). Every question is a step in the L12 link: Morse timing
 % and words per minute, decoding marks and spaces, key clicks and edge time,
-% the product detector and the CW filter, and setting the threshold.
+% the product detector and the CW filter, and setting the threshold from the
+% envelope plot. No SNR or error-rate arithmetic (Neil, 2026-10-21).
 % Blank copy: \begin{solution}[h] reserves h of work space.
 % SOLUTIONS copy (\iskey=1) prints the red worked solutions.
 
@@ -131,9 +132,10 @@ and then the key stays up for 700 ms.
 
 \newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\question \textbf{Key clicks.} Lesson 12 measured the keyer's spectrum at 20 WPM. With
-raised-cosine edges, the level 1 kHz from the carrier, compared with hard keying, was
-$-10$ dB for 1 ms edges, $-24$ dB for 2 ms, $-40$ dB for 5 ms, and $-52$ dB for 10 ms.
+\question \textbf{Key clicks.} The CW Keyer Explorer on the Lesson 12 page has a readout,
+``1 kHz away, vs hard,'' that compares the shaped spectrum with hard keying 1 kHz from
+the carrier. At 20 WPM a cadet drags the edge time and reads $-10$ dB at 1 ms, $-24$ dB
+at 2 ms, $-40$ dB at 5 ms, and $-52$ dB at 10 ms.
 \begin{parts}
 
 	\begin{minipage}[t]{0.58\linewidth}
@@ -185,9 +187,7 @@ $-10$ dB for 1 ms edges, $-24$ dB for 2 ms, $-40$ dB for 5 ms, and $-52$ dB for 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \question \textbf{The product detector and the CW filter.} The L12 receiver moves the
 tuned frequency to 0 Hz, multiplies by a 700 Hz BFO, and keeps the real part. Its CW
-filter is a band-pass centered on 700 Hz. The noise has amplitude $\sigma$, spread over
-32 kHz, and the keyed carrier has power 1, so the SNR in a filter of width $B$ is
-\[ \text{SNR} = \frac{32{,}000}{\sigma^2 B}. \]
+filter is a band-pass centered on 700 Hz.
 \begin{parts}
 
 	\begin{minipage}[t]{0.58\linewidth}
@@ -212,29 +212,29 @@ filter is a band-pass centered on 700 Hz. The noise has amplitude $\sigma$, spre
 	\end{minipage}
 
 	\begin{minipage}[t]{0.58\linewidth}
-		\part At $\sigma = 8$, find the SNR in the 200 Hz filter and in a 50 Hz filter.
-		\begin{solution}[1.2in]
-		\eq{ \text{SNR}_{200} &= \dfrac{32{,}000}{64 \times 200} = 2.5 = 4.0\db \\
-		\text{SNR}_{50} &= \dfrac{32{,}000}{64 \times 50} = 10 = 10.0\db }
+		\part At a noise amplitude of 8 with the 200 Hz filter, the envelope plot shows a
+		space level of about 0.40 and a mark level of about 0.72, and the text is mostly
+		wrong. The cadet narrows the CW filter to 50 Hz, and the space level drops to
+		about 0.20 while the mark level stays near 0.65. Where should \texttt{thr} go now?
+		\begin{solution}[1.0in]
+		Halfway between the new levels:
+		\eq{ \texttt{thr} = \dfrac{0.20 + 0.65}{2} \approx 0.43 }
 		\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
 		\raggedleft \vspace{12pt}
-		200 Hz: \ansbox[1.0in]{4.0 dB}
-
-		\vspace{4pt}
-		50 Hz: \ansbox[1.0in]{10.0 dB}
+		thr: \ansbox[1.0in]{about 0.43}
 	\end{minipage}
 
-	\part Lesson 12's 200 Hz filter decoded without errors down to 10 dB. Explain in
-	words why the 50 Hz filter in part (b) is the better choice in this noise, and what
-	limits its use.
+	\part Explain in words why the 50 Hz filter in part (b) lowered the space level and
+	not the mark level, and what limits its use.
 		\begin{solution}[1.2in]
 		The signal is only about 100 Hz wide, so most of what a wider filter passes is
-		noise. Cutting the width by four cuts the noise by four, 6 dB, which brings the SNR
-		to the 10 dB where the 200 Hz filter decoded cleanly. Its limit is tuning: the tone
-		must stay inside the narrow filter, so the receiver must tune within a little less than 25 Hz of the
-		carrier, and a transmitter that drifts by more than that leaves the filter.
+		noise. A narrower filter still passes the tone, so the mark level hardly moves, but
+		it passes much less noise, so the envelope between marks drops and the gap between
+		the two levels opens up. Its limit is tuning: the tone must stay inside the narrow
+		filter, so the receiver must tune within a little less than 25 Hz of the carrier,
+		and a transmitter that drifts by more than that leaves the filter.
 		\end{solution}
 
 \end{parts}
