@@ -14,8 +14,9 @@ end (\textbf{None} if you did not collaborate).}
 \begin{questions}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\question \textbf{FM bandwidth.} Carson's rule estimates the bandwidth of an FM
-signal with peak deviation $\Delta f$ and audio bandwidth $W$ as
+\question \textbf{FM bandwidth.} Carson's rule, a rule of thumb for setting a channel
+filter, puts the width of an FM signal with peak deviation $\Delta f$ and audio
+bandwidth $W$ at about
 \eq{ B \approx 2(\Delta f + W) }
 \begin{parts}
 
@@ -38,13 +39,14 @@ signal with peak deviation $\Delta f$ and audio bandwidth $W$ as
 		\end{solution}
 
 	\part Open the FM Explorer on the Lesson 7 page and choose the broadcast preset,
-	75~kHz of deviation with a 15~kHz tone. Read the power inside Carson's band, and
-	explain in words why the signal is wider than $2\Delta f$ = 150~kHz.
+	75~kHz of deviation with a 15~kHz tone. Lower the deviation to 25~kHz and describe
+	what happens to the spectrum. Then explain in words why the broadcast signal is
+	wider than $2\Delta f$ = 150~kHz.
 		\begin{solution}[1.0in]
-		Carson's band, 180 kHz, holds 99.4\% of the power. The explorer draws lines
-		every 15 kHz out past $\pm 75$ kHz: the frequency swings at the tone's rate, and
-		that swing adds lines beyond the peak deviation, about one tone frequency on
-		each side.
+		At 25 kHz the lines crowd in toward the carrier and the shaded band shrinks to
+		80 kHz. At 75 kHz the explorer draws lines every 15 kHz out past $\pm 75$ kHz:
+		the frequency swings at the tone's rate, and that swing adds lines beyond the
+		peak deviation, about one tone frequency on each side.
 		\end{solution}
 
 \end{parts}
@@ -99,10 +101,10 @@ signal with peak deviation $\Delta f$ and audio bandwidth $W$ as
 
 	\begin{minipage}[t]{0.58\linewidth}
 		\part Find the decimation from the demodulator to a 48~kHz sound card, and the
-		corner frequency of a 75~$\mu$s de-emphasis filter.
+		time constant to type into FM Deemphasis for a US station.
 		\begin{solution}[1.0in]
 		\eq{ \dfrac{240}{48} = 5 }
-		\eq{ f = \dfrac{1}{2\pi(75\times10^{-6})} = 2.12\ \text{kHz} }
+		75 $\mu$s in the US; Europe uses 50 $\mu$s.
 		\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
@@ -110,7 +112,7 @@ signal with peak deviation $\Delta f$ and audio bandwidth $W$ as
 		decimation = \ansbox[1.0in]{5}
 
 		\vspace{4pt}
-		corner = \ansbox[1.0in]{2.12 kHz}
+		$\tau$ = \ansbox[1.0in]{75 $\mu$s}
 	\end{minipage}
 
 	\part Explain why the flowgraph needs no Throttle, whether it plays a file or
@@ -125,42 +127,19 @@ signal with peak deviation $\Delta f$ and audio bandwidth $W$ as
 
 \newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\question \textbf{RDS.} RDS sends 1187.5 bits per second on a 57~kHz subcarrier, in
-groups of 104 bits.
+\question \textbf{RDS.} RDS sends 1187.5 bits per second on a 57~kHz subcarrier.
 \begin{parts}
 
 	\begin{minipage}[t]{0.58\linewidth}
-		\part The RDS branch resamples to 19~kHz. Find the samples per bit, and the time
-		one group takes.
-		\begin{solution}[1.0in]
+		\part The RDS branch resamples to 19~kHz before Symbol Sync. Find the samples
+		per bit that Symbol Sync is set for.
+		\begin{solution}[0.8in]
 		\eq{ \dfrac{19000}{1187.5} = 16 }
-		\eq{ \dfrac{104}{1187.5} = 87.6\ \text{ms} }
 		\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
 		\raggedleft \vspace{12pt}
 		\ansbox[1.0in]{16 samples}
-
-		\vspace{4pt}
-		\ansbox[1.0in]{87.6 ms}
-	\end{minipage}
-
-	\begin{minipage}[t]{0.58\linewidth}
-		\part The station name is eight characters, sent two per group. Radiotext is up
-		to 64 characters, sent four per group. Find the shortest time to receive each,
-		if the station sent nothing else.
-		\begin{solution}[1.1in]
-		\eq{ 4 \times 87.6 = 350\ \text{ms} }
-		\eq{ 16 \times 87.6 = 1.40\ \text{s} }
-		A station interleaves other group types, so a real receiver takes longer.
-		\end{solution}
-	\end{minipage}\hfill%
-	\begin{minipage}[t]{0.37\linewidth}
-		\raggedleft \vspace{12pt}
-		name = \ansbox[1.0in]{350 ms}
-
-		\vspace{4pt}
-		text = \ansbox[1.0in]{1.40 s}
 	\end{minipage}
 
 	\part The RDS signal is BPSK, a DSB-SC signal. Name the block in
@@ -186,76 +165,46 @@ groups of 104 bits.
 \newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \question \textbf{AM and FM in the same noise.} \texttt{L07-am-vs-fm.grc} sends a
-1~kHz tone as AM at $m = 1$ in a 10~kHz channel and as FM in a $2(\Delta f + 5)$~kHz
-channel, with the same transmitted power and the same noise. It measured these output
-SNRs in dB:
-
-\begin{center}
-\renewcommand{\arraystretch}{1.2}
-\begin{tabular}{| l | c | c | c | c |}
-\hline
-C/N in 10 kHz (dB) & 30 & 20 & 15 & 10 \\\hline
-AM & 29.5 & 19.4 & 14.4 & 9.2 \\\hline
-FM, $\Delta f$ = 5 kHz & 35.5 & 25.5 & 20.5 & 14.2 \\\hline
-FM, $\Delta f$ = 25 kHz & 48.5 & 39.2 & 26.1 & 9.3 \\\hline
-FM, $\Delta f$ = 50 kHz & 53.2 & 39.5 & 17.3 & 6.4 \\\hline
-\end{tabular}
-\end{center}
-
+1~kHz tone as AM at $m = 1$ in a 10~kHz channel and as FM in a wider channel, with the
+same transmitted power and the same noise. Its Input SNR slider sets the noise, and two
+meters show each receiver's output SNR.
 \begin{parts}
 
-	\begin{minipage}[t]{0.58\linewidth}
-		\part Find each FM channel's bandwidth, and how many dB more noise it admits than
-		the 10~kHz AM channel.
-		\begin{solution}[1.2in]
-		5 kHz: $2(5 + 5) = 20$ kHz, $10\mylog{2} = 3.0\db$.
-		25 kHz: $2(25 + 5) = 60$ kHz, $10\mylog{6} = 7.8\db$.
-		50 kHz: $2(50 + 5) = 110$ kHz, $10\mylog{11} = 10.4\db$.
-		\end{solution}
-	\end{minipage}\hfill%
-	\begin{minipage}[t]{0.37\linewidth}
-		\raggedleft \vspace{12pt}
-		\ansbox[1.3in]{20, 60, 110 kHz}
-
-		\vspace{4pt}
-		\ansbox[1.3in]{3.0, 7.8, 10.4 dB}
-	\end{minipage}
-
-	\begin{minipage}[t]{0.58\linewidth}
-		\part An FM receiver reaches threshold when its C/N in its own bandwidth falls to
-		about 10~dB. Find the C/N in 10~kHz at which each FM signal reaches threshold, and
-		check each against the table.
-		\begin{solution}[1.4in]
-		For 5, 25, and 50 kHz of deviation, the threshold C/N values in 10 kHz are, in dB,
-		\eq{ 10 + 3.0 = 13.0, \quad 10 + 7.8 = 17.8, \quad 10 + 10.4 = 20.4 }
-		The table agrees for 25 and 50 kHz. At 10 dB the 5 kHz signal is just under its
-		threshold and has lost only about 1 dB, because the threshold is a gradual onset
-		rather than a cliff. The 25 kHz signal leads by 19 to 20 dB down to 20 dB C/N and has lost
-		about 7 dB of that lead at 15. The 50 kHz signal leads by 24 dB at 30 but only
-		20 dB at 20, already near its 20.4 dB threshold.
-		\end{solution}
-	\end{minipage}\hfill%
-	\begin{minipage}[t]{0.37\linewidth}
-		\raggedleft \vspace{12pt}
-		\ansbox[1.3in]{13.0, 17.8, 20.4 dB}
-	\end{minipage}
-
-	\part A link to a distant receiver runs at 10~dB C/N in 10~kHz. Use the table to
-	choose AM or one of the three FM deviations, and explain the choice in words.
+	\part At 30~dB Input SNR and 25~kHz deviation, the meters read 29.5~dB for AM and
+	48.4~dB for FM. Say which output is cleaner and by about how much, and explain in
+	words how FM wins although its 60~kHz channel lets in six times the noise.
 		\begin{solution}[1.1in]
-		Choose FM with 5 kHz deviation, which reaches 14.2 dB. At 10 dB the 5 kHz signal is just under its
-		13 dB threshold and has lost only about 1 dB of its lead over AM, because the
-		threshold is a gradual onset rather than a cliff. The wider deviations
-		would be better on a strong link, but their wider channels admit enough noise to
-		push them below threshold here, where they are no better than AM or worse.
+		FM, by about 19 dB. The demodulator's output follows how far the frequency
+		swings, and a 25 kHz swing is large next to the small jitter that the noise adds
+		to a strong carrier. FM trades bandwidth for a cleaner output.
 		\end{solution}
 
-	\part Above threshold, each doubling of the deviation improves FM's output by about
-	6~dB. Check that rule against the 30~dB column from 5 to 25~kHz.
-		\begin{solution}[0.8in]
-		Going from 5 to 25 kHz is $\log_2 5 = 2.3$ doublings, and the output rises
-		$48.5 - 35.5 = 13.0$ dB, or 5.6 dB per doubling, close to 6 dB. (From 25 to
-		50 kHz the meter's own distortion floor, near 57 dB, holds the gain to 4.7 dB.)
+	\part With the speaker on FM, you drag Input SNR from 30 down to 10~dB. Describe
+	what you expect to hear, and what the FM meter does compared with the AM meter.
+		\begin{solution}[1.1in]
+		The tone stays clean at first. Below about 15 dB, clicks start and get more
+		frequent, and the FM meter falls quickly; near 10 dB it reads about the same as
+		AM's, about 9 dB. That collapse is the FM threshold. AM only hisses more as the
+		slider comes down.
+		\end{solution}
+
+	\part You raise the deviation from 25 to 50~kHz. Say what happens to the FM meter
+	at 30~dB, and to the Input SNR at which the clicks begin. Explain the trade in
+	words.
+		\begin{solution}[1.1in]
+		The meter at 30 dB rises, to about 53 dB. The clicks start sooner as the noise
+		goes up, near 20 dB instead of near 15. The wider deviation needs a wider channel,
+		which lets in more noise, so the cleaner output lasts only while the signal is
+		strong.
+		\end{solution}
+
+	\part A link to a distant receiver runs at 10~dB Input SNR. There the meters read
+	9.2~dB for AM and 14.2, 9.3, and 6.4~dB for FM at 5, 25, and 50~kHz of deviation.
+	Choose AM or one of the FM deviations, and explain the choice in words.
+		\begin{solution}[1.0in]
+		FM at 5 kHz, the highest reading. Its narrow channel lets in the least noise, so it
+		has not yet broken into clicks. The wider deviations would be cleaner on a strong
+		link, but here they have broken up and are no better than AM, or worse.
 		\end{solution}
 
 \end{parts}

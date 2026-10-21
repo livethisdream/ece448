@@ -64,8 +64,8 @@ The test file comes from `L07-fm-test-tx.grc`. It builds each station the way a 
 ::::{frame} Wideband FM
 :::{present}
 - The carrier's **frequency** follows the message, up to $\Delta f$ = 75 kHz away.
-- **Carson's rule** gives the bandwidth: $B \approx 2(\Delta f + W)$.
-- 15 kHz audio needs 180 kHz; US stations sit 200 kHz apart.
+- A station is about $2(\Delta f + W)$ wide: 180 kHz for 15 kHz audio.
+- US stations sit 200 kHz apart.
 :::
 
 **Frequency modulation** (FM) leaves the carrier's amplitude alone and moves its frequency instead. The instantaneous frequency is
@@ -74,11 +74,7 @@ $$f(t) = f_c + \Delta f\,x(t)$$
 
 where the message $x(t)$ stays between $-1$ and 1, and the **peak deviation** $\Delta f$ is the farthest the carrier ever moves. Broadcast FM sets $\Delta f$ = 75 kHz and carries audio up to $W$ = 15 kHz, which makes it **wideband FM** (WBFM). Two-way radios use narrowband FM, with $\Delta f$ near 2.5 or 5 kHz.
 
-An FM signal is wider than $2\Delta f$, because the frequency swings at audio rates. **Carson's rule** gives the bandwidth that holds nearly all of the power:
-
-$$B \approx 2(\Delta f + W)$$
-
-For broadcast audio that is $2(75 + 15)$ = 180 kHz, which fits the 200 kHz spacing of US FM channels, 88.1 to 107.9 MHz. An AM signal carrying the same audio would be 30 kHz wide. The FM Explorer later in the lesson draws the spectrum line by line.
+An FM signal is a little wider than $2\Delta f$, because the frequency swings at audio rates. A rule of thumb, **Carson's rule**, puts the width at about $2(\Delta f + W)$, which is the number we need to set the receiver's channel filter. For broadcast audio that is $2(75 + 15)$ = 180 kHz, which fits the 200 kHz spacing of US FM channels, 88.1 to 107.9 MHz. An AM signal carrying the same audio would be 30 kHz wide.
 ::::
 
 ::::{frame} The Receiver Flowgraph
@@ -121,11 +117,9 @@ $$\begin{aligned}
 - With this gain, 75 kHz of deviation gives an output of 1.
 :::
 
-After the channel filter the station is a complex signal whose phase turns faster or slower as the frequency moves. The **Quadrature Demod** block measures how far the phase turns from one sample to the next, which is the frequency at that instant: a phase step of $2\pi$ per sample would be $f_s$, so a step of $\Delta\phi$ is the frequency
+After the channel filter the station is a complex signal whose phase turns faster or slower as the frequency moves. The **Quadrature Demod** block measures how far the phase turns from one sample to the next, which is the frequency at that instant.
 
-$$f = \frac{f_s\,\Delta\phi}{2\pi}$$
-
-The gain scales that frequency into a convenient number. With the gain above, a carrier 75 kHz above center produces an output of exactly 1, so the output is the transmitted message at its original scale. The block ignores amplitude entirely, which is why an FM receiver needs no AGC, and why a weakening FM station keeps its volume and degrades slowly until its carrier-to-noise ratio falls to the FM threshold, covered later in this lesson.
+The gain scales that frequency into a convenient number. With the gain above, a carrier 75 kHz above center produces an output of exactly 1, so the output is the transmitted message at its original scale. The block ignores amplitude entirely, which is why an FM receiver needs no AGC, and why a weakening FM station keeps its volume until the noise gets strong enough to break it up, as a later frame shows.
 ::::
 
 ::::{frame} The Multiplex
@@ -181,13 +175,13 @@ To use your own L5 capture, set the File Source's file to `fm_capture.cfile`, ty
 ::::{frame} RDS
 :::{present}
 - The **Radio Data System** sends 1187.5 bits per second on 57 kHz.
-- It is BPSK with differential coding and biphase symbols.
-- Groups of 104 bits carry the station name, program type, and text.
+- It is BPSK: a DSB-SC signal that needs its carrier recovered.
+- It carries the station name, program type, and text.
 :::
 
-The **Radio Data System** (RDS, called RBDS in North America) adds a slow digital channel to an FM station. It runs at 1187.5 bits per second, which is 57 kHz divided by 48, on a 57 kHz subcarrier. The station sends each bit as two half-bit symbols of opposite sign, a **biphase** code, and the result is BPSK on the subcarrier: a DSB-SC signal like Lesson 6's, which needs its carrier recovered. The bits are also differentially coded, so the receiver needs only the changes between bits, and a 180° error in the recovered carrier does no harm.
+The **Radio Data System** (RDS, called RBDS in North America) adds a slow digital channel to an FM station. It runs at 1187.5 bits per second, which is 57 kHz divided by 48, on a 57 kHz subcarrier. The bits ride the subcarrier as BPSK, which is a DSB-SC signal like Lesson 6's, so the receiver has to recover the carrier. The bits are also differentially coded, so the receiver needs only the changes between bits, and a 180° error in the recovered carrier does no harm.
 
-The data arrives in **groups** of 104 bits, four 26-bit blocks that each carry 16 data bits and a 10-bit check word, so one group takes 87.6 ms. The **PI** code is the station's 16-bit identifier, the **PS** name is the eight characters a car radio displays, sent two per group, and the **radiotext** is up to 64 characters of free text.
+The data arrives in short **groups**, a fraction of a second each. The **PI** code is the station's identifier, the **PS** name is the eight characters a car radio displays, sent two per group, and the **radiotext** is up to 64 characters of free text.
 ::::
 
 ::::{frame} Decoding RDS
@@ -207,7 +201,7 @@ The data arrives in **groups** of 104 bits, four 26-bit blocks that each carry 1
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
 :::
 
-`L07-rds-rx.grc` is the WBFM receiver with an RDS branch added to the demodulator's output, following the receiver that ships with gr-rds. A second Frequency Xlating FIR Filter moves 57 kHz to 0 Hz and decimates to 24 kHz, and a Rational Resampler converts to 19 kHz, which is exactly 16 samples per bit. A matched filter for the biphase symbols, an AGC, and a **Symbol Sync** find the bit timing, and the **Constellation Receiver** recovers the subcarrier's phase, which is the carrier recovery Lesson 6 said DSB-SC needs. The two tight clusters on the constellation show it working. A Differential Decoder undoes the differential coding, and the three gr-rds blocks find the 104-bit groups, check them, and display what they carry.
+`L07-rds-rx.grc` is the WBFM receiver with an RDS branch added to the demodulator's output, following the receiver that ships with gr-rds. A second Frequency Xlating FIR Filter moves 57 kHz to 0 Hz and decimates to 24 kHz, and a Rational Resampler converts to 19 kHz, which is exactly 16 samples per bit. A filter matched to the RDS symbol shape, an AGC, and a **Symbol Sync** find the bit timing, and the **Constellation Receiver** recovers the subcarrier's phase, which is the carrier recovery Lesson 6 said DSB-SC needs. The two tight clusters on the constellation show it working. A Differential Decoder undoes the differential coding, and the three gr-rds blocks find the groups, check them, and display what they carry.
 
 The panel shows "ECE 448" and the test transmitter's radiotext. It also shows the station's PI code, 1093 in hexadecimal, under "Program Type" and the program type under "PI": the panel swaps those two labels, so read them the other way around on a live station too. The RDS blocks come from **gr-rds**, which radioconda installs as `gnuradio-rds`.
 ::::
@@ -238,15 +232,15 @@ After the filter, the AM station is a complex signal with its carrier at 0 Hz, a
 ::::{frame} AM and FM in the Same Noise
 :::{present}
 <img src="../../viz/img/L07-amfm-30.png"
-     alt="L07-am-vs-fm.grc at C/N 30 dB and 25 kHz deviation: output SNR meters read 29.5 dB for AM and 48.4 dB for FM; the outputs' spectrum shows the 1 kHz tone with the AM noise floor near minus 64 dB and the FM floor near minus 85 dB rising toward 5 kHz; the time sink shows both outputs as clean 1 kHz sine waves"
+     alt="L07-am-vs-fm.grc at an input SNR of 30 dB and 25 kHz deviation: output SNR meters read 29.5 dB for AM and 48.4 dB for FM; the outputs' spectrum shows the 1 kHz tone with the AM noise floor near minus 64 dB and the FM floor near minus 85 dB rising toward 5 kHz; the time sink shows both outputs as clean 1 kHz sine waves"
      style="max-width: 760px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
 - Both carry the same tone at the same power in the same noise.
-- AM in 10 kHz reaches 29.5 dB, and FM in 60 kHz reaches 48.4 dB.
+- At 30 dB in, the AM meter reads about 29 dB and the FM meter about 48 dB.
 :::
 
-`L07-am-vs-fm.grc` sends one 1 kHz tone two ways with the same transmitted power: as AM at $m$ = 1, the best case from Lesson 6, and as FM with 25 kHz deviation. Both go through the same noise, and each receiver filters to its own channel, 10 kHz for AM and $2(25 + 5)$ = 60 kHz for FM by Carson's rule with a 5 kHz audio band. Each output then passes the same 5 kHz audio filter, and a meter built from blocks measures the tone's power against everything else in the audio band: the **output SNR**. The C/N slider sets the carrier-to-noise ratio in 10 kHz, the AM channel.
+`L07-am-vs-fm.grc` sends one 1 kHz tone two ways with the same transmitted power: as AM at $m$ = 1, the best case from Lesson 6, and as FM with 25 kHz deviation. Both go through the same noise. Each receiver filters to its own channel, 10 kHz for AM and 60 kHz for FM, and then the same 5 kHz audio filter. The **Input SNR** slider sets how strong the signal is against the noise in a 10 kHz channel, and two meters show each receiver's **output SNR**, the tone against everything else in its audio. The Listen to buttons switch the speaker between the two.
 
 :::{depth}
 <img src="../../viz/img/L07-grc-am-vs-fm.png"
@@ -254,34 +248,31 @@ After the filter, the AM station is a complex signal with its carrier at 0 Hz, a
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
 :::
 
-At 30 dB, AM delivers 29.5 dB, close to its C/N, and FM delivers 48.4 dB. Although the FM receiver admits six times as much noise as the AM receiver, its output SNR is about 19 dB higher. The demodulator's output follows how far the frequency swings, and a 25 kHz swing is large next to the small frequency jitter that the noise adds to a strong carrier. The spectrum shows the result: FM's noise floor sits about 20 dB under AM's. Each doubling of the deviation improves FM's output by another 5 to 6 dB, as long as the signal stays above threshold and below the meter's own distortion floor near 57 dB, which holds the 25 to 50 kHz step to 4.7 dB.
+At 30 dB the FM output is clearly the cleaner one, even though the FM receiver's wider channel lets in six times as much noise. The spectrum shows it: FM's noise floor sits about 20 dB under AM's. Drag the deviation up and FM's meter climbs further; drag it down to 5 kHz and most of the advantage goes away. FM buys a cleaner output with bandwidth.
 ::::
 
-::::{frame} The FM Threshold
+::::{frame} Turning the Noise Up
 :::{present}
-<img src="../../viz/img/L07-amfm-15.png"
-     alt="L07-am-vs-fm.grc at C/N 15 dB: output SNR meters read 14.3 dB for AM and 25.8 dB for FM; FM's noise floor is now flat near minus 63 dB and only about 12 dB under AM's"
+<img src="../../viz/img/L07-amfm-10.png"
+     alt="L07-am-vs-fm.grc at an input SNR of 10 dB and 25 kHz deviation: output SNR meters read 9.2 dB for AM and 9.4 dB for FM; the AM and FM noise floors sit together near minus 47 dB; the time sink shows both tones ragged"
      style="max-width: 760px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
-| C/N in 10 kHz | 30 | 20 | 15 | 10 |
-| :-- | :-: | :-: | :-: | :-: |
-| AM | 29.5 | 19.4 | 14.4 | 9.2 |
-| FM, 5 kHz | 35.5 | 25.5 | 20.5 | 14.2 |
-| FM, 25 kHz | 48.5 | 39.2 | 26.1 | 9.3 |
-| FM, 50 kHz | 53.2 | 39.5 | 17.3 | 6.4 |
+- Drag Input SNR down with the speaker on FM.
+- Near 10 dB, FM breaks into clicks and its advantage is gone.
+- AM only gets steadily noisier.
 :::
 
-FM's advantage holds only while the carrier stays well above the noise in the FM receiver's own bandwidth. Below about 10 dB there, noise occasionally swings the phase through a full turn, and the demodulator turns each slip into a click. That is the **FM threshold**: below it, FM's output falls quickly. The table lists the output SNR in dB that we measured with the flowgraph at three deviations, each the average of about 12 s of meter readings, because near threshold the meters wander by about 1 dB as clicks come and go. At 15 dB, the 25 kHz signal is 7 dB above the noise in its 60 kHz band and has lost about 7 dB of its advantage, and at 10 dB its output SNR is no better than AM's.
+Now drag the Input SNR slider down with the speaker on FM. The FM output stays clean longer than AM's does, and then, below about 15 dB, it starts to crackle with clicks and its meter drops quickly. At 10 dB, shown in the figure, the two meters read about the same, and both tones on the time sink are ragged. That sudden collapse is the **FM threshold**: FM's advantage lasts only while the signal stays well above the noise in its own, wider channel. AM has no threshold; its hiss rises steadily as the slider comes down, and the tone stays recognizable. Repeat the sweep at 5 kHz and 50 kHz deviation: the wider the deviation, the cleaner FM sounds when the signal is strong, and the sooner it breaks up as the noise rises.
 
-Wider deviation raises the output SNR above threshold, 53.2 dB against 48.5 at 30 dB C/N, but it also widens the receiver's filter, which lets in more noise and raises the threshold. At 10 dB, the 50 kHz signal is worse than AM, and the 5 kHz signal, which gains only 6 dB at 30 dB C/N, is the best of the four. FM uses bandwidth to get a cleaner output, and the improvement lasts only while the signal is strong. Broadcast FM uses it because a broadcast station is strong and has a 200 kHz channel to fill. Aircraft use AM because a weak AM signal stays intelligible, and because two aircraft transmitting at once are both heard, where an FM receiver would lock onto the stronger one.
+That trade is why broadcast FM and aircraft radios chose differently. A broadcast station is strong and has a 200 kHz channel to fill, so it uses FM. Aircraft use AM because a weak AM signal stays intelligible, and because two aircraft transmitting at once are both heard, where an FM receiver would lock onto the stronger one.
 ::::
 
 ::::{frame} FM Explorer
 :class: viz-frame
 
 :::{depth}
-The left panel shows the spectral lines of a carrier frequency modulated by one tone, with Carson's band shaded; the right panel shows how much of the power falls inside a band of each width. Start with the L7 flowgraph preset and notice that the lines stop just outside Carson's band. Set the deviation to 2.4 kHz with a 1 kHz tone and watch the carrier line vanish, which is how technicians calibrate a transmitter's deviation. Whatever the settings, Carson's band holds about 96% of the power or more.
+The left panel shows the spectrum of a carrier frequency modulated by one tone, with Carson's band shaded; the right panel shows how much of the signal falls inside a band of each width. Start with the L7 flowgraph preset. Raise the deviation and watch the lines spread wider; raise the tone frequency and watch them move apart. Whatever the settings, nearly all of the signal stays inside the shaded band, which is why Carson's rule is good enough to set a channel filter.
 :::
 
 :::{present}
@@ -289,7 +280,7 @@ The left panel shows the spectral lines of a carrier frequency modulated by one 
         width="100%" height="407"
         style="border: 1px solid #cddce9; border-radius: 6px;"
         loading="lazy"
-        title="FM explorer: the line spectrum of a tone-modulated FM signal against deviation and tone frequency, with Carson's bandwidth and the share of power inside it">
+        title="FM explorer: the line spectrum of a tone-modulated FM signal against deviation and tone frequency, with Carson's bandwidth and the share of the signal inside it">
 </iframe>
 :::
 ::::
@@ -297,8 +288,20 @@ The left panel shows the spectral lines of a carrier frequency modulated by one 
 ::::{frame} Key Point
 :::{present}
 :class: callout
-FM spreads the message over a wider channel, and above threshold its receiver returns a cleaner output than AM. Below threshold the improvement disappears, and a wider channel reaches threshold sooner.
+FM spreads the message over a wider channel and, while the signal is strong, comes out cleaner than AM. Turn the noise up far enough and FM breaks up into clicks, sooner for a wider channel; AM just gets noisier.
 :::
+::::
+
+::::{frame} Find the Station in GQRX
+:::{present}
+- Tune the FM band in GQRX and choose **WFM (stereo)**.
+- Turn on RDS and read the station name.
+- Note the frequency; the GRC receiver uses it next.
+:::
+
+Before building anything on the air, find the station with a ready-made receiver. **GQRX** runs on the same RTL-SDR: choose the RTL-SDR as the input device, start it, and click a strong station on the spectrum or waterfall between 88 and 108 MHz. Set the mode to **WFM (stereo)**; the audio plays, and the stereo indicator lights if the station sends a pilot. Open GQRX's RDS panel and turn decoding on, and within a few seconds it shows the station name.
+
+GQRX runs on Linux and macOS; on Windows, SDR++ or SDR# does the same job with the same WFM mode and an RDS display. Write down the station's frequency and name, and close GQRX, since only one program can use the RTL-SDR at a time. The next step builds the same receiver in GRC on that station, and the name GQRX showed is the check that the RDS flowgraph decodes it correctly.
 ::::
 
 ::::{frame} On the SDR
@@ -313,15 +316,24 @@ On the air, the receivers need three settings from Lesson 5. Tune the SDR a few 
 RDS needs a stronger signal than the audio does, because its 57 kHz subcarrier sits where the multiplex noise is highest. If the station name never appears, raise the gain or choose a stronger station before changing the flowgraph. As Lesson 2 said, receiving is unrestricted and transmitting is not; the RTL-SDR receives only, and nothing in this lesson transmits.
 ::::
 
-::::{frame} Downloads
+::::{frame} Downloads and Sources
 :class: read-only doc-links
+
+This lesson follows:
+
+- <a class="doc-link" href="../../legacy/L08-am-fm-receivers.pdf" target="_blank" rel="noopener">Dr. Rogers's 2025 slides, AM and FM Receivers (PDF)</a>
+- <a class="doc-link" href="https://wiki.gnuradio.org/index.php?title=Simulation_example:_Narrowband_FM_transceiver" target="_blank" rel="noopener">GNU Radio wiki, Simulation example: Narrowband FM transceiver</a>
+- <a class="doc-link" href="https://pysdr.org/content/rds.html" target="_blank" rel="noopener">PySDR, RDS: an end-to-end example</a>
+- <a class="doc-link" href="https://gqrx.dk/" target="_blank" rel="noopener">GQRX</a>, for finding a station before building a receiver for it
+
+Downloads:
 
 - <a class="doc-link" href="../../grc/L07-fm-test-tx.grc" download>L07-fm-test-tx.grc</a>: writes `L07-fm-test.cfile`, 4 s (76.8 MB) of a simulated FM band around 100.0 MHz with two stations, one carrying RDS. It needs gr-rds. Run it once; it stops on its own.
 - <a class="doc-link" href="../../grc/L07-am-test-tx.grc" download>L07-am-test-tx.grc</a>: writes `L07-am-test.cfile`, 4 s (76.8 MB) of a simulated AM station at 126.2 MHz carrying the L6 two-tone message.
 - <a class="doc-link" href="../../grc/L07-wbfm-rx.grc" download>L07-wbfm-rx.grc</a>: the broadcast FM receiver, playing the test file, your L5 capture, or the RTL-SDR.
 - <a class="doc-link" href="../../grc/L07-rds-rx.grc" download>L07-rds-rx.grc</a>: the same receiver with the RDS decoder. It also needs gr-rds.
 - <a class="doc-link" href="../../grc/L07-am-rx.grc" download>L07-am-rx.grc</a>: the AM receiver for the aircraft band.
-- <a class="doc-link" href="../../grc/L07-am-vs-fm.grc" download>L07-am-vs-fm.grc</a>: one tone as AM and as FM in the same noise, with output SNR meters. It needs no hardware.
+- <a class="doc-link" href="../../grc/L07-am-vs-fm.grc" download>L07-am-vs-fm.grc</a>: one tone as AM and as FM in the same noise, with output SNR meters and an Input SNR slider. It needs no hardware.
 
 Put every file in one folder; GRC runs a flowgraph from its own folder, so the receivers find the test files there. Each receiver plays through your laptop's speakers; start with the volume low. gr-rds comes with radioconda; if GRC reports the RDS blocks missing, run `mamba install gnuradio-rds` from the radioconda prompt.
 ::::
@@ -331,10 +343,10 @@ Put every file in one folder; GRC runs a flowgraph from its own folder, so the r
 
 | Receiver | Front end | Demodulator | After it | Number to remember |
 | :-- | :-- | :-- | :-- | :-- |
-| WBFM | Xlating FIR, ±90 kHz, ÷10 | Quadrature Demod, gain $f_s/2\pi\Delta f$ | 15 kHz low-pass ÷5, de-emphasis 75 μs | $B \approx 2(\Delta f + W)$ = 180 kHz |
-| RDS | Xlating FIR at 57 kHz, resample to 19 kHz | Symbol Sync, Constellation Receiver | Differential Decoder, gr-rds | 1187.5 bit/s, 104-bit groups |
+| WBFM | Xlating FIR, ±90 kHz, ÷10 | Quadrature Demod, gain $f_s/2\pi\Delta f$ | 15 kHz low-pass ÷5, de-emphasis 75 μs | about 180 kHz wide, 200 kHz apart |
+| RDS | Xlating FIR at 57 kHz, resample to 19 kHz | Symbol Sync, Constellation Receiver | Differential Decoder, gr-rds | 1187.5 bit/s on 57 kHz |
 | AM | Xlating FIR, ±5 kHz, ÷50 | Complex to Mag | 3 kHz low-pass, DC Blocker, AGC | 118 to 137 MHz |
-| AM vs. FM | same power, same noise | | output SNR meters | FM +19 dB at 25 kHz, until threshold |
+| AM vs. FM | same power, same noise | | output SNR meters | FM cleaner until the noise breaks it up |
 ::::
 
 ::::{frame} Practice
@@ -350,7 +362,7 @@ Put every file in one folder; GRC runs a flowgraph from its own folder, so the r
 - Lesson 8 sends bits by switching frequency: FSK.
 :::
 
-Today we built a broadcast FM receiver, added an RDS decoder to it, built an AM receiver for the aircraft band, and measured what FM's extra bandwidth does in noise. The L7 Lab is the bench version: play your own L5 capture through the receiver, receive a live station and its RDS name, receive an ATIS broadcast, and fill in the AM and FM output SNR table yourself.
+Today we built a broadcast FM receiver, added an RDS decoder to it, built an AM receiver for the aircraft band, and watched what FM's extra bandwidth does as the noise goes up. The L7 Lab is the bench version: play your own L5 capture through the receiver, receive a live station and its RDS name, receive an ATIS broadcast, and turn the noise up on AM and FM yourself.
 
 Lesson 8 moves from analog to digital modulation. Its first signal, frequency-shift keying, is FM with a message that takes only two values, so its receiver uses the same quadrature demodulator as today's.
 ::::

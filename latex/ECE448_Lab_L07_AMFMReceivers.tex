@@ -112,11 +112,10 @@ trade-off between bandwidth and noise performance for AM vs.\ FM.}
 \vspace{2pt}
 
 This packet is the L\labLesson\ Lab, in three parts, and you turn it in once, complete,
-before Lesson 8. Do \textbf{Part 1} on your own before the lab period: predict the
-receiver settings and the numbers you will measure. \textbf{Part 2} is your own
-measurements, on your own laptop and RTL-SDR, recorded in class. Do \textbf{Part 3} on
-your own after the lab: compare the measurements with the predictions and answer the
-analysis questions.
+before Lesson 8. Do \textbf{Part 1} on your own before the lab period: work out the
+receiver settings you will need. \textbf{Part 2} is your own
+measurements and observations, on your own laptop and RTL-SDR, recorded in class. Do
+\textbf{Part 3} on your own after the lab: explain what you saw.
 
 \textbf{Grading.} We grade one submission against Objectives 3.3 and 3.4 on the
 course's 1 / 0 scale, and you may revise it under course policy. Paste screenshots
@@ -140,7 +139,7 @@ period, run \texttt{L07-fm-test-tx.grc}, which also uses an RDS block, and
 \fullwidth{\large\textbf{Part 1: Pre-Lab} \normalsize(individual, before the lab period)}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\question \textbf{Predictions.} You will check each of these at the bench.
+\question \textbf{Receiver settings.} You will use each of these at the bench.
 
 \begin{parts}
 
@@ -181,34 +180,6 @@ period, run \texttt{L07-fm-test-tx.grc}, which also uses an RDS block, and
 		gain = \ansbox[1.0in]{$0.509$}
 	\end{minipage}
 
-	\begin{minipage}[t]{0.58\linewidth}
-		\part The test station's audio is a 1~kHz tone at amplitude 0.6 plus a 2.5~kHz
-		tone at 0.4, with pre-emphasis at the transmitter and de-emphasis at the
-		receiver. Predict how far below the 1~kHz line the 2.5~kHz line sits on the
-		receiver's audio sink.
-		\begin{solution}[1.0in]
-		De-emphasis undoes pre-emphasis, so the levels are the message's:
-		\eq{ 20\mylog{\dfrac{0.4}{0.6}} = -3.5\db }
-		\end{solution}
-	\end{minipage}\hfill%
-	\begin{minipage}[t]{0.37\linewidth}
-		\raggedleft \vspace{12pt}
-		\ansbox[1.0in]{$3.5\db$ below}
-	\end{minipage}
-
-	\begin{minipage}[t]{0.58\linewidth}
-		\part RDS sends 1187.5 bits per second in 104-bit groups, and the station name
-		takes four groups. Find the shortest time from a clean start to a displayed
-		name.
-		\begin{solution}[0.8in]
-		\eq{ 4 \times \dfrac{104}{1187.5} = 4 \times 87.6 = 350\ \text{ms} }
-		\end{solution}
-	\end{minipage}\hfill%
-	\begin{minipage}[t]{0.37\linewidth}
-		\raggedleft \vspace{12pt}
-		\ansbox[1.0in]{350 ms}
-	\end{minipage}
-
 	\part Find the ATIS frequency of an airport near you in the FAA Chart Supplement
 	or on a sectional chart. Choose an SDR center 250~kHz below it, and fill in the AM
 	receiver's settings.
@@ -225,20 +196,6 @@ period, run \texttt{L07-fm-test-tx.grc}, which also uses an RDS block, and
 		\begin{solution}[0.4in]
 		The decimation is $2.4\ \text{MS/s} \div 48\ \text{kS/s} = 50$ for any station.
 		\end{solution}
-
-	\begin{minipage}[t]{0.58\linewidth}
-		\part In \texttt{L07-am-vs-fm.grc} the FM channel is $2(25 + 5) = 60$~kHz wide
-		and the AM channel 10~kHz. FM reaches threshold at about 10~dB C/N in its own
-		bandwidth. Predict the C/N in 10~kHz at which the 25~kHz FM signal reaches
-		threshold.
-		\begin{solution}[0.9in]
-		\eq{ 10 + 10\mylog{\dfrac{60}{10}} = 10 + 7.8 = 17.8\db }
-		\end{solution}
-	\end{minipage}\hfill%
-	\begin{minipage}[t]{0.37\linewidth}
-		\raggedleft \vspace{12pt}
-		\ansbox[1.0in]{$17.8\db$}
-	\end{minipage}
 
 \end{parts}
 
@@ -276,8 +233,9 @@ open \texttt{L07-wbfm-rx.grc}: build the receiver yourself.
 	\part Run it. Read the audio frequency sink, and record the frequency of each line and how far the
 	2.5~kHz line sits below the 1~kHz line.
 		\begin{solution}[0.6in]
-		The sink shows lines at 1 and 2.5 kHz, about 3.5 to 4 dB apart, matching Question 1(c), and
-		nothing else above the floor.
+		The sink shows lines at 1 and 2.5 kHz, about 3.5 to 4 dB apart, and nothing else
+		above the floor. That is the 0.6-to-0.4 amplitude ratio of the test message:
+		de-emphasis undid the transmitter's pre-emphasis.
 		\end{solution}
 
 	\part Type 99.5 into Station. Describe what you hear, and explain why the station
@@ -316,13 +274,35 @@ Quadrature Demod output, with bandwidth \texttt{samp\_rate/10}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newpage
-\question \textbf{Live FM and RDS.} Open \texttt{L07-rds-rx.grc}. Disable the File
-Source, enable the RTL-SDR Source, and set SDR center about 300~kHz below a strong
-local station and Station to the station. Set RF gain from your L5 Lab gain table.
+\question \textbf{Live FM and RDS.} Find a station in GQRX first, then receive it with
+your own flowgraph.
 
 \begin{parts}
 
-	\part Record what the RDS panel shows. The panel prints the PI code under
+	\part Open GQRX, choose the RTL-SDR, and click a strong station between 88 and
+	108~MHz. Set the mode to WFM (stereo), open the RDS panel, and turn decoding on.
+	Record the station's frequency and the name GQRX shows, and whether the stereo
+	indicator lights. Then close GQRX. (On Windows, use SDR++ or SDR\# the same way.)
+
+	\begin{center}
+	\renewcommand{\arraystretch}{1.25}
+	\begin{tabular}{| l | p{1.3in} | p{1.3in} | p{0.8in} |}
+	\hline
+	& Frequency (MHz) & Station name & Stereo? \\\hline
+	GQRX & & & \\\hline
+	\end{tabular}
+	\end{center}
+
+		\begin{solution}[0.4in]
+		Answers vary by station. Only one program can hold the RTL-SDR, so GQRX must be
+		closed before the flowgraph runs.
+		\end{solution}
+
+	Now open \texttt{L07-rds-rx.grc}. Disable the File Source, enable the RTL-SDR
+	Source, set SDR center about 300~kHz below the station you found in GQRX, and
+	set Station to its frequency. Set RF gain from your L5 Lab gain table.
+
+	\part Record what the RDS panel shows, and check the station name against GQRX's. The panel prints the PI code under
 	``Program Type'' and the program type under ``PI''; record each under its correct
 	name.
 
@@ -339,7 +319,7 @@ local station and Station to the station. Set RF gain from your L5 Lab gain tabl
 	\end{center}
 
 		\begin{solution}[0.3in]
-		Answers vary by station.
+		Answers vary by station. The station name matches the one GQRX showed.
 		\end{solution}
 
 	\part Paste a screenshot of the RDS constellation and the panel. Explain what the
@@ -351,12 +331,12 @@ local station and Station to the station. Set RF gain from your L5 Lab gain tabl
 		\end{solution}
 
 	\begin{minipage}[t]{0.58\linewidth}
-		\part Restart the flowgraph and time how long the station name takes to appear.
-		Compare with Question 1(d).
+		\part Restart the flowgraph three times and time how long the station name takes
+		to appear. Record the longest time, and describe how the name fills in.
 		\begin{solution}[0.8in]
-		The name usually takes 1 to 3 s, longer than 350 ms, because a station interleaves other group
-		types between the name's four groups, and the decoder first has to find the group
-		boundaries.
+		Usually 1 to 3 s. The name appears two characters at a time, because the station
+		sends it in pieces between its other data, and the time varies from one restart to
+		the next.
 		\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
@@ -369,7 +349,7 @@ local station and Station to the station. Set RF gain from your L5 Lab gain tabl
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \question \textbf{ATIS.} Open \texttt{L07-am-rx.grc}. Check it first on
 \texttt{L07-am-test.cfile}, then disable the File Source, enable the RTL-SDR Source,
-and enter the settings of Question 1(e).
+and enter the settings of Question 1(c).
 
 \begin{parts}
 
@@ -396,31 +376,35 @@ and enter the settings of Question 1(e).
 
 \begin{parts}
 
-	\part Read the two output SNR meters at each C/N, with the FM deviation at 25~kHz
-	and then at 5~kHz. Near threshold the meters wander; record the middle of the
-	range you see.
+	\part Set the deviation to 25~kHz and Input SNR to 30~dB. Record the two output
+	SNR meters, and say which output looks cleaner on the frequency sink.
+		\begin{solution}[0.8in]
+		AM reads about 29.5 dB and FM about 48.5 dB. FM's noise floor sits about 20 dB
+		below AM's, so FM is cleaner, although its wider channel lets in more noise.
+		\end{solution}
+
+	\part Choose FM under Listen To. Turn the noise up: lower Input SNR slowly until
+	you first hear clicks, and record that slider value in the table. Keep going to
+	10~dB, and describe what you hear and what the FM meter does. Then repeat the
+	click search at 5~kHz and at 50~kHz deviation, and record each FM meter reading
+	at 30~dB too.
 
 	\begin{center}
 	\renewcommand{\arraystretch}{1.25}
-	\begin{tabular}{| l | K{0.7in} | K{0.7in} | K{0.7in} | K{0.7in} | K{0.7in} |}
+	\begin{tabular}{| l | K{1.5in} | K{1.5in} |}
 	\hline
-	C/N in 10 kHz (dB) & 30 & 25 & 20 & 15 & 10 \\\hline
-	AM & \kv{$29.5$} & \kv{$24.5$} & \kv{$19.4$} & \kv{$14.4$} & \kv{$9.2$} \\\hline
-	FM, 25 kHz & \kv{$48.5$} & \kv{$44.1$} & \kv{$39.2$} & \kv{$26.1$} & \kv{$9.3$} \\\hline
-	FM, 5 kHz & \kv{$35.5$} & \kv{$30.7$} & \kv{$25.5$} & \kv{$20.5$} & \kv{$14.2$} \\\hline
+	FM deviation & Clicks begin at (dB) & FM meter at 30 dB \\\hline
+	5 kHz & \kv{about 10} & \kv{$35.5$} \\\hline
+	25 kHz & \kv{about 15 to 18} & \kv{$48.5$} \\\hline
+	50 kHz & \kv{about 20 to 23} & \kv{$53.2$} \\\hline
 	\end{tabular}
 	\end{center}
 
-		\begin{solution}[0.5in]
-		Your readings should fall within about 1 dB of these values; the FM entries near threshold vary the most.
-		\end{solution}
-
-	\part Set the deviation to 25~kHz and Listen To to FM. Lower C/N from 30 to 10~dB
-	and describe the sound at 20, 15, and 10~dB.
 		\begin{solution}[1.0in]
-		The tone is clean at 20 dB. Clicks begin near 15 dB and become frequent at 10 dB, where the
-		tone sounds rough. The clicks are the FM threshold. AM, in Question 5(b), only
-		grew steadily noisier.
+		Values vary with each listener's ear by a few dB. At 25 kHz the tone is clean at
+		20 dB; clicks begin near 15 dB and become frequent at 10 dB, where the tone sounds
+		rough and the FM meter has dropped to about the AM meter's 9 dB. The clicks are the
+		FM threshold. AM, in Question 5(b), only grew steadily noisier.
 		\end{solution}
 
 \end{parts}
@@ -441,27 +425,21 @@ and enter the settings of Question 1(e).
 		the receiver's 15 kHz low-pass filter removes them and plays the sum.
 		\end{solution}
 
-	\part Compare where your 25~kHz FM measurements lost their advantage over AM with
-	your prediction in Question 1(f). Then use your table to explain why the 5~kHz
-	signal has the higher output SNR at 10~dB C/N and the lower one at 30~dB.
-		\begin{solution}[1.6in]
-		The 25 kHz signal leads AM by about 19 to 20 dB down to 20 dB C/N, has lost
-		about 7 dB of that lead at 15 dB, and is no better than AM at 10 dB, consistent
-		with a threshold near the predicted 17.8 dB. Wider deviation gives a larger
-		output SNR above threshold, 48.5 against 35.5 dB at 30 dB C/N. It also needs a
-		wider channel, 60 kHz against 20 kHz, which admits 4.8 dB more noise, so the
-		25 kHz signal falls below threshold first. At 10 dB the 5 kHz signal is just under its 13 dB
-		threshold and has lost only about 1 dB of its 6 dB lead, because the threshold is
-		a gradual onset rather than a cliff, while the wider deviations are far below
-		theirs.
+	\part Use your table from Question 6(b) to describe, in words, what a wider FM
+	deviation buys and what it costs.
+		\begin{solution}[1.3in]
+		Wider deviation buys a cleaner output while the signal is strong: the FM meter at
+		30 dB climbs from about 35 to about 53 dB as the deviation goes from 5 to 50 kHz.
+		It costs bandwidth, and the wider channel lets in more noise, so the clicks start
+		sooner as the noise goes up: near 10 dB at 5 kHz but near 20 dB at 50 kHz.
 		\end{solution}
 
 	\part Aircraft use AM, and broadcasters use wideband FM. Using your measurements
 	from Questions 5 and 6, explain one reason for each choice.
 		\begin{solution}[1.2in]
 		Broadcast FM: a broadcast station is strong and has a 200 kHz channel, so it
-		stays far above threshold and the wide deviation gives a much cleaner output than
-		AM. Aircraft AM: a distant aircraft is weak, and an AM signal degrades gradually
+		stays well clear of the clicks, and the wide deviation gives a much cleaner output
+		than AM. Aircraft AM: a distant aircraft is weak, and an AM signal degrades gradually
 		and stays intelligible where FM would break into clicks. Two aircraft transmitting
 		at once are also both heard on AM.
 		\end{solution}
