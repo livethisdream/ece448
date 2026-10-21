@@ -58,6 +58,18 @@
 \newcolumntype{K}[1]{>{\centering\arraybackslash}p{#1}}
 \newcommand{\kv}[1]{\ifkey{\color{red}#1}\fi\rule[-0.10in]{0pt}{0.34in}}
 
+% Answers are not in this public file. Every solution, \kv value, and \ansbox
+% value is \keysol{<id>}, defined in the private ECE448-faculty repo at
+% lab-keys/src/ECE448_Lab_L10_PAMLink_solutions.tex; build_lab.sh puts that
+% folder on TEXINPUTS (KEYDIR) for the KEY. A KEY build without it stops.
+\long\def\defkeysol#1#2{\expandafter\long\expandafter\def\csname keysol@#1\endcsname{#2}}
+\def\keysol#1{\ifcsname keysol@#1\endcsname\csname keysol@#1\endcsname\fi}
+\ifkey
+	\IfFileExists{ECE448_Lab_L10_PAMLink_solutions.tex}%
+		{\input{ECE448_Lab_L10_PAMLink_solutions}}%
+		{\errmessage{KEY build needs ECE448_Lab_L10_PAMLink_solutions.tex from ECE448-faculty/lab-keys/src (set KEYDIR)}}
+\fi
+
 % print the answers if this is the key
 \ifkey
 	\printanswers % if this IS the key
@@ -148,20 +160,15 @@ with the sliders at their defaults, a noise amplitude of 0.3 and a clock error o
 
 	\begin{minipage}[t]{0.58\linewidth}
 		\part After about 20 s, record the Lines label.
-		\begin{solution}[0.5in]
-		The label reads about 220 lines, all correct: the link sends 11.6 packets a second, less a second or two while the flowgraph starts.
-		\end{solution}
+		\begin{solution}[0.5in]\keysol{sol1}\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
 		\raggedleft \vspace{12pt}
-		\ansbox[1.6in]{all correct, $\approx 220$}
+		\ansbox[1.6in]{\keysol{ans1}}
 	\end{minipage}
 
 	\part Paste a screenshot of the running flowgraph's window.
-		\begin{solution}[1.6in]
-		The window shows an open receive-filter eye, Symbol Sync output in two tight
-		bands at $\pm 1$, and the received line of text.
-		\end{solution}
+		\begin{solution}[1.6in]\keysol{sol2}\end{solution}
 
 \end{parts}
 
@@ -175,31 +182,23 @@ with the sliders at their defaults, a noise amplitude of 0.3 and a clock error o
 		\part Each line is a packet: a 64-bit access code, a 32-bit header, and the 31
 		bytes of the line. Find the bits per packet, the time per packet, and the number
 		of packets in 30 s.
-		\begin{solution}[1.0in]
-		\eq{ 64 + 32 + 8 \times 31 &= 344\ \text{bits} \\
-			344 / 4000 &= 86\ \text{ms} \\
-			30 / 0.086 &\approx 349 }
-		\end{solution}
+		\begin{solution}[1.0in]\keysol{sol3}\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
 		\raggedleft \vspace{12pt}
-		bits = \ansbox[1.0in]{344}
+		bits = \ansbox[1.0in]{\keysol{ans2}}
 
 		\vspace{4pt}
-		time = \ansbox[1.0in]{86 ms}
+		time = \ansbox[1.0in]{\keysol{ans3}}
 
 		\vspace{4pt}
-		in 30 s = \ansbox[1.0in]{349}
+		in 30 s = \ansbox[1.0in]{\keysol{ans4}}
 	\end{minipage}
 
 	\part Choose a line of text of your own, such as your class year and name. Write
 	it below, count its bytes with the newline, and write the 16-bit length field the
 	header will carry and the 8 bits of its first character.
-		\begin{solution}[0.8in]
-		The answer depends on the line. For \texttt{C1C Jane Doe}, 12 characters and a newline make
-		13 bytes, so the length field is \texttt{0000000000001101}, and `C' is 0x43,
-		\texttt{01000011}.
-		\end{solution}
+		\begin{solution}[0.8in]\keysol{sol4}\end{solution}
 
 \end{parts}
 
@@ -221,27 +220,16 @@ receiver starts listening at a random bit.
 	\begin{tabular}{| l | K{1.1in} | K{1.1in} | K{1.1in} |}
 	\hline
 	Run & 1 & 2 & 3 \\\hline
-	Offset that reads & \kv{varies} & \kv{varies} & \kv{varies} \\\hline
+	Offset that reads & \kv{\keysol{kv1}} & \kv{\keysol{kv2}} & \kv{\keysol{kv3}} \\\hline
 	\end{tabular}
 	\end{center}
 
-		\begin{solution}[0.9in]
-		Exactly one offset from 0 to 7 reads in each run, and it changes from run to run
-		at random. There are 8 offsets because a byte has 8 bits: every other offset
-		groups the bits across two characters, and most of those bytes are not printable
-		ASCII.
-		\end{solution}
+		\begin{solution}[0.9in]\keysol{sol5}\end{solution}
 
 	\part Stop and start \texttt{L10-pam-link.grc} three times. Record how long the first
 	line takes to appear, and explain in words how the receiver finds the byte boundary
 	that you had to find by hand in part (a).
-		\begin{solution}[1.3in]
-		A line appears within about a second every time, with nothing to adjust.
-		Correlate Access Code - Tag Stream compares every 64-bit window of the received
-		bits with the access code, so wherever the receiver starts listening, it finds the
-		bit where a packet begins, and Repack Bits groups the bytes from that bit. The
-		access code does the job of the bit-offset slider automatically, on every packet.
-		\end{solution}
+		\begin{solution}[1.3in]\keysol{sol6}\end{solution}
 
 \end{parts}
 
@@ -255,33 +243,20 @@ with your line of text from Question 2(b) in \texttt{msg}.
 
 	\part Paste a screenshot of your flowgraph on the GRC canvas. Every connection
 	must be black, not red.
-		\begin{solution}[1.6in]
-		The flowgraph matches the lab page's list: Vector Source, Stream to Tagged Stream, Protocol
-		Formatter, Tagged Stream Mux, Unpack K Bits, Chunks to Symbols, Throttle, and an
-		Interpolating FIR Filter, with a QT GUI Time Sink on the symbols and a QT GUI
-		Frequency Sink on the shaped signal. The byte ports are purple and the float
-		ports orange.
-		\end{solution}
+		\begin{solution}[1.6in]\keysol{sol7}\end{solution}
 
 	\part Paste a screenshot of the time sink. Mark where the access code ends, where
 	the header ends, and the bits of your first character, and check the length field
 	against Question 2(b).
-		\begin{solution}[1.6in]
-		The access code takes the first 64 symbols, the header the next 32, and the
-		payload starts at symbol 96. The header shows the length field of Question 2(b)
-		twice; for \texttt{C1C Jane Doe} that is 12 zeros, then \texttt{1101}, twice,
-		and the payload starts \texttt{01000011}.
-		\end{solution}
+		\begin{solution}[1.6in]\keysol{sol8}\end{solution}
 
 	\begin{minipage}[t]{0.58\linewidth}
 		\part Read the edges of the shaped signal's spectrum from the frequency sink.
-		\begin{solution}[0.6in]
-		The spectrum ends near $\pm 2.7$ kHz, half of $(1+\alpha)R_s = 5.4$ kHz.
-		\end{solution}
+		\begin{solution}[0.6in]\keysol{sol9}\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
 		\raggedleft \vspace{12pt}
-		\ansbox[1.1in]{$\pm 2.7$ kHz}
+		\ansbox[1.1in]{\keysol{ans5}}
 	\end{minipage}
 
 \end{parts}
@@ -301,20 +276,14 @@ moves.
 		\part Record the noise amplitude at which lines start to break, where the correct
 		count first falls behind the received count on the Lines label, and the setting
 		at which no line arrives intact in 20 s.
-		\begin{solution}[1.0in]
-		Lines start to break near 0.7 (between 0.6 and 0.8, depending on the run): the
-		correct count first falls behind the received count, as a few lines in a hundred
-		arrive with a wrong character. About half
-		arrive intact near 1.0, and none arrive intact by about 1.4 (between 1.3 and
-		1.5).
-		\end{solution}
+		\begin{solution}[1.0in]\keysol{sol10}\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
 		\raggedleft \vspace{12pt}
-		break at \ansbox[1.0in]{$\approx 0.7$}
+		break at \ansbox[1.0in]{\keysol{ans6}}
 
 		\vspace{4pt}
-		stop at \ansbox[1.0in]{$\approx 1.4$}
+		stop at \ansbox[1.0in]{\keysol{ans7}}
 	\end{minipage}
 
 	\part Describe the eye and the Symbol Sync output at 0.3, at your break setting,
@@ -325,24 +294,17 @@ moves.
 	\begin{tabular}{| l | K{1.6in} | K{1.6in} | K{1.6in} |}
 	\hline
 	Noise & $0.3$ & break & stop \\\hline
-	Eye & \kv{wide open} & \kv{open, fuzzy} & \kv{closed} \\\hline
-	Symbol Sync output & \kv{two tight bands} & \kv{two wide bands} & \kv{two clouds that meet at zero} \\\hline
+	Eye & \kv{\keysol{kv4}} & \kv{\keysol{kv5}} & \kv{\keysol{kv6}} \\\hline
+	Symbol Sync output & \kv{\keysol{kv7}} & \kv{\keysol{kv8}} & \kv{\keysol{kv9}} \\\hline
 	\end{tabular}
 	\end{center}
 
-		\begin{solution}[0.5in]
-		As the noise rises, the eye fills in from above and below and the bands at $\pm 1$
-		spread until some samples land on the wrong side of zero.
-		\end{solution}
+		\begin{solution}[0.5in]\keysol{sol11}\end{solution}
 
 	\part Near 1.1, wait for a line with a wrong character in the Received label and
 	paste a screenshot. Find the character, write its correct and received bytes in
 	binary, and count the bits that differ.
-		\begin{solution}[1.4in]
-		Answers vary. Most wrong characters differ from the right one in one bit, such as
-		`4', \texttt{00110100}, received as `6', \texttt{00110110}. The Text Sink shows a
-		byte that does not print as `?'.
-		\end{solution}
+		\begin{solution}[1.4in]\keysol{sol12}\end{solution}
 
 	\part Set the noise to 0.5. Switch the matched filter off, wait 20 s, and record
 	the Lines label and how the eye looks. Then switch it back on and do the same.
@@ -352,15 +314,12 @@ moves.
 	\begin{tabular}{| l | K{2.0in} | K{2.0in} |}
 	\hline
 	Matched filter & off & on \\\hline
-	Lines label & \kv{a few correct of $\approx 110$} & \kv{all correct} \\\hline
-	Eye & \kv{no opening} & \kv{open} \\\hline
+	Lines label & \kv{\keysol{kv10}} & \kv{\keysol{kv11}} \\\hline
+	Eye & \kv{\keysol{kv12}} & \kv{\keysol{kv13}} \\\hline
 	\end{tabular}
 	\end{center}
 
-		\begin{solution}[0.4in]
-		With the filter off, most lines that arrive have wrong characters and about half
-		never arrive. With it on, at the same noise, every line arrives.
-		\end{solution}
+		\begin{solution}[0.4in]\keysol{sol13}\end{solution}
 
 \end{parts}
 
@@ -382,27 +341,16 @@ type 40,000 into the clock-error box in one jump, and record the Lines label aft
 	\begin{tabular}{| l | K{0.55in} | K{0.55in} | K{0.55in} | K{0.55in} | K{0.55in} | K{0.75in} |}
 	\hline
 	ppm & $0$ & $10{,}000$ & $20{,}000$ & $30{,}000$ & $40{,}000$ & jump to $40{,}000$ \\\hline
-	Lines correct & \kv{all} & \kv{$\approx$ all} & \kv{most} & \kv{most} & \kv{most} & \kv{none} \\\hline
-	Eye sink & \kv{open} & \kv{smeared} & \kv{smeared} & \kv{smeared} & \kv{smeared} & \kv{smeared} \\\hline
+	Lines correct & \kv{\keysol{kv14}} & \kv{\keysol{kv15}} & \kv{\keysol{kv16}} & \kv{\keysol{kv17}} & \kv{\keysol{kv18}} & \kv{\keysol{kv19}} \\\hline
+	Eye sink & \kv{\keysol{kv20}} & \kv{\keysol{kv21}} & \kv{\keysol{kv22}} & \kv{\keysol{kv23}} & \kv{\keysol{kv24}} & \kv{\keysol{kv25}} \\\hline
 	\end{tabular}
 	\end{center}
 
-		\begin{solution}[0.9in]
-		Raised a step at a time, Symbol Sync stays locked and follows the error; a
-		measured ramp kept more than 95\% of lines correct at every step up to 40,000
-		ppm. The jump from 500 to 40,000 ppm breaks lock, and the loop cannot reacquire
-		at 40,000 ppm, so no line arrives. The eye sink assumes exactly 8 samples per symbol, so it smears
-		even where every line arrives.
-		\end{solution}
+		\begin{solution}[0.9in]\keysol{sol14}\end{solution}
 
 	\part Paste a screenshot at 10,000 ppm, and explain how the eye can look smeared
 	while the Symbol Sync output stays at $\pm 1$.
-		\begin{solution}[1.2in]
-		Each symbol spans 7.92 samples, but the eye sink cuts the waveform every 8, so
-		each trace starts a little later in its symbol and the eye slides across the
-		display. Symbol Sync follows the real symbol timing, so its samples stay at the
-		center of each symbol.
-		\end{solution}
+		\begin{solution}[1.2in]\keysol{sol15}\end{solution}
 
 \end{parts}
 
@@ -420,12 +368,7 @@ frequency error between them; the noise and the carrier phase come from the hard
 	\part If no line arrives within 5 s, switch Polarity. If neither setting works, raise
 	the TX attenuation by 10 dB and try both again. Once lines arrive, paste a
 	screenshot that shows the constellation, the received line, and the Lines label.
-		\begin{solution}[1.6in]
-		The constellation after carrier recovery shows two clusters on the real axis,
-		symmetric about zero; in simulation their centers fall between about $\pm 0.5$ and
-		$\pm 1.4$, depending on the signal level. In simulation, once one polarity locks,
-		nearly every line arrives correctly.
-		\end{solution}
+		\begin{solution}[1.6in]\keysol{sol16}\end{solution}
 
 	\part Stop and start the flowgraph three times. Each time, record which polarity
 	setting delivers lines.
@@ -435,20 +378,15 @@ frequency error between them; the noise and the carrier phase come from the hard
 	\begin{tabular}{| l | K{1.1in} | K{1.1in} | K{1.1in} |}
 	\hline
 	Run & 1 & 2 & 3 \\\hline
-	Polarity that works & \kv{varies} & \kv{varies} & \kv{varies} \\\hline
+	Polarity that works & \kv{\keysol{kv26}} & \kv{\keysol{kv27}} & \kv{\keysol{kv28}} \\\hline
 	\end{tabular}
 	\end{center}
 
-		\begin{solution}[0.5in]
-		Either setting can be the right one, and it changes from run to run at random.
-		\end{solution}
+		\begin{solution}[0.5in]\keysol{sol17}\end{solution}
 
 	\part Stop the flowgraph, put your line from Question 2(b) in \texttt{msg}, run
 	it again, and paste a screenshot of your line arriving.
-		\begin{solution}[1.2in]
-		The Received label shows the team's own line, and the Lines label counts it as
-		correct.
-		\end{solution}
+		\begin{solution}[1.2in]\keysol{sol18}\end{solution}
 
 \end{parts}
 
@@ -463,48 +401,20 @@ frequency error between them; the noise and the carrier phase come from the hard
 	\part Your link went from every line intact to none over a fairly small change in
 	the noise amplitude. Explain why, using what a line needs in order to count as
 	correct, and say what that means for a link on a real radio.
-		\begin{solution}[1.5in]
-		A line counts only if every bit of its header and payload is right, 280 bits for
-		the default line, and a wrong header bit loses the line entirely. While the bands
-		at $\pm 1$ are tight, no sample crosses zero and every line arrives. Once the noise
-		spreads the bands far enough that a few samples cross, almost every 280-bit line
-		catches at least one of them, so lines go from all to none quickly. A real link
-		therefore needs margin: a signal that only just works on a quiet day stops
-		working when it fades a little.
-		\end{solution}
+		\begin{solution}[1.5in]\keysol{sol19}\end{solution}
 
 	\part Explain why switching the matched filter off broke the text at a noise level
 	the link handled easily with it on.
-		\begin{solution}[1.5in]
-		The signal occupies only a few kilohertz of the 32 kHz the samples represent,
-		but the noise fills all of it. The matched filter, the receive RRC, passes the
-		signal's band and blocks the noise outside it. With it off, all that noise
-		reaches Symbol Sync and the slicer, the eye closes, and many samples land on the
-		wrong side of zero.
-		\end{solution}
+		\begin{solution}[1.5in]\keysol{sol20}\end{solution}
 
 	\part Your link held nearly every line to at least 10,000 ppm. Compare that with two
 	radios whose crystals are accurate to 20 ppm each, and say what would happen to the
 	link if you replaced Symbol Sync with Keep 1 in N, which samples at a fixed point.
-		\begin{solution}[1.5in]
-		Two 20 ppm crystals can differ by 40 ppm, 250 times smaller than 10,000 ppm, so
-		clock error does not limit this link. Keep 1 in N cannot follow a drift: its
-		sampling point would slowly slide away from the center of the eye toward the
-		zero crossings, and lines would fail in bursts each time it got there, every few
-		seconds even at 40 ppm. At 10,000 ppm almost no line would arrive.
-		\end{solution}
+		\begin{solution}[1.5in]\keysol{sol21}\end{solution}
 
 	\part Explain why the working polarity changed between runs on the Pluto, and
 	propose a change to the receiver that would make the polarity switch unnecessary.
-		\begin{solution}[1.5in]
-		The Costas Loop locks to the carrier's phase, but a 2-PAM signal looks the same
-		rotated by 180$^\circ$, so the loop can lock either way, and it picks one at
-		random each time it starts. Locked upside down, every bit inverts, and the
-		access code never matches. Either of two fixes works: search for both the access code and
-		its inverse, and flip the bits when the inverse matches; or send the data
-		differentially, as a change or no change from one bit to the next, which an
-		inversion does not affect.
-		\end{solution}
+		\begin{solution}[1.5in]\keysol{sol22}\end{solution}
 
 \end{parts}
 
