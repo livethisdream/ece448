@@ -72,9 +72,25 @@ the material. A lesson is a guided walkthrough, not a chapter.
 - **The page is a demo script.** Frames walk through what to build, run, and
   watch in GRC or GQRX, in the order Neil does it live. Explanation is the
   minimum needed to know what to look at.
-- **GQRX counts.** For receive-and-explore topics (a band, an unknown
-  signal, HD Radio, ADS-B, AIS), GQRX on a real SDR is a first-class tool,
-  alongside GRC.
+- **SDR Flex is the primary explore tool** (Neil, 2026-10-21). Neil's own
+  `livethisdream/sdr-flex` starts at the spectrum and builds a GNU Radio
+  flowgraph behind each drag, demodulator, and decoder, so a lesson can show
+  cadets the flowgraph they just made. Use it for receive-and-explore steps
+  (a band, an unknown signal, HD Radio, ADS-B, AIS, L17's reverse
+  engineering).
+  - **Which version.** The full version (Docker image, or the server against
+    the cadet's own GNU Radio) carries the external decoders (rtl_433,
+    dump1090, direwolf, and others) and live radios. The browser version
+    (livethisdream.github.io/sdr-flex) needs no install but lacks those
+    decoders; use it only for steps that work on its example captures or
+    the client-side decoders.
+  - **Write explore steps as actions** (tune, select a signal, demodulate,
+    attach a decoder), so they read the same in SDR Flex and GQRX. GQRX is
+    the named fallback.
+  - **Go/no-go: first week of January 2027.** Neil is testing it on macOS
+    and Windows (outside WSL it is untested, and the image is amd64 only).
+    Until then no lab *requires* SDR Flex; after it, the Integrator makes
+    SDR Flex the only named tool or leaves GQRX as written.
 
 This rule is meant to stand out. ECE 444's conventions (shell, voice,
 budgets, checks) still apply. Where 444 would put a derivation on screen,
