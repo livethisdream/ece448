@@ -160,7 +160,7 @@ The Writeup is Question 7, in three parts. Part (a) describes what rising noise 
 - <a class="doc-link" href="../../grc/L12-cw-link.grc" download>L12-cw-link.grc</a>: the whole CW link with sliders for the noise, filter, threshold, tuning, and both speeds. No hardware needed.
 - <a class="doc-link" href="../../grc/L12-cw-pluto.grc" download>L12-cw-pluto.grc</a>: the link on one PlutoSDR, transmitting at 915 MHz into a cable from its TX port to its RX port through a 30 dB attenuator. Needs a PlutoSDR.
 
-Tutorials this lesson follows:
+Tutorials this lab follows:
 
 - GNU Radio wiki: <a class="doc-link" href="https://wiki.gnuradio.org/index.php/Embedded_Python_Block" target="_blank" rel="noopener">Embedded Python Block</a>, <a class="doc-link" href="https://wiki.gnuradio.org/index.php/Frequency_Shifting" target="_blank" rel="noopener">Frequency Shifting</a>, <a class="doc-link" href="https://wiki.gnuradio.org/index.php/Low_Pass_Filter_Example" target="_blank" rel="noopener">Low Pass Filter Example</a>, and <a class="doc-link" href="https://wiki.gnuradio.org/index.php/Runtime_Updating_Variables" target="_blank" rel="noopener">Runtime Updating Variables</a>.
 - PySDR: <a class="doc-link" href="https://pysdr.org/content/filters.html" target="_blank" rel="noopener">Filters</a> and <a class="doc-link" href="https://pysdr.org/content/noise.html" target="_blank" rel="noopener">Noise and dB</a>.

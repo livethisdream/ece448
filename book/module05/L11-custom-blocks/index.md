@@ -63,6 +63,8 @@ No block in GNU Radio's library makes that key directly, so we write one: the **
 :::
 
 Lesson 8's Text Sink is an **Embedded Python Block**: GRC saves its code inside the `.grc` file, and Lesson 10 had to paste the same code into its own flowgraph. That is the right tool for a block one flowgraph needs. A block several flowgraphs need belongs in an **out-of-tree (OOT) module**, a separate package of blocks that installs beside GNU Radio's own. GNU Radio's library is the "tree", so a module we build ourselves is "out of tree". After we install it, the block appears in GRC's library like any other block, every flowgraph uses the same code, and a unit test checks that code each time we build it.
+
+*Follows: GNU Radio wiki, [Embedded Python Block](https://wiki.gnuradio.org/index.php/Embedded_Python_Block).*
 ::::
 
 ::::{frame} Part 1: Make the Module
@@ -77,6 +79,8 @@ gr_modtool add -t decimator -l python energy_detector
 :::
 
 **gr_modtool** comes with GNU Radio and writes the files of a module for us. `gr_modtool newmod ece448` makes a directory named `gr-ece448` with the build files and empty folders. Inside it, `gr_modtool add` asks for the block's type and language, which the flags `-t decimator -l python` give on the command line. It then asks for a copyright holder, the constructor's arguments, which we give as `decim=32, threshold_db=-20.0, hysteresis_db=3.0`, and whether to add a Python unit test, which we accept.
+
+*Follows: GNU Radio wiki, [Creating Python OOT with gr-modtool](https://wiki.gnuradio.org/index.php/Creating_Python_OOT_with_gr-modtool).*
 ::::
 
 ::::{frame} The Module Tree
@@ -193,6 +197,8 @@ cmake --install .
 :::
 
 A Python-only module has nothing to compile, but **CMake** still copies its files to the right places, and `ctest` runs its tests against the build directory. `CMAKE_PREFIX_PATH` tells CMake to find the radioconda environment's GNU Radio, and `CMAKE_INSTALL_PREFIX` installs into the same environment, so the block goes where that GNU Radio looks: the Python file under its `site-packages/gnuradio/ece448/`, and the YAML file under `share/gnuradio/grc/blocks/`. These steps build, test, and install the module under GNU Radio 3.10.12 from conda-forge on Linux, and under Ubuntu's 3.10.9 with `make` in place of Ninja. A passing `ctest` prints `100% tests passed, 0 tests failed out of 1`: its one entry runs the four test methods in `qa_energy_detector.py`. Restart GRC after installing so it reloads its block library.
+
+*Follows: GNU Radio wiki, [Creating Python OOT with gr-modtool](https://wiki.gnuradio.org/index.php/Creating_Python_OOT_with_gr-modtool).*
 ::::
 
 ::::{frame} The Block in GRC

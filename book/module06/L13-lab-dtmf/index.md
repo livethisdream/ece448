@@ -99,10 +99,10 @@ The receiver should decode every repetition of the lesson's capture with no wron
 :class: read-only
 
 <img src="../../viz/img/L13-grc-link.png"
-     alt="The L13 link flowgraph in GNU Radio Companion: a QT GUI Entry for the number, a "Round k to an integer" check box, left unchecked, and sliders for SNR, twist, tone, gap, and frequency error; the DTMF Dialer and a Noise Source feed an Add, a Throttle, the DTMF Decoder, and a frequency sink; two Function Probes feed the Digits and Numbers labels"
+     alt="The L13 link flowgraph in GNU Radio Companion: a QT GUI Entry for the number and sliders for SNR, twist, tone, gap, and frequency error; the DTMF Dialer and a Noise Source feed an Add, a Throttle, the DTMF Decoder, and a frequency sink; two Function Probes feed the Digits and Numbers labels"
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto 12px;">
 
-1. Open and run `L13-dtmf-link.grc`. Leave "Round k to an integer" unchecked for the whole lab. The Numbers label counts the dialings decoded correctly since a setting last changed, and the dialings that decoded at all; 0 of 0 means none decoded. Each dialing of the default number takes 1.5 s.
+1. Open and run `L13-dtmf-link.grc`. The Numbers label counts the dialings decoded correctly since a setting last changed, and the dialings that decoded at all; 0 of 0 means none decoded. Each dialing of the default number takes 1.5 s.
 2. Type `123A456B789C*0#D` into Number and press Enter, so that the link tests every key. Set the twist to each value in the Question 5(a) table, wait about 30 s, and record the Numbers label.
 3. Set the twist back to 0 and the number back to `7195550148`. Set Gap to 60 ms, set Tone to each value in Question 5(b), wait about 30 s at each, and record the Numbers label.
 4. Set Tone to 60 ms, set Gap to each value in Question 5(c), and record the Numbers label.
@@ -162,7 +162,7 @@ The Writeup is three questions. The first compares where the decoder started to 
 - <a class="doc-link" href="../../grc/L13-dtmf-mic.grc" download>L13-dtmf-mic.grc</a>: the receiver on the laptop's microphone. Needs a microphone. Compiled only; not yet tested with a real microphone.
 - The Lesson 13 page has `L13-dtmf-rx.grc`, `L13-dtmf-link.grc`, `L13-capture.wav`, and the keypad flowgraph to check your build against after Question 3.
 
-Tutorials this lesson follows:
+Tutorials this lab follows:
 
 - <a class="doc-link" href="https://wiki.gnuradio.org/index.php/Embedded_Python_Block" target="_blank" rel="noopener">Embedded Python Block</a>, GNU Radio wiki: how the DTMF Dialer and DTMF Decoder are written.
 - <a class="doc-link" href="https://wiki.gnuradio.org/index.php/Goertzel" target="_blank" rel="noopener">Goertzel</a>, GNU Radio wiki: the block behind the receiver's eight bins.

@@ -82,6 +82,8 @@ The frequencies are not round numbers on purpose: they are chosen so that no ton
 `L13-dtmf-keypad.grc` builds one key from stock blocks. The Chooser sets `key` from 0 to 15, and two variables look up its frequencies: `row_f` is `[697, 770, 852, 941][key // 4]` and `col_f` is `[1209, 1336, 1477, 1633][key % 4]`. Two float Signal Sources make the tones at amplitude 0.3 each, an Add sums them, and a Multiply Const by `press` passes the sum only while you hold the Press button.
 
 Everything runs at 8 kHz, the telephone sample rate. Laptop sound cards do not all accept 8 kHz, so a Rational Resampler raises the rate by 6 to 48 kHz for the Audio Sink.
+
+*Follows: GNU Radio wiki, [Signal Source](https://wiki.gnuradio.org/index.php/Signal_Source).*
 ::::
 
 ::::{frame} Two Tones, One Key
@@ -132,7 +134,7 @@ The spectrogram shows the result. Each digit is two short marks, one in the row 
 - How else could we decode it? Build the decoder ourselves.
 :::
 
-Ready-made decoders already handle DTMF. `multimon-ng` reads an audio file or a sound card and prints the digits, and DTMF decoder apps on an Android phone read them through the phone's microphone. Play `L13-capture.wav` to either one and it prints 7195550148. Building the transmitter in GNU Radio was easy; the rest of this lesson builds the decoder, which takes more thought.
+Ready-made decoders already handle DTMF. `multimon-ng` runs on Linux (`sudo apt install multimon-ng sox`), on macOS (`brew install multimon-ng sox`), and on Windows inside WSL2. Run `multimon-ng -t wav -a DTMF L13-capture.wav` in the folder with the capture, and it prints `DTMF: 7`, `DTMF: 1`, and so on, one line per digit, through `DTMF: 8`: all ten digits of 7195550148. A DTMF decoder app on an Android phone does the same through the phone's microphone while the laptop plays the file. Building the transmitter in GNU Radio was easy; the rest of this lesson builds the decoder, which takes more thought.
 ::::
 
 ::::{frame} Separating Neighboring Tones
@@ -147,7 +149,7 @@ The direct way to decode DTMF is a bank of eight band-pass filters, one per tone
 A narrow filter needs time: the closer two tones are, the longer the filter must listen before it can tell them apart. A 40 ms tone leaves room for a block of about 25 ms, with a margin for the tone's start and end, and practical receivers use that length.
 ::::
 
-::::{frame} The Goertzel Bin
+::::{frame} The Goertzel Block
 :::{present}
 | Goertzel | Setting |
 | :-- | :-- |
@@ -161,6 +163,8 @@ A narrow filter needs time: the closer two tones are, the longer the filter must
 The **Goertzel algorithm** builds exactly that filter. It measures the energy at one frequency over a block of samples, far more cheaply than an FFT of the whole band when only eight frequencies matter. GNU Radio has it as a stock block, **Goertzel**, with three parameters: the sample rate, the block length, and the frequency to measure.
 
 The classic setting is a length of 205 at 8 kHz. One block then lasts $205/8000 = 25.6$ ms, which fits inside a 40 ms tone, and $8000/205$ puts the bins 39 Hz apart, nulls 39 Hz either side. The receiver uses eight Goertzel blocks with the same rate and length, one at each DTMF frequency.
+
+*Follows: GNU Radio wiki, [Goertzel](https://wiki.gnuradio.org/index.php/Goertzel).*
 ::::
 
 ::::{frame} Bins Against Tone Spacing
@@ -179,7 +183,7 @@ Each Goertzel bin is a band-pass filter read once per block. The figure plots th
 A longer block narrows the bins but needs a longer tone. A shorter block responds faster, so it accepts shorter bursts, and its wider bins accept tones farther off frequency. The L13 Lab changes the block length and watches both.
 ::::
 
-::::{frame} The Receiver in GNU Radio
+::::{frame} The Receiver
 :::{present}
 <img src="../../viz/img/L13-grc-rx.png"
      alt="The L13 receiver flowgraph in GNU Radio Companion: a Wav File Source and a Throttle at 8 kHz feed eight stock Goertzel blocks of length N = 205 at the eight DTMF frequencies, each followed by Complex to Mag into one of two four-input QT GUI Time Sinks; the Throttle also feeds a QT GUI Frequency Sink and the DTMF Decoder Embedded Python Block, whose digits and stats functions two Function Probes read for two QT GUI Labels"
@@ -193,6 +197,8 @@ A longer block narrows the bins but needs a longer tone. A shorter block respond
 `L13-dtmf-rx.grc` reads a WAV file at 8 kHz. Eight stock **Goertzel** blocks, one per tone with length 205, each output one complex value per block, the bin divided by $N$; a **Complex to Mag** turns it into half the tone's amplitude, which is why the row bins in the opening figure peak at 0.15 for a 0.3 tone.
 
 The **DTMF Decoder** is an Embedded Python Block that runs the same eight Goertzel bins itself, on a block of 205 samples every 102 samples, so the blocks overlap by half. It applies the decision rules on the next frame and reports each number it hears to the Digits and Numbers labels.
+
+*Follows: GNU Radio wiki, [Wav File Source](https://wiki.gnuradio.org/index.php/Wav_File_Source).*
 ::::
 
 ::::{frame} The Decision Rules
@@ -203,7 +209,7 @@ The **DTMF Decoder** is an Embedded Python Block that runs the same eight Goertz
 4. Three blocks in a row agree.
 :::
 
-For each block, the decoder picks the strongest row bin and the strongest column bin. Test 1 rejects noise and speech, where the energy is spread out. Test 2 rejects a signal with two tones in one group. Test 3 rejects a pair whose levels differ too much: a column tone more than 10 dB weaker or 6 dB stronger than the row tone.
+For each block, the decoder picks the strongest row bin and the strongest column bin. Test 1 rejects noise and speech, where the energy is spread out. Test 2 rejects a signal with two tones in one group. Test 3 rejects a pair whose levels differ too much: a column tone 10 dB or more weaker, or 6 dB or more stronger, than the row tone.
 
 A digit counts once three overlapping blocks in a row agree on it. The blocks start 102 samples apart, so the tone must last longer than about one 25.6 ms block, which rejects short bursts. The same digit counts again only after a block that does not show it, which is how 555 reads as three digits. A pause of 200 ms ends the number.
 ::::
@@ -225,10 +231,10 @@ The left panel shows the response of all eight Goertzel bins for the block lengt
 :::
 ::::
 
-::::{frame} Decoder Performance in Noise
+::::{frame} Add Noise Until Digits Drop
 :::{present}
 <img src="../../viz/img/L13-link-noisy.png"
-     alt="The L13 link flowgraph at an SNR of 1 dB, twist 0 dB, 50 ms tones and gaps, and no frequency error: the Numbers label reads 15 correct of 26 decoded in 40 s, and the spectrum shows noise across 0 to 4 kHz"
+     alt="The L13 link flowgraph at an SNR of 1 dB, twist 0 dB, 50 ms tones and gaps, and no frequency error: the Numbers label reads 15 correct of 27 decoded in 42 s, and the spectrum shows noise across 0 to 4 kHz"
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
@@ -236,7 +242,7 @@ The left panel shows the response of all eight Goertzel bins for the block lengt
 - Every number arrives down to about 2 dB; almost none at 0 dB.
 :::
 
-`L13-dtmf-link.grc` puts the dialer, a noise source, and the decoder in one flowgraph, with sliders for the SNR, twist, tone and gap lengths, and frequency error, and it counts the numbers decoded correctly since a setting last changed. At 1 dB SNR the screenshot shows 15 of 26 correct.
+`L13-dtmf-link.grc` puts the dialer, a noise source, and the decoder in one flowgraph, with sliders for the SNR, twist, tone and gap lengths, and frequency error, and it counts the numbers decoded correctly since a setting last changed. At 1 dB SNR the screenshot shows 15 of 27 correct.
 
 Lower the SNR and watch the spectrum fill with noise. Every number arrives down to about 2 dB, because each bin, with bins 39 Hz apart and nulls 39 Hz either side, sees only a small slice of the noise. Some numbers drop near 1 dB, and almost none arrive at 0 dB. Noise alone, run for ten minutes, produced no false digits. The frequency-error slider shows the same kind of edge with no noise: every key decodes at 1.5% off frequency, and none at 2%.
 ::::
@@ -249,7 +255,14 @@ Lower the SNR and watch the spectrum fill with noise. Every number arrives down 
 - The L13 Lab decodes a phone through the microphone.
 :::
 
-On the air, radios send DTMF over narrowband FM. Amateur repeaters accept DTMF commands, and many handheld radios have a DTMF keypad. To hear it, open [SDR Flex](https://livethisdream.github.io/sdr-flex/) with an RTL-SDR, tune to a channel that carries DTMF, demodulate it as narrow FM, and listen. SDR Flex can attach `multimon-ng`, a ready-made decoder that reads DTMF among other formats, and print the digits: the same job as our decoder. Without SDR Flex, use GQRX in Narrow FM mode; its UDP button sends the audio, 48 kHz and 16 bits, to port 7355; a short pipe through `nc` and `sox` brings it to 22.05 kHz for `multimon-ng -t raw -a DTMF -`, which prints the digits. To decode it in GNU Radio instead, tune an RTL-SDR to the channel, demodulate it with an FM receiver like Lesson 7's, with its channel filter narrowed to the 12.5 kHz channel, resample the audio to 8 kHz, and connect the audio to the DTMF Decoder block in place of the Wav File Source.
+On the air, radios send DTMF over narrowband FM. Amateur repeaters accept DTMF commands, and many handheld radios have a DTMF keypad. To hear it, open [SDR Flex](https://livethisdream.github.io/sdr-flex/) with an RTL-SDR, tune to a channel that carries DTMF, demodulate it as narrow FM, and listen. SDR Flex runs in a browser, and its server, which live radios and external decoders need, runs in Docker; it can attach `multimon-ng` and print the digits, the same job as our decoder. Without SDR Flex, use GQRX, on Linux or macOS, in Narrow FM mode, and press its UDP button, which sends the audio as 48 kHz, 16-bit samples to port 7355. In a terminal, run
+
+```
+nc -l -u 7355 | sox -t raw -e signed-integer -b 16 -r 48000 -c 1 - \
+  -t raw -e signed-integer -b 16 -r 22050 -c 1 - | multimon-ng -t raw -a DTMF -
+```
+
+which resamples the audio to the 22.05 kHz multimon-ng expects and prints each digit. The `sox` and `multimon-ng` half decodes the capture correctly; the live link from GQRX is not yet tested. To decode it in GNU Radio instead, tune an RTL-SDR to the channel, demodulate it with an FM receiver like Lesson 7's, with its channel filter narrowed to the 12.5 kHz channel, resample the audio to 8 kHz, and connect the audio to the DTMF Decoder block in place of the Wav File Source.
 
 Nothing in this lesson transmits, and decoding is receive-only. In class we transmit only into a cable, into a shielded enclosure, or at very low power in an ISM band, and only when the lesson says to. The L13 Lab uses a real acoustic signal instead: `L13-dtmf-mic.grc` decodes a phone's keypad tones from the laptop's microphone. It is compiled only and not yet tested with a real microphone.
 ::::

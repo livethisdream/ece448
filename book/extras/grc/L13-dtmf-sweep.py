@@ -43,13 +43,13 @@ DIALER, DECODER = load_blocks()
 
 
 def run(number, snr_db=None, twist_db=0.0, tone_ms=50, gap_ms=50, offset_pct=0.0,
-        round_k=False, trials=TRIALS, seed=1):
+        trials=TRIALS, seed=1):
     """Dial `number` `trials` times; return how many dialings decode exactly."""
     level = 0.3
     dial = DIALER.blk(digits=number, tone_ms=tone_ms, gap_ms=gap_ms, pause_ms=500,
                       level=level, twist_db=twist_db, offset_pct=offset_pct)
     period = int(round(8000 * (len(number) * (tone_ms + gap_ms) + 500) / 1000))
-    dec = DECODER.blk(expected=number, round_k=round_k)
+    dec = DECODER.blk(expected=number)
     tb = gr.top_block()
     head = blocks.head(gr.sizeof_float, period * trials)
     if snr_db is None:

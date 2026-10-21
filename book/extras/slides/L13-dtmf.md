@@ -35,12 +35,13 @@ Open L13-dtmf-rx.grc, L13-dtmf-keypad.grc, and L13-dtmf-link.grc before class, w
 
 1. The keypad grid and one key in GNU Radio
 2. Timing and twist
-3. Goertzel blocks
-4. The receiver and its decision rules
-5. Testing the decoder
+3. Ready-made decoders: multimon-ng and a phone app
+4. Goertzel blocks
+5. The receiver and its decision rules
+6. Testing the decoder
 
 Note:
-Parts 1 and 2 are the signal, parts 3 and 4 the receiver. Part 5 runs live with the link flowgraph's sliders.
+Parts 1 and 2 are the signal, part 3 the ready-made decoders, parts 4 and 5 our own receiver. Part 6 runs live with the link flowgraph's sliders.
 
 ---
 
@@ -112,11 +113,12 @@ L13-dtmf-capture.grc chains the DTMF Dialer Embedded Python Block, a Noise Sourc
 
 ## Ready-Made Decoders
 
-- multimon-ng and Android DTMF apps read the capture.
+- `multimon-ng -t wav -a DTMF L13-capture.wav` prints the ten digits.
+- An Android DTMF app hears them through the microphone.
 - How else could we decode it?
 
 Note:
-From the 2025 deck: the transmitter is easy, the decoder not so easy. Play L13-capture.wav into multimon-ng or a phone app to show the digits, then ask how we would build the decoder ourselves.
+From the 2025 deck: the transmitter is easy, the decoder not so easy. Run multimon-ng (Linux: apt install multimon-ng sox; macOS: brew install multimon-ng sox; Windows: inside WSL2) on L13-capture.wav to show the digits, or play the file to a phone app, then ask how we would build the decoder ourselves.
 
 ---
 
@@ -197,7 +199,7 @@ Start at key 5, N 205, 20 dB. Raise twist past +6 dB to show test 3. The explore
 
 ## Add Noise Until Digits Drop
 
-<img src="./img/13-dtmf/L13-link-noisy.png" alt="The link flowgraph at 1 dB SNR with 15 of 26 numbers correct" style="max-height:380px; display:block; margin:0 auto;">
+<img src="./img/13-dtmf/L13-link-noisy.png" alt="The link flowgraph at 1 dB SNR with 15 of 27 numbers correct" style="max-height:380px; display:block; margin:0 auto;">
 
 Every number arrives to about 2 dB; some drop near 1 dB; almost none at 0 dB.
 
@@ -209,12 +211,14 @@ Run the link live and pull the SNR slider down. With bins 39 Hz apart, nulls 39 
 ## DTMF on a Real Radio
 
 - Repeaters and remote sites take DTMF over FM.
-- Listen in SDR Flex (or GQRX) on an RTL-SDR, narrow FM; multimon-ng decodes the digits.
+- Listen in SDR Flex (or GQRX) on an RTL-SDR, narrow FM; multimon-ng prints the digits.
 - Or feed 8 kHz FM audio to the DTMF Decoder.
 - The L13 Lab decodes a phone through the laptop microphone.
 
 Note:
 Nothing in this lesson transmits. In class we transmit only into a cable, into a shielded enclosure, or at very low power in an ISM band, and only when the lesson says to.
+
+GQRX fallback (Linux or macOS; not yet tested live): press UDP, then nc -l -u 7355 | sox -t raw -e signed-integer -b 16 -r 48000 -c 1 - -t raw -e signed-integer -b 16 -r 22050 -c 1 - | multimon-ng -t raw -a DTMF -
 
 Tutorials this lesson follows: GNU Radio wiki Embedded Python Block, Goertzel, Signal Source, and Wav File Source pages; multimon-ng is the deck's ready-made decoder.
 

@@ -114,7 +114,7 @@ The Morse Keyer is an Embedded Python Block. It outputs 1 while the key is down 
 The edges look alike in time; in frequency, the shaped one stays close to the carrier.
 
 Note:
-A receiver tuned near a hard-keyed transmitter hears a click at every edge. Drag the edge-time slider live: at 0 ms the two spectra match, and the skirts fall as the edge grows. The edge has to stay well under a dit; at 40 WPM a dit is 30 ms, and 5 ms edges still leave 25 ms at full power.
+A receiver tuned near a hard-keyed transmitter hears a click at every edge. Drag the edge-time slider live: at 1 ms the red skirts sit just below the blue, and they fall as the edge grows. The edge has to stay well under a dit; at 40 WPM a dit is 30 ms, and 5 ms edges still leave 25 ms at full power.
 
 ---
 
@@ -209,7 +209,7 @@ Same noise, three filters: drag the CW filter slider live. A narrower filter pas
 - SDR Flex or GQRX: hear a VOR's Morse identifier in AM
 
 Note:
-In class we transmit only into a cable, into a shielded enclosure, or at very low power in an ISM band, and only when the lesson says to. The PlutoSDR flowgraph has run only in simulation so far; the lab is its first run on hardware. In SDR Flex (GQRX as the fallback), tune a VOR between 108 and 118 MHz in AM mode and wait for its identifier, a 1020 Hz tone. Amateur CW is on HF, below an RTL-SDR's range without an upconverter.
+In class we transmit only into a cable, into a shielded enclosure, or at very low power in an ISM band, and only when the lesson says to. The PlutoSDR flowgraph has run only in simulation so far; the lab is its first run on hardware. In SDR Flex (GQRX as the fallback), tune the nearest VOR (108 to 118 MHz; its frequency and identifier are on an FAA sectional, free at SkyVector) in AM mode and wait for its identifier, a 1020 Hz tone. Most amateur CW is on HF (needs an upconverter or direct sampling); 2 m CW at 144.0 to 144.1 MHz is in range.
 
 ---
 

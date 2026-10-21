@@ -149,7 +149,7 @@ The Writeup is three questions. The first explains why some marks read a millise
 - <a class="doc-link" href="../../grc/L11-keyed-carrier.grc" download>L11-keyed-carrier.grc</a>: the keyed carrier through the installed Energy Detector. No hardware needed.
 - <a class="doc-link" href="../../grc/L11-keyed-carrier-epy.grc" download>L11-keyed-carrier-epy.grc</a>: the same flowgraph with the Energy Detector in an Embedded Python Block. Needs nothing installed.
 
-Tutorials this lesson follows, on the GNU Radio wiki:
+Tutorials this lab follows, on the GNU Radio wiki:
 
 - <a class="doc-link" href="https://wiki.gnuradio.org/index.php/Creating_Your_First_Block" target="_blank" rel="noopener">Creating Your First Block</a>
 - <a class="doc-link" href="https://wiki.gnuradio.org/index.php/Embedded_Python_Block" target="_blank" rel="noopener">Embedded Python Block</a>

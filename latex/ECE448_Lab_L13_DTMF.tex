@@ -208,18 +208,20 @@ blocks in a row agree.
 	\end{minipage}
 
 	\begin{minipage}[t]{0.58\linewidth}
-		\part Open and run \texttt{L13-dtmf-link.grc}. Lower the SNR slider from 20 dB, 1 dB
-		at a time, waiting about 15 s at each step. Record the SNR at which the Numbers label
-		first shows a number missed or wrong, and describe what the spectrum looks like there.
+		\part Open and run \texttt{L13-dtmf-link.grc}. Set the Twist slider to $-6$ dB, so
+		the column tone arrives weaker. Then lower the SNR slider from 20 dB, 1 dB at a time,
+		waiting about 15 s at each step. Record the SNR at which the Numbers label first shows
+		a number missed or wrong, and describe what the spectrum looks like there.
 		\begin{solution}[1.2in]
-		Every number arrives down to about 2 dB. Near 1 dB some numbers come out short or
-		wrong, and by 0 dB almost none arrive. The spectrum is filled with noise across the
-		whole 0 to 4 kHz band, and the two tones barely rise above it.
+		Every number arrives down to about 4 dB. Near 3 dB a few numbers come out short or
+		wrong, and by 1 dB most are lost. That is a dB or two worse than with no twist: the
+		weaker column tone sinks into the noise first. The spectrum shows the column tone
+		barely above the noise and the row tone a little higher.
 		\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
 		\raggedleft \vspace{12pt}
-		SNR \ansbox[1.1in]{about 1 dB}
+		SNR \ansbox[1.1in]{about 3 dB}
 	\end{minipage}
 
 \end{parts}

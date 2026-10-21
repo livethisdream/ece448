@@ -131,7 +131,7 @@ The time sink triggers on each key-down and shows 10 ms before it and 30 ms afte
 
 A receiver tuned to a frequency near a hard-keyed transmitter hears that spread as a click at every edge, and operators call it a **key click**. Shaping the edges removes the clicks without changing what the receiver decodes, so CW transmitters shape their keying, typically with edges of a few milliseconds.
 
-Drag the edge-time slider while the flowgraph runs and watch the red spectrum: at 0 ms it matches the blue one, and as the edge grows, the skirts fall away from the carrier. The edge has to stay well under a dit, though, or the dits lose their flat tops. At 40 WPM a dit lasts 30 ms, and 5 ms edges still leave 25 ms of it at full power.
+Drag the edge-time slider while the flowgraph runs and watch the red spectrum: at its lowest setting, 1 ms, it already sits a little below the blue one, and as the edge grows, the skirts fall away from the carrier. The edge has to stay well under a dit, though, or the dits lose their flat tops. At 40 WPM a dit lasts 30 ms, and 5 ms edges still leave 25 ms of it at full power.
 ::::
 
 ::::{frame} CW Keyer Explorer
@@ -166,6 +166,8 @@ The left panel shows the whole message as marks and spaces, and below it the fir
 The top row of the flowgraph is the transmitter and the channel. The Morse Keyer's output becomes a complex carrier at 5 kHz, and a **Noise Source** adds complex Gaussian noise whose amplitude a slider sets. The receiver starts with a **Frequency Xlating FIR Filter**, as in Lesson 7: it moves the 5 kHz carrier to 0 Hz, keeps ±600 Hz around it, and decimates by 4 to 8 kHz.
 
 The rest of the receiver works at audio rates. The product detector makes the carrier audible as a 700 Hz tone, and an **Audio Sink** plays it. A band-pass **CW filter** 200 Hz wide around 700 Hz removes most of the noise. **Abs** and a low-pass filter recover the envelope, as in Lesson 6, and decimate it to 1 kHz. A **Threshold** block turns the envelope into a key, 1 or 0, and the **CW Decoder** turns the key into letters.
+
+*Follows: GNU Radio wiki, [Frequency Shifting](https://wiki.gnuradio.org/index.php/Frequency_Shifting).*
 ::::
 
 ::::{frame} The Product Detector
@@ -269,7 +271,7 @@ The L12 Lab moves this link onto a PlutoSDR. The transmit half ends at a PlutoSD
 
 In class we transmit only into a cable, into a shielded enclosure, or at very low power in an ISM band, and only when the lesson says to. Nothing in this lesson transmits; the L12 Lab transmits from the Pluto's TX port through an inline 30 dB attenuator into its own RX port. We have run the PlutoSDR flowgraph only in simulation, with a model of the cable in place of the radio, so the lab is its first run on hardware.
 
-To hear real Morse, open [SDR Flex](https://livethisdream.github.io/sdr-flex/) with an RTL-SDR, or GQRX if SDR Flex is not set up, tune a nearby VOR between 108 and 118 MHz, and choose AM. Every few seconds the station keys its two- or three-letter identifier as a 1020 Hz tone, and the waterfall shows each mark as a short dash beside the carrier. The CW demodulator in SDR Flex, and GQRX's CW-U and CW-L modes, work like today's product detector: they turn a keyed carrier into a tone you can hear. Amateur CW sits on HF, below the RTL-SDR's range, so it needs an HF receiver or an upconverter. Listening is receive-only.
+To hear real Morse, open [SDR Flex](https://livethisdream.github.io/sdr-flex/) with an RTL-SDR, or GQRX if SDR Flex is not set up, tune a nearby VOR, and choose AM. VORs sit between 108 and 118 MHz; find the frequency of the nearest one on an FAA sectional chart, free at [SkyVector](https://skyvector.com/), where each VOR's box lists its frequency and its Morse identifier. Every few seconds the station keys its two- or three-letter identifier as a 1020 Hz tone, and the waterfall shows each mark as a short dash beside the carrier. The CW demodulator in SDR Flex, and GQRX's CW-U and CW-L modes, work like today's product detector: they turn a keyed carrier into a tone you can hear. Most amateur CW is on HF, which needs an upconverter or direct sampling; 2 m CW at 144.0 to 144.1 MHz is in range. Listening is receive-only.
 ::::
 
 ::::{frame} Key Point

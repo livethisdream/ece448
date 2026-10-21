@@ -115,12 +115,12 @@ samples at $f_s = 8$ kHz in \texttt{L13-dtmf-rx.grc} instead of the lesson's 205
 		spacing: \ansbox[1.1in]{58.8 Hz}
 	\end{minipage}
 
-	\part Which parameter do you change in each of the eight Goertzel blocks, and what
-	sample rate must the two time sinks that plot the bins now use?
+	\part What do you change in the flowgraph, and what happens to the eight Goertzel
+	blocks' Length and the two time sinks that plot the bins?
 		\begin{solution}[0.8in]
-		Set Length to 136 in all eight Goertzel blocks; Rate stays \texttt{samp\_rate} and each
-		Frequency stays its tone. Each Goertzel block makes one output per block, so the time
-		sinks' sample rate becomes \texttt{samp\_rate/136}, about 58.8 outputs a second.
+		Set the Variable \texttt{N} to 136. The eight Goertzel lengths and the
+		\texttt{samp\_rate/N} sample rate of the time sinks follow it, so nothing else
+		changes; the sinks now get about 58.8 outputs a second.
 		\end{solution}
 
 	\part Compared with $N = 205$, what do you expect the shorter block to do better, and

@@ -206,18 +206,20 @@ a threshold of $-10$ dB, and a hysteresis of 3 dB, these twelve complex samples:
 \begin{center}
 $1,\ 1,\ 1,\ 1,\ \ 0.1,\ 0.1,\ 0.1,\ 0.1,\ \ 1,\ 1,\ 0,\ 0$
 \end{center}
+Averaged four at a time, these samples read 0, $-20$, and $-3$ dB on the power output.
 \begin{parts}
 
 	\begin{minipage}[t]{0.58\linewidth}
-		\part How many outputs does each port make? Give the power outputs in dB.
+		\part How many outputs does each port make, and which input samples does each
+		output average?
 		\begin{solution}[1.2in]
-		Twelve inputs at 4 per output give 3 outputs. The three runs have a mean power
-		of 1, 0.01, and 0.5, which read 0, $-20$, and $-3$ dB on the power output.
+		Twelve inputs at 4 per output give 3 outputs on each port. The first averages
+		samples 1 to 4, the second 5 to 8, and the third 9 to 12.
 		\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
 		\raggedleft \vspace{12pt}
-		\ansbox[1.4in]{0, $-20$, $-3.0$ dB}
+		\ansbox[1.4in]{3 on each port}
 	\end{minipage}
 
 	\begin{minipage}[t]{0.58\linewidth}
