@@ -1,8 +1,9 @@
 % !TEX root =./ECE448_Practice_main.tex
 %
 % L9 practice set (PAM Theory). Every question is a choice we make in the L9
-% flowgraphs: a symbol rate, an RRC parameter, a sampling instant, a loop
-% setting. Blank copy: \begin{solution}[h] reserves h of work space. SOLUTIONS
+% flowgraphs or a display we read: a symbol rate, an RRC parameter, a Gray
+% code, an eye, a loop setting. No error-rate math (ROADMAP, "Sources and
+% noise", 2026-10-21): noise is something to watch. Blank copy: \begin{solution}[h] reserves h of work space. SOLUTIONS
 % copy (\iskey=1) prints the red worked solutions.
 
 \fullwidth{\textbf{Learning Objective 4.2: } I can describe PAM theory and identify the
@@ -14,6 +15,39 @@ end (\textbf{None} if you did not collaborate).}
 
 \begin{questions}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{Constellations and Gray coding.}
+\begin{parts}
+
+	\part Sketch the 4-PAM constellation on the I/Q plane and label its four points
+	with a Gray code. Explain why a Gray code is worth using.
+		\begin{solution}[1.2in]
+		Four points on the real axis at $-3, -1, +1, +3$, labeled 00, 01, 11, 10 from left
+		to right. Noise almost always pushes a sample to a neighboring point, and
+		neighbors differ in only one bit, so a wrong decision usually costs one bit
+		instead of two.
+		\end{solution}
+
+	\part 8-PSK places eight points evenly around a circle, three bits each. Label
+	them with a Gray code, going around the circle.
+		\begin{solution}[1.2in]
+		One answer, going counterclockwise from $0^\circ$: 000, 001, 011, 010, 110, 111,
+		101, 100. Each point differs from both neighbors in one bit, including the wrap
+		from 100 back to 000. Any labeling with that property is correct.
+		\end{solution}
+
+	\part On a constellation sink, a 2-PAM signal shows two tight clouds at $\pm 1$.
+	The noise is turned up. Describe what changes on the display, and say when the
+	receiver starts making wrong decisions.
+		\begin{solution}[1.0in]
+		Each cloud spreads. While both clouds stay on their own side of the imaginary
+		axis, the decision threshold, every decision is right; once the clouds spread far
+		enough that some samples cross it, those samples are decided wrong.
+		\end{solution}
+
+\end{parts}
+
+\newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \question \textbf{Fitting a channel.} A telemetry link must fit a 25 kHz channel and
 carry at least 32 kb/s. Use RRC pulse shaping, with bandwidth $B = (1+\alpha)R_s$.
@@ -36,21 +70,20 @@ carry at least 32 kb/s. Use RRC pulse shaping, with bandwidth $B = (1+\alpha)R_s
 	\end{minipage}
 
 	\begin{minipage}[t]{0.58\linewidth}
-		\part Switch to 4-PAM at the same $\alpha$. Find the bit rate, and use Lesson 3's
-		curves to state how much more $E_b/N_0$ the link needs for a bit error rate of
-		$10^{-5}$.
-		\begin{solution}[1.1in]
+		\part Switch to 4-PAM at the same $\alpha$. Which block setting changes, and what
+		is the bit rate now? In words, what would you expect to see on the Symbol Sync
+		output at the same noise as before, and why?
+		\begin{solution}[1.3in]
+		The Chunks to Symbols table changes to four levels, and
 		\eq{ R_b = 2 \times 18.5 = 37.0\ \text{kb/s} }
-		which meets the requirement. 2-PAM needs 9.6 dB and 4-PAM needs 13.4 dB at
-		$10^{-5}$, so 3.8 dB more.
+		which meets the requirement. At the same power, four levels sit closer together
+		than two, so the same noise spreads each band into its neighbors' thresholds
+		sooner: more samples land past a threshold, and more decisions are wrong.
 		\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
 		\raggedleft \vspace{12pt}
 		$R_b$: \ansbox[1.1in]{37.0 kb/s}
-
-		\vspace{4pt}
-		extra: \ansbox[1.1in]{3.8 dB}
 	\end{minipage}
 
 	\begin{minipage}[t]{0.58\linewidth}
@@ -145,13 +178,13 @@ $\pm 0.2$ around each level.
 	(ii) the receiver drops its filter; (iii) the receiver samples 4 samples away from
 	the best instant.
 		\begin{solution}[1.4in]
-		(i) The traces spread vertically and the opening shrinks; at twice the spread,
-		$\pm 0.4$, it falls to $(0.4 - (-0.4))/1.6 = 50\%$. (ii) Noise across the whole
+		(i) The traces spread vertically, each band gets wider, and the opening between
+		them shrinks. (ii) Noise across the whole
 		sample bandwidth returns and the single transmit RRC leaves ISI, so the traces
 		miss the levels and the eye nearly closes. (iii) Four samples is half a symbol,
 		so the receiver samples between symbols. Where the symbol repeats, the sample
 		stays near its level, but at a transition it lands near the zero crossing, and
-		about half of those decisions are wrong.
+		many of those decisions go wrong.
 		\end{solution}
 
 	\part In words, explain why a smaller roll-off makes the receiver more
@@ -179,26 +212,24 @@ $\pm 0.2$ around each level.
 		in cascade make a raised cosine, which is zero at every other symbol instant.
 		\end{solution}
 
-	\begin{minipage}[t]{0.58\linewidth}
-		\part Before the receive filter, the noise fills the full 32 kHz the samples
-		represent. Afterward, its noise-equivalent bandwidth is about $R_s$.
-		Estimate the noise reduction in dB.
+	\part In the L9 matched-filter screenshot, at a noise amplitude of 0.6, the eye
+	before the filter is closed and the eye after it is open. The signal occupies about
+	$\pm 2.7$ kHz of the 32 kHz the samples represent. Explain in words what the filter
+	did to make the difference.
 		\begin{solution}[1.0in]
-		\eq{ 10\log_{10}\dfrac{32\ \text{kHz}}{4\ \text{kHz}} = 10\log_{10} 8 = 9.0\db }
+		The noise is spread across the whole 32 kHz, but the signal sits in only a few
+		kilohertz of it. The matched filter passes the signal's band and blocks the
+		noise everywhere else, so far less noise is left at the sampling instant, the
+		traces converge near $\pm 1$, and the eye opens.
 		\end{solution}
-	\end{minipage}\hfill%
-	\begin{minipage}[t]{0.37\linewidth}
-		\raggedleft \vspace{12pt}
-		\ansbox[1.1in]{$9.0\db$}
-	\end{minipage}
 
 	\part A classmate puts a full raised-cosine filter at the transmitter and no
 	filter at the receiver. The eye at the receiver has zero ISI. Explain what is
 	still wrong with this design.
 		\begin{solution}[1.0in]
 		The receiver passes all the noise across the 32 kHz the samples represent,
-		about 9 dB more than the matched filter would, so the eye is noisier and the
-		error rate is higher at the same transmit power. Zero ISI is necessary but not
+		instead of only the signal's band, so the eye is noisier and more decisions are
+		wrong at the same transmit power. Zero ISI is necessary but not
 		sufficient; the RRC split gets zero ISI and the best noise rejection together.
 		\end{solution}
 

@@ -23,6 +23,11 @@ cd "$(dirname "$0")"
 SLUG="${1:-L05_FirstFlowgraphs}"
 SRC="ECE448_Lab_${SLUG}"
 
+# A lab whose answers live in the private ECE448-faculty repo (see the L10 Lab)
+# finds them on TEXINPUTS. KEYDIR is that repo's lab-keys/src folder; it
+# defaults to a sibling clone. The blank copy never reads it.
+KEYDIR="${KEYDIR:-../../ECE448-faculty/lab-keys/src}"
+
 NOFIGSDEF=""
 if [[ "${NOFIGS:-0}" == "1" ]]; then
 	NOFIGSDEF="\\def\\nofigsIn{}"
@@ -38,7 +43,7 @@ build() {                       # build <iskey:0|1> <suffix>
 	echo "wrote ${job}.pdf"
 }
 
-build 1 KEY
+TEXINPUTS="${KEYDIR}//:${TEXINPUTS:-}" build 1 KEY
 build 0 blank
 
 # Publish the student copy to the site. book/extras/ is copied to the built
