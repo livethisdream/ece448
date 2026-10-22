@@ -52,7 +52,7 @@ Parts 1 and 3 are LO 5.1, the packaging. Part 2 and the levels are LO 5.2, the b
 Our block turns the carrier into a key: 1 while it is on.
 
 Note:
-Run L11-keyed-carrier.grc live. Morse ECE at 20 WPM, so a dit is 60 ms. The tone has power 0 dB and the noise at amplitude 0.1 has power minus 20 dB.
+Run L11-keyed-carrier.grc live. Morse ECE at 20 WPM, so a dit is 60 ms. On the Power plot the carrier reads 0 dB and the floor near minus 20 dB.
 
 ---
 
@@ -110,10 +110,10 @@ Sync like Multiply Const, decimator like a decimating filter, interpolator like 
 
 <div class="fig" data-inline-svg="./fig/L11-energy-steps.svg" style="max-width:720px; margin:0 auto;"></div>
 
-$$P = \frac{1}{N}\sum_{n=1}^{N} \vert x[n]\vert^2$$
+Average power of each $N$ samples, in dB, then a key with hysteresis.
 
 Note:
-Key on above the threshold, off below the threshold minus the hysteresis. With N = 32 at 32 kHz, one output per millisecond. Noise of amplitude sigma has power sigma squared, so the floor sits near 20 log10 sigma.
+Key on above the threshold, off below the threshold minus the hysteresis. With N = 32 at 32 kHz, one output per millisecond. A tone of amplitude 1 reads 0 dB; with the carrier off, read the noise floor off the Power plot.
 
 ---
 
@@ -186,7 +186,7 @@ Search the library for Energy Detector, under ECE 448. The rest of the flowgraph
 
 <img src="./img/11-custom-blocks/L11-keyed-chatter.png" alt="At noise amplitude 0.3 the noise floor sits on the minus 10 dB threshold, and the key chatters through every gap" style="max-height:420px; display:block; margin:0 auto;">
 
-The floor sits at $-10.5$ dB, on the threshold.
+On the Power plot the floor sits near $-10.5$ dB, on the threshold.
 
 Note:
 Move the noise slider to 0.3 and the hysteresis to 0 live. Then add 3 dB of hysteresis with the threshold left at minus 10: the key turns on and rarely turns off. The threshold must move up before hysteresis can help.
@@ -197,10 +197,10 @@ Move the noise slider to 0.3 and the hysteresis to 0 live. Then add 3 dB of hyst
 
 <img src="./img/11-custom-blocks/L11-keyed-fixed.png" alt="With the threshold at minus 5 dB and 3 dB of hysteresis, both levels sit between the floor and the carrier and the key follows the keying" style="max-height:420px; display:block; margin:0 auto;">
 
-Set the threshold halfway between the floor and the signal, and the hysteresis above the floor's spread.
+Read both levels off the plot. Set the threshold halfway between them, and the hysteresis above the floor's ragged edge.
 
 Note:
-Carrier on: 10 log10 of 1.09, plus 0.4 dB. Carrier off: minus 10.5 dB. On level minus 5, off level minus 8. Hysteresis should be a few times the floor's spread, which shrinks as the square root of N.
+On the plot the carrier sits just above 0 dB and the floor near minus 10.5 dB. On level minus 5, off level minus 8. Averaging more samples smooths the floor, so the levels can sit closer to the noise, but each output covers more time.
 
 ---
 
@@ -232,7 +232,7 @@ macOS also needs xcode-select --install; we did not test a Mac or the Windows Bu
 The same block keys on a 433.92 MHz remote. The flowgraph only receives.
 
 Note:
-Tuned 200 kHz low to keep the DC spike off the signal. N = 4 at 128 kHz is about 31 microseconds per output, short enough for pulses a few hundred microseconds long. Not run for the page: it needs an RTL-SDR and a remote.
+Find the bursts first in SDR Flex (GQRX as the fallback): tune 433.92 MHz and watch the waterfall while pressing the remote. SDR Flex can pass them to rtl_433, a ready-made decoder that names the device. Then close the explore tool and open the flowgraph. Tuned 200 kHz low to keep the DC spike off the signal. N = 4 at 128 kHz is about 31 microseconds per output, short enough for pulses a few hundred microseconds long. Not run for the page: it needs an RTL-SDR and a remote.
 
 ---
 
@@ -249,6 +249,8 @@ The Energy Detector is the first block in gr-ece448; Lesson 12 can reuse it.
 
 - L11 Lab: build gr-ece448, then write a Key Timer block in a module of your own
 - Lesson 12: turn the key into Morse letters
+
+Wiki tutorials: Creating Your First Block · Embedded Python Block · Creating Python OOT with gr-modtool
 
 Note:
 Before the lab, make sure gr_modtool runs at the radioconda prompt, and decide with your instructor whether your laptop takes the module route or the Embedded Python Block route.

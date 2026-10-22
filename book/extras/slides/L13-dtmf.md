@@ -34,13 +34,14 @@ Open L13-dtmf-rx.grc, L13-dtmf-keypad.grc, and L13-dtmf-link.grc before class, w
 ## Today's Plan
 
 1. The keypad grid and one key in GNU Radio
-2. The rules a receiver must meet
-3. Goertzel bins
-4. The receiver and its decision rules
-5. Testing the decoder
+2. Timing and twist
+3. Ready-made decoders: multimon-ng and a phone app
+4. Goertzel blocks
+5. The receiver and its decision rules
+6. Testing the decoder
 
 Note:
-Parts 1 and 2 are the signal, parts 3 and 4 the receiver. Part 5 runs live with the link flowgraph's sliders.
+Parts 1 and 2 are the signal, part 3 the ready-made decoders, parts 4 and 5 our own receiver. Part 6 runs live with the link flowgraph's sliders.
 
 ---
 
@@ -62,7 +63,7 @@ Run L13-dtmf-rx.grc live. The capture is synthetic: L13-dtmf-capture.grc dialed 
 '5' sends 770 Hz and 1336 Hz.
 
 Note:
-Each tone is about 10.5% above the previous one in its group, and no row tone's second harmonic lands on a column tone. The closest pair is 697 and 770 Hz, 73 Hz apart. The A to D column set call precedence on AUTOVON and carries control codes on radio systems.
+The frequencies are chosen so that no tone's harmonics land on another tone. The closest pair is 697 and 770 Hz, 73 Hz apart. The A to D column set call precedence on AUTOVON and carries control codes on radio systems.
 
 ---
 
@@ -88,17 +89,14 @@ Run it and hold Press. The receiver works in frequency because the digit is obvi
 
 ---
 
-## The Rules a Receiver Must Meet
+## Timing and Twist
 
-| Rule | Accept | Reject |
-| :-- | :-- | :-- |
-| Tone length | 40 ms or longer | shorter than 23 ms |
-| Gap | 40 ms or longer | |
-| Frequency error | within ±1.5% | beyond ±3.5% |
-| Twist (column − row) | −8 to +4 dB | |
+- Tones last 40 ms or longer.
+- Gaps between digits last 20 ms or longer.
+- The column tone may arrive a few dB weaker: **twist**.
 
 Note:
-The rules come from ITU-T Q.24 and the Bell System. Auto-dialers typically send 50 ms on and 50 ms off, 10 digits a second. The 23 ms reject rule keeps speech from looking like a digit. Lines lose more at high frequencies, so the column tone usually arrives weaker, which the standard calls normal twist.
+Auto-dialers typically send 50 ms on and 50 ms off, 10 digits a second. A receiver ignores bursts much shorter than a tone, which keeps speech from looking like a digit. Lines lose more at high frequencies, so the column tone often arrives weaker; the link has a twist slider.
 
 ---
 
@@ -109,7 +107,18 @@ The rules come from ITU-T Q.24 and the Bell System. Auto-dialers typically send 
 The simulated capture uses 50 ms tones and gaps, −2 dB twist, and 20 dB SNR.
 
 Note:
-L13-dtmf-capture.grc chains the DTMF Dialer Embedded Python Block, a Noise Source, a Head, and a Wav File Sink. It writes one dialing and a 500 ms pause, 1.5 s at 8 kHz. SNR is tone power over noise power across 0 to 4 kHz, during a tone. The three 5s are separate because a gap separates them.
+L13-dtmf-capture.grc chains the DTMF Dialer Embedded Python Block, a Noise Source, a Head, and a Wav File Sink. It writes one dialing and a 500 ms pause, 1.5 s at 8 kHz. The three 5s are separate because a gap separates them.
+
+---
+
+## Ready-Made Decoders
+
+- `multimon-ng -t wav -a DTMF L13-capture.wav` prints the ten digits.
+- An Android DTMF app hears them through the microphone.
+- How else could we decode it?
+
+Note:
+From the 2025 deck: the transmitter is easy, the decoder not so easy. Run multimon-ng (Linux: apt install multimon-ng sox; macOS: brew install multimon-ng sox; Windows: inside WSL2) on L13-capture.wav to show the digits, or play the file to a phone app, then ask how we would build the decoder ourselves.
 
 ---
 
@@ -117,23 +126,25 @@ L13-dtmf-capture.grc chains the DTMF Dialer Embedded Python Block, a Noise Sourc
 
 - Eight band-pass filters, each followed by an energy detector
 - Each must reject a neighbor 73 Hz away
-- Separating $\Delta f$ takes about $1/\Delta f$ of signal: 14 ms
+- A narrower filter has to listen longer
 
 Note:
 A 40 ms tone leaves room for a block of about 25 ms, with margin for the tone's start and end.
 
 ---
 
-## The Goertzel Bin
+## The Goertzel Block
 
-$$k = \frac{f N}{f_s}, \qquad c = 2\cos\left(\frac{2\pi k}{N}\right)$$
+| Parameter | Setting |
+| :-- | :-- |
+| Sample rate | 8000 |
+| Length | 205 |
+| Frequency | one DTMF tone |
 
-$$q_n = c q_{n-1} - q_{n-2} + x_n$$
-
-With $N = 205$ at 8 kHz, blocks last 25.6 ms and bins sit 39.0 Hz apart.
+205 samples at 8 kHz last 25.6 ms: bins 39 Hz apart, nulls 39 Hz either side.
 
 Note:
-The Goertzel recursion computes one DFT bin with one multiply per sample. For 697 Hz, k = 17.86; for 1209 Hz, k = 30.98. The power after the last sample comes from the last two values of q.
+The Goertzel algorithm measures the energy at one frequency over a block, far cheaper than an FFT when only eight frequencies matter. GNU Radio has it as a stock block. 205/8000 = 25.6 ms fits in a 40 ms tone; 8000/205 = 39 Hz.
 
 ---
 
@@ -141,10 +152,10 @@ The Goertzel recursion computes one DFT bin with one multiply per sample. For 69
 
 <div class="fig" data-inline-svg="./fig/L13-goertzel.svg" style="max-width:720px; margin:0 auto;"></div>
 
-Each bin has nulls 39 Hz either side, and a neighbor lands 19 to 26 dB down.
+Bins 39 Hz apart, nulls 39 Hz either side; each neighbor lands far down.
 
 Note:
-Each bin is a band-pass filter read once per block. A longer block narrows the bins but outlasts a short tone; a shorter one widens them. The lab measures both. The classic decoder rounds k, which moves the 697 Hz bin to 702.4 Hz.
+Each bin is a band-pass filter read once per block. A longer block narrows the bins but outlasts a short tone; a shorter one widens them. The lab changes N and watches both.
 
 ---
 
@@ -167,7 +178,7 @@ Each stock Goertzel block outputs the bin divided by N once per block; Complex t
 4. Three blocks in a row agree.
 
 Note:
-Test 1 rejects noise and speech, test 2 a second tone in a group, test 3 excessive twist; the limits sit 2 dB outside the standard's because measured powers vary by about a decibel from block to block. The blocks start 102 samples apart, so a tone must outlast about one 25.6 ms block, which rejects bursts under 23 ms. A block without the digit must come before it counts again, so 555 reads as three digits.
+Test 1 rejects noise and speech, test 2 a second tone in a group, test 3 a pair whose levels differ too much. The blocks start 102 samples apart, so a tone must outlast about one 25.6 ms block, which rejects short bursts. A block without the digit must come before it counts again, so 555 reads as three digits.
 
 ---
 
@@ -176,7 +187,7 @@ Test 1 rejects noise and speech, test 2 a second tone in a group, test 3 excessi
 ## DTMF Explorer
 
 - Lower the SNR: "too little energy."
-- Move the frequency error until a tone leaves its main lobe.
+- Move the frequency error until the tone slides off its bin.
 - Lower N until the main lobes overlap.
 
 <p class="viz-cue">↗ Interactive on the lesson page</p>
@@ -186,47 +197,36 @@ Start at key 5, N 205, 20 dB. Raise twist past +6 dB to show test 3. The explore
 
 ---
 
-## Decoder Performance in Noise
+## Add Noise Until Digits Drop
 
-<img src="./img/13-dtmf/L13-link-noisy.png" alt="The link flowgraph at 1 dB SNR with 15 of 26 numbers correct" style="max-height:380px; display:block; margin:0 auto;">
+<img src="./img/13-dtmf/L13-link-noisy.png" alt="The link flowgraph at 1 dB SNR with 15 of 27 numbers correct" style="max-height:380px; display:block; margin:0 auto;">
 
-| SNR | 3 dB | 2 dB | 1 dB | 0 dB |
-| :-- | :-: | :-: | :-: | :-: |
-| Correct | 40/40 | 40/40 | 25/40 | 5/40 |
+Every number arrives to about 2 dB; some drop near 1 dB; almost none at 0 dB.
 
 Note:
-Each bin sees about 20 dB less noise than the 4 kHz band. The limit comes from test 1: at 0 dB half the block's energy is noise. Ten minutes of noise alone produced no false digits.
-
----
-
-## Frequency Error and Rounding k
-
-<img src="./img/13-dtmf/L13-link-roundk.png" alt="The link with k rounded and a 1.5% frequency error: 0 of 15 numbers correct" style="max-height:340px; display:block; margin:0 auto;">
-
-| Error | ±1.0% | ±1.5% | ±2.0% |
-| :-- | :-: | :-: | :-: |
-| $k$ unrounded | 40/40 | 40/40 | 0/40 |
-| $k$ rounded | 40/40 | 0/40 | |
-
-Note:
-Rounded, the 697 Hz bin sits at 702.4 Hz, and some bins move by up to 10 Hz. A 1.5% error adds 10 to 25 Hz more. Unrounded k removes the rounding error; the recursion works for any k.
+Run the link live and pull the SNR slider down. With bins 39 Hz apart, nulls 39 Hz either side, each bin sees only a small slice of the noise. Ten minutes of noise alone produced no false digits. With no noise, every key decodes at 1.5% frequency error and none at 2%.
 
 ---
 
 ## DTMF on a Real Radio
 
 - Repeaters and remote sites take DTMF over FM.
-- An RTL-SDR and an FM receiver can feed 8 kHz audio to the decoder.
+- Listen in SDR Flex (or GQRX) on an RTL-SDR, narrow FM; multimon-ng prints the digits.
+- Or feed 8 kHz FM audio to the DTMF Decoder.
 - The L13 Lab decodes a phone through the laptop microphone.
 
 Note:
 Nothing in this lesson transmits. In class we transmit only into a cable, into a shielded enclosure, or at very low power in an ISM band, and only when the lesson says to.
 
+GQRX fallback (Linux or macOS; not yet tested live): press UDP, then nc -l -u 7355 | sox -t raw -e signed-integer -b 16 -r 48000 -c 1 - -t raw -e signed-integer -b 16 -r 22050 -c 1 - | multimon-ng -t raw -a DTMF -
+
+Tutorials this lesson follows: GNU Radio wiki Embedded Python Block, Goertzel, Signal Source, and Wav File Source pages; multimon-ng is the deck's ready-made decoder.
+
 ---
 
 ## Key Point
 
-<div class="callout">Each DTMF key is one row tone plus one column tone. Goertzel bins of 205 samples at 8 kHz separate tones 73 Hz apart, and a digit counts when one row bin and one column bin dominate for three blocks.</div>
+<div class="callout">Each DTMF key is one row tone plus one column tone. Goertzel blocks of length 205 at 8 kHz separate tones 73 Hz apart, and a digit counts when one row bin and one column bin dominate for three blocks.</div>
 
 Note:
 Every tone-based signaling system in the course decodes the same way: it measures the power at a few known frequencies over a block and applies decision rules to those powers.
@@ -235,8 +235,8 @@ Every tone-based signaling system in the course decodes the same way: it measure
 
 ## Looking Ahead
 
-- The L13 Lab builds the keypad, decodes an unknown capture, measures the limits, and decodes a phone.
+- The L13 Lab builds the keypad, decodes an unknown capture, finds where digits drop, and decodes a phone.
 - Lesson 14 receives HD Radio beside an FM station.
 
 Note:
-Before the lab, run the receiver on L13-capture.wav and be able to find k for any tone.
+Before the lab, run the receiver on L13-capture.wav and the link with its sliders.

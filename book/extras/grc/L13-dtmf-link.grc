@@ -113,7 +113,7 @@ blocks:
   parameters:
     comment: ''
     entry_signal: editingFinished
-    gui_hint: 0,0,1,1
+    gui_hint: 0,0,1,2
     label: Number
     type: string
     value: '''7195550148'''
@@ -143,23 +143,6 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [820, 12]
-    rotation: 0
-    state: enabled
-- name: round_k
-  id: variable_qtgui_check_box
-  parameters:
-    comment: ''
-    'false': 'False'
-    gui_hint: 0,1,1,1
-    label: Round k to an integer
-    'true': 'True'
-    type: bool
-    value: 'False'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [320, 112]
     rotation: 0
     state: enabled
 - name: rx_digits
@@ -372,70 +355,70 @@ blocks:
       A block holds a digit when the strongest row bin and the strongest column bin\n\
       carry at least `share` of the block's energy, each is at least 6 dB above the\n\
       other three bins in its group, and the column tone is no more than 6 dB above\n\
-      or 10 dB below the row tone (the twist limits, 2 dB outside the standard's\n\
-      +4 and -8 dB). A digit is reported when three blocks in a row hold it, and\n\
-      again only after a block that does not.\nA pause of 200 ms or more ends a number.\
-      \ The counts start over when a setting\nchanges, and a number that is not decoded\
-      \ never counts.\nFunction Probes read digits() and stats() for the QT GUI Labels.\"\
-      \"\"\n\nimport time\n\nimport numpy as np\nfrom gnuradio import gr\n\nROWS =\
-      \ (697, 770, 852, 941)\nCOLS = (1209, 1336, 1477, 1633)\nKEYS = ('123A', '456B',\
-      \ '789C', '*0#D')\n\n\nclass blk(gr.sync_block):\n    def __init__(self, samp_rate=8000,\
-      \ N=205, share=0.35, round_k=False,\n                 expected='', settings=None):\n\
-      \        gr.sync_block.__init__(self, name='DTMF Decoder', in_sig=[np.float32],\
-      \ out_sig=None)\n        self.fs = samp_rate\n        self.N = int(N)\n    \
-      \    self.share = share\n        self.round_k = round_k\n        self.expected\
-      \ = expected\n        self.settings = settings\n\n    @property\n    def settings(self):\n\
-      \        return self._settings\n\n    @settings.setter\n    def settings(self,\
-      \ value):\n        # GRC sets this whenever a setting it names changes; start\
-      \ the counts over,\n        # and drop the first number after a change, which\
-      \ may mix old and new samples.\n        self.discard = hasattr(self, '_settings')\n\
-      \        self._settings = value\n        k = np.array(ROWS + COLS) * self.N\
-      \ / self.fs       # bin number of each tone\n        if self.round_k:\n    \
-      \        k = np.round(k)\n        self.coef = 2 * np.cos(2 * np.pi * k / self.N)\n\
-      \        self.hop = self.N // 2\n        self.buf = np.zeros(0, dtype=np.float32)\n\
-      \        self.prev = self.held = None\n        self.run = 0\n        self.quiet\
-      \ = 0\n        self.number = ''\n        self.shown = '(listening)'\n      \
-      \  self.good = self.total = 0\n        self.t0 = time.monotonic()\n\n    def\
-      \ goertzel(self, x):\n        q1 = np.zeros(8)\n        q2 = np.zeros(8)\n \
-      \       for v in x:\n            q1, q2 = self.coef * q1 - q2 + v, q1\n    \
-      \    return q1 * q1 + q2 * q2 - self.coef * q1 * q2      # |X(k)|^2 for each\
-      \ tone\n\n    def decide(self, x):\n        energy = np.dot(x, x)\n        if\
-      \ energy < 1e-8:\n            return None\n        p = self.goertzel(x) * 2\
-      \ / (self.N * energy)          # a lone tone gives 1\n        lo, hi = p[:4],\
-      \ p[4:]\n        r, c = int(np.argmax(lo)), int(np.argmax(hi))\n        if lo[r]\
-      \ + hi[c] < self.share:\n            return None                           \
-      \            # not enough energy in two tones\n        if np.sort(lo)[-2] *\
-      \ 4 > lo[r] or np.sort(hi)[-2] * 4 > hi[c]:\n            return None       \
-      \                                # no clear winner (6 dB)\n        if hi[c]\
-      \ > lo[r] * 10 ** 0.6 or lo[r] > hi[c] * 10 ** 1.0:\n            return None\
-      \                                       # twist: +6 dB / -10 dB\n        return\
-      \ KEYS[r][c]\n\n    def work(self, input_items, output_items):\n        self.buf\
-      \ = np.concatenate((self.buf, input_items[0]))\n        while len(self.buf)\
-      \ >= self.N:\n            d = self.decide(self.buf[:self.N].astype(np.float64))\n\
-      \            self.buf = self.buf[self.hop:]\n            self.run = self.run\
-      \ + 1 if d is not None and d == self.prev else int(d is not None)\n        \
-      \    if d != self.held:\n                self.held = None\n            if d\
-      \ is not None and self.run >= 3 and self.held is None:\n                self.number\
-      \ += d\n                self.held = d\n            self.quiet = 0 if d is not\
-      \ None else self.quiet + 1\n            if self.number and self.quiet * self.hop\
-      \ >= 0.2 * self.fs:\n                self.finish()\n            self.prev =\
-      \ d\n        return len(input_items[0])\n\n    def finish(self):\n        if\
-      \ self.discard:\n            self.discard = False\n        else:\n         \
-      \   self.shown = self.number\n            self.total += 1\n            self.good\
-      \ += self.number == str(self.expected).upper()\n        self.number = ''\n\n\
-      \    def digits(self):\n        return self.number or self.shown\n\n    def\
-      \ stats(self):\n        t = time.monotonic() - self.t0\n        if not self.expected:\n\
-      \            return f'{self.total} decoded in {t:.0f} s'\n        return f'{self.good}\
-      \ correct of {self.total} decoded in {t:.0f} s'\n"
+      or 10 dB below the row tone. A digit is reported when three blocks in a row\
+      \ hold it, and\nagain only after a block that does not.\nA pause of 200 ms or\
+      \ more ends a number. The counts start over when a setting\nchanges, and a number\
+      \ that is not decoded never counts.\nFunction Probes read digits() and stats()\
+      \ for the QT GUI Labels.\"\"\"\n\nimport time\n\nimport numpy as np\nfrom gnuradio\
+      \ import gr\n\nROWS = (697, 770, 852, 941)\nCOLS = (1209, 1336, 1477, 1633)\n\
+      KEYS = ('123A', '456B', '789C', '*0#D')\n\n\nclass blk(gr.sync_block):\n   \
+      \ def __init__(self, samp_rate=8000, N=205, share=0.35, round_k=False,\n   \
+      \              expected='', settings=None):\n        gr.sync_block.__init__(self,\
+      \ name='DTMF Decoder', in_sig=[np.float32], out_sig=None)\n        self.fs =\
+      \ samp_rate\n        self.N = int(N)\n        self.share = share\n        self.round_k\
+      \ = round_k\n        self.expected = expected\n        self.settings = settings\n\
+      \n    @property\n    def settings(self):\n        return self._settings\n\n\
+      \    @settings.setter\n    def settings(self, value):\n        # GRC sets this\
+      \ whenever a setting it names changes; start the counts over,\n        # and\
+      \ drop the first number after a change, which may mix old and new samples.\n\
+      \        self.discard = hasattr(self, '_settings')\n        self._settings =\
+      \ value\n        k = np.array(ROWS + COLS) * self.N / self.fs       # bin number\
+      \ of each tone\n        if self.round_k:\n            k = np.round(k)\n    \
+      \    self.coef = 2 * np.cos(2 * np.pi * k / self.N)\n        self.hop = self.N\
+      \ // 2\n        self.buf = np.zeros(0, dtype=np.float32)\n        self.prev\
+      \ = self.held = None\n        self.run = 0\n        self.quiet = 0\n       \
+      \ self.number = ''\n        self.shown = '(listening)'\n        self.good =\
+      \ self.total = 0\n        self.t0 = time.monotonic()\n\n    def goertzel(self,\
+      \ x):\n        q1 = np.zeros(8)\n        q2 = np.zeros(8)\n        for v in\
+      \ x:\n            q1, q2 = self.coef * q1 - q2 + v, q1\n        return q1 *\
+      \ q1 + q2 * q2 - self.coef * q1 * q2      # |X(k)|^2 for each tone\n\n    def\
+      \ decide(self, x):\n        energy = np.dot(x, x)\n        if energy < 1e-8:\n\
+      \            return None\n        p = self.goertzel(x) * 2 / (self.N * energy)\
+      \          # a lone tone gives 1\n        lo, hi = p[:4], p[4:]\n        r,\
+      \ c = int(np.argmax(lo)), int(np.argmax(hi))\n        if lo[r] + hi[c] < self.share:\n\
+      \            return None                                       # not enough\
+      \ energy in two tones\n        if np.sort(lo)[-2] * 4 > lo[r] or np.sort(hi)[-2]\
+      \ * 4 > hi[c]:\n            return None                                    \
+      \   # no clear winner (6 dB)\n        if hi[c] > lo[r] * 10 ** 0.6 or lo[r]\
+      \ > hi[c] * 10 ** 1.0:\n            return None                            \
+      \           # twist: +6 dB / -10 dB\n        return KEYS[r][c]\n\n    def work(self,\
+      \ input_items, output_items):\n        self.buf = np.concatenate((self.buf,\
+      \ input_items[0]))\n        while len(self.buf) >= self.N:\n            d =\
+      \ self.decide(self.buf[:self.N].astype(np.float64))\n            self.buf =\
+      \ self.buf[self.hop:]\n            self.run = self.run + 1 if d is not None\
+      \ and d == self.prev else int(d is not None)\n            if d != self.held:\n\
+      \                self.held = None\n            if d is not None and self.run\
+      \ >= 3 and self.held is None:\n                self.number += d\n          \
+      \      self.held = d\n            self.quiet = 0 if d is not None else self.quiet\
+      \ + 1\n            if self.number and self.quiet * self.hop >= 0.2 * self.fs:\n\
+      \                self.finish()\n            self.prev = d\n        return len(input_items[0])\n\
+      \n    def finish(self):\n        if self.discard:\n            self.discard\
+      \ = False\n        else:\n            self.shown = self.number\n           \
+      \ self.total += 1\n            self.good += self.number == str(self.expected).upper()\n\
+      \        self.number = ''\n\n    def digits(self):\n        return self.number\
+      \ or self.shown\n\n    def stats(self):\n        t = time.monotonic() - self.t0\n\
+      \        if not self.expected:\n            return f'{self.total} decoded in\
+      \ {t:.0f} s'\n        return f'{self.good} correct of {self.total} decoded in\
+      \ {t:.0f} s'\n"
     affinity: ''
     alias: ''
     comment: ''
     expected: number
     maxoutbuf: '0'
     minoutbuf: '0'
-    round_k: round_k
+    round_k: 'False'
     samp_rate: samp_rate
-    settings: (number, snr_db, twist_db, tone_ms, gap_ms, offset_pct, round_k)
+    settings: (number, snr_db, twist_db, tone_ms, gap_ms, offset_pct)
     share: '0.35'
   states:
     _io_cache: ('DTMF Decoder', 'blk', [('samp_rate', '8000'), ('N', '205'), ('share',

@@ -28,8 +28,8 @@ L11 Lab · Module 5: Custom Blocks & Midterm · Dr. Neil Rogers
 
 ::::{frame} From Lesson to Bench
 :::{present}
-- **Pre-Lab:** check your tools and predict the levels and the Morse timing.
-- **Bench:** build `gr-ece448`, set the levels, then write and time your own Key Timer.
+- **Pre-Lab:** check your tools and work out the Morse timing at 15 WPM.
+- **Bench:** build `gr-ece448`, set the levels from the plot, then write and time a Key Timer.
 - **Writeup:** explain hysteresis and timing, and what a Morse decoder needs.
 :::
 
@@ -42,10 +42,10 @@ The lab packet has three parts, and you turn it in once, complete, before the mi
 :::{present}
 - Check that `gr_modtool` and `cmake` run, and choose your route.
 - Run `L11-keyed-carrier-epy.grc`, which needs nothing installed.
-- Predict the levels at two noise amplitudes, and the Morse timing at 15 WPM.
+- Work out the Morse timing at 15 WPM.
 :::
 
-At the radioconda prompt, run `gnuradio-config-info --version`, `gr_modtool --help`, and `cmake --version`. If `cmake` is missing, run `conda install -c conda-forge gnuradio-build-deps`; on macOS, also run `xcode-select --install` once. Question 2 asks for predictions from the lesson's formulas: the Energy Detector's power with the carrier off and on, a threshold between them, the floor's spread, and the length of each Morse element at 15 words per minute, where one unit lasts $1.2/15$ s.
+At the radioconda prompt, run `gnuradio-config-info --version`, `gr_modtool --help`, and `cmake --version`. If `cmake` is missing, run `conda install -c conda-forge gnuradio-build-deps`; on macOS, also run `xcode-select --install` once. Question 2 asks for the length of each Morse element at 15 words per minute, where one unit lasts $1.2/15$ s, how long one sending of "ECE" lasts and how many points that is at 1 kHz, and how many detector outputs a dit spans. You read the Energy Detector's levels off its Power plot at the bench.
 ::::
 
 ::::{frame} Two Routes
@@ -76,8 +76,8 @@ A Python-only module still runs CMake, and CMake needs a C++ compiler, which rad
 :class: read-only
 
 1. In the running flowgraph, set the noise amplitude to 0.5.
-2. Stop the flowgraph. Set the variable `wpm` to 15, and set both Time Sinks' Number of Points to one sending of "ECE" at 1 kHz, from your Question 2(d) answer. Run it again.
-3. Read the floor and the carrier-on level from the power plot for Question 4(a).
+2. Stop the flowgraph. Set the variable `wpm` to 15, and set both Time Sinks' Number of Points to one sending of "ECE" at 1 kHz, from your Question 2(b) answer. Run it again.
+3. Read the floor and the carrier-on level from the power plot, and note how far the floor wanders, for Question 4(a).
 4. Set the threshold to the floor's level and the hysteresis to 0, and watch the key.
 5. Choose your own threshold and hysteresis so that the detected key follows the sent keying for at least 20 s. Record them and screenshot the window for Question 4(b). Save this flowgraph under a new name; Question 6 adds to it.
 ::::
@@ -119,7 +119,7 @@ The Key Timer reads the Energy Detector's key, a stream of 0s and 1s, and counts
 
 1. Set the noise amplitude to 0.8. With 32 samples averaged, find the best threshold and hysteresis you can.
 2. Stop the flowgraph, run it again, and record the Marks label after 30 s for Question 7(a).
-3. Stop it, set the variable `decim` to 128, and run it again. Find your best settings again, and record the Marks label after 30 s and the dit length for Question 7(b).
+3. Stop it, set the variable `decim` to 128, and run it again. Watch how the floor on the power plot changes. Find your best settings again, and record the Marks label after 30 s and the dit length for Question 7(b).
 ::::
 
 ::::{frame} If the Block Does Not Appear
@@ -133,7 +133,7 @@ CMake prints several warnings marked "for project developers" about policies and
 
 ::::{frame} Part 3: After the Lab
 :::{present}
-- Explain why hysteresis can lengthen a mark, and how a larger $N$ lowers the floor's spread but coarsens the timing.
+- Explain why hysteresis can lengthen a mark, and how a larger $N$ smooths the floor but coarsens the timing.
 - Decide which blocks belong in a module.
 - Propose a rule that tells a dit from a dah at any speed.
 :::
@@ -148,6 +148,12 @@ The Writeup is three questions. The first explains why some marks read a millise
 - <a class="doc-link" href="../../grc/L11-gr-ece448.zip" download>L11-gr-ece448.zip</a>: the `gr-ece448` module with the Energy Detector and its unit test.
 - <a class="doc-link" href="../../grc/L11-keyed-carrier.grc" download>L11-keyed-carrier.grc</a>: the keyed carrier through the installed Energy Detector. No hardware needed.
 - <a class="doc-link" href="../../grc/L11-keyed-carrier-epy.grc" download>L11-keyed-carrier-epy.grc</a>: the same flowgraph with the Energy Detector in an Embedded Python Block. Needs nothing installed.
+
+Tutorials this lab follows, on the GNU Radio wiki:
+
+- <a class="doc-link" href="https://wiki.gnuradio.org/index.php/Creating_Your_First_Block" target="_blank" rel="noopener">Creating Your First Block</a>
+- <a class="doc-link" href="https://wiki.gnuradio.org/index.php/Embedded_Python_Block" target="_blank" rel="noopener">Embedded Python Block</a>
+- <a class="doc-link" href="https://wiki.gnuradio.org/index.php/Creating_Python_OOT_with_gr-modtool" target="_blank" rel="noopener">Creating Python OOT with gr-modtool</a>
 ::::
 
 ::::{frame} Looking Ahead

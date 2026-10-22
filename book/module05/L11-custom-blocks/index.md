@@ -63,6 +63,8 @@ No block in GNU Radio's library makes that key directly, so we write one: the **
 :::
 
 Lesson 8's Text Sink is an **Embedded Python Block**: GRC saves its code inside the `.grc` file, and Lesson 10 had to paste the same code into its own flowgraph. That is the right tool for a block one flowgraph needs. A block several flowgraphs need belongs in an **out-of-tree (OOT) module**, a separate package of blocks that installs beside GNU Radio's own. GNU Radio's library is the "tree", so a module we build ourselves is "out of tree". After we install it, the block appears in GRC's library like any other block, every flowgraph uses the same code, and a unit test checks that code each time we build it.
+
+*Follows: GNU Radio wiki, [Embedded Python Block](https://wiki.gnuradio.org/index.php/Embedded_Python_Block).*
 ::::
 
 ::::{frame} Part 1: Make the Module
@@ -77,6 +79,8 @@ gr_modtool add -t decimator -l python energy_detector
 :::
 
 **gr_modtool** comes with GNU Radio and writes the files of a module for us. `gr_modtool newmod ece448` makes a directory named `gr-ece448` with the build files and empty folders. Inside it, `gr_modtool add` asks for the block's type and language, which the flags `-t decimator -l python` give on the command line. It then asks for a copyright holder, the constructor's arguments, which we give as `decim=32, threshold_db=-20.0, hysteresis_db=3.0`, and whether to add a Python unit test, which we accept.
+
+*Follows: GNU Radio wiki, [Creating Python OOT with gr-modtool](https://wiki.gnuradio.org/index.php/Creating_Python_OOT_with_gr-modtool).*
 ::::
 
 ::::{frame} The Module Tree
@@ -120,11 +124,7 @@ GNU Radio's scheduler calls a block's `work()` function with a buffer of input s
 - The key turns on above the threshold and off below threshold minus hysteresis.
 :::
 
-For each run of $N$ input samples, the block computes the average power
-
-$$P = \frac{1}{N}\sum_{n=1}^{N} \vert x[n]\vert^2,$$
-
-and outputs $10\log_{10} P$ on its first output. A tone of amplitude 1 has power 1, or 0 dB, and GNU Radio's Noise Source with amplitude $\sigma$ has power $\sigma^2$, so with the carrier off the output sits near $20\log_{10}\sigma$ dB. The second output is the key. It switches to 1 when the power rises above the threshold, and back to 0 only when the power falls below the threshold minus the **hysteresis**. With $N = 32$ at 32 kHz, the block makes one output per millisecond.
+For each run of $N$ input samples, the block averages the magnitude squared, which is the average power, and outputs it in dB on its first output. A tone of amplitude 1 reads 0 dB, and with the carrier off the output sits at the noise floor, which the Power plot shows. The second output is the key. It switches to 1 when the power rises above the threshold, and back to 0 only when the power falls below the threshold minus the **hysteresis**. With $N = 32$ at 32 kHz, the block makes one output per millisecond.
 ::::
 
 ::::{frame} The work() Function
@@ -197,6 +197,8 @@ cmake --install .
 :::
 
 A Python-only module has nothing to compile, but **CMake** still copies its files to the right places, and `ctest` runs its tests against the build directory. `CMAKE_PREFIX_PATH` tells CMake to find the radioconda environment's GNU Radio, and `CMAKE_INSTALL_PREFIX` installs into the same environment, so the block goes where that GNU Radio looks: the Python file under its `site-packages/gnuradio/ece448/`, and the YAML file under `share/gnuradio/grc/blocks/`. These steps build, test, and install the module under GNU Radio 3.10.12 from conda-forge on Linux, and under Ubuntu's 3.10.9 with `make` in place of Ninja. A passing `ctest` prints `100% tests passed, 0 tests failed out of 1`: its one entry runs the four test methods in `qa_energy_detector.py`. Restart GRC after installing so it reloads its block library.
+
+*Follows: GNU Radio wiki, [Creating Python OOT with gr-modtool](https://wiki.gnuradio.org/index.php/Creating_Python_OOT_with_gr-modtool).*
 ::::
 
 ::::{frame} The Block in GRC
@@ -224,7 +226,7 @@ Once installed, the Energy Detector is an ordinary block: you search for it in G
 - Hysteresis alone cannot fix a threshold in the wrong place.
 :::
 
-At a noise amplitude of 0.3, the noise floor is $20\log_{10} 0.3 = -10.5$ dB, right at the $-10$ dB threshold. With no hysteresis, every averaged output that crosses the line flips the key, so the key **chatters** through every gap, and a Morse decoder downstream would read each flip as a dit. Adding 3 dB of hysteresis with the threshold where it is makes things worse: the key turns on and then rarely falls below $-13$ dB, so it stays on nearly all the time, and the threshold must move up before hysteresis can help.
+At a noise amplitude of 0.3, the Power plot shows the noise floor near $-10.5$ dB, right at the $-10$ dB threshold. With no hysteresis, every averaged output that crosses the line flips the key, so the key **chatters** through every gap, and a Morse decoder downstream would read each flip as a dit. Adding 3 dB of hysteresis with the threshold where it is makes things worse: the key turns on and then rarely falls below $-13$ dB, so it stays on nearly all the time, and the threshold must move up before hysteresis can help.
 ::::
 
 ::::{frame} Setting the Levels
@@ -238,11 +240,7 @@ At a noise amplitude of 0.3, the noise floor is $20\log_{10} 0.3 = -10.5$ dB, ri
 - Hysteresis then keeps noise near the threshold from switching the key.
 :::
 
-With the carrier on, the power is
-
-$$P_\text{on} = 10\log_{10}(1 + \sigma^2)\ \text{dB},$$
-
-which is $+0.4$ dB at $\sigma = 0.3$, and with it off the power is about $-10.5$ dB. Raising the threshold to $-5$ dB puts the on level at $-5$ dB and the off level at $-8$ dB, both well inside that 11 dB gap, and the key follows the keying exactly. A good rule is to set the threshold about halfway between the floor and the signal in dB, and the hysteresis to a few times the spread of the floor, which the frame How Many Samples to Average works out.
+Read the two levels off the Power plot: with the carrier on, the power sits just above 0 dB, and with it off, near $-10.5$ dB. Raising the threshold to $-5$ dB puts the on level at $-5$ dB and the off level at $-8$ dB, both well inside that 11 dB gap, and the key follows the keying exactly. A good rule is to set the threshold about halfway between the floor and the signal on the plot, and the hysteresis a little larger than the floor's ragged up-and-down, so noise near the threshold cannot switch the key.
 ::::
 
 ::::{frame} Energy Detector Explorer
@@ -265,15 +263,7 @@ The top panel is the detector's power output for one sending of "ECE", and the b
 ::::{frame} How Many Samples to Average
 :class: read-only
 
-The noise power in one sample varies as much as its mean, so a single sample of noise tells us little. Averaging $N$ samples divides that spread by $\sqrt N$, so the average has a mean of $\sigma^2$ and a standard deviation of
-
-$$\sigma_P = \frac{\sigma^2}{\sqrt N}.$$
-
-In dB, one standard deviation above and below the mean is
-
-$$10\log_{10}\left(1 \pm \frac{1}{\sqrt N}\right)\ \text{dB},$$
-
-which for $N = 8$ is $+1.3$ dB and $-1.9$ dB. Four times as many samples halves the spread.
+The power of one noise sample jumps around a lot, so a single sample tells us little. Averaging more samples smooths it: in the explorer above, 8 samples give a ragged floor that wanders a dB or two, and 64 give a floor that barely moves. A smoother floor lets the threshold and hysteresis sit closer to the noise.
 
 Averaging more samples takes more time: each output covers $N/f_s$ seconds, and an edge in the keying can land anywhere inside one output. At 32 kHz, $N = 32$ gives 1 ms outputs. A dit at 20 words per minute is 60 ms, so it spans 60 outputs, and even $N = 64$, 2 ms, leaves 30 outputs per dit. A faster signal needs a shorter average: the 433 MHz remotes below send pulses a few hundred microseconds long, so their flowgraph averages 4 samples at 128 kHz, about 31 $\mu$s per output.
 ::::
@@ -301,7 +291,7 @@ A Windows laptop without them has two other routes. The first is WSL2 with Ubunt
 - The same block keys on their bursts.
 :::
 
-On-off keying sends a 1 as a burst of carrier and a 0 as silence, the same signal as today's keyed tone, only faster. Weather sensors, doorbells, and some remotes in the US use on-off keying at 433.92 MHz, as low-power unlicensed devices under FCC Part 15. `L11-ook-rtlsdr.grc` tunes an RTL-SDR 200 kHz below 433.92 MHz to keep the radio's DC spike off the signal, shifts the signal to 0 Hz and decimates to 128 kHz, and runs the Energy Detector with $N = 4$. The time sink draws the key at $-60$ dB when it is off and $-40$ dB when it is on, so it shares the power plot's axis. Set the threshold halfway between the floor and the burst level on the power plot, press a remote nearby, and the key traces its bursts. The flowgraph only receives. This page has not run it, because it needs an RTL-SDR and a remote, so the figure shows the flowgraph in GRC, not a capture.
+On-off keying sends a 1 as a burst of carrier and a 0 as silence, the same signal as today's keyed tone, only faster. Weather sensors, doorbells, and some remotes in the U.S. use on-off keying at 433.92 MHz, as low-power unlicensed devices under FCC Part 15. First find the bursts in [SDR Flex](https://livethisdream.github.io/sdr-flex/), or in GQRX if SDR Flex is not set up: tune the RTL-SDR to 433.92 MHz and watch the waterfall while you press the remote, and each press paints a short streak. SDR Flex can also hand the bursts to `rtl_433`, a ready-made decoder for hundreds of ISM devices, which names the device and prints what it sent: the same job, done by someone else's block. Then close the explore tool and open the flowgraph. `L11-ook-rtlsdr.grc` tunes an RTL-SDR 200 kHz below 433.92 MHz to keep the radio's DC spike off the signal, shifts the signal to 0 Hz and decimates to 128 kHz, and runs the Energy Detector with $N = 4$. The time sink draws the key at $-60$ dB when it is off and $-40$ dB when it is on, so it shares the power plot's axis. Set the threshold halfway between the floor and the burst level on the power plot, press a remote nearby, and the key traces its bursts. The flowgraph only receives. This page has not run it, because it needs an RTL-SDR and a remote, so the figure shows the flowgraph in GRC, not a capture.
 ::::
 
 ::::{frame} Key Point
@@ -320,6 +310,12 @@ A block several flowgraphs need belongs in an out-of-tree module: gr_modtool wri
 - <a class="doc-link" href="../../grc/L11-ook-rtlsdr.grc" download>L11-ook-rtlsdr.grc</a>: the Energy Detector on an RTL-SDR at 433.92 MHz, for OOK remotes. Needs `gr-ece448` and an RTL-SDR; receive only.
 
 Unzip the module, then follow its `README.md` from the radioconda prompt. Open a `.grc` file from GRC's File menu, or run `gnuradio-companion L11-keyed-carrier.grc`.
+
+Tutorials this lesson follows, on the GNU Radio wiki:
+
+- <a class="doc-link" href="https://wiki.gnuradio.org/index.php/Creating_Your_First_Block" target="_blank" rel="noopener">Creating Your First Block</a>
+- <a class="doc-link" href="https://wiki.gnuradio.org/index.php/Embedded_Python_Block" target="_blank" rel="noopener">Embedded Python Block</a>
+- <a class="doc-link" href="https://wiki.gnuradio.org/index.php/Creating_Python_OOT_with_gr-modtool" target="_blank" rel="noopener">Creating Python OOT with gr-modtool</a>
 ::::
 
 ::::{frame} Summary
@@ -332,8 +328,8 @@ Unzip the module, then follow its `README.md` from the radioconda prompt. Open a
 | Block types | sync, decimator, interpolator, general | 1:1, $N$:1, 1:$N$, any ratio |
 | Block files | `.py`, `.block.yml`, `qa_*.py` | check `gr_python_install` on 3.10.9 |
 | Build | CMake, `ctest`, install | install into the radioconda environment |
-| Energy Detector | average power in dB, keyed with hysteresis | floor near $20\log_{10}\sigma$ dB |
-| Levels | threshold halfway, hysteresis above the spread | spread shrinks as $\sqrt N$ |
+| Energy Detector | average power in dB, keyed with hysteresis | read the floor off the Power plot |
+| Levels | threshold halfway, hysteresis above the floor's ragged edge | more samples: smoother floor, coarser timing |
 | Windows | CMake needs Visual Studio 2022 Build Tools | fallbacks: WSL2 Ubuntu, then an Embedded Python Block |
 ::::
 

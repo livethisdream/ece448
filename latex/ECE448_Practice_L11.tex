@@ -119,34 +119,20 @@ decimator, interpolator, or general, and give the ratio of outputs to inputs.
 
 \newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\question \textbf{Levels.} A cadet runs the Energy Detector on a keyed tone of amplitude 1
-at 48 kHz, with GNU Radio's Noise Source at amplitude 0.25, and averages 64 samples.
+\question \textbf{Levels.} A cadet runs the Energy Detector on a keyed tone at 48 kHz,
+averaging 64 samples. On the Power plot, the floor between marks sits near $-12$ dB and
+wanders about half a dB up and down, and the carrier sits just above 0 dB.
 \begin{parts}
 
 	\begin{minipage}[t]{0.58\linewidth}
-		\part Find the power output, in dB, with the carrier off and with it on.
-		\begin{solution}[1.1in]
-		\eq{ P_\text{off} &= 20\log_{10} 0.25 = -12.0\db \\
-		P_\text{on} &= 10\log_{10}(1 + 0.25^2) = 10\log_{10} 1.0625 = 0.26\db }
-		\end{solution}
-	\end{minipage}\hfill%
-	\begin{minipage}[t]{0.37\linewidth}
-		\raggedleft \vspace{12pt}
-		off: \ansbox[1.1in]{$-12.0$ dB}
-
-		\vspace{4pt}
-		on: \ansbox[1.1in]{$+0.26$ dB}
-	\end{minipage}
-
-	\begin{minipage}[t]{0.58\linewidth}
-		\part Choose a threshold halfway between the two levels in dB.
+		\part Choose a threshold halfway between the two levels on the plot.
 		\begin{solution}[0.6in]
-		\eq{ \dfrac{-12.0 + 0.26}{2} = -5.9\db }
+		\eq{ \dfrac{-12 + 0}{2} = -6\db }
 		\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
 		\raggedleft \vspace{12pt}
-		\ansbox[1.1in]{$-5.9$ dB}
+		\ansbox[1.1in]{about $-6$ dB}
 	\end{minipage}
 
 	\begin{minipage}[t]{0.58\linewidth}
@@ -162,24 +148,20 @@ at 48 kHz, with GNU Radio's Noise Source at amplitude 0.25, and averages 64 samp
 		\ansbox[1.1in]{1.33 ms, 750/s}
 	\end{minipage}
 
-	\begin{minipage}[t]{0.58\linewidth}
-		\part Averaging $N$ samples divides the spread of the noise power by $\sqrt N$.
-		Find the floor's spread as a fraction of its mean, and in dB above and below it.
-		\begin{solution}[1.0in]
-		\eq{ \dfrac{1}{\sqrt{64}} &= 0.125 \\
-		10\log_{10} 1.125 &= +0.51\db, \quad 10\log_{10} 0.875 = -0.58\db }
-		\end{solution}
-	\end{minipage}\hfill%
-	\begin{minipage}[t]{0.37\linewidth}
-		\raggedleft \vspace{12pt}
-		\ansbox[1.1in]{about $\pm 0.5$ dB}
-	\end{minipage}
-
 	\part Suggest a hysteresis and explain the choice in words.
 		\begin{solution}[0.9in]
-		A hysteresis of about 2 to 3 dB works. That is a few times the floor's spread, so noise near the threshold
-		cannot turn the key back off, and the off level, $-8$ to $-9$ dB, still sits
-		3 dB or more above the floor.
+		A hysteresis of about 2 to 3 dB works. That is several times the half-dB wander of
+		the floor, so noise near the threshold cannot turn the key back off, and the off
+		level, $-8$ to $-9$ dB, still sits 3 dB or more above the floor.
+		\end{solution}
+
+	\part The cadet changes Samples Averaged from 64 to 16. Describe what changes on the
+	Power plot and in the key's timing, and whether the levels from (a) and (c) still work.
+		\begin{solution}[1.1in]
+		The floor gets more ragged, since each output averages fewer samples, and its
+		peaks reach closer to the off level. Each output covers only 0.33 ms, so the key's
+		edges land more precisely. The threshold can stay near $-6$ dB; check the floor's
+		peaks against the off level on the plot, and widen the hysteresis if they reach it.
 		\end{solution}
 
 \end{parts}
@@ -224,20 +206,20 @@ a threshold of $-10$ dB, and a hysteresis of 3 dB, these twelve complex samples:
 \begin{center}
 $1,\ 1,\ 1,\ 1,\ \ 0.1,\ 0.1,\ 0.1,\ 0.1,\ \ 1,\ 1,\ 0,\ 0$
 \end{center}
+Averaged four at a time, these samples read 0, $-20$, and $-3$ dB on the power output.
 \begin{parts}
 
 	\begin{minipage}[t]{0.58\linewidth}
-		\part How many outputs does each port make? Give the power outputs in dB.
+		\part How many outputs does each port make, and which input samples does each
+		output average?
 		\begin{solution}[1.2in]
-		Twelve inputs at 4 per output give 3 outputs.
-		\eq{ P_1 &= 10\log_{10} 1 = 0\db \\
-		P_2 &= 10\log_{10} 0.01 = -20\db \\
-		P_3 &= 10\log_{10} \tfrac{1 + 1 + 0 + 0}{4} = -3.0\db }
+		Twelve inputs at 4 per output give 3 outputs on each port. The first averages
+		samples 1 to 4, the second 5 to 8, and the third 9 to 12.
 		\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
 		\raggedleft \vspace{12pt}
-		\ansbox[1.4in]{0, $-20$, $-3.0$ dB}
+		\ansbox[1.4in]{3 on each port}
 	\end{minipage}
 
 	\begin{minipage}[t]{0.58\linewidth}
