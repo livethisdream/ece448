@@ -32,8 +32,8 @@ Lesson 2 · Module 1: Foundations of Detection & Link Budgets · Dr. Neil Rogers
 ::::{frame} Learning Objectives
 
 <ol class="lo-list" style="--module: '1'">
-  <li>I can define noise figure and cascade it through a receiver chain to predict system noise performance.</li>
-  <li>I can compute a link budget and predict received SNR for a specified geometry, transmitter, and antenna configuration.</li>
+  <li>I can define noise figure and explain how each stage of a receiver chain, the first above all, sets the system's noise performance.</li>
+  <li>I can compute a link budget for a specified geometry, transmitter, and antenna configuration, and compare it with the signal an SDR shows.</li>
 </ol>
 ::::
 

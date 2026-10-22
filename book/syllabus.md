@@ -71,8 +71,8 @@ mastery-based portion of the grade.
 
 | LO | Description |
 | :-: | :- |
-| 1.1 | I can define noise figure and cascade it through a receiver chain to predict system noise performance. |
-| 1.2 | I can compute a link budget and predict received SNR for a specified geometry, transmitter, and antenna configuration. |
+| 1.1 | I can define noise figure and explain how each stage of a receiver chain, the first above all, sets the system's noise performance. |
+| 1.2 | I can compute a link budget for a specified geometry, transmitter, and antenna configuration, and compare it with the signal an SDR shows. |
 | 1.3 | I can describe signal-space concepts (basis functions, constellations, decision regions) and apply them to a digital modulation scheme. |
 
 ### Module 2 — SDR & GNU Radio Foundations

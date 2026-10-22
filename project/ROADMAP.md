@@ -263,6 +263,29 @@ since they follow this structure. Two changes:
   L13's microphone flowgraph with a real phone.
 - **Next batch:** L14 to L16.
 
+## Lesson threads, fourth batch and fidelity passes (2026-10-21)
+
+- **L14, L15, and L16 done** (PRs #22, #24, #23). Four fidelity passes took L2
+  to L13 back to the 2025 slides under "Sources and noise" (PRs #27, #29, #28,
+  #26). The site now has no Eb/N0, BER, or Q-function anywhere a cadet sees it.
+- **Lab answers are private** (Neil, 2026-10-21). Every lab packet prints its
+  answers through `\keysol{<id>}`. The values live in
+  `ECE448-faculty/lab-keys/src/*_solutions.tex`, `latex/build_lab.sh` reads
+  them through `KEYDIR` (default: a sibling clone of the faculty repo), and a
+  KEY build without them stops with an error. `*_solutions.tex` is
+  gitignored here. Answers from before the split are still in this repo's git
+  history.
+- **No public page prints a lab answer.** That covers lesson and lab pages,
+  decks, practice sets and their solutions, widgets, and `.grc` descriptions.
+  A lab uses inputs of its own, so its answers differ from the lesson's worked
+  examples, and lesson demos run at settings the lab does not use. "Expected
+  Numbers" frames are gone.
+- **Bench checks for Neil:** the KEY values marked as estimates in PR #29
+  (L5 to L8, notably L7's click onsets), L15's PlutoSDR link and zero-IF DC
+  tracking, and L14 on a live HD station with nrsc5.
+- **Open for Neil:** the wording of objective 6.4, and new hidden captures
+  for L13 and L14, whose old answers are in the public history.
+
 ## Lesson threads (from L6 on)
 
 The trial is done. From L6 on, each lesson is its own thread, and this thread

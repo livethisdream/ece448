@@ -20,14 +20,14 @@ Lessons 1–3 · Software Defined Radios · Dr. Neil Rogers
 ::::
 
 ::::{frame} Where This Module Goes
-Noise figure, cascade analysis, the link budget, and signal space: just enough to predict whether a link will work and to read a constellation.
+Noise figure, the link budget, and signal space: just enough to tell whether a link will work and to read a constellation.
 ::::
 
 ::::{frame} Learning Objectives
 
 <ol class="lo-list" style="--module: '1'">
-  <li>I can define noise figure and cascade it through a receiver chain to predict system noise performance.</li>
-  <li>I can compute a link budget and predict received SNR for a specified geometry, transmitter, and antenna configuration.</li>
+  <li>I can define noise figure and explain how each stage of a receiver chain, the first above all, sets the system's noise performance.</li>
+  <li>I can compute a link budget for a specified geometry, transmitter, and antenna configuration, and compare it with the signal an SDR shows.</li>
   <li>I can describe signal-space concepts (basis functions, constellations, decision regions) and apply them to a digital modulation scheme.</li>
 </ol>
 ::::
@@ -43,7 +43,7 @@ Noise figure, cascade analysis, the link budget, and signal space: just enough t
   <a class="mt-card mt-lesson" href="L02-noise-figure-link-budget/index.html">
     <span class="mt-kind">Lesson · L2</span>
     <h4>Noise Figure and Link Budget</h4>
-    <p>Cascade noise figure through a receiver and predict the SNR a link delivers. Objectives 1.1, 1.2.</p>
+    <p>Noise figure through a receiver chain, and the link budget that says whether a signal will arrive. Objectives 1.1, 1.2.</p>
   </a>
   <a class="mt-card mt-lesson" href="L03-signal-space/index.html">
     <span class="mt-kind">Lesson · L3</span>
