@@ -1,0 +1,156 @@
+% !TEX root =./ECE448_Practice_main.tex
+%
+% L14 practice set (HD Radio). Every question is about the L14 flowgraphs:
+% reading the sidebands on a display, setting the OFDM blocks, setting the
+% sideband meter, and watching what noise does. No power sums or timing
+% arithmetic (Neil, 2026-10-21). The L14 Lab's Pre-Lab asks for the meter's
+% inner setting for extended stations and an FFT size for one subcarrier per
+% bin, so no question here asks for either or shows how to find them.
+% Blank copy: \begin{solution}[h] reserves h of work space.
+% SOLUTIONS copy (\iskey=1) prints the red worked solutions.
+
+\fullwidth{\textbf{Learning Objective 6.3: } I can describe how HD Radio works and
+demodulate an HD Radio signal.
+\\[4pt]\normalfont\small Show your work. Write a \textbf{Documentation} line at the
+end (\textbf{None} if you did not collaborate). From the lesson: a hybrid station's
+sidebands run from 129.4 to 198.4 kHz on each side of its center, subcarriers 356 to 546,
+spaced 363.4 Hz apart.}
+
+\begin{questions}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{Reading the display.} You tune \texttt{L14-hd-find.grc} to a station at
+98.5 MHz.
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Type 98.5 into the finder's Center, zoom in on the frequency sink, and read
+		where each shelf starts and ends, in MHz.
+		\begin{solution}[0.8in]
+		Upper: about 98.629 to 98.698 MHz. Lower: about 98.302 to 98.371 MHz. As a check,
+		the lesson's offsets give $98.5 \pm 0.1294$ and $98.5 \pm 0.1984$ MHz.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		upper \ansbox[1.5in]{98.6294 to 98.6984}
+
+		\vspace{4pt}
+		lower \ansbox[1.5in]{98.3016 to 98.3706}
+	\end{minipage}
+
+	\part On the waterfall, the station at 98.5 MHz shows a rounded band whose width changes
+	from moment to moment, and two straight bands of constant width on either side. Which
+	is the analog host, and which are the HD Radio sidebands? What makes each look the way
+	it does?
+		\begin{solution}[1.0in]
+		The rounded band of changing width is the analog FM host: its width follows the audio,
+		because louder audio swings the frequency farther. The straight bands are the
+		sidebands: every subcarrier carries the same power all the time and the subcarriers
+		stop at fixed numbers, so the shelves are flat, sharp-edged, and constant in width.
+		\end{solution}
+
+	\part A second station shows shelves that start much closer to its host than
+	129.4 kHz and end at 198.4 kHz. A third shows a rounded host and nothing beside it.
+	Name the mode of each.
+		\begin{solution}[0.8in]
+		The second is extended hybrid: it has added partitions on the inside edge of each
+		sideband. The third is an analog-only station with no HD Radio.
+		\end{solution}
+
+\end{parts}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{Reading the OFDM blocks.} Open \texttt{L14-hd-test-tx.grc}.
+\begin{parts}
+
+	\part The OFDM Carrier Allocator's occupied carriers for the upper sideband are
+	\texttt{list(range(356, 547))}. Which subcarrier numbers does that list hold, and where
+	does each end of the list appear on the frequency sink?
+		\begin{solution}[0.8in]
+		\texttt{range(356, 547)} holds 356 through 546; Python's range stops one short of its
+		second number. Subcarrier 356 is the inner edge of the upper shelf, 129.4 kHz above
+		the center, and 546 is its outer edge, 198.4 kHz above the center.
+		\end{solution}
+
+	\part A Multiply Const after each OFDM Cyclic Prefixer sets that sideband's level. Halve
+	the lower sideband's constant, rerun both flowgraphs, and record how far the lower shelf
+	and the lower meter drop. What happens to the upper side?
+		\begin{solution}[0.8in]
+		The lower shelf and the lower meter both drop by about 6 dB, and the Upper minus lower
+		meter rises by the same amount. The upper shelf and the upper meter do not change.
+		\end{solution}
+
+	\part You set the OFDM Cyclic Prefixer's rolloff from 112 to 0. What do you expect to
+	see at the edges of the shelves, and why does it matter to a neighboring station?
+		\begin{solution}[0.9in]
+		The rolloff smooths the change from one symbol to the next. Without it, each symbol
+		starts and stops abruptly, which spreads power outside the sideband, so the shelves'
+		edges slope down slowly instead of dropping sharply. That spread power lands in the
+		neighboring channel.
+		\end{solution}
+
+\end{parts}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{Setting the meter.} The sideband meter in \texttt{L14-hd-find.grc} uses a
+Frequency Xlating FFT Filter, Complex to Mag\^{}2, a Moving Average of \texttt{avg\_len}
+samples (0.2 s), Keep 1 in N, and Log10 for each band.
+\begin{parts}
+
+	\part You shorten the Moving Average to 0.02 s. What changes in the readings, and what
+	stays the same?
+		\begin{solution}[0.8in]
+		The readings jump around more from one update to the next, because each one averages
+		fewer samples of a noise-like signal. Their average value stays the same.
+		\end{solution}
+
+	\part You type \texttt{sb\_center} into the lower sideband's filter instead of
+	\texttt{-sb\_center}. What do the two readings show?
+		\begin{solution}[0.6in]
+		Both meters then measure the upper sideband, so both read the upper sideband's level,
+		and the lower sideband is not measured at all.
+		\end{solution}
+
+	\part On an extended hybrid station, you leave Inner subcarrier at 356. Does the meter read
+	high or low, and what do you do with the slider?
+		\begin{solution}[0.6in]
+		Low: the filter leaves out the added partitions inside 356. Slide Inner subcarrier down
+		until the readings stop rising; there the meter covers the whole sideband.
+		\end{solution}
+
+\end{parts}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{What noise does.} In \texttt{L14-hd-test-tx.grc} you raise the Variable
+\texttt{noise\_amp}, run it again, and play the new file in the sideband finder.
+\begin{parts}
+
+	\part Describe what happens to the floor, the shelves, and the host on the frequency
+	sink as \texttt{noise\_amp} goes up.
+		\begin{solution}[0.9in]
+		The floor rises. The host stays well above it, but the shelves, which are much weaker,
+		sink toward the floor; their edges blur, and eventually the shelves disappear into it.
+		\end{solution}
+
+	\part What happens to the two meter readings, and why?
+		\begin{solution}[0.9in]
+		They read higher than the level the sidebands were built with. Each meter measures
+		all the power in its band, and the noise in that band adds to the sideband's power,
+		so the reading rises as the floor comes up to the shelves.
+		\end{solution}
+
+	\part On a real station, what would you expect to hear from nrsc5, and from the analog
+	station in SDR Flex or GQRX, as the shelves sink into the floor?
+		\begin{solution}[0.9in]
+		nrsc5's digital audio stops abruptly once the shelves sink too far, rather than getting
+		gradually noisier. The analog station in SDR Flex or GQRX, which is much stronger than the
+		shelves, keeps playing, with more hiss as the floor rises.
+		\end{solution}
+
+\end{parts}
+
+\end{questions}
