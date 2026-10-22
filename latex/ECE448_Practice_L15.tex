@@ -1,0 +1,275 @@
+% !TEX root =./ECE448_Practice_main.tex
+%
+% L15 practice set (mPSK). Every question is a step in the L15 link: bits per
+% symbol, the Gray map, differential coding by hand, the frequency
+% offset the Costas Loop has to remove, and choosing between QPSK and 8PSK.
+% Blank copy: \begin{solution}[h] reserves h of work space.
+% SOLUTIONS copy (\iskey=1) prints the red worked solutions.
+
+\fullwidth{\textbf{Learning Objective 6.4: } I can implement an mPSK modulator and
+demodulator (BPSK, QPSK, 8PSK), recover carrier and symbol timing, and verify
+constellation behavior against theory.
+\\[4pt]\normalfont\small Show your work. Write a \textbf{Documentation} line at the
+end (\textbf{None} if you did not collaborate).}
+
+\begin{questions}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{Bits per symbol.} A telemetry radio sends 25,000 symbols per second
+with RRC pulses of roll-off $\alpha = 0.25$. On a circle of radius 1, neighboring points
+sit 2.00 apart for BPSK, 1.41 apart for QPSK, and 0.77 apart for 8PSK.
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Find the occupied bandwidth, and the bit rate with BPSK, QPSK, and 8PSK.
+		\begin{solution}[1.2in]
+		\eq{ B &= (1 + \alpha) R_s = 1.25 \times 25\ \text{kHz} = 31.25\ \text{kHz} }
+		The bandwidth does not depend on $M$. The bit rate is $k R_s$ with $k = \log_2 M$:
+		25, 50, and 75 kb/s.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		$B$: \ansbox[1.0in]{31.25 kHz}
+
+		\vspace{4pt}
+		bits: \ansbox[1.3in]{25, 50, 75 kb/s}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part The telemetry must carry 60 kb/s. Which of the three modulations can carry it
+		at 25,000 symbols per second?
+		\begin{solution}[1.0in]
+		It needs at least $60/25 = 2.4$ bits per symbol. BPSK carries 1 and QPSK 2, so
+		only 8PSK, with 3 bits and 75 kb/s, can carry it.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.0in]{8PSK}
+	\end{minipage}
+
+	\part In words, explain what the radio gives up by moving from QPSK to 8PSK, and
+	what you would watch on the receiver's constellation display as the signal weakens.
+		\begin{solution}[1.2in]
+		8PSK sends 50\% more bits in the same 31.25 kHz, but its points sit 0.77 apart
+		instead of 1.41, so the same noise pushes far more symbols across to a neighbor.
+		As the signal weakens, the noise clouds grow; the eight 8PSK clouds touch and
+		merge into a ring while QPSK's four clouds are still separate, and the text
+		starts to break up sooner.
+		\end{solution}
+
+\end{parts}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{The Gray map.} The L15 transmitter numbers the QPSK points by
+\emph{phase index} $i = 0, 1, 2, 3$, counterclockwise from the point at $45^\circ$.
+The Gray label of index $i$ is $i \oplus (i \gg 1)$, the index XORed with itself
+shifted right one bit.
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Write the 2-bit Gray label of each index. Then find the indices the
+		transmitter sends for the bits \texttt{01 11 10 00}.
+		\begin{solution}[1.4in]
+		\eq{ 0 \oplus 0 = 00, &\quad 1 \oplus 0 = 01 \\
+		2 \oplus 1 = 11, &\quad 3 \oplus 1 = 10 }
+		The labels are 00, 01, 11, 10. The transmitter's Map sends the index whose label
+		matches each pair: \texttt{01} is 1, \texttt{11} is 2, \texttt{10} is 3, and
+		\texttt{00} is 0, so it sends 1, 2, 3, 0.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		labels: \ansbox[1.3in]{00, 01, 11, 10}
+
+		\vspace{4pt}
+		indices: \ansbox[1.3in]{1, 2, 3, 0}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Noise moves a symbol sent as index 1 into the region of index 2. How many
+		bits are wrong with the Gray labels? How many would be wrong if index $i$
+		simply carried the binary number $i$?
+		\begin{solution}[1.0in]
+		Gray: \texttt{01} becomes \texttt{11}, one bit. Natural binary: \texttt{01}
+		becomes \texttt{10}, two bits.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		Gray: \ansbox[1.0in]{1}
+
+		\vspace{4pt}
+		binary: \ansbox[1.0in]{2}
+	\end{minipage}
+
+	\part In words, explain why a wrong 8PSK symbol in a Gray-coded link usually
+	corrupts only one of its three bits.
+		\begin{solution}[1.0in]
+		Almost every symbol error is a slip to one of the two neighbors, because the
+		noise rarely reaches farther. With Gray labels a neighbor differs in one of the
+		three bits, so each wrong symbol usually corrupts one bit out of three.
+		\end{solution}
+
+\end{parts}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{Differential coding by hand.} The L15 Differential Encoder sends
+$e_n = (e_{n-1} + d_n) \bmod M$, where $d_n$ is the phase index from the Gray map and
+$e_{n-1}$ starts at 0. The decoder outputs $(r_n - r_{n-1}) \bmod M$, where $r_n$ is the
+received index and $r_{n-1}$ also starts at 0. The link uses QPSK, and the data indices
+are $d = 2, 1, 1, 3, 0$.
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Find the five indices the encoder sends.
+		\begin{solution}[1.0in]
+		\eq{ e_0 &= 0 + 2 = 2, \quad e_1 = 2 + 1 = 3 \\
+		e_2 &= (3 + 1) \bmod 4 = 0 \\
+		e_3 &= 0 + 3 = 3, \quad e_4 = 3 + 0 = 3 }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.3in]{2, 3, 0, 3, 3}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part The receiver's Costas Loop locks $180^\circ$ off, so every received index
+		is 2 more than the one sent, mod 4. Decode the five received indices and compare
+		them with $d$.
+		\begin{solution}[1.4in]
+		Received: $r = 0, 1, 2, 1, 1$. Decoded, with $r_{-1} = 0$:
+		\eq{ 0 - 0 = 0,\ 1 - 0 = 1,\ 2 - 1 = 1,\ 1 - 2 \equiv 3,\ 1 - 1 = 0 }
+		The output is 0, 1, 1, 3, 0. Every symbol after the first is right; the first is
+		wrong only because the decoder's starting reference was not rotated.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.3in]{0, 1, 1, 3, 0}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Now the loop locks correctly, but noise turns the third received index from
+		0 into 1. Decode the five indices and count the wrong symbols.
+		\begin{solution}[1.2in]
+		Received: $r = 2, 3, 1, 3, 3$.
+		\eq{ 2,\ 3 - 2 = 1,\ 1 - 3 \equiv 2,\ 3 - 1 = 2,\ 3 - 3 = 0 }
+		The output is 2, 1, 2, 2, 0: the third and fourth symbols are wrong, two errors
+		from one wrong decision.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.0in]{2 wrong}
+	\end{minipage}
+
+	\part In words, use parts (b) and (c) to explain what differential coding does for
+	a link and what it does to the errors in a noisy link.
+		\begin{solution}[1.0in]
+		It makes the link work at any of the $M$ lock positions, because a rotation adds
+		the same amount to every index and the differences do not change. In exchange,
+		every wrong decision corrupts two differences, the one into it and the one out
+		of it, so one wrong decision corrupts two symbols of data.
+		\end{solution}
+
+\end{parts}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{The frequency offset.} A frequency offset $\Delta f$ turns the
+constellation by $360^\circ \times \Delta f / R_s$ every symbol. In Lesson 15, a QPSK
+Costas Loop at 4,000 symbols per second locked from a 200 Hz offset in under a second and
+false-locked from 450 Hz.
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part A 4 kbaud QPSK link has a 75 Hz offset. Find the rotation per symbol and the
+		number of symbols in one full turn of the constellation.
+		\begin{solution}[1.0in]
+		\eq{ 360^\circ \times \dfrac{75}{4000} &= 6.75^\circ \\
+		\dfrac{360^\circ}{6.75^\circ} &= 53.3\ \text{symbols} }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.0in]{$6.75^\circ$}
+
+		\vspace{4pt}
+		\ansbox[1.0in]{53.3}
+	\end{minipage}
+
+	\part In words, explain why a link between two separate radios has a frequency offset
+	even when both are tuned to the same frequency, and why it needs a coarse frequency
+	correction before its Costas Loop.
+		\begin{solution}[1.3in]
+		Each radio makes its carrier from its own oscillator, and no two oscillators run at
+		exactly the same rate, so the received carrier sits off from the receiver's by the
+		difference. At a carrier of hundreds of megahertz or more, even a small error in
+		each oscillator adds up to kilohertz, while a Costas Loop pulls in from only a few
+		hundred hertz. A coarse correction, such as an FLL Band-Edge block or a frequency
+		measured from a known preamble, brings the offset inside that range first.
+		\end{solution}
+
+	\part In words, explain why a receiver that sees the Lesson 15 constellation settle into
+	clusters has not necessarily locked, and what you would check on its constellation, its
+	frequency estimate, and its Received label to tell a true lock from a false one.
+		\begin{solution}[1.2in]
+		A loop can settle at the wrong frequency, a false lock: in Lesson 15, QPSK started
+		450 Hz off settled at $-50$ Hz. The points still form clusters, but twice as many as
+		the constellation has, and no text arrives. A true lock shows $M$ tight clusters at
+		the transmitted angles, a frequency estimate equal to the offset that stays put, and
+		lines arriving in the Received label.
+		\end{solution}
+
+\end{parts}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{QPSK or 8PSK?} A link must carry 12 kb/s in a channel 6.25 kHz wide,
+with RRC pulses of roll-off $\alpha = 0.35$ and differential coding. Lesson 15's Noise frame
+showed QPSK and 8PSK at the same noise amplitude, 0.8.
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Find the symbol rate and the occupied bandwidth with QPSK and with 8PSK.
+		Which fits the channel?
+		\begin{solution}[1.4in]
+		\eq{ \text{QPSK: } R_s &= 12/2 = 6\ \text{kbaud}, \quad B = 1.35 \times 6 = 8.1\ \text{kHz} \\
+		\text{8PSK: } R_s &= 12/3 = 4\ \text{kbaud}, \quad B = 1.35 \times 4 = 5.4\ \text{kHz} }
+		Only 8PSK fits in 6.25 kHz.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		QPSK: \ansbox[1.0in]{8.1 kHz}
+
+		\vspace{4pt}
+		8PSK: \ansbox[1.0in]{5.4 kHz}
+	\end{minipage}
+
+	\part Describe what the receiver's constellation and Received label showed for each
+	modulation at a noise amplitude of 0.8, and what that means for the 8PSK link.
+		\begin{solution}[1.2in]
+		QPSK's four clouds nearly touched but stayed separate, and most lines arrived.
+		8PSK's eight clouds merged into a ring, and almost no line arrived intact. The 8PSK
+		link fits the channel but needs a quieter channel, a stronger signal, than QPSK
+		would at the same noise.
+		\end{solution}
+
+	\part In words, state which modulation you would choose and what you would check on
+	the bench before committing to it.
+		\begin{solution}[1.2in]
+		8PSK, because QPSK does not fit the channel at 12 kb/s. On the bench, run the link at
+		the weakest signal you expect and check that the eight clouds stay separate on the
+		constellation display and the text arrives intact, with some room to spare. If they
+		merge, the link needs more power or a slower bit rate.
+		\end{solution}
+
+\end{parts}
+
+\end{questions}
