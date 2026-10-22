@@ -22,7 +22,7 @@ Spring 2027 · Dr. Neil Rogers
 
 ## Where We Were
 
-- Lesson 3: one clean sample per symbol gives a constellation and a bit error rate
+- Lesson 3: a constellation shows one sample per symbol
 - Lesson 5: a flowgraph is the receiver
 - Lesson 8: FSK carried bits as frequency
 
@@ -35,14 +35,14 @@ Open both L9 flowgraphs in GRC before class. The pulse-shaping demo runs in the 
 
 ## Today's Plan
 
-1. Bits to levels: symbol rate
+1. Binary and M-ary PAM, noise, constellations, Gray coding
 2. Pulse shaping: raised cosine and bandwidth
 3. The eye diagram
 4. Matched filtering
 5. Symbol-timing recovery with Symbol Sync
 
 Note:
-Every part adds one block to the flowgraph. Items two, four, and five run live.
+Part 1 follows the 2025 PAM slides. Every later part adds one block to the flowgraph. Items two, four, and five run live.
 
 ---
 
@@ -57,14 +57,36 @@ Trace the signal left to right: symbols, transmit filter, channel, matched filte
 
 ---
 
-## Bits to Levels
+## Binary and M-ary PAM
 
 <div class="fig" data-inline-svg="./fig/L09-pam-levels.svg" style="max-width:720px; margin:0 auto;"></div>
 
 $$R_s = \frac{R_b}{\log_2 M}$$
 
 Note:
-The same eight bits go out both ways. 4-PAM uses half as many symbols, each twice as long, Gray coded as in Lesson 3. In GNU Radio, a Chunks to Symbols block does the mapping from a table.
+Binary PAM sends plus A for a 1 and minus A for a 0, and the receiver decides by the sign. FSK's two tones are orthogonal, so at the same power its points sit closer together than PAM's mirror-image pair. The same eight bits go out both ways: 4-PAM uses half as many symbols, each twice as long. In GNU Radio, a Chunks to Symbols block does the mapping from a table.
+
+---
+
+## What Noise Does to the Levels
+
+<div class="fig" data-inline-svg="./fig/L09-pam-noise.svg" style="max-width:700px; margin:0 auto;"></div>
+
+A sample past a dashed threshold is a wrong decision.
+
+Note:
+Top: a little noise, no errors. Middle: more noise, a few red dots. Bottom: 4-PAM at the same power, so its levels are about plus or minus 0.45 and 1.34, and the same little noise as the top; the levels are closer, so it already makes errors.
+
+---
+
+## Constellations and Gray Coding
+
+<div class="fig" data-inline-svg="./fig/L09-constellations.svg" style="max-width:740px; margin:0 auto;"></div>
+
+Neighboring points differ in one bit. Now label the 8-PSK points.
+
+Note:
+PAM's points lie on the real axis; m-PSK's lie on a circle and come back in Lesson 15. Noise usually pushes a sample to a neighbor, so with Gray coding a wrong decision usually costs one bit. Give the class two minutes to Gray-code the blank 8-PSK; the answer is in the practice SOLUTIONS.
 
 ---
 
@@ -138,15 +160,15 @@ Run it live and drag alpha: the red edge follows one plus alpha times Rs over tw
 
 ## Symbol Rate and Bandwidth
 
-A 12.96 kHz channel at $\alpha = 0.35$ fits 9.6 kbaud.
+A 12.96 kHz channel at $\alpha = 0.35$ fits 9.6 kbaud: `sps` = 5 at 48 kHz.
 
-| Modulation | Bit rate | $E_b/N_0$ at $10^{-5}$ |
+| Modulation | Bit rate | Bandwidth |
 | :-- | :-: | :-: |
-| 2-PAM | 9.6 kb/s | 9.6 dB |
-| 4-PAM | 19.2 kb/s | 13.4 dB |
+| 2-PAM | 9.6 kb/s | 12.96 kHz |
+| 4-PAM | 19.2 kb/s | 12.96 kHz |
 
 Note:
-4-PAM doubles the bit rate in the same channel and needs 3.8 dB more. Doubling the symbol rate instead doubles the bandwidth and no longer fits.
+4-PAM doubles the bit rate in the same channel by changing the Chunks to Symbols table, but its levels sit closer, so it breaks at less noise. Doubling the symbol rate instead doubles the bandwidth and no longer fits.
 
 ---
 
@@ -167,7 +189,7 @@ Height is noise margin, width is timing margin, the center is where to sample. G
 
 - Lower α: the spectrum narrows and the eye's waist pinches.
 - RRC only: the eye picks up ISI.
-- Move the sample time or lower Es/N0: symbol errors climb.
+- Move the sample time or lower the SNR: wrong decisions climb.
 
 <p class="viz-cue">↗ Interactive on the lesson page</p>
 
@@ -180,10 +202,10 @@ Switch to rectangular to show the spectrum spreading, then back to RRC plus matc
 
 <img src="./img/09-pam-theory/L09-matched-filter.png" alt="Eyes before and after the matched filter" style="max-height:400px; display:block; margin:0 auto;">
 
-The same RRC at the receiver removes about 9 dB of noise at 8 sps.
+The same RRC at the receiver opens the eye that noise closed.
 
 Note:
-Turn the noise slider up to 0.6 live. The received eye closes, and the matched-filter eye stays open. The filter cuts the noise from the full 32 kHz to the RRC's noise bandwidth of about 4 kHz, which is 9 dB.
+Turn the noise slider up to 0.6 live. The received eye closes, and the matched-filter eye stays open. The filter passes the signal's few kilohertz and blocks the noise across the rest of the 32 kHz.
 
 ---
 

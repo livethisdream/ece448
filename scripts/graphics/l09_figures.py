@@ -10,6 +10,14 @@
   L09-eye-anatomy  : a noiseless raised-cosine 2-PAM eye with the sampling
                      instant and the eye opening marked. About 70 traces keep the SVG
                      small enough to inline in the deck.
+  L09-pam-noise    : received samples, one per symbol, for 2-PAM with a little
+                     and with more noise, and for 4-PAM at the same power with a
+                     little noise; the decision thresholds are dashed and every
+                     wrong decision is red. No error-rate numbers: noise is
+                     something to watch (ROADMAP, "Sources and noise").
+  L09-constellations : 2-PAM, Gray-coded 4-PAM, Gray-coded QPSK, and unlabeled
+                     8-PSK on the I/Q plane, as on the 2025 deck's constellation
+                     slides; the 8-PSK Gray code is left for the class to fill in.
 
 The GNU Radio screenshots (L09-grc-*.png, L09-pulse-shaping.png,
 L09-matched-filter.png, L09-timing.png) are not generated here: they are taken
@@ -170,8 +178,61 @@ def eye_anatomy():
     write("L09-eye-anatomy", fig)
 
 
+def pam_noise():
+    rng = np.random.default_rng(448)
+    n = 160
+    l4 = np.array([-3, -1, 1, 3]) / np.sqrt(5)          # 4-PAM at the same average power as 2-PAM
+    cases = (("2-PAM, a little noise", np.array([-1.0, 1.0]), 0.25),
+             ("2-PAM, more noise", np.array([-1.0, 1.0]), 0.6),
+             ("4-PAM, the same little noise", l4, 0.25))
+    fig, axes = plt.subplots(3, 1, figsize=(8, 5.6), sharex=True)
+    for ax, (title, lev, sig) in zip(axes, cases):
+        tx = rng.choice(lev, n)
+        rx = tx + rng.normal(0, sig, n)
+        dec = lev[np.argmin(np.abs(rx[:, None] - lev[None, :]), axis=1)]
+        bad = dec != tx
+        ax.plot(np.arange(n)[~bad], rx[~bad], "o", color=NAVY, ms=3.2)
+        ax.plot(np.arange(n)[bad], rx[bad], "o", color=RED, ms=5.5)
+        for t in (lev[1:] + lev[:-1]) / 2:
+            ax.axhline(t, color=AMBER, lw=1.3, ls="--")
+        ax.set_yticks(np.round(lev, 2))
+        ax.set_ylim(-2.4, 2.4)
+        ax.set_title(f"{title}: {bad.sum()} wrong of {n}", loc="left", fontsize=11, color=INK)
+    axes[-1].set_xlabel("symbol number")
+    fig.tight_layout()
+    write("L09-pam-noise", fig)
+
+
+def constellations():
+    fig, axes = plt.subplots(1, 4, figsize=(10, 2.9))
+    l4 = np.array([-3, -1, 1, 3]) / np.sqrt(5)
+    sets = (("2-PAM", [(-1, 0, "0"), (1, 0, "1")]),
+            ("4-PAM, Gray coded", [(x, 0, b) for x, b in zip(l4, ["00", "01", "11", "10"])]),
+            ("QPSK, Gray coded", [(np.cos(a), np.sin(a), b) for a, b in
+                                  zip(np.pi / 4 * np.array([1, 3, 5, 7]), ["00", "01", "11", "10"])]),
+            ("8-PSK: label it", [(np.cos(a), np.sin(a), "") for a in np.pi / 4 * np.arange(8)]))
+    for ax, (title, pts) in zip(axes, sets):
+        ax.axhline(0, color=RULE, lw=1)
+        ax.axvline(0, color=RULE, lw=1)
+        for x, y, b in pts:
+            ax.plot(x, y, "o", color=NAVY, ms=9)
+            ax.text(x, y + 0.22, b, ha="center", color=AMBER, fontsize=11, fontweight="bold")
+        ax.set_title(title, fontsize=11, color=INK)
+        ax.set_xlim(-1.6, 1.6)
+        ax.set_ylim(-1.6, 1.6)
+        ax.set_aspect("equal")
+        ax.set_xticks([])
+        ax.set_yticks([])
+        ax.set_xlabel("I (real)")
+        ax.set_ylabel("Q (imag)")
+    fig.tight_layout()
+    write("L09-constellations", fig)
+
+
 if __name__ == "__main__":
     pam_levels()
     rc_pulses()
     rc_spectrum()
     eye_anatomy()
+    pam_noise()
+    constellations()
