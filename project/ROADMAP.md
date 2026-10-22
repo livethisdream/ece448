@@ -7,6 +7,10 @@ working rules apply here.
 
 **This is an applications course. Teach only enough theory to get by.**
 
+**Watch what the signal does; don't calculate it** (Neil, 2026-10-21). We use
+real radios to observe effects and, when it helps, tie them back to theory.
+This is the line the landing page, syllabus, and Lesson 1 use.
+
 Every lesson exists to get a real signal built, received, or decoded in
 GNU Radio. Theory earns a place only when the application needs it, and only
 as much as the application needs. Write lesson pages, slides, practice sets,
@@ -23,6 +27,70 @@ and lab packets with these rules in mind:
   diagram right after it.
 - **Assess what cadets can build.** Labs, the midterm, and the final project
   grade working flowgraphs and decoded signals. Proofs are not graded.
+
+### Sources and noise (Neil, 2026-10-21)
+
+**The point is to build flowgraphs and modulate and demodulate signals,
+not to calculate BER or probability of error.** About half the class has no
+communications background. The rules below override anything in a lesson
+written before this date.
+
+- **Sources, in order.** (1) Neil's 2025 slides for the lesson, in
+  `book/extras/legacy/`; they are the primary source, and a lesson keeps
+  their topics and order. (2) The GNU Radio wiki and its tutorials
+  (wiki.gnuradio.org). (3) PySDR (pysdr.org). Material from none of these
+  stays out unless a flowgraph needs it to set a block parameter.
+- **Noise is something to watch, not to calculate.** Show what happens as
+  noise goes up: the constellation spreads, the eye closes, the text breaks,
+  the audio hisses. No Eb/N0, no BER or Pe formulas, no Q-functions, no
+  error-rate curves against theory. The one noise number the course uses is
+  SNR as the SDR display shows it (Lesson 2), and only where a slider or a
+  display needs it.
+- **Labs observe; they do not predict from formulas.** A Pre-Lab may ask
+  for a block setting (a sample rate, a decimation, a filter cutoff) or a
+  quick arithmetic step a flowgraph needs. It does not ask cadets to predict
+  error rates, SNR tables, or loop limits. Bench parts turn a slider and
+  record what they see; Writeup questions ask what changed and why, in
+  words.
+- **Practice sets** follow the same rule: block parameters, reading a
+  display, choosing a setting, and explaining what a change does.
+- **Deckless lessons** (L5, L8, L11, L12, L15, L16 and later ones without a
+  2025 deck) follow the GNU Radio tutorials and PySDR for scope, and stay at
+  the level of the lessons that do have decks.
+
+### How Neil teaches it (2026-10-21)
+
+Neil taught 2025 by walking through the GNU Radio tutorials
+(wiki.gnuradio.org) with GNU Radio Companion or GQRX on screen the whole
+period. That is why several lessons have no 2025 deck: the tutorials were
+the material. A lesson is a guided walkthrough, not a chapter.
+
+- **Name the tutorial.** Each lesson lists the GNU Radio wiki tutorial
+  pages it follows (and PySDR chapters, if any) and follows their sequence.
+  Where a lesson has a 2025 deck, the deck sets the topics and the tutorials
+  supply the hands-on steps.
+- **The page is a demo script.** Frames walk through what to build, run, and
+  watch in GRC or GQRX, in the order Neil does it live. Explanation is the
+  minimum needed to know what to look at.
+- **SDR Flex is the primary explore tool** (Neil, 2026-10-21). Neil's own
+  `livethisdream/sdr-flex` starts at the spectrum and builds a GNU Radio
+  flowgraph behind each drag, demodulator, and decoder, so a lesson can show
+  cadets the flowgraph they just made. Use it for receive-and-explore steps
+  (a band, an unknown signal, HD Radio, ADS-B, AIS, L17's reverse
+  engineering).
+  - **Which version.** The full version (Docker image, or the server against
+    the cadet's own GNU Radio) carries the external decoders (rtl_433,
+    dump1090, direwolf, and others) and live radios. The browser version
+    (livethisdream.github.io/sdr-flex) needs no install but lacks those
+    decoders; use it only for steps that work on its example captures or
+    the client-side decoders.
+  - **Write explore steps as actions** (tune, select a signal, demodulate,
+    attach a decoder), so they read the same in SDR Flex and GQRX. GQRX is
+    the named fallback.
+  - **Go/no-go: first week of January 2027.** Neil is testing it on macOS
+    and Windows (outside WSL it is untested, and the image is amd64 only).
+    Until then no lab *requires* SDR Flex; after it, the Integrator makes
+    SDR Flex the only named tool or leaves GQRX as written.
 
 This rule is meant to stand out. ECE 444's conventions (shell, voice,
 budgets, checks) still apply. Where 444 would put a derivation on screen,

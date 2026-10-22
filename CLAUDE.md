@@ -13,6 +13,12 @@ ECE 444 would put a derivation on screen, 448 puts a flowgraph. The rules are
 in `project/ROADMAP.md`, "Course philosophy"; apply them to every page,
 slide, lab, and assessment.
 
+**Sources and noise** (Neil, 2026-10-21): Neil's 2025 slides are the primary
+source for a lesson, then the GNU Radio wiki and tutorials, then PySDR.org.
+Noise is shown, not calculated: "look what happens when noise goes up." No
+Eb/N0, BER, or probability-of-error math anywhere a cadet sees. Details in
+`project/ROADMAP.md`, "Sources and noise".
+
 **Follow ECE 444.** `livethisdream/ece444` is the model for this site's
 format, conventions, and rules. Its `CLAUDE.md`, `project/ROADMAP.md`,
 `COURSE_SPEC.md`, `VOICE.md`, and `REVIEW.md` apply here unless a rule is

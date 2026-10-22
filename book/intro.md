@@ -41,9 +41,9 @@ Seven modules, 20 lessons, and a final project you define yourself.
 ::::{frame} An Applications Course
 
 :::{callout}
-This course is about **building radios, not deriving them**. You get just
-enough theory to make the flowgraph work, then spend the period on real
-signals in GNU Radio.
+**Watch what the signal does; don't calculate it.** We use real radios and
+GNU Radio to observe effects, such as what happens when the noise goes up,
+and, when it helps, tie what we see back to theory.
 :::
 
 :::{depth}
