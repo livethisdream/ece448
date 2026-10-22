@@ -175,10 +175,10 @@ function draw() {
   txt('noise floor', mL + 6, Y(d.floor) + (sensAbove ? 9 : -9), 10.5, '#b01e24', 'left', true);
   txt('sensitivity', mL + 6, Y(d.sens) + (sensAbove ? -9 : 9), 10.5, '#8a5a00', 'left', true);
 
-  // the level steps: Tx, EIRP, after the path, Rx input
+  // the level steps: Tx, after the Tx antenna (losses come off at Rx in), after the path, Rx input
   const stages = [
     ['Tx', state.pt, '#004a85'],
-    ['EIRP', d.eirp, '#004a85'],
+    ['+ Tx ant', d.eirp, '#004a85'],
     ['path', d.eirp - d.fspl, '#8a5a00'],
     ['Rx in', d.pr, '#0067b9'],
   ];
