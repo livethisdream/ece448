@@ -1,0 +1,436 @@
+\documentclass{exam}
+
+\newif\ifA
+\newif\ifkey
+\newif\ifprintselected   % required by exam_config's \ansbox
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% SET THESE IF VARIABLES
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Lab name -- labs are named by the lesson they belong to, never by a
+% sequential lab number (Neil, 2026-10-12): this is the L15 Lab.
+\def\labLesson{15}
+
+% is this the key or not?
+\ifdefined\iskey
+	\ifnum\iskey=1
+		\keytrue
+	\else
+		\keyfalse
+	\fi
+\else
+	%% Pick one manually
+	\keyfalse % if this is NOT the key
+%	\keytrue     % if this IS the key
+\fi
+
+% set up the header and footer - change for every term
+\ifdefined\thisTermIn
+	\def\thisterm{\thisTermIn}
+\else
+	\def\thisterm{Spring 2027}
+\fi
+%
+\def\thisclass{ECE 448}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% END SET THESE IF VARIABLES
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% packages and shortcuts
+\input{myPackages_gr}
+\usepackage[hidelinks, linkcolor=red]{hyperref}
+\input{myShortcuts}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt}
+
+%% exam class customization
+\input{exam_config}
+\input{ece448_fonts}   % Barlow body text (needs lualatex)
+\printselectedfalse      % full worked solutions in the key, not answers-only
+\CorrectChoiceEmphasis{\color{red}}
+\SolutionEmphasis{\color{red}}
+\renewcommand\questionlabel{\textbf{\thequestion.}}
+\renewcommand{\thepartno}{\alph{partno}}
+\renewcommand{\partlabel}{(\thepartno)}
+
+% Fillable table cell: blank in the student copy, the expected value in red on
+% the KEY. Fixed-width centered columns keep the blank cells writable.
+\newcolumntype{K}[1]{>{\centering\arraybackslash}p{#1}}
+\newcommand{\kv}[1]{\ifkey{\color{red}#1}\fi\rule[-0.10in]{0pt}{0.34in}}
+
+% Answers are not in this public file. Every solution, \kv value, and \ansbox
+% value is \keysol{<id>}, defined in the private ECE448-faculty repo at
+% lab-keys/src/ECE448_Lab_L15_MPSK_solutions.tex; build_lab.sh puts that
+% folder on TEXINPUTS (KEYDIR) for the KEY. A KEY build without it stops.
+\long\def\defkeysol#1#2{\expandafter\long\expandafter\def\csname keysol@#1\endcsname{#2}}
+\def\keysol#1{\ifcsname keysol@#1\endcsname\csname keysol@#1\endcsname\fi}
+\ifkey
+	\IfFileExists{ECE448_Lab_L15_MPSK_solutions.tex}%
+		{\input{ECE448_Lab_L15_MPSK_solutions}}%
+		{\errmessage{KEY build needs ECE448_Lab_L15_MPSK_solutions.tex from ECE448-faculty/lab-keys/src (set KEYDIR)}}
+\fi
+
+% print the answers if this is the key
+\ifkey
+	\printanswers % if this IS the key
+\else
+	\noprintanswers  %if this is NOT the key
+\fi
+
+% print the header and footer
+% need to print key on top if this is the key
+\ifkey
+	\firstpageheader{}{\color{red}{ KEY}}{}
+	\runningheader{\thisclass\hspace{1pt} -- \thisterm }{L\labLesson\ Lab\hspace{1pt}\color{red}{ KEY}}{\thepage\hspace{1pt} of\hspace{1pt} \numpages}
+	\firstpagefooter{}{}{}
+	\runningfooter{}{}{}
+\else
+	\firstpageheader{}{}{}
+	\runningheader{\thisclass \hspace{1pt} -- \thisterm }{L\labLesson\ Lab\hspace{1pt}}{\thepage\hspace{1pt} of\hspace{1pt} \numpages}
+	\firstpagefooter{}{}{}
+	\runningfooter{}{}{}
+\fi
+
+\runningheadrule
+
+
+\begin{document}
+\pagestyle{headandfoot}   % exam class
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% title block
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{center}
+USAF ACADEMY \\
+DEPARTMENT OF ELECTRICAL AND COMPUTER ENGINEERING \\
+LESSON \labLesson\ LAB - mPSK \\
+\textbf{Lab Packet} \\
+\thisterm \\[4mm]
+\end{center}
+
+\vspace{-4pt}
+\textbf{Name:} \rule[-2pt]{2.6in}{0.4pt} \hfill
+\textbf{Section:} \rule[-2pt]{0.9in}{0.4pt} \hfill
+\textbf{Date:} \rule[-2pt]{1.1in}{0.4pt}
+
+\vspace{4pt}
+
+\fullwidth{\textbf{Learning Objective 6.4: } I can implement an mPSK modulator and
+demodulator (BPSK, QPSK, 8PSK), recover carrier and symbol timing, and verify
+constellation behavior against theory.}
+
+\vspace{2pt}
+
+This packet is the L\labLesson\ Lab, in three parts, and you turn it in once, complete,
+before Lesson 16. Do \textbf{Part 1} on your own before the lab period: run the link
+flowgraph and work out the settings you will need at the bench. \textbf{Part 2} is
+your own measurements, recorded in class: Questions 3 to 6 on your own laptop, and
+Question 7 at a PlutoSDR station with your team. Do \textbf{Part 3} on your own after
+the lab: explain what you saw and answer the analysis questions.
+
+\textbf{Grading.} You submit the packet once, we grade it against Objective 6.4 on
+the course's 1 / 0 scale, and you may revise it under course policy. Paste screenshots
+where a question asks for one.
+
+\textbf{Transmitting.} In class we transmit only into a cable, into a shielded
+enclosure, or at very low power in an ISM band, and only when the lesson says to.
+Questions 1 to 6 run on your laptop and transmit nothing. Question 7 transmits from a
+PlutoSDR's TX port, through a cable with an inline 30 dB SMA attenuator, to the same
+Pluto's RX port, at 915 MHz. Connect the cable and attenuator before you run the
+flowgraph, and never connect an antenna in this lab. Never set TX attenuation below
+30 dB or change the slider's range; the RX input is rated to only a few dBm. We have
+run the PlutoSDR flowgraph only in simulation, so Question 7 is its first run on
+hardware.
+
+The flowgraphs are on the L15 lesson page, \texttt{L15-psk-tx.grc} and
+\texttt{L15-psk-link.grc}, and on the L15 Lab page, \texttt{L15-psk-pluto.grc}. Every
+number below assumes their settings: 4,000 symbols per second, RRC pulses with
+$\alpha = 0.35$ at 8 samples per symbol, Gray-coded points, a Costas Loop bandwidth of
+0.02, a default noise amplitude of 0.5, and the default message.
+
+\begin{questions}
+
+\fullwidth{\large\textbf{Part 1: Pre-Lab} \normalsize(individual, before the lab period)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{Run the link.} Open \texttt{L15-psk-link.grc} in GRC and run it
+with every slider at its default.
+
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part After about 15 s, record the Received label and the Lines label.
+		\begin{solution}[0.7in]\keysol{sol1}\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.4in]{\keysol{ans1}}
+	\end{minipage}
+
+	\part Type 50 into the frequency offset box, wait about 5 s, and paste a screenshot of
+	the running flowgraph's window.
+		\begin{solution}[1.6in]\keysol{sol2}\end{solution}
+
+\end{parts}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\question \textbf{Settings.} You will need each of these at the bench.
+
+\begin{parts}
+
+
+	\part Question 3 builds an 8PSK flowgraph whose Chunks to Symbols block needs the
+	eight points on a circle of radius 1. Using the lesson's 8PSK map, list the angle
+	of each point in degrees, by phase index.
+
+	\begin{center}
+	\renewcommand{\arraystretch}{1.25}
+	\small\setlength{\tabcolsep}{3pt}
+	\begin{tabular}{| l | *{8}{K{0.55in} |}}
+	\hline
+	Index & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 \\\hline
+	Angle & \kv{\keysol{kv1}} & \kv{\keysol{kv2}} & \kv{\keysol{kv3}} & \kv{\keysol{kv4}} & \kv{\keysol{kv5}} & \kv{\keysol{kv6}} & \kv{\keysol{kv7}} & \kv{\keysol{kv8}} \\\hline
+	\end{tabular}
+	\end{center}
+		\begin{solution}[0.4in]\keysol{sol3}\end{solution}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part The Costas Loop's frequency output is in radians per symbol. Find the constant
+		of the Multiply Const that turns it into hertz at 4,000 symbols per second.
+		\begin{solution}[0.9in]\keysol{sol4}\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.0in]{\keysol{ans2}}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Your Question 3 flowgraph adds a 20 Hz frequency offset at 4,000 symbols per
+		second. How far does it turn the constellation each symbol, and how many symbols
+		does one full turn take?
+		\begin{solution}[0.9in]\keysol{sol5}\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.0in]{\keysol{ans3}}
+
+		\vspace{4pt}
+		\ansbox[1.0in]{\keysol{ans4}}
+	\end{minipage}
+
+\end{parts}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\fullwidth{\large\textbf{Part 2: Measurements} \normalsize(in class)}
+
+\question \textbf{Build a carrier-recovery loop.} Start GRC with an empty canvas. Do not
+open the lesson's flowgraphs: build the 8PSK carrier-recovery flowgraph yourself as the
+lab page lists, with a 20 Hz frequency offset.
+
+\begin{parts}
+
+	\part Paste a screenshot of your flowgraph on the GRC canvas. Every connection
+	must be black, not red.
+		\begin{solution}[1.5in]\keysol{sol6}\end{solution}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Paste a screenshot of the running window, and record the loop's frequency
+		reading at offsets of 20 Hz and $-60$ Hz.
+		\begin{solution}[1.2in]\keysol{sol7}\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		20 Hz: \ansbox[1.0in]{\keysol{ans5}}
+
+		\vspace{4pt}
+		$-60$ Hz: \ansbox[1.0in]{\keysol{ans6}}
+	\end{minipage}
+
+	\part Change the Costas Loop's order from 8 to 2 and run it again. Describe the
+	output and the frequency reading, and explain why the loop needs the right order.
+		\begin{solution}[1.2in]\keysol{sol8}\end{solution}
+
+\end{parts}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\question \textbf{Noise.} Follow the lab page's steps for \texttt{L15-psk-link.grc}, with
+\texttt{diff} = 1, no frequency offset, and the channel phase at 0. For each
+constellation, raise the noise amplitude by 0.1 at a time from 0.5, wait about 20 s at
+each step, and watch the Costas Loop's output and the Lines label.
+
+\begin{parts}
+
+	\part Record the noise amplitude at which about half the lines received are correct,
+	and describe the Costas output there.
+
+	\begin{center}
+	\renewcommand{\arraystretch}{1.25}
+	\begin{tabular}{| l | K{1.1in} | K{1.1in} | K{1.1in} |}
+	\hline
+	& BPSK & QPSK & 8PSK \\\hline
+	Noise amplitude & \kv{\keysol{kv9}} & \kv{\keysol{kv10}} & \kv{\keysol{kv11}} \\\hline
+	\end{tabular}
+	\end{center}
+		\begin{solution}[1.0in]\keysol{sol9}\end{solution}
+
+	\part At each constellation's limit, describe the Lines label and the Received label:
+	how many lines arrive, and what the wrong characters look like. Do the three limits look
+	different?
+		\begin{solution}[1.2in]\keysol{sol10}\end{solution}
+
+	\part Paste a screenshot of the window for 8PSK at its limit, and mark one wrong
+	character in the Received label.
+		\begin{solution}[1.4in]\keysol{sol11}\end{solution}
+
+\end{parts}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\question \textbf{Carrier recovery.} Follow the lab page's steps at the default noise
+amplitude of 0.5, with differential coding on. Before each offset, start from a loop locked at 0 Hz,
+as the lab page describes, and then type the new offset in one jump. Watch the frequency
+estimate for up to 20 s.
+
+\begin{parts}
+
+	\part For QPSK, record whether the loop locks, about how long it takes, and the
+	frequency it settles at.
+
+	\begin{center}
+	\renewcommand{\arraystretch}{1.25}
+	\begin{tabular}{| l | K{1.1in} | K{1.1in} | K{1.1in} |}
+	\hline
+	Offset (Hz) & 250 & 350 & 400 \\\hline
+	Locks? & \kv{\keysol{kv12}} & \kv{\keysol{kv13}} & \kv{\keysol{kv14}} \\\hline
+	Time & \kv{\keysol{kv15}} & \kv{\keysol{kv16}} & \kv{\keysol{kv17}} \\\hline
+	Settles at (Hz) & \kv{\keysol{kv18}} & \kv{\keysol{kv19}} & \kv{\keysol{kv20}} \\\hline
+	\end{tabular}
+	\end{center}
+		\begin{solution}[0.6in]\keysol{sol12}\end{solution}
+
+	\part Set \texttt{M} to 8 and run the flowgraph again. Record the same for 8PSK, and
+	find its pull-in range.
+
+	\begin{center}
+	\renewcommand{\arraystretch}{1.25}
+	\begin{tabular}{| l | K{0.9in} | K{0.9in} | K{0.9in} | K{0.9in} |}
+	\hline
+	Offset (Hz) & 100 & 150 & 200 & 250 \\\hline
+	Locks? & \kv{\keysol{kv21}} & \kv{\keysol{kv22}} & \kv{\keysol{kv23}} & \kv{\keysol{kv24}} \\\hline
+	Time & \kv{\keysol{kv25}} & \kv{\keysol{kv26}} & \kv{\keysol{kv27}} & \kv{\keysol{kv28}} \\\hline
+	\end{tabular}
+	\end{center}
+		\begin{solution}[0.6in]\keysol{sol13}\end{solution}
+
+\end{parts}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\question \textbf{Phase ambiguity.} Follow the lab page's steps: set \texttt{diff} to 0 and run
+the flowgraph again, so that the loop locks with no frequency offset and the channel phase
+at 0, and leave the noise amplitude at 0.5. For each channel phase, start from a loop locked at
+0 degrees, as the lab page describes, and then type the phase in one jump. Mark each setting at which
+the Lines count keeps rising.
+
+\begin{parts}
+
+	\part Mark the settings that deliver text, and count them.
+
+	\begin{center}
+	\renewcommand{\arraystretch}{1.25}
+	\footnotesize\setlength{\tabcolsep}{2pt}
+	\begin{tabular}{| l | *{18}{K{0.2in} |}}
+	\hline
+	Phase & 0 & 20 & 40 & 60 & 80 & 100 & 120 & 140 & 160 & 180 & 200 & 220 & 240 & 260 & 280 & 300 & 320 & 340 \\\hline
+	QPSK & \kv{\keysol{ph1}} & \kv{\keysol{ph2}} & \kv{\keysol{ph3}} & \kv{\keysol{ph4}} & \kv{\keysol{ph5}} & \kv{\keysol{ph6}} & \kv{\keysol{ph7}} & \kv{\keysol{ph8}} & \kv{\keysol{ph9}} & \kv{\keysol{ph10}} & \kv{\keysol{ph11}} & \kv{\keysol{ph12}} & \kv{\keysol{ph13}} & \kv{\keysol{ph14}} & \kv{\keysol{ph15}} & \kv{\keysol{ph16}} & \kv{\keysol{ph17}} & \kv{\keysol{ph18}} \\\hline
+	8PSK & \kv{\keysol{ph19}} & \kv{\keysol{ph20}} & \kv{\keysol{ph21}} & \kv{\keysol{ph22}} & \kv{\keysol{ph23}} & \kv{\keysol{ph24}} & \kv{\keysol{ph25}} & \kv{\keysol{ph26}} & \kv{\keysol{ph27}} & \kv{\keysol{ph28}} & \kv{\keysol{ph29}} & \kv{\keysol{ph30}} & \kv{\keysol{ph31}} & \kv{\keysol{ph32}} & \kv{\keysol{ph33}} & \kv{\keysol{ph34}} & \kv{\keysol{ph35}} & \kv{\keysol{ph36}} \\\hline
+	\end{tabular}
+	\end{center}
+		\begin{solution}[0.5in]\keysol{sol14}\end{solution}
+
+	\part Set \texttt{diff} to 1, run the flowgraph again, and repeat three settings that failed. Record
+	what happens. Then, for QPSK with differential coding off, explain what changes if you
+	step the phase by 20 degrees at a time without returning to 0.
+		\begin{solution}[1.3in]\keysol{sol15}\end{solution}
+
+\end{parts}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\question \textbf{QPSK on a PlutoSDR.} At a PlutoSDR station, with your team, follow the
+lab page's steps: connect the Pluto's TX port to its RX port through the 30 dB
+attenuator, check the Pluto with \texttt{iio\_info -s}, and run
+\texttt{L15-psk-pluto.grc}. When you finish, stop the flowgraph and unplug the Pluto
+before you disconnect the cable.
+
+\begin{parts}
+
+	\part Once lines arrive, paste a screenshot that shows both constellations, the
+	frequency estimate, and the Lines label.
+		\begin{solution}[1.5in]\keysol{sol16}\end{solution}
+
+	\part With \texttt{diff} = 1, stop and start the flowgraph three times. Then set
+	\texttt{diff} to 0 and do it eight more times. Record which runs deliver text.
+
+	\begin{center}
+	\renewcommand{\arraystretch}{1.25}
+	\small\setlength{\tabcolsep}{3pt}
+	\begin{tabular}{| l | *{3}{K{0.27in} |} *{8}{K{0.27in} |}}
+	\hline
+	Run & 1 & 2 & 3 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 \\\hline
+	Differential & on & on & on & off & off & off & off & off & off & off & off \\\hline
+	Text? & & & & & & & & & & & \\\hline
+	\end{tabular}
+	\end{center}
+		\begin{solution}[0.8in]\keysol{sol17}\end{solution}
+
+	\part With \texttt{diff} = 1, wait 30 s at each TX attenuation and record the Lines label.
+	Explain what changes as the attenuation rises.
+
+	\begin{center}
+	\renewcommand{\arraystretch}{1.25}
+	\begin{tabular}{| l | K{1.1in} | K{1.1in} | K{1.1in} |}
+	\hline
+	TX attenuation (dB) & 70 & 80 & 89 \\\hline
+	Lines correct of received & & & \\\hline
+	\end{tabular}
+	\end{center}
+		\begin{solution}[1.2in]\keysol{sol18}\end{solution}
+
+\end{parts}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\fullwidth{\large\textbf{Part 3: Writeup} \normalsize(individual, after the lab)}
+
+\question \textbf{Analysis.}
+
+\begin{parts}
+
+	\part Compare the noise limits in Question 4 for the three constellations. Explain
+	in words why they come in that order, and what that means for a radio that must carry
+	more bits per symbol.
+		\begin{solution}[1.5in]\keysol{sol19}\end{solution}
+
+	\part Compare the 8PSK pull-in range with QPSK's, explain the difference, and say what a link between two different Plutos,
+	each accurate to 25 ppm at 915 MHz, would need before its Costas Loop.
+		\begin{solution}[1.5in]\keysol{sol20}\end{solution}
+
+	\part Compare Question 6 with Question 7(b). Explain why the
+	working settings were where they were, why the Pluto runs behaved as they did, and
+	why a real mPSK link uses differential coding even though one wrong symbol then
+	corrupts two.
+		\begin{solution}[1.5in]\keysol{sol21}\end{solution}
+
+\end{parts}
+
+\end{questions}
+
+\vspace{1.0em}
+\noindent\textbf{Documentation:} \rule[-2pt]{0.6\linewidth}{0.4pt}
+
+\end{document}
