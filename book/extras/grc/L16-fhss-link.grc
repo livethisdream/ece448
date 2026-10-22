@@ -1,0 +1,1412 @@
+options:
+  parameters:
+    author: ECE 448
+    catch_exceptions: 'True'
+    category: '[GRC Hier Blocks]'
+    cmake_opt: ''
+    comment: ''
+    copyright: ''
+    description: 'L16: the hopping FSK transmitter, a channel with noise, a path delay,
+      and a narrowband jammer, and a receiver that finds the hop timing on the sync
+      channel and de-hops. No hardware.'
+    gen_cmake: 'On'
+    gen_linking: dynamic
+    generate_options: qt_gui
+    hier_block_src_path: '.:'
+    id: L16_fhss_link
+    max_nouts: '0'
+    output_language: python
+    placement: (0,0)
+    qt_qss_theme: ''
+    realtime_scheduling: ''
+    run: 'True'
+    run_command: '{python} -u {filename}'
+    run_options: prompt
+    sizing_mode: fixed
+    thread_safe_setters: ''
+    title: L16 - FHSS Link
+    window_size: (1060,860)
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    state: enabled
+
+blocks:
+- name: baud
+  id: variable
+  parameters:
+    comment: ''
+    value: '1000'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 200
+    - 228
+    state: enabled
+- name: chan_f
+  id: variable
+  parameters:
+    comment: ''
+    value: '[spacing*(k - (nch - 1)/2) for k in range(nch)]'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 680
+    - 296
+    state: enabled
+- name: delay_ms
+  id: variable_qtgui_range
+  parameters:
+    comment: ''
+    gui_hint: 1,1,1,1
+    label: Path delay (ms)
+    min_len: '200'
+    orient: QtCore.Qt.Horizontal
+    rangeType: float
+    start: '0'
+    step: '10'
+    stop: '1000'
+    value: '100'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 1075
+    - 8
+    state: enabled
+- name: dev
+  id: variable
+  parameters:
+    comment: ''
+    value: '1000'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 200
+    - 296
+    state: enabled
+- name: dwell
+  id: variable
+  parameters:
+    comment: ''
+    value: hop_bits*sps
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 520
+    - 296
+    state: enabled
+- name: extra
+  id: variable
+  parameters:
+    comment: ''
+    value: (noise, delay_ms)
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 1160
+    - 228
+    state: enabled
+- name: guard
+  id: variable
+  parameters:
+    comment: ''
+    value: '2'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 520
+    - 160
+    state: enabled
+- name: hdr
+  id: variable
+  parameters:
+    comment: ''
+    value: digital.header_format_default(digital.packet_utils.default_access_code,
+      0)
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 360
+    - 296
+    state: enabled
+- name: hop_bits
+  id: variable
+  parameters:
+    comment: ''
+    value: 8*(2*guard + 12 + len(msg) + 1)
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 520
+    - 228
+    state: enabled
+- name: hop_f
+  id: variable
+  parameters:
+    comment: ''
+    value: '[chan_f[c] for c in seq]'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 840
+    - 296
+    state: enabled
+- name: jam_amp
+  id: variable_qtgui_range
+  parameters:
+    comment: ''
+    gui_hint: 0,1,1,1
+    label: Jammer amplitude
+    min_len: '200'
+    orient: QtCore.Qt.Horizontal
+    rangeType: float
+    start: '0'
+    step: '0.1'
+    stop: '10'
+    value: '0'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 375
+    - 8
+    state: enabled
+- name: jam_ch
+  id: variable_qtgui_range
+  parameters:
+    comment: ''
+    gui_hint: 1,0,1,1
+    label: Jammer channel
+    min_len: '200'
+    orient: QtCore.Qt.Horizontal
+    rangeType: int
+    start: '0'
+    step: '1'
+    stop: '7'
+    value: '4'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 550
+    - 8
+    state: enabled
+- name: key
+  id: variable
+  parameters:
+    comment: ''
+    value: '448'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 840
+    - 160
+    state: enabled
+- name: msg
+  id: variable
+  parameters:
+    comment: ''
+    value: '''USAFA ECE 448'''
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 360
+    - 228
+    state: enabled
+- name: nch
+  id: variable
+  parameters:
+    comment: ''
+    value: '8'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 680
+    - 160
+    state: enabled
+- name: noise
+  id: variable_qtgui_range
+  parameters:
+    comment: ''
+    gui_hint: 0,0,1,1
+    label: Noise amplitude
+    min_len: '200'
+    orient: QtCore.Qt.Horizontal
+    rangeType: float
+    start: '0'
+    step: '0.1'
+    stop: '4'
+    value: '1'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 200
+    - 8
+    state: enabled
+- name: offset
+  id: variable_qtgui_range
+  parameters:
+    comment: ''
+    gui_hint: 2,0,1,1
+    label: Receiver hop offset (hops)
+    min_len: '200'
+    orient: QtCore.Qt.Horizontal
+    rangeType: int
+    start: '-2'
+    step: '1'
+    stop: '2'
+    value: '0'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 725
+    - 8
+    state: enabled
+- name: rx_key
+  id: variable
+  parameters:
+    comment: ''
+    value: key
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 1000
+    - 160
+    state: enabled
+- name: rx_label
+  id: variable_qtgui_label
+  parameters:
+    comment: ''
+    formatter: 'lambda x: '':  '' + x'
+    gui_hint: 8,0,1,2
+    label: Received
+    type: string
+    value: rx_text
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 1860
+    - 280
+    state: enabled
+- name: rx_rate
+  id: variable
+  parameters:
+    comment: ''
+    value: samp_rate/4
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 1000
+    - 296
+    state: enabled
+- name: rx_seq
+  id: variable
+  parameters:
+    comment: ''
+    value: '[int(c) for c in np.random.default_rng(rx_key).permutation(nch)]'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 1000
+    - 228
+    state: enabled
+- name: rx_sps
+  id: variable
+  parameters:
+    comment: ''
+    value: int(rx_rate/baud)
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 1160
+    - 160
+    state: enabled
+- name: rx_state
+  id: variable_function_probe
+  parameters:
+    block_id: hop_sync
+    comment: ''
+    function_args: ''
+    function_name: state
+    poll_rate: '4'
+    value: '''searching'''
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 1860
+    - 160
+    state: enabled
+- name: rx_stats
+  id: variable_function_probe
+  parameters:
+    block_id: text_sink
+    comment: ''
+    function_args: ''
+    function_name: stats
+    poll_rate: '4'
+    value: ''''''
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 1680
+    - 160
+    state: enabled
+- name: rx_text
+  id: variable_function_probe
+  parameters:
+    block_id: text_sink
+    comment: ''
+    function_args: ''
+    function_name: last_line
+    poll_rate: '4'
+    value: '''(waiting for a packet)'''
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 1500
+    - 160
+    state: enabled
+- name: samp_rate
+  id: variable
+  parameters:
+    comment: ''
+    value: '128000'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 200
+    - 160
+    state: enabled
+- name: seq
+  id: variable
+  parameters:
+    comment: ''
+    value: '[int(c) for c in np.random.default_rng(key).permutation(nch)]'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 840
+    - 228
+    state: enabled
+- name: spacing
+  id: variable
+  parameters:
+    comment: ''
+    value: '10000'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 680
+    - 228
+    state: enabled
+- name: sps
+  id: variable
+  parameters:
+    comment: ''
+    value: int(samp_rate/baud)
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 360
+    - 160
+    state: enabled
+- name: state_label
+  id: variable_qtgui_label
+  parameters:
+    comment: ''
+    formatter: 'lambda x: '':  '' + x'
+    gui_hint: 7,0,1,1
+    label: Receiver
+    type: string
+    value: rx_state
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 1500
+    - 280
+    state: enabled
+- name: stats_label
+  id: variable_qtgui_label
+  parameters:
+    comment: ''
+    formatter: 'lambda x: '':  '' + x'
+    gui_hint: 7,1,1,1
+    label: Packets
+    type: string
+    value: rx_stats
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 1680
+    - 280
+    state: enabled
+- name: timing_ms
+  id: variable_qtgui_range
+  parameters:
+    comment: ''
+    gui_hint: 2,1,1,1
+    label: Receiver timing error (ms)
+    min_len: '200'
+    orient: QtCore.Qt.Horizontal
+    rangeType: float
+    start: '-40'
+    step: '1'
+    stop: '40'
+    value: '0'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 900
+    - 8
+    state: enabled
+- name: bit_average
+  id: blocks_moving_average_xx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    length: rx_sps
+    max_iter: '4000'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    scale: 1/rx_sps
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 800
+    - 1010
+    state: enabled
+- name: channel
+  id: blocks_add_xx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_inputs: '3'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 1760
+    - 760
+    state: enabled
+- name: find_packet
+  id: digital_correlate_access_code_xx_ts
+  parameters:
+    access_code: digital.packet_utils.default_access_code
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    tagname: '"packet_len"'
+    threshold: '2'
+    type: byte
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 1390
+    - 1010
+    state: enabled
+- name: fsk
+  id: analog_frequency_modulator_fc
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    sensitivity: 2*math.pi*dev/samp_rate
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 1170
+    - 480
+    state: enabled
+- name: fsk_demod
+  id: analog_quadrature_demod_cf
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    gain: rx_rate/(2*math.pi*dev)
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 620
+    - 1020
+    state: enabled
+- name: guard_src
+  id: blocks_vector_source_x
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    repeat: 'True'
+    tags: '[]'
+    type: byte
+    vector: '[0x55]*guard'
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 8
+    - 400
+    state: enabled
+- name: guard_tag
+  id: blocks_stream_to_tagged_stream
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    len_tag_key: '"packet_len"'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    packet_len: guard
+    type: byte
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 200
+    - 400
+    state: enabled
+- name: header
+  id: digital_protocol_formatter_bb
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    format: hdr
+    len_tag_key: '"packet_len"'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 200
+    - 590
+    state: enabled
+- name: hop_frame
+  id: blocks_tagged_stream_mux
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    lengthtagname: '"packet_len"'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    ninputs: '4'
+    tag_preserve_head_pos: '0'
+    type: byte
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 430
+    - 460
+    state: enabled
+- name: hop_src
+  id: blocks_vector_source_x
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    repeat: 'True'
+    tags: '[]'
+    type: float
+    vector: hop_f
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 640
+    - 630
+    state: enabled
+- name: hop_sync
+  id: epy_block
+  parameters:
+    _source_code: "\"\"\"Hop Sync: the receiver's hop synthesizer. It multiplies the\
+      \ received band\nby a tone that follows the same hop sequence as the transmitter,\
+      \ so the\ntransmitted signal comes out at 0 Hz on every hop.\n\nSync on a known\
+      \ hop: until it is locked, the block parks on the sync\nchannel, chan_f[seq[0]],\
+      \ the channel of hop 0. The sequence uses each channel\nonce per cycle, so the\
+      \ transmitter shows up there only on hop 0. When the\npower in the sync channel\
+      \ jumps, hop 0 has started: the block takes that\nmoment as its hop boundary\
+      \ and hops from then on, one hop every `dwell`\nsamples. Each received packet\
+      \ arrives on the 'pkt' message port; if a full\ncycle and one more hop pass\
+      \ with no packet, the block parks again.\n\noffset (hops) and timing_ms move\
+      \ the receiver's hops away from the ones it\nfound, to show what a sync error\
+      \ does. A Function Probe reads state().\"\"\"\n\nimport numpy as np\nimport\
+      \ pmt\nfrom gnuradio import gr\nfrom gnuradio.filter import firdes\n\n\nclass\
+      \ blk(gr.sync_block):\n    def __init__(self, samp_rate=128000, dwell=30720,\
+      \ chan_f=[0.0], seq=[0], offset=0, timing_ms=0.0):\n        gr.sync_block.__init__(self,\
+      \ name='Hop Sync', in_sig=[np.complex64], out_sig=[np.complex64])\n        self.message_port_register_in(pmt.intern('pkt'))\n\
+      \        self.set_msg_handler(pmt.intern('pkt'), self.on_packet)\n        self.samp_rate\
+      \ = samp_rate\n        self.dwell = int(dwell)\n        self.chan_f = list(chan_f)\n\
+      \        self.seq = [int(c) for c in seq]\n        self.offset = offset\n  \
+      \      self.timing_ms = timing_ms\n        self.taps = np.array(firdes.low_pass(1,\
+      \ samp_rate, 2500, 2000), dtype=np.float32)\n        self.hist = np.zeros(len(self.taps)\
+      \ - 1, dtype=np.complex64)\n        self.tick = 64                      # power\
+      \ measured every 0.5 ms at 128 kHz\n        self.ticks = []                \
+      \     # recent tick powers\n        self.part = np.zeros(0, dtype=np.float32)\n\
+      \        self.ph_lo = 0.0                    # phase of the output tone\n  \
+      \      self.ph_sync = 0.0                  # phase of the sync-channel detector\n\
+      \        self.n_now = 0\n        self.locked = len(self.seq) == 1    # one channel:\
+      \ nothing to find\n        self.b = 0                          # sample where\
+      \ some hop 0 started\n        self.last_pkt = 0                   # hop count\
+      \ of the last packet\n\n    def on_packet(self, msg):\n        if self.locked:\n\
+      \            self.last_pkt = self.hop_count(self.n_now)\n\n    def hop_count(self,\
+      \ n):\n        shift = int(round(self.timing_ms * 1e-3 * self.samp_rate))\n\
+      \        return (n - self.b - shift) // self.dwell\n\n    def state(self):\n\
+      \        if not self.locked:\n            return f'searching: parked on channel\
+      \ {self.seq[0]}'\n        h = self.hop_count(self.n_now) + int(self.offset)\n\
+      \        return f'locked: hop {h % len(self.seq)}, channel {self.seq[h % len(self.seq)]}'\n\
+      \n    def detect(self, x, n0):\n        \"\"\"Return the sample where hop 0\
+      \ began, or None.\"\"\"\n        n = np.arange(len(x))\n        w = 2 * np.pi\
+      \ * self.chan_f[self.seq[0]] / self.samp_rate\n        y = x * np.exp(-1j *\
+      \ (self.ph_sync + w * n)).astype(np.complex64)\n        self.ph_sync = (self.ph_sync\
+      \ + w * len(x)) % (2 * np.pi)\n        z = np.convolve(np.concatenate([self.hist,\
+      \ y]), self.taps, mode='valid')\n        self.hist = np.concatenate([self.hist,\
+      \ y])[-(len(self.taps) - 1):]\n        p = np.concatenate([self.part, np.abs(z)\
+      \ ** 2])\n        k = len(p) // self.tick\n        first = n0 + len(x) - len(p)\
+      \        # sample index of p[0]\n        self.part = p[k * self.tick:]\n   \
+      \     found = None\n        for i in range(k):\n            self.ticks.append(p[i\
+      \ * self.tick:(i + 1) * self.tick].mean())\n            t = self.ticks\n   \
+      \         if len(t) < 48 or found is not None:\n                continue\n \
+      \           now = np.mean(t[-4:])                # last 2 ms\n            ref\
+      \ = np.mean(t[-44:-8])             # 18 ms, ending 4 ms ago\n            if\
+      \ now > 4 * ref + 1e-9:\n                j = len(t) - 8 + int(np.argmax(np.array(t[-8:])\
+      \ > now / 2))\n                back = len(t) - 1 - j            # ticks before\
+      \ this one\n                found = first + (i - back) * self.tick - (len(self.taps)\
+      \ - 1) // 2\n        del self.ticks[:-64]\n        return found\n\n    def work(self,\
+      \ input_items, output_items):\n        x = input_items[0]\n        n0 = self.nitems_read(0)\n\
+      \        self.n_now = n0 + len(x)\n        b = self.detect(x, n0)\n        if\
+      \ not self.locked and b is not None:\n            self.locked, self.b = True,\
+      \ b\n            self.last_pkt = 0\n        nch = len(self.seq)\n        if\
+      \ self.locked and nch > 1 and self.hop_count(self.n_now) - self.last_pkt > nch\
+      \ + 1:\n            self.locked = False\n        n = n0 + np.arange(len(x))\n\
+      \        if self.locked:\n            h = self.hop_count(n) + int(self.offset)\n\
+      \            f = np.array(self.chan_f)[np.array(self.seq)[h % nch]]\n      \
+      \  else:\n            f = np.full(len(x), self.chan_f[self.seq[0]])\n      \
+      \  dph = 2 * np.pi * f / self.samp_rate\n        ph = self.ph_lo + np.cumsum(dph)\
+      \ - dph\n        self.ph_lo = float((ph[-1] + dph[-1]) % (2 * np.pi)) if len(x)\
+      \ else self.ph_lo\n        output_items[0][:] = x * np.exp(-1j * ph).astype(np.complex64)\n\
+      \        return len(x)\n"
+    affinity: ''
+    alias: ''
+    chan_f: chan_f
+    comment: ''
+    dwell: dwell
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    offset: offset
+    samp_rate: samp_rate
+    seq: rx_seq
+    timing_ms: timing_ms
+  states:
+    _io_cache: ('Hop Sync', 'blk', [('samp_rate', '128000'), ('dwell', '30720'), ('chan_f',
+      '[0.0]'), ('seq', '[0]'), ('offset', '0'), ('timing_ms', '0.0')], [('0', 'complex',
+      1), ('pkt', 'message', 1)], [('0', 'complex', 1)], '', ['chan_f', 'dwell', 'offset',
+      'samp_rate', 'seq', 'timing_ms'])
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 200
+    - 980
+    state: enabled
+- name: hop_synth
+  id: blocks_vco_c
+  parameters:
+    affinity: ''
+    alias: ''
+    amplitude: '1'
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samp_rate: samp_rate
+    sensitivity: 2*math.pi
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 1010
+    - 630
+    state: enabled
+- name: import_0
+  id: import
+  parameters:
+    alias: ''
+    comment: ''
+    imports: 'import math
+
+      import numpy as np'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 8
+    - 170
+    state: enabled
+- name: jammer
+  id: analog_sig_source_x
+  parameters:
+    affinity: ''
+    alias: ''
+    amp: jam_amp
+    comment: ''
+    freq: chan_f[jam_ch % nch]
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    offset: '0'
+    phase: '0'
+    samp_rate: samp_rate
+    showports: 'False'
+    type: complex
+    waveform: analog.GR_COS_WAVE
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 1540
+    - 850
+    state: enabled
+- name: msg_src
+  id: blocks_vector_source_x
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    repeat: 'True'
+    tags: '[]'
+    type: byte
+    vector: list(msg.encode()) + [10]
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 8
+    - 500
+    state: enabled
+- name: msg_tag
+  id: blocks_stream_to_tagged_stream
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    len_tag_key: '"packet_len"'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    packet_len: len(msg) + 1
+    type: byte
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 200
+    - 500
+    state: enabled
+- name: noise_src
+  id: analog_noise_source_x
+  parameters:
+    affinity: ''
+    alias: ''
+    amp: noise
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    noise_type: analog.GR_GAUSSIAN
+    seed: '0'
+    type: complex
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 1540
+    - 760
+    state: enabled
+- name: path_delay
+  id: blocks_delay
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    delay: int(delay_ms*samp_rate/1000)
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_ports: '1'
+    showports: 'False'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 1540
+    - 680
+    state: enabled
+- name: repack
+  id: blocks_repack_bits_bb
+  parameters:
+    affinity: ''
+    alias: ''
+    align_output: 'False'
+    comment: ''
+    endianness: gr.GR_MSB_FIRST
+    k: '1'
+    l: '8'
+    len_tag_key: '"packet_len"'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 1640
+    - 1010
+    state: enabled
+- name: repeat_bits
+  id: blocks_repeat
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    interp: sps
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 1000
+    - 480
+    state: enabled
+- name: repeat_hop
+  id: blocks_repeat
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    interp: dwell
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 840
+    - 638
+    state: enabled
+- name: rx_filter
+  id: low_pass_filter
+  parameters:
+    affinity: ''
+    alias: ''
+    beta: '6.76'
+    comment: ''
+    cutoff_freq: dev + baud
+    decim: '4'
+    gain: '1'
+    interp: '1'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samp_rate: samp_rate
+    type: fir_filter_ccf
+    width: '1000'
+    win: window.WIN_HAMMING
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 420
+    - 980
+    state: enabled
+- name: rx_in
+  id: virtual_source
+  parameters:
+    alias: ''
+    comment: ''
+    stream_id: rx_in
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 8
+    - 1000
+    state: enabled
+- name: slicer
+  id: digital_binary_slicer_fb
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 1250
+    - 1020
+    state: enabled
+- name: symbol_sync
+  id: digital_symbol_sync_xx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    constellation: digital.constellation_bpsk().base()
+    damping: '1.0'
+    loop_bw: '0.045'
+    max_dev: '1.5'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    nfilters: '128'
+    osps: '1'
+    pfb_mf_taps: '[]'
+    resamp_type: digital.IR_MMSE_8TAP
+    sps: rx_sps
+    ted_gain: '1.0'
+    ted_type: digital.TED_GARDNER
+    type: ff
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 990
+    - 980
+    state: enabled
+- name: symbols
+  id: digital_chunks_to_symbols_xx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    dimension: '1'
+    in_type: byte
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_ports: '1'
+    out_type: float
+    symbol_table: '[-1, 1]'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 800
+    - 472
+    state: enabled
+- name: text_sink
+  id: epy_block
+  parameters:
+    _source_code: "\"\"\"Text Sink: shows each received packet as a line of text,\
+      \ counts the lines\nthat match the transmitted message, and compares that count\
+      \ with the number\nof hops the transmitter has sent, one packet per hop. The\
+      \ counts restart\nwhenever a slider moves, because GRC sets `settings` each\
+      \ time one changes.\nEvery packet also goes out the 'pkt' port, which tells\
+      \ Hop Sync that it is\nstill on the right hops. Function Probes read last_line()\
+      \ and stats().\"\"\"\n\nimport time\n\nimport numpy as np\nimport pmt\nfrom\
+      \ gnuradio import gr\n\n\nclass blk(gr.sync_block):\n    def __init__(self,\
+      \ expected='', hop_rate=1.0, settings=None):\n        gr.sync_block.__init__(self,\
+      \ name='Text Sink', in_sig=[np.uint8], out_sig=None)\n        self.message_port_register_out(pmt.intern('pkt'))\n\
+      \        self.expected = expected\n        self.hop_rate = hop_rate\n      \
+      \  self.key = pmt.intern('packet_len')\n        self.buf = ''\n        self.need\
+      \ = 0\n        self.line = '(waiting for a packet)'\n        self.settings =\
+      \ settings\n\n    @property\n    def settings(self):\n        return self._settings\n\
+      \n    @settings.setter\n    def settings(self, value):\n        self._settings\
+      \ = value\n        self.good = 0\n        self.total = 0\n        self.t0 =\
+      \ time.monotonic()\n\n    def work(self, input_items, output_items):\n     \
+      \   data = input_items[0]\n        start = self.nitems_read(0)\n        # Each\
+      \ packet starts with a packet_len tag that holds its length, so\n        # the\
+      \ line ends after that many bytes, even if its newline is wrong.\n        tags\
+      \ = {t.offset - start: pmt.to_long(t.value)\n                for t in self.get_tags_in_window(0,\
+      \ 0, len(data), self.key)}\n        for i, b in enumerate(data):\n         \
+      \   if i in tags:\n                if self.buf:\n                    self.finish()\n\
+      \                self.need = tags[i]\n            self.buf += chr(b) if 32 <=\
+      \ b < 127 or b == 10 else '?'\n            if len(self.buf) == self.need:\n\
+      \                self.finish()\n        return len(data)\n\n    def finish(self):\n\
+      \        self.line = self.buf[:-1] if self.buf.endswith('\\n') else self.buf\n\
+      \        self.total += 1\n        self.good += self.buf == self.expected + '\\\
+      n'\n        self.buf = ''\n        self.message_port_pub(pmt.intern('pkt'),\
+      \ pmt.PMT_T)\n\n    def last_line(self):\n        return self.line\n\n    def\
+      \ stats(self):\n        t = time.monotonic() - self.t0\n        sent = int(t\
+      \ * self.hop_rate)\n        pct = f' ({100 * self.good / sent:.0f}%)' if sent\
+      \ else ''\n        return f'{self.good} correct of {sent} sent in {t:.0f} s{pct}'\n"
+    affinity: ''
+    alias: ''
+    comment: ''
+    expected: msg
+    hop_rate: samp_rate/dwell
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    settings: (jam_amp, jam_ch, offset, timing_ms) + extra
+  states:
+    _io_cache: ('Text Sink', 'blk', [('expected', "''"), ('hop_rate', '1.0'), ('settings',
+      'None')], [('0', 'byte', 1)], [('pkt', 'message', 1)], '', ['expected', 'hop_rate',
+      'settings'])
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 1840
+    - 1010
+    state: enabled
+- name: throttle
+  id: blocks_throttle2
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    ignoretag: 'True'
+    limit: auto
+    maximum: '0.1'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samples_per_second: samp_rate
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 1540
+    - 560
+    state: enabled
+- name: to_rx
+  id: virtual_sink
+  parameters:
+    alias: ''
+    comment: ''
+    stream_id: rx_in
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 1880
+    - 780
+    state: enabled
+- name: tx_mixer
+  id: blocks_multiply_xx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_inputs: '2'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 1380
+    - 550
+    state: enabled
+- name: unpack
+  id: blocks_unpack_k_bits_bb
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    k: '8'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 640
+    - 480
+    state: enabled
+- name: wf_dehop
+  id: qtgui_waterfall_sink_x
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha1: '1.0'
+    alpha10: '1.0'
+    alpha2: '1.0'
+    alpha3: '1.0'
+    alpha4: '1.0'
+    alpha5: '1.0'
+    alpha6: '1.0'
+    alpha7: '1.0'
+    alpha8: '1.0'
+    alpha9: '1.0'
+    axislabels: 'True'
+    bw: samp_rate
+    color1: '0'
+    color10: '0'
+    color2: '0'
+    color3: '0'
+    color4: '0'
+    color5: '0'
+    color6: '0'
+    color7: '0'
+    color8: '0'
+    color9: '0'
+    comment: ''
+    fc: '0'
+    fftsize: '1024'
+    freqhalf: 'True'
+    grid: 'False'
+    gui_hint: 3,1,4,1
+    int_max: '0'
+    int_min: '-30'
+    label1: ''
+    label10: ''
+    label2: ''
+    label3: ''
+    label4: ''
+    label5: ''
+    label6: ''
+    label7: ''
+    label8: ''
+    label9: ''
+    legend: 'True'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    name: '"After Hop Sync"'
+    nconnections: '1'
+    showports: 'False'
+    type: complex
+    update_time: '0.05'
+    wintype: window.WIN_BLACKMAN_hARRIS
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 420
+    - 1180
+    state: enabled
+- name: wf_rx
+  id: qtgui_waterfall_sink_x
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha1: '1.0'
+    alpha10: '1.0'
+    alpha2: '1.0'
+    alpha3: '1.0'
+    alpha4: '1.0'
+    alpha5: '1.0'
+    alpha6: '1.0'
+    alpha7: '1.0'
+    alpha8: '1.0'
+    alpha9: '1.0'
+    axislabels: 'True'
+    bw: samp_rate
+    color1: '0'
+    color10: '0'
+    color2: '0'
+    color3: '0'
+    color4: '0'
+    color5: '0'
+    color6: '0'
+    color7: '0'
+    color8: '0'
+    color9: '0'
+    comment: ''
+    fc: '0'
+    fftsize: '1024'
+    freqhalf: 'True'
+    grid: 'False'
+    gui_hint: 3,0,4,1
+    int_max: '0'
+    int_min: '-30'
+    label1: ''
+    label10: ''
+    label2: ''
+    label3: ''
+    label4: ''
+    label5: ''
+    label6: ''
+    label7: ''
+    label8: ''
+    label9: ''
+    legend: 'True'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    name: '"Received band"'
+    nconnections: '1'
+    showports: 'False'
+    type: complex
+    update_time: '0.05'
+    wintype: window.WIN_BLACKMAN_hARRIS
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 200
+    - 1180
+    state: enabled
+
+connections:
+- [bit_average, '0', symbol_sync, '0']
+- [channel, '0', to_rx, '0']
+- [find_packet, '0', repack, '0']
+- [fsk, '0', tx_mixer, '0']
+- [fsk_demod, '0', bit_average, '0']
+- [guard_src, '0', guard_tag, '0']
+- [guard_tag, '0', hop_frame, '0']
+- [guard_tag, '0', hop_frame, '3']
+- [header, '0', hop_frame, '1']
+- [hop_frame, '0', unpack, '0']
+- [hop_src, '0', repeat_hop, '0']
+- [hop_sync, '0', rx_filter, '0']
+- [hop_sync, '0', wf_dehop, '0']
+- [hop_synth, '0', tx_mixer, '1']
+- [jammer, '0', channel, '2']
+- [msg_src, '0', msg_tag, '0']
+- [msg_tag, '0', header, '0']
+- [msg_tag, '0', hop_frame, '2']
+- [noise_src, '0', channel, '1']
+- [path_delay, '0', channel, '0']
+- [repack, '0', text_sink, '0']
+- [repeat_bits, '0', fsk, '0']
+- [repeat_hop, '0', hop_synth, '0']
+- [rx_filter, '0', fsk_demod, '0']
+- [rx_in, '0', hop_sync, '0']
+- [rx_in, '0', wf_rx, '0']
+- [slicer, '0', find_packet, '0']
+- [symbol_sync, '0', slicer, '0']
+- [symbols, '0', repeat_bits, '0']
+- [text_sink, pkt, hop_sync, pkt]
+- [throttle, '0', path_delay, '0']
+- [tx_mixer, '0', throttle, '0']
+- [unpack, '0', symbols, '0']
+
+metadata:
+  file_format: 1
+  grc_version: 3.10.9.2
