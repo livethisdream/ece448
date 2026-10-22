@@ -40,21 +40,18 @@ Before class, run L07-fm-test-tx.grc and L07-am-test-tx.grc once, in the folder 
 The goal is audio from the station at 100.3 MHz, and its station name.
 
 Note:
-This is a test file from a GNU Radio transmitter flowgraph, the same kind of file as their L5 capture. The station at 100.3 carries the L6 two-tone message and RDS; 99.5 carries a 600 Hz tone. The figure carries a Simulated label.
+This is a test file from a GNU Radio transmitter flowgraph, the same kind of file as their L5 capture. The station at 100.3 carries the L6 two-tone message and RDS; 99.5 carries a different test tone. The figure carries a Simulated label.
 
 ---
 
 ## Wideband FM
 
 - The carrier's **frequency** follows the message, up to $\Delta f$ = 75 kHz away.
-- Carson's rule gives the bandwidth:
-
-$$B \approx 2(\Delta f + W)$$
-
-- 15 kHz audio needs 180 kHz; US stations sit 200 kHz apart.
+- A station is about $2(\Delta f + W)$ wide: 180 kHz for 15 kHz audio.
+- US stations sit 200 kHz apart.
 
 Note:
-Narrowband FM on two-way radios uses 2.5 or 5 kHz of deviation. AM carrying the same 15 kHz audio would be 30 kHz wide, so broadcast FM is six times wider.
+The width rule is Carson's rule, a rule of thumb; we use it only to set the channel filter. The 2025 slides' modulation index is beta = deviation / message frequency; broadcast FM at 15 kHz audio has beta = 75/15 = 5. Narrowband FM on two-way radios uses 2.5 or 5 kHz of deviation. AM carrying the same 15 kHz audio would be 30 kHz wide, so broadcast FM is six times wider.
 
 ---
 
@@ -121,7 +118,7 @@ FM noise at the demodulator output grows with distance from the carrier, so the 
 - It removes the high-frequency noise along with the boost.
 
 Note:
-US pre-emphasis boosts 15 kHz by about 17 dB; the de-emphasis corner is 2.1 kHz. Europe uses 50 microseconds.
+The transmitter boosts the treble; the receiver cuts it back, and the noise with it. Europe uses 50 microseconds.
 
 ---
 
@@ -130,18 +127,18 @@ US pre-emphasis boosts 15 kHz by about 17 dB; the de-emphasis corner is 2.1 kHz.
 <img src="./img/07-am-fm-receivers/L07-wbfm-rx.png" alt="Simulated: the WBFM receiver window, received band, multiplex, and audio with lines at 1 and 2.5 kHz" style="max-height:420px; display:block; margin:0 auto;">
 
 Note:
-Play the audio. The audio sink shows exactly the two message tones. Type 99.5 into Station and the 600 Hz tone plays. Then show how to point the File Source at fm_capture.cfile and type its center frequency.
+Play the audio. The audio sink shows exactly the two message tones. Type 99.5 into Station and a different test tone plays. Then show how to point the File Source at fm_capture.cfile and type its center frequency.
 
 ---
 
 ## RDS
 
 - The **Radio Data System** sends 1187.5 bit/s on 57 kHz.
-- It is BPSK with differential coding and biphase symbols.
-- Groups of 104 bits carry the station name, program type, and radiotext.
+- It is BPSK: a DSB-SC signal that needs its carrier recovered.
+- It carries the station name, program type, and radiotext.
 
 Note:
-1187.5 is 57 kHz divided by 48. A group is four 26-bit blocks, 16 data bits and a 10-bit check word each, so 87.6 ms per group. The PS name is eight characters, two per group. North America calls it RBDS.
+1187.5 is 57 kHz divided by 48. The bits are differentially coded, so a 180 degree error in the recovered carrier does no harm. The PS name is eight characters, sent two at a time. North America calls it RBDS.
 
 ---
 
@@ -152,7 +149,7 @@ Note:
 Two clusters show BPSK with its carrier recovered, and the panel shows ECE 448.
 
 Note:
-Open L07-rds-rx.grc. It shifts 57 kHz to 0 and resamples to 19 kHz, 16 samples per bit. A matched filter and Symbol Sync find the bits, the Constellation Receiver recovers the carrier, and a Differential Decoder feeds the gr-rds blocks. The panel swaps two labels: the PI code, 1093, appears under Program Type.
+Open L07-rds-rx.grc. It shifts 57 kHz to 0 and resamples to 19 kHz, 16 samples per bit. A matched filter and Symbol Sync find the bit timing, the Constellation Receiver recovers the carrier, and a Differential Decoder feeds the gr-rds blocks. The panel swaps two labels: the PI code, 1093, appears under Program Type.
 
 ---
 
@@ -169,28 +166,24 @@ Aircraft and ATIS are AM between 118 and 137 MHz. After Complex to Mag it is the
 
 ## AM and FM in the Same Noise
 
-<img src="./img/07-am-fm-receivers/L07-amfm-30.png" alt="At C/N 30 dB: AM output SNR 29.5 dB, FM 48.4 dB" style="max-height:340px; display:block; margin:0 auto;">
+<img src="./img/07-am-fm-receivers/L07-amfm-25.png" alt="At an input SNR of 25 dB and 15 kHz deviation: the FM output SNR bar reaches well past the AM bar" style="max-height:340px; display:block; margin:0 auto;">
 
-With the same tone, power, and noise, AM in 10 kHz reaches 29.5 dB and FM in 60 kHz reaches 48.4 dB.
+Same tone, power, and noise: with a strong signal, FM's meter reads well above AM's.
 
 Note:
-L07-am-vs-fm.grc sends AM at m = 1 and FM at 25 kHz deviation with the same transmitted power and noise density. The FM receiver admits six times the noise, and its output SNR is still about 19 dB higher. Each doubling of deviation adds 5 to 6 dB above threshold.
+L07-am-vs-fm.grc sends AM at m = 1 and FM with the same transmitted power and the same noise. Demo at 15 kHz deviation and 25 dB Input SNR; the lab uses other settings, so don't read the meters at the lab's. The FM receiver's wider channel lets in more noise, and its output is still the cleaner one; FM's noise floor sits well under AM's. Drag the deviation up and FM's meter climbs; drag it down and most of the advantage goes away.
 
 ---
 
-## The FM Threshold
+## Turning the Noise Up
 
-| C/N in 10 kHz (dB) | 30 | 20 | 15 | 10 |
-| :-- | :-: | :-: | :-: | :-: |
-| AM | 29.5 | 19.4 | 14.4 | 9.2 |
-| FM, 5 kHz | 35.5 | 25.5 | 20.5 | 14.2 |
-| FM, 25 kHz | 48.5 | 39.2 | 26.1 | 9.3 |
-| FM, 50 kHz | 53.2 | 39.5 | 17.3 | 6.4 |
+<img src="./img/07-am-fm-receivers/L07-amfm-08.png" alt="At an input SNR of 8 dB and 15 kHz deviation: AM and FM output SNR bars about equal, both tones ragged" style="max-height:300px; display:block; margin:0 auto;">
 
-Below about 10 dB in its own bandwidth, FM clicks and its advantage disappears.
+- Far enough down, FM breaks into clicks and its advantage is gone.
+- AM only gets steadily noisier.
 
 Note:
-Drag C/N down with the audio on FM and listen for the clicks. At 15 dB the 25 kHz signal is 7 dB above the noise in its 60 kHz band. A wider deviation gives more SNR above threshold and reaches threshold sooner. At 10 dB the 5 kHz signal is the best of the four. Each table entry averages about 12 s of meter readings; near threshold the live meters wander by about 1 dB.
+At 15 kHz deviation, drag Input SNR down with the speaker on FM and let them hear the clicks start; don't call out the slider value, which the lab asks them to find at other deviations. Repeat at a narrower and a wider deviation: wider deviation sounds cleaner when the signal is strong and breaks up sooner as the noise rises. Near that point the live meters wander by about 1 dB.
 
 ---
 
@@ -198,23 +191,35 @@ Drag C/N down with the audio on FM and listen for the clicks. At 15 dB the 25 kH
 
 ## FM Explorer
 
-- The lines fall off just outside Carson's band.
-- At $\Delta f$ = 2.4 kHz on a 1 kHz tone, the carrier vanishes.
-- Carson's band holds about 96% of the power or more.
+- Raise the deviation: the lines spread wider.
+- Raise the tone frequency: the lines move apart.
+- Nearly all of the signal stays inside Carson's band.
 
 <p class="viz-cue">↗ Interactive on the lesson page</p>
 
 Note:
-The carrier line vanishes when the deviation is 2.4 times the tone frequency, and technicians use that null to calibrate deviation.
+Start from the L7 flowgraph preset. The point is that the rule of thumb is good enough to set a channel filter.
 
 ---
 
 ## Key Point
 
-<div class="callout">FM spreads the message over a wider channel, and above threshold its receiver returns a cleaner output than AM. Below threshold the improvement disappears, and a wider channel reaches threshold sooner.</div>
+<div class="callout">FM spreads the message over a wider channel and, while the signal is strong, comes out cleaner than AM. Turn the noise up far enough and FM breaks up into clicks, sooner for a wider channel; AM just gets noisier.</div>
 
 Note:
 Broadcast FM is strong and has a 200 kHz channel. Aircraft use AM: a weak AM signal stays intelligible, and two transmitters at once are both heard.
+
+---
+
+## Find the Station
+
+- SDR Flex: select an FM signal, demodulate it.
+- Live: tune the FM band in GQRX; choose **WFM (stereo)**.
+- Turn on RDS, read the name, and note the frequency.
+- Then try **NFM** on NOAA weather, 162.400–162.550 MHz.
+
+Note:
+Open SDR Flex (livethisdream.github.io/sdr-flex) on an example capture and demodulate an FM signal; RDS there needs the full server. Then demo live: choose the RTL-SDR in GQRX, click a strong station, set WFM (stereo), open the RDS panel and enable decoding. Write the frequency and name on the board, close GQRX (one program per RTL-SDR), then run L07-rds-rx.grc on that station and check that the names match. Before closing, switch GQRX to NFM on a NOAA weather channel (162.400 to 162.550 MHz, receive only): about 5 kHz deviation and a channel tens of kHz wide, against 75 kHz and 200 kHz for broadcast. GQRX comes with radioconda; if it does not start on a laptop, SDR++ has the same controls.
 
 ---
 
@@ -235,4 +240,4 @@ ATIS frequencies are in the FAA Chart Supplement and on sectional charts. RDS ne
 - Lesson 8 sends bits as FSK, which is FM with a two-valued message.
 
 Note:
-The pre-lab asks for the receiver's shift and rates, the demodulator gain, the test file's audio line levels, the RDS name time, the ATIS receiver settings, and the FM threshold before the bench. The bench starts with building the WBFM receiver from an empty canvas.
+The pre-lab asks for the receiver's shift and rates, the demodulator gain, and the ATIS receiver settings. At the bench they turn the noise up on AM and FM and record where the clicks start. The bench starts with building the WBFM receiver from an empty canvas. Extension, from the 2025 course: a dual FM receiver that plays two stations from one capture.

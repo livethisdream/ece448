@@ -115,16 +115,14 @@ $f_s = 32$ kHz.
 		\ansbox[1.3in]{96 MB}
 	\end{minipage}
 
-	\begin{minipage}[t]{0.58\linewidth}
-		\part You analyze the capture with a 4096-point FFT. Find the width of one bin.
-		\begin{solution}[0.8in]
-		\eq{ \dfrac{f_s}{N} = \dfrac{2.4\times10^{6}}{4096} = 586\ \text{Hz} }
+	\part You play the capture back through a File Source into a QT GUI Sink, with
+	no other blocks. The flowgraph uses a whole processor core and the display
+	races. What block is missing, and what do you set it to?
+		\begin{solution}[0.9in]
+		A Throttle, set to the capture's sample rate, 2.4 MS/s. A File Source has no
+		hardware to pace it, so without a throttle it reads samples as fast as the
+		laptop can.
 		\end{solution}
-	\end{minipage}\hfill%
-	\begin{minipage}[t]{0.37\linewidth}
-		\raggedleft \vspace{12pt}
-		\ansbox[1.3in]{586 Hz}
-	\end{minipage}
 
 	\part A teammate sends only the file \texttt{capture.cfile}. Name the two numbers
 	you need before the file is useful, and explain why.
@@ -138,24 +136,17 @@ $f_s = 32$ kHz.
 
 \newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\question \textbf{Gain and dynamic range.} Each bit of an analog-to-digital
-converter adds about 6 dB of dynamic range.
+\question \textbf{Gain and the DC spike.} An RTL-SDR runs the L5 FM flowgraph.
 \begin{parts}
 
-	\begin{minipage}[t]{0.58\linewidth}
-		\part Estimate the dynamic range of the RTL-SDR's 8-bit converter and the
-		PlutoSDR's 12-bit converter.
-		\begin{solution}[0.8in]
-		\eq{ 8 \times 6 = 48\db, \qquad 12 \times 6 = 72\db }
+	\part With the gain at 0 dB, only the strongest station shows, and the noise
+	floor does not move when you raise the gain a little. What is happening, and what
+	do you change?
+		\begin{solution}[0.9in]
+		The gain is too low: weak stations sit below the converter's own noise, which
+		sets the floor. Raise the gain until the floor rises a few dB, which shows the
+		antenna's noise now sits above the converter's.
 		\end{solution}
-	\end{minipage}\hfill%
-	\begin{minipage}[t]{0.37\linewidth}
-		\raggedleft \vspace{12pt}
-		RTL-SDR: \ansbox[1.0in]{$48\db$}
-
-		\vspace{4pt}
-		PlutoSDR: \ansbox[1.0in]{$72\db$}
-	\end{minipage}
 
 	\part With the gain at maximum, copies of a strong station appear at frequencies
 	where nothing transmits. Name the problem and the fix.
@@ -170,7 +161,7 @@ converter adds about 6 dB of dynamic range.
 	it hidden in a spike at the center of the display. Explain the spike and the fix.
 		\begin{solution}[0.9in]
 		The spike is the receiver's own DC offset, which appears at 0 Hz, the center
-		frequency, in every direct-conversion SDR. Tuning the SDR a little off the
+		frequency, in most SDRs. Tuning the SDR a little off the
 		signal moves the signal away from the center while the spike stays there.
 		\end{solution}
 

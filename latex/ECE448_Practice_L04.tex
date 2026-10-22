@@ -28,7 +28,7 @@ collaborate).}
 	\begin{enumerate}[label=(\roman*)]
 		\item Receive ship AIS at 162 MHz.
 		\item Display the whole FM broadcast band, 88 to 108 MHz, at once.
-		\item Transmit a 915 MHz test signal into a cable and receive it at the same time.
+		\item Transmit a 915 MHz test signal into a cable, through a 30 dB attenuator, and receive it at the same time.
 		\item Find the direction of a 10.3 GHz beacon.
 	\end{enumerate}
 		\begin{solution}[2.3in]
@@ -40,7 +40,8 @@ collaborate).}
 		roll-off. The RTL-SDR's 2.56 MS/s shows only 2.56 MHz, the PlutoSDR cannot tune
 		to 100 MHz, and the ADALM-PHASER works only at X band.
 
-		(iii) The PlutoSDR, the only full-duplex radio. The HackRF transmits or receives
+		(iii) The PlutoSDR, the only full-duplex radio, with its transmit port cabled
+		through the 30 dB attenuator to its receive port. The HackRF transmits or receives
 		but not both at once, the RTL-SDR cannot transmit, and the ADALM-PHASER does
 		not cover 915 MHz.
 
@@ -169,43 +170,43 @@ because the radio's filters roll off near its edges.
 
 \newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\question \textbf{Bits and dynamic range.} Each ADC bit adds about 6 dB of dynamic
-range across the whole window. A strong local station reaches the ADC at $-10$ dBFS,
-and a weak wideband signal that fills the window is 55 dB below it.
+\question \textbf{Bits and clipping.} Use the L4 flowgraph, \texttt{L04-adc-bits.grc},
+and its plots on the lesson page.
 \begin{parts}
 
 	\begin{minipage}[t]{0.58\linewidth}
-		\part Estimate the dynamic range of an 8-bit and a 12-bit converter, and the
-		level of the weak signal in dBFS.
-		\begin{solution}[0.9in]
-		\eq{ 8 \times 6 &= 48\db, \qquad 12 \times 6 = 72\db \\ -10 - 55 &= -65\ \text{dBFS} }
+		\part How many levels does the ADC block round to with 8 bits, the RTL-SDR's
+		and HackRF's resolution, and with 12 bits, the PlutoSDR's?
+		\begin{solution}[0.8in]
+		\eq{ 2^{8} = 256, \qquad 2^{12} = 4096 }
 		\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
 		\raggedleft \vspace{12pt}
-		8 / 12 bits: \ansbox[1.2in]{48 / 72 dB}
+		8 bits: \ansbox[1.2in]{256}
 
 		\vspace{4pt}
-		weak: \ansbox[1.2in]{$-65$ dBFS}
+		12 bits: \ansbox[1.2in]{4096}
 	\end{minipage}
 
-	\part The converter's own floor sits about one dynamic range below full scale.
-	Which converter shows the weak signal, and by how many dB does it clear that
-	converter's floor?
-		\begin{solution}[0.9in]
-		The 8-bit floor is near $-48$ dBFS, above the $-65$ dBFS signal, so the 8-bit
-		radio does not show it. The 12-bit floor is near $-72$ dBFS, so the 12-bit radio
-		shows it about $-65 - (-72) = 7$ dB above the floor.
+	\part At 8 bits the weak tone at $-0.49$ MHz is not visible. Switching the menu to
+	12 bits makes it appear, about 40 dB above the floor. Did the weak signal change?
+	Describe what changed on the spectrum, and why.
+		\begin{solution}[1.1in]
+		The weak signal did not change; the input is the same. The floor dropped by about
+		20 dB and the spurs disappeared, because 12 bits round in much finer steps, so the
+		rounding error is smaller. The weak tone was always there, below the 8-bit floor.
 		\end{solution}
 
-	\part On the 8-bit radio, how much can the gain rise before the strong station
-	clips, and does that rise make the weak signal visible? Explain.
-		\begin{solution}[1.2in]
-		The strong station is 10 dB below full scale, so the gain can rise 10 dB. The
-		weak signal rises by the same 10 dB, to $-55$ dBFS, which is still below the
-		$-48$ dBFS floor. Gain moves both signals together and cannot widen the 48 dB
-		span between full scale and the floor; seeing both needs more bits or a filter
-		that keeps the strong station out of the window.
+	\part Set the flowgraph back to 8 bits. Raise the gain slider in steps until the
+	time sink's $I$ and $Q$ just begin to flatten at full scale. Did the weak tone
+	appear on the spectrum? Explain what you saw, and name one thing that would let an
+	8-bit radio show the weak signal.
+		\begin{solution}[1.3in]
+		No. Gain raised the strong tone, the weak tone, and the spurs together, so the
+		weak tone stayed hidden below the spurs, and the strong tone reached full scale
+		first. Raising the gain further only clipped the strong tone. More bits would
+		help, or a filter that keeps the strong signal out of the ADC.
 		\end{solution}
 
 	\part In the L4 flowgraph, name two things on the plots that show the ADC is

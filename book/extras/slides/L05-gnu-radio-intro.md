@@ -36,14 +36,14 @@ Open GRC on the projector before class with the tone flowgraph loaded. The first
 ## Today's Plan
 
 1. Install with radioconda
-2. Anatomy of a flowgraph: options, variables, throttle, port colors
-3. A tone in time and frequency
+2. Your first flowgraph: a tone in time and frequency
+3. Variables and sliders; data types and converting them
 4. Complex sampling and aliasing
-5. A real signal: broadcast FM on an RTL-SDR
+5. Find a station (SDR Flex, GQRX), then view it in GRC
 6. Gain, recording IQ, and reading it in Python
 
 Note:
-Items three and four run live from the tone flowgraph. Item five needs an RTL-SDR and an antenna at the front of the room.
+Items two through four follow the GNU Radio wiki's Beginner Tutorials, built live from an empty canvas. Item five needs an RTL-SDR and an antenna at the front of the room.
 
 ---
 
@@ -64,36 +64,21 @@ Point out source, throttle, and the two sinks, then press run. Show them the gen
 - Windows, macOS, and Linux
 - Windows RTL-SDR users also run Zadig once
 
-Verify: `gnuradio-companion`, `rtl_test`, `hackrf_info`, `iio_info -s`, `SoapySDRUtil --find`
+Verify: `gnuradio-companion`, `gqrx`, `rtl_test`, `hackrf_info`, `iio_info -s`, `SoapySDRUtil --find`
 
 Note:
 The installer link and the full verification table are on the lesson page. The pre-lab requires a working install, so anyone stuck should come to EI before the lab.
 
 ---
 
-## Anatomy of a Flowgraph
+## Your First Flowgraph
 
-- **Options** names the flowgraph and picks the GUI.
-- **Variables** hold shared numbers, such as `samp_rate`.
+- File, New: an **Options** block and a `samp_rate` variable.
+- Add **Signal Source**, **Throttle**, **QT GUI Time Sink**; wire and run.
 - **Throttle** paces a flowgraph with no hardware; real hardware sets its own pace.
 
 Note:
-Change samp_rate in one place and show every block following it. Warn them now: a throttle in a flowgraph with an SDR causes dropped samples.
-
----
-
-## Port Colors and Data Types
-
-| Color | Type | Bytes/sample |
-| :-- | :-- | :-: |
-| Blue | complex | 8 |
-| Orange | float | 4 |
-| Green | int | 4 |
-| Yellow | short | 2 |
-| Purple | byte | 1 |
-
-Note:
-Connect a complex output to a float input on purpose and show the red arrow. That is the most common error they will hit this week.
+This is the wiki's "Your First Flowgraph." Build it live from an empty canvas, then add a Frequency Sink off the throttle. Warn them now: a throttle in a flowgraph with an SDR causes dropped samples.
 
 ---
 
@@ -108,13 +93,39 @@ Ask why there is no spike at minus 1 kHz. A complex tone rotates in one directio
 
 ---
 
+## Variables and Sliders
+
+- A **Variable** holds a shared number, such as `samp_rate`.
+- A **QT GUI Range** is a variable with a slider.
+- Do: set the source's frequency to `freq` and drag the slider.
+
+Note:
+The wiki's variables and runtime-updating tutorials. Change samp_rate from 32000 to 64000 and show every block following it, then set it back. Add the freq slider live.
+
+---
+
+## Data Types and Converting Them
+
+| Color | Type | Bytes/sample |
+| :-- | :-- | :-: |
+| Blue | complex | 8 |
+| Orange | float | 4 |
+| Green | int | 4 |
+| Yellow | short | 2 |
+| Purple | byte | 1 |
+
+Do: **Complex to Float** into a two-input float Time Sink shows $I$ and $Q$ as two traces.
+
+Note:
+Connect a complex output to a float input on purpose and show the red arrow. That is the most common error they will hit this week. Then insert Complex to Float and wire both outputs to a two-input float sink.
+
+---
+
 ## Complex Sampling and Aliasing
 
 <img src="./img/05-gnu-radio/L05-tone-alias.png" alt="A 20 kHz tone at 32 kHz sampling appearing at minus 12 kHz" style="max-height:330px; display:block; margin:0 auto;">
 
-$$f_\text{alias} = f - m f_s$$
-
-At $f_s = 32$ kHz, a 20 kHz tone appears at $-12$ kHz.
+Outside $\pm f_s/2$, a tone moves by $f_s$: at $f_s = 32$ kHz, 20 kHz appears at $-12$ kHz.
 
 Note:
 Drag the slider slowly past 16 kHz on the live flowgraph and let them see the spike jump to the other side. Complex samples show minus fs over two to plus fs over two.
@@ -136,14 +147,26 @@ This is the wagon-wheel effect from movies. Each sample advances more than half 
 
 ---
 
-## A Real Signal
+## Find a Station
+
+- Practice in SDR Flex: select a signal, demodulate it.
+- Live: run `gqrx`, choose the RTL-SDR, press power.
+- Mode **WFM (stereo)**; click a tall peak and listen.
+- Note the frequency; quit GQRX before opening GRC.
+
+Note:
+SDR Flex (livethisdream.github.io/sdr-flex) on an example capture shows the select-and-demodulate moves. On the full SDR Flex server each action builds a GNU Radio flowgraph; the browser copy simulates it and has no live radio, so GQRX does the live part. Explore first, so they hear the station before they build anything. Only one program can open the RTL-SDR at a time, so quit GQRX before running the flowgraph. GQRX comes with radioconda; if GQRX does not start on a laptop, SDR++ has the same controls.
+
+---
+
+## A Real Signal in GRC
 
 <img src="./img/05-gnu-radio/L05-grc-fm.png" alt="The L5 FM flowgraph: Soapy RTLSDR Source feeding a QT GUI Sink, with a disabled File Sink" style="max-height:400px; display:block; margin:0 auto;">
 
 The display spans $f_c \pm f_s/2$: 2.4 MHz of the FM band at once.
 
 Note:
-Swap to the FM flowgraph with the RTL-SDR plugged in. No throttle here. Tune across the band and name the local stations.
+Set the center frequency to the station found in GQRX. No throttle here. Tune across the band and name the local stations.
 
 ---
 
@@ -160,7 +183,7 @@ This figure is simulated; the live display is the real one. Stations are about 2
 
 - Raise the gain until the noise floor lifts a few dB.
 - Stop before strong stations grow copies elsewhere: that is overload.
-- The RTL-SDR's 8-bit converter spans about 48 dB.
+- No single setting shows a strong local station and a weak distant one well.
 
 Note:
 Demo both extremes live: gain at zero hides the weak stations; gain at maximum makes spurs appear between stations. Then find the setting in between.
@@ -174,7 +197,7 @@ Demo both extremes live: gain at zero hides the weak stations; gain at maximum m
 - Record the sample rate and center frequency with the file.
 
 Note:
-Enable the File Sink for two seconds, then disable it. Show the file size: about 38 MB. Mention SigMF, which later lessons use for handed-out captures.
+Enable the File Sink for about one second, then disable it, and show the file size against the 19.2 MB per second on the slide. Mention SigMF, which later lessons use for handed-out captures.
 
 ---
 

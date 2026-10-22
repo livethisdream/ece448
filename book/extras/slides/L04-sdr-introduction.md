@@ -37,11 +37,12 @@ Bring the RTL-SDR, HackRF, PlutoSDR, and ADALM-PHASER to the front of the room a
 2. The four course SDRs
 3. Inside an SDR: front end, mixer and LO, I and Q, ADCs
 4. Sample rate and bandwidth
-5. Bits and dynamic range, in a flowgraph
+5. Bits and clipping, in a flowgraph
 6. Choosing the radio and its settings
+7. Explore a band: SDR Flex, then GQRX
 
 Note:
-Item five runs live from L04-adc-bits.grc, which needs no hardware. If GNU Radio is not yet installed on the projector laptop, use the screenshots on the lesson page.
+Item five runs live from L04-adc-bits.grc, which needs no hardware. If GNU Radio is not yet installed on the projector laptop, use the screenshots on the lesson page. Item seven opens SDR Flex in the browser, then needs an RTL-SDR on the projector laptop for GQRX.
 
 ---
 
@@ -163,14 +164,14 @@ Start on FM with the RTL-SDR, switch to the HackRF and raise the rate to 20 MS/s
 ---
 
 
-## Bits and Dynamic Range
+## Bits and Clipping
 
 - An \(N\)-bit ADC has \(2^N\) levels between \(-\)full scale and \(+\)full scale.
-- Each bit adds about 6 dB: 8 bits span about 48 dB, 12 bits about 72 dB.
+- More bits put the converter's own noise floor lower.
 - 0 dBFS is full scale; above it, the ADC clips.
 
 Note:
-Six dB per bit compares the strong signal with the converter noise across the whole window. On an FFT, a narrow signal stands out by about 36 dB more for a 4096-bin FFT.
+8 bits is 256 levels, 12 bits is 4096. The rounding error acts like a small noise; finer steps mean less of it. Do not derive a dB-per-bit rule; the flowgraph shows it.
 
 ---
 
@@ -193,7 +194,7 @@ The ADC block is an Embedded Python Block: it clips I and Q to plus and minus on
 The floor and spurs reach within about 60 dB of the strong tone; the weak tone lies below them.
 
 Note:
-Point to minus 0.49 MHz, where the weak tone should be. It sits below the spurs. The smooth floor is deeper than six dB per bit suggests because the 4096-point FFT spreads the noise over 4096 bins; the spurs do not spread.
+Point to minus 0.49 MHz, where the weak tone should be. It sits below the spurs. Because the input is a pure tone, much of the rounding error shows up as spurs rather than smooth noise.
 
 ---
 
@@ -204,7 +205,7 @@ Point to minus 0.49 MHz, where the weak tone should be. It sits below the spurs.
 The floor drops about 20 dB and the spurs are gone; the weak tone sits about 40 dB above the floor.
 
 Note:
-Switch the menu live. Then drag the weak-signal slider down until the tone disappears to measure the span.
+Switch the menu live. The weak signal did not get stronger; the floor dropped beneath it. Then drag the weak-signal slider down until the tone disappears.
 
 ---
 
@@ -226,13 +227,25 @@ On a real SDR these false signals look exactly like transmissions. Set the gain 
 3. **Gain**: the strongest signal in the window stays below full scale.
 
 Note:
-Broadcast FM: RTL-SDR at 2.4 MS/s. A 20 MHz Wi-Fi channel: HackRF at its 20 MS/s maximum, with no margin at the edges; the PlutoSDR streams only about 4 MS/s. Transmit into a cable: HackRF or PlutoSDR. Direction of an X-band source: ADALM-PHASER.
+Broadcast FM: RTL-SDR at 2.4 MS/s. A 20 MHz Wi-Fi channel: HackRF at its 20 MS/s maximum, with no margin at the edges; the PlutoSDR streams only about 4 MS/s. Transmit into a cable through the 30 dB attenuator: HackRF or PlutoSDR. Direction of an X-band source: ADALM-PHASER.
+
+---
+
+## Walkthrough: Explore a Band
+
+1. SDR Flex: open an example capture; drag across a signal; demodulate it.
+2. GQRX on the RTL-SDR: tune to 98 MHz; read the waterfall.
+3. Click a station, set the mode to WFM, and listen.
+4. Raise the gain until false stations appear; back it off.
+
+Note:
+Run this live. SDR Flex is at livethisdream.github.io/sdr-flex: right-click the source chip for an example capture, drag a box across a signal, pick a demodulator. On the full SDR Flex server each action builds a GNU Radio flowgraph; the browser copy simulates it and has no live radio, so switch to GQRX for the band. Each station is a steady stripe about 200 kHz wide in the waterfall. Raise the gain in steps: weak stations rise first, then new stripes appear where nothing transmits, the clipping from the flowgraph on a real radio. GQRX comes with radioconda; if it does not start on a laptop, SDR++ has the same controls.
 
 ---
 
 ## Key Point
 
-<div class="callout">An SDR mixes a band to 0 Hz and digitizes \(I\) and \(Q\). The sample rate sets the visible spectrum; the ADC's bits, about 6 dB each, set how weak a signal can be near a strong one.</div>
+<div class="callout">An SDR mixes a band to 0 Hz and digitizes \(I\) and \(Q\). The sample rate sets the visible spectrum; the ADC's bits and the gain set how weak a signal can be near a strong one.</div>
 
 ---
 

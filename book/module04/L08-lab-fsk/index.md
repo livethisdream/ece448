@@ -27,12 +27,12 @@ L8 Lab · Module 4: Digital Modulation · Dr. Neil Rogers
 
 ::::{frame} From Lesson to Bench
 :::{present}
-- **Pre-Lab:** run the link flowgraph and predict every setting and limit.
+- **Pre-Lab:** run the link flowgraph and work out the block settings.
 - **Bench:** build the transmitter yourself, then sweep the noise and the offset.
-- **Writeup:** explain the limits and choose a deviation.
+- **Writeup:** explain what you saw and choose a deviation.
 :::
 
-Lesson 8 showed an FSK link carrying a line of text through noise. Today you build the transmitter from an empty canvas and measure where the link breaks. The lab packet has three parts, and you turn it in once, complete, before Lesson 9. **Part 1, the Pre-Lab**, is on your own before the period: run `L08-fsk-link.grc` once and predict the block settings, the SNR at each noise level, and the demodulator levels at each offset. **Part 2** is your own measurements in class. **Part 3, the Writeup**, explains them.
+Lesson 8 showed an FSK link carrying a line of text through noise. Today you build the transmitter from an empty canvas and measure where the link breaks. The lab packet has three parts, and you turn it in once, complete, before Lesson 9. **Part 1, the Pre-Lab**, is on your own before the period: run `L08-fsk-link.grc` once, read its display, and work out the block settings and the packet timing. **Part 2** is your own measurements in class. **Part 3, the Writeup**, explains them.
 
 This lab needs no SDR, and nothing in it transmits. The Channel Model block stands in for the air.
 ::::
@@ -40,26 +40,13 @@ This lab needs no SDR, and nothing in it transmits. The Channel Model block stan
 ::::{frame} Part 1: Before the Period
 :::{present}
 - `L08-fsk-link.grc` runs and shows the received line.
-- Predict $k$, $g$, $h$, $B$, and the filter cutoff for $\Delta f$ = 1 and 2 kHz.
-- Predict the SNR for six noise voltages.
+- Work out $k$, $g$, $B$, and the filter cutoff for $\Delta f$ = 1.5 and 2 kHz.
+- Read how far the tones sit above the noise at two noise settings.
 :::
 
-Do the Pre-Lab before you arrive. Question 1 is a check that both flowgraphs open and run on your laptop: if GRC reports an error, the L5 lesson page lists the install checks, and EI before the lab is the place to fix it.
+Do the Pre-Lab before you arrive. Question 1 is a check that `L08-fsk-link.grc` opens and runs on your laptop: if GRC reports an error, the L5 lesson page lists the install checks, and EI before the lab is the place to fix it.
 
-Question 2 asks for predictions from the lesson's formulas: the transmitter's sensitivity and the receiver's gain, modulation index, Carson bandwidth, and filter cutoff for two deviations; the SNR at the demodulator for noise voltages from 0.5 to 2.0; the length and duration of one packet; and the demodulator's two levels at each frequency offset. Part 2 checks each one against a measurement.
-::::
-
-::::{frame} Expected Numbers
-:::{present}
-| Check | Expected |
-| :-- | :-- |
-| Peaks at $\Delta f$ = 1 kHz | $\pm 1$ kHz |
-| SNR at $\sigma$ = 1.0 | 9 dB |
-| One packet | 424 bits, 0.424 s |
-| Levels at 600 Hz offset | $+1.6$ and $-0.4$ |
-:::
-
-These follow from Lesson 8. The block settings and the spectral peaks are exact, because the flowgraph computes them. The SNR comes from the 4 kHz receive bandwidth: noise of voltage $\sigma$ spread over 32 kHz leaves $\sigma^2/8$ in the filter, so the SNR is $8/\sigma^2$. The count of correct lines at each noise voltage is random and changes from run to run, which is why the packet records it over 30 s rather than predicting it.
+Question 2 asks for block settings from the lesson's formulas: the transmitter's sensitivity, the receiver's gain, the bandwidth, and the filter cutoff for deviations of 1500 and 2000 Hz, and the length and duration of one packet. It also asks you to read, on the running link's spectrum, how far the two tones stand above the noise floor at two noise settings. Part 2 checks the bandwidth against your spectrum and uses the packet time when you count lines.
 ::::
 
 ::::{frame} Part 2: Build the Transmitter
@@ -72,7 +59,7 @@ These follow from Lesson 8. The block settings and the spectral peaks are exact,
 5. Add **Unpack K Bits** with K = 8, then **Chunks to Symbols**: input byte, output float, symbol table `[-1, 1]`.
 6. Add **Repeat**: type float, interpolation `sps`. Then add **Frequency Mod** with sensitivity `2*math.pi*dev/samp_rate`.
 7. Add a **Throttle** (complex, `samp_rate`) and a **QT GUI Frequency Sink** (complex, bandwidth `samp_rate`), and connect the chain. Every arrow must be black.
-8. Run it. Screenshot the canvas for Question 3(a), then record the two peaks at a deviation of 1000 and 2000 Hz for Question 3(b).
+8. Run it. Screenshot the canvas for Question 3(a), then record the two peaks at a deviation of 1500 and 2000 Hz, and compare each spectrum's width with your Question 2(a) bandwidth, for Question 3(b).
 ::::
 
 ::::{frame} Part 2: Noise and Offset
@@ -85,8 +72,10 @@ These follow from Lesson 8. The block settings and the spectral peaks are exact,
 1. Open and run `L08-fsk-link.grc`. The Lines label counts the lines received since a slider last moved.
 2. With the offset at 0, set the noise voltage to 0.5, 0.8, 1.0, 1.2, 1.5, and 2.0 in turn. At each, wait about 30 s and record the time, the lines received, and the lines correct for Question 4(a).
 3. At 0.5 and at 1.2, screenshot the eye diagram for Question 4(b).
-4. Set the noise back to 0.5. Set the offset to 0, 300, 600, 800, and 1000 Hz in turn. At each, wait about 20 s and record the eye's two levels and the Lines label for Question 5(a).
-5. Stop the flowgraph and change the `dev` variable from 1000 to 2000. The transmitter's sensitivity, the receiver's filter, and the demodulator's gain all follow it. Run the two settings of Question 5(b) and record the Lines label for each.
+4. Set the noise back to 0.5 and raise it in steps of 0.1 until a wrong line appears. Record that noise voltage and how far the tones stand above the floor for Question 4(c).
+5. Set the noise back to 0.5. Set the offset to 0, 300, 600, 800, and 1000 Hz in turn. At each, wait about 20 s and record the eye's two levels and the Lines label for Question 5(a).
+6. Still at a noise voltage of 0.5, set the offset to 1200 Hz, wait about 20 s, and record the Lines label in the $\Delta f$ = 1000 row of Question 5(b); its $\sigma$ = 1.2 cell comes from your noise table. Then stop the flowgraph and change the `dev` variable from 1000 to 2000. The transmitter's sensitivity, the receiver's filter, and the demodulator's gain all follow it. Run the two settings of Question 5(b) and record the Lines label for each.
+7. Optional, from the 2025 class: add a **File Sink** (float, file `demod.f32`) on the Quadrature Demod output, run for a few seconds, and stop. In Audacity choose File, Import, Raw Data: 32-bit float, little-endian, 1 channel, sample rate 32000. Zoom in until you can read single bits. Nothing in the packet asks for it.
 ::::
 
 ::::{frame} If No Text Arrives
@@ -100,12 +89,12 @@ Close the flowgraph and run it again with the sliders at their defaults, a noise
 
 ::::{frame} Part 3: After the Lab
 :::{present}
-- Explain why the link goes from no errors to no packets within about 6 dB.
+- Describe how the link went from clean text to no text as the noise rose.
 - Convert the offset limit to ppm at 915 MHz and judge it.
 - Choose 1 or 2 kHz of deviation, and justify it.
 :::
 
-The Writeup is three questions. The first connects your noise table to Lesson 2's link margin: the change from clean text to no text happens within a few dB, so a link designed right at its threshold fails on the first fade. The second turns your offset limit into parts per million, the unit in which manufacturers specify crystal oscillators, and asks whether this link would work between two real radios. The third asks you to choose a deviation from your own measurements and to say what the choice gives up.
+The Writeup is three questions. The first asks you to describe, from your noise table and screenshots, what the eye and the text did as the noise rose, and what that means for Lesson 2's link margin: the change from clean text to no text takes a small turn of the slider, so a link that only just works fails on the first fade. The second turns your offset limit into parts per million, the unit in which manufacturers specify crystal oscillators, and asks whether this link would work between two real radios. The third asks you to choose a deviation from your own measurements and to say what the choice gives up.
 ::::
 
 ::::{frame} Lab Packet

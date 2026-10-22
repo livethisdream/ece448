@@ -36,14 +36,14 @@ Have L08-fsk-link.grc open and running on the projector before class. The text l
 ## Today's Plan
 
 1. The transmitter: bits to tones with Frequency Mod
-2. Symbol rate, deviation, modulation index, and bandwidth
-3. The receiver: filter, quadrature demodulator, symbol timing, slicer
-4. Packets: finding where each line starts
-5. Noise and frequency offset
+2. The channel: noise and frequency offset on sliders
+3. The receiver: filter, quadrature demodulator, symbol timing, slicer; save the bits and view them in Audacity
+4. Packets: from bits back to text
+5. Turn up the noise, then the offset
 6. FSK on a real radio
 
 Note:
-Everything today runs from two flowgraphs with no hardware. Items one and two use L08-fsk-tx.grc; items three to five use L08-fsk-link.grc.
+Everything today runs from two flowgraphs with no hardware, in the order of the GNU Radio wiki's Simulation example: FSK. Item one uses L08-fsk-tx.grc; items two to five use L08-fsk-link.grc.
 
 ---
 
@@ -54,7 +54,7 @@ Everything today runs from two flowgraphs with no hardware. Items one and two us
 A 1 is a tone at $+\Delta f$ and a 0 is a tone at $-\Delta f$; here $\Delta f = 1$ kHz.
 
 Note:
-Run L08-fsk-tx.grc. Point at the two spectral peaks first, then at the time plot. I is the same 1 kHz cosine during every bit, because at h = 2 each bit turns the phase through one full circle. Q is what changes: it flips relative to I when the direction of rotation changes, which is the complex-tone idea from Lesson 5.
+Run L08-fsk-tx.grc. Point at the two spectral peaks first, then at the time plot. I is the same 1 kHz cosine during every bit, because a cosine cannot tell which way the phase turns. Q can: it flips relative to I each time the bit changes, the complex-tone idea from Lesson 5.
 
 ---
 
@@ -78,7 +78,7 @@ Ask who has a car key fob on them. Lesson 17 records and decodes those. GFSK is 
 Bytes become bits, bits become $\pm 1$, and **Frequency Mod** turns each $\pm 1$ into a tone.
 
 Note:
-Walk the chain left to right. Frequency Mod is the FM transmitter block; the only difference between FM and FSK is that the message is a square wave of bits. The block keeps the phase continuous between bits, which keeps the spectrum compact.
+Walk the chain left to right. Frequency Mod is the FM transmitter block; the only difference between FM and FSK is that the message is a square wave of bits. The VCO (complex) block, which the 2025 class used, does the same job. The block keeps the phase continuous between bits, which keeps the spectrum compact.
 
 ---
 
@@ -101,25 +101,21 @@ Symbol rate, deviation, and modulation index. k is what Frequency Mod calls its 
 
 $$B \approx 2(\Delta f + R_s)$$
 
-This takes the message bandwidth as $R_s$, a conservative choice. At 1000 baud, 1 kHz of deviation takes about 4 kHz and 3 kHz takes about 8 kHz.
+At 1000 baud, 1 kHz of deviation takes about 4 kHz and 3 kHz takes about 8 kHz. The number sets the receiver's filter.
 
 Note:
-Drag the deviation slider live from 1 kHz to 3 kHz. Carson's rule sets the receiver's first filter. Some references write 2Δf + Rs instead, taking the message bandwidth as half the symbol rate. Wider deviation separates the tones but lets in more noise.
+Drag the deviation slider live from 1 kHz to 3 kHz and let the class watch the spectrum widen. This is Carson's rule from FM, used only to set the receiver's first filter. Wider deviation separates the tones but a wider filter lets in more noise.
 
 ---
 
-<!-- .slide: class="viz-cue-slide" -->
+## The Channel
 
-## FSK Explorer
-
-- Raise the deviation: the tones separate and the band widens
-- Raise the noise: errors start near 9 dB in the Carson bandwidth
-- Double the symbol rate: the same noise gives more errors
-
-<p class="viz-cue">↗ Interactive on the lesson page</p>
+- Open `L08-fsk-link.grc`: transmitter, channel, and receiver in one file.
+- The **Channel Model** adds noise and a frequency offset, each on a slider.
+- Drag the noise slider: the tones stay put, the floor moves.
 
 Note:
-The widget uses the same receiver as the flowgraph but an ideal clock, so its error counts run slightly better than the flowgraph's.
+The top row is the transmitter they just saw. Run it, drag the noise slider up and down so they see the floor move, then set it to 0.3 and leave the offset at 0 while walking the receiver.
 
 ---
 
@@ -130,7 +126,7 @@ The widget uses the same receiver as the flowgraph but an ideal clock, so its er
 Filter to the signal, turn frequency into a number, and decide each bit.
 
 Note:
-The Channel Model is the air: noise and frequency offset on sliders. The low-pass cutoff is deviation plus symbol rate, 2 kHz, which is half the Carson bandwidth.
+The low-pass cutoff is deviation plus symbol rate, 2 kHz: the filter passes minus 2 to plus 2 kHz, the 4 kHz band.
 
 ---
 
@@ -148,9 +144,20 @@ The gain is the reciprocal of the transmitter's sensitivity, so the demodulator 
 
 ---
 
+## Save It and Look in Audacity
+
+- Add a **File Sink** (float) on the Quadrature Demod output.
+- Run a few seconds, then import in Audacity as raw 32-bit float, 32000 Hz.
+- Zoom in: the bits are the square wave.
+
+Note:
+Do this live; it is the end of the 2025 FSK agenda. File Sink type float, file demod.f32. Audacity: File, Import, Raw Data, 32-bit float, little-endian, 1 channel. Each bit is a flat step near plus or minus 1, sps samples long, with the noise on it.
+
+---
+
 ## Finding the Bits
 
-<img src="./img/08-fsk/L08-link-clean.png" alt="The L8 link at noise voltage 0.5: two tones well above the noise, a wide-open eye diagram, and every line of text correct" style="max-height:380px; display:block; margin:0 auto;">
+<img src="./img/08-fsk/L08-link-clean.png" alt="The L8 link at noise voltage 0.3: two tones well above the noise, a wide-open eye diagram, and every line of text correct" style="max-height:380px; display:block; margin:0 auto;">
 
 A moving average, **Symbol Sync**, and a **Binary Slicer** at zero decide each bit.
 
@@ -170,27 +177,44 @@ Without the access code the receiver has bits but no idea where a byte starts. T
 
 ---
 
-## Noise
+## Turn Up the Noise
 
-<img src="./img/08-fsk/L08-link-noisy.png" alt="The L8 link at noise voltage 1.3: a higher noise floor, a mostly open eye with occasional spikes, and 7 of 29 lines correct" style="max-height:330px; display:block; margin:0 auto;">
+<img src="./img/08-fsk/L08-link-noisy.png" alt="The L8 link at noise voltage 1.3: a higher noise floor, a mostly open eye with occasional spikes, and most lines with an error" style="max-height:330px; display:block; margin:0 auto;">
 
-$$\text{SNR} = \frac{1}{\sigma^2 \times 4/32} = \frac{8}{\sigma^2}$$
+- Low noise: the eye is wide open and every line arrives.
+- More noise: the floor climbs, spikes cross zero, and lines have errors.
+- More still: almost no packets.
 
-At 0.5 V the SNR is 15 dB and every line arrives; at 1.3 V it is 6.7 dB and most lines have an error.
+The figure is at 1.3.
 
 Note:
-Drag the noise slider up slowly and let the class watch the eye close and the line count fall. The fall happens within about 6 dB. Tie it back to Lesson 2: a link designed right at the threshold fails on the first fade.
+Start from 0.3. Drag the noise slider up slowly and let the class watch the eye thicken, the FM clicks appear, and the line count fall. The fall from clean text to no text takes a small turn of the slider. Tie it back to Lesson 2: a link that only just works fails on the first fade.
+
+---
+
+<!-- .slide: class="viz-cue-slide" -->
+
+## FSK Explorer
+
+- Raise the deviation: the tones separate and the band widens
+- Raise the noise slowly: note where the first red dot appears
+- Double the symbol rate: red dots appear at a lower noise voltage
+
+<p class="viz-cue">↗ Interactive on the lesson page</p>
+
+Note:
+The widget uses the same receiver as the flowgraph but its own link, 48 kHz at 600 to 2400 baud, and an ideal clock, so its numbers are not the flowgraph's or the lab's.
 
 ---
 
 ## Frequency Offset
 
-<img src="./img/08-fsk/L08-link-offset.png" alt="The L8 link with a 600 Hz offset: the tones shifted right and the eye shifted up to plus 1.6 and minus 0.4" style="max-height:330px; display:block; margin:0 auto;">
+<img src="./img/08-fsk/L08-link-offset.png" alt="The L8 link at noise 0.3 with a 400 Hz offset: the tones shifted right and the eye shifted up to about plus 1.4 and minus 0.6" style="max-height:330px; display:block; margin:0 auto;">
 
-The levels shift by $f_\text{off}/\Delta f$; this link tolerates about $\pm 600$ Hz.
+The levels shift by $f_\text{off}/\Delta f$; once the lower level nears zero, the text breaks.
 
 Note:
-2 ppm at 915 MHz is 1.8 kHz, more than this link tolerates. Real receivers use a wide deviation or remove the offset before demodulating. The lab measures both.
+Demo at noise 0.3 and 400 Hz, then keep dragging until lines start to have errors and then stop. 2 ppm at 915 MHz is 1.8 kHz. Real receivers use a wide deviation or remove the offset before demodulating. The lab measures both.
 
 ---
 
@@ -201,7 +225,7 @@ Note:
 Tone spacing gives $2\Delta f$; the shortest dwell gives $1/R_s$.
 
 Note:
-This waterfall is simulated. The tracks are 40 kHz apart, so the deviation is 20 kHz, and the preamble's shortest dwell is 1 ms, so the symbol rate is 1000 baud. On a live waterfall a row often lasts longer than a bit, so measure the dwell in URH or on the Quadrature Demod output. To run today's link over the air, replace the Channel Model with a Pluto or HackRF sink and source. Transmit only into a cable, a shielded enclosure, or at very low power in an ISM band, and only when the lesson says to. Nothing today transmits.
+This waterfall is simulated. The tracks are 40 kHz apart, so the deviation is 20 kHz, and the preamble's shortest dwell is 1 ms, so the symbol rate is 1000 baud. On a live waterfall a row often lasts longer than a bit, so measure the dwell in URH or on the Quadrature Demod output. To run today's link over the air, replace the Channel Model with a Pluto or HackRF sink and source. In class we transmit only into a cable through the 30 dB attenuator, and only when the lesson says to. Nothing today transmits.
 
 ---
 

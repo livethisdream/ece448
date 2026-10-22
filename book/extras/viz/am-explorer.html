@@ -43,13 +43,13 @@
   </div>
   <div class="controls">
     <div class="seg" id="mode"><button data-m="am" class="on">DSB-AM</button><button data-m="sc">DSB-SC</button><button data-m="usb">USB</button><button data-m="lsb">LSB</button></div>
-    <div class="seg right" id="msg"><button data-x="two" class="on">two tones</button><button data-x="one">one tone</button></div>
+    <div class="seg right" id="msg"><button data-x="one" class="on">one tone</button><button data-x="two">two tones</button></div>
     <div class="ctl" id="m-ctl"><label for="m">Modulation index m</label><span class="val" id="m-v"></span>
       <input type="range" id="m" min="0" max="1.5" step="0.05" value="0.5"></div>
   </div>
   <div class="readouts">
     <div class="ro"><span class="k">bandwidth</span><span class="v" id="o-bw">—</span></div>
-    <div class="ro"><span class="k">power in sidebands</span><span class="v" id="o-eff">—</span></div>
+    <div class="ro"><span class="k">carrier line</span><span class="v" id="o-car">—</span></div>
     <div class="ro" id="ro-env"><span class="k">envelope detector</span><span class="v" id="o-env">—</span></div>
   </div>
 </div>
@@ -63,7 +63,7 @@ const FC = 10, SANS = 'Inter, system-ui, -apple-system, sans-serif';
 const C = { navy:'#004a85', mid:'#0067b9', red:'#b01e24', amber:'#8a5a00', rule:'#cddce9', ink:'#15202b', ink3:'#5b6573', grn:'#3f7d34' };
 const MSG = { two: [[1, 0.6], [2.5, 0.4]], one: [[1, 1]] };
 const mEl = document.getElementById('m');
-let mode = 'am', msg = 'two';
+let mode = 'am', msg = 'one';
 function seg(id, key, set) {
   document.querySelectorAll('#' + id + ' button').forEach(b => b.onclick = () => {
     set(b.dataset[key]); document.querySelectorAll('#' + id + ' button').forEach(x => x.classList.toggle('on', x === b)); update(); });
@@ -160,18 +160,12 @@ function drawSpec() {
 
 function update() {
   const m = +mEl.value, W = Math.max(...MSG[msg].map(t => t[0]));
-  const px = MSG[msg].reduce((s, [, a]) => s + a*a/2, 0);          // message power
   document.getElementById('m-v').textContent = m.toFixed(2);
   document.getElementById('m-ctl').classList.toggle('off', mode !== 'am');
   mEl.disabled = mode !== 'am';
   const ssb = mode === 'usb' || mode === 'lsb';
   document.getElementById('o-bw').textContent = (ssb ? W : 2*W).toFixed(1) + ' kHz';
-  const eff = mode === 'am' ? m*m*px / (1 + m*m*px) : 1;
-  document.getElementById('o-eff').textContent = Math.round(100*eff) + '%';
-  // The envelope follows the message only for DSB-AM while 1 + m*x(t) stays
-  // positive: m <= 1 for one tone, m <= 1.10 for the two-tone message, whose
-  // trough is -0.906. (One-tone SSB has a constant envelope, which carries no
-  // message either.)
+  document.getElementById('o-car').textContent = mode === 'am' ? 'yes' : 'none';
   let ok, say;
   if (mode === 'am') { ok = m > 0 && 1 + m*xmin() >= -1e-9; say = m === 0 ? 'no message' : ok ? 'follows message' : 'overmodulated'; }
   else if (mode === 'sc') { ok = false; say = 'sees |x(t)|'; }

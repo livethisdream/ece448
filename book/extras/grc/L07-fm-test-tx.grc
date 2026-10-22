@@ -8,7 +8,7 @@ options:
     copyright: ''
     description: 'L7: writes L07-fm-test.cfile, 4 s of 2.4 MS/s IQ centered on 100.0
       MHz. Station A at 100.3 MHz carries a two-tone message and RDS; station B at
-      99.5 MHz carries a 600 Hz tone. Simulated; nothing transmits.'
+      99.5 MHz carries a different test tone. Simulated; nothing transmits.'
     gen_cmake: 'On'
     gen_linking: dynamic
     generate_options: no_gui

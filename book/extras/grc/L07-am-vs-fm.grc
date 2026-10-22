@@ -7,8 +7,8 @@ options:
     comment: ''
     copyright: ''
     description: 'L7: a 1 kHz tone sent as AM (m = 1) and as FM at the same carrier
-      power, through the same noise. Each receiver measures its output SNR. Drag C/N
-      and the FM deviation. Simulated; no hardware.'
+      power, through the same noise. Each receiver measures its output SNR. Drag the
+      input SNR and the FM deviation. Simulated; no hardware.'
     gen_cmake: 'On'
     gen_linking: dynamic
     generate_options: qt_gui
@@ -94,7 +94,7 @@ blocks:
   parameters:
     comment: ''
     gui_hint: 0,0,1,1
-    label: C/N in 10 kHz (dB)
+    label: Input SNR in 10 kHz (dB)
     min_len: '200'
     orient: QtCore.Qt.Horizontal
     rangeType: float

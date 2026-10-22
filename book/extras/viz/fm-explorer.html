@@ -114,7 +114,7 @@ function drawSpec(s) {
     ctx.strokeStyle = n === 0 ? C.amber : C.navy; ctx.lineWidth = n === 0 ? Math.max(lw, 2) : lw;
     ctx.beginPath(); ctx.moveTo(X(f), y0); ctx.lineTo(X(f), A(a)); ctx.stroke();
   }
-  txt(ctx, 'line amplitude |Jₙ(β)|', mL + 2, 10, 11, C.ink3, 'left', true);
+  txt(ctx, 'line amplitude', mL + 2, 10, 11, C.ink3, 'left', true);
   txt(ctx, 'carrier', w - mR - 2, 10, 11, C.amber, 'right', true);
 }
 
