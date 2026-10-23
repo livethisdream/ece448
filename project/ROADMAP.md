@@ -121,6 +121,14 @@ budgets, checks) still apply. Where 444 would put a derivation on screen,
 - **Objectives** are the two-level "I can…" list (module.N). Neil reviews
   them before anything is scaffolded.
 
+- **SigMF is the preferred data format** (Neil, 2026-10-23). A recording a
+  cadet downloads, or one a lab has them make, is a SigMF pair: the samples in
+  `<name>.sigmf-data` and the sample rate, center frequency, and datatype in
+  `<name>.sigmf-meta`. The data file is raw samples, so a File Source reads it
+  with the type the meta file names. To convert: L14's handed-out `.cu8`
+  captures, and the L5 Lab recording, which the lesson already says to save
+  as SigMF.
+
 ## Lesson list (approved by Neil, 2026-10-17)
 
 Neil, 2026-10-17: keep the seven-module structure from the old site
@@ -262,6 +270,29 @@ since they follow this structure. Two changes:
 - **Bench checks for Neil:** L12's PlutoSDR cable link across 30-89 dB, and
   L13's microphone flowgraph with a real phone.
 - **Next batch:** L14 to L16.
+
+## Lesson threads, fourth batch and fidelity passes (2026-10-21)
+
+- **L14, L15, and L16 done** (PRs #22, #24, #23). Four fidelity passes took L2
+  to L13 back to the 2025 slides under "Sources and noise" (PRs #27, #29, #28,
+  #26). The site now has no Eb/N0, BER, or Q-function anywhere a cadet sees it.
+- **Lab answers are private** (Neil, 2026-10-21). Every lab packet prints its
+  answers through `\keysol{<id>}`. The values live in
+  `ECE448-faculty/lab-keys/src/*_solutions.tex`, `latex/build_lab.sh` reads
+  them through `KEYDIR` (default: a sibling clone of the faculty repo), and a
+  KEY build without them stops with an error. `*_solutions.tex` is
+  gitignored here. Answers from before the split are still in this repo's git
+  history.
+- **No public page prints a lab answer.** That covers lesson and lab pages,
+  decks, practice sets and their solutions, widgets, and `.grc` descriptions.
+  A lab uses inputs of its own, so its answers differ from the lesson's worked
+  examples, and lesson demos run at settings the lab does not use. "Expected
+  Numbers" frames are gone.
+- **Bench checks for Neil:** the KEY values marked as estimates in PR #29
+  (L5 to L8, notably L7's click onsets), L15's PlutoSDR link and zero-IF DC
+  tracking, and L14 on a live HD station with nrsc5.
+- **Open for Neil:** the wording of objective 6.4, and new hidden captures
+  for L13 and L14, whose old answers are in the public history.
 
 ## Lesson threads (from L6 on)
 

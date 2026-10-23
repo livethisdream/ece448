@@ -42,7 +42,7 @@ work.
 | `book/extras/slides/<slug>.md` | a reveal.js deck; `.html` wrapper from `scripts/make_deck_html.py` |
 | `book/extras/legacy/*.pdf` | the legacy Beamer slides, served at `/legacy/`; `refs/` holds third-party references |
 | `book/extras/grc/` | flowgraphs (`.grc`) and scripts a cadet downloads, served at `/grc/` |
-| `book/extras/labs/*_blank.pdf` | lab packets, student copy only; the KEY goes to `ECE448-faculty/lab-keys/` |
+| `book/extras/labs/*_blank.pdf` | lab packets, student copy only; answers come from `ECE448-faculty/lab-keys/src` through `\keysol`, and the KEY goes to `ECE448-faculty/lab-keys/` |
 | `latex/` | practice-set and lab-packet sources and build scripts (444's harness) |
 | `scripts/grc/` | normalize a `.grc`, run one headless for screenshots, screenshot GRC itself |
 | `figures/` | course figure library for LaTeX (`\graphicspath{{./figures/}}`) |
@@ -64,7 +64,7 @@ so change them together with the manifest.
 Lessons move to the 444 format one at a time, in teaching order. A converted
 lesson replaces its generated page with a real frame lesson, following 444's
 `book/module01/L05-field-regions/` as the worked example and 444's budgets
-and checks. L1-L13 are converted. Keep the legacy slide links until the new
+and checks. L1-L16 are converted. Keep the legacy slide links until the new
 material covers the same ground, then set the lesson's decks to `[]` in the
 manifest. GNU Radio flowgraphs (`.grc`) and example code a cadet runs go with
 the lesson; solutions stay in `ECE448-faculty`.
@@ -102,6 +102,10 @@ ships goes through three steps before it is committed:
    with `scripts/grc/grc_canvas.sh file.grc out.png [WxH]`. A flowgraph that
    needs an SDR is compiled only; say so in the PR. A figure that stands in
    for a real capture is labeled "Simulated" on the figure itself.
+
+Recordings a cadet downloads or makes are **SigMF** (`.sigmf-data` plus
+`.sigmf-meta`), the preferred data format (Neil, 2026-10-23); see
+`project/ROADMAP.md`, "Settled".
 
 The GNU Radio bindings are built for `/usr/bin/python3.12`; call `grcc` and the
 scripts through it, not through whatever `python3` is first on `PATH`.

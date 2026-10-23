@@ -49,8 +49,8 @@ INSTRUCTORS = "Dr. Neil Rogers"
 # recovery). Change one here, in book/syllabus.md, and in every lesson that
 # quotes it, together.
 LO_TEXT = {
-    "1.1": "I can define noise figure and cascade it through a receiver chain to predict system noise performance.",
-    "1.2": "I can compute a link budget and predict received SNR for a specified geometry, transmitter, and antenna configuration.",
+    "1.1": "I can define noise figure and explain how each stage of a receiver chain, the first above all, sets the system's noise performance.",
+    "1.2": "I can compute a link budget for a specified geometry, transmitter, and antenna configuration, and compare it with the signal an SDR shows.",
     "1.3": "I can describe signal-space concepts (basis functions, constellations, decision regions) and apply them to a digital modulation scheme.",
     "2.1": "I can describe what a Software Defined Radio is, contrast it with a traditional hardware radio, and identify the SDR platforms used in this course (RTL-SDR, HackRF, PlutoSDR, ADALM-PHASER).",
     "2.2": "I can identify the roles of the RF frontend, ADC/DAC, and host in an SDR signal chain and describe sample-rate, bandwidth, and dynamic-range trade-offs.",
@@ -87,7 +87,7 @@ MODULES = {
     1: dict(
         name="Foundations of Detection & Link Budgets",
         tagline="Will the link close? The few numbers you need before hardware touches a signal.",
-        synopsis="Noise figure, cascade analysis, the link budget, and signal space: just enough to predict whether a link will work and to read a constellation.",
+        synopsis="Noise figure, the link budget, and signal space: just enough to tell whether a link will work and to read a constellation.",
         generate_index=True,
     ),
     2: dict(
@@ -155,7 +155,7 @@ DECKS = {
 # (module, num, slug, title, [lo_ids], [deck keys], synopsis)
 LESSONS = [
     (1, 1, "L01-course-intro", "Course Introduction", [], [], "What an SDR is, the signals around you, and how the course is run."),
-    (1, 2, "L02-noise-figure-link-budget", "Noise Figure and Link Budget", ["1.1", "1.2"], [], "Cascade noise figure through a receiver and predict the SNR a link delivers."),
+    (1, 2, "L02-noise-figure-link-budget", "Noise Figure and Link Budget", ["1.1", "1.2"], [], "Noise figure through a receiver chain, and the link budget that says whether a signal will arrive."),
     (1, 3, "L03-signal-space", "Signal Space", ["1.3"], [], "Basis functions, constellations, and decision regions: the picture every digital receiver works from."),
 
     (2, 4, "L04-sdr-introduction", "SDR Introduction", ["2.1", "2.2"], [], "The SDR platforms in this course, what is inside them, and the sample-rate, bandwidth, and dynamic-range trade-offs."),
@@ -172,7 +172,7 @@ LESSONS = [
 
     (6, 12, "L12-cw", "CW", ["6.1"], [], "Send and decode Morse code in GNU Radio."),
     (6, 13, "L13-dtmf", "DTMF", ["6.2"], [], "Detect DTMF tones in a captured audio signal."),
-    (6, 14, "L14-hd-radio", "HD Radio", ["6.3"], ["hd", "ref-nrsc"], "How HD Radio hides OFDM sidebands beside an FM station, and how to demodulate them."),
+    (6, 14, "L14-hd-radio", "HD Radio", ["6.3"], ["ref-nrsc"], "How HD Radio hides OFDM sidebands beside an FM station, and how to demodulate them."),
     (6, 15, "L15-mpsk", "mPSK", ["6.4"], ["ref-diff"], "BPSK, QPSK, and 8PSK in GNU Radio, with carrier and symbol-timing recovery."),
     (6, 16, "L16-fhss", "Frequency Hopping", ["6.5"], [], "An FHSS transmitter and receiver that stay on the same hop sequence."),
     (6, 17, "L17-rf-reverse-engineering", "RF Reverse Engineering", ["6.6"], ["rfre"], "Take an unknown signal from spectrum to bits with GQRX, URH, and GNU Radio."),
