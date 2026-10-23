@@ -103,6 +103,10 @@ ships goes through three steps before it is committed:
    needs an SDR is compiled only; say so in the PR. A figure that stands in
    for a real capture is labeled "Simulated" on the figure itself.
 
+Recordings a cadet downloads or makes are **SigMF** (`.sigmf-data` plus
+`.sigmf-meta`), the preferred data format (Neil, 2026-10-23); see
+`project/ROADMAP.md`, "Settled".
+
 The GNU Radio bindings are built for `/usr/bin/python3.12`; call `grcc` and the
 scripts through it, not through whatever `python3` is first on `PATH`.
 
