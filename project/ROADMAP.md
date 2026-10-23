@@ -121,6 +121,14 @@ budgets, checks) still apply. Where 444 would put a derivation on screen,
 - **Objectives** are the two-level "I can…" list (module.N). Neil reviews
   them before anything is scaffolded.
 
+- **SigMF is the preferred data format** (Neil, 2026-10-23). A recording a
+  cadet downloads, or one a lab has them make, is a SigMF pair: the samples in
+  `<name>.sigmf-data` and the sample rate, center frequency, and datatype in
+  `<name>.sigmf-meta`. The data file is raw samples, so a File Source reads it
+  with the type the meta file names. To convert: L14's handed-out `.cu8`
+  captures, and the L5 Lab recording, which the lesson already says to save
+  as SigMF.
+
 ## Lesson list (approved by Neil, 2026-10-17)
 
 Neil, 2026-10-17: keep the seven-module structure from the old site
