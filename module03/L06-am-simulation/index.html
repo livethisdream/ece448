@@ -1,0 +1,651 @@
+<!doctype html>
+<html lang="en" data-mode="read">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>L6 - AM Simulation &mdash; ECE 448 — Software Defined Radios</title>
+<meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+<link rel="icon" href="../../_static/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap"><link rel="stylesheet" href="../../_static/custom.css?v=a42eea83fd">
+<link rel="stylesheet" href="../../_static/shell.css?v=474250fccb">
+<link rel="stylesheet" href="../../_static/frames.css?v=fa285d3703">
+<script>window.MathJax = {"tex": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processEscapes": true}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+<script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js"></script>
+</head>
+<body>
+
+<div class="rail"><span id="railfill"></span></div>
+
+<div class="laser" id="laser" aria-hidden="true"></div>
+<div class="spot" id="spot" aria-hidden="true"></div>
+
+<div class="index" id="index" role="dialog" aria-label="Jump to a frame or another lesson">
+  <button class="index-close" id="btnIndexClose" type="button" aria-label="Close">&times;</button>
+  <div class="wrap">
+    <div class="index-cols">
+      <div class="index-here">
+        <h2>This lesson</h2>
+        <ol id="indexlist"></ol>
+      </div>
+      <div class="index-toc">
+        <h2>Course</h2>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Course Information</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../syllabus.html">Syllabus</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../materials.html">Materials</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 1 — Foundations of Detection &amp; Link Budgets</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module01/index.html">Module 1 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module01/L01-course-intro/index.html">L1 — Course Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module01/L02-noise-figure-link-budget/index.html">L2 — Noise Figure and Link Budget</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module01/L03-signal-space/index.html">L3 — Signal Space</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 2 — SDR &amp; GNU Radio Foundations</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module02/index.html">Module 2 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module02/L04-sdr-introduction/index.html">L4 — SDR Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module02/L05-gnu-radio-intro/index.html">L5 — GNU Radio Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module02/L05-lab-first-flowgraphs/index.html">L5 Lab — First Flowgraphs</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 3 — Analog Modulation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Module 3 overview</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">L6 — AM Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L06-lab-am-simulation/index.html">L6 Lab — AM Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L07-am-fm-receivers/index.html">L7 — AM and FM Receivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L07-lab-am-fm-receivers/index.html">L7 Lab — AM and FM Receivers</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 4 — Digital Modulation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/index.html">Module 4 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/L08-fsk/index.html">L8 — FSK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/L08-lab-fsk/index.html">L8 Lab — FSK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/L09-pam-theory/index.html">L9 — PAM Theory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/L10-ascii-pam/index.html">L10 — ASCII over PAM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/L10-lab-pam-link/index.html">L10 Lab — PAM Link</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 5 — Custom Blocks &amp; Midterm</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module05/index.html">Module 5 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module05/L11-custom-blocks/index.html">L11 — Out-of-Tree Modules and Custom Blocks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module05/L11-lab-custom-block/index.html">L11 Lab — Custom Block</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module05/midterm/index.html">Midterm — Fox Hunt and CTF</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 6 — Waveform Applications &amp; RF Reverse Engineering</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/index.html">Module 6 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L12-cw/index.html">L12 — CW</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L12-lab-cw/index.html">L12 Lab — CW</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L13-dtmf/index.html">L13 — DTMF</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L13-lab-dtmf/index.html">L13 Lab — DTMF</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L14-hd-radio/index.html">L14 — HD Radio</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L14-lab-hd-radio/index.html">L14 Lab — HD Radio</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L15-mpsk/index.html">L15 — mPSK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L15-lab-mpsk/index.html">L15 Lab — mPSK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L16-fhss/index.html">L16 — Frequency Hopping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L16-lab-fhss/index.html">L16 Lab — Frequency Hopping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L17-rf-reverse-engineering/index.html">L17 — RF Reverse Engineering</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L17-lab-rf-reverse-engineering/index.html">L17 Lab — RF Reverse Engineering</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L18-adsb/index.html">L18 — ADS-B</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L19-ais/index.html">L19 — AIS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L18-L19-lab-adsb-ais/index.html">L18–L19 Lab — ADS-B and AIS</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 7 — Final Project</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module07/index.html">Module 7 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module07/L20-qam-ofdm/index.html">L20 — QAM and OFDM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module07/final-project/index.html">Final Project</a></li>
+</ul>
+
+      </div>
+    </div>
+  </div>
+</div><div class="hud">
+<div class="hud-group">
+  <button id="btnSite" class="site" type="button"
+          aria-expanded="false" aria-controls="sitepop"
+          title="Elsewhere on this site">ECE 448</button>
+</div>
+<div class="pop" id="sitepop" role="group" aria-label="Site" hidden>
+  <a href="https://livethisdream.github.io/">Home</a>
+  <a href="https://livethisdream.github.io/ece343/intro.html">ECE 343</a>
+  <a href="https://livethisdream.github.io/ece444/intro.html">ECE 444</a>
+  <a href="../../intro.html" aria-current="page">ECE 448</a>
+  <a href="https://livethisdream.github.io/projects">Projects</a>
+</div>
+
+  <div class="hud-group hud-mid"><button id="btnMode" type="button" aria-expanded="false" aria-controls="modepop"
+            title="How the lesson is laid out (P)">read</button>
+    <button id="btnTools" type="button" aria-expanded="false" aria-controls="toolspop"
+            title="Presenter tools">tools</button>
+  </div>
+
+  <div class="hud-group"><button id="btnIndex" class="counter" type="button" aria-pressed="false"
+            title="Contents (G) · double-tap for the top"><b id="cur">1</b>/<span id="tot">0</span></button>
+  </div><div class="pop" id="modepop" role="group" aria-label="View mode" hidden>
+    <button id="btnPresent" class="choice" type="button" aria-pressed="false">
+      present<span class="pop-note">one frame at a time</span></button>
+    <button id="btnRead" class="choice" type="button" aria-pressed="true">
+      read<span class="pop-note">the whole lesson, continuous</span></button>
+  </div><div class="pop" id="toolspop" role="group" aria-label="Presenter tools" hidden>
+    <button id="btnLaser" type="button" aria-pressed="false">laser<kbd>L</kbd></button>
+    <button id="btnSpot" type="button" aria-pressed="false">spotlight<kbd>S</kbd></button>
+    <button id="btnFull" type="button">fullscreen<kbd>F</kbd></button>
+  </div>
+</div><main class="deck bd-article" id="deck" tabindex="-1">
+<section class="tex2jax_ignore mathjax_ignore" id="l6-am-simulation">
+<h1>L6 - AM Simulation<a class="headerlink" href="#l6-am-simulation" title="Permalink to this heading">#</a></h1>
+<div class="frame title-frame docutils container" id="frame-1">
+<div class="wrap docutils container">
+<div class="course-mark">ECE 448 · Spring 2027</div>
+<h1 class="frame-title">AM Simulation</h1>
+<div class="title-rule"></div>
+<p>DSB-AM, DSB-SC, and SSB built and demodulated in GNU Radio.</p>
+<p>Lesson 6 · Module 3: Analog Modulation · Dr. Neil Rogers</p>
+</div>
+</div>
+<div class="frame read-only docutils container" id="frame-slides">
+<div class="wrap docutils container">
+<p class="rubric">Slides</p>
+<div class="slides admonition">
+<p class="admonition-title">Slides</p>
+<p><a href="../../slides/L06-am-simulation.html" target="_blank" rel="noopener">html slides</a>
+<a href="../../slides/L06-am-simulation.html?print-pdf" target="_blank" rel="noopener">pdf slides</a>
+<a href="../../slides/L06-am-simulation.md" target="_blank" rel="noopener">raw markdown slides</a></p>
+</div>
+</div>
+</div>
+<div class="frame docutils container" id="frame-learning-objectives">
+<div class="wrap docutils container">
+<p class="rubric">Learning Objectives</p>
+<ol class="lo-list" style="--module: '3'">
+  <li>I can describe DSB-AM, DSB-SC, and SSB and identify each on a spectrum.</li>
+  <li>I can implement an AM modulator and demodulator in GNU Radio and verify demodulated audio against the source.</li>
+</ol>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-a-message-on-a-carrier">
+<div class="wrap docutils container">
+<p class="rubric">A Message on a Carrier</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<p><img src="../../viz/img/L06-am-spectrum.png"
+     alt="The L6 DSB-AM flowgraph's frequency sink: a carrier at 10 kHz with a pair of sidebands at 9 and 11 kHz and a smaller pair at 7.5 and 12.5 kHz"
+     style="max-width: 820px; width: 100%; display: block; margin: 0 auto;"></p>
+</div>
+<div class="present docutils container">
+<ul class="simple">
+<li><p><strong>Modulation</strong> moves an audio message up to a carrier frequency.</p></li>
+<li><p>Today’s signal: a two-tone message on a 10 kHz carrier, as DSB-AM.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p><strong>Modulation</strong> moves an audio message up to a <strong>carrier</strong> frequency, so each transmitter gets its own channel. Varying the carrier’s amplitude with the message is <strong>amplitude modulation</strong> (AM), still on the air in AM broadcast, every aircraft radio, and HF voice links.</p>
+<p>Open <code class="docutils literal notranslate"><span class="pre">L06-dsb-am.grc</span></code> and run it; no hardware is needed. The figure is its frequency sink. The message is two tones, 1 kHz and 2.5 kHz, on a 10 kHz carrier. The tall line in the middle is the carrier, and each tone makes a pair of lines on either side of it. Today we build this signal and two relatives, receive each one, and check the output against the message.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-part-1-dsb-am">
+<div class="wrap docutils container">
+<p class="rubric">Part 1: DSB-AM</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<div class="math notranslate nohighlight">
+\[s(t) = A_c\left[1 + m\,x(t)\right]\cos(2\pi f_c t)\]</div>
+</div>
+<div class="present docutils container">
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(m\)</span> is the <strong>modulation index</strong>; the bracket is the <strong>envelope</strong>.</p></li>
+<li><p>A tone at <span class="math notranslate nohighlight">\(f\)</span> makes sidebands at <span class="math notranslate nohighlight">\(f_c - f\)</span> and <span class="math notranslate nohighlight">\(f_c + f\)</span>.</p></li>
+<li><p>The bandwidth is <span class="math notranslate nohighlight">\(2W\)</span>, here 5 kHz (7.5 to 12.5 kHz).</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p><strong>Double-sideband AM</strong> (DSB-AM, or simply AM) multiplies a carrier at <span class="math notranslate nohighlight">\(f_c\)</span> by one plus the scaled message. The message <span class="math notranslate nohighlight">\(x(t)\)</span> stays between <span class="math notranslate nohighlight">\(-1\)</span> and 1, and the <strong>modulation index</strong> <span class="math notranslate nohighlight">\(m\)</span> is the slider that sets how far the carrier’s amplitude swings: at <span class="math notranslate nohighlight">\(m = 0.5\)</span>, between 0.5 and 1.5 times <span class="math notranslate nohighlight">\(A_c\)</span>. The bracket is the <strong>envelope</strong>, the outline of the carrier’s peaks, which is a copy of the message riding on a constant.</p>
+<p>Multiplying by the carrier shifts the message’s spectrum up to <span class="math notranslate nohighlight">\(f_c\)</span>. The constant 1 becomes the carrier line, and each message tone at <span class="math notranslate nohighlight">\(f\)</span> becomes two lines, one at <span class="math notranslate nohighlight">\(f_c + f\)</span> in the <strong>upper sideband</strong> and one at <span class="math notranslate nohighlight">\(f_c - f\)</span> in the <strong>lower sideband</strong>. On the opening figure the sideband lines sit well below the carrier, and the louder 1 kHz tone makes the taller pair; raise <span class="math notranslate nohighlight">\(m\)</span> and every sideband line grows while the carrier stays put. The signal occupies <span class="math notranslate nohighlight">\(f_c - W\)</span> to <span class="math notranslate nohighlight">\(f_c + W\)</span>, where <span class="math notranslate nohighlight">\(W\)</span> is the highest message frequency, so its <strong>bandwidth</strong> is <span class="math notranslate nohighlight">\(2W\)</span>, 5 kHz for our message. The FCC spaces US AM broadcast stations 10 kHz apart for the same reason: each carries about 5 kHz of audio.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-the-dsb-am-flowgraph">
+<div class="wrap docutils container">
+<p class="rubric">The DSB-AM Flowgraph</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<p><img src="../../viz/img/L06-grc-dsb-am.png"
+     alt="GNU Radio Companion with L06-dsb-am.grc open: two Signal Sources added to form the message, Multiply Const by m, Add Const 1, and a Multiply with a 10 kHz carrier source feed a frequency sink and a time sink; below, Abs, a Decimating FIR Filter, and Multiply Const pi over 2 form the envelope detector, followed by a DC Blocker, a volume control, and an Audio Sink"
+     style="max-width: 760px; width: 100%; display: block; margin: 0 auto;"></p>
+</div>
+<div class="present docutils container">
+<ul class="simple">
+<li><p>The top row is the transmitter, and the bottom row is the receiver.</p></li>
+<li><p>The <strong>Audio Sink</strong> paces the flowgraph, so there is no Throttle.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>The top row of <code class="docutils literal notranslate"><span class="pre">L06-dsb-am.grc</span></code> is the transmitter, block for block from the equation: two Signal Sources add to make <span class="math notranslate nohighlight">\(x(t)\)</span>, a Multiply Const applies <span class="math notranslate nohighlight">\(m\)</span>, an Add Const adds the 1, and a Multiply mixes the result with a third Signal Source at <span class="math notranslate nohighlight">\(f_c\)</span>. Its output goes to a frequency sink and to a time sink that overlays the modulated signal on its envelope <span class="math notranslate nohighlight">\(1 + m\,x(t)\)</span>. The bottom row is the receiver, an <strong>envelope detector</strong>, which the next frames take apart. Its output goes to a second time sink for checking and, through a DC Blocker and a volume slider, to an <strong>Audio Sink</strong>, so we can listen to it.</p>
+<p>The whole flowgraph runs at 48 kHz, a rate every laptop sound card supports. Lesson 5 said to use a Throttle only when no hardware sets the pace. The sound card is hardware: it takes exactly 48,000 samples per second, so the Audio Sink sets the pace and a Throttle would only cause audio dropouts.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-modulation-index">
+<div class="wrap docutils container">
+<p class="rubric">Modulation Index</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<p><img src="../../viz/img/L06-am-envelope.png"
+     alt="Two QT GUI time sinks at m = 0.5: on the left the AM signal fills in under a red envelope that swings between about 0.5 and 1.5; on the right the detector output lies on top of the delayed envelope"
+     style="max-width: 820px; width: 100%; display: block; margin: 0 auto;"></p>
+</div>
+<div class="present docutils container">
+<ul class="simple">
+<li><p>Left: the carrier fills in under its envelope, <span class="math notranslate nohighlight">\(1 + m\,x(t)\)</span>.</p></li>
+<li><p>Right: the detector output lies on the envelope.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>The left time sink shows 10 ms of the transmitted signal in blue, with the envelope <span class="math notranslate nohighlight">\(1 + m\,x(t)\)</span> in red. The carrier is 10 kHz, so 100 cycles fill the window and blur into a solid band, and the red trace outlines its peaks. The pattern repeats every 2 ms because 1 kHz and 2.5 kHz are both multiples of 500 Hz.</p>
+<p>The right time sink compares the receiver’s output, in red, with the envelope in blue. The two traces lie on top of each other, which is the check the objective asks for: the demodulated signal matches the source. The receiver’s low-pass filter delays everything that passes through it by half its length, so the flowgraph’s Delay block holds the envelope back the same 57 samples before the comparison.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-the-envelope-detector">
+<div class="wrap docutils container">
+<p class="rubric">The Envelope Detector</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<ul class="simple">
+<li><p><strong>Abs</strong> rectifies: it keeps the carrier’s peaks positive.</p></li>
+<li><p>A <strong>low-pass filter</strong> at 3 kHz keeps the envelope and removes the carrier.</p></li>
+<li><p>Multiply by <span class="math notranslate nohighlight">\(\pi/2\)</span> to restore the level.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>An AM receiver only has to recover the envelope; a diode and a capacitor do it in hardware. The bottom row of the flowgraph does the same with blocks. <strong>Abs</strong> is the diode: it flips the carrier’s negative half-cycles up. The <strong>low-pass filter</strong> is the capacitor: it keeps the slowly varying envelope and removes the rest. After Abs, the envelope sits near 0 Hz and the rest of the signal sits at higher frequencies, which the filter of the next frame removes.</p>
+<p>Averaging the rectified carrier leaves <span class="math notranslate nohighlight">\(2/\pi\)</span> of its peak, so a Multiply Const of <span class="math notranslate nohighlight">\(\pi/2\)</span> restores the envelope’s original level. The DC Blocker then removes the constant 1, which carries no information, before the audio reaches the speaker.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-low-pass-filter-taps">
+<div class="wrap docutils container">
+<p class="rubric">Low-pass Filter Taps</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<ul class="simple">
+<li><p><strong>Cutoff</strong> 3 kHz and <strong>transition</strong> 1 kHz define the filter.</p></li>
+<li><p>GNU Radio picks the length: 115 taps.</p></li>
+<li><p>The output lags by half the taps: 57 samples, or 1.2 ms.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>The <strong>Low-pass Filter Taps</strong> variable designs a filter from the sample rate, a cutoff frequency, a transition width, and a window, and a <strong>Decimating FIR Filter</strong> block with decimation 1 applies it. We choose a 3 kHz cutoff and a 1 kHz transition, so the filter passes everything up to about 2.5 kHz, which keeps both message tones, and stops everything above about 3.5 kHz.</p>
+<p>GNU Radio sets the number of taps from the transition width: a narrower transition needs a longer filter, and 1 kHz at 48 kHz gives 115 taps. A filter with <span class="math notranslate nohighlight">\(N\)</span> taps delays its output by <span class="math notranslate nohighlight">\((N-1)/2\)</span> samples, 57 here. The Delay block uses the expression <code class="docutils literal notranslate"><span class="pre">len(lpf_taps)//2</span></code>, so it follows the filter if we change it. Every receiver in this lesson uses these taps.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-overmodulation">
+<div class="wrap docutils container">
+<p class="rubric">Overmodulation</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<p><img src="../../viz/img/L06-am-overmod.png"
+     alt="The same time sinks at m = 1.4: the envelope 1 + m x(t) dips below zero, and the detector output folds those dips back up so it no longer matches the envelope"
+     style="max-width: 820px; width: 100%; display: block; margin: 0 auto;"></p>
+</div>
+<div class="present docutils container">
+<ul class="simple">
+<li><p>Push <span class="math notranslate nohighlight">\(m\)</span> too far and the envelope goes negative; the detector folds it up.</p></li>
+<li><p>The audio distorts, and the spectrum spreads.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>Keeping <span class="math notranslate nohighlight">\(m \le 1\)</span> guarantees no overmodulation for any message with <span class="math notranslate nohighlight">\(\vert x(t)\vert \le 1\)</span>. Past that, the bracket <span class="math notranslate nohighlight">\(1 + m\,x(t)\)</span> goes negative at the message’s deepest troughs. Our message never quite reaches <span class="math notranslate nohighlight">\(-1\)</span>, so on the slider the trouble starts a little above <span class="math notranslate nohighlight">\(m = 1\)</span>. The carrier’s amplitude cannot be negative, so the detector sees the dips fold back up, as the right panel’s red trace shows at <span class="math notranslate nohighlight">\(m = 1.4\)</span>, and the output no longer matches the message. This is <strong>overmodulation</strong>.</p>
+<p>Drag <span class="math notranslate nohighlight">\(m\)</span> slowly from 0.5 to 1.4 with the audio on. Watch for the red trace to split from the envelope, listen for the tones to turn harsh, and watch new lines appear on the frequency sink, spreading into the neighboring channel. That is why AM transmitters keep <span class="math notranslate nohighlight">\(m\)</span> below 1.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-part-2-dsb-sc">
+<div class="wrap docutils container">
+<p class="rubric">Part 2: DSB-SC</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<p><img src="../../viz/img/L06-sc-spectrum.png"
+     alt="The L6 DSB-SC flowgraph's frequency sink: the four sideband lines at 7.5, 9, 11, and 12.5 kHz and no line at the 10 kHz carrier"
+     style="max-width: 820px; width: 100%; display: block; margin: 0 auto;"></p>
+</div>
+<div class="present docutils container">
+<div class="math notranslate nohighlight">
+\[s(t) = A_c\,x(t)\cos(2\pi f_c t)\]</div>
+</div>
+<div class="present docutils container">
+<ul class="simple">
+<li><p>No carrier line: all of the power goes into the sidebands.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p><strong>Double-sideband suppressed carrier</strong> (DSB-SC) drops the 1 from the bracket and multiplies the carrier by the message alone. Open and run <code class="docutils literal notranslate"><span class="pre">L06-dsb-sc.grc</span></code>: its transmitter is the DSB-AM one with the Multiply Const and Add Const removed. The frequency sink shows the same four sideband lines and the same 5 kHz bandwidth, and nothing at 10 kHz. On the DSB-AM spectrum the carrier was the tallest line, yet it carries no information; it is there to keep the receiver simple.</p>
+<p>Without the carrier, the envelope is <span class="math notranslate nohighlight">\(\vert x(t)\vert\)</span>, because the message itself goes negative. An envelope detector outputs that folded signal, the same as overmodulation, so DSB-SC needs a different receiver.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-coherent-demodulation">
+<div class="wrap docutils container">
+<p class="rubric">Coherent Demodulation</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<p><img src="../../viz/img/L06-sc-mixer.png"
+     alt="A frequency sink on the DSB-SC receiver's Multiply output: lines at 1 and 2.5 kHz, and a copy of the four sideband lines around 20 kHz, at 17.5, 19, 21, and 22.5 kHz"
+     style="max-width: 820px; width: 100%; display: block; margin: 0 auto;"></p>
+</div>
+<div class="present docutils container">
+<ul class="simple">
+<li><p>Multiplying by the LO puts the message back near 0 Hz, with a copy near 20 kHz.</p></li>
+<li><p>The low-pass filter keeps the message.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth docutils container">
+<p><img src="../../viz/img/L06-sc-phi0.png"
+     alt="The DSB-SC flowgraph's time sink with the receiver's LO phase at 0 degrees: the coherent receiver's output lies on the message, and the envelope detector's output is a filtered, rectified copy"
+     style="max-width: 820px; width: 100%; display: block; margin: 0 auto;"></p>
+</div>
+<div class="depth depth-cut docutils container">
+<p>A <strong>coherent receiver</strong>, also called a product detector, multiplies the received signal by its own copy of the carrier, a <strong>local oscillator</strong> (LO), and low-pass filters the product. The figure is a frequency sink on that Multiply’s output: the message is back at 1 and 2.5 kHz, with a copy around 20 kHz that the filter removes. A Multiply Const of 2 restores the level.</p>
+<p>The flowgraph builds both receivers side by side. On its time sink, above, the message is blue, the coherent receiver is red on top of it, and the envelope detector is green and does not match. Switch the Listen To menu between Coherent and Envelope and hear the difference.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-the-lo-must-match">
+<div class="wrap docutils container">
+<p class="rubric">The LO Must Match</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<p><img src="../../viz/img/L06-sc-phi90.png"
+     alt="The DSB-SC time sink with the receiver's LO phase at 90 degrees: the coherent receiver's output is a flat line at zero"
+     style="max-width: 820px; width: 100%; display: block; margin: 0 auto;"></p>
+</div>
+<div class="present docutils container">
+<ul class="simple">
+<li><p>An LO phase error makes the output smaller.</p></li>
+<li><p>At <span class="math notranslate nohighlight">\(90°\)</span> the output is zero.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>The coherent receiver works only if its LO matches the transmitter’s carrier in both frequency and phase. Drag the LO phase slider and watch the red trace: a small phase error lowers the volume, and at <span class="math notranslate nohighlight">\(90°\)</span> the output vanishes, as the flat red trace shows. A frequency error is worse: the phase drifts continuously and the output fades in and out.</p>
+<p>Here both oscillators come from the same <code class="docutils literal notranslate"><span class="pre">fc</span></code> variable, so they match. A real DSB-SC receiver has no carrier to copy, so the transmitter has to help. FM stereo sends a 19 kHz <strong>pilot tone</strong> so receivers can rebuild the 38 kHz LO for its DSB-SC subcarrier; Lesson 7 shows it in the FM multiplex.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-part-3-ssb">
+<div class="wrap docutils container">
+<p class="rubric">Part 3: SSB</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<p><img src="../../viz/img/L06-ssb-spectra.png"
+     alt="Two frequency sinks from L06-ssb.grc: with USB selected, lines at 11 and 12.5 kHz and the lower pair suppressed far below the kept lines; with LSB selected, lines at 9 and 7.5 kHz and the upper pair suppressed"
+     style="max-width: 760px; width: 100%; display: block; margin: 0 auto;"></p>
+</div>
+<div class="present docutils container">
+<ul class="simple">
+<li><p>The two sidebands carry the same information. <strong>SSB</strong> sends one.</p></li>
+<li><p>Its bandwidth is <span class="math notranslate nohighlight">\(W\)</span> = 2.5 kHz, half that of DSB.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>The two sidebands are mirror images, so either one alone carries the whole message. <strong>Single sideband</strong> (SSB) sends one: the <strong>upper sideband</strong> (USB) or the <strong>lower sideband</strong> (LSB). It has no carrier and needs half the bandwidth, which is why it is the standard for long-range HF voice.</p>
+<p>Open and run <code class="docutils literal notranslate"><span class="pre">L06-ssb.grc</span></code> and switch its Sideband menu; the figure shows both settings. With USB selected, the lines at 11 and 12.5 kHz remain and the lower pair sits far below the kept lines. With LSB selected, only the lines at 9 and 7.5 kHz remain. Note that the LSB reverses the message’s spectrum: the higher tone is the line farther below the carrier.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-the-phasing-method">
+<div class="wrap docutils container">
+<p class="rubric">The Phasing Method</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<p><img src="../../viz/img/L06-grc-ssb.png"
+     alt="GNU Radio Companion with L06-ssb.grc open: the message feeds a Hilbert block, whose complex output multiplies a complex 10 kHz Signal Source; Complex To Real gives the SSB signal, which feeds a frequency sink and a product detector made of a Multiply with a real 10 kHz source, a Decimating FIR Filter, and a Multiply Const of 2"
+     style="max-width: 760px; width: 100%; display: block; margin: 0 auto;"></p>
+</div>
+<div class="present docutils container">
+<div class="math notranslate nohighlight">
+\[s(t) = \mathrm{Re}\left\{z(t)\,e^{\pm j2\pi f_c t}\right\}\]</div>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>The flowgraph makes SSB by the <strong>phasing method</strong>, as in the GNU Radio wiki’s SSB transceiver example. The <strong>Hilbert</strong> block turns the message into a complex signal with only positive frequencies, like Lesson 5’s complex tone that turned in one direction.</p>
+<p>A Multiply by a complex Signal Source at <span class="math notranslate nohighlight">\(+f_c\)</span> moves those frequencies to just above <span class="math notranslate nohighlight">\(f_c\)</span>, and Complex To Real gives the USB. The Sideband menu just flips the source’s frequency to <span class="math notranslate nohighlight">\(-f_c\)</span> for LSB. The Hilbert block is a 129-tap filter, and its imperfection is why the unwanted sideband sits far below the kept lines rather than gone.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-receiving-ssb">
+<div class="wrap docutils container">
+<p class="rubric">Receiving SSB</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<p><img src="../../viz/img/L06-ssb-mistuned.png"
+     alt="The SSB flowgraph's time sink with a receiver tuning error of 200 Hz: the product detector's output no longer lies on the delayed message because each tone has shifted in frequency"
+     style="max-width: 820px; width: 100%; display: block; margin: 0 auto;"></p>
+</div>
+<div class="present docutils container">
+<ul class="simple">
+<li><p>A product detector at <span class="math notranslate nohighlight">\(f_c\)</span> recovers <span class="math notranslate nohighlight">\(x(t)\)</span> from either sideband.</p></li>
+<li><p>A tuning error <span class="math notranslate nohighlight">\(\Delta f\)</span> shifts every audio tone by <span class="math notranslate nohighlight">\(\Delta f\)</span>.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>The SSB receiver is the same product detector as DSB-SC: multiply by a cosine at <span class="math notranslate nohighlight">\(f_c\)</span>, low-pass filter, and multiply by 2. Tuned exactly, its output lies on the message for USB and LSB alike. Now select USB and drag the tuning slider to <span class="math notranslate nohighlight">\(+200\)</span> Hz: every tone moves down by 200 Hz, so the traces drift apart, as in the figure. On LSB the same error raises the tones.</p>
+<p>Listen while you drag. The pitch shifts, but the audio never fades, and a voice stays intelligible out to about 100 Hz of error. That is why an SSB receiver needs no carrier recovery: the operator turns the tuning knob until the voice sounds natural.</p>
+</div>
+</div>
+</div>
+<div class="frame viz-frame cut docutils container" id="frame-am-explorer">
+<div class="wrap docutils container">
+<p class="rubric">AM Explorer</p>
+<div class="depth docutils container">
+<p>The left panel plots 2 ms of the signal, its envelope in red, and the message in dashed amber; the right panel shows the spectral lines around the 10 kHz carrier. It starts with one tone and DSB-AM at <span class="math notranslate nohighlight">\(m = 0.5\)</span>; notice the envelope follow the message. Raise <span class="math notranslate nohighlight">\(m\)</span> past 1 and watch the envelope fold. Then switch to two tones, the flowgraphs’ message, and drag <span class="math notranslate nohighlight">\(m\)</span> again. Switch to DSB-SC and the carrier line disappears, while the envelope becomes <span class="math notranslate nohighlight">\(\vert x(t)\vert\)</span>. Switch to USB or LSB and notice the bandwidth halve, and that the envelope of the two-tone SSB signal is not the message at all, which is why SSB needs a product detector.</p>
+</div>
+<div class="stage docutils container">
+<div class="present docutils container">
+<iframe src="../../viz/am-explorer.html"
+        width="100%" height="427"
+        style="border: 1px solid #cddce9; border-radius: 6px;"
+        loading="lazy"
+        title="AM explorer: DSB-AM, DSB-SC, USB, and LSB in time and frequency, with the modulation index, bandwidth, carrier line, and whether an envelope detector recovers the message">
+</iframe>
+</div>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-identifying-each-on-a-spectrum">
+<div class="wrap docutils container">
+<p class="rubric">Identifying Each on a Spectrum</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head text-left"><p>Signal</p></th>
+<th class="head text-center"><p>Carrier line</p></th>
+<th class="head text-center"><p>Sidebands</p></th>
+<th class="head text-center"><p>Bandwidth</p></th>
+<th class="head text-left"><p>Receiver</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-left"><p>DSB-AM</p></td>
+<td class="text-center"><p>yes</p></td>
+<td class="text-center"><p>two</p></td>
+<td class="text-center"><p><span class="math notranslate nohighlight">\(2W\)</span></p></td>
+<td class="text-left"><p>envelope</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>DSB-SC</p></td>
+<td class="text-center"><p>no</p></td>
+<td class="text-center"><p>two</p></td>
+<td class="text-center"><p><span class="math notranslate nohighlight">\(2W\)</span></p></td>
+<td class="text-left"><p>coherent</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>SSB</p></td>
+<td class="text-center"><p>no</p></td>
+<td class="text-center"><p>one</p></td>
+<td class="text-center"><p><span class="math notranslate nohighlight">\(W\)</span></p></td>
+<td class="text-left"><p>product</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>On any spectrum display, ask two questions. Is there a steady line at the center? Only DSB-AM has one. Is the signal symmetric about its center? DSB-AM and DSB-SC are; SSB sits on one side, above the carrier frequency for USB and below for LSB. A voice SSB signal on a waterfall is a band about 3 kHz wide that comes and goes with speech, with no line beside it.</p>
+<p>The last column says what to build to receive each one.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-key-point">
+<div class="wrap docutils container">
+<p class="rubric">Key Point</p>
+<div class="stage docutils container">
+<div class="present callout docutils container">
+<p>DSB-AM puts most of its power in a carrier so the receiver can be an envelope detector. DSB-SC and SSB drop the carrier, and the receiver has to supply its own.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-on-the-sdr">
+<div class="wrap docutils container">
+<p class="rubric">On the SDR</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<ul class="simple">
+<li><p>AM broadcast uses 540 to 1700 kHz, and aircraft use AM from 118 to 137 MHz.</p></li>
+<li><p>Long-range HF voice uses SSB.</p></li>
+<li><p>On an SDR, the envelope detector is one block: <strong>Complex to Mag</strong>.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>Each of today’s signals is on the air. AM broadcast fills 540 to 1700 kHz, and every aircraft and control tower talks in AM between 118 and 137 MHz, including the recorded airport weather broadcasts (ATIS), which make a good first target for Lesson 7’s AM receiver. SSB carries long-range HF voice: military and maritime stations use USB, and amateurs use LSB below 10 MHz and USB above it. DSB-SC rides inside every FM stereo broadcast.</p>
+<p>An SDR delivers complex samples centered on its tuned frequency, so a signal arrives with its carrier already at 0 Hz. The envelope is then the magnitude of each sample, and the whole envelope detector is one <strong>Complex to Mag</strong> block, which is what GNU Radio’s AM Demod block contains. An SSB receiver on an SDR keeps the real part after a frequency shift. Lesson 7 builds the AM receiver around an RTL-SDR.</p>
+</div>
+</div>
+</div>
+<div class="frame read-only doc-links docutils container" id="frame-downloads-and-sources">
+<div class="wrap docutils container">
+<p class="rubric">Downloads and Sources</p>
+<ul class="simple">
+<li><p><a class="doc-link" href="../../grc/L06-dsb-am.grc" download>L06-dsb-am.grc</a>: a two-tone message as DSB-AM on a 10 kHz carrier, with an envelope detector, a modulation-index slider, and audio out. No hardware needed.</p></li>
+<li><p><a class="doc-link" href="../../grc/L06-dsb-sc.grc" download>L06-dsb-sc.grc</a>: the same message as DSB-SC, with a coherent receiver and an envelope detector side by side and an LO phase slider.</p></li>
+<li><p><a class="doc-link" href="../../grc/L06-ssb.grc" download>L06-ssb.grc</a>: the same message as USB or LSB by the phasing method, with a product detector and a tuning-error slider.</p></li>
+</ul>
+<p>Each flowgraph plays its receiver’s output through your laptop’s speakers; start with the volume low. Open a <code class="docutils literal notranslate"><span class="pre">.grc</span></code> file from GRC’s File menu, or run <code class="docutils literal notranslate"><span class="pre">gnuradio-companion</span> <span class="pre">L06-dsb-am.grc</span></code> from the radioconda prompt.</p>
+<p>This lesson follows Dr. Rogers’s 2025 slides, <em>AM Simulation</em>, which set the topics, and these pages:</p>
+<ul class="simple">
+<li><p><a class="doc-link" href="https://wiki.gnuradio.org/index.php?title=Simulation_example:_Single_Sideband_transceiver" target="_blank" rel="noopener">GNU Radio wiki, Simulation example: Single Sideband transceiver</a>, for the SSB build</p></li>
+<li><p><a class="doc-link" href="https://wiki.gnuradio.org/index.php?title=Your_First_Flowgraph" target="_blank" rel="noopener">GNU Radio wiki, Your First Flowgraph</a> and <a class="doc-link" href="https://wiki.gnuradio.org/index.php?title=Runtime_Updating_Variables" target="_blank" rel="noopener">Runtime Updating Variables</a>, for the sliders that set <span class="math notranslate nohighlight">\(m\)</span>, the LO phase, and the tuning error</p></li>
+<li><p><a class="doc-link" href="https://pysdr.org/content/filters.html" target="_blank" rel="noopener">PySDR, Filters</a>, which the 2025 deck cites, for the low-pass filter</p></li>
+</ul>
+<p>The deck’s opening sampling and data-type demos are in Lesson 5.</p>
+</div>
+</div>
+<div class="frame read-only docutils container" id="frame-summary">
+<div class="wrap docutils container">
+<p class="rubric">Summary</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head text-left"><p>Signal</p></th>
+<th class="head text-left"><p>Transmitter</p></th>
+<th class="head text-left"><p>Spectrum</p></th>
+<th class="head text-left"><p>Receiver</p></th>
+<th class="head text-left"><p>Number to remember</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-left"><p>DSB-AM</p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\([1 + m\,x(t)]\cos(2\pi f_c t)\)</span></p></td>
+<td class="text-left"><p>carrier and two sidebands, <span class="math notranslate nohighlight">\(2W\)</span></p></td>
+<td class="text-left"><p>Abs, low-pass, <span class="math notranslate nohighlight">\(\times\pi/2\)</span></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(m \le 1\)</span></p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>DSB-SC</p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(x(t)\cos(2\pi f_c t)\)</span></p></td>
+<td class="text-left"><p>two sidebands, <span class="math notranslate nohighlight">\(2W\)</span></p></td>
+<td class="text-left"><p>multiply by LO, low-pass, <span class="math notranslate nohighlight">\(\times 2\)</span></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(90°\)</span> LO error: no output</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>SSB</p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(\mathrm{Re}\{z(t)\,e^{\pm j2\pi f_c t}\}\)</span></p></td>
+<td class="text-left"><p>one sideband, <span class="math notranslate nohighlight">\(W\)</span></p></td>
+<td class="text-left"><p>product detector at <span class="math notranslate nohighlight">\(f_c\)</span></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(\Delta f\)</span> shifts the audio</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="frame read-only doc-links docutils container" id="frame-practice">
+<div class="wrap docutils container">
+<p class="rubric">Practice</p>
+<ul class="simple">
+<li><p><a class="doc-link" href="../../practice/ECE448_L06_Practice_blank.pdf" target="_blank" rel="noopener">Problem set (PDF)</a></p></li>
+<li><p><a class="doc-link doc-key" href="../../practice/ECE448_L06_Practice_SOLUTIONS.pdf" target="_blank" rel="noopener">Solutions (PDF)</a></p></li>
+</ul>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-looking-ahead">
+<div class="wrap docutils container">
+<p class="rubric">Looking Ahead</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<ul class="simple">
+<li><p>The L6 Lab builds DSB-AM from an empty canvas and measures DSB-SC and SSB.</p></li>
+<li><p>Lesson 7 receives real AM and FM with an RTL-SDR.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>Today we built DSB-AM, DSB-SC, and SSB transmitters in GNU Radio, received each one, and compared the output with the message on a time sink and by ear. The L6 Lab is the hands-on version: build the DSB-AM flowgraph yourself, find its overmodulation point with the slider, and then watch and listen to what LO phase and tuning errors do to the DSB-SC and SSB receivers.</p>
+<p>Lesson 7 replaces the simulated transmitter with the air. An RTL-SDR delivers complex samples, the envelope detector becomes a Complex to Mag block, and we receive an aircraft band AM station, then a broadcast FM station with its RDS data.</p>
+</div>
+</div>
+</div>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./module03/L06-am-simulation"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+</main>
+
+<script src="../../_static/shell.js?v=e3abacb6d1"></script>
+<script src="../../_static/frames.js?v=89e4b02ee3"></script><script src="../../_static/viz-autosize.js?v=4fe0c4e159"></script>
+</body>
+</html>

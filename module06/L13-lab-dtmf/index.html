@@ -1,0 +1,406 @@
+<!doctype html>
+<html lang="en" data-mode="read">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>L13 Lab — DTMF &mdash; ECE 448 — Software Defined Radios</title>
+<meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+<link rel="icon" href="../../_static/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap"><link rel="stylesheet" href="../../_static/custom.css?v=a42eea83fd">
+<link rel="stylesheet" href="../../_static/shell.css?v=474250fccb">
+<link rel="stylesheet" href="../../_static/frames.css?v=fa285d3703">
+<script>window.MathJax = {"tex": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processEscapes": true}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+<script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js"></script>
+</head>
+<body>
+
+<div class="rail"><span id="railfill"></span></div>
+
+<div class="laser" id="laser" aria-hidden="true"></div>
+<div class="spot" id="spot" aria-hidden="true"></div>
+
+<div class="index" id="index" role="dialog" aria-label="Jump to a frame or another lesson">
+  <button class="index-close" id="btnIndexClose" type="button" aria-label="Close">&times;</button>
+  <div class="wrap">
+    <div class="index-cols">
+      <div class="index-here">
+        <h2>This lesson</h2>
+        <ol id="indexlist"></ol>
+      </div>
+      <div class="index-toc">
+        <h2>Course</h2>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Course Information</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../syllabus.html">Syllabus</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../materials.html">Materials</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 1 — Foundations of Detection &amp; Link Budgets</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module01/index.html">Module 1 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module01/L01-course-intro/index.html">L1 — Course Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module01/L02-noise-figure-link-budget/index.html">L2 — Noise Figure and Link Budget</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module01/L03-signal-space/index.html">L3 — Signal Space</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 2 — SDR &amp; GNU Radio Foundations</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module02/index.html">Module 2 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module02/L04-sdr-introduction/index.html">L4 — SDR Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module02/L05-gnu-radio-intro/index.html">L5 — GNU Radio Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module02/L05-lab-first-flowgraphs/index.html">L5 Lab — First Flowgraphs</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 3 — Analog Modulation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module03/index.html">Module 3 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module03/L06-am-simulation/index.html">L6 — AM Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module03/L06-lab-am-simulation/index.html">L6 Lab — AM Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module03/L07-am-fm-receivers/index.html">L7 — AM and FM Receivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module03/L07-lab-am-fm-receivers/index.html">L7 Lab — AM and FM Receivers</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 4 — Digital Modulation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/index.html">Module 4 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/L08-fsk/index.html">L8 — FSK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/L08-lab-fsk/index.html">L8 Lab — FSK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/L09-pam-theory/index.html">L9 — PAM Theory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/L10-ascii-pam/index.html">L10 — ASCII over PAM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/L10-lab-pam-link/index.html">L10 Lab — PAM Link</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 5 — Custom Blocks &amp; Midterm</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module05/index.html">Module 5 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module05/L11-custom-blocks/index.html">L11 — Out-of-Tree Modules and Custom Blocks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module05/L11-lab-custom-block/index.html">L11 Lab — Custom Block</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module05/midterm/index.html">Midterm — Fox Hunt and CTF</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 6 — Waveform Applications &amp; RF Reverse Engineering</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Module 6 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L12-cw/index.html">L12 — CW</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L12-lab-cw/index.html">L12 Lab — CW</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L13-dtmf/index.html">L13 — DTMF</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">L13 Lab — DTMF</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L14-hd-radio/index.html">L14 — HD Radio</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L14-lab-hd-radio/index.html">L14 Lab — HD Radio</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L15-mpsk/index.html">L15 — mPSK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L15-lab-mpsk/index.html">L15 Lab — mPSK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L16-fhss/index.html">L16 — Frequency Hopping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L16-lab-fhss/index.html">L16 Lab — Frequency Hopping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L17-rf-reverse-engineering/index.html">L17 — RF Reverse Engineering</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L17-lab-rf-reverse-engineering/index.html">L17 Lab — RF Reverse Engineering</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L18-adsb/index.html">L18 — ADS-B</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L19-ais/index.html">L19 — AIS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L18-L19-lab-adsb-ais/index.html">L18–L19 Lab — ADS-B and AIS</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 7 — Final Project</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module07/index.html">Module 7 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module07/L20-qam-ofdm/index.html">L20 — QAM and OFDM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module07/final-project/index.html">Final Project</a></li>
+</ul>
+
+      </div>
+    </div>
+  </div>
+</div><div class="hud">
+<div class="hud-group">
+  <button id="btnSite" class="site" type="button"
+          aria-expanded="false" aria-controls="sitepop"
+          title="Elsewhere on this site">ECE 448</button>
+</div>
+<div class="pop" id="sitepop" role="group" aria-label="Site" hidden>
+  <a href="https://livethisdream.github.io/">Home</a>
+  <a href="https://livethisdream.github.io/ece343/intro.html">ECE 343</a>
+  <a href="https://livethisdream.github.io/ece444/intro.html">ECE 444</a>
+  <a href="../../intro.html" aria-current="page">ECE 448</a>
+  <a href="https://livethisdream.github.io/projects">Projects</a>
+</div>
+
+  <div class="hud-group hud-mid"><button id="btnMode" type="button" aria-expanded="false" aria-controls="modepop"
+            title="How the lesson is laid out (P)">read</button>
+    <button id="btnTools" type="button" aria-expanded="false" aria-controls="toolspop"
+            title="Presenter tools">tools</button>
+  </div>
+
+  <div class="hud-group"><button id="btnIndex" class="counter" type="button" aria-pressed="false"
+            title="Contents (G) · double-tap for the top"><b id="cur">1</b>/<span id="tot">0</span></button>
+  </div><div class="pop" id="modepop" role="group" aria-label="View mode" hidden>
+    <button id="btnPresent" class="choice" type="button" aria-pressed="false">
+      present<span class="pop-note">one frame at a time</span></button>
+    <button id="btnRead" class="choice" type="button" aria-pressed="true">
+      read<span class="pop-note">the whole lesson, continuous</span></button>
+  </div><div class="pop" id="toolspop" role="group" aria-label="Presenter tools" hidden>
+    <button id="btnLaser" type="button" aria-pressed="false">laser<kbd>L</kbd></button>
+    <button id="btnSpot" type="button" aria-pressed="false">spotlight<kbd>S</kbd></button>
+    <button id="btnFull" type="button">fullscreen<kbd>F</kbd></button>
+  </div>
+</div><main class="deck bd-article" id="deck" tabindex="-1">
+<section class="tex2jax_ignore mathjax_ignore" id="l13-lab-dtmf">
+<h1>L13 Lab — DTMF<a class="headerlink" href="#l13-lab-dtmf" title="Permalink to this heading">#</a></h1>
+<div class="frame title-frame docutils container" id="frame-1">
+<div class="wrap docutils container">
+<div class="course-mark">ECE 448 · Spring 2027</div>
+<h1 class="frame-title">DTMF</h1>
+<div class="title-rule"></div>
+<p>Build a DTMF keypad, decode a capture whose number you do not know, find where the decoder fails, and decode a real phone.</p>
+<p>L13 Lab · Module 6: Waveform Applications &amp; RF Reverse Engineering · Dr. Neil Rogers</p>
+</div>
+</div>
+<div class="frame docutils container" id="frame-learning-objectives">
+<div class="wrap docutils container">
+<p class="rubric">Learning Objectives</p>
+<ol class="lo-list" style="--module: '6'; counter-reset: lo 1">
+  <li>I can decode DTMF tones from a captured audio signal.</li>
+</ol>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-from-lesson-to-bench">
+<div class="wrap docutils container">
+<p class="rubric">From Lesson to Bench</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<ul class="simple">
+<li><p><strong>Pre-Lab:</strong> run the receiver, work out block settings, and add noise.</p></li>
+<li><p><strong>Bench:</strong> build the keypad and bins, decode a capture, find the limits, and decode a phone.</p></li>
+<li><p><strong>Writeup:</strong> explain where the decoder misses digits, and why.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>Lesson 13 decoded a synthetic capture of a phone number. Today you build the keypad and the receiver’s eight Goertzel bins from an empty canvas, decode a second capture whose number you do not know, and measure where the decoder stops working as the twist, the tone length, and the block length change. Then you decode a real signal: a phone’s keypad through your laptop’s microphone. The lab packet has three parts, and you turn it in once, complete, before Lesson 14. You do <strong>Part 1, the Pre-Lab</strong>, on your own before the period, record <strong>Part 2</strong>’s measurements in class, and explain them in <strong>Part 3, the Writeup</strong>.</p>
+<p>Nothing in this lab transmits. Bring a phone whose keypad plays tones, and headphones if you want to listen without disturbing the room.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-part-1-before-the-period">
+<div class="wrap docutils container">
+<p class="rubric">Part 1: Before the Period</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">L13-dtmf-rx.grc</span></code> decodes <code class="docutils literal notranslate"><span class="pre">L13-capture.wav</span></code>.</p></li>
+<li><p>Look up the tones of a number of your own.</p></li>
+<li><p>Work out the block times at N = 102 and 410.</p></li>
+<li><p>Run <code class="docutils literal notranslate"><span class="pre">L13-dtmf-link.grc</span></code> and lower the SNR until digits drop.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>Do the Pre-Lab before you arrive. Put every file from the Lesson 13 and L13 Lab pages in one folder. Question 1 checks that the receiver opens, runs, and reads 7195550148 from <code class="docutils literal notranslate"><span class="pre">L13-capture.wav</span></code>; if GRC reports an error, the L5 lesson page lists the install checks.</p>
+<p>Question 2 sets up the bench. Look up the two tones of each key in a number you choose, and work out the block time <span class="math notranslate nohighlight">\(N/f_s\)</span> and the bin spacing <span class="math notranslate nohighlight">\(f_s/N\)</span> at the two other block lengths Part 2 uses. Then open <code class="docutils literal notranslate"><span class="pre">L13-dtmf-link.grc</span></code>, lower the SNR slider a step at a time, and record where the Numbers label first shows a number missed or wrong.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-expected-numbers">
+<div class="wrap docutils container">
+<p class="rubric">Expected Numbers</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head text-left"><p>Check</p></th>
+<th class="head text-left"><p>Expected</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">L13-capture.wav</span></code></p></td>
+<td class="text-left"><p>7195550148, every 1.5 s</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>Key ‘9’</p></td>
+<td class="text-left"><p>852 Hz and 1477 Hz</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>Block at N = 205</p></td>
+<td class="text-left"><p>25.6 ms, bins 39 Hz apart</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>Repeated digits</p></td>
+<td class="text-left"><p>each one counts</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>The receiver should decode every repetition of the lesson’s capture with no wrong digits. Your keypad should put two lines on the spectrum exactly at the grid’s frequencies, within the frequency sink’s resolution. The lab capture is harder than the lesson’s, with more noise, more twist, and shorter tones, but the decoder should still read every repetition the same way.</p>
+</div>
+</div>
+</div>
+<div class="frame read-only docutils container" id="frame-part-2-keypad-build">
+<div class="wrap docutils container">
+<p class="rubric">Part 2: Keypad Build</p>
+<ol class="arabic simple">
+<li><p>Start GRC and choose File, New, QT GUI. Do not open <code class="docutils literal notranslate"><span class="pre">L13-dtmf-keypad.grc</span></code>; build it yourself.</p></li>
+<li><p>Set <code class="docutils literal notranslate"><span class="pre">samp_rate</span></code> to 8000. Add a <strong>QT GUI Chooser</strong> with ID <code class="docutils literal notranslate"><span class="pre">key</span></code>: type Integer, Num Options List, options <code class="docutils literal notranslate"><span class="pre">list(range(16))</span></code>, labels <code class="docutils literal notranslate"><span class="pre">['1',</span> <span class="pre">'2',</span> <span class="pre">'3',</span> <span class="pre">'A',</span> <span class="pre">'4',</span> <span class="pre">'5',</span> <span class="pre">'6',</span> <span class="pre">'B',</span> <span class="pre">'7',</span> <span class="pre">'8',</span> <span class="pre">'9',</span> <span class="pre">'C',</span> <span class="pre">'*',</span> <span class="pre">'0',</span> <span class="pre">'#',</span> <span class="pre">'D']</span></code>, widget Radio Buttons, orientation Horizontal.</p></li>
+<li><p>Add a <strong>QT GUI Push Button</strong> with ID <code class="docutils literal notranslate"><span class="pre">press</span></code>: type Integer, pressed 1, released 0.</p></li>
+<li><p>Add Variables <code class="docutils literal notranslate"><span class="pre">row_f</span></code> = <code class="docutils literal notranslate"><span class="pre">[697,</span> <span class="pre">770,</span> <span class="pre">852,</span> <span class="pre">941][key</span> <span class="pre">//</span> <span class="pre">4]</span></code> and <code class="docutils literal notranslate"><span class="pre">col_f</span></code> = <code class="docutils literal notranslate"><span class="pre">[1209,</span> <span class="pre">1336,</span> <span class="pre">1477,</span> <span class="pre">1633][key</span> <span class="pre">%</span> <span class="pre">4]</span></code>.</p></li>
+<li><p>Add two <strong>Signal Sources</strong>: type float, waveform Sine, amplitude 0.3, frequencies <code class="docutils literal notranslate"><span class="pre">row_f</span></code> and <code class="docutils literal notranslate"><span class="pre">col_f</span></code>. Add them with an <strong>Add</strong> block, then a <strong>Multiply Const</strong> with constant <code class="docutils literal notranslate"><span class="pre">press</span></code>.</p></li>
+<li><p>Add a <strong>Rational Resampler</strong> (float, interpolation 6, decimation 1) and an <strong>Audio Sink</strong> at 48000.</p></li>
+<li><p>On the Multiply Const output, add a <strong>QT GUI Frequency Sink</strong> (float, FFT size 2048, bandwidth <code class="docutils literal notranslate"><span class="pre">samp_rate</span></code>) and a <strong>QT GUI Time Sink</strong> (float, 160 points). Do not add a Throttle; the Audio Sink sets the rate. Every arrow must be black.</p></li>
+<li><p>Run it. Hold Press on three keys of your choice and screenshot the spectrum for one, for Question 3(a). Read both peaks for each key for Question 3(b), and listen with the volume low.</p></li>
+</ol>
+</div>
+</div>
+<div class="frame read-only docutils container" id="frame-part-2-receiver-bins">
+<div class="wrap docutils container">
+<p class="rubric">Part 2: Receiver Bins</p>
+<ol class="arabic simple">
+<li><p>Keep your keypad flowgraph open. On the Multiply Const output, add eight <strong>Goertzel</strong> blocks, each with Rate <code class="docutils literal notranslate"><span class="pre">samp_rate</span></code>, Length 205, and Frequency one of 697, 770, 852, 941, 1209, 1336, 1477, and 1633. Follow each with a <strong>Complex to Mag</strong>.</p></li>
+<li><p>Add two <strong>QT GUI Time Sinks</strong>: type float, 4 inputs, 117 points, sample rate <code class="docutils literal notranslate"><span class="pre">samp_rate/205</span></code>, Y axis from 0 to 0.2, autoscale off, GUI Hints <code class="docutils literal notranslate"><span class="pre">3,0,1,1</span></code> and <code class="docutils literal notranslate"><span class="pre">3,1,1,1</span></code>. Connect the four row chains to one sink and the four column chains to the other.</p></li>
+<li><p>Open <code class="docutils literal notranslate"><span class="pre">L13-dtmf-rx.grc</span></code> in a second tab. Copy its DTMF Decoder block, its two Function Probes, and its two QT GUI Labels, and paste them into your flowgraph. Set the labels’ GUI Hints to <code class="docutils literal notranslate"><span class="pre">4,0,1,1</span></code> and <code class="docutils literal notranslate"><span class="pre">4,1,1,1</span></code>, and connect the Multiply Const output to the DTMF Decoder. You build the bins; the supplied block makes the decisions.</p></li>
+<li><p>Run it. Hold Press on one key for about half a second, screenshot both time sinks, and read the peak heights for Question 3(c).</p></li>
+<li><p>Press each key of your Question 2(a) number in turn. Each key appears in the Digits label about 0.2 s after you release it. Record the keys the decoder reports for Question 3(d).</p></li>
+</ol>
+</div>
+</div>
+<div class="frame read-only docutils container" id="frame-part-2-the-lab-capture">
+<div class="wrap docutils container">
+<p class="rubric">Part 2: The Lab Capture</p>
+<ol class="arabic simple">
+<li><p>Open <code class="docutils literal notranslate"><span class="pre">L13-dtmf-rx.grc</span></code>. Double-click the Variable <code class="docutils literal notranslate"><span class="pre">wav</span></code>, change its value to <code class="docutils literal notranslate"><span class="pre">'L13-lab-capture.wav'</span></code>, with the quotes, and run it. The Wav File Source reads the file only when the flowgraph starts.</p></li>
+<li><p>Wait for the Numbers label to count at least five, and record the number in the Digits label for Question 4(a). Screenshot the window.</p></li>
+<li><p>Read the height of the row peaks and of the column peaks in the two time sinks, and note which group arrives weaker, for Question 4(b).</p></li>
+<li><p>Read the time from one dialing to the next in the time sinks, count the digits, and estimate the time per digit, tone plus gap, for Question 4(c).</p></li>
+</ol>
+</div>
+</div>
+<div class="frame read-only docutils container" id="frame-part-2-decoder-limits">
+<div class="wrap docutils container">
+<p class="rubric">Part 2: Decoder Limits</p>
+<p><img src="../../viz/img/L13-grc-link.png"
+     alt="The L13 link flowgraph in GNU Radio Companion: a QT GUI Entry for the number and sliders for SNR, twist, tone, gap, and frequency error; the DTMF Dialer and a Noise Source feed an Add, a Throttle, the DTMF Decoder, and a frequency sink; two Function Probes feed the Digits and Numbers labels"
+     style="max-width: 820px; width: 100%; display: block; margin: 0 auto 12px;"></p>
+<ol class="arabic simple">
+<li><p>Open and run <code class="docutils literal notranslate"><span class="pre">L13-dtmf-link.grc</span></code>. The Numbers label counts the dialings decoded correctly since a setting last changed, and the dialings that decoded at all; 0 of 0 means none decoded. Each dialing of the default number takes 1.5 s.</p></li>
+<li><p>Type <code class="docutils literal notranslate"><span class="pre">123A456B789C*0#D</span></code> into Number and press Enter, so that the link tests every key. Set the twist to each value in the Question 5(a) table, wait about 30 s, and record the Numbers label.</p></li>
+<li><p>Set the twist back to 0 and the number back to <code class="docutils literal notranslate"><span class="pre">7195550148</span></code>. Set Gap to 60 ms, set Tone to each value in Question 5(b), wait about 30 s at each, and record the Numbers label.</p></li>
+<li><p>Set Tone to 60 ms, set Gap to each value in Question 5(c), and record the Numbers label.</p></li>
+</ol>
+</div>
+</div>
+<div class="frame read-only docutils container" id="frame-part-2-block-length">
+<div class="wrap docutils container">
+<p class="rubric">Part 2: Block Length</p>
+<ol class="arabic simple">
+<li><p>Stop the link flowgraph. Double-click the Variable <code class="docutils literal notranslate"><span class="pre">N</span></code> and change it from 205 to 102. Run it.</p></li>
+<li><p>Set Gap to 60 ms and Tone to 22, 25, and 30 ms. Then, with 50 ms tones and gaps, set the frequency error to +1.5%, +2.5%, and +3.5%. Record each Numbers label in the Question 6 table.</p></li>
+<li><p>Stop it, set <code class="docutils literal notranslate"><span class="pre">N</span></code> to 410, and run it again. Record the Numbers label at the default 50 ms tones and gaps. Then set Tone and Gap to 100 ms and record it at frequency errors of +0.5% and +1.0%.</p></li>
+<li><p>Stop it and set <code class="docutils literal notranslate"><span class="pre">N</span></code> back to 205.</p></li>
+</ol>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-part-2-a-real-phone">
+<div class="wrap docutils container">
+<p class="rubric">Part 2: A Real Phone</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<p><img src="../../viz/img/L13-rx-capture.png"
+     alt="The L13 receiver running on the lesson's synthetic capture, labeled Simulated capture, for comparison: the Digits label reads 7195550148, and the row and column Goertzel bins show one peak each per digit"
+     style="max-width: 820px; width: 100%; display: block; margin: 0 auto;"></p>
+</div>
+<div class="present docutils container">
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">L13-dtmf-mic.grc</span></code> is the receiver with the microphone in place of the WAV file.</p></li>
+<li><p>The figure shows the synthetic capture; your phone’s bins will look rougher.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p><code class="docutils literal notranslate"><span class="pre">L13-dtmf-mic.grc</span></code> takes the laptop’s microphone at 48 kHz, lowers the rate by 6 to 8 kHz with a Rational Resampler, and runs the same eight Goertzel bins and DTMF Decoder as the receiver. It is compiled only and not yet tested with a real microphone, so expect to adjust it. Most phones play DTMF tones from the dialer’s keypad; turn on keypad tones in the phone’s sound settings if yours is silent.</p>
+<ol class="arabic simple">
+<li><p>Open and run <code class="docutils literal notranslate"><span class="pre">L13-dtmf-mic.grc</span></code>. Hold the phone’s speaker about 10 cm from the laptop’s microphone, open the dialer, and press keys slowly.</p></li>
+<li><p>Type a number of at least seven digits, pause for a second, and record the Digits label for Question 7(a). Screenshot the window with the bins.</p></li>
+<li><p>Press keys as fast as you can, and record what the decoder misses for Question 7(b). Then talk, whistle, or play music near the microphone and record any false digits for Question 7(c).</p></li>
+</ol>
+</div>
+</div>
+</div>
+<div class="frame read-only docutils container" id="frame-no-digits">
+<div class="wrap docutils container">
+<p class="rubric">No Digits?</p>
+<div class="tip admonition">
+<p class="admonition-title">If the Digits label stays at “(listening)”</p>
+<p>For the receiver, check that the WAV files are in the same folder as the flowgraph, and that the Variable <code class="docutils literal notranslate"><span class="pre">wav</span></code> holds the name exactly, in quotes. For the microphone, check that the bins in the time sinks rise when you press a key: if they stay near 0, the operating system has not given GRC the microphone, or the input level is too low, so raise it in the sound settings. If the bins rise but no digit appears, raise the phone’s volume, and hold each key for at least a quarter of a second. For your own keypad, check that <code class="docutils literal notranslate"><span class="pre">row_f</span></code> and <code class="docutils literal notranslate"><span class="pre">col_f</span></code> use <code class="docutils literal notranslate"><span class="pre">//</span></code> and <code class="docutils literal notranslate"><span class="pre">%</span></code>, not <code class="docutils literal notranslate"><span class="pre">/</span></code>.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-part-3-after-the-lab">
+<div class="wrap docutils container">
+<p class="rubric">Part 3: After the Lab</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<ul class="simple">
+<li><p>Compare where the decoder missed digits with the lesson’s 40 ms tones and 20 ms gaps.</p></li>
+<li><p>Explain what a shorter and a longer block gain and lose.</p></li>
+<li><p>Compare the phone with the synthetic captures.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>The Writeup is three questions. The first compares where the decoder started to miss digits as you moved the twist, tone, and gap sliders with the lesson’s timing, tones of 40 ms and up and gaps of 20 ms and up, and with the decoder’s twist test, and explains why it fails where it does. The second uses your Question 6 measurements to explain what a shorter and a longer Goertzel block gain and lose. The third compares the real phone with the synthetic captures and proposes one change to the decoder for a noisy room.</p>
+</div>
+</div>
+</div>
+<div class="frame read-only doc-links docutils container" id="frame-lab-packet">
+<div class="wrap docutils container">
+<p class="rubric">Lab Packet</p>
+<ul class="simple">
+<li><p><a class="doc-link" href="../../labs/ECE448_Lab_L13_DTMF_blank.pdf" target="_blank" rel="noopener">L13 Lab packet (PDF)</a></p></li>
+<li><p><a class="doc-link" href="../../grc/L13-lab-capture.wav" download>L13-lab-capture.wav</a>: the lab’s synthetic capture, a number you decode in Question 4.</p></li>
+<li><p><a class="doc-link" href="../../grc/L13-dtmf-mic.grc" download>L13-dtmf-mic.grc</a>: the receiver on the laptop’s microphone. Needs a microphone. Compiled only; not yet tested with a real microphone.</p></li>
+<li><p>The Lesson 13 page has <code class="docutils literal notranslate"><span class="pre">L13-dtmf-rx.grc</span></code>, <code class="docutils literal notranslate"><span class="pre">L13-dtmf-link.grc</span></code>, <code class="docutils literal notranslate"><span class="pre">L13-capture.wav</span></code>, and the keypad flowgraph to check your build against after Question 3.</p></li>
+</ul>
+<p>Tutorials this lab follows:</p>
+<ul class="simple">
+<li><p><a class="doc-link" href="https://wiki.gnuradio.org/index.php/Embedded_Python_Block" target="_blank" rel="noopener">Embedded Python Block</a>, GNU Radio wiki: how the DTMF Dialer and DTMF Decoder are written.</p></li>
+<li><p><a class="doc-link" href="https://wiki.gnuradio.org/index.php/Goertzel" target="_blank" rel="noopener">Goertzel</a>, GNU Radio wiki: the block behind the receiver’s eight bins.</p></li>
+<li><p><a class="doc-link" href="https://wiki.gnuradio.org/index.php/Signal_Source" target="_blank" rel="noopener">Signal Source</a>, GNU Radio wiki: the two tones of the keypad.</p></li>
+<li><p><a class="doc-link" href="https://wiki.gnuradio.org/index.php/Wav_File_Source" target="_blank" rel="noopener">Wav File Source</a>, GNU Radio wiki: how the receiver reads a capture.</p></li>
+<li><p><a class="doc-link" href="https://github.com/EliasOenal/multimon-ng" target="_blank" rel="noopener">multimon-ng</a>: the ready-made decoder from the 2025 deck.</p></li>
+</ul>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-looking-ahead">
+<div class="wrap docutils container">
+<p class="rubric">Looking Ahead</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<ul class="simple">
+<li><p>Lesson 14 receives HD Radio beside an FM station.</p></li>
+<li><p>Lesson 17 takes an unknown signal from the spectrum to its bits.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>Keep your keypad flowgraph and your tables. Lesson 14 returns to RF with HD Radio, the digital signal that sits beside many FM stations. Lesson 17, on RF reverse engineering, starts where this lab’s capture did: a recording of a signal whose content you do not know, which you identify by its spectrum and its timing before you decode it.</p>
+</div>
+</div>
+</div>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./module06/L13-lab-dtmf"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+</main>
+
+<script src="../../_static/shell.js?v=e3abacb6d1"></script>
+<script src="../../_static/frames.js?v=89e4b02ee3"></script><script src="../../_static/viz-autosize.js?v=4fe0c4e159"></script>
+</body>
+</html>

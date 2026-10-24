@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="en" data-mode="read">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>L6 Lab — AM Simulation &mdash; ECE 448 — Software Defined Radios</title>
+<meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+<link rel="icon" href="../../_static/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap"><link rel="stylesheet" href="../../_static/custom.css?v=a42eea83fd">
+<link rel="stylesheet" href="../../_static/shell.css?v=474250fccb">
+<link rel="stylesheet" href="../../_static/frames.css?v=fa285d3703">
+<script>window.MathJax = {"tex": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processEscapes": true}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+<script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js"></script>
+</head>
+<body>
+
+<div class="rail"><span id="railfill"></span></div>
+
+<div class="laser" id="laser" aria-hidden="true"></div>
+<div class="spot" id="spot" aria-hidden="true"></div>
+
+<div class="index" id="index" role="dialog" aria-label="Jump to a frame or another lesson">
+  <button class="index-close" id="btnIndexClose" type="button" aria-label="Close">&times;</button>
+  <div class="wrap">
+    <div class="index-cols">
+      <div class="index-here">
+        <h2>This lesson</h2>
+        <ol id="indexlist"></ol>
+      </div>
+      <div class="index-toc">
+        <h2>Course</h2>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Course Information</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../syllabus.html">Syllabus</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../materials.html">Materials</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 1 — Foundations of Detection &amp; Link Budgets</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module01/index.html">Module 1 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module01/L01-course-intro/index.html">L1 — Course Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module01/L02-noise-figure-link-budget/index.html">L2 — Noise Figure and Link Budget</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module01/L03-signal-space/index.html">L3 — Signal Space</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 2 — SDR &amp; GNU Radio Foundations</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module02/index.html">Module 2 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module02/L04-sdr-introduction/index.html">L4 — SDR Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module02/L05-gnu-radio-intro/index.html">L5 — GNU Radio Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module02/L05-lab-first-flowgraphs/index.html">L5 Lab — First Flowgraphs</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 3 — Analog Modulation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Module 3 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L06-am-simulation/index.html">L6 — AM Simulation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">L6 Lab — AM Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L07-am-fm-receivers/index.html">L7 — AM and FM Receivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L07-lab-am-fm-receivers/index.html">L7 Lab — AM and FM Receivers</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 4 — Digital Modulation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/index.html">Module 4 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/L08-fsk/index.html">L8 — FSK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/L08-lab-fsk/index.html">L8 Lab — FSK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/L09-pam-theory/index.html">L9 — PAM Theory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/L10-ascii-pam/index.html">L10 — ASCII over PAM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/L10-lab-pam-link/index.html">L10 Lab — PAM Link</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 5 — Custom Blocks &amp; Midterm</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module05/index.html">Module 5 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module05/L11-custom-blocks/index.html">L11 — Out-of-Tree Modules and Custom Blocks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module05/L11-lab-custom-block/index.html">L11 Lab — Custom Block</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module05/midterm/index.html">Midterm — Fox Hunt and CTF</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 6 — Waveform Applications &amp; RF Reverse Engineering</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/index.html">Module 6 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L12-cw/index.html">L12 — CW</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L12-lab-cw/index.html">L12 Lab — CW</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L13-dtmf/index.html">L13 — DTMF</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L13-lab-dtmf/index.html">L13 Lab — DTMF</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L14-hd-radio/index.html">L14 — HD Radio</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L14-lab-hd-radio/index.html">L14 Lab — HD Radio</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L15-mpsk/index.html">L15 — mPSK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L15-lab-mpsk/index.html">L15 Lab — mPSK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L16-fhss/index.html">L16 — Frequency Hopping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L16-lab-fhss/index.html">L16 Lab — Frequency Hopping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L17-rf-reverse-engineering/index.html">L17 — RF Reverse Engineering</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L17-lab-rf-reverse-engineering/index.html">L17 Lab — RF Reverse Engineering</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L18-adsb/index.html">L18 — ADS-B</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L19-ais/index.html">L19 — AIS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L18-L19-lab-adsb-ais/index.html">L18–L19 Lab — ADS-B and AIS</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 7 — Final Project</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module07/index.html">Module 7 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module07/L20-qam-ofdm/index.html">L20 — QAM and OFDM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module07/final-project/index.html">Final Project</a></li>
+</ul>
+
+      </div>
+    </div>
+  </div>
+</div><div class="hud">
+<div class="hud-group">
+  <button id="btnSite" class="site" type="button"
+          aria-expanded="false" aria-controls="sitepop"
+          title="Elsewhere on this site">ECE 448</button>
+</div>
+<div class="pop" id="sitepop" role="group" aria-label="Site" hidden>
+  <a href="https://livethisdream.github.io/">Home</a>
+  <a href="https://livethisdream.github.io/ece343/intro.html">ECE 343</a>
+  <a href="https://livethisdream.github.io/ece444/intro.html">ECE 444</a>
+  <a href="../../intro.html" aria-current="page">ECE 448</a>
+  <a href="https://livethisdream.github.io/projects">Projects</a>
+</div>
+
+  <div class="hud-group hud-mid"><button id="btnMode" type="button" aria-expanded="false" aria-controls="modepop"
+            title="How the lesson is laid out (P)">read</button>
+    <button id="btnTools" type="button" aria-expanded="false" aria-controls="toolspop"
+            title="Presenter tools">tools</button>
+  </div>
+
+  <div class="hud-group"><button id="btnIndex" class="counter" type="button" aria-pressed="false"
+            title="Contents (G) · double-tap for the top"><b id="cur">1</b>/<span id="tot">0</span></button>
+  </div><div class="pop" id="modepop" role="group" aria-label="View mode" hidden>
+    <button id="btnPresent" class="choice" type="button" aria-pressed="false">
+      present<span class="pop-note">one frame at a time</span></button>
+    <button id="btnRead" class="choice" type="button" aria-pressed="true">
+      read<span class="pop-note">the whole lesson, continuous</span></button>
+  </div><div class="pop" id="toolspop" role="group" aria-label="Presenter tools" hidden>
+    <button id="btnLaser" type="button" aria-pressed="false">laser<kbd>L</kbd></button>
+    <button id="btnSpot" type="button" aria-pressed="false">spotlight<kbd>S</kbd></button>
+    <button id="btnFull" type="button">fullscreen<kbd>F</kbd></button>
+  </div>
+</div><main class="deck bd-article" id="deck" tabindex="-1">
+<section class="tex2jax_ignore mathjax_ignore" id="l6-lab-am-simulation">
+<h1>L6 Lab — AM Simulation<a class="headerlink" href="#l6-lab-am-simulation" title="Permalink to this heading">#</a></h1>
+<div class="frame title-frame docutils container" id="frame-1">
+<div class="wrap docutils container">
+<div class="course-mark">ECE 448 · Spring 2027</div>
+<h1 class="frame-title">AM Simulation</h1>
+<div class="title-rule"></div>
+<p>Build an AM modulator and demodulator and check the audio against the source.</p>
+<p>L6 Lab · Module 3: Analog Modulation · Dr. Neil Rogers</p>
+</div>
+</div>
+<div class="frame docutils container" id="frame-learning-objectives">
+<div class="wrap docutils container">
+<p class="rubric">Learning Objectives</p>
+<ol class="lo-list" style="--module: '3'">
+  <li>I can describe DSB-AM, DSB-SC, and SSB and identify each on a spectrum.</li>
+  <li>I can implement an AM modulator and demodulator in GNU Radio and verify demodulated audio against the source.</li>
+</ol>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-from-lesson-to-bench">
+<div class="wrap docutils container">
+<p class="rubric">From Lesson to Bench</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<ul class="simple">
+<li><p><strong>Pre-Lab:</strong> list the spectral lines and the message settings for the lab’s own message.</p></li>
+<li><p><strong>Bench:</strong> build DSB-AM yourself, then turn the sliders on DSB-SC and SSB.</p></li>
+<li><p><strong>Writeup:</strong> explain what changed and why, in words.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>Lesson 6 showed all three flowgraphs running. Today you build the DSB-AM flowgraph from an empty canvas and measure the other two. The lab packet has three parts, and you turn it in once, complete, before Lesson 7. The lab uses its own message, not the Lesson 6 one, so your readings are your own. <strong>Part 1, the Pre-Lab</strong>, is on your own before the period: list the lines of each signal and the message settings you will type in. <strong>Part 2</strong> is your own measurements in class: turn each slider and record what you see and hear. <strong>Part 3, the Writeup</strong>, explains what changed and why.</p>
+<p>Every flowgraph in this lab is a simulation, so you need only your laptop. Bring headphones; the receivers play through the Audio Sink, and thirty laptops playing tones at once make the room hard to work in.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-part-1-before-the-period">
+<div class="wrap docutils container">
+<p class="rubric">Part 1: Before the Period</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<ul class="simple">
+<li><p>List the lines of DSB-AM, DSB-SC, USB, and LSB.</p></li>
+<li><p>Fill in the message Signal Source settings.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>Do the Pre-Lab before you arrive, so the bench time goes to building and watching. Both items on the slide are the packet’s Question 1, worked for the lab’s message, which the packet describes: the line list is <span class="math notranslate nohighlight">\(f_c\)</span> plus and minus each tone, and the settings table is what you will type into the two message Signal Sources, in your build and in each downloaded flowgraph. Bring questions to EI before the lab rather than to the lab itself.</p>
+<p>Part 2 is where you turn the sliders: <span class="math notranslate nohighlight">\(m\)</span>, the LO phase, and the tuning error. Record what you see on the sinks and hear on the audio.</p>
+</div>
+</div>
+</div>
+<div class="frame read-only docutils container" id="frame-part-2-build-dsb-am">
+<div class="wrap docutils container">
+<p class="rubric">Part 2: Build DSB-AM</p>
+<ol class="arabic simple">
+<li><p>Start GRC and choose File, New, QT GUI. Do not open <code class="docutils literal notranslate"><span class="pre">L06-dsb-am.grc</span></code>; build it yourself.</p></li>
+<li><p>Set <code class="docutils literal notranslate"><span class="pre">samp_rate</span></code> to 48000 and add a Variable <code class="docutils literal notranslate"><span class="pre">fc</span></code> of 10000.</p></li>
+<li><p>Add a <strong>QT GUI Range</strong> with ID <code class="docutils literal notranslate"><span class="pre">m</span></code>, from 0 to 1.5 in steps of 0.05, default 0.5.</p></li>
+<li><p>Make the message: two float <strong>Signal Sources</strong>, cosine, with the settings from your Question 1(c), into an <strong>Add</strong>.</p></li>
+<li><p>Build the transmitter: <strong>Multiply Const</strong> <code class="docutils literal notranslate"><span class="pre">m</span></code>, <strong>Add Const</strong> 1, and a <strong>Multiply</strong> with a third Signal Source at <code class="docutils literal notranslate"><span class="pre">fc</span></code>. Send it to a float <strong>QT GUI Frequency Sink</strong>.</p></li>
+<li><p>Build the receiver: <strong>Abs</strong>, a <strong>Low-pass Filter Taps</strong> variable <code class="docutils literal notranslate"><span class="pre">lpf_taps</span></code> (cutoff 3000, transition 1000) used by a <strong>Decimating FIR Filter</strong>, and <strong>Multiply Const</strong> <code class="docutils literal notranslate"><span class="pre">numpy.pi/2</span></code> with an <strong>Import</strong> block for <code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">numpy</span></code>.</p></li>
+<li><p>Add a <strong>Delay</strong> of <code class="docutils literal notranslate"><span class="pre">len(lpf_taps)//2</span></code> on the output of the Add Const, and a two-input float <strong>QT GUI Time Sink</strong> comparing it with the receiver’s output.</p></li>
+<li><p>Finish with a <strong>DC Blocker</strong>, a volume Multiply Const, and an <strong>Audio Sink</strong> at 48 kHz. Do not add a Throttle.</p></li>
+<li><p>Run it with the volume low. Screenshot the canvas and the time sink for Question 2, and record the lower tone’s upper sideband line against the carrier at each <span class="math notranslate nohighlight">\(m\)</span> in the table.</p></li>
+</ol>
+</div>
+</div>
+<div class="frame read-only docutils container" id="frame-part-2-overmodulation-and-dsb-sc">
+<div class="wrap docutils container">
+<p class="rubric">Part 2: Overmodulation and DSB-SC</p>
+<ol class="arabic simple">
+<li><p>With your DSB-AM flowgraph running and the audio on, raise <code class="docutils literal notranslate"><span class="pre">m</span></code> by 0.05 at a time. Record where the detector output first departs from the envelope, and screenshot <span class="math notranslate nohighlight">\(m = 1.4\)</span>, for Question 3.</p></li>
+<li><p>Close it, then open <code class="docutils literal notranslate"><span class="pre">L06-dsb-sc.grc</span></code>, set its two message Signal Sources with the settings from your Question 1(c), and run it. Confirm the four lines and the empty carrier frequency for Question 4(a).</p></li>
+<li><p>Set the LO phase to each value in the packet’s table. Read the coherent receiver’s peak off the time sink at each, for Question 4(b).</p></li>
+<li><p>Return the LO phase to 0. Switch Listen To between Coherent and Envelope and describe what you hear for Question 4(c).</p></li>
+</ol>
+</div>
+</div>
+<div class="frame read-only docutils container" id="frame-part-2-ssb">
+<div class="wrap docutils container">
+<p class="rubric">Part 2: SSB</p>
+<ol class="arabic simple">
+<li><p>Open <code class="docutils literal notranslate"><span class="pre">L06-ssb.grc</span></code>, set its two message Signal Sources with the settings from your Question 1(c), and run it. Read the kept and suppressed lines for USB and for LSB off the frequency sink for Question 5(a).</p></li>
+<li><p>Select LSB and set the tuning error to the value in Question 5(b). Screenshot the time sink and describe the audio for Question 5(b).</p></li>
+<li><p>Starting from 0, move the tuning error in steps of 10 Hz in each direction until the tones no longer sound like the original. Record the largest error for Question 5(c).</p></li>
+</ol>
+</div>
+</div>
+<div class="frame read-only docutils container" id="frame-no-audio">
+<div class="wrap docutils container">
+<p class="rubric">No Audio?</p>
+<div class="tip admonition">
+<p class="admonition-title">If the flowgraph stops with an audio error</p>
+<p>An Audio Sink that cannot open your sound card stops the flowgraph with an error such as <code class="docutils literal notranslate"><span class="pre">audio_alsa_sink</span></code> or <code class="docutils literal notranslate"><span class="pre">audio_portaudio_sink</span></code>. Plug in your headphones and run it again, or set the Audio Sink’s Device Name to the device your operating system lists. As a last resort, disable the Audio Sink and add a Throttle at <code class="docutils literal notranslate"><span class="pre">samp_rate</span></code> before the time sinks: every measurement in the packet still works, and only the listening steps need a classmate’s laptop. Say in the packet which you did.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-part-3-after-the-lab">
+<div class="wrap docutils container">
+<p class="rubric">Part 3: After the Lab</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<ul class="simple">
+<li><p>Describe what <span class="math notranslate nohighlight">\(m\)</span> does to the sideband lines and the carrier.</p></li>
+<li><p>Explain why an envelope detector recovers DSB-AM but not DSB-SC.</p></li>
+<li><p>Explain why operators tune SSB by ear while DSB-SC needs carrier recovery.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>The Writeup is three questions. The first explains your <span class="math notranslate nohighlight">\(m\)</span> table: which lines moved and which did not. The second connects the overmodulation and DSB-SC envelope screenshots: in both, the detector sees the absolute value of something that goes negative. The third compares your LO phase table with your tuning-error measurement, which is the reason the two receivers are built differently on the air.</p>
+</div>
+</div>
+</div>
+<div class="frame read-only doc-links docutils container" id="frame-lab-packet">
+<div class="wrap docutils container">
+<p class="rubric">Lab Packet</p>
+<ul class="simple">
+<li><p><a class="doc-link" href="../../labs/ECE448_Lab_L06_AMSimulation_blank.pdf" target="_blank" rel="noopener">L6 Lab packet (PDF)</a></p></li>
+<li><p><a class="doc-link" href="../../grc/L06-dsb-am.grc" download>L06-dsb-am.grc</a>, <a class="doc-link" href="../../grc/L06-dsb-sc.grc" download>L06-dsb-sc.grc</a>, and <a class="doc-link" href="../../grc/L06-ssb.grc" download>L06-ssb.grc</a></p></li>
+</ul>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-looking-ahead">
+<div class="wrap docutils container">
+<p class="rubric">Looking Ahead</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<ul class="simple">
+<li><p>Lesson 7 replaces the simulated transmitter with an RTL-SDR.</p></li>
+<li><p>The envelope detector becomes one block: Complex to Mag.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>Keep your DSB-AM flowgraph. Lesson 7 receives real AM with an RTL-SDR, and its receiver keeps your low-pass filter and DC Blocker but replaces the Abs block with Complex to Mag, because the SDR delivers the signal as complex samples with its carrier already at 0 Hz.</p>
+</div>
+</div>
+</div>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./module03/L06-lab-am-simulation"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+</main>
+
+<script src="../../_static/shell.js?v=e3abacb6d1"></script>
+<script src="../../_static/frames.js?v=89e4b02ee3"></script><script src="../../_static/viz-autosize.js?v=4fe0c4e159"></script>
+</body>
+</html>

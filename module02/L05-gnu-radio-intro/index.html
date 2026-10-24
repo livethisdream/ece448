@@ -1,0 +1,662 @@
+<!doctype html>
+<html lang="en" data-mode="read">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>L5 - GNU Radio Introduction &mdash; ECE 448 — Software Defined Radios</title>
+<meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+<link rel="icon" href="../../_static/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap"><link rel="stylesheet" href="../../_static/custom.css?v=a42eea83fd">
+<link rel="stylesheet" href="../../_static/shell.css?v=474250fccb">
+<link rel="stylesheet" href="../../_static/frames.css?v=fa285d3703">
+<script>window.MathJax = {"tex": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processEscapes": true}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+<script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js"></script>
+</head>
+<body>
+
+<div class="rail"><span id="railfill"></span></div>
+
+<div class="laser" id="laser" aria-hidden="true"></div>
+<div class="spot" id="spot" aria-hidden="true"></div>
+
+<div class="index" id="index" role="dialog" aria-label="Jump to a frame or another lesson">
+  <button class="index-close" id="btnIndexClose" type="button" aria-label="Close">&times;</button>
+  <div class="wrap">
+    <div class="index-cols">
+      <div class="index-here">
+        <h2>This lesson</h2>
+        <ol id="indexlist"></ol>
+      </div>
+      <div class="index-toc">
+        <h2>Course</h2>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Course Information</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../syllabus.html">Syllabus</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../materials.html">Materials</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 1 — Foundations of Detection &amp; Link Budgets</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module01/index.html">Module 1 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module01/L01-course-intro/index.html">L1 — Course Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module01/L02-noise-figure-link-budget/index.html">L2 — Noise Figure and Link Budget</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module01/L03-signal-space/index.html">L3 — Signal Space</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 2 — SDR &amp; GNU Radio Foundations</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Module 2 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L04-sdr-introduction/index.html">L4 — SDR Introduction</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">L5 — GNU Radio Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L05-lab-first-flowgraphs/index.html">L5 Lab — First Flowgraphs</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 3 — Analog Modulation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module03/index.html">Module 3 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module03/L06-am-simulation/index.html">L6 — AM Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module03/L06-lab-am-simulation/index.html">L6 Lab — AM Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module03/L07-am-fm-receivers/index.html">L7 — AM and FM Receivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module03/L07-lab-am-fm-receivers/index.html">L7 Lab — AM and FM Receivers</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 4 — Digital Modulation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/index.html">Module 4 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/L08-fsk/index.html">L8 — FSK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/L08-lab-fsk/index.html">L8 Lab — FSK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/L09-pam-theory/index.html">L9 — PAM Theory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/L10-ascii-pam/index.html">L10 — ASCII over PAM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/L10-lab-pam-link/index.html">L10 Lab — PAM Link</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 5 — Custom Blocks &amp; Midterm</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module05/index.html">Module 5 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module05/L11-custom-blocks/index.html">L11 — Out-of-Tree Modules and Custom Blocks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module05/L11-lab-custom-block/index.html">L11 Lab — Custom Block</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module05/midterm/index.html">Midterm — Fox Hunt and CTF</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 6 — Waveform Applications &amp; RF Reverse Engineering</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/index.html">Module 6 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L12-cw/index.html">L12 — CW</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L12-lab-cw/index.html">L12 Lab — CW</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L13-dtmf/index.html">L13 — DTMF</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L13-lab-dtmf/index.html">L13 Lab — DTMF</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L14-hd-radio/index.html">L14 — HD Radio</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L14-lab-hd-radio/index.html">L14 Lab — HD Radio</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L15-mpsk/index.html">L15 — mPSK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L15-lab-mpsk/index.html">L15 Lab — mPSK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L16-fhss/index.html">L16 — Frequency Hopping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L16-lab-fhss/index.html">L16 Lab — Frequency Hopping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L17-rf-reverse-engineering/index.html">L17 — RF Reverse Engineering</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L17-lab-rf-reverse-engineering/index.html">L17 Lab — RF Reverse Engineering</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L18-adsb/index.html">L18 — ADS-B</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L19-ais/index.html">L19 — AIS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L18-L19-lab-adsb-ais/index.html">L18–L19 Lab — ADS-B and AIS</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 7 — Final Project</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module07/index.html">Module 7 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module07/L20-qam-ofdm/index.html">L20 — QAM and OFDM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module07/final-project/index.html">Final Project</a></li>
+</ul>
+
+      </div>
+    </div>
+  </div>
+</div><div class="hud">
+<div class="hud-group">
+  <button id="btnSite" class="site" type="button"
+          aria-expanded="false" aria-controls="sitepop"
+          title="Elsewhere on this site">ECE 448</button>
+</div>
+<div class="pop" id="sitepop" role="group" aria-label="Site" hidden>
+  <a href="https://livethisdream.github.io/">Home</a>
+  <a href="https://livethisdream.github.io/ece343/intro.html">ECE 343</a>
+  <a href="https://livethisdream.github.io/ece444/intro.html">ECE 444</a>
+  <a href="../../intro.html" aria-current="page">ECE 448</a>
+  <a href="https://livethisdream.github.io/projects">Projects</a>
+</div>
+
+  <div class="hud-group hud-mid"><button id="btnMode" type="button" aria-expanded="false" aria-controls="modepop"
+            title="How the lesson is laid out (P)">read</button>
+    <button id="btnTools" type="button" aria-expanded="false" aria-controls="toolspop"
+            title="Presenter tools">tools</button>
+  </div>
+
+  <div class="hud-group"><button id="btnIndex" class="counter" type="button" aria-pressed="false"
+            title="Contents (G) · double-tap for the top"><b id="cur">1</b>/<span id="tot">0</span></button>
+  </div><div class="pop" id="modepop" role="group" aria-label="View mode" hidden>
+    <button id="btnPresent" class="choice" type="button" aria-pressed="false">
+      present<span class="pop-note">one frame at a time</span></button>
+    <button id="btnRead" class="choice" type="button" aria-pressed="true">
+      read<span class="pop-note">the whole lesson, continuous</span></button>
+  </div><div class="pop" id="toolspop" role="group" aria-label="Presenter tools" hidden>
+    <button id="btnLaser" type="button" aria-pressed="false">laser<kbd>L</kbd></button>
+    <button id="btnSpot" type="button" aria-pressed="false">spotlight<kbd>S</kbd></button>
+    <button id="btnFull" type="button">fullscreen<kbd>F</kbd></button>
+  </div>
+</div><main class="deck bd-article" id="deck" tabindex="-1">
+<section class="tex2jax_ignore mathjax_ignore" id="l5-gnu-radio-introduction">
+<h1>L5 - GNU Radio Introduction<a class="headerlink" href="#l5-gnu-radio-introduction" title="Permalink to this heading">#</a></h1>
+<div class="frame title-frame docutils container" id="frame-1">
+<div class="wrap docutils container">
+<div class="course-mark">ECE 448 · Spring 2027</div>
+<h1 class="frame-title">GNU Radio Introduction</h1>
+<div class="title-rule"></div>
+<p>Everything after the analog-to-digital converter is software, and in this course that software is a GNU Radio flowgraph.</p>
+<p>Lesson 5 · Module 2: SDR &amp; GNU Radio Foundations · Dr. Neil Rogers</p>
+</div>
+</div>
+<div class="frame read-only docutils container" id="frame-slides">
+<div class="wrap docutils container">
+<p class="rubric">Slides</p>
+<div class="slides admonition">
+<p class="admonition-title">Slides</p>
+<p><a href="../../slides/L05-gnu-radio-intro.html" target="_blank" rel="noopener">html slides</a>
+<a href="../../slides/L05-gnu-radio-intro.html?print-pdf" target="_blank" rel="noopener">pdf slides</a>
+<a href="../../slides/L05-gnu-radio-intro.md" target="_blank" rel="noopener">raw markdown slides</a></p>
+</div>
+</div>
+</div>
+<div class="frame docutils container" id="frame-learning-objectives">
+<div class="wrap docutils container">
+<p class="rubric">Learning Objectives</p>
+<ol class="lo-list" style="--module: '2'; counter-reset: lo 2">
+  <li>I can install GNU Radio and use GNU Radio Companion (GRC) to build, inspect, and run a basic flowgraph.</li>
+  <li>I can capture a real RF signal using an SDR and interpret its time- and frequency-domain representations.</li>
+</ol>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-the-radio-is-a-flowgraph">
+<div class="wrap docutils container">
+<p class="rubric">The Radio Is a Flowgraph</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<p><img src="../../viz/img/L05-grc-tone.png"
+     alt="GNU Radio Companion with the L5 tone flowgraph open: an Options block, a samp_rate variable, a QT GUI Range for the tone frequency, and a Signal Source feeding a Throttle that feeds a QT GUI Time Sink and a QT GUI Frequency Sink"
+     style="max-width: 690px; width: 100%; display: block; margin: 0 auto;"></p>
+</div>
+<div class="present docutils container">
+<ul class="simple">
+<li><p>A <strong>flowgraph</strong> is blocks wired together: sources, processing, and sinks.</p></li>
+<li><p><strong>GNU Radio Companion</strong> (GRC) draws it and generates the Python that runs it.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>Lesson 4 followed a signal from the antenna through the SDR’s front end to the analog-to-digital converter. Everything after that point is software, and in this course the software is <strong>GNU Radio</strong>. A GNU Radio program is a <strong>flowgraph</strong>: samples come out of a <strong>source</strong>, such as an SDR or a signal generator, pass through processing blocks, and end in a <strong>sink</strong>, such as a plot, a speaker, or a file. <strong>GNU Radio Companion</strong> (GRC) is the graphical editor we use to draw flowgraphs. When we press run, GRC writes a Python program from the diagram and runs it.</p>
+<p>The figure is the first flowgraph of this lesson, opened in GRC: a signal source that makes a tone, a throttle that sets its pace, and two plots that show it in time and in frequency. Every flowgraph in the course, up to the ADS-B and AIS decoders of Module 6, is built from the same pieces.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-part-1-install-with-radioconda">
+<div class="wrap docutils container">
+<p class="rubric">Part 1: Install With Radioconda</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<ul class="simple">
+<li><p><strong>Radioconda</strong> installs GNU Radio 3.10 and the drivers for every course SDR in one step.</p></li>
+<li><p>It runs on Windows, macOS, and Linux.</p></li>
+<li><p>Install it before the lab; the pre-lab checks it.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>The course standard is <strong>radioconda</strong>, a packaged installer built on the conda package manager that the GNU Radio project recommends for Windows and macOS. One installer brings GNU Radio 3.10, GNU Radio Companion, and the drivers and tools for the RTL-SDR, the HackRF, the PlutoSDR, and USRP radios, plus SoapySDR, which lets one GNU Radio block talk to many kinds of hardware. Download the installer for your operating system from the <a href="https://github.com/ryanvolz/radioconda" target="_blank" rel="noopener">radioconda releases page</a> and accept the defaults.</p>
+<p>On Windows, the RTL-SDR also needs its USB driver replaced once, with the Zadig tool that radioconda’s instructions link; skip that step and the dongle shows up in Device Manager but no program can open it. The next frame lists the commands that confirm each piece works.</p>
+</div>
+</div>
+</div>
+<div class="frame read-only docutils container" id="frame-verify-the-install">
+<div class="wrap docutils container">
+<p class="rubric">Verify the Install</p>
+<p>Open the radioconda prompt (on Windows, “Radioconda Prompt” in the Start menu; on macOS and Linux, a terminal) and run each command. Each line names what a working result looks like.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head text-left"><p>Command</p></th>
+<th class="head text-left"><p>Checks</p></th>
+<th class="head text-left"><p>A working result</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">gnuradio-companion</span></code></p></td>
+<td class="text-left"><p>GRC itself</p></td>
+<td class="text-left"><p>the GRC window opens</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">gqrx</span></code></p></td>
+<td class="text-left"><p>GQRX, the stand-alone receiver</p></td>
+<td class="text-left"><p>the GQRX window opens; if GQRX does not start on your laptop, SDR++ has the same controls</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">rtl_test</span></code></p></td>
+<td class="text-left"><p>an RTL-SDR on USB</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">Found</span> <span class="pre">1</span> <span class="pre">device(s)</span></code> and a tuner name</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">hackrf_info</span></code></p></td>
+<td class="text-left"><p>a HackRF on USB</p></td>
+<td class="text-left"><p>a serial number and firmware version</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">iio_info</span> <span class="pre">-s</span></code></p></td>
+<td class="text-left"><p>a PlutoSDR on USB</p></td>
+<td class="text-left"><p>a context listing <code class="docutils literal notranslate"><span class="pre">PlutoSDR</span></code></p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">SoapySDRUtil</span> <span class="pre">--find</span></code></p></td>
+<td class="text-left"><p>every SoapySDR radio</p></td>
+<td class="text-left"><p>one entry per plugged-in SDR</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Plug in only the radio you are testing. A command that reports no device usually means a USB driver problem (on Windows, Zadig for the RTL-SDR) or a cable that carries power but not data.</p>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-part-2-your-first-flowgraph">
+<div class="wrap docutils container">
+<p class="rubric">Part 2: Your First Flowgraph</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<ul class="simple">
+<li><p>File, New: an <strong>Options</strong> block and a <code class="docutils literal notranslate"><span class="pre">samp_rate</span></code> variable.</p></li>
+<li><p>Add a <strong>Signal Source</strong>, <strong>Throttle</strong>, and <strong>QT GUI Time Sink</strong>; wire and run.</p></li>
+<li><p><strong>Throttle</strong> paces a flowgraph with no hardware.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>This follows the wiki’s “Your First Flowgraph.” Every flowgraph starts with an <strong>Options</strong> block, which sets the flowgraph’s title, the name of the Python file GRC generates, and the kind of window it opens; “QT GUI” gives the windows with plots and sliders we use all semester. Add a Signal Source, a Throttle, and a QT GUI Time Sink, connect them in that order, and press run: a window opens with the tone on the time plot. Then add a <strong>QT GUI Frequency Sink</strong> off the same throttle output to see the tone in frequency too.</p>
+<p>A flowgraph with real hardware runs at the rate the hardware delivers samples. A flowgraph with no hardware, like a signal source feeding a plot, has nothing to slow it down and would use a whole processor core computing samples as fast as it can. The <strong>Throttle</strong> block limits it to <code class="docutils literal notranslate"><span class="pre">samp_rate</span></code> samples per second. Use one only when no hardware block sets the pace; with an SDR in the flowgraph, a throttle is unnecessary and can cause dropped samples.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-a-tone-in-time-and-frequency">
+<div class="wrap docutils container">
+<p class="rubric">A Tone in Time and Frequency</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<p><img src="../../viz/img/L05-tone-1k.png"
+     alt="The L5 tone flowgraph running at 1 kHz: the time sink shows I as a cosine and Q as a sine a quarter cycle behind, eight cycles in 8 ms; the frequency sink shows a single spike at plus 1 kHz"
+     style="max-width: 820px; width: 100%; display: block; margin: 0 auto;"></p>
+</div>
+<div class="present docutils container">
+<ul class="simple">
+<li><p>I and Q are a cosine and a sine, a quarter cycle apart.</p></li>
+<li><p>A complex tone has one spike, at <span class="math notranslate nohighlight">\(+1\)</span> kHz.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>The tone flowgraph runs at <code class="docutils literal notranslate"><span class="pre">samp_rate</span></code> = 32 kHz with <code class="docutils literal notranslate"><span class="pre">freq</span></code> at 1 kHz. The time sink plots the real and imaginary parts, <span class="math notranslate nohighlight">\(I\)</span> and <span class="math notranslate nohighlight">\(Q\)</span>, as two traces: <span class="math notranslate nohighlight">\(I\)</span> is a cosine and <span class="math notranslate nohighlight">\(Q\)</span> is a sine, a quarter cycle behind it, which is the point <span class="math notranslate nohighlight">\(e^{j2\pi ft}\)</span> going around the unit circle of Lesson 3. The 8 ms window holds eight cycles, as it should at 1 kHz.</p>
+<p>The frequency sink shows the same signal as a single spike at <span class="math notranslate nohighlight">\(+1\)</span> kHz, about 10 dB below the top of the plot because of how the sink scales its FFT. There is no spike at <span class="math notranslate nohighlight">\(-1\)</span> kHz. A real cosine would have one at each, but a complex tone is not a cosine: it rotates in one direction, and the sign of its frequency says which. That is why an SDR delivers complex samples: it can tell a signal 100 kHz above its tuned frequency from one 100 kHz below.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-variables-and-sliders">
+<div class="wrap docutils container">
+<p class="rubric">Variables and Sliders</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<ul class="simple">
+<li><p>A <strong>Variable</strong> holds a number many blocks share, such as <code class="docutils literal notranslate"><span class="pre">samp_rate</span></code>.</p></li>
+<li><p>A <strong>QT GUI Range</strong> is a variable with a slider, changed while the flowgraph runs.</p></li>
+<li><p>Do: set the Signal Source’s frequency to <code class="docutils literal notranslate"><span class="pre">freq</span></code>, then drag the slider.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>This is the wiki’s “Python Variables in GRC,” “Variables in Flowgraphs,” and “Runtime Updating Variables.” Any block parameter can be a Python expression, and a <strong>Variable</strong> block gives a name to a value that several blocks share. The sample rate is the most important one, and by convention we call it <code class="docutils literal notranslate"><span class="pre">samp_rate</span></code>; change it in one place and every block that uses it follows. Try it: change <code class="docutils literal notranslate"><span class="pre">samp_rate</span></code> from its default 32000 to 64000, watch both sinks rescale, and set it back.</p>
+<p>A <strong>QT GUI Range</strong> is a variable with a slider. Add one with ID <code class="docutils literal notranslate"><span class="pre">freq</span></code>, from <span class="math notranslate nohighlight">\(-48000\)</span> to <span class="math notranslate nohighlight">\(48000\)</span>, type <code class="docutils literal notranslate"><span class="pre">freq</span></code> into the Signal Source’s frequency, and run. Dragging the slider moves the tone while the flowgraph runs, which is how every flowgraph in this course exposes the settings we want to turn.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-data-types-and-converting-them">
+<div class="wrap docutils container">
+<p class="rubric">Data Types and Converting Them</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head text-left"><p>Color</p></th>
+<th class="head text-left"><p>Type</p></th>
+<th class="head text-center"><p>Bytes/sample</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-left"><p>Blue</p></td>
+<td class="text-left"><p>complex</p></td>
+<td class="text-center"><p>8</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>Orange</p></td>
+<td class="text-left"><p>float</p></td>
+<td class="text-center"><p>4</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>Green</p></td>
+<td class="text-left"><p>int</p></td>
+<td class="text-center"><p>4</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>Yellow</p></td>
+<td class="text-left"><p>short</p></td>
+<td class="text-center"><p>2</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>Purple</p></td>
+<td class="text-left"><p>byte</p></td>
+<td class="text-center"><p>1</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="present docutils container">
+<ul class="simple">
+<li><p>Mismatched ports draw a red arrow.</p></li>
+<li><p>Do: <strong>Complex to Float</strong> into a float Time Sink with 2 inputs.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>This is the wiki’s “Signal Data Types” and “Converting Data Types.” Each block port carries one data type, and GRC colors the port to show which. A <strong>complex</strong> sample is a pair of 32-bit floats, the <span class="math notranslate nohighlight">\(I\)</span> and <span class="math notranslate nohighlight">\(Q\)</span> of Lesson 3, so it takes 8 bytes; a <strong>float</strong> is one 32-bit value; and the integer types carry bits and symbols in later lessons; audio in GNU Radio is float. Two connected ports must have the same type. When they do not, GRC draws the connection in red and refuses to run, which is the most common error in a first flowgraph. Most blocks have a type setting that changes their port color, and conversion blocks sit between types when we need both. Try it on the tone flowgraph: add a second Time Sink with its type set to float and see the red arrow, then set that sink’s Number of Inputs to 2, insert <strong>Complex to Float</strong>, and connect its two outputs to the two sink inputs. The plot shows <span class="math notranslate nohighlight">\(I\)</span> and <span class="math notranslate nohighlight">\(Q\)</span> as separate traces, the same two curves the complex sink drew. Packing bits, vectors, and hierarchical blocks, the next wiki tutorials, come back in later lessons.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-complex-sampling-and-aliasing">
+<div class="wrap docutils container">
+<p class="rubric">Complex Sampling and Aliasing</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<ul class="simple">
+<li><p>Complex samples at <span class="math notranslate nohighlight">\(f_s\)</span> represent <span class="math notranslate nohighlight">\(-f_s/2\)</span> to <span class="math notranslate nohighlight">\(+f_s/2\)</span>.</p></li>
+<li><p>A tone outside that window appears shifted by a multiple of <span class="math notranslate nohighlight">\(f_s\)</span>.</p></li>
+<li><p>At <span class="math notranslate nohighlight">\(f_s = 32\)</span> kHz, 20 kHz appears at <span class="math notranslate nohighlight">\(-12\)</span> kHz.</p></li>
+</ul>
+</div>
+<div class="present docutils container">
+<p><img src="../../viz/img/L05-tone-alias.png"
+     alt="The same flowgraph with the slider at 20 kHz, beyond half the 32 kHz sample rate: the frequency sink shows the spike at minus 12 kHz"
+     style="max-width: 820px; width: 100%; display: block; margin: 0 auto;"></p>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>A complex sample stream at rate <span class="math notranslate nohighlight">\(f_s\)</span> can represent any frequency from <span class="math notranslate nohighlight">\(-f_s/2\)</span> to <span class="math notranslate nohighlight">\(+f_s/2\)</span>, a band <span class="math notranslate nohighlight">\(f_s\)</span> wide. That is twice what real samples at the same rate can show, because real samples cannot tell positive from negative frequencies and so represent only 0 to <span class="math notranslate nohighlight">\(f_s/2\)</span>. Lesson 4’s SDRs all sample complex for that reason: an RTL-SDR at 2.4 MS/s shows 2.4 MHz of spectrum at once.</p>
+<p>A tone outside the window does not disappear. Its samples are identical to those of a tone <span class="math notranslate nohighlight">\(f_s\)</span> higher or lower, so it <strong>aliases</strong> into the window: add or subtract <span class="math notranslate nohighlight">\(f_s\)</span> until it lands between <span class="math notranslate nohighlight">\(-f_s/2\)</span> and <span class="math notranslate nohighlight">\(+f_s/2\)</span>. Dragging the slider to 20 kHz puts the spike at <span class="math notranslate nohighlight">\(20 - 32 = -12\)</span> kHz. An SDR’s filters remove most out-of-band signals before the converter for exactly this reason, and a strong signal that leaks through anyway appears at a frequency where nothing is transmitting.</p>
+</div>
+</div>
+</div>
+<div class="frame viz-frame cut docutils container" id="frame-sampling-wheel">
+<div class="wrap docutils container">
+<p class="rubric">Sampling Wheel</p>
+<div class="depth docutils container">
+<p>The left panel plots the tone’s last eight samples on the unit circle, one new sample about every half second, so we can watch which way it turns. The right panel marks where the tone appears on the frequency axis, with the band the samples can represent shaded. Start at 4 kHz: eight samples per cycle, turning counterclockwise, a spike at <span class="math notranslate nohighlight">\(+4\)</span> kHz. Raise the frequency past 16 kHz, half the sample rate, and watch the wheel reverse: each sample has advanced more than half a turn, which looks the same as a smaller step backward, and the spike jumps to the negative side. Then switch to real samples. A real signal cannot turn in either direction, so it shows a spike and its mirror image, and a tone and its alias become indistinguishable.</p>
+</div>
+<div class="stage docutils container">
+<div class="present docutils container">
+<iframe src="../../viz/sampling-wheel.html"
+        width="100%" height="407"
+        style="border: 1px solid #cddce9; border-radius: 6px;"
+        loading="lazy"
+        title="Sampling wheel: a tone's samples on the unit circle and its position on the frequency axis, for complex or real sampling at 32 kHz, showing aliasing past half the sample rate">
+</iframe>
+</div>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-part-3-find-a-station">
+<div class="wrap docutils container">
+<p class="rubric">Part 3: Find a Station</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<ul class="simple">
+<li><p>Practice in SDR Flex: select a signal, demodulate it.</p></li>
+<li><p>Live: run <code class="docutils literal notranslate"><span class="pre">gqrx</span></code>, choose the RTL-SDR, press power.</p></li>
+<li><p>Set <strong>WFM (stereo)</strong>; click a tall peak and listen.</p></li>
+<li><p>Note its frequency for the flowgraph.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>Before building a receiver, find a signal with one that already works. <a href="https://livethisdream.github.io/sdr-flex/" target="_blank" rel="noopener">SDR Flex</a>, in the browser, has the same moves on its example captures: drag across a signal on the waterfall and choose a demodulator. On the full SDR Flex server each action builds a GNU Radio flowgraph; the browser copy simulates it and has no live radio, so for the RTL-SDR use GQRX. <strong>GQRX</strong> comes with radioconda and is a spectrum, waterfall, and receiver in one window; if GQRX does not start on your laptop, SDR++ has the same controls. Start it from the radioconda prompt with <code class="docutils literal notranslate"><span class="pre">gqrx</span></code>, pick the RTL-SDR in the device dialog, set the frequency to about 100 MHz, and press the power button at the top left. Set the mode to WFM (stereo), click on one of the tall bands in the spectrum, and the station plays through the speaker.</p>
+<p>Write down the frequency of the strongest station you can hear, then quit GQRX; only one program can open the RTL-SDR at a time. The next flowgraph uses that frequency as its center frequency, so the station we just heard is the one we look at in GRC.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-a-real-signal-in-grc">
+<div class="wrap docutils container">
+<p class="rubric">A Real Signal in GRC</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<p><img src="../../viz/img/L05-grc-fm.png"
+     alt="GNU Radio Companion with the L5 FM flowgraph open: a Soapy RTLSDR Source at 2.4 MS/s tuned by a center-frequency slider, feeding a QT GUI Sink, with a disabled File Sink below"
+     style="max-width: 690px; width: 100%; display: block; margin: 0 auto;"></p>
+</div>
+<div class="present docutils container">
+<ul class="simple">
+<li><p>The <strong>Soapy RTLSDR Source</strong> sets center frequency, sample rate, and gain.</p></li>
+<li><p>The display spans <span class="math notranslate nohighlight">\(f_c \pm f_s/2\)</span>: 2.4 MHz of the FM band at once.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>The second flowgraph replaces the signal source with an RTL-SDR. The <strong>Soapy RTLSDR Source</strong> block has three settings that matter today: the <strong>center frequency</strong> <span class="math notranslate nohighlight">\(f_c\)</span> the radio tunes to, the <strong>sample rate</strong> <span class="math notranslate nohighlight">\(f_s\)</span> it digitizes at, and the <strong>RF gain</strong>. Its output is the same complex stream as the tone flowgraph’s, so the plots work unchanged. We give the <strong>QT GUI Sink</strong> the center frequency so its axis reads in real frequencies, from <span class="math notranslate nohighlight">\(f_c - f_s/2\)</span> to <span class="math notranslate nohighlight">\(f_c + f_s/2\)</span>. Set the center frequency to the station you found in GQRX. At 2.4 MS/s centered on 100.1 MHz, the display spans 98.9 to 101.3 MHz, enough to see several FM stations at once.</p>
+<p>The File Sink below is disabled, which GRC draws in gray. Enabling it records every sample to a file, which the last part of this lesson reads in Python. There is no throttle here: the RTL-SDR delivers samples at exactly 2.4 MS/s, so the hardware sets the pace.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-reading-the-spectrum-and-waterfall">
+<div class="wrap docutils container">
+<p class="rubric">Reading the Spectrum and Waterfall</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<p><img src="../../viz/img/L05-fm-band-sim.svg"
+     alt="Simulated view of the FM band around 100.1 MHz: four stations at 99.3, 99.9, 100.3, and 100.9 MHz, each about 200 kHz wide, a narrow DC spike at the 100.1 MHz center, and a flat noise floor; below it a waterfall showing the stations as vertical bands that wander slightly over time"
+     style="max-width: 760px; width: 100%; display: block; margin: 0 auto;"></p>
+</div>
+<div class="present docutils container">
+<ul class="simple">
+<li><p>Each FM station is about 200 kHz wide, on odd tenths of a MHz.</p></li>
+<li><p>The spike at the center is the receiver’s own DC offset, not a signal.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>The figure is a simulation of what the flowgraph shows, so we know what to look for before the lab; the lab replaces it with the real band. The <strong>frequency display</strong> on top averages the spectrum. US broadcast FM stations sit on the odd tenths of a megahertz from 88.1 to 107.9 MHz, and each occupies about 200 kHz. Their heights differ by tens of dB because the stations are at different distances and powers, which is Lesson 2’s link budget in action. The flat region between them is the noise floor.</p>
+<p>The <strong>waterfall</strong> below stacks the spectrum over time, newest at the top, with color for power. A steady carrier is a straight vertical line, a station’s audio makes its band wander, and a burst transmitter, such as a key fob, appears as short dashes. The thin line exactly at the center frequency is the <strong>DC spike</strong>: a small offset in the receiver’s own mixer and converter that looks like a signal at 0 Hz. Many SDRs show one, and the fix is to tune a little off a signal of interest rather than directly onto it.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-setting-the-gain">
+<div class="wrap docutils container">
+<p class="rubric">Setting the Gain</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<ul class="simple">
+<li><p>Raise the gain until the noise floor lifts a few dB.</p></li>
+<li><p>Stop before strong stations grow copies elsewhere: that is overload.</p></li>
+<li><p>No single setting shows a strong local station and a weak distant one well.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>The RF gain sets how loud the signal is when it reaches the analog-to-digital converter, and both extremes hurt. Too little gain leaves weak signals below the converter’s own noise, so they never appear. Too much drives strong signals past the top of the converter’s range, and the clipping creates false signals, spurs and copies of strong stations at frequencies where nothing transmits. A useful procedure: start low, raise the gain until the noise floor on the display rises by a few dB, which means the antenna’s noise now dominates the converter’s, and stop there.</p>
+<p>The RTL-SDR’s converter has only 8 bits, the coarsest of the course radios, so the span from its own noise to full scale is small. A strong local station and a distant weak one can differ by more than that span, which is why no single gain setting shows both well. Lesson 4’s quantizer flowgraph showed the same thing with two tones.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-recording-iq">
+<div class="wrap docutils container">
+<p class="rubric">Recording IQ</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<ul class="simple">
+<li><p>A <strong>File Sink</strong> writes raw complex samples, 8 bytes each.</p></li>
+<li><p>2.4 MS/s fills 19.2 MB every second.</p></li>
+<li><p>Record the sample rate and center frequency with the file.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>Enabling the File Sink writes every complex sample to disk as two 32-bit floats, <span class="math notranslate nohighlight">\(I\)</span> then <span class="math notranslate nohighlight">\(Q\)</span>, with no header. At 2.4 MS/s that is <span class="math notranslate nohighlight">\(2.4\times10^6 \times 8 = 19.2\)</span> MB per second, so a 10 s capture is 192 MB. The file holds only the samples, so it is useless without the sample rate and the center frequency used to capture it. Write them in the file name, or use the <strong>SigMF</strong> format, which stores them in a small metadata file beside the samples; several later lessons hand out SigMF captures.</p>
+<p>A recording turns a live signal into data we can replay. A File Source block plays the file back into any flowgraph, with a throttle to pace it, so we can develop a receiver against the same capture repeatedly instead of waiting for a transmitter. Most of the decoders in Module 6 start that way.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-iq-in-python">
+<div class="wrap docutils container">
+<p class="rubric">IQ in Python</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fromfile</span><span class="p">(</span><span class="s2">"fm.cfile"</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex64</span><span class="p">)</span>
+<span class="n">power_dbfs</span> <span class="o">=</span> <span class="mi">10</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fftshift</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fft</span><span class="p">(</span><span class="n">x</span><span class="p">[:</span><span class="mi">2048</span><span class="p">]))</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>One line reads a GNU Radio capture into NumPy.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>Because the File Sink writes plain 32-bit floats, NumPy reads a capture in one line as <code class="docutils literal notranslate"><span class="pre">complex64</span></code>. From there, the average power of the capture, in dB relative to full scale, is the mean of <span class="math notranslate nohighlight">\(\vert x\vert^2\)</span>, and the spectrum is an FFT with <code class="docutils literal notranslate"><span class="pre">fftshift</span></code> to put 0 Hz in the middle, which is what the frequency sink computes. The downloadable script below averages many FFTs with a window, labels the axis in real frequencies, and plots the result:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">L05</span><span class="o">-</span><span class="n">psd</span><span class="o">.</span><span class="n">py</span> <span class="n">fm_capture</span><span class="o">.</span><span class="n">cfile</span> <span class="o">--</span><span class="n">fs</span> <span class="mf">2.4e6</span> <span class="o">--</span><span class="n">fc</span> <span class="mf">100.1e6</span>
+</pre></div>
+</div>
+<p>Its plot should match the frequency sink: the same stations at the same frequencies, with the DC spike at the center.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-key-point">
+<div class="wrap docutils container">
+<p class="rubric">Key Point</p>
+<div class="stage docutils container">
+<div class="present callout docutils container">
+<p>An SDR hands GNU Radio a stream of complex samples that shows <span class="math notranslate nohighlight">\(f_s\)</span> of spectrum centered on <span class="math notranslate nohighlight">\(f_c\)</span>. A flowgraph is the receiver: everything we do to that stream is a block.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="frame read-only doc-links docutils container" id="frame-downloads-and-sources">
+<div class="wrap docutils container">
+<p class="rubric">Downloads and Sources</p>
+<ul class="simple">
+<li><p><a class="doc-link" href="../../grc/L05-tone.grc" download>L05-tone.grc</a>: a complex tone in time and frequency, with a frequency slider for the aliasing demonstration. No hardware needed.</p></li>
+<li><p><a class="doc-link" href="../../grc/L05-fm-spectrum.grc" download>L05-fm-spectrum.grc</a>: the FM band from an RTL-SDR as a spectrum and waterfall, with frequency and gain sliders and a File Sink to enable for recording.</p></li>
+<li><p><a class="doc-link" href="../../grc/L05-psd.py" download>L05-psd.py</a>: reads a File Sink capture and plots its power spectral density.</p></li>
+</ul>
+<p>Open a <code class="docutils literal notranslate"><span class="pre">.grc</span></code> file from GRC’s File menu, or run <code class="docutils literal notranslate"><span class="pre">gnuradio-companion</span> <span class="pre">L05-tone.grc</span></code> from the radioconda prompt.</p>
+<p><strong>Follows.</strong> This lesson walks the GNU Radio wiki’s Beginner Tutorials 1 to 6, in order, and two chapters of PySDR:</p>
+<ol class="arabic simple">
+<li><p><a class="doc-link" href="https://wiki.gnuradio.org/index.php?title=Your_First_Flowgraph" target="_blank" rel="noopener">Your First Flowgraph</a></p></li>
+<li><p><a class="doc-link" href="https://wiki.gnuradio.org/index.php?title=Python_Variables_in_GRC" target="_blank" rel="noopener">Python Variables in GRC</a></p></li>
+<li><p><a class="doc-link" href="https://wiki.gnuradio.org/index.php?title=Variables_in_Flowgraphs" target="_blank" rel="noopener">Variables in Flowgraphs</a></p></li>
+<li><p><a class="doc-link" href="https://wiki.gnuradio.org/index.php?title=Runtime_Updating_Variables" target="_blank" rel="noopener">Runtime Updating Variables</a></p></li>
+<li><p><a class="doc-link" href="https://wiki.gnuradio.org/index.php?title=Signal_Data_Types" target="_blank" rel="noopener">Signal Data Types</a></p></li>
+<li><p><a class="doc-link" href="https://wiki.gnuradio.org/index.php?title=Converting_Data_Types" target="_blank" rel="noopener">Converting Data Types</a></p></li>
+</ol>
+<p>The next three Beginner Tutorials come back in later lessons: <a class="doc-link" href="https://wiki.gnuradio.org/index.php?title=Packing_Bits" target="_blank" rel="noopener">Packing Bits</a>, <a class="doc-link" href="https://wiki.gnuradio.org/index.php?title=Streams_and_Vectors" target="_blank" rel="noopener">Streams and Vectors</a>, and <a class="doc-link" href="https://wiki.gnuradio.org/index.php?title=Hier_Blocks_and_Parameters" target="_blank" rel="noopener">Hier Blocks and Parameters</a>.</p>
+<p>PySDR and receivers:</p>
+<ul class="simple">
+<li><p><a class="doc-link" href="https://pysdr.org/content/sampling.html" target="_blank" rel="noopener">PySDR: IQ Sampling</a></p></li>
+<li><p><a class="doc-link" href="https://pysdr.org/content/frequency_domain.html" target="_blank" rel="noopener">PySDR: Frequency Domain</a></p></li>
+<li><p><a class="doc-link" href="https://livethisdream.github.io/sdr-flex/" target="_blank" rel="noopener">SDR Flex</a>, in the browser, and <a class="doc-link" href="https://gqrx.dk/" target="_blank" rel="noopener">GQRX</a>, for finding a station</p></li>
+</ul>
+</div>
+</div>
+<div class="frame read-only docutils container" id="frame-summary">
+<div class="wrap docutils container">
+<p class="rubric">Summary</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head text-left"><p>Idea</p></th>
+<th class="head text-left"><p>What it is</p></th>
+<th class="head text-left"><p>Number to remember</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-left"><p>Flowgraph</p></td>
+<td class="text-left"><p>sources, blocks, and sinks wired together</p></td>
+<td class="text-left"><p>GRC generates the Python</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">samp_rate</span></code></p></td>
+<td class="text-left"><p>the variable every block shares</p></td>
+<td class="text-left"><p>tone flowgraph: 32 kHz</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>Throttle</p></td>
+<td class="text-left"><p>paces a flowgraph with no hardware</p></td>
+<td class="text-left"><p>never with an SDR</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>Complex samples</p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(I + jQ\)</span>, 8 bytes each</p></td>
+<td class="text-left"><p>show <span class="math notranslate nohighlight">\(-f_s/2\)</span> to <span class="math notranslate nohighlight">\(+f_s/2\)</span></p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>Aliasing</p></td>
+<td class="text-left"><p>a tone outside the window moves by <span class="math notranslate nohighlight">\(f_s\)</span></p></td>
+<td class="text-left"><p>20 kHz at 32 kHz appears at <span class="math notranslate nohighlight">\(-12\)</span> kHz</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>DC spike</p></td>
+<td class="text-left"><p>the receiver’s own offset at <span class="math notranslate nohighlight">\(f_c\)</span></p></td>
+<td class="text-left"><p>tune a little off the signal</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>Gain</p></td>
+<td class="text-left"><p>raise until the floor lifts a few dB</p></td>
+<td class="text-left"><p>stop before spurs appear</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>IQ file size</p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(8 f_s\)</span> bytes per second</p></td>
+<td class="text-left"><p>19.2 MB/s at 2.4 MS/s</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="frame read-only doc-links docutils container" id="frame-practice">
+<div class="wrap docutils container">
+<p class="rubric">Practice</p>
+<ul class="simple">
+<li><p><a class="doc-link" href="../../practice/ECE448_L05_Practice_blank.pdf" target="_blank" rel="noopener">Problem set (PDF)</a></p></li>
+<li><p><a class="doc-link doc-key" href="../../practice/ECE448_L05_Practice_SOLUTIONS.pdf" target="_blank" rel="noopener">Solutions (PDF)</a></p></li>
+</ul>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-looking-ahead">
+<div class="wrap docutils container">
+<p class="rubric">Looking Ahead</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<ul class="simple">
+<li><p>The L5 Lab builds both flowgraphs and records the FM band.</p></li>
+<li><p>Lesson 6 modulates and demodulates AM in a flowgraph.</p></li>
+<li><p>Lesson 7 turns today’s FM spectrum into audio.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>Today we built a flowgraph from a signal source and from a real SDR, and saw what complex sampling, aliasing, the DC spike, and the gain setting look like on GNU Radio’s plots. The L5 Lab is the hands-on version: install radioconda before the lab, build the tone flowgraph from an empty canvas, measure aliasing, then find and record broadcast FM stations with an RTL-SDR and plot the recording in Python.</p>
+<p>Lesson 6 adds the first processing blocks between source and sink to modulate and demodulate AM, and Lesson 7 returns to today’s FM band to demodulate a station into audio and decode its RDS data. Before the next lesson, have radioconda installed and <code class="docutils literal notranslate"><span class="pre">gnuradio-companion</span></code> opening on your laptop.</p>
+</div>
+</div>
+</div>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./module02/L05-gnu-radio-intro"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+</main>
+
+<script src="../../_static/shell.js?v=e3abacb6d1"></script>
+<script src="../../_static/frames.js?v=89e4b02ee3"></script><script src="../../_static/viz-autosize.js?v=4fe0c4e159"></script>
+</body>
+</html>

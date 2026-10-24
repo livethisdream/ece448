@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="en" data-mode="read">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ECE 448 — Software Defined Radios &mdash; ECE 448 — Software Defined Radios</title>
+<meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+<link rel="icon" href="_static/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap"><link rel="stylesheet" href="_static/custom.css?v=a42eea83fd">
+<link rel="stylesheet" href="_static/shell.css?v=474250fccb">
+<link rel="stylesheet" href="_static/frames.css?v=fa285d3703">
+</head>
+<body>
+
+<div class="rail"><span id="railfill"></span></div>
+
+<div class="laser" id="laser" aria-hidden="true"></div>
+<div class="spot" id="spot" aria-hidden="true"></div>
+
+<div class="index" id="index" role="dialog" aria-label="Jump to a frame or another lesson">
+  <button class="index-close" id="btnIndexClose" type="button" aria-label="Close">&times;</button>
+  <div class="wrap">
+    <div class="index-cols">
+      <div class="index-here">
+        <h2>This lesson</h2>
+        <ol id="indexlist"></ol>
+      </div>
+      <div class="index-toc">
+        <h2>Course</h2>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Course Information</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="syllabus.html">Syllabus</a></li>
+<li class="toctree-l1"><a class="reference internal" href="materials.html">Materials</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 1 — Foundations of Detection &amp; Link Budgets</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="module01/index.html">Module 1 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module01/L01-course-intro/index.html">L1 — Course Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module01/L02-noise-figure-link-budget/index.html">L2 — Noise Figure and Link Budget</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module01/L03-signal-space/index.html">L3 — Signal Space</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 2 — SDR &amp; GNU Radio Foundations</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="module02/index.html">Module 2 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module02/L04-sdr-introduction/index.html">L4 — SDR Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module02/L05-gnu-radio-intro/index.html">L5 — GNU Radio Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module02/L05-lab-first-flowgraphs/index.html">L5 Lab — First Flowgraphs</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 3 — Analog Modulation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="module03/index.html">Module 3 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module03/L06-am-simulation/index.html">L6 — AM Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module03/L06-lab-am-simulation/index.html">L6 Lab — AM Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module03/L07-am-fm-receivers/index.html">L7 — AM and FM Receivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module03/L07-lab-am-fm-receivers/index.html">L7 Lab — AM and FM Receivers</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 4 — Digital Modulation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="module04/index.html">Module 4 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module04/L08-fsk/index.html">L8 — FSK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module04/L08-lab-fsk/index.html">L8 Lab — FSK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module04/L09-pam-theory/index.html">L9 — PAM Theory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module04/L10-ascii-pam/index.html">L10 — ASCII over PAM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module04/L10-lab-pam-link/index.html">L10 Lab — PAM Link</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 5 — Custom Blocks &amp; Midterm</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="module05/index.html">Module 5 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module05/L11-custom-blocks/index.html">L11 — Out-of-Tree Modules and Custom Blocks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module05/L11-lab-custom-block/index.html">L11 Lab — Custom Block</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module05/midterm/index.html">Midterm — Fox Hunt and CTF</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 6 — Waveform Applications &amp; RF Reverse Engineering</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="module06/index.html">Module 6 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module06/L12-cw/index.html">L12 — CW</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module06/L12-lab-cw/index.html">L12 Lab — CW</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module06/L13-dtmf/index.html">L13 — DTMF</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module06/L13-lab-dtmf/index.html">L13 Lab — DTMF</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module06/L14-hd-radio/index.html">L14 — HD Radio</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module06/L14-lab-hd-radio/index.html">L14 Lab — HD Radio</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module06/L15-mpsk/index.html">L15 — mPSK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module06/L15-lab-mpsk/index.html">L15 Lab — mPSK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module06/L16-fhss/index.html">L16 — Frequency Hopping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module06/L16-lab-fhss/index.html">L16 Lab — Frequency Hopping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module06/L17-rf-reverse-engineering/index.html">L17 — RF Reverse Engineering</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module06/L17-lab-rf-reverse-engineering/index.html">L17 Lab — RF Reverse Engineering</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module06/L18-adsb/index.html">L18 — ADS-B</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module06/L19-ais/index.html">L19 — AIS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module06/L18-L19-lab-adsb-ais/index.html">L18–L19 Lab — ADS-B and AIS</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 7 — Final Project</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="module07/index.html">Module 7 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module07/L20-qam-ofdm/index.html">L20 — QAM and OFDM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module07/final-project/index.html">Final Project</a></li>
+</ul>
+
+      </div>
+    </div>
+  </div>
+</div><div class="hud">
+<div class="hud-group">
+  <button id="btnSite" class="site" type="button"
+          aria-expanded="false" aria-controls="sitepop"
+          title="Elsewhere on this site">ECE 448</button>
+</div>
+<div class="pop" id="sitepop" role="group" aria-label="Site" hidden>
+  <a href="https://livethisdream.github.io/">Home</a>
+  <a href="https://livethisdream.github.io/ece343/intro.html">ECE 343</a>
+  <a href="https://livethisdream.github.io/ece444/intro.html">ECE 444</a>
+  <a href="" aria-current="page">ECE 448</a>
+  <a href="https://livethisdream.github.io/projects">Projects</a>
+</div>
+
+  <div class="hud-group hud-mid"><button id="btnMode" type="button" aria-expanded="false" aria-controls="modepop"
+            title="How the lesson is laid out (P)">read</button>
+    <button id="btnTools" type="button" aria-expanded="false" aria-controls="toolspop"
+            title="Presenter tools">tools</button>
+  </div>
+
+  <div class="hud-group"><button id="btnIndex" class="counter" type="button" aria-pressed="false"
+            title="Contents (G) · double-tap for the top"><b id="cur">1</b>/<span id="tot">0</span></button>
+  </div><div class="pop" id="modepop" role="group" aria-label="View mode" hidden>
+    <button id="btnPresent" class="choice" type="button" aria-pressed="false">
+      present<span class="pop-note">one frame at a time</span></button>
+    <button id="btnRead" class="choice" type="button" aria-pressed="true">
+      read<span class="pop-note">the whole lesson, continuous</span></button>
+  </div><div class="pop" id="toolspop" role="group" aria-label="Presenter tools" hidden>
+    <button id="btnLaser" type="button" aria-pressed="false">laser<kbd>L</kbd></button>
+    <button id="btnSpot" type="button" aria-pressed="false">spotlight<kbd>S</kbd></button>
+    <button id="btnFull" type="button">fullscreen<kbd>F</kbd></button>
+  </div>
+</div><main class="deck bd-article" id="deck" tabindex="-1">
+<section class="tex2jax_ignore mathjax_ignore" id="ece-448-software-defined-radios">
+<h1>ECE 448 — Software Defined Radios<a class="headerlink" href="#ece-448-software-defined-radios" title="Permalink to this heading">#</a></h1>
+<div class="frame title-frame docutils container" id="frame-1">
+<div class="wrap docutils container">
+<div class="course-mark">USAFA · Dept. of Electrical &amp; Computer Engineering · Spring 2027</div>
+<h1 class="frame-title">Software Defined Radios</h1>
+<div class="title-rule"></div>
+<p>Real signals, real flowgraphs.</p>
+<p>Seven modules, 20 lessons, and a final project you define yourself.</p>
+<div class="hero-pills">
+<div class="hero-cta hero-grid" style="--cols: 4; --cols-phone: 2">
+  <div class="pop-anchor">
+    <button class="cta cta-menu" id="btnModules" type="button" aria-expanded="false" aria-controls="modpop">Modules</button>
+    <div class="mod-pop" id="modpop" role="group" aria-label="Modules" data-drop hidden>
+      <a class="mod-link" href="module01/index.html"><span class="mod-n">01</span>Foundations of Detection &amp; Link Budgets</a>
+      <a class="mod-link" href="module02/index.html"><span class="mod-n">02</span>SDR &amp; GNU Radio Foundations</a>
+      <a class="mod-link" href="module03/index.html"><span class="mod-n">03</span>Analog Modulation</a>
+      <a class="mod-link" href="module04/index.html"><span class="mod-n">04</span>Digital Modulation</a>
+      <a class="mod-link" href="module05/index.html"><span class="mod-n">05</span>Custom Blocks &amp; Midterm</a>
+      <a class="mod-link" href="module06/index.html"><span class="mod-n">06</span>Waveform Applications &amp; RF Reverse Engineering</a>
+      <a class="mod-link" href="module07/index.html"><span class="mod-n">07</span>Final Project</a>
+    </div>
+  </div>
+  <a class="cta" href="syllabus.html#course-schedule">Schedule</a>
+  <a class="cta" href="syllabus.html">Syllabus</a>
+  <a class="cta" href="materials.html">Materials</a>
+</div>
+</div>
+</div>
+</div>
+<div class="frame docutils container" id="frame-an-applications-course">
+<div class="wrap docutils container">
+<p class="rubric">An Applications Course</p>
+<div class="callout docutils container">
+<p><strong>Watch what the signal does; don’t calculate it.</strong> We use real radios and
+GNU Radio to observe effects, such as what happens when the noise goes up,
+and, when it helps, tie what we see back to theory.</p>
+</div>
+<div class="depth docutils container">
+<p>ECE 447 is where communications theory is derived. Here we use it: every
+lesson starts with a signal to build, receive, or decode, and brings in the
+theory only when the flowgraph needs it.</p>
+</div>
+</div>
+</div>
+<div class="frame docutils container" id="frame-modules-1-2-foundations">
+<div class="wrap docutils container">
+<p class="rubric">Modules 1-2: Foundations</p>
+<div class="block-grid">
+  <a class="block-card" href="module01/index.html">
+    <span class="num">01</span>
+    <h3>Foundations of Detection &amp; Link Budgets</h3>
+    <p>Noise figure, link budgets, and signal space: enough to predict whether a link closes.</p>
+    <footer>Lessons 1–3</footer>
+  </a>
+  <a class="block-card" href="module02/index.html">
+    <span class="num">02</span>
+    <h3>SDR &amp; GNU Radio Foundations</h3>
+    <p>What is inside an SDR, and your first GNU Radio flowgraphs against real captures.</p>
+    <footer>Lessons 4–5</footer>
+  </a>
+</div>
+</div>
+</div>
+<div class="frame docutils container" id="frame-modules-3-4-modulation">
+<div class="wrap docutils container">
+<p class="rubric">Modules 3-4: Modulation</p>
+<div class="block-grid">
+  <a class="block-card" href="module03/index.html">
+    <span class="num">03</span>
+    <h3>Analog Modulation</h3>
+    <p>AM and FM: simulate them, build receivers, and pull a live station and its RDS data off the air.</p>
+    <footer>Lessons 6–7</footer>
+  </a>
+  <a class="block-card" href="module04/index.html">
+    <span class="num">04</span>
+    <h3>Digital Modulation</h3>
+    <p>FSK and PAM, end to end, finishing with a link that carries ASCII text.</p>
+    <footer>Lessons 8–10</footer>
+  </a>
+</div>
+</div>
+</div>
+<div class="frame docutils container" id="frame-modules-5-7-applications">
+<div class="wrap docutils container">
+<p class="rubric">Modules 5-7: Applications</p>
+<div class="block-grid">
+  <a class="block-card" href="module05/index.html">
+    <span class="num">05</span>
+    <h3>Custom Blocks &amp; Midterm</h3>
+    <p>Write your own GNU Radio blocks, then the midterm: a fox hunt and a capture-the-flag.</p>
+    <footer>Lesson 11 · Midterm</footer>
+  </a>
+  <a class="block-card" href="module06/index.html">
+    <span class="num">06</span>
+    <h3>Waveform Applications &amp; RF Reverse Engineering</h3>
+    <p>CW, DTMF, HD Radio, mPSK, frequency hopping, ADS-B, AIS, and the unknown signal.</p>
+    <footer>Lessons 12–19</footer>
+  </a>
+  <a class="block-card" href="module07/index.html">
+    <span class="num">07</span>
+    <h3>Final Project</h3>
+    <p>QAM and OFDM, then your own project, graded against success criteria you write.</p>
+    <footer>Lesson 20 · Final Project</footer>
+  </a>
+</div>
+</div>
+</div>
+<div class="frame docutils container" id="frame-what-you-are-graded-on">
+<div class="wrap docutils container">
+<p class="rubric">What You Are Graded On</p>
+<div class="deliverable-cards">
+  <div class="deliverable-card">
+    <p class="d-eyebrow">Individual</p>
+    <h3>Final Project</h3>
+    <p class="d-weight"><span class="d-w-num">40%</span> of course grade</p>
+    <p class="d-due">Self-defined success criteria, report, and live demonstration</p>
+    <a class="d-link" href="syllabus.html#final-project">How it is graded →</a>
+  </div>
+  <div class="deliverable-card">
+    <p class="d-eyebrow">Per lab</p>
+    <h3>Labs</h3>
+    <p class="d-weight"><span class="d-w-num">25%</span> of course grade</p>
+    <p class="d-due">One packet per lab: Pre-Lab, Bench, Writeup</p>
+    <a class="d-link" href="syllabus.html#labs">How labs work →</a>
+  </div>
+  <div class="deliverable-card">
+    <p class="d-eyebrow">Ongoing</p>
+    <h3>Engagement</h3>
+    <p class="d-weight"><span class="d-w-num">20%</span> of course grade</p>
+    <p class="d-due">Quizzes, practice problems, EI, and peer review</p>
+    <a class="d-link" href="syllabus.html#engagement-credits-ec">Ways to earn engagement →</a>
+  </div>
+  <div class="deliverable-card">
+    <p class="d-eyebrow">Individual</p>
+    <h3>Midterm</h3>
+    <p class="d-weight"><span class="d-w-num">15%</span> of course grade</p>
+    <p class="d-due">Fox hunt and capture-the-flag, after <strong>Lesson 11</strong></p>
+    <a class="d-link" href="syllabus.html#midterm">How it is graded →</a>
+  </div>
+</div>
+</div>
+</div>
+<div class="frame docutils container" id="frame-course-goals">
+<div class="wrap docutils container">
+<p class="rubric">Course Goals</p>
+<p>By the end of this course you should be able to:</p>
+<ol class="arabic simple">
+<li><p>Simulate, receive, and transmit signals with modern software and modulation techniques.</p></li>
+<li><p>Describe filtering, interpolation, decimation, and matched filtering.</p></li>
+<li><p>Apply them to real signals, noise and non-idealities included.</p></li>
+<li><p>Reverse-engineer, decode, and characterize an unknown RF signal.</p></li>
+<li><p>Define, execute, and defend your own SDR project.</p></li>
+</ol>
+</div>
+</div>
+<div class="frame docutils container" id="frame-how-this-course-is-graded">
+<div class="wrap docutils container">
+<p class="rubric">How This Course Is Graded</p>
+<div class="callout docutils container">
+<p>Every learning objective is scored on a <strong>binary 1 / 0</strong> scale, with no
+partial credit. A 0 comes with detailed feedback rather than the answer, and
+if you submitted real effort on time you may <strong>revise your work</strong> until you
+earn the 1.</p>
+</div>
+</div>
+</div>
+<div class="frame docutils container" id="frame-this-site-is-being-built">
+<div class="wrap docutils container">
+<p class="rubric">This Site Is Being Built</p>
+<p>The course is moving to this site one lesson at a time. Until a lesson is
+converted, its page carries the objectives and the legacy slides it was last
+taught from. Everything is also on the <a class="reference internal" href="materials.html"><span class="doc std std-doc">materials page</span></a>.</p>
+<div class="depth docutils container">
+<p>The contents of this website are for educational use only and do not
+necessarily reflect the official policy or position of the United States Air
+Force Academy, the Department of the Air Force, or the U.S. Government.</p>
+</div>
+</div>
+</div>
+<div class="toctree-wrapper compound">
+</div>
+<div class="toctree-wrapper compound">
+</div>
+<div class="toctree-wrapper compound">
+</div>
+<div class="toctree-wrapper compound">
+</div>
+<div class="toctree-wrapper compound">
+</div>
+<div class="toctree-wrapper compound">
+</div>
+<div class="toctree-wrapper compound">
+</div>
+<div class="toctree-wrapper compound">
+</div>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+</main>
+
+<script src="_static/shell.js?v=e3abacb6d1"></script>
+<script src="_static/frames.js?v=89e4b02ee3"></script><script src="_static/viz-autosize.js?v=4fe0c4e159"></script>
+</body>
+</html>

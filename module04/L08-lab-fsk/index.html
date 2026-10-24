@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="en" data-mode="read">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>L8 Lab — FSK &mdash; ECE 448 — Software Defined Radios</title>
+<meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+<link rel="icon" href="../../_static/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap"><link rel="stylesheet" href="../../_static/custom.css?v=a42eea83fd">
+<link rel="stylesheet" href="../../_static/shell.css?v=474250fccb">
+<link rel="stylesheet" href="../../_static/frames.css?v=fa285d3703">
+<script>window.MathJax = {"tex": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processEscapes": true}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+<script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js"></script>
+</head>
+<body>
+
+<div class="rail"><span id="railfill"></span></div>
+
+<div class="laser" id="laser" aria-hidden="true"></div>
+<div class="spot" id="spot" aria-hidden="true"></div>
+
+<div class="index" id="index" role="dialog" aria-label="Jump to a frame or another lesson">
+  <button class="index-close" id="btnIndexClose" type="button" aria-label="Close">&times;</button>
+  <div class="wrap">
+    <div class="index-cols">
+      <div class="index-here">
+        <h2>This lesson</h2>
+        <ol id="indexlist"></ol>
+      </div>
+      <div class="index-toc">
+        <h2>Course</h2>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Course Information</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../syllabus.html">Syllabus</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../materials.html">Materials</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 1 — Foundations of Detection &amp; Link Budgets</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module01/index.html">Module 1 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module01/L01-course-intro/index.html">L1 — Course Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module01/L02-noise-figure-link-budget/index.html">L2 — Noise Figure and Link Budget</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module01/L03-signal-space/index.html">L3 — Signal Space</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 2 — SDR &amp; GNU Radio Foundations</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module02/index.html">Module 2 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module02/L04-sdr-introduction/index.html">L4 — SDR Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module02/L05-gnu-radio-intro/index.html">L5 — GNU Radio Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module02/L05-lab-first-flowgraphs/index.html">L5 Lab — First Flowgraphs</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 3 — Analog Modulation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module03/index.html">Module 3 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module03/L06-am-simulation/index.html">L6 — AM Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module03/L06-lab-am-simulation/index.html">L6 Lab — AM Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module03/L07-am-fm-receivers/index.html">L7 — AM and FM Receivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module03/L07-lab-am-fm-receivers/index.html">L7 Lab — AM and FM Receivers</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 4 — Digital Modulation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Module 4 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L08-fsk/index.html">L8 — FSK</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">L8 Lab — FSK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L09-pam-theory/index.html">L9 — PAM Theory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L10-ascii-pam/index.html">L10 — ASCII over PAM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L10-lab-pam-link/index.html">L10 Lab — PAM Link</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 5 — Custom Blocks &amp; Midterm</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module05/index.html">Module 5 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module05/L11-custom-blocks/index.html">L11 — Out-of-Tree Modules and Custom Blocks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module05/L11-lab-custom-block/index.html">L11 Lab — Custom Block</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module05/midterm/index.html">Midterm — Fox Hunt and CTF</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 6 — Waveform Applications &amp; RF Reverse Engineering</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/index.html">Module 6 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L12-cw/index.html">L12 — CW</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L12-lab-cw/index.html">L12 Lab — CW</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L13-dtmf/index.html">L13 — DTMF</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L13-lab-dtmf/index.html">L13 Lab — DTMF</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L14-hd-radio/index.html">L14 — HD Radio</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L14-lab-hd-radio/index.html">L14 Lab — HD Radio</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L15-mpsk/index.html">L15 — mPSK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L15-lab-mpsk/index.html">L15 Lab — mPSK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L16-fhss/index.html">L16 — Frequency Hopping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L16-lab-fhss/index.html">L16 Lab — Frequency Hopping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L17-rf-reverse-engineering/index.html">L17 — RF Reverse Engineering</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L17-lab-rf-reverse-engineering/index.html">L17 Lab — RF Reverse Engineering</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L18-adsb/index.html">L18 — ADS-B</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L19-ais/index.html">L19 — AIS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L18-L19-lab-adsb-ais/index.html">L18–L19 Lab — ADS-B and AIS</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 7 — Final Project</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module07/index.html">Module 7 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module07/L20-qam-ofdm/index.html">L20 — QAM and OFDM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module07/final-project/index.html">Final Project</a></li>
+</ul>
+
+      </div>
+    </div>
+  </div>
+</div><div class="hud">
+<div class="hud-group">
+  <button id="btnSite" class="site" type="button"
+          aria-expanded="false" aria-controls="sitepop"
+          title="Elsewhere on this site">ECE 448</button>
+</div>
+<div class="pop" id="sitepop" role="group" aria-label="Site" hidden>
+  <a href="https://livethisdream.github.io/">Home</a>
+  <a href="https://livethisdream.github.io/ece343/intro.html">ECE 343</a>
+  <a href="https://livethisdream.github.io/ece444/intro.html">ECE 444</a>
+  <a href="../../intro.html" aria-current="page">ECE 448</a>
+  <a href="https://livethisdream.github.io/projects">Projects</a>
+</div>
+
+  <div class="hud-group hud-mid"><button id="btnMode" type="button" aria-expanded="false" aria-controls="modepop"
+            title="How the lesson is laid out (P)">read</button>
+    <button id="btnTools" type="button" aria-expanded="false" aria-controls="toolspop"
+            title="Presenter tools">tools</button>
+  </div>
+
+  <div class="hud-group"><button id="btnIndex" class="counter" type="button" aria-pressed="false"
+            title="Contents (G) · double-tap for the top"><b id="cur">1</b>/<span id="tot">0</span></button>
+  </div><div class="pop" id="modepop" role="group" aria-label="View mode" hidden>
+    <button id="btnPresent" class="choice" type="button" aria-pressed="false">
+      present<span class="pop-note">one frame at a time</span></button>
+    <button id="btnRead" class="choice" type="button" aria-pressed="true">
+      read<span class="pop-note">the whole lesson, continuous</span></button>
+  </div><div class="pop" id="toolspop" role="group" aria-label="Presenter tools" hidden>
+    <button id="btnLaser" type="button" aria-pressed="false">laser<kbd>L</kbd></button>
+    <button id="btnSpot" type="button" aria-pressed="false">spotlight<kbd>S</kbd></button>
+    <button id="btnFull" type="button">fullscreen<kbd>F</kbd></button>
+  </div>
+</div><main class="deck bd-article" id="deck" tabindex="-1">
+<section class="tex2jax_ignore mathjax_ignore" id="l8-lab-fsk">
+<h1>L8 Lab — FSK<a class="headerlink" href="#l8-lab-fsk" title="Permalink to this heading">#</a></h1>
+<div class="frame title-frame docutils container" id="frame-1">
+<div class="wrap docutils container">
+<div class="course-mark">ECE 448 · Spring 2027</div>
+<h1 class="frame-title">FSK</h1>
+<div class="title-rule"></div>
+<p>Build an FSK transmitter from an empty canvas, then find the noise level and frequency offset at which a line of text stops arriving.</p>
+<p>L8 Lab · Module 4: Digital Modulation · Dr. Neil Rogers</p>
+</div>
+</div>
+<div class="frame docutils container" id="frame-learning-objectives">
+<div class="wrap docutils container">
+<p class="rubric">Learning Objectives</p>
+<ol class="lo-list" style="--module: '4'">
+  <li>I can describe FSK modulation and implement an FSK transmitter and receiver in GNU Radio.</li>
+</ol>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-from-lesson-to-bench">
+<div class="wrap docutils container">
+<p class="rubric">From Lesson to Bench</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<ul class="simple">
+<li><p><strong>Pre-Lab:</strong> run the link flowgraph and work out the block settings.</p></li>
+<li><p><strong>Bench:</strong> build the transmitter yourself, then sweep the noise and the offset.</p></li>
+<li><p><strong>Writeup:</strong> explain what you saw and choose a deviation.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>Lesson 8 showed an FSK link carrying a line of text through noise. Today you build the transmitter from an empty canvas and measure where the link breaks. The lab packet has three parts, and you turn it in once, complete, before Lesson 9. <strong>Part 1, the Pre-Lab</strong>, is on your own before the period: run <code class="docutils literal notranslate"><span class="pre">L08-fsk-link.grc</span></code> once, read its display, and work out the block settings and the packet timing. <strong>Part 2</strong> is your own measurements in class. <strong>Part 3, the Writeup</strong>, explains them.</p>
+<p>This lab needs no SDR, and nothing in it transmits. The Channel Model block stands in for the air.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-part-1-before-the-period">
+<div class="wrap docutils container">
+<p class="rubric">Part 1: Before the Period</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">L08-fsk-link.grc</span></code> runs and shows the received line.</p></li>
+<li><p>Work out <span class="math notranslate nohighlight">\(k\)</span>, <span class="math notranslate nohighlight">\(g\)</span>, <span class="math notranslate nohighlight">\(B\)</span>, and the filter cutoff for <span class="math notranslate nohighlight">\(\Delta f\)</span> = 1.5 and 2 kHz.</p></li>
+<li><p>Read how far the tones sit above the noise at two noise settings.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>Do the Pre-Lab before you arrive. Question 1 is a check that <code class="docutils literal notranslate"><span class="pre">L08-fsk-link.grc</span></code> opens and runs on your laptop: if GRC reports an error, the L5 lesson page lists the install checks, and EI before the lab is the place to fix it.</p>
+<p>Question 2 asks for block settings from the lesson’s formulas: the transmitter’s sensitivity, the receiver’s gain, the bandwidth, and the filter cutoff for deviations of 1500 and 2000 Hz, and the length and duration of one packet. It also asks you to read, on the running link’s spectrum, how far the two tones stand above the noise floor at two noise settings. Part 2 checks the bandwidth against your spectrum and uses the packet time when you count lines.</p>
+</div>
+</div>
+</div>
+<div class="frame read-only docutils container" id="frame-part-2-build-the-transmitter">
+<div class="wrap docutils container">
+<p class="rubric">Part 2: Build the Transmitter</p>
+<ol class="arabic simple">
+<li><p>Start GRC and choose File, New, QT GUI. Do not open <code class="docutils literal notranslate"><span class="pre">L08-fsk-tx.grc</span></code>; build it yourself.</p></li>
+<li><p>Set <code class="docutils literal notranslate"><span class="pre">samp_rate</span></code> to 32000. Add a Variable <code class="docutils literal notranslate"><span class="pre">sps</span></code> of 32, a Variable <code class="docutils literal notranslate"><span class="pre">msg</span></code> holding your line of text in quotes, and an <strong>Import</strong> block with <code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">math</span></code>.</p></li>
+<li><p>Add a <strong>QT GUI Range</strong> with ID <code class="docutils literal notranslate"><span class="pre">dev</span></code>, from 250 to 4000 in steps of 250, default 1000.</p></li>
+<li><p>Add a <strong>Vector Source</strong>: type byte, vector <code class="docutils literal notranslate"><span class="pre">list(msg.encode())</span> <span class="pre">+</span> <span class="pre">[10]</span></code>, repeat Yes.</p></li>
+<li><p>Add <strong>Unpack K Bits</strong> with K = 8, then <strong>Chunks to Symbols</strong>: input byte, output float, symbol table <code class="docutils literal notranslate"><span class="pre">[-1,</span> <span class="pre">1]</span></code>.</p></li>
+<li><p>Add <strong>Repeat</strong>: type float, interpolation <code class="docutils literal notranslate"><span class="pre">sps</span></code>. Then add <strong>Frequency Mod</strong> with sensitivity <code class="docutils literal notranslate"><span class="pre">2*math.pi*dev/samp_rate</span></code>.</p></li>
+<li><p>Add a <strong>Throttle</strong> (complex, <code class="docutils literal notranslate"><span class="pre">samp_rate</span></code>) and a <strong>QT GUI Frequency Sink</strong> (complex, bandwidth <code class="docutils literal notranslate"><span class="pre">samp_rate</span></code>), and connect the chain. Every arrow must be black.</p></li>
+<li><p>Run it. Screenshot the canvas for Question 3(a), then record the two peaks at a deviation of 1500 and 2000 Hz, and compare each spectrum’s width with your Question 2(a) bandwidth, for Question 3(b).</p></li>
+</ol>
+</div>
+</div>
+<div class="frame read-only docutils container" id="frame-part-2-noise-and-offset">
+<div class="wrap docutils container">
+<p class="rubric">Part 2: Noise and Offset</p>
+<p><img src="../../viz/img/L08-grc-link.png"
+     alt="The whole L8 link flowgraph in GNU Radio Companion: the transmitter row from Vector Source to Frequency Mod, then Throttle, Channel Model, and the receiver from Low Pass Filter to Text Sink, with the noise and offset sliders and the two labels at the top"
+     style="max-width: 820px; width: 100%; display: block; margin: 0 auto 12px;"></p>
+<ol class="arabic simple">
+<li><p>Open and run <code class="docutils literal notranslate"><span class="pre">L08-fsk-link.grc</span></code>. The Lines label counts the lines received since a slider last moved.</p></li>
+<li><p>With the offset at 0, set the noise voltage to 0.5, 0.8, 1.0, 1.2, 1.5, and 2.0 in turn. At each, wait about 30 s and record the time, the lines received, and the lines correct for Question 4(a).</p></li>
+<li><p>At 0.5 and at 1.2, screenshot the eye diagram for Question 4(b).</p></li>
+<li><p>Set the noise back to 0.5 and raise it in steps of 0.1 until a wrong line appears. Record that noise voltage and how far the tones stand above the floor for Question 4(c).</p></li>
+<li><p>Set the noise back to 0.5. Set the offset to 0, 300, 600, 800, and 1000 Hz in turn. At each, wait about 20 s and record the eye’s two levels and the Lines label for Question 5(a).</p></li>
+<li><p>Still at a noise voltage of 0.5, set the offset to 1200 Hz, wait about 20 s, and record the Lines label in the <span class="math notranslate nohighlight">\(\Delta f\)</span> = 1000 row of Question 5(b); its <span class="math notranslate nohighlight">\(\sigma\)</span> = 1.2 cell comes from your noise table. Then stop the flowgraph and change the <code class="docutils literal notranslate"><span class="pre">dev</span></code> variable from 1000 to 2000. The transmitter’s sensitivity, the receiver’s filter, and the demodulator’s gain all follow it. Run the two settings of Question 5(b) and record the Lines label for each.</p></li>
+<li><p>Optional, from the 2025 class: add a <strong>File Sink</strong> (float, file <code class="docutils literal notranslate"><span class="pre">demod.f32</span></code>) on the Quadrature Demod output, run for a few seconds, and stop. In Audacity choose File, Import, Raw Data: 32-bit float, little-endian, 1 channel, sample rate 32000. Zoom in until you can read single bits. Nothing in the packet asks for it.</p></li>
+</ol>
+</div>
+</div>
+<div class="frame read-only docutils container" id="frame-if-no-text-arrives">
+<div class="wrap docutils container">
+<p class="rubric">If No Text Arrives</p>
+<div class="tip admonition">
+<p class="admonition-title">If the Received label stays at “(waiting for a packet)”</p>
+<p>Close the flowgraph and run it again with the sliders at their defaults, a noise voltage of 0.5 and an offset of 0, where every line should arrive within a second. If it still shows no text, compare <code class="docutils literal notranslate"><span class="pre">samp_rate</span></code>, <code class="docutils literal notranslate"><span class="pre">sps</span></code>, and <code class="docutils literal notranslate"><span class="pre">dev</span></code> with the lesson’s values: the transmitter and the receiver share these variables, and a change to <code class="docutils literal notranslate"><span class="pre">sps</span></code> alone breaks the receiver’s timing. If you changed the message, keep it on one line, because the newline at its end marks the end of each line of text.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-part-3-after-the-lab">
+<div class="wrap docutils container">
+<p class="rubric">Part 3: After the Lab</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<ul class="simple">
+<li><p>Describe how the link went from clean text to no text as the noise rose.</p></li>
+<li><p>Convert the offset limit to ppm at 915 MHz and judge it.</p></li>
+<li><p>Choose 1 or 2 kHz of deviation, and justify it.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>The Writeup is three questions. The first asks you to describe, from your noise table and screenshots, what the eye and the text did as the noise rose, and what that means for Lesson 2’s link margin: the change from clean text to no text takes a small turn of the slider, so a link that only just works fails on the first fade. The second turns your offset limit into parts per million, the unit in which manufacturers specify crystal oscillators, and asks whether this link would work between two real radios. The third asks you to choose a deviation from your own measurements and to say what the choice gives up.</p>
+</div>
+</div>
+</div>
+<div class="frame read-only doc-links docutils container" id="frame-lab-packet">
+<div class="wrap docutils container">
+<p class="rubric">Lab Packet</p>
+<ul class="simple">
+<li><p><a class="doc-link" href="../../labs/ECE448_Lab_L08_FSK_blank.pdf" target="_blank" rel="noopener">L8 Lab packet (PDF)</a></p></li>
+<li><p><a class="doc-link" href="../../grc/L08-fsk-tx.grc" download>L08-fsk-tx.grc</a> and <a class="doc-link" href="../../grc/L08-fsk-link.grc" download>L08-fsk-link.grc</a></p></li>
+</ul>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-looking-ahead">
+<div class="wrap docutils container">
+<p class="rubric">Looking Ahead</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<ul class="simple">
+<li><p>Lesson 9 sends bits as pulse amplitudes: PAM.</p></li>
+<li><p>Lesson 10 sends ASCII over PAM, in packets like today’s.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>Keep your transmitter flowgraph and your tables. Lesson 9 sends each bit as the height of a pulse instead of a frequency, and Lesson 10 sends ASCII text over PAM. That link needs the same kind of packet as today’s, an access code followed by a length, so the receiver can find where each line starts.</p>
+</div>
+</div>
+</div>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./module04/L08-lab-fsk"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+</main>
+
+<script src="../../_static/shell.js?v=e3abacb6d1"></script>
+<script src="../../_static/frames.js?v=89e4b02ee3"></script><script src="../../_static/viz-autosize.js?v=4fe0c4e159"></script>
+</body>
+</html>
