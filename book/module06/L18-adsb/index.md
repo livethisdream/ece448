@@ -105,7 +105,7 @@ The explorer draws three real messages as the chips a receiver sees at 2 MS/s: t
 
 :::{present}
 <iframe src="../../viz/adsb-ppm.html"
-        width="100%" height="480"
+        width="100%" height="473"
         style="border: 1px solid #cddce9; border-radius: 6px;"
         loading="lazy"
         title="ADS-B message explorer: the preamble and pulse-position chips of a Mode S message, its five fields, and whether its parity passes as noise rises">

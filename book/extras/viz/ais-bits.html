@@ -93,7 +93,7 @@ function stuff(p) {   // returns [{b, stuffed}]
 
 function gauss(bt) {   // Gaussian filter for a pulse of SPS samples per bit, unit DC gain
   const t = [], a = Math.PI * bt * Math.sqrt(2 / Math.log(2));
-  for (let k = -2 * SPS; k <= 2 * SPS; k++) t.push(Math.exp(-(a * k / SPS) ** 2));
+  for (let k = -2 * SPS; k <= 2 * SPS; k++) t.push(Math.exp(-((a * k / SPS) ** 2)));
   const s = t.reduce((x, y) => x + y, 0); return t.map(v => v / s);
 }
 
@@ -130,7 +130,7 @@ function update() {
 
 function draw(s, lev, fr, rxf, dec, rb, wrong) {
   const narrow = window.matchMedia && window.matchMedia('(max-width:620px)').matches;
-  const { ctx, w, h } = setup($('cv'), narrow ? 330 : 360);
+  const { ctx, w, h } = setup($("cv"), narrow ? 320 : 330);
   ctx.clearRect(0, 0, w, h);
   const n = s.length, mL = narrow ? 64 : 92, mR = 8, X = i => mL + i / n * (w - mL - mR), bw = (w - mL - mR) / n;
   const fs = Math.max(9, Math.min(13, bw * 0.55));

@@ -130,7 +130,7 @@ The explorer follows one short stretch of a burst through the transmitter of `L1
 
 :::{present}
 <iframe src="../../viz/ais-bits.html"
-        width="100%" height="520"
+        width="100%" height="528"
         style="border: 1px solid #cddce9; border-radius: 6px;"
         loading="lazy"
         title="AIS bit explorer: bit stuffing, NRZI, and the Gaussian-filtered GMSK frequency for a stretch of an AIS burst, and the bits a receiver decides as noise rises">
