@@ -77,7 +77,7 @@ This is the 2003 edition; NTIA posts the current one. Let them look for a minute
 - Receiving is unrestricted; in class we transmit only when the lesson says to.
 
 Note:
-Pull up the NTIA allocation chart on the screen if there is time. Point out that nearly everything is licensed. The ISM bands are where Wi-Fi, Bluetooth, and drones live because nobody needs a license there. Note that the course PlutoSDR, in extended-frequency mode, covers all three common ISM bands. Make the transmit rule explicit: cadets transmit only into a cable through a 30 dB attenuator, and only when the lesson says so.
+Pull up the NTIA allocation chart on the screen if there is time. Point out that nearly everything is licensed. The ISM bands are where Wi-Fi, Bluetooth, and drones live because nobody needs a license there. Note that the course PlutoSDR, in extended-frequency mode, covers all three common ISM bands. Make the transmit rule explicit: cadets transmit at 915 MHz into a cable through a 30 dB attenuator, or, if the instructor says so, over the air at low power, and only when the lesson says so.
 
 ---
 

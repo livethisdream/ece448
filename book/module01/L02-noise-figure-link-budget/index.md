@@ -82,7 +82,7 @@ The chart shows every allocation in the United States, from 3 kHz at the top lef
 
 In the United States the FCC (and the NTIA, for federal users) allocates the radio spectrum, and the allocation chart shows who holds each band. Almost all of it requires a license to transmit. The exceptions that matter most in this course are the **industrial, scientific, and medical (ISM)** bands. Part 15 of the FCC rules lets anyone transmit there at low power without a license, provided they accept interference from everyone else, and that is why Wi-Fi, Bluetooth, and most hobby drones share 915 MHz, 2.4 GHz, and 5.8 GHz.
 
-Two rules govern what we do with the SDRs. Receiving is unrestricted: we can tune anywhere the hardware reaches and look at whatever is there, which is most of this course. Transmitting is not: in class, cadets transmit only into a cable through a 30 dB attenuator, and only when the lesson says to. The figure shows where the ISM bands fall against the PlutoSDR's tuning range. In the course's extended-frequency mode it covers all three of the common ISM bands and can transmit in them; as shipped it would miss 5.8 GHz.
+Two rules govern what we do with the SDRs. Receiving is unrestricted: we can tune anywhere the hardware reaches and look at whatever is there, which is most of this course. Transmitting is not: in class, cadets transmit at 915 MHz into a cable through a 30 dB attenuator, or, if the instructor says so, over the air at low power, and only when the lesson says to. The figure shows where the ISM bands fall against the PlutoSDR's tuning range. In the course's extended-frequency mode it covers all three of the common ISM bands and can transmit in them; as shipped it would miss 5.8 GHz.
 ::::
 
 ::::{frame} Part 2: The Friis Equation
