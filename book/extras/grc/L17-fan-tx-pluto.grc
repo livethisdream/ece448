@@ -7,9 +7,10 @@ options:
     comment: ''
     copyright: ''
     description: 'L17: the Simulated fan remote encoder on a PlutoSDR at 915.04 MHz,
-      never on the remote''s own 350 MHz. Transmit only into the cable: Pluto TX port,
+      never on the remote''s own 350 MHz. Transmit into the cable: Pluto TX port,
       inline 30 dB attenuator, a second PlutoSDR running L17-capture.grc at fc = 915e6.
-      Never connect an antenna. TX attenuation stays at 30 dB or more. Needs a PlutoSDR.'
+      Or, if your instructor says so, over the air at 915 MHz at low power. TX attenuation
+      stays at 30 dB or more. Needs a PlutoSDR.'
     gen_cmake: 'On'
     gen_linking: dynamic
     generate_options: qt_gui

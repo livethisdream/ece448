@@ -101,12 +101,12 @@ Check the sample rate first: a wrong `samp_rate` makes every time on the envelop
 ::::{frame} Part 2: Transmit into a Cable
 :::{present}
 - You send your encoder at 915 MHz from one PlutoSDR through a 30 dB attenuator into a second PlutoSDR.
-- Connect the cable before the flowgraph runs, and never connect an antenna.
+- Connect the cable before the flowgraph runs; an antenna only if your instructor says so.
 :::
 
-Save a copy of your encoder for the radio. Delete the Noise Source, the Add, and the Throttle, set `samp_rate` to 1000000 and `chip_len` to your chip length in samples at 1 MS/s, and add a **PlutoSDR Sink** after a Multiply Const of 0.5, tuned to 915 MHz. A signal the course makes never goes out on the real device's frequency, so your encoder leaves the device's band for 915 MHz, in the 902 to 928 MHz ISM band; keep your carrier offset, so the carrier lands at 915 MHz plus the offset. Copy the `tx_atten` QT GUI Range from `L17-fan-tx-pluto.grc` unchanged, from 30 to 89 dB with a default of 60, and set it as the sink's attenuation. Put "Transmit only into the cable" in the flowgraph's description. A second PlutoSDR records what arrives with `L17-capture.grc`. Leave its variable `fc` at 915e6, its default, and set it before you run it if you changed it; the SigMF Sink writes the center frequency into the meta file when the flowgraph starts.
+Save a copy of your encoder for the radio. Delete the Noise Source, the Add, and the Throttle, set `samp_rate` to 1000000 and `chip_len` to your chip length in samples at 1 MS/s, and add a **PlutoSDR Sink** after a Multiply Const of 0.5, tuned to 915 MHz. A signal the course makes never goes out on the real device's frequency, so your encoder leaves the device's band for 915 MHz, in the 902 to 928 MHz ISM band; keep your carrier offset, so the carrier lands at 915 MHz plus the offset. Copy the `tx_atten` QT GUI Range from `L17-fan-tx-pluto.grc` unchanged, from 30 to 89 dB with a default of 60, and set it as the sink's attenuation. Put "Transmit into the cable unless your instructor says otherwise" in the flowgraph's description. A second PlutoSDR records what arrives with `L17-capture.grc`. Leave its variable `fc` at 915e6, its default, and set it before you run it if you changed it; the SigMF Sink writes the center frequency into the meta file when the flowgraph starts.
 
-In class we transmit only into a cable, into a shielded enclosure, or at very low power in an ISM band, and only when the lesson says to. This device's band is an FCC Part 15 frequency, not a U.S. ISM band, which is why the encoder moves to 915 MHz; transmit only into the cable. This question transmits only into the cable between the first Pluto's TX port and the second Pluto's RX port, through an inline 30 dB SMA attenuator. Never set TX attenuation below 30 dB or change the slider's range; a Pluto's input is rated to only a few dBm. We have compiled the Pluto flowgraphs but not run them on a radio, so your bench is their first run on hardware.
+In class we transmit only into a cable, into a shielded enclosure, or at very low power in an ISM band, and only when the lesson says to. This device's band is an FCC Part 15 frequency, not a U.S. ISM band, which is why the encoder moves to 915 MHz. By default this question transmits only into the cable between the first Pluto's TX port and the second Pluto's RX port, through an inline 30 dB SMA attenuator, or, if your instructor says so, over the air at 915 MHz at low power. Never set TX attenuation below 30 dB or change the slider's range; a Pluto's input is rated to only a few dBm. We have compiled the Pluto flowgraphs but not run them on a radio, so your bench is their first run on hardware.
 ::::
 
 ::::{frame} PlutoSDR Steps
@@ -149,7 +149,7 @@ The Writeup is Question 10, in three parts. Part (a) lists, step by step, the ob
 - <a class="doc-link" href="../../grc/L17-capture.grc" download>L17-capture.grc</a>: the receiving PlutoSDR for Questions 8 and 9, recording to SigMF. Receive only; set `fc` before you run it.
 - <a class="doc-link" href="../../grc/L17-explore-pluto.grc" download>L17-explore-pluto.grc</a>: a live PlutoSDR spectrum and waterfall with a center frequency you change while it runs, for Question 9(a). Receive only.
 - Optional: an RTL-SDR also works for Question 9 with <a class="doc-link" href="../../grc/L17-capture-rtl.grc" download>L17-capture-rtl.grc</a>, a Soapy RTL-SDR Source at 1.024 MS/s; nothing in the lab needs one.
-- <a class="doc-link" href="../../grc/L17-fan-tx-pluto.grc" download>L17-fan-tx-pluto.grc</a>: the lesson's Pluto encoder, for its TX attenuation slider. Transmit only into the cable.
+- <a class="doc-link" href="../../grc/L17-fan-tx-pluto.grc" download>L17-fan-tx-pluto.grc</a>: the lesson's Pluto encoder, for its TX attenuation slider. Transmit into the cable unless your instructor says otherwise.
 ::::
 
 ::::{frame} Looking Ahead

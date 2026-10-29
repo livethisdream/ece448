@@ -143,10 +143,11 @@ else about it is given: finding it out is the lab.
 enclosure, or at very low power in an ISM band, and only when the lesson says to.
 This device's band is an FCC Part 15 frequency, not a U.S. ISM band, and a signal the
 course makes never goes out on the real device's frequency: your encoder transmits at
-915 MHz, in the 902 to 928 MHz ISM band, and only into the cable. Questions 1 to 7 run on your laptop and transmit nothing. Question 8 transmits from a
+915 MHz, in the 902 to 928 MHz ISM band. Questions 1 to 7 run on your laptop and transmit nothing. Question 8 transmits from a
 PlutoSDR's TX port, through a cable with an inline 30 dB SMA attenuator, to a second
-PlutoSDR's RX port. Connect the cable and attenuator before you run the flowgraph, and never
-connect an antenna in this lab. Never set TX attenuation below 30 dB or change the
+PlutoSDR's RX port, or, if your instructor says so, over the air at 915 MHz at low
+power. Connect the cable and attenuator before you run the flowgraph, and connect an
+antenna only when your instructor says so. Never set TX attenuation below 30 dB or change the
 slider's range; a Pluto's input is rated to only a few dBm. We have compiled the
 PlutoSDR flowgraphs but not run them on a radio, so Question 8 is their first run on
 hardware. Question 9 only receives, which is always allowed.
