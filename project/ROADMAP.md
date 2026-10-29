@@ -72,7 +72,23 @@ the material. A lesson is a guided walkthrough, not a chapter.
 - **The page is a demo script.** Frames walk through what to build, run, and
   watch in GRC or GQRX, in the order Neil does it live. Explanation is the
   minimum needed to know what to look at.
-- **SDR Flex is the primary explore tool** (Neil, 2026-10-21). Neil's own
+- **The PlutoSDR is the radio, and GNU Radio is the tool** (Neil,
+  2026-10-29). This rule outranks the SDR Flex bullet below.
+  - Every receive and transmit path a lesson or lab uses is a GNU Radio
+    flowgraph with a PlutoSDR Source or Sink (`soapy_plutosdr_*` or
+    `iio_pluto_*`).
+  - The course Plutos run in extended-frequency (AD9364) mode, 70 MHz to
+    6 GHz, so FM broadcast, HD Radio, and AIS are in range. A Pluto
+    streams a few MS/s continuously over USB 2.0, so wider signals are
+    captured in bursts.
+  - Where GNU Radio has a module for a signal, the lesson uses it:
+    gr-adsb (`gnuradio-adsb`, shipped in radioconda) for ADS-B, with
+    gr-air-modes named as the other module.
+  - RTL-SDRs and HackRFs are optional extras, never required. SDR Flex is
+    an optional quick look. GQRX, dump1090, and other apps appear only as
+    optional extras, or where the 2025 lesson used them (URH in L17).
+- **SDR Flex is an explore tool** (Neil, 2026-10-21; narrowed 2026-10-29
+  by the rule above). Neil's own
   `livethisdream/sdr-flex` starts at the spectrum and builds a GNU Radio
   flowgraph behind each drag, demodulator, and decoder, so a lesson can show
   cadets the flowgraph they just made. Use it for receive-and-explore steps
@@ -85,8 +101,8 @@ the material. A lesson is a guided walkthrough, not a chapter.
     decoders; use it only for steps that work on its example captures or
     the client-side decoders.
   - **Write explore steps as actions** (tune, select a signal, demodulate,
-    attach a decoder), so they read the same in SDR Flex and GQRX. GQRX is
-    the named fallback.
+    attach a decoder). The GNU Radio flowgraph is the path every cadet
+    takes; SDR Flex is optional.
   - **Go/no-go: first week of January 2027.** Neil is testing it on macOS
     and Windows (outside WSL it is untested, and the image is amd64 only).
     Until then no lab *requires* SDR Flex; after it, the Integrator makes

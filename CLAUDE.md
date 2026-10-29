@@ -103,6 +103,12 @@ ships goes through three steps before it is committed:
    needs an SDR is compiled only; say so in the PR. A figure that stands in
    for a real capture is labeled "Simulated" on the figure itself.
 
+**The PlutoSDR is the radio and GNU Radio is the tool** (Neil, 2026-10-29).
+Every radio path is a flowgraph with a PlutoSDR Source or Sink; the Plutos
+run in extended-frequency mode (70 MHz to 6 GHz). Where GNU Radio has a module
+for a signal (gr-adsb in radioconda), use it. RTL-SDR, HackRF, SDR Flex, and
+GQRX are optional extras. See `project/ROADMAP.md`, "How Neil teaches it".
+
 Recordings a cadet downloads or makes are **SigMF** (`.sigmf-data` plus
 `.sigmf-meta`), the preferred data format (Neil, 2026-10-23); see
 `project/ROADMAP.md`, "Settled".
