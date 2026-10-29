@@ -6,7 +6,7 @@ options:
     cmake_opt: ''
     comment: ''
     copyright: ''
-    description: 'L7: an AM receiver for the aircraft band. Plays L07-am-test.cfile;
+    description: 'L7: an AM receiver for the aircraft band. Plays L07-am-test.sigmf-data;
       disable the File Source and enable the PlutoSDR Source to receive a live AM
       station such as an airport ATIS.'
     gen_cmake: 'On'
@@ -452,7 +452,7 @@ blocks:
     alias: ''
     begin_tag: pmt.PMT_NIL
     comment: ''
-    file: L07-am-test.cfile
+    file: L07-am-test.sigmf-data
     length: '0'
     maxoutbuf: '0'
     minoutbuf: '0'
@@ -490,7 +490,7 @@ blocks:
     rfdc: 'True'
     samplerate: int(samp_rate)
     type: fc32
-    uri: '"ip:192.168.2.1"'
+    uri: '""'
   states:
     bus_sink: false
     bus_source: false

@@ -143,8 +143,8 @@ folder, with your \texttt{fm\_capture.cfile} from the L5 Lab. Open
 comes with radioconda; if GRC reports the RDS blocks missing, run
 \texttt{mamba install gnuradio-rds} from the radioconda prompt. Then, before the
 period, run \texttt{L07-fm-test-tx.grc}, which also uses an RDS block, and
-\texttt{L07-am-test-tx.grc} once each; they write \texttt{L07-fm-test.cfile} and
-\texttt{L07-am-test.cfile} into that folder and stop on their own.
+\texttt{L07-am-test-tx.grc} once each; they write \texttt{L07-fm-test.sigmf-data} and
+\texttt{L07-am-test.sigmf-data} into that folder and stop on their own.
 
 \begin{questions}
 
@@ -211,7 +211,7 @@ open \texttt{L07-wbfm-rx.grc}: build the receiver yourself.
 \begin{itemize}\setlength{\itemsep}{0pt}
 	\item \texttt{samp\_rate} 2.4e6, a QT GUI Entry \texttt{fc\_mhz} (100.0), a QT GUI
 	Entry \texttt{station\_mhz} (100.3), and a QT GUI Range \texttt{vol} from 0 to 1.
-	\item A File Source on \texttt{L07-fm-test.cfile}, repeat on.
+	\item A File Source on \texttt{L07-fm-test.sigmf-data}, repeat on.
 	\item A Frequency Xlating FIR Filter, decimation 5, center frequency
 	\texttt{(station\_mhz - fc\_mhz) * 1e6}, with a Low-pass Filter Taps variable
 	\texttt{chan\_taps}: cutoff 105 kHz, transition 30 kHz, at \texttt{samp\_rate}.
@@ -324,7 +324,7 @@ then decode its RDS data.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \question \textbf{ATIS.} Open \texttt{L07-am-rx.grc}. Check it first on
-\texttt{L07-am-test.cfile}, then disable the File Source, enable the PlutoSDR Source,
+\texttt{L07-am-test.sigmf-data}, then disable the File Source, enable the PlutoSDR Source,
 and enter the settings of Question 1(c).
 
 \begin{parts}

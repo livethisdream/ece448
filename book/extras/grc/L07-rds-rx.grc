@@ -7,8 +7,9 @@ options:
     comment: ''
     copyright: ''
     description: 'L7: the WBFM receiver of L07-wbfm-rx.grc plus an RDS decoder on
-      the 57 kHz subcarrier. Plays L07-fm-test.cfile; disable the File Source and
-      enable the PlutoSDR Source to receive live. Needs gr-rds (gnuradio-rds in radioconda).'
+      the 57 kHz subcarrier. Plays L07-fm-test.sigmf-data; disable the File Source
+      and enable the PlutoSDR Source to receive live. Needs gr-rds (gnuradio-rds in
+      radioconda).'
     gen_cmake: 'On'
     gen_linking: dynamic
     generate_options: qt_gui
@@ -377,7 +378,7 @@ blocks:
     alias: ''
     begin_tag: pmt.PMT_NIL
     comment: ''
-    file: L07-fm-test.cfile
+    file: L07-fm-test.sigmf-data
     length: '0'
     maxoutbuf: '0'
     minoutbuf: '0'
@@ -544,7 +545,7 @@ blocks:
     rfdc: 'True'
     samplerate: int(samp_rate)
     type: fc32
-    uri: '"ip:192.168.2.1"'
+    uri: '""'
   states:
     bus_sink: false
     bus_source: false

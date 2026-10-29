@@ -230,7 +230,7 @@ Demo live on the PlutoSDR: find a tall stripe in L05-fm-spectrum.grc, stop it (o
 - Receiving is unrestricted; these flowgraphs only receive.
 
 Note:
-The PlutoSDR's DC tracking removes whatever sits at 0 Hz, so a station tuned onto the center loses its middle. ATIS frequencies are in the FAA Chart Supplement and on sectional charts. RDS needs a stronger signal than the audio, because 57 kHz sits where the multiplex noise is highest.
+The PlutoSDR's DC tracking acts at 0 Hz and can eat into a station tuned right onto the center. ATIS frequencies are in the FAA Chart Supplement and on sectional charts. RDS needs a stronger signal than the audio, because 57 kHz sits where the multiplex noise is highest.
 
 ---
 

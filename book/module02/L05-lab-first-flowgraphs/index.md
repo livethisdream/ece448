@@ -41,7 +41,7 @@ Nothing in this lab transmits. The FM flowgraph uses only the PlutoSDR's receive
 ::::{frame} Part 1: Before the Period
 :::{present}
 - `gnuradio-config-info --version` reports 3.10.
-- `iio_info -s` finds your PlutoSDR, and the `iio_attr` check tunes it to 100 MHz.
+- `iio_info -s` finds your PlutoSDR, and the `iio_attr` check shows 70 MHz to 6 GHz.
 - `L05-tone.grc` runs and shows one spike at $+1$ kHz.
 :::
 
@@ -66,7 +66,7 @@ Question 2 is quick arithmetic from your block settings: where five tones appear
 ::::{frame} Part 2: The FM Band
 :class: read-only
 
-1. Screw the antenna onto the PlutoSDR's RX port and plug the Pluto into your laptop.
+1. Screw the course's broadband whip onto the PlutoSDR's RX port and plug the Pluto into your laptop.
 2. Open and run `L05-fm-spectrum.grc`. Drag the center frequency slowly from 88 to 108 MHz and record the tallest station's frequency for Question 4(a).
 3. Center the display on that station, then drag across 88 to 108 MHz again. Record the three strongest stations' frequencies and peak levels, and how wide each looks next to the others, for Question 4(b).
 4. Uncheck DC tracking. Center a station exactly on the spike in the middle of the display, then tune 300 kHz away. Note what moves, then check DC tracking again and note what changes, for Question 4(c).

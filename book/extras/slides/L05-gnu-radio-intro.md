@@ -64,7 +64,7 @@ Point out source, throttle, and the two sinks, then press run. Show them the gen
 - Windows, macOS, and Linux
 - Windows users also install Analog Devices' PlutoSDR USB driver once
 
-Verify: `gnuradio-companion`, `iio_info -s`, and the `iio_attr` check that the Pluto tunes 100 MHz
+Verify: `gnuradio-companion`, `iio_info -s`, and the `iio_attr` check for the 70 MHz to 6 GHz range
 
 Note:
 The installer link and the full verification table are on the lesson page. A Pluto that fails the iio_attr line is still in its stock 325 MHz to 3.8 GHz mode and needs switching to extended-frequency mode at EI. The pre-lab requires a working install, so anyone stuck should come to EI before the lab.
@@ -150,7 +150,7 @@ This is the wagon-wheel effect from movies. Each sample advances more than half 
 ## Connect the PlutoSDR
 
 - Antenna on the **RX** port; USB cable on the middle micro-USB port.
-- The Pluto appears as a network device at `192.168.2.1`.
+- GNU Radio finds the Pluto on USB by itself.
 - Course Plutos tune 70 MHz to 6 GHz, so the FM band is in range.
 
 Note:
@@ -174,7 +174,7 @@ PlutoSDR Source: LO frequency from the slider, 2.4 MS/s, gain Manual from the sl
 <div class="fig" data-inline-svg="./fig/L05-fm-band-sim.svg" style="max-width:820px; margin:0 auto;"></div>
 
 Note:
-This figure is simulated; the live display is the real one. Stations are about 200 kHz wide on odd tenths of a megahertz. Uncheck DC tracking live to show the spike the Pluto's tracking hides, then check it again. Tune a little off a station either way, since tracking also removes whatever sits at 0 Hz.
+This figure is simulated; the live display is the real one. Stations are about 200 kHz wide on odd tenths of a megahertz. Point out the DC tracking check box; the lab compares tracking on and off. Tune a little off a station either way, since tracking can also eat into a signal right at 0 Hz.
 
 ---
 
@@ -185,7 +185,7 @@ This figure is simulated; the live display is the real one. Stations are about 2
 - No single setting shows a strong local station and a weak distant one well.
 
 Note:
-Demo both extremes live: gain at zero hides the weak stations; gain at 71 dB makes spurs appear between stations. Then find the setting in between. The Pluto's Slow Attack AGC is the automatic alternative; we keep Manual to see the trade-off.
+Demo both extremes live: gain at zero hides the weak stations; gain at the top of its range makes spurs appear between stations. Then find the setting in between. The Pluto's Slow Attack AGC is the automatic alternative; we keep Manual to see the trade-off.
 
 ---
 

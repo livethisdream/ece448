@@ -5,28 +5,25 @@
 % Radio specifications are the manufacturers' numbers, as on the lesson page.
 
 \fullwidth{\textbf{Learning Objective 2.1: } I can describe what a Software Defined
-Radio is, contrast it with a traditional hardware radio, and identify the SDR platforms
-used in this course (RTL-SDR, HackRF, PlutoSDR, ADALM-PHASER).
+Radio is, contrast it with a traditional hardware radio, and identify the SDR used in
+this course, the PlutoSDR.
 \\[2pt]\textbf{Learning Objective 2.2: } I can identify the roles of the RF frontend,
 ADC/DAC, and host in an SDR signal chain and describe sample-rate, bandwidth, and
 dynamic-range trade-offs.
-\\[4pt]\normalfont\small Use the course SDR table from the lesson page. Show your work.
+\\[4pt]\normalfont\small Use the PlutoSDR table from the lesson page. Show your work.
 Write a \textbf{Documentation} line at the end (\textbf{None} if you did not
 collaborate).}
 
 \begin{questions}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\question \textbf{Choosing a radio.} The course radio is the PlutoSDR (70 to 6000 MHz
+\question \textbf{Planning a capture.} The course radio is the PlutoSDR: 70 to 6000 MHz
 in the extended-frequency mode the course Plutos use, about 4 MS/s sustained over USB
-and up to 61.44 MS/s in short bursts, 12 bits, full duplex), with the ADALM-PHASER
-(10.0 to 10.5 GHz, digitized by a PlutoSDR) for X band. The HackRF One (1 to 6000 MHz,
-20 MS/s, 8 bits, half duplex) and the RTL-SDR Blog V4 (0.5 to 1766 MHz, 2.56 MS/s,
-8 bits, receive only) are optional extras.
+and up to 61.44 MS/s in short bursts, 12 bits, full duplex.
 \begin{parts}
 
-	\part For each task, say whether the PlutoSDR can do it, and how, or which radio
-	the task needs instead and the specification that rules the PlutoSDR out.
+	\part For each task, say whether the PlutoSDR can do it and how, or name the
+	specification that rules it out.
 	\begin{enumerate}[label=(\roman*)]
 		\item Receive ship AIS at 162 MHz.
 		\item Display the whole FM broadcast band, 88 to 108 MHz, at once.
@@ -39,14 +36,12 @@ and up to 61.44 MS/s in short bursts, 12 bits, full duplex), with the ADALM-PHAS
 
 		(ii) Not while streaming: its 4 MS/s shows only 4 MHz of the 20 MHz band. A
 		short burst capture at 20 MS/s or more shows the whole band at once, and a
-		rate above 20 MS/s leaves margin for the filters' roll-off at the edges. (The
-		optional HackRF streams 20 MS/s, with no margin.)
+		rate above 20 MS/s leaves margin for the filters' roll-off at the edges.
 
 		(iii) Yes. The PlutoSDR is full duplex, so its transmit port is cabled through
 		the 30 dB attenuator to its receive port and both run at once.
 
-		(iv) No. The PlutoSDR stops at 6 GHz. The ADALM-PHASER covers 10.3 GHz, and
-		its 8 elements let it find direction.
+		(iv) No. 10.3 GHz is above the top of its tuning range, 6 GHz.
 		\end{solution}
 
 	\part Explain how an SDR differs from a hardware FM radio, and why the same
@@ -150,7 +145,7 @@ narrower than $f_s$, because the radio's filters roll off near its edges.
 		4 MS/s the Pluto streams without dropped samples.
 		\begin{solution}[0.9in]
 		\eq{ 4\ \text{bytes} \times 12.5\times10^{6} &= 50\ \text{MB/s} \\ 4\ \text{bytes} \times 4\times10^{6} &= 16\ \text{MB/s} }
-		The capture needs about three times what the USB 2.0 link sustains, so it
+		The capture needs about three times what the Pluto streams over its USB 2.0 link, so it
 		works only as a short burst into the Pluto's memory.
 		\end{solution}
 	\end{minipage}\hfill%
@@ -162,11 +157,12 @@ narrower than $f_s$, because the radio's filters roll off near its edges.
 		at 4 MS/s: \ansbox[1.2in]{16 MB/s}
 	\end{minipage}
 
-	\part A teammate suggests the optional RTL-SDR instead. Give two separate reasons
-	it cannot make this capture.
+	\part A teammate suggests streaming the capture live at 12.5 MS/s instead of taking
+	a burst. Explain what goes wrong.
 		\begin{solution}[0.9in]
-		Its tuning range stops at 1766 MHz, below 2437 MHz. Even inside its range, its
-		2.56 MS/s shows only 2.56 MHz, far less than the 10 MHz signal.
+		The Pluto streams only about 4 MS/s over its USB 2.0 link without dropping
+		samples. At 12.5 MS/s it drops most of them, so the recording has gaps and the
+		spectrum shows false signals and a raised floor.
 		\end{solution}
 
 \end{parts}
@@ -178,8 +174,8 @@ and its plots on the lesson page.
 \begin{parts}
 
 	\begin{minipage}[t]{0.58\linewidth}
-		\part How many levels does the ADC block round to with 8 bits, the RTL-SDR's
-		and HackRF's resolution, and with 12 bits, the PlutoSDR's?
+		\part How many levels does the ADC block round to with 8 bits, the resolution
+		of an 8-bit radio, and with 12 bits, the PlutoSDR's?
 		\begin{solution}[0.8in]
 		\eq{ 2^{8} = 256, \qquad 2^{12} = 4096 }
 		\end{solution}

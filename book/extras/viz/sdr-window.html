@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>SDR window — what each course SDR can see of a band at a given center frequency and sample rate</title>
+<title>SDR window — what the PlutoSDR can see of a band at a given center frequency and sample rate</title>
 <style>
   :root { --navy:#004a85; --mid:#0067b9; --edge:#cddce9; --edge2:#b9d2e5; --bg:#f5f9fc;
           --ink:#15202b; --ink3:#5b6573;
@@ -33,11 +33,10 @@
 </head>
 <body>
 <div class="app">
-  <canvas id="spec" aria-label="Simulated spectrum of the chosen band, with the part the chosen SDR can see at its center frequency and sample rate shaded"></canvas>
+  <canvas id="spec" aria-label="Simulated spectrum of the chosen band, with the part the PlutoSDR can see at its center frequency and sample rate shaded"></canvas>
   <div class="controls">
     <div class="segs">
       <div class="seg" id="band"><button data-b="fm" class="on">FM broadcast</button><button data-b="adsb">ADS-B</button><button data-b="ism">2.4 GHz ISM</button></div>
-      <div class="seg" id="radio"><button data-r="pluto" class="on">PlutoSDR</button><button data-r="hackrf">HackRF</button><button data-r="rtl">RTL-SDR</button></div>
     </div>
     <div class="ctl"><label for="fc">Center frequency</label><span class="val" id="fc-v"></span>
       <input type="range" id="fc"></div>
@@ -46,24 +45,20 @@
   </div>
   <div class="readouts">
     <div class="ro" id="ro-span"><span class="k">visible span</span><span class="v" id="o-span">—</span></div>
-    <div class="ro"><span class="k">into GNU Radio</span><span class="v" id="o-rate">—</span></div>
+    <div class="ro" id="ro-rate"><span class="k">into GNU Radio</span><span class="v" id="o-rate">—</span></div>
     <div class="ro" id="ro-sig"><span class="k">signals in view</span><span class="v" id="o-sig">—</span></div>
   </div>
 </div>
 
 <script>
 'use strict';
-// Frequencies in MHz throughout. Tuning ranges and sample rates are the
-// manufacturers' numbers: Analog Devices (ADALM-PLUTO in extended-frequency,
-// AD9364, mode, as the course Plutos run: 70 MHz to 6 GHz and up to 56 MHz of
-// bandwidth; its USB 2.0 link streams about 4 MS/s without dropped samples,
-// and its 61.44 MS/s converters reach higher rates only in bursts), and, for
-// the optional radios, Great Scott Gadgets (HackRF One) and the RTL-SDR Blog
-// V4 datasheet (2.56 MS/s is its stable rate).
+// Frequencies in MHz throughout. The tuning range and sample rates are Analog
+// Devices' numbers for the ADALM-PLUTO in extended-frequency (AD9364) mode, as
+// the course Plutos run: 70 MHz to 6 GHz and up to 56 MHz of bandwidth. Its
+// USB 2.0 link streams about 4 MS/s without dropped samples; its 61.44 MS/s
+// converters reach higher rates only in bursts, which the readout marks.
 const RADIOS = {
-  rtl:    { name: 'RTL-SDR', lo: 0.5,  hi: 1766, fsMin: 0.25,  fsMax: 2.56, bw: Infinity },
-  hackrf: { name: 'HackRF',  lo: 1,    hi: 6000, fsMin: 2,     fsMax: 20,   bw: Infinity },
-  pluto:  { name: 'PlutoSDR', lo: 70,  hi: 6000, fsMin: 0.521, fsMax: 4,    bw: 56 },
+  pluto:  { name: 'PlutoSDR', lo: 70,  hi: 6000, fsMin: 0.521, fsMax: 30, fsStream: 4, bw: 56 },
 };
 // The bands are simulated: plausible signals, not a survey of any one place.
 function fmStations() {
@@ -83,9 +78,10 @@ const BANDS = {
 const SANS = 'Inter, system-ui, -apple-system, sans-serif';
 const C = { navy:'#004a85', mid:'#0067b9', red:'#b01e24', amber:'#8a5a00', rule:'#cddce9', ink:'#15202b', ink3:'#5b6573', fill:'rgba(0,103,185,0.12)' };
 const $ = id => document.getElementById(id);
-let band = 'fm', radio = 'pluto';
+let band = 'fm';
+const radio = 'pluto';
 const fcByBand = { fm: BANDS.fm.fc, adsb: BANDS.adsb.fc, ism: BANDS.ism.fc };
-const fsByRadio = { rtl: 2.4, hackrf: 2.4, pluto: 2.4 };
+const fsByRadio = { pluto: 2.4 };
 
 function configure() {
   const B = BANDS[band], R = RADIOS[radio];
@@ -94,8 +90,6 @@ function configure() {
 }
 document.querySelectorAll('#band button').forEach(b => b.onclick = () => {
   band = b.dataset.b; document.querySelectorAll('#band button').forEach(x => x.classList.toggle('on', x === b)); configure(); update(); });
-document.querySelectorAll('#radio button').forEach(b => b.onclick = () => {
-  radio = b.dataset.r; document.querySelectorAll('#radio button').forEach(x => x.classList.toggle('on', x === b)); configure(); update(); });
 $('fc').oninput = () => { fcByBand[band] = +$('fc').value; update(); };
 $('fs').oninput = () => { fsByRadio[radio] = +$('fs').value; update(); };
 
@@ -157,7 +151,9 @@ function update() {
   $('o-span').textContent = inRange ? (+span.toFixed(2)) + ' MHz' : 'out of range';
   $('ro-span').className = 'ro' + (inRange ? '' : ' bad');
   // GNU Radio carries each complex sample as two 32-bit floats: 8 bytes.
-  $('o-rate').textContent = inRange ? (8 * fs).toFixed(1) + ' MB/s' : '—';
+  const burst = fs > R.fsStream + 1e-9;
+  $('o-rate').textContent = inRange ? (8 * fs).toFixed(1) + ' MB/s' + (burst ? ' · burst only' : '') : '—';
+  $('ro-rate').className = 'ro' + (burst ? ' bad' : '');
   const seen = inRange ? B.sig.filter(s => s.f - s.w / 2 >= win.lo - 1e-9 && s.f + s.w / 2 <= win.hi + 1e-9).length : 0;
   $('o-sig').textContent = seen + ' of ' + B.sig.length;
   $('ro-sig').className = 'ro' + (seen === 0 ? ' bad' : '');
@@ -167,9 +163,7 @@ function update() {
 window.addEventListener('resize', update);
 const q = new URLSearchParams(location.search);
 if (q.get('band') in BANDS) band = q.get('band');
-if (q.get('radio') in RADIOS) radio = q.get('radio');
 document.querySelectorAll('#band button').forEach(x => x.classList.toggle('on', x.dataset.b === band));
-document.querySelectorAll('#radio button').forEach(x => x.classList.toggle('on', x.dataset.r === radio));
 if (q.get('fc')) fcByBand[band] = +q.get('fc');
 if (q.get('fs')) fsByRadio[radio] = +q.get('fs');
 configure();

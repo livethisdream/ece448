@@ -47,7 +47,7 @@ Bring your PlutoSDR, its antenna, your `fm_capture.cfile` from the L5 Lab, and h
 
 Do the Pre-Lab before you arrive. Question 1 asks for the shift for two captures, the rates and Quadrature Demod gain of the receiver you build at the bench, which decimates differently from the lesson's, and the AM receiver's settings for a local ATIS.
 
-The setup also takes a few minutes, and some of it needs a network connection, which the lab room may not have. Put the six flowgraphs from the Lesson 7 page in one folder with `fm_capture.cfile`. Open `L07-rds-rx.grc` first and check that GRC reports no missing blocks: gr-rds comes with radioconda; if GRC reports the RDS blocks missing, run `mamba install gnuradio-rds` from the radioconda prompt. Then run `L07-fm-test-tx.grc`, which also uses an RDS block, and `L07-am-test-tx.grc` once each; they write the two test files, 76.8 MB each, into that folder and stop on their own. For Question 1(c), the FAA Chart Supplement and every sectional chart list an airport's ATIS frequency.
+The setup also takes a few minutes, and some of it needs a network connection, which the lab room may not have. Put the six flowgraphs from the Lesson 7 page in one folder with `fm_capture.cfile`. Open `L07-rds-rx.grc` first and check that GRC reports no missing blocks: gr-rds comes with radioconda; if GRC reports the RDS blocks missing, run `mamba install gnuradio-rds` from the radioconda prompt. Then run `L07-fm-test-tx.grc`, which also uses an RDS block, and `L07-am-test-tx.grc` once each; they record the two test files as SigMF, 76.8 MB of samples each, into that folder and stop on their own. For Question 1(c), the FAA Chart Supplement and every sectional chart list an airport's ATIS frequency.
 ::::
 
 ::::{frame} Part 2: Build the WBFM Receiver
@@ -55,7 +55,7 @@ The setup also takes a few minutes, and some of it needs a network connection, w
 
 1. Start GRC and choose File, New, QT GUI. Do not open `L07-wbfm-rx.grc`; build it yourself.
 2. Set `samp_rate` to 2.4e6. Add QT GUI Entries `fc_mhz` (100.0) and `station_mhz` (100.3), and a QT GUI Range `vol` from 0 to 1.
-3. Add a **File Source** on `L07-fm-test.cfile` with Repeat on.
+3. Add a **File Source** on `L07-fm-test.sigmf-data` with Repeat on.
 4. Add a **Low-pass Filter Taps** variable `chan_taps`: cutoff 105 kHz, transition 30 kHz, at `samp_rate`. Use it in a **Frequency Xlating FIR Filter** with decimation 5 and center frequency `(station_mhz - fc_mhz) * 1e6`.
 5. Add a **Quadrature Demod** with the gain from Question 1(b).
 6. Add a **Decimating FIR Filter**, decimation 10, with taps `firdes.low_pass(1, samp_rate/5, 15e3, 3e3)`.
@@ -87,7 +87,7 @@ The setup also takes a few minutes, and some of it needs a network connection, w
 ::::{frame} Part 2: ATIS
 :class: read-only
 
-1. Open `L07-am-rx.grc` and run it on `L07-am-test.cfile`. The audio is the L6 two-tone message.
+1. Open `L07-am-rx.grc` and run it on `L07-am-test.sigmf-data`. The audio is the L6 two-tone message.
 2. Stop it. Disable the File Source, enable the PlutoSDR Source, and run it again.
 3. Enter the SDR center and Station from Question 1(c), and set RF gain to 50 dB to start.
 4. Screenshot the receiver and record the information letter and the altimeter setting for Question 5(a).
@@ -109,7 +109,7 @@ The setup also takes a few minutes, and some of it needs a network connection, w
 :::{admonition} If the station name, the ATIS, or the PlutoSDR does not work
 :class: tip
 - **No station name:** check that Station matches the frequency you heard the station on. Otherwise choose a stronger station, or raise RF gain until the RDS constellation shows two clusters. RDS needs more signal than the audio does.
-- **No ATIS:** aircraft band stations need line of sight. Try a window, a higher floor, or the airport's other frequency, and say in the packet what you tried. If none works, answer Question 5 from the test file and say so.
+- **No ATIS:** aircraft band stations need line of sight. If it plays but sounds muffled, the Pluto's frequency may be a few kilohertz off; nudge Station by 1 to 3 kHz. Try a window, a higher floor, or the airport's other frequency, and say in the packet what you tried. If none works, answer Question 5 from the test file and say so.
 - **No PlutoSDR:** pair with a classmate whose PlutoSDR works for Questions 4 and 5, take turns at their laptop, and record your own numbers. Questions 2, 3, and 6 need no hardware.
 - **Audio error:** an Audio Sink that cannot open your sound card stops the flowgraph. Plug in your headphones and run it again, as in the L6 Lab.
 :::

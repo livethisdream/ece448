@@ -54,20 +54,17 @@ def write(name, fig):
 
 
 def tuning_ranges():
-    # Tuning ranges in Hz. Analog Devices (ADALM-PLUTO in extended-frequency,
-    # AD9364, mode, as the course Plutos run; CN0566 ADALM-PHASER); Great Scott
-    # Gadgets (HackRF One); RTL-SDR Blog V4 datasheet. The HackRF and RTL-SDR
-    # are optional extras.
-    radios = [("PlutoSDR", 70e6, 6e9, "full duplex"),
-              ("HackRF One", 1e6, 6e9, "optional"),
-              ("RTL-SDR Blog V4", 0.5e6, 1.766e9, "optional"),
-              ("ADALM-PHASER", 10.0e9, 10.5e9, "8-element array")]
+    # PlutoSDR tuning range in Hz, from Analog Devices: 70 MHz to 6 GHz in the
+    # extended-frequency (AD9364) mode the course Plutos use, 325 MHz to
+    # 3.8 GHz as shipped.
+    radios = [("PlutoSDR, course mode", 70e6, 6e9, "extended frequency"),
+              ("PlutoSDR, as shipped", 325e6, 3.8e9, "stock AD9363")]
     signals = [("FM", 98e6), ("AIS", 162e6), ("433.92", 433.92e6), ("ADS-B", 1090e6),
                ("GPS L1", 1575.42e6), ("2.4 GHz ISM", 2.44e9)]
-    fig, ax = plt.subplots(figsize=(8.4, 3.3))
+    fig, ax = plt.subplots(figsize=(8.4, 2.4))
     for i, (name, lo, hi, note) in enumerate(radios):
         y = len(radios) - 1 - i
-        ax.barh(y, np.log10(hi) - np.log10(lo), left=np.log10(lo), height=0.56, color=MID if i < 3 else AMBER,
+        ax.barh(y, np.log10(hi) - np.log10(lo), left=np.log10(lo), height=0.56, color=MID if i == 0 else GRAY,
                 alpha=0.9)
         ax.text(np.log10(lo) - 0.06, y, name, ha="right", va="center", color=INK, fontsize=11, fontweight="bold")
         ax.text(np.log10(hi) + 0.06, y, note, ha="left", va="center", color=GRAY, fontsize=10)
@@ -75,10 +72,10 @@ def tuning_ranges():
         ax.axvline(np.log10(f), color=RED, lw=1, ls=(0, (3, 3)), zorder=0)
         ax.text(np.log10(f) - 0.035, len(radios) - 0.35, label, rotation=90, ha="right", va="bottom", color=RED,
                 fontsize=9.5)
-    ticks = [1e5, 1e6, 1e7, 1e8, 1e9, 1e10]
-    ax.set_xticks(np.log10(ticks), ["100 kHz", "1 MHz", "10 MHz", "100 MHz", "1 GHz", "10 GHz"])
-    ax.set_xlim(5, np.log10(3e10))
-    ax.set_ylim(-0.6, len(radios) + 0.75)
+    ticks = [1e7, 1e8, 1e9, 1e10]
+    ax.set_xticks(np.log10(ticks), ["10 MHz", "100 MHz", "1 GHz", "10 GHz"])
+    ax.set_xlim(6.6, np.log10(2.5e10))
+    ax.set_ylim(-0.6, len(radios) + 0.95)
     ax.set_yticks([])
     ax.spines["left"].set_visible(False)
     ax.set_xlabel("tuning range (log scale)")

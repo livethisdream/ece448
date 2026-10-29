@@ -60,7 +60,7 @@ The figure is the first flowgraph of this lesson, opened in GRC: a signal source
 - Install it before the lab; the pre-lab checks it.
 :::
 
-The course standard is **radioconda**, a packaged installer built on the conda package manager that the GNU Radio project recommends for Windows and macOS. One installer brings GNU Radio 3.10, GNU Radio Companion, and the PlutoSDR's libraries (libiio and libad9361) and GNU Radio blocks, along with drivers for the optional HackRF and RTL-SDR and for USRP radios, plus SoapySDR, which lets one GNU Radio block talk to many kinds of hardware. Download the installer for your operating system from the <a href="https://github.com/ryanvolz/radioconda" target="_blank" rel="noopener">radioconda releases page</a> and accept the defaults.
+The course standard is **radioconda**, a packaged installer built on the conda package manager that the GNU Radio project recommends for Windows and macOS. One installer brings GNU Radio 3.10, GNU Radio Companion, and the PlutoSDR's libraries (libiio and libad9361) and GNU Radio blocks, along with drivers for many other radios and SoapySDR, which lets one GNU Radio block talk to many kinds of hardware. Download the installer for your operating system from the <a href="https://github.com/ryanvolz/radioconda" target="_blank" rel="noopener">radioconda releases page</a> and accept the defaults.
 
 On Windows, the PlutoSDR also needs Analog Devices' USB driver installed once, from the <a href="https://wiki.analog.com/university/tools/pluto/drivers/windows" target="_blank" rel="noopener">PlutoSDR Windows driver page</a>; without it the Pluto appears only as a USB drive. The next frame lists the commands that confirm each piece works.
 ::::
@@ -73,12 +73,10 @@ Open the radioconda prompt (on Windows, "Radioconda Prompt" in the Start menu; o
 | Command | Checks | A working result |
 | :-- | :-- | :-- |
 | `gnuradio-companion` | GRC itself | the GRC window opens |
-| `iio_info -s` | the PlutoSDR on USB | a context listing `PlutoSDR` at `192.168.2.1` |
-| `iio_attr -u ip:192.168.2.1 -c ad9361-phy altvoltage0 frequency 100000000` | extended-frequency mode | no error: the Pluto tunes to 100 MHz |
-| `hackrf_info` | an optional HackRF | a serial number and firmware version |
-| `rtl_test` | an optional RTL-SDR | `Found 1 device(s)` and a tuner name |
+| `iio_info -s` | the PlutoSDR on USB | one entry for your radio, usually with a `usb:` URI |
+| `iio_attr -a -c ad9361-phy altvoltage0 frequency_available` | extended-frequency mode | `[70000000 1 6000000000]`: 70 MHz to 6 GHz |
 
-A Pluto that reports an error on the `iio_attr` line is still in its stock 325 MHz to 3.8 GHz mode; bring it to EI, where it takes a minute to switch. A command that reports no device usually means a USB driver problem or a cable that carries power but not data.
+A Pluto that reports `[325000000 1 3800000000]` on the `iio_attr` line is still in its stock 325 MHz to 3.8 GHz mode; bring it to EI, where it takes a minute to switch. A command that reports no device usually means a USB driver problem or a cable that carries power but not data.
 ::::
 
 ::::{frame} Part 2: Your First Flowgraph
@@ -176,11 +174,11 @@ The left panel plots the tone's last eight samples on the unit circle, one new s
 ::::{frame} Part 3: Connect the PlutoSDR
 :::{present}
 - Antenna on the **RX** port; USB cable on the middle micro-USB port.
-- The Pluto appears as a network device at `192.168.2.1`.
+- GNU Radio finds the Pluto on USB by itself.
 - Course Plutos tune 70 MHz to 6 GHz, so the FM band is in range.
 :::
 
-The PlutoSDR has two SMA connectors, TX and RX, and two micro-USB ports: the middle one carries data and power, and the one at the end carries power only. Screw the antenna onto RX and connect the data port to the laptop. The Pluto shows up as a small USB network adapter at `192.168.2.1`, which is the address GNU Radio's PlutoSDR Source opens; `iio_info -s` from the Verify table finds it.
+The PlutoSDR has two SMA connectors, TX and RX, and two micro-USB ports: the middle one carries data and power, and the one at the end carries power only. Screw an antenna onto RX, the course's broadband whip if you have one; the two small antennas that ship with the Pluto are cut for the cellular bands and show only the strongest FM stations. Connect the data port to the laptop. The course flowgraphs leave the PlutoSDR Source's URI blank, so the block finds the Pluto on USB by itself on Windows, macOS, and Linux; with two Plutos plugged in, type the `usb:` URI that `iio_info -s` prints.
 
 Out of the box a Pluto tunes 325 MHz to 3.8 GHz, which misses broadcast FM. The course Plutos are set to extended-frequency mode, which tunes 70 MHz to 6 GHz; the `iio_attr` line in the Verify table confirms it. Only one flowgraph can stream from the Pluto at a time, so stop one before starting the next.
 ::::
@@ -214,7 +212,7 @@ The File Sink below is disabled, which GRC draws in gray. Enabling it records ev
 
 The figure is a simulation of what the flowgraph shows, so we know what to look for before the lab; the lab replaces it with the real band. The **frequency display** on top averages the spectrum. US broadcast FM stations sit on the odd tenths of a megahertz from 88.1 to 107.9 MHz, and each occupies about 200 kHz. Their heights differ by tens of dB because the stations are at different distances and powers, which is Lesson 2's link budget in action. The flat region between them is the noise floor.
 
-The **waterfall** below stacks the spectrum over time, newest at the top, with color for power. A steady carrier is a straight vertical line, a station's audio makes its band wander, and a burst transmitter, such as a key fob, appears as short dashes. The thin line exactly at the center frequency is the **DC spike**: a small offset in the receiver's own mixer and converter that looks like a signal at 0 Hz. Every zero-IF SDR makes one. The PlutoSDR's DC tracking, the flowgraph's **DC tracking** check box, subtracts most of it; uncheck the box and the spike stands up. Tracking removes whatever sits at exactly 0 Hz, a station's center included, so either way tune a little off a signal of interest rather than directly onto it.
+The **waterfall** below stacks the spectrum over time, newest at the top, with color for power. A steady carrier is a straight vertical line, a station's audio makes its band wander, and a burst transmitter, such as a key fob, appears as short dashes. The thin line exactly at the center frequency is the **DC spike**: a small offset in the receiver's own mixer and converter that looks like a signal at 0 Hz. Every zero-IF SDR makes one. The PlutoSDR's DC tracking, the flowgraph's **DC tracking** check box, subtracts its estimate of that offset, and the check box turns the tracking on and off. Tracking can also eat into a signal that sits right at 0 Hz, so either way tune a little off a signal of interest rather than directly onto it.
 ::::
 
 ::::{frame} Setting the Gain
@@ -306,7 +304,7 @@ PySDR and the PlutoSDR:
 | Throttle | paces a flowgraph with no hardware | never with an SDR |
 | Complex samples | $I + jQ$, 8 bytes each | show $-f_s/2$ to $+f_s/2$ |
 | Aliasing | a tone outside the window moves by $f_s$ | 20 kHz at 32 kHz appears at $-12$ kHz |
-| DC spike | the receiver's own offset at $f_c$ | Pluto's DC tracking hides it; tune a little off the signal |
+| DC spike | the receiver's own offset at $f_c$ | Pluto's DC tracking subtracts it; tune a little off the signal |
 | Gain | raise until the floor lifts a few dB | stop before spurs appear |
 | IQ file size | $8 f_s$ bytes per second | 19.2 MB/s at 2.4 MS/s |
 ::::

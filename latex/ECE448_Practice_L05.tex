@@ -160,11 +160,11 @@ with the gain set to Manual.
 
 	\part A student tunes the PlutoSDR exactly onto a weak narrowband signal. With DC
 	tracking off, the signal hides in a spike at the center of the display; with DC
-	tracking on, it disappears. Explain both, and the fix.
+	tracking on, it looks weakened and distorted. Explain both, and the fix.
 		\begin{solution}[1.1in]
 		The spike is the receiver's own DC offset, which appears at 0 Hz, the center
-		frequency, in every zero-IF SDR. DC tracking subtracts whatever sits at 0 Hz,
-		so it removes the offset and the signal with it. Tuning the SDR a little off the
+		frequency, in every zero-IF SDR. DC tracking subtracts its estimate of what sits
+		at 0 Hz, so it removes the offset and can eat into a signal sitting there too. Tuning the SDR a little off the
 		signal moves the signal away from the center, where neither touches it.
 		\end{solution}
 

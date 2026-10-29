@@ -27,14 +27,14 @@ Spring 2027 · Dr. Neil Rogers
 - Today: the hardware that turns a band of spectrum into those points
 
 Note:
-Bring the PlutoSDR and the ADALM-PHASER to the front of the room, with an RTL-SDR and a HackRF as optional extras, and pass the small radios around while the next slides are up.
+Bring a PlutoSDR to the front of the room and pass it around while the next slides are up; every cadet is issued one.
 
 ---
 
 ## Today's Plan
 
 1. What makes a radio software defined
-2. The course SDR: the PlutoSDR, and the optional extras
+2. The course SDR: the PlutoSDR
 3. Inside an SDR: front end, mixer and LO, I and Q, ADCs
 4. Sample rate and bandwidth
 5. Bits and clipping, in a flowgraph
@@ -53,7 +53,7 @@ Item five runs live from L04-adc-bits.grc, which needs no hardware. If GNU Radio
 Each bar is a course SDR's tuning range; the dashed lines are signals this course decodes.
 
 Note:
-The PlutoSDR receives FM at 100 MHz, AIS at 162 MHz, key fobs at 433.92 MHz, ADS-B at 1090 MHz, and Wi-Fi at 2.4 GHz with the same hardware. Only the software changes. Point out that the course Plutos run in extended-frequency mode, 70 MHz to 6 GHz (325 MHz to 3.8 GHz as shipped), that the HackRF and RTL-SDR are optional, and that only the ADALM-PHASER works at X band.
+The PlutoSDR receives FM at 100 MHz, AIS at 162 MHz, key fobs at 433.92 MHz, ADS-B at 1090 MHz, and Wi-Fi at 2.4 GHz with the same hardware. Only the software changes. Point out that the course Plutos run in extended-frequency mode, 70 MHz to 6 GHz (325 MHz to 3.8 GHz as shipped).
 
 ---
 
@@ -68,20 +68,21 @@ An SDR is a radio in which software defines some or all of the physical layer. I
 
 ---
 
-## The Course SDRs
+## The Course SDR: the PlutoSDR
 
-| Radio | Tunes | Max rate | Bits | Transmit |
-| :-- | :-- | :-- | :-: | :-- |
-| PlutoSDR | 70–6000 MHz | 4 MS/s sustained | 12 | full duplex |
-| ADALM-PHASER | 10.0–10.5 GHz | via its Pluto | 12 | — |
-| HackRF One (optional) | 1–6000 MHz | 20 MS/s | 8 | half duplex |
-| RTL-SDR V4 (optional) | 0.5–1766 MHz | 2.56 MS/s | 8 | no |
+| Specification | PlutoSDR |
+| :-- | :-- |
+| Tunes | 70–6000 MHz (325–3800 as shipped) |
+| Streams over USB | about 4 MS/s |
+| Bursts | up to 61.44 MS/s |
+| Bits | 12 |
+| Transmit | full duplex |
 
 - The PlutoSDR's converters reach 61.44 MS/s, but its USB 2.0 link streams about 4 MS/s without drops.
-- Every number comes from the manufacturer's data, linked on the lesson page.
+- Every number comes from Analog Devices' data, linked on the lesson page.
 
 Note:
-The PlutoSDR is every lab's radio. Its 70 MHz to 6 GHz is extended-frequency (AD9364) mode, which the course Plutos are set to; live flowgraphs stay at 2 to 4 MS/s and wider signals are captured in bursts. The RTL-SDR's 2.56 MS/s is the datasheet's rate without dropped samples. The ADALM-PHASER mixes 10.0 to 10.5 GHz down to about 2.2 GHz and a PlutoSDR digitizes it, so its rate and bits are the PlutoSDR's.
+The PlutoSDR is every lab's radio. Its 70 MHz to 6 GHz is extended-frequency (AD9364) mode, which the course Plutos are set to; live flowgraphs stay at 2 to 4 MS/s and wider signals are captured in bursts. An RTL-SDR a cadet already owns also works as a receive-only extra; no lesson needs it.
 
 ---
 
@@ -126,12 +127,12 @@ Lesson 5 shows the negative frequencies this makes possible on GNU Radio's plots
 
 - **Zero-IF**: one quadrature mixer straight to 0 Hz
 - **Superheterodyne**: to a fixed IF first, then to 0 Hz
-- ADALM-PHASER: 10.0–10.5 GHz to about 2.2 GHz, then a PlutoSDR
+- The PlutoSDR is zero-IF; a classic FM radio is a superheterodyne
 
 GNU Radio receives complex samples whatever the architecture.
 
 Note:
-Zero-IF puts anything that leaks into the mixer output at 0 Hz in the middle of the band, which is one source of Lesson 5's DC spike. The ADALM-PHASER mixes X band to about 2.2 GHz and the PlutoSDR does the rest. The PlutoSDR follows the zero-IF chain; the optional RTL-SDR and HackRF reach the same I/Q stream by other routes.
+Zero-IF puts anything that leaks into the mixer output at 0 Hz in the middle of the band, which is one source of Lesson 5's DC spike. A classic FM radio mixes every station to 10.7 MHz and filters there. The PlutoSDR follows the zero-IF chain; other SDRs reach the same I/Q stream by other routes.
 
 ---
 
@@ -153,13 +154,13 @@ A laptop that cannot keep up drops samples, and most drivers print an overflow m
 ## SDR Window
 
 - FM on the PlutoSDR at 2.4 MS/s: three stations in view
-- PlutoSDR: streams at most 4 MS/s, a slice of one Wi-Fi channel
-- Optional HackRF at 20 MS/s: a whole Wi-Fi channel, 160 MB/s
+- Streaming stops at 4 MS/s: a slice of one Wi-Fi channel
+- A burst at 20 MS/s: a whole Wi-Fi channel, 160 MB/s
 
 <p class="viz-cue">↗ Interactive on the lesson page</p>
 
 Note:
-Start on FM with the PlutoSDR and raise the rate to its 4 MS/s stop. On the ISM band, show how little of one Wi-Fi channel the PlutoSDR's 4 MS/s covers, then put the whole channel in view with the HackRF at 20 MS/s. The PlutoSDR gets that view only as a short burst capture.
+Start on FM with the PlutoSDR and raise the rate past 4 MS/s, where the readout turns to burst only. On the ISM band, show how little of one Wi-Fi channel 4 MS/s covers, then raise the rate to about 20 MS/s to put the whole channel in view, which the Pluto delivers only as a short burst capture.
 
 ---
 
@@ -222,12 +223,12 @@ On a real SDR these false signals look exactly like transmissions. Set the gain 
 
 ## Choosing the Radio and Its Settings
 
-1. **Radio**: its tuning range covers the signal, and it transmits if the task does.
-2. **Sample rate**: a little more than the signal's bandwidth.
+1. **Range**: the signal sits inside 70 MHz to 6 GHz.
+2. **Sample rate**: a little more than the signal's bandwidth; past 4 MS/s, a burst.
 3. **Gain**: the strongest signal in the window stays below full scale.
 
 Note:
-Broadcast FM: PlutoSDR at 2.4 MS/s. A 20 MHz Wi-Fi channel: a PlutoSDR burst capture at 20 MS/s or more, or the optional HackRF streaming at 20 MS/s. Transmit into a cable through the 30 dB attenuator: PlutoSDR, which can receive at the same time. Direction of an X-band source: ADALM-PHASER.
+Broadcast FM: 2.4 MS/s. A 20 MHz Wi-Fi channel: a burst capture at 20 MS/s or more. A test signal the course generates goes out at 915 MHz into a cable through the 30 dB attenuator, or, if the instructor says so, over the air at 915 MHz at low power, never on a real service's frequency; the Pluto can receive it at the same time.
 
 ---
 

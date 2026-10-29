@@ -76,13 +76,13 @@ The chart shows every allocation in the United States, from 3 kHz at the top lef
 :::
 :::{present}
 <img src="../../viz/img/L02-ism-bands.svg"
-     alt="The US ISM bands at 6.78, 13.56, 27.12, and 40.68 MHz and at 915, 2450, and 5800 MHz on a log frequency axis, with the tuning ranges of the course PlutoSDR, 70 MHz to 6 GHz in extended-frequency mode, and of two optional radios, the HackRF One, 1 MHz to 6 GHz, and the RTL-SDR, 24 MHz to 1.766 GHz"
+     alt="The US ISM bands at 6.78, 13.56, 27.12, and 40.68 MHz and at 915, 2450, and 5800 MHz on a log frequency axis, with the tuning range of the course PlutoSDR, 70 MHz to 6 GHz in extended-frequency mode, and 325 MHz to 3.8 GHz as shipped"
      style="max-width: 720px; width: 100%; display: block; margin: 0 auto;">
 :::
 
 In the United States the FCC (and the NTIA, for federal users) allocates the radio spectrum, and the allocation chart shows who holds each band. Almost all of it requires a license to transmit. The exceptions that matter most in this course are the **industrial, scientific, and medical (ISM)** bands. Part 15 of the FCC rules lets anyone transmit there at low power without a license, provided they accept interference from everyone else, and that is why Wi-Fi, Bluetooth, and most hobby drones share 915 MHz, 2.4 GHz, and 5.8 GHz.
 
-Two rules govern what we do with the SDRs. Receiving is unrestricted: we can tune anywhere the hardware reaches and look at whatever is there, which is most of this course. Transmitting is not: in class, cadets transmit only into a cable through a 30 dB attenuator, and only when the lesson says to. The figure shows where the ISM bands fall against the tuning range of each SDR. The course PlutoSDR, in its extended-frequency mode, covers all three of the common ISM bands and can transmit in them, as can the optional HackRF; the optional RTL-SDR receives only, and it reaches 915 MHz but not 2.4 GHz.
+Two rules govern what we do with the SDRs. Receiving is unrestricted: we can tune anywhere the hardware reaches and look at whatever is there, which is most of this course. Transmitting is not: in class, cadets transmit only into a cable through a 30 dB attenuator, and only when the lesson says to. The figure shows where the ISM bands fall against the PlutoSDR's tuning range. In the course's extended-frequency mode it covers all three of the common ISM bands and can transmit in them; as shipped it would miss 5.8 GHz.
 ::::
 
 ::::{frame} Part 2: The Friis Equation

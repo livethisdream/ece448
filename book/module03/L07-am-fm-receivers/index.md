@@ -57,7 +57,7 @@ By the end of the lesson we will turn that file into audio, read the station's n
      alt="GNU Radio Companion with L07-fm-test-tx.grc open: two tones, pre-emphasis, and a level for station A's audio; an RDS Encoder, Differential Encoder, Map, Unpack K Bits, Chunks to Symbols, root raised cosine filter, resampler, and a 57 kHz Signal Source for RDS; an Add forming the multiplex, a resampler, a Frequency Mod, and a 300 kHz shift; a second station with a different test tone shifted to minus 500 kHz; a Noise Source; and an Add, Head, and File Sink"
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
 
-The test file comes from `L07-fm-test-tx.grc`. It builds each station the way a broadcaster does, with pre-emphasis, an RDS encoder from gr-rds, and levels set for 75 kHz of deviation, about 71 kHz at the peaks of this audio, then adds noise and writes 4 s of samples, 76.8 MB, to `L07-fm-test.cfile`. Nothing in it transmits: its last block is a File Sink. `L07-am-test-tx.grc` does the same for the AM receiver, with one station at 126.2 MHz. Run both once before class, in the folder that holds the receivers.
+The test file comes from `L07-fm-test-tx.grc`. It builds each station the way a broadcaster does, with pre-emphasis, an RDS encoder from gr-rds, and levels set for 75 kHz of deviation, about 71 kHz at the peaks of this audio, then adds noise and records 4 s of samples as SigMF: 76.8 MB of samples in `L07-fm-test.sigmf-data`, and the sample rate and center frequency in `L07-fm-test.sigmf-meta`. Nothing in it transmits: its last block is a SigMF Sink, which writes a file. `L07-am-test-tx.grc` does the same for the AM receiver, with one station at 126.2 MHz. Run both once before class, in the folder that holds the receivers.
 :::
 ::::
 
@@ -226,7 +226,7 @@ Aircraft and control towers talk in AM between 118 and 137 MHz, and most airport
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
 :::
 
-After the filter, the AM station is a complex signal with its carrier at 0 Hz, and its envelope is the magnitude of each sample. **Complex to Mag** replaces the Abs block of Lesson 6, and the rest is the L6 receiver: the same 3 kHz low-pass taps and a DC Blocker that removes the carrier's constant. An **AGC** block then holds the audio level steady, because a station's strength depends on the aircraft's distance and an AM receiver's output depends on it directly. The figure shows the receiver on `L07-am-test.cfile`, which carries the L6 two-tone message at $m$ = 0.5; the audio repeats every 2 ms, as it did in Lesson 6.
+After the filter, the AM station is a complex signal with its carrier at 0 Hz, and its envelope is the magnitude of each sample. **Complex to Mag** replaces the Abs block of Lesson 6, and the rest is the L6 receiver: the same 3 kHz low-pass taps and a DC Blocker that removes the carrier's constant. An **AGC** block then holds the audio level steady, because a station's strength depends on the aircraft's distance and an AM receiver's output depends on it directly. The figure shows the receiver on `L07-am-test.sigmf-data`, which carries the L6 two-tone message at $m$ = 0.5; the audio repeats every 2 ms, as it did in Lesson 6.
 ::::
 
 ::::{frame} AM and FM in the Same Noise
@@ -314,7 +314,7 @@ The same receiver also plays narrowband FM, badly, which shows what its settings
 - Receiving is unrestricted; these flowgraphs only receive.
 :::
 
-On the air, the receivers need three settings from Lesson 5. Tune the SDR a few hundred kilohertz away from the station, so the center of the band stays out of the channel filter, and type the station's real frequency into Station. The PlutoSDR's DC tracking removes whatever sits at 0 Hz, and whatever offset it leaves behind is a spike there, so a shift under about 100 kHz puts a notch or a tone inside the channel, where it shows up as distortion or hum. Set the RF gain slider to the highest gain in your L5 Lab gain table at which no new signals appeared between stations. For ATIS, look up the airport's frequency in the FAA Chart Supplement or on a sectional chart, and expect a weaker signal than broadcast FM, because aircraft band stations are lower in power and need line of sight.
+On the air, the receivers need three settings from Lesson 5. Tune the SDR a few hundred kilohertz away from the station, so the center of the band stays out of the channel filter, and type the station's real frequency into Station. The center is where the PlutoSDR's DC tracking acts and where any offset it leaves behind sits, so a shift under about 100 kHz puts both inside the channel, where they show up as distortion or hum. Set the RF gain slider to the highest gain in your L5 Lab gain table at which no new signals appeared between stations. For ATIS, look up the airport's frequency in the FAA Chart Supplement or on a sectional chart, and expect a weaker signal than broadcast FM, because aircraft band stations are lower in power and need line of sight. The Pluto's own frequency can be off by a few kilohertz there; if the ATIS sounds muffled, nudge Station by 1 to 3 kHz.
 
 RDS needs a stronger signal than the audio does, because its 57 kHz subcarrier sits where the multiplex noise is highest. If the station name never appears, raise the gain or choose a stronger station before changing the flowgraph. As Lesson 2 said, receiving is unrestricted and transmitting is not; every flowgraph here uses only the PlutoSDR's receive port, and nothing in this lesson transmits.
 ::::
@@ -330,8 +330,8 @@ This lesson follows:
 
 Downloads:
 
-- <a class="doc-link" href="../../grc/L07-fm-test-tx.grc" download>L07-fm-test-tx.grc</a>: writes `L07-fm-test.cfile`, 4 s (76.8 MB) of a simulated FM band around 100.0 MHz with two stations, one carrying RDS. It needs gr-rds. Run it once; it stops on its own.
-- <a class="doc-link" href="../../grc/L07-am-test-tx.grc" download>L07-am-test-tx.grc</a>: writes `L07-am-test.cfile`, 4 s (76.8 MB) of a simulated AM station at 126.2 MHz carrying the L6 two-tone message.
+- <a class="doc-link" href="../../grc/L07-fm-test-tx.grc" download>L07-fm-test-tx.grc</a>: records `L07-fm-test.sigmf-data` and `.sigmf-meta`, 4 s (76.8 MB) of a simulated FM band around 100.0 MHz with two stations, one carrying RDS. It needs gr-rds. Run it once; it stops on its own.
+- <a class="doc-link" href="../../grc/L07-am-test-tx.grc" download>L07-am-test-tx.grc</a>: records `L07-am-test.sigmf-data` and `.sigmf-meta`, 4 s (76.8 MB) of a simulated AM station at 126.2 MHz carrying the L6 two-tone message.
 - <a class="doc-link" href="../../grc/L07-wbfm-rx.grc" download>L07-wbfm-rx.grc</a>: the broadcast FM receiver, playing the test file, your L5 capture, or the PlutoSDR.
 - <a class="doc-link" href="../../grc/L07-rds-rx.grc" download>L07-rds-rx.grc</a>: the same receiver with the RDS decoder. It also needs gr-rds.
 - <a class="doc-link" href="../../grc/L07-am-rx.grc" download>L07-am-rx.grc</a>: the AM receiver for the aircraft band.

@@ -6,9 +6,10 @@ options:
     cmake_opt: ''
     comment: ''
     copyright: ''
-    description: 'L7: writes L07-fm-test.cfile, 4 s of 2.4 MS/s IQ centered on 100.0
-      MHz. Station A at 100.3 MHz carries a two-tone message and RDS; station B at
-      99.5 MHz carries a different test tone. Simulated; nothing transmits.'
+    description: 'L7: writes L07-fm-test.sigmf-data and .sigmf-meta, 4 s of 2.4 MS/s
+      IQ centered on 100.0 MHz. Station A at 100.3 MHz carries a two-tone message
+      and RDS; station B at 99.5 MHz carries a different test tone. Simulated; nothing
+      transmits.'
     gen_cmake: 'On'
     gen_linking: dynamic
     generate_options: no_gui
@@ -207,16 +208,19 @@ blocks:
     rotation: 0
     state: enabled
 - name: file_sink
-  id: blocks_file_sink
+  id: blocks_sigmf_sink_minimal
   parameters:
     affinity: ''
     alias: ''
-    append: 'False'
+    author: ECE 448
+    center_freq: 100e6
     comment: ''
-    file: L07-fm-test.cfile
-    type: complex
-    unbuffered: 'False'
-    vlen: '1'
+    description: 'L7 FM test band, Simulated: station A at 100.3 MHz (two-tone message
+      and RDS), station B at 99.5 MHz.'
+    filename: L07-fm-test
+    hw_info: Simulated in GNU Radio; no radio
+    sample_rate: samp_rate
+    type: complex float (fc32_le)
   states:
     bus_sink: false
     bus_source: false
