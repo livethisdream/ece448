@@ -296,6 +296,25 @@ since they follow this structure. Two changes:
   he taught from; the L13 answer left in public history is not worth a new
   capture (regenerate only if L13's lab is reworked for another reason).
 
+## Lesson threads, fifth batch (2026-10-29)
+
+- **L17, L18-L19, and L20 done** (PRs #35, #37, #36). L1-L20 are converted.
+- **Simulated signals, real ones where they exist.** L17's demo and lab
+  devices are simulated remotes; the lab adds a graded receive-only capture of
+  a real remote the cadet owns. ADS-B is live at USAFA; AIS is a simulated
+  two-channel recording, because no ships are in range. Every handed-out
+  recording is SigMF, and each lab recording comes from a private generator in
+  `ECE448-faculty/lab-solutions/` that reproduces it byte for byte.
+- **Generators that could transmit say they must not.** 1090 MHz (ADS-B) and
+  161.975/162.025 MHz (AIS) carry safety-of-life traffic; their flowgraphs
+  write files only, and their descriptions say never to connect a transmitter.
+- **Bench checks for Neil:** L17's PlutoSDR-to-SDR cable link and the
+  RTL-SDR capture path (1.024 MS/s, URH Samples/Symbol 512); live ADS-B on an
+  RTL-SDR; L20's Wi-Fi and LTE steps on a HackRF at 20 MS/s.
+- **Open for Neil:** an over-the-air Hunter fan demo for L17 (as written,
+  nothing transmits over the air), and whether to publish the third-party
+  AIS recording ("bebau") from the faculty repo for L19.
+
 ## Lesson threads (from L6 on)
 
 The trial is done. From L6 on, each lesson is its own thread, and this thread
