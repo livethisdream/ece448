@@ -250,19 +250,14 @@ Lower the SNR and watch the spectrum fill with noise. Every number arrives down 
 ::::{frame} DTMF on a Real Radio
 :::{present}
 - Two-way radios send DTMF over FM to control repeaters.
-- Listen in SDR Flex or GQRX on an RTL-SDR, in narrow FM.
-- Hand the audio to multimon-ng, or to this decoder.
+- `L13-nfm-pluto.grc` receives narrow FM on the PlutoSDR.
+- Its audio feeds the same DTMF Decoder.
 - The L13 Lab decodes a phone through the microphone.
 :::
 
-On the air, radios send DTMF over narrowband FM. Amateur repeaters accept DTMF commands, and many handheld radios have a DTMF keypad. To hear it, open [SDR Flex](https://livethisdream.github.io/sdr-flex/) with an RTL-SDR, tune to a channel that carries DTMF, demodulate it as narrow FM, and listen. SDR Flex runs in a browser, and its server, which live radios and external decoders need, runs in Docker; it can attach `multimon-ng` and print the digits, the same job as our decoder. Without SDR Flex, use GQRX, on Linux or macOS, in Narrow FM mode, and press its UDP button, which sends the audio as 48 kHz, 16-bit samples to port 7355. In a terminal, run
+On the air, radios send DTMF over narrowband FM. Amateur repeaters accept DTMF commands, and many handheld radios have a DTMF keypad. `L13-nfm-pluto.grc` receives it: type a channel that carries DTMF, such as a local 2 m repeater's output, into Channel. The PlutoSDR tunes 200 kHz below the channel at 1.536 MS/s, with its gain in slow-attack automatic mode, and a Frequency Xlating FIR Filter brings the channel to 0 Hz at 48 kHz. GNU Radio's **NBFM Receive** block demodulates it with a 5 kHz deviation setting, the amateur standard, and decimates the audio by 6 to the decoder's 8 kHz. The audio plays on the speaker and feeds the eight Goertzel bins and the DTMF Decoder, which takes the Wav File Source's place. The band and its waterfall help you find the channel, 200 kHz right of center. The flowgraph is compiled but not yet run on a live channel.
 
-```
-nc -l -u 7355 | sox -t raw -e signed-integer -b 16 -r 48000 -c 1 - \
-  -t raw -e signed-integer -b 16 -r 22050 -c 1 - | multimon-ng -t raw -a DTMF -
-```
-
-which resamples the audio to the 22.05 kHz multimon-ng expects and prints each digit. The `sox` and `multimon-ng` half decodes the capture correctly; the live link from GQRX is not yet tested. To decode it in GNU Radio instead, tune an RTL-SDR to the channel, demodulate it with an FM receiver like Lesson 7's, with its channel filter narrowed to the 12.5 kHz channel, resample the audio to 8 kHz, and connect the audio to the DTMF Decoder block in place of the Wav File Source.
+Optional: `multimon-ng`, the 2025 deck's ready-made decoder, prints the digits from a recording; `sox L13-capture.wav -t raw -e signed-integer -b 16 -r 22050 -c 1 - | multimon-ng -t raw -a DTMF -` decodes the lesson's capture correctly.
 
 Nothing in this lesson transmits, and decoding is receive-only. In class we transmit only into a cable, into a shielded enclosure, or at very low power in an ISM band, and only when the lesson says to. The L13 Lab uses a real acoustic signal instead: `L13-dtmf-mic.grc` decodes a phone's keypad tones from the laptop's microphone. It is compiled only and not yet tested with a real microphone.
 ::::
@@ -282,6 +277,7 @@ Each DTMF key is one row tone plus one column tone. Goertzel blocks of length 20
 - <a class="doc-link" href="../../grc/L13-capture.wav" download>L13-capture.wav</a>: the synthetic capture of 719-555-0148, 1.5 s at 8 kHz.
 - <a class="doc-link" href="../../grc/L13-dtmf-rx.grc" download>L13-dtmf-rx.grc</a>: the receiver, with the eight Goertzel bins and the DTMF Decoder. No hardware needed.
 - <a class="doc-link" href="../../grc/L13-dtmf-link.grc" download>L13-dtmf-link.grc</a>: dialer, noisy channel, and decoder, with sliders. No hardware needed.
+- <a class="doc-link" href="../../grc/L13-nfm-pluto.grc" download>L13-nfm-pluto.grc</a>: a narrowband FM receiver on the PlutoSDR feeding the DTMF Decoder, with the band, a waterfall, and audio. Needs a PlutoSDR; receive only.
 - <a class="doc-link" href="../../grc/L13-dtmf-sweep.py" download>L13-dtmf-sweep.py</a>: the noise and frequency-error sweeps behind this page's observations, run headless. Put it beside `L13-dtmf-link.grc`.
 
 Put the files in one folder; the receiver opens the WAV file by name from that folder. Open a `.grc` file from GRC's File menu, or run `gnuradio-companion L13-dtmf-rx.grc` from the radioconda prompt. The DTMF Dialer and DTMF Decoder are Embedded Python Blocks, saved inside the `.grc` files.

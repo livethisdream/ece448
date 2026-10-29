@@ -19,14 +19,11 @@ shots first, in one folder:
     (cd DIR && python3.12 L14_hd_test_tx.py)               # writes L14-hd-test.cu8
     (cd DIR && xvfb-run python3.12 scripts/grc/grc_shot.py --size 1060x1000 L14_hd_find.py find.png 12)
     # find_noise.png: the same, on a test file written with noise_amp = 0.15
-    scripts/grc/grc_canvas.sh book/extras/grc/L14-hd-find.grc DIR/canvas_find.png 1800x1000
+    scripts/grc/grc_canvas.sh book/extras/grc/L14-hd-find.grc DIR/canvas_find.png 1800x1100
     scripts/grc/grc_canvas.sh book/extras/grc/L14-hd-test-tx.grc DIR/canvas_tx.png 1800x1000
 
-GQRX (apt install gqrx-sdr) plays the same test file, converted to complex
-float, through its file input, device string
-"file=hd.cf32,rate=1488375,freq=100300000,repeat=true,throttle=true", in WFM
-mode with DSP started; its window at 1060x666 is DIR/gqrx.png. GQRX needs a
-PulseAudio server, so run it under xvfb-run with pulseaudio and a null sink.
+L14-hd-scan is the spectrum and waterfall half of find.png, the first look at
+the band that opens the lesson.
 
     python3 scripts/graphics/l14_figures.py [DIR]
 """
@@ -127,9 +124,8 @@ def shots(raw: Path):
     save(stamp(find.crop((0, 0, 1060, 362)), (1020, 70)), "L14-hd-meters", colors=32)
     noisy = Image.open(raw / "find_noise.png").convert("RGB")
     save(stamp(noisy, (1020, 412), "Simulated: test file, noise_amp 0.15"), "L14-hd-noise", colors=12)
-    gq = Image.open(raw / "gqrx.png").convert("RGB").crop((0, 0, 1060, 666))
-    save(stamp(gq, (745, 128)).resize((848, 533)), "L14-gqrx", colors=32)
-    save(Image.open(raw / "canvas_find.png").crop((0, 68, 1700, 1000)), "L14-grc-find", colors=64)
+    save(stamp(find.crop((0, 362, 1060, 1000)), (1020, 50)), "L14-hd-scan", colors=16)
+    save(Image.open(raw / "canvas_find.png").crop((0, 68, 1700, 1100)), "L14-grc-find", colors=64)
     save(Image.open(raw / "canvas_tx.png").crop((0, 68, 1760, 940)), "L14-grc-test-tx", colors=64)
 
 

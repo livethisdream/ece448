@@ -27,7 +27,7 @@ Spring 2027 · Dr. Neil Rogers
 - Today we find a digital signal that sits beside an FM station.
 
 Note:
-Before class, run L14-hd-test-tx.grc once so L14-hd-test.cu8 sits next to L14-hd-find.grc. If the room has an RTL-SDR and an antenna, find a local HD station on the waterfall ahead of time.
+Before class, run L14-hd-test-tx.grc once so L14-hd-test.cu8 sits next to L14-hd-find.grc. If the room has a PlutoSDR and an antenna, switch the finder to its PlutoSDR Source and find a local HD station on the waterfall ahead of time.
 
 ---
 
@@ -37,7 +37,7 @@ Before class, run L14-hd-test-tx.grc once so L14-hd-test.cu8 sits next to L14-hd
 2. The digital sidebands and OFDM
 3. Recreating and finding the sidebands in GNU Radio
 4. Measuring them
-5. Decoding with nrsc5
+5. Decoding with nrsc5 (optional)
 
 Note:
 This follows the slides: overview, spectrum, RBDS, sidebands, the OFDM concept and implementation, then tools.
@@ -46,12 +46,12 @@ This follows the slides: overview, spectrum, RBDS, sidebands, the OFDM concept a
 
 ## Find the Shelves on the Air
 
-<img src="./img/14-hd-radio/L14-gqrx.png" alt="Simulated: GQRX on the L14 test file at 100.3 MHz, with a flat shelf on each side of the station on the spectrum and two straight bands on the waterfall; the station at 99.9 MHz has none" style="max-height:400px; display:block; margin:0 auto;">
+<img src="./img/14-hd-radio/L14-hd-scan.png" alt="Simulated: the finder's spectrum and waterfall on the L14 test file at 100.3 MHz, with a flat shelf on each side of the station on the spectrum and two straight bands on the waterfall; the station at 99.9 MHz has none" style="max-height:400px; display:block; margin:0 auto;">
 
-Tune SDR Flex, or GQRX, to an FM station: flat bands beside it are HD Radio.
+Run L14-hd-find.grc on the PlutoSDR at an FM station: flat bands beside it are HD Radio.
 
 Note:
-Live demo: the RTL-SDR in SDR Flex's full version (its radio drivers are not yet tried with a real radio, so GQRX is the tested path), at 1,488,375 samples per second, tuned to a strong local station. In SDR Flex, drag a box across one shelf and choose Tune here. hdradio.com/stations lists the local HD stations. The figure is GQRX playing the simulated test file.
+Live demo: in L14-hd-find.grc, disable the File Source and the six blocks after it, enable the PlutoSDR Source (1,488,375 samples per second, extended-frequency mode), and type a strong local station into Center. Drag a box across one shelf on the spectrum to zoom in. hdradio.com/stations lists the local HD stations. The figure is the finder playing the simulated test file.
 
 ---
 
@@ -130,27 +130,27 @@ Start at HD Radio: the red dots sit on zero. Move the spacing off 1.00 and the n
 
 <img src="./img/14-hd-radio/L14-grc-test-tx.png" alt="L14-hd-test-tx.grc: two OFDM chains of Random Uniform Source, Chunks to Symbols, Stream to Tagged Stream, OFDM Carrier Allocator, reverse FFT, and OFDM Cyclic Prefixer; an FM host and neighbor; noise; and a File Sink of unsigned bytes" style="max-height:400px; display:block; margin:0 auto;">
 
-Each side carries random QPSK on subcarriers 356 to 546, written as RTL-SDR bytes.
+Each side carries random QPSK on subcarriers 356 to 546, written as unsigned bytes.
 
 Note:
-The FFT has 4096 points at 1,488,375 samples per second, so each bin is one subcarrier, and the guard is 224 samples. The symbols are random, not NRSC-5 data, so nrsc5 cannot decode this file. The 4 s file is 11.9 MB. Nothing transmits.
+The FFT has 4096 points at 1,488,375 samples per second, so each bin is one subcarrier, and the guard is 224 samples. The symbols are random, not NRSC-5 data, so nrsc5 cannot decode this file. The 4 s file is 11.9 MB, in nrsc5's default format. Nothing transmits.
 
 ---
 
 ## The Sideband Finder
 
-<img src="./img/14-hd-radio/L14-grc-find.png" alt="L14-hd-find.grc: a byte File Source through UChar To Float, Add Const, Multiply Const, Deinterleave, and Float To Complex, or an RTL-SDR, into a frequency sink, a waterfall, and three band-power meters" style="max-height:400px; display:block; margin:0 auto;">
+<img src="./img/14-hd-radio/L14-grc-find.png" alt="L14-hd-find.grc: a byte File Source through UChar To Float, Add Const, Multiply Const, Deinterleave, and Float To Complex, or a PlutoSDR, into a frequency sink, a waterfall, and three band-power meters" style="max-height:400px; display:block; margin:0 auto;">
 
-Five blocks turn RTL-SDR bytes into complex samples.
+Five blocks turn unsigned bytes into complex samples.
 
 Note:
-Subtract 127.5, scale by 1/128, pair the bytes. GRC shows the RTL-SDR Source grayed out. To go live, select the File Source and the six blocks after it, press D, and enable the RTL-SDR Source.
+Subtract 127.5, scale by 1/128, pair the bytes. GRC shows the PlutoSDR Source grayed out, with a Rational Resampler and SigMF Sink that record for nrsc5. To go live, select the File Source and the six blocks after it, press D, and enable the PlutoSDR Source.
 
 ---
 
 ## Finding the Sidebands
 
-<img src="./img/14-hd-radio/L14-hd-find.png" alt="Simulated: the sideband finder with meters at -23.02 and -23.05 dBc and 0.02 dB between them, the spectrum with two flat shelves, and the waterfall with two straight bands" style="max-height:440px; display:block; margin:0 auto;">
+<img src="./img/14-hd-radio/L14-hd-find.png" alt="Simulated: the sideband finder with meters at -23.04 and -23.06 dBc and 0.02 dB between them, the spectrum with two flat shelves, and the waterfall with two straight bands" style="max-height:440px; display:block; margin:0 auto;">
 
 The shelves have flat tops and sharp edges, and their width never changes on the waterfall.
 
@@ -161,7 +161,7 @@ The figure comes from the simulated test file. The shelves start at 100.1706 and
 
 ## Measuring Sideband Power
 
-<img src="./img/14-hd-radio/L14-hd-meters.png" alt="Simulated: Upper sideband -23.02 dBc, Lower sideband -23.05 dBc, Upper minus lower 0.02 dB" style="max-height:200px; display:block; margin:0 auto;">
+<img src="./img/14-hd-radio/L14-hd-meters.png" alt="Simulated: Upper sideband -23.04 dBc, Lower sideband -23.06 dBc, Upper minus lower 0.02 dB" style="max-height:200px; display:block; margin:0 auto;">
 
 - Each meter shifts its band to 0 Hz, filters it, and averages $\vert x\vert^2$ for 0.2 s.
 - The sideband meter minus the host meter gives dBc; a third reading compares the sides.
@@ -173,29 +173,28 @@ The host band is plus or minus 100 kHz, each sideband is plus or minus 34.7 kHz 
 
 ## What Noise Does
 
-<img src="./img/14-hd-radio/L14-hd-noise.png" alt="Simulated: the finder with noise_amp 0.15: the floor near -66 dB, the shelves about 8 dB above it, and the meters reading -22.26 and -22.30 dBc" style="max-height:440px; display:block; margin:0 auto;">
+<img src="./img/14-hd-radio/L14-hd-noise.png" alt="Simulated: the finder with noise_amp 0.15: the floor near -66 dB, the shelves about 8 dB above it, and the meters reading -22.24 and -22.27 dBc" style="max-height:440px; display:block; margin:0 auto;">
 
 With `noise_amp` raised to 0.15, the shelves sink toward the floor and the meters read high.
 
 Note:
-Demo: change noise_amp from 0.03 to 0.15 in L14-hd-test-tx.grc, rerun it, rerun the finder. The floor rises about 14 dB and the meters read about 0.7 dB high, because the noise in each band adds to the sideband's power.
+Demo: change noise_amp from 0.03 to 0.15 in L14-hd-test-tx.grc, rerun it, rerun the finder. The floor rises about 14 dB and the meters read about 0.8 dB high, because the noise in each band adds to the sideband's power.
 
 ---
 
-## Decoding with nrsc5
+## Decoding with nrsc5 (optional)
 
 ```
-nrsc5 -g 30 100.3 0            # tune 100.3 MHz, play HD1
-nrsc5 -g 30 -w hd.cu8 100.3 0  # also record the IQ
-nrsc5 -r hd.cu8 0            # decode a recording
+nrsc5 --iq-input-format cf32 -r hd.sigmf-data 0  # play HD1
+nrsc5 --iq-input-format cf32 -r hd.sigmf-data 1  # play HD2
 ```
 
 nrsc5 runs the rest of NRSC-5: sync, QPSK, deinterleaving, decoding, and audio.
 
-The nrsc5 README documents these commands; we have not yet tested them in this course.
+The finder records the Pluto as SigMF at 744,188 S/s, half rate, which nrsc5 reads.
 
 Note:
-nrsc5 is not part of radioconda; build it from source on Linux, with the project's Homebrew formula on macOS, or with MSYS2 on Windows. We have not yet run it in this course. Program 0 is HD1. A recording made with -w opens in L14-hd-find.grc. NRSC5-DUI is a graphical front end for nrsc5; SDR Flex's full version lists nrsc5 as a decoder, not yet tested on a real signal. gr-nrsc5 is a transmitter, not a receiver.
+GNU Radio has no HD Radio receiver module, and nrsc5 has no PlutoSDR driver, so it decodes a recording. In the finder, enable the PlutoSDR Source, the Rational Resampler, and the SigMF Sink, run about 10 s on the station (about 60 MB), stop, and run the command. nrsc5 is not part of radioconda; build a recent version from source on Linux, with the project's Homebrew formula on macOS, or with MSYS2 on Windows. Not yet run in this course. Program 0 is HD1. With an optional RTL-SDR, nrsc5 tunes live. gr-nrsc5 is a transmitter, not a receiver.
 
 ---
 
@@ -207,18 +206,18 @@ nrsc5 is not part of radioconda; build it from source on Linux, with the project
 
 ## On the SDR
 
-- Run the RTL-SDR at 1,488,375 samples per second, centered on the station.
-- Look for shelves 129 to 198 kHz either side, with gain from your L5 table.
+- Run the PlutoSDR at 1,488,375 samples per second, centered on the station.
+- Look for shelves 129 to 198 kHz either side, with manual gain near 30 dB.
 - The shelves should stand 10 dB above the floor.
 
 Note:
-Centering puts the DC spike on the host, away from the meters. Overload buries the sidebands, so back off the gain if the floor rises. The RTL-SDR only receives, and nothing transmits.
+Centering puts the Pluto's DC correction on the host, away from the meters. Manual gain, not the Pluto's AGC, so a reading at a given gain means the same thing every time. Overload buries the sidebands, so back off the gain if the floor rises. The finder only receives, and nothing transmits.
 
 ---
 
 ## Looking Ahead
 
-- The L14 Lab builds the meter, identifies a station's mode, and decodes a live station.
+- The L14 Lab builds the meter, identifies a station's mode, and measures a live station.
 - Lesson 15 recovers carrier phase and symbol timing for mPSK.
 
 Note:

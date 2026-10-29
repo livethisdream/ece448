@@ -6,13 +6,14 @@ options:
     cmake_opt: ''
     comment: ''
     copyright: ''
-    description: 'L11: the Energy Detector on an RTL-SDR at 433.92 MHz, keying on
-      the bursts of an on-off keyed remote. Receive only.'
+    description: 'L11: the Energy Detector on a PlutoSDR at 433.92 MHz (FCC Part 15),
+      keying on the bursts of an on-off keyed remote, with a waterfall to find the
+      bursts. Receive only: there is no transmit block. Needs gr-ece448 and a PlutoSDR.'
     gen_cmake: 'On'
     gen_linking: dynamic
     generate_options: qt_gui
     hier_block_src_path: '.:'
-    id: L11_ook_rtlsdr
+    id: L11_ook_pluto
     max_nouts: '0'
     output_language: python
     placement: (0,0)
@@ -23,8 +24,8 @@ options:
     run_options: prompt
     sizing_mode: fixed
     thread_safe_setters: ''
-    title: L11 - OOK Remote on an RTL-SDR
-    window_size: (1060,760)
+    title: L11 - OOK Remote on a PlutoSDR
+    window_size: (1060,1000)
   states:
     bus_sink: false
     bus_source: false
@@ -85,19 +86,19 @@ blocks:
     coordinate: [176, 76]
     rotation: 0
     state: enabled
-- name: rf_gain
+- name: rx_gain
   id: variable_qtgui_range
   parameters:
     comment: ''
     gui_hint: 0,0,1,1
-    label: RF gain (dB)
+    label: Pluto RX gain (dB)
     min_len: '200'
     orient: QtCore.Qt.Horizontal
     rangeType: float
     start: '0'
     step: '1'
-    stop: '49'
-    value: '30'
+    stop: '70'
+    value: '40'
     widget: counter_slider
   states:
     bus_sink: false
@@ -228,6 +229,37 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [300, 220]
+    rotation: 0
+    state: enabled
+- name: pluto_source
+  id: iio_pluto_source
+  parameters:
+    affinity: ''
+    alias: ''
+    bandwidth: int(samp_rate)
+    bbdc: 'True'
+    buffer_size: '32768'
+    comment: ''
+    filter: '""'
+    filter_source: '''Auto'''
+    fpass: '0'
+    frequency: int(433.92e6 - offset)
+    fstop: '0'
+    gain1: '''manual'''
+    len_tag_key: '""'
+    manual_gain1: rx_gain
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    quadrature: 'True'
+    rfdc: 'True'
+    samplerate: int(samp_rate)
+    type: fc32
+    uri: '"ip:192.168.2.1"'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [16, 220]
     rotation: 0
     state: enabled
 - name: qtgui_freq_sink_x_0
@@ -408,28 +440,65 @@ blocks:
     coordinate: [1220, 200]
     rotation: 0
     state: enabled
-- name: soapy_rtlsdr_source_0
-  id: soapy_rtlsdr_source
+- name: waterfall
+  id: qtgui_waterfall_sink_x
   parameters:
     affinity: ''
-    agc: 'False'
     alias: ''
-    bias: 'False'
-    bufflen: '16384'
-    center_freq: 433.92e6 - offset
+    alpha1: '1.0'
+    alpha10: '1.0'
+    alpha2: '1.0'
+    alpha3: '1.0'
+    alpha4: '1.0'
+    alpha5: '1.0'
+    alpha6: '1.0'
+    alpha7: '1.0'
+    alpha8: '1.0'
+    alpha9: '1.0'
+    axislabels: 'True'
+    bw: samp_rate / 8
+    color1: '0'
+    color10: '0'
+    color2: '0'
+    color3: '0'
+    color4: '0'
+    color5: '0'
+    color6: '0'
+    color7: '0'
+    color8: '0'
+    color9: '0'
     comment: ''
-    dev_args: ''''''
-    freq_correction: '0'
-    gain: rf_gain
+    fc: 433.92e6
+    fftsize: '1024'
+    freqhalf: 'True'
+    grid: 'False'
+    gui_hint: 3,0,1,3
+    int_max: '-30'
+    int_min: '-110'
+    label1: ''
+    label10: ''
+    label2: ''
+    label3: ''
+    label4: ''
+    label5: ''
+    label6: ''
+    label7: ''
+    label8: ''
+    label9: ''
+    legend: 'True'
     maxoutbuf: '0'
     minoutbuf: '0'
-    samp_rate: samp_rate
-    type: fc32
+    name: '"Waterfall"'
+    nconnections: '1'
+    showports: 'False'
+    type: complex
+    update_time: '0.10'
+    wintype: window.WIN_BLACKMAN_hARRIS
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [40, 220]
+    coordinate: [600, 470]
     rotation: 0
     state: enabled
 
@@ -441,7 +510,8 @@ connections:
 - [ece448_energy_detector_0, '1', blocks_multiply_const_vxx_0, '0']
 - [freq_xlating_fir_filter_xxx_0, '0', ece448_energy_detector_0, '0']
 - [freq_xlating_fir_filter_xxx_0, '0', qtgui_freq_sink_x_0, '0']
-- [soapy_rtlsdr_source_0, '0', freq_xlating_fir_filter_xxx_0, '0']
+- [freq_xlating_fir_filter_xxx_0, '0', waterfall, '0']
+- [pluto_source, '0', freq_xlating_fir_filter_xxx_0, '0']
 
 metadata:
   file_format: 1

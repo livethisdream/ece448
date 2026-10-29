@@ -280,18 +280,22 @@ Radioconda installs GNU Radio from conda-forge, and its `gnuradio-core` package 
 A Windows laptop without them has two other routes. The first is WSL2 with Ubuntu 24.04: inside it, `sudo apt install gnuradio-dev cmake g++` installs GNU Radio 3.10.9 and a compiler, the module builds exactly as on Ubuntu, and WSLg runs GRC in a window; we have tested the Ubuntu 24.04 route but not WSL itself. The second needs nothing installed: `L11-keyed-carrier-epy.grc` has the same `energy_detector` class pasted into an Embedded Python Block, renamed `blk`, and runs identically. The block's code, its tests, and its YAML file move into a module unchanged on any Linux or macOS machine, such as a teammate's in the lab.
 ::::
 
-::::{frame} OOK on an RTL-SDR
+::::{frame} OOK on a PlutoSDR
 :::{present}
 <img src="../../viz/img/L11-grc-ook.png"
-     alt="The L11 RTL-SDR flowgraph in GNU Radio Companion: a Soapy RTLSDR Source at 1.024 MS/s tuned to 433.72 MHz, a Frequency Xlating FIR Filter that shifts 200 kHz and decimates by 8 to 128 kHz, the Energy Detector averaging 4 samples, a Multiply Const of 20 and an Add Const of minus 60 that draw the key at minus 60 dB when off and minus 40 dB when on, a time sink of power, key, and threshold, and a frequency sink"
+     alt="The L11 PlutoSDR flowgraph in GNU Radio Companion: a PlutoSDR Source at 1.024 MS/s tuned to 433.72 MHz with manual gain, a Frequency Xlating FIR Filter that shifts 200 kHz and decimates by 8 to 128 kHz, the Energy Detector averaging 4 samples, a Multiply Const of 20 and an Add Const of minus 60 that draw the key at minus 60 dB when off and minus 40 dB when on, a time sink of power, key, and threshold, a frequency sink, and a waterfall sink"
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
 - Many 433.92 MHz remotes and sensors use on-off keying (OOK).
-- The same block keys on their bursts.
+- The same block keys on their bursts, received on the PlutoSDR.
 :::
 
-On-off keying sends a 1 as a burst of carrier and a 0 as silence, the same signal as today's keyed tone, only faster. Weather sensors, doorbells, and some remotes in the U.S. use on-off keying at 433.92 MHz, as low-power unlicensed devices under FCC Part 15. First find the bursts in [SDR Flex](https://livethisdream.github.io/sdr-flex/), or in GQRX if SDR Flex is not set up: tune the RTL-SDR to 433.92 MHz and watch the waterfall while you press the remote, and each press paints a short streak. SDR Flex can also hand the bursts to `rtl_433`, a ready-made decoder for hundreds of ISM devices, which names the device and prints what it sent: the same job, done by someone else's block. Then close the explore tool and open the flowgraph. `L11-ook-rtlsdr.grc` tunes an RTL-SDR 200 kHz below 433.92 MHz to keep the radio's DC spike off the signal, shifts the signal to 0 Hz and decimates to 128 kHz, and runs the Energy Detector with $N = 4$. The time sink draws the key at $-60$ dB when it is off and $-40$ dB when it is on, so it shares the power plot's axis. Set the threshold halfway between the floor and the burst level on the power plot, press a remote nearby, and the key traces its bursts. The flowgraph only receives. This page has not run it, because it needs an RTL-SDR and a remote, so the figure shows the flowgraph in GRC, not a capture.
+On-off keying sends a 1 as a burst of carrier and a 0 as silence, the same signal as today's keyed tone, only faster. Weather sensors, doorbells, and some remotes in the U.S. use on-off keying at 433.92 MHz, as low-power unlicensed devices under FCC Part 15. `L11-ook-pluto.grc` tunes the PlutoSDR 200 kHz below 433.92 MHz at 1.024 MS/s, so the signal stays clear of the radio's center, where the Pluto removes its own DC offset and a small spike can remain. A Frequency Xlating FIR Filter shifts the signal to 0 Hz and decimates to 128 kHz, and the Energy Detector runs with $N = 4$.
+
+First find the bursts: run the flowgraph, press the remote, and each press paints a short streak on the waterfall. The Pluto's gain is manual, from the RX gain slider, because an automatic gain would ramp up between bursts and move the floor under the threshold. The time sink draws the key at $-60$ dB when it is off and $-40$ dB when it is on, so it shares the power plot's axis. Set the threshold halfway between the floor and the burst level on the power plot, press a remote nearby, and the key traces its bursts. Optional: `rtl_433`, a ready-made decoder for hundreds of these devices, names the device and prints what it sent, the same job done by someone else's block; it runs on an RTL-SDR, or on the Pluto through SoapySDR.
+
+The flowgraph only receives. This page has not run it, because it needs a PlutoSDR and a remote, so the figure shows the flowgraph in GRC, not a capture.
 ::::
 
 ::::{frame} Key Point
@@ -307,7 +311,7 @@ A block several flowgraphs need belongs in an out-of-tree module: gr_modtool wri
 - <a class="doc-link" href="../../grc/L11-gr-ece448.zip" download>L11-gr-ece448.zip</a>: the `gr-ece448` module, with the Energy Detector, its YAML file, and its unit test. Its `README.md` lists the build steps.
 - <a class="doc-link" href="../../grc/L11-keyed-carrier.grc" download>L11-keyed-carrier.grc</a>: Morse "ECE" as a keyed carrier in noise, through the installed Energy Detector, with noise, threshold, and hysteresis sliders. Needs `gr-ece448` installed; no hardware.
 - <a class="doc-link" href="../../grc/L11-keyed-carrier-epy.grc" download>L11-keyed-carrier-epy.grc</a>: the same flowgraph with the Energy Detector in an Embedded Python Block. Needs nothing installed.
-- <a class="doc-link" href="../../grc/L11-ook-rtlsdr.grc" download>L11-ook-rtlsdr.grc</a>: the Energy Detector on an RTL-SDR at 433.92 MHz, for OOK remotes. Needs `gr-ece448` and an RTL-SDR; receive only.
+- <a class="doc-link" href="../../grc/L11-ook-pluto.grc" download>L11-ook-pluto.grc</a>: the Energy Detector on a PlutoSDR at 433.92 MHz, for OOK remotes, with a waterfall to find the bursts. Needs `gr-ece448` and a PlutoSDR; receive only.
 
 Unzip the module, then follow its `README.md` from the radioconda prompt. Open a `.grc` file from GRC's File menu, or run `gnuradio-companion L11-keyed-carrier.grc`.
 
