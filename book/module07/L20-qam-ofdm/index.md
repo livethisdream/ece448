@@ -287,12 +287,10 @@ These signals are on the air around you, and the PlutoSDR shows their spectrum. 
 
 A Pluto streams about 4 MS/s continuously over USB 2.0, and a Wi-Fi channel is 20 MHz wide. At 20 MS/s the Pluto still fills each buffer of 131,072 samples without a break, 6.5 ms of signal, but the laptop cannot take the buffers as fast as they come, so samples are lost between them. The spectrum needs only a short unbroken stretch, so the displays still show the channel's shape; they skip some of what happens between buffers.
 
-1. At 2 MS/s, tune near 100 MHz to an FM station that carries HD Radio and find Lesson 14's flat shelves on each side. If the whole spectrum rises and spreads, lower the RX gain.
-2. Choose 20 MS/s and tune to 2.437 GHz, Wi-Fi channel 6, and watch the waterfall. Short bursts come and go. Those carrying data are OFDM: a flat top with steep edges about 17 MHz wide, often with a small dip at the center, where the subcarrier at 0 Hz is left empty. Some access points still send beacons in the older 802.11b format, which look rounded instead.
+1. At 2 MS/s, find an FM station near 100 MHz that carries HD Radio, and set the center frequency about 400 kHz to one side of it, so the Pluto's own mark at 0 Hz stays off the station and both of Lesson 14's flat shelves. If the whole spectrum rises and spreads, lower the RX gain.
+2. Choose 20 MS/s and tune to 2.437 GHz, Wi-Fi channel 6, and watch the waterfall. Short bursts come and go. Those carrying data are OFDM: a flat top with steep edges about 17 MHz wide, often with a small dip at the center, where the subcarrier at 0 Hz is left empty. The Pluto marks its own 0 Hz too, so tune 2 MHz higher: the dip that moves with the channel is Wi-Fi's. Some access points still send beacons in the older 802.11b format, which look rounded instead.
 3. Still at 20 MS/s, tune between 729 and 756 MHz, where US carriers run LTE downlinks; which frequencies are in use varies by area. A 10 MHz LTE carrier shows as a flat top about 9 MHz wide with steep edges, and unlike Wi-Fi's bursts it stays on.
 4. At 2 MS/s, find the same LTE carrier. The window shows only a flat slice of it, so step the center frequency 2 MHz at a time to find both edges.
-
-Optionally, a HackRF streams 20 MS/s without gaps; put a Soapy HackRF Source in place of the PlutoSDR Source.
 
 As in every lesson, receiving is unrestricted and transmitting is not; nothing in this lesson transmits.
 ::::

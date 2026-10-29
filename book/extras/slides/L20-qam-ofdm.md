@@ -231,7 +231,7 @@ Wi-Fi and LTE step from 64-QAM down to 16-QAM and QPSK as the signal weakens, ad
 - At 20 MS/s between 729 and 756 MHz: LTE as a flat band about 9 MHz wide that stays on.
 
 Note:
-The flowgraph is a PlutoSDR Source with a center frequency control and a 2 or 20 MS/s choice. A Pluto streams about 4 MS/s continuously over USB 2.0; at 20 MS/s each 131,072-sample buffer, 6.5 ms, is unbroken, with samples lost between buffers, and that is enough for the spectrum's shape. At 2 MS/s LTE shows only a flat slice; step 2 MHz to find its edges. A HackRF with a Soapy HackRF Source streams 20 MS/s without gaps, optionally. Some beacons use the older 802.11b format and look rounded. Look at the spectrum only; nothing here transmits.
+The flowgraph is a PlutoSDR Source with a center frequency control and a 2 or 20 MS/s choice. A Pluto streams about 4 MS/s continuously over USB 2.0; at 20 MS/s each 131,072-sample buffer, 6.5 ms, is unbroken, with samples lost between buffers, and that is enough for the spectrum's shape. At 2 MS/s LTE shows only a flat slice; step 2 MHz to find its edges. Some beacons use the older 802.11b format and look rounded. Look at the spectrum only; nothing here transmits.
 
 ---
 

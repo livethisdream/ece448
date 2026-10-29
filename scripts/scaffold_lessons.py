@@ -175,7 +175,7 @@ LESSONS = [
     (6, 14, "L14-hd-radio", "HD Radio", ["6.3"], ["ref-nrsc"], "How HD Radio hides OFDM sidebands beside an FM station, and how to demodulate them."),
     (6, 15, "L15-mpsk", "mPSK", ["6.4"], ["ref-diff"], "BPSK, QPSK, and 8PSK in GNU Radio, with carrier and symbol-timing recovery."),
     (6, 16, "L16-fhss", "Frequency Hopping", ["6.5"], [], "An FHSS transmitter and receiver that stay on the same hop sequence."),
-    (6, 17, "L17-rf-reverse-engineering", "RF Reverse Engineering", ["6.6"], [], "Take an unknown signal from spectrum to bits with a PlutoSDR, GNU Radio, and URH."),
+    (6, 17, "L17-rf-reverse-engineering", "RF Reverse Engineering", ["6.6"], [], "Take an unknown signal from spectrum to bits with a PlutoSDR and GNU Radio."),
     (6, 18, "L18-adsb", "ADS-B", ["6.7"], ["ref-adsb", "ref-1090", "ref-magazu"], "Receive and decode aircraft ADS-B messages at 1090 MHz."),
     (6, 19, "L19-ais", "AIS", ["6.8"], [], "Receive and decode AIS messages from ships."),
 

@@ -12,8 +12,8 @@ options:
       100 MHz. At 20 MS/s it cannot, so each 131072-sample buffer (6.5 ms) is a contiguous
       burst with gaps between buffers; the spectrum and waterfall still show the shape
       of a Wi-Fi or LTE channel. Needs a PlutoSDR in extended-frequency mode (70 MHz
-      to 6 GHz). The RF bandwidth stays at 20 MHz for both rates; at 2 MS/s the Pluto''s
-      digital filter narrows it. Opens at 2 MS/s and 100.1 MHz.'
+      to 6 GHz). Its Auto filter sets the Pluto''s filters for the chosen rate. Opens
+      at 2 MS/s and 100.1 MHz.'
     gen_cmake: 'On'
     gen_linking: dynamic
     generate_options: qt_gui
@@ -49,7 +49,7 @@ blocks:
     orient: QtCore.Qt.Horizontal
     rangeType: float
     start: 70e6
-    step: 100e3
+    step: 1e6
     stop: 6e9
     value: 100.1e6
     widget: counter
@@ -193,7 +193,7 @@ blocks:
   parameters:
     affinity: ''
     alias: ''
-    bandwidth: '20000000'
+    bandwidth: int(samp_rate)
     bbdc: 'True'
     buffer_size: '131072'
     comment: ''

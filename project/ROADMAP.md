@@ -143,7 +143,7 @@ lab under its lesson.
 | 3 · Analog Modulation | L6 AM Simulation → L6 Lab · L7 AM and FM Receivers (incl. broadcast FM and RDS) → L7 Lab |
 | 4 · Digital Modulation | L8 FSK → L8 Lab · L9 PAM Theory · L10 ASCII over PAM → L10 Lab |
 | 5 · Custom Blocks & Midterm | L11 Out-of-Tree Modules and Custom Blocks → L11 Lab · Midterm (fox hunt + CTF, calendar) |
-| 6 · Waveform Applications & RF Reverse Engineering | L12 CW → L12 Lab · L13 DTMF → L13 Lab · L14 HD Radio → L14 Lab · L15 mPSK (about 2 periods) → L15 Lab · L16 Frequency Hopping → L16 Lab · L17 RF Reverse Engineering (PlutoSDR, URH, remotes) → L17 Lab · L18 ADS-B · L19 AIS → L18–L19 Lab ADS-B/AIS |
+| 6 · Waveform Applications & RF Reverse Engineering | L12 CW → L12 Lab · L13 DTMF → L13 Lab · L14 HD Radio → L14 Lab · L15 mPSK (about 2 periods) → L15 Lab · L16 Frequency Hopping → L16 Lab · L17 RF Reverse Engineering (PlutoSDR, GNU Radio, remotes) → L17 Lab · L18 ADS-B · L19 AIS → L18–L19 Lab ADS-B/AIS |
 | 7 · Final Project | L20 QAM and OFDM · project days and presentations (calendar) |
 
 ## Objectives

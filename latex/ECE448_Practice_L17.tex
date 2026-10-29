@@ -92,22 +92,24 @@ appear each time the button is pressed.
 		\ansbox[1.4in]{40 MB; 80 MB}
 	\end{minipage}
 
-	\part URH reads a file it does not recognize as complex float. Explain in words what
-	URH would show if you opened this \texttt{ci16\_le} file without converting it.
+	\part The SigMF Source (Minimal) in \texttt{L17-chips.grc} has its Output Type set to
+	complex float (\texttt{fc32\_le}). Explain in words what the flowgraph would show if
+	you opened this \texttt{ci16\_le} file without changing it.
 		\begin{solution}[0.9in]
-		URH would read every 8 bytes as one complex float sample, but each 8 bytes holds
-		two \texttt{ci16} samples. The values would be meaningless, and the display would
-		show noise-like garbage instead of bursts, with half as many samples as the file
-		holds. The file has to be converted to \texttt{cf32\_le} first, or opened with an
-		extension URH recognizes for 16-bit integers.
+		The source would read every 8 bytes as one complex float sample, but each 8 bytes
+		holds two \texttt{ci16} samples. The values would be meaningless, and the displays
+		would show noise-like garbage instead of bursts, with half as many samples as the
+		file holds. Set the Output Type to complex short (\texttt{sc16\_le}) and add an
+		IShort To Complex block, or convert the file to \texttt{cf32\_le} first.
 		\end{solution}
 
 \end{parts}
 
 \newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\question \textbf{Chips to bits.} URH opens the doorbell's recording at 1 MS/s, chooses
-ASK and 300 samples per symbol, and lists every burst as the same line of chips:
+\question \textbf{Chips to bits.} \texttt{L17-chips.grc} opens the doorbell's recording at
+1 MS/s with a chip length of 300 samples, and its Chip Reader prints every burst as the
+same line of chips:
 
 \begin{center}
 \texttt{1000100010101010001010001}
@@ -194,7 +196,7 @@ Bits, Char To Float, a Repeat, and a Stream Mux with a Constant Source of 0.
 		\ansbox[1.6in]{350; [16800, 10000]}
 	\end{minipage}
 
-	\part Your encoder's output, opened in URH beside the original recording, shows the
+	\part Your encoder's output, opened in \texttt{L17-chips.grc} beside the original recording, shows the
 	same lines of chips except that every one of yours is 4 chips longer. In words, give
 	the most likely mistake.
 		\begin{solution}[0.9in]
@@ -259,10 +261,10 @@ press and ends each frame with a check nibble.
 
 	\part You lower the signal in the pulse decoder explorer by raising the noise. Name
 	two things you would watch to see the frames start to fail, in the explorer or in
-	URH.
+	\texttt{L17-chips.grc}.
 		\begin{solution}[0.9in]
 		In the explorer, groups marked \texttt{?} that are neither \texttt{110} nor
-		\texttt{100}, and now and then the Frame readout reporting that the check fails. In URH, the lines
+		\texttt{100}, and now and then the Frame readout reporting that the check fails. In \texttt{L17-chips.grc}, the lines
 		of chips for one press no longer matching each other from repeat to repeat.
 		\end{solution}
 

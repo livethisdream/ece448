@@ -29,7 +29,7 @@ Spring 2027 · Dr. Neil Rogers
 Today the format belongs to someone else, and we work it out.
 
 Note:
-Open L17-sigmf-view.grc and URH before class, with L17-fan-remote.sigmf-data in the same folder as the flowgraph. URH's sample rate for the lesson recording is 200000.
+Open L17-sigmf-view.grc and L17-chips.grc before class, with L17-fan-remote.sigmf-data in the same folder as the flowgraphs. The lesson recording is 200000 samples a second.
 
 ---
 
@@ -88,7 +88,7 @@ Let the recording loop and point at the waterfall. The bursts come five times pe
 At a 40 kHz offset the envelope fills with pulses: 350.040 MHz.
 
 Note:
-The Frequency Xlating FIR Filter shifts the offset to 0 Hz and keeps plus and minus 10 kHz; Complex to Mag gives the envelope. Move the slider 10 kHz off and the pulses drop to half height; 20 kHz off and they disappear. This replaces URH's Spectrum Analyzer fine-tuning from 2025.
+The Frequency Xlating FIR Filter shifts the offset to 0 Hz and keeps plus and minus 10 kHz; Complex to Mag gives the envelope. Move the slider 10 kHz off and the pulses drop to half height; 20 kHz off and they disappear. This replaces the live-spectrum fine-tuning from 2025.
 
 ---
 
@@ -106,7 +106,7 @@ L17-explore-pluto.grc is L17-capture.grc without the SigMF Sink: a PlutoSDR Sour
 ## Capture a Real Remote
 
 - Record a real 315 or 433.92 MHz key fob, doorbell, or sensor to SigMF.
-- Find its carrier with URH's Spectrum Analyzer, as in 2025.
+- Hold a button down and read its carrier off the spectrum, as in 2025.
 - Your Pluto only receives.
 
 Note:
@@ -135,14 +135,14 @@ The 2025 SigID exercise. Set samp_rate to 100000 and fc to 915e6. A is two-level
 
 ---
 
-## Step 3: URH
+## Step 3: Read the Chips
 
-<img src="./img/17-rf-reverse-engineering/L17-urh-frame.png" alt="URH's Interpretation tab zoomed on one frame, simulated: ASK, Samples/Symbol 80, 16 bursts of two widths" style="max-height:380px; display:block; margin:0 auto;">
+<img src="./img/17-rf-reverse-engineering/L17-chips.png" alt="L17-chips.grc on the recording, simulated: the envelope of one frame of 16 pulses of two widths, and the line Last burst: 46 chips, pause 2560 samples" style="max-height:380px; display:block; margin:0 auto;">
 
-Autodetect: ASK, 80 samples a symbol, which is a 400 µs chip.
+The shortest pulse is 400 µs, 80 samples: set the chip length to 80.
 
 Note:
-File, New Project first, as in 2025. Then File, Open, All Files, then set the sample rate to 200000 in the signal's details; URH does not read the meta file. Each line of the text area is one burst; Pause is the silence after it.
+L17-chips.grc is the viewer's shift and Complex to Mag, then Add Const of minus the threshold, a Binary Slicer, and the Chip Reader, an Embedded Python Block. It keeps the middle sample of each chip, as a Keep 1 in N of 80 would, but starts counting at each burst's first rising edge, and prints one line of chips per burst with the pause after it. The 2025 class used URH here; it is no longer maintained, so the lesson does this in GNU Radio.
 
 ---
 
@@ -153,7 +153,7 @@ File, New Project first, as in 2025. Then File, Open, All Files, then set the sa
 The fan remote's chips come in threes: `110` is a 1 and `100` is a 0.
 
 Note:
-That is pulse-width coding: every bit starts on, and a 1 stays on longer. The other two rows are common too: pulse distance, where the gap carries the bit, and Manchester, where every bit has a mid-bit transition. URH lists 46 or 47 chips, not 48, because the last off chips run into the pause.
+That is pulse-width coding: every bit starts on, and a 1 stays on longer. The other two rows are common too: pulse distance, where the gap carries the bit, and Manchester, where every bit has a mid-bit transition. The Chip Reader prints 46 or 47 chips, not 48, because the last off chips run into the pause.
 
 ---
 
@@ -181,7 +181,7 @@ $$\begin{aligned}
 A frame of 16 bits takes 19.2 ms, and one starts every 31.2 ms.
 
 Note:
-URH's symbol is our chip, so URH works at the baud rate. Three chips make one bit. These are the encoder's numbers: chip_len for the Repeat and the gap for the Stream Mux.
+The Chip Reader keeps one sample per chip, so it works at the baud rate. Three chips make one bit. These are the encoder's numbers: chip_len for the Repeat and the gap for the Stream Mux.
 
 ---
 
@@ -215,7 +215,7 @@ Repeat holds each chip 80 samples. The Stream Mux takes 3840 samples of frame an
 
 <img src="./img/17-rf-reverse-engineering/L17-tx-sim.png" alt="L17-fan-tx-sim.grc running with Light chosen, simulated: the envelope matches the recording's frame" style="max-height:400px; display:block; margin:0 auto;">
 
-Open `my-fan-remote.sigmf-data` in URH: its chips should match the recording.
+Open `my-fan-remote.sigmf-data` in `L17-chips.grc`: its chips should match the recording.
 
 Note:
 Matching chips are the test of steps 1 to 3. The encoder repeats for as long as it runs; the remote stops after six frames.
@@ -224,12 +224,12 @@ Matching chips are the test of steps 1 to 3. The encoder repeats for as long as 
 
 ## Step 5: Transmit
 
-- The PlutoSDR sends at 350.04 MHz and 1 MS/s, so `chip_len` is 400.
+- The PlutoSDR sends at 915.04 MHz, not 350 MHz, and 1 MS/s, so `chip_len` is 400.
 - Cadets: TX port into a 30 dB attenuator and a second PlutoSDR running `L17-capture.grc`.
 - Instructor demo: the classroom's Hunter fan, over the air, at very low power.
 
 Note:
-Cadets transmit only into a cable, never an antenna, with TX attenuation at 30 dB or more; 350 MHz is an FCC Part 15 frequency, not an ISM band. Then run the demo: record the classroom fan's remote, decode it with Steps 1 to 3, and send its Light command from your own encoder flowgraph over the air, a few meters from the fan, at the lowest power that still works it. The fan obeys a transmitter it has never seen, because a fixed code cannot tell the two apart. Both cadet Pluto flowgraphs are compiled only; the L17 Lab is their first run on hardware.
+Cadets transmit only into a cable, never an antenna, with TX attenuation at 30 dB or more, and at 915 MHz, in the 902 to 928 MHz ISM band: a signal the course makes never goes out on the real device's frequency, and the remote's 350 MHz is an FCC Part 15 frequency, not an ISM band. The second Pluto records at fc = 915e6; open the recording in L17-chips.grc at 1 MS/s with a chip length of 400 and raise the envelope gain. Then run the demo: record the classroom fan's remote, decode it with Steps 1 to 3, and send its Light command from your own encoder flowgraph over the air, a few meters from the fan, at the lowest power that still works it. The fan obeys a transmitter it has never seen, because a fixed code cannot tell the two apart. The cadet Pluto flowgraphs are compiled only; the L17 Lab is their first run on hardware.
 
 ---
 
@@ -238,7 +238,7 @@ Cadets transmit only into a cable, never an antenna, with TX attenuation at 30 d
 <div class="callout">Find the carrier, identify the modulation, identify the encoding, build an encoder, and transmit. An encoder whose output decodes the same as the recording confirms the first three.</div>
 
 Note:
-Matching chips in URH are the test of steps 1 to 3.
+Matching chips in L17-chips.grc are the test of steps 1 to 3.
 
 ---
 
@@ -248,4 +248,4 @@ Matching chips in URH are the test of steps 1 to 3.
 - Lessons 18 and 19 decode ADS-B and AIS, whose formats are published.
 
 Note:
-Before the lab, install URH and open the lesson recording in it, and read the lab recording's meta file.
+Before the lab, open the lesson recording in L17-chips.grc, and read the lab recording's meta file.

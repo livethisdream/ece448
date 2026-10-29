@@ -123,7 +123,7 @@ an unknown signal: identify its modulation, symbol rate, and payload structure.}
 
 This packet is the L\labLesson\ Lab, in three parts, and you turn it in once, complete,
 before Lesson 18. Do \textbf{Part 1} on your own before the lab period: read the
-recording's meta file, check your URH install, and work out the chip settings.
+recording's meta file, check \texttt{L17-chips.grc} on the lesson's recording, and work out the chip settings.
 \textbf{Part 2} is what you find, build, and observe, recorded in class: Questions 4 to
 7 on your own laptop, Question 8 at a PlutoSDR station with your team, and Question 9
 with a real remote of your choice. Do
@@ -141,8 +141,9 @@ else about it is given: finding it out is the lab.
 
 \textbf{Transmitting.} In class we transmit only into a cable, into a shielded
 enclosure, or at very low power in an ISM band, and only when the lesson says to.
-This device's band is an FCC Part 15 frequency, not a U.S. ISM band; transmit only into
-the cable. Questions 1 to 7 run on your laptop and transmit nothing. Question 8 transmits from a
+This device's band is an FCC Part 15 frequency, not a U.S. ISM band, and a signal the
+course makes never goes out on the real device's frequency: your encoder transmits at
+915 MHz, in the 902 to 928 MHz ISM band, and only into the cable. Questions 1 to 7 run on your laptop and transmit nothing. Question 8 transmits from a
 PlutoSDR's TX port, through a cable with an inline 30 dB SMA attenuator, to a second
 PlutoSDR's RX port. Connect the cable and attenuator before you run the flowgraph, and never
 connect an antenna in this lab. Never set TX attenuation below 30 dB or change the
@@ -182,14 +183,16 @@ editor.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newpage
-\question \textbf{URH.} Install URH and open the lesson's recording,
-\texttt{L17-fan-remote.sigmf-data}, with its sample rate set to 200000.
+\question \textbf{Reading chips in GNU Radio.} Open the lesson's recording,
+\texttt{L17-fan-remote.sigmf-data}, in \texttt{L17-chips.grc}, with \texttt{samp\_rate}
+200000, \texttt{fc} 350e6, and the carrier offset at 40000 Hz.
 
 \begin{parts}
 
 	\begin{minipage}[t]{0.58\linewidth}
-		\part Record the Modulation and Samples/Symbol that autodetect chooses, and the
-		chip length in microseconds that Samples/Symbol gives.
+		\part Measure the shortest pulse on the envelope, and set the chip length to it.
+		Record the chip length in samples and in microseconds, and the first line of chips
+		the Chip Reader prints, with its pause.
 		\begin{solution}[0.9in]\keysol{sol3}\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
@@ -197,13 +200,13 @@ editor.
 		\ansbox[1.4in]{\keysol{ans1}}
 	\end{minipage}
 
-	\part Paste a screenshot of URH's Interpretation tab with the recording open.
+	\part Paste a screenshot of \texttt{L17-chips.grc} running on the recording.
 		\begin{solution}[1.6in]\keysol{sol4}\end{solution}
 
 \end{parts}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\question \textbf{Samples per chip.} URH's Samples/Symbol and your encoder's
+\question \textbf{Samples per chip.} The Chip Reader's chip length and your encoder's
 \texttt{chip\_len} are both a chip's length in samples. Fill in the table for each chip
 length at this recording's sample rate, from Question 1(a), and at the PlutoSDR
 flowgraph's 1 MS/s.
@@ -258,13 +261,13 @@ flowgraph's 1 MS/s.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newpage
 \question \textbf{Steps 2 and 3: modulation and encoding.} Follow the lab page's steps in
-URH.
+\texttt{L17-chips.grc}.
 
 \begin{parts}
 
 	\begin{minipage}[t]{0.58\linewidth}
-		\part Record the Modulation and Samples/Symbol that autodetect chooses for this
-		recording.
+		\part Record the shortest pulse you measured on the envelope, in samples and in
+		microseconds, and the chip length you set.
 		\begin{solution}[0.7in]\keysol{sol9}\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
@@ -272,9 +275,9 @@ URH.
 		\ansbox[1.3in]{\keysol{ans4}}
 	\end{minipage}
 
-	\part Record the shortest pulse and the shortest gap you measured, in samples and
-	in microseconds. Say whether you kept autodetect's Samples/Symbol or changed it, and
-	why.
+	\part Record the shortest gap you measured, in samples and in microseconds. Say
+	whether it fits your chip length, and how you checked that the Chip Reader's lines
+	repeat from burst to burst.
 		\begin{solution}[1.2in]\keysol{sol10}\end{solution}
 
 	\part Name the modulation and the encoding. Give the evidence for each from the
@@ -341,16 +344,16 @@ with your settings from Questions 4 to 6.
 
 \begin{parts}
 
-	\part Paste a screenshot of your flowgraph's canvas, and a screenshot of URH with
-	\texttt{my-unknown.sigmf-data} and the original recording open, showing the lines of
-	chips for the same button.
+	\part Paste a screenshot of your flowgraph's canvas, and the lines of chips
+	\texttt{L17-chips.grc} prints for \texttt{my-unknown.sigmf-data} and for the
+	original recording, for the same button.
 		\begin{solution}[1.8in]\keysol{sol15}\end{solution}
 
 	\part Do the same for a second button, and say whether every chip matches.
 		\begin{solution}[1.2in]\keysol{sol16}\end{solution}
 
 	\begin{minipage}[t]{0.58\linewidth}
-		\part Record the noise amplitude at which URH's lines of chips from your
+		\part Record the noise amplitude at which the Chip Reader's lines of chips from your
 		recording first stop matching the original, and describe what goes wrong first.
 		\begin{solution}[1.0in]\keysol{sol17}\end{solution}
 	\end{minipage}\hfill%
@@ -365,8 +368,8 @@ with your settings from Questions 4 to 6.
 \newpage
 \question \textbf{Step 5: transmit into a cable.} At a PlutoSDR station, with your team,
 follow the lab page's steps: connect the first Pluto's TX port to the second Pluto's RX port
-through the 30 dB attenuator, set \texttt{fc} and run \texttt{L17-capture.grc} on the
-second Pluto, and run your Pluto encoder. When you finish, stop both flowgraphs and unplug the radios before
+through the 30 dB attenuator, set \texttt{fc} to 915e6 and run \texttt{L17-capture.grc}
+on the second Pluto, and run your Pluto encoder at 915 MHz. When you finish, stop both flowgraphs and unplug the radios before
 you disconnect the cable.
 
 \begin{parts}
@@ -375,13 +378,13 @@ you disconnect the cable.
 	flowgraph's waterfall.
 		\begin{solution}[1.5in]\keysol{sol18}\end{solution}
 
-	\part Open \texttt{capture.sigmf-data} in URH at the sample rate in its meta file,
-	1 MS/s, and compare its lines of
+	\part Open \texttt{capture.sigmf-data} in \texttt{L17-chips.grc} at the sample rate
+	and center frequency in its meta file, 1 MS/s and 915 MHz, and compare its lines of
 	chips with the original recording's for the same button.
 		\begin{solution}[1.0in]\keysol{sol19}\end{solution}
 
 	\part Record whether the chips still match at each TX attenuation, and explain in words,
-	from what you saw on the waterfall and in URH, what limits the link as the attenuation
+	from what you saw on the waterfall and in \texttt{L17-chips.grc}, what limits the link as the attenuation
 	rises.
 
 	\begin{center}
@@ -405,11 +408,11 @@ key fob, doorbell, or sensor of your choice. Answers depend on the device.
 \begin{parts}
 
 	\part Name the device, and record its carrier frequency and how you found it:
-	\texttt{L17-explore-pluto.grc} or URH's Spectrum Analyzer. Paste a screenshot.
+	the spectrum of \texttt{L17-explore-pluto.grc}. Paste a screenshot.
 		\begin{solution}[1.4in]\keysol{sol24}\end{solution}
 
 	\part Record the modulation, the chip length, and the encoding, with the evidence
-	from URH for each.
+	from \texttt{L17-chips.grc} for each.
 		\begin{solution}[1.2in]\keysol{sol25}\end{solution}
 
 	\part Compare the recordings of two buttons, and of two presses of the same button.
