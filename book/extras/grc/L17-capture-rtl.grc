@@ -40,7 +40,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: 433.92e6
+    value: 350e6
   states:
     bus_sink: false
     bus_source: false

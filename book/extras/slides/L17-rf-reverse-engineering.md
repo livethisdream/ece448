@@ -107,7 +107,7 @@ SDR Flex's browser version opens its example captures from the source chip; its 
 
 - Record a real 315 or 433.92 MHz key fob, doorbell, or sensor to SigMF.
 - Find its carrier with URH's Spectrum Analyzer, as in 2025.
-- This step only receives.
+- Your SDR only receives.
 
 Note:
 Run L17-capture.grc with a PlutoSDR or L17-capture-rtl.grc with an RTL-SDR, with fc set before it starts, because the SigMF Sink writes the center frequency when the flowgraph starts. Record each button. A car key fob usually sends a rolling code, so its frames change from press to press.

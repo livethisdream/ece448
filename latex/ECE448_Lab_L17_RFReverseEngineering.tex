@@ -141,7 +141,7 @@ else about it is given: finding it out is the lab.
 
 \textbf{Transmitting.} In class we transmit only into a cable, into a shielded
 enclosure, or at very low power in an ISM band, and only when the lesson says to.
-This device's band is an FCC Part 15 frequency, not a US ISM band; transmit only into
+This device's band is an FCC Part 15 frequency, not a U.S. ISM band; transmit only into
 the cable. Questions 1 to 7 run on your laptop and transmit nothing. Question 8 transmits from a
 PlutoSDR's TX port, through a cable with an inline 30 dB SMA attenuator, to a second
 SDR's input. Connect the cable and attenuator before you run the flowgraph, and never
@@ -376,7 +376,8 @@ you disconnect the cable.
 	flowgraph's waterfall.
 		\begin{solution}[1.5in]\keysol{sol18}\end{solution}
 
-	\part Open \texttt{capture.sigmf-data} in URH at 1 MS/s, and compare its lines of
+	\part Open \texttt{capture.sigmf-data} in URH at the sample rate in its meta file,
+	1 MS/s from a PlutoSDR or 1.024 MS/s from an RTL-SDR, and compare its lines of
 	chips with the original recording's for the same button.
 		\begin{solution}[1.0in]\keysol{sol19}\end{solution}
 

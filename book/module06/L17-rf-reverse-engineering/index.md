@@ -132,14 +132,14 @@ GQRX is the fallback, and it plays back our recording. Choose the device string 
 
 ::::{frame} Capture a Real Remote
 :::{present}
-- Record a real 315 or 433.92 MHz key fob, doorbell, or sensor, every button, to SigMF.
+- Record every button of a real 315 or 433.92 MHz key fob, doorbell, or sensor to SigMF.
 - Find its carrier with URH's Spectrum Analyzer, as in 2025.
-- This step only receives.
+- Your SDR only receives.
 :::
 
-The 2025 class captured a real remote, and every step so far works the same on one. Take a key fob, a wireless doorbell, or a weather sensor; in the U.S. most use 315 MHz or 433.92 MHz, FCC Part 15 frequencies. Run `L17-capture.grc` with a PlutoSDR or `L17-capture-rtl.grc` with an RTL-SDR, with the variable `fc` set near the device's frequency before you start it, because the SigMF Sink writes the center frequency into the meta file when the flowgraph starts. Press each button a few times, close the flowgraph, and rename `capture.sigmf-data` and `.sigmf-meta` for that button.
+The 2025 class captured a real remote, and every step so far works the same on one. Take a key fob, a wireless doorbell, or a weather sensor that you own; in the U.S. most use 315 MHz or 433.92 MHz, FCC Part 15 frequencies. Run `L17-capture.grc` with a PlutoSDR or `L17-capture-rtl.grc` with an RTL-SDR, with the variable `fc` set about 200 kHz below the device's frequency, so the SDR's DC spike stays off the signal. Set it before you start the flowgraph, because the SigMF Sink writes the center frequency into the meta file when the flowgraph starts. Press each button a few times, close the flowgraph, and rename `capture.sigmf-data` and `.sigmf-meta` for that button.
 
-URH's **Spectrum Analyzer**, under File, shows a live spectrum from any radio URH supports, and in 2025 it was how the class fine-tuned the carrier: hold a button down and read the peak. Then open the recordings in URH as in Step 3. Receiving is always allowed, and nothing in this step transmits. A car key fob usually sends a **rolling code**, which changes with every press, so its frames will not repeat from press to press; the L17 Lab asks why.
+URH's **Spectrum Analyzer**, under File, shows a live spectrum from any radio URH supports, and in 2025 it was how the class fine-tuned the carrier: hold a button down and read the peak. Then open the recordings in URH as in Step 3. Receiving is always allowed, and your SDR only receives in this step. A car key fob usually sends a **rolling code**, which changes with every press, so its frames will not repeat from press to press; the L17 Lab asks why.
 ::::
 
 ::::{frame} Step 2: Identify the Modulation
@@ -287,7 +287,7 @@ The explorer draws one frame of the Simulated fan remote's envelope and reads it
 
 Raise the Noise amplitude in the explorer a step at a time, and press new noise a few times at each step. Up to about 0.4 the envelope roughens but the frame reads correctly. From about 0.45 chips start to land on the wrong side of the threshold, and most often that breaks a group, so it reads as neither `110` nor `100` and shows `?`; by 0.5 almost every frame has a broken group. Now and then a flipped chip turns one bit into the other instead, and then the frame still reads as 16 bits but the Frame readout says the check fails.
 
-URH shows the same thing on a real recording: as the signal weakens, the lines of chips stop matching from one repeat to the next. A receiver throws away a frame it cannot read, and the check catches the rarer frame that reads but has a wrong bit. Remotes repeat each frame so that one of the six tries usually gets through.
+URH shows the same thing on a real recording: as the signal weakens, the lines of chips stop matching from one repeat to the next. A receiver throws away a frame it cannot read. The check catches a frame that reads but has a wrong bit in the command; a flipped address bit passes it, and the frame then reads as another remote's. Remotes repeat each frame so that one of the six tries usually gets through.
 ::::
 
 ::::{frame} Step 4: Build an Encoder
