@@ -96,7 +96,9 @@ the material. A lesson is a guided walkthrough, not a chapter.
   - **Synthesized signals go out at 915 MHz or as recordings** (Neil,
     2026-10-29). A signal the course generates (ADS-B, AIS, FSK, PSK,
     CW, hopping, a simulated remote) is never sent on its real
-    frequency: it is recorded as SigMF, or transmitted at 915 MHz. Live
+    frequency: it is recorded as SigMF, or transmitted at 915 MHz, either
+    into a cable through the 30 dB attenuator or over the air at low
+    power, as the instructor chooses for that lab. Live
     reception of real signals on their own frequencies (FM, HD Radio,
     ADS-B aircraft) is unchanged.
 - **SDR Flex is an explore tool** (Neil, 2026-10-21; narrowed 2026-10-29

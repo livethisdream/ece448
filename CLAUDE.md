@@ -109,7 +109,8 @@ run in extended-frequency mode (70 MHz to 6 GHz). Where GNU Radio has a module
 for a signal (gr-adsb in radioconda), use it. Every cadet is issued a Pluto,
 and lessons are written for it alone (no HackRF or PHASER); an RTL-SDR,
 SDR Flex, and GQRX are optional extras at most, and URH is out. A signal the course generates is
-recorded or sent at 915 MHz, never on its real frequency. See
+recorded or sent at 915 MHz (cable or low-power over the air), never on its
+real frequency. See
 `project/ROADMAP.md`, "How Neil teaches it".
 
 Recordings a cadet downloads or makes are **SigMF** (`.sigmf-data` plus
