@@ -150,11 +150,11 @@ This is the wagon-wheel effect from movies. Each sample advances more than half 
 ## Connect the PlutoSDR
 
 - Antenna on the **RX** port; USB cable on the middle micro-USB port.
-- GNU Radio finds the Pluto on USB by itself.
+- The course flowgraphs open it at `ip:192.168.2.1`; macOS needs one extra step.
 - Course Plutos tune 70 MHz to 6 GHz, so the FM band is in range.
 
 Note:
-Out of the box a Pluto tunes 325 MHz to 3.8 GHz; the course Plutos are in extended-frequency (AD9364) mode. Only one flowgraph can stream from the Pluto at a time. SDR Flex in the browser is an optional quick look for anyone who wants one; no step needs it.
+Windows: Analog Devices' PlutoSDR USB driver, then ip:192.168.2.1 works. Linux: ip:192.168.2.1 works with no driver. macOS: the Pluto's default RNDIS USB-Ethernet mode is not supported, so ip:192.168.2.1 fails out of the box; switch the Pluto to NCM mode once (ADI's PlutoSDR wiki, USB Ethernet mode), or put the usb: URI from iio_info -s in the uri field. Out of the box a Pluto tunes 325 MHz to 3.8 GHz; the course Plutos are in extended-frequency (AD9364) mode. Only one flowgraph can stream from the Pluto at a time. SDR Flex in the browser is an optional quick look for anyone who wants one; no step needs it.
 
 ---
 

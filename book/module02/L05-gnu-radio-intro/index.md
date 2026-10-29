@@ -73,7 +73,7 @@ Open the radioconda prompt (on Windows, "Radioconda Prompt" in the Start menu; o
 | Command | Checks | A working result |
 | :-- | :-- | :-- |
 | `gnuradio-companion` | GRC itself | the GRC window opens |
-| `iio_info -s` | the PlutoSDR on USB | one entry for your radio, usually with a `usb:` URI |
+| `iio_info -s` | the PlutoSDR on USB | Windows and Linux: an entry for your radio with a `usb:` URI, and often an `ip:` one; macOS: a `usb:` URI only, until the NCM switch |
 | `iio_attr -a -c ad9361-phy altvoltage0 frequency_available` | extended-frequency mode | `[70000000 1 6000000000]`: 70 MHz to 6 GHz |
 
 A Pluto that reports `[325000000 1 3800000000]` on the `iio_attr` line is still in its stock 325 MHz to 3.8 GHz mode; bring it to EI, where it takes a minute to switch. A command that reports no device usually means a USB driver problem or a cable that carries power but not data.
@@ -174,11 +174,18 @@ The left panel plots the tone's last eight samples on the unit circle, one new s
 ::::{frame} Part 3: Connect the PlutoSDR
 :::{present}
 - Antenna on the **RX** port; USB cable on the middle micro-USB port.
-- GNU Radio finds the Pluto on USB by itself.
+- The course flowgraphs open it at `ip:192.168.2.1`; macOS needs one extra step.
 - Course Plutos tune 70 MHz to 6 GHz, so the FM band is in range.
 :::
 
-The PlutoSDR has two SMA connectors, TX and RX, and two micro-USB ports: the middle one carries data and power, and the one at the end carries power only. Screw an antenna onto RX, the course's broadband whip if you have one; the two small antennas that ship with the Pluto are cut for the cellular bands and show only the strongest FM stations. Connect the data port to the laptop. The course flowgraphs leave the PlutoSDR Source's URI blank, so the block finds the Pluto on USB by itself on Windows, macOS, and Linux; with two Plutos plugged in, type the `usb:` URI that `iio_info -s` prints.
+The PlutoSDR has two SMA connectors, TX and RX, and two micro-USB ports: the middle one carries data and power, and the one at the end carries power only. Screw an antenna onto RX, the course's broadband whip if you have one; the two small antennas that ship with the Pluto are cut for the cellular bands and show only the strongest FM stations. Connect the data port to the laptop. The Pluto appears as a small USB network adapter, and every course flowgraph's PlutoSDR Source opens it at the URI `ip:192.168.2.1`. How that works depends on the laptop:
+
+| Laptop | Setup | URI in the PlutoSDR Source |
+| :-- | :-- | :-- |
+| Windows | install Analog Devices' PlutoSDR USB driver once | `ip:192.168.2.1` |
+| Linux | nothing to install | `ip:192.168.2.1` |
+| macOS | the Pluto's default USB-Ethernet mode, RNDIS, does not work; switch the Pluto to NCM mode once (see ADI's PlutoSDR wiki, USB Ethernet mode), or use the `usb:` URI | `ip:192.168.2.1` after the switch, or the `usb:` URI that `iio_info -s` prints |
+
 
 Out of the box a Pluto tunes 325 MHz to 3.8 GHz, which misses broadcast FM. The course Plutos are set to extended-frequency mode, which tunes 70 MHz to 6 GHz; the `iio_attr` line in the Verify table confirms it. Only one flowgraph can stream from the Pluto at a time, so stop one before starting the next.
 ::::

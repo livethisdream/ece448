@@ -45,7 +45,7 @@ Nothing in this lab transmits. The FM flowgraph uses only the PlutoSDR's receive
 - `L05-tone.grc` runs and shows one spike at $+1$ kHz.
 :::
 
-Do the Pre-Lab before you arrive; the bench time assumes a working install. The three checks on the slide are the packet's Question 1. If any fails, the L5 lesson page lists the fixes: the most common one on Windows is Analog Devices' PlutoSDR USB driver, and a Pluto that fails the `iio_attr` check needs switching to extended-frequency mode. Bring the problem to EI before the lab rather than to the lab itself.
+Do the Pre-Lab before you arrive; the bench time assumes a working install. The three checks on the slide are the packet's Question 1. The flowgraphs open the Pluto at `ip:192.168.2.1`. On Windows that needs Analog Devices' PlutoSDR USB driver; on Linux it works as is; on macOS, switch the Pluto to NCM mode once or type the `usb:` URI from `iio_info -s` into the PlutoSDR Source, as the lesson page's Connect frame shows. If any check fails, the L5 lesson page lists the fixes: the most common one on Windows is Analog Devices' PlutoSDR USB driver, and a Pluto that fails the `iio_attr` check needs switching to extended-frequency mode. Bring the problem to EI before the lab rather than to the lab itself.
 
 Question 2 is quick arithmetic from your block settings: where five tones appear at a 48 kHz sample rate, the band the FM display shows at a given center frequency, and the size of a 3 s recording. Part 2 checks the tones and the file size on the screen. The tone results are exact, because a computed tone has no noise or hardware in the way; if a measurement disagrees with your arithmetic, check `samp_rate` first.
 ::::
