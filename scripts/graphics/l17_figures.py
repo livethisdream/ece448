@@ -8,6 +8,9 @@
                   on/off chips, the 3-chip PWM bits, and the three fields.
   L17-encodings : the same four bits keyed three common ways: pulse width,
                   pulse distance, and Manchester.
+  L17-sigid     : spectrograms of the three Simulated SigID recordings,
+                  book/extras/grc/L17-sigid-{a,b,c}.sigmf-data, made by
+                  L17-sigid-gen.grc (rasterized PNG).
 
 The recording L17-fan-remote.sigmf-data comes from book/extras/grc/
 L17-fan-remote-gen.grc. The GNU Radio and URH screenshots (L17-view-*.png,
@@ -24,7 +27,10 @@ import io
 import re
 from pathlib import Path
 
+import json
+
 import matplotlib
+import numpy as np
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
@@ -136,7 +142,34 @@ def encodings():
     write("L17-encodings", fig)
 
 
+def sigid():
+    fig, axes = plt.subplots(1, 3, figsize=(9.6, 3.0), sharey=True)
+    for ax, tag in zip(axes, "abc"):
+        base = ROOT / f"book/extras/grc/L17-sigid-{tag}"
+        meta = json.loads((base.parent / f"{base.name}.sigmf-meta").read_text())
+        fs = meta["global"]["core:sample_rate"]
+        x = np.fromfile(base.parent / f"{base.name}.sigmf-data", dtype=np.complex64)
+        n = 512
+        frames = x[: len(x) // n * n].reshape(-1, n) * np.hanning(n)
+        spec = 20 * np.log10(np.abs(np.fft.fftshift(np.fft.fft(frames, axis=1), axes=1)) + 1e-6)
+        f = np.fft.fftshift(np.fft.fftfreq(n, 1 / fs)) / 1e3
+        t = np.arange(len(frames)) * n / fs
+        ax.pcolormesh(f, t, spec, shading="auto", cmap="viridis", vmin=spec.max() - 60, vmax=spec.max(), rasterized=True)
+        ax.set_title(f"Signal {tag.upper()}", color=INK, fontsize=11, fontweight="bold")
+        ax.set_xlabel("offset (kHz)")
+    axes[0].set_ylabel("time (s)")
+    fig.text(0.99, 0.01, "Simulated", ha="right", va="bottom", color=RED, fontsize=10, fontweight="bold")
+    out = ROOT / "book/extras/viz/img/L17-sigid.png"
+    fig.savefig(out, dpi=100, bbox_inches="tight", pad_inches=0.06)
+    from PIL import Image  # a 64-color palette keeps the noise texture under 100 KB
+    Image.open(out).convert("RGB").quantize(64).save(out, optimize=True)
+    (ROOT / "book/extras/slides/img/17-rf-reverse-engineering/L17-sigid.png").write_bytes(out.read_bytes())
+    plt.close(fig)
+    print("wrote L17-sigid.png")
+
+
 if __name__ == "__main__":
     process()
     frame()
     encodings()
+    sigid()

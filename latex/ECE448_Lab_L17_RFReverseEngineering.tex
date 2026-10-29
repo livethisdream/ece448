@@ -210,7 +210,7 @@ flowgraph's 1 MS/s.
 	\renewcommand{\arraystretch}{1.25}
 	\begin{tabular}{| l | K{0.8in} | K{0.8in} | K{0.8in} | K{0.8in} |}
 	\hline
-	Chip length & 200 $\mu$s & 400 $\mu$s & 500 $\mu$s & 1 ms \\\hline
+	Chip length & 240 $\mu$s & 300 $\mu$s & 600 $\mu$s & 1 ms \\\hline
 	At the recording's rate & \kv{\keysol{kv4}} & \kv{\keysol{kv5}} & \kv{\keysol{kv6}} & \kv{\keysol{kv7}} \\\hline
 	At 1 MS/s & \kv{\keysol{kv8}} & \kv{\keysol{kv9}} & \kv{\keysol{kv10}} & \kv{\keysol{kv11}} \\\hline
 	\end{tabular}
@@ -270,12 +270,13 @@ URH.
 	\end{minipage}
 
 	\part Record the shortest pulse and the shortest gap you measured, in samples and
-	in microseconds. Give the Samples/Symbol you used from then on, and describe what
-	changed in the lines of chips when you set it.
+	in microseconds. Say whether you kept autodetect's Samples/Symbol or changed it, and
+	why.
 		\begin{solution}[1.2in]\keysol{sol10}\end{solution}
 
 	\part Name the modulation and the encoding. Give the evidence for each from the
-	envelope and the lines of chips, and describe any chips that every burst shares.
+	envelope and the lines of chips, and describe any structure in each burst besides
+	the data bits, if there is any.
 		\begin{solution}[1.4in]\keysol{sol11}\end{solution}
 
 	\part Find the baud rate, in chips per second, and the bit rate, in data bits per
@@ -300,8 +301,7 @@ URH.
 
 \begin{parts}
 
-	\part Decode one burst of each button and write its data bits in hex, without the
-	chips every burst shares.
+	\part Decode one burst of each button and write its data bits in hex.
 
 	\begin{center}
 	\renewcommand{\arraystretch}{1.25}
@@ -314,8 +314,8 @@ URH.
 	\end{center}
 
 	\part Mark the fields: which bits never change, which change with the button, and
-	what the remaining bits do. Give the rule the remaining bits follow, and check it on
-	two buttons.
+	any field that follows neither. If you find such a field, give the rule it follows
+	and check it on two buttons.
 		\begin{solution}[1.6in]\keysol{sol13}\end{solution}
 
 	\begin{minipage}[t]{0.58\linewidth}
@@ -376,8 +376,9 @@ you disconnect the cable.
 	chips with the original recording's for the same button.
 		\begin{solution}[1.0in]\keysol{sol19}\end{solution}
 
-	\part Record whether the chips still match at each TX attenuation, and explain what
-	limits the link as the attenuation rises.
+	\part Record whether the chips still match at each TX attenuation, and explain in words,
+	from what you saw on the waterfall and in URH, what limits the link as the attenuation
+	rises.
 
 	\begin{center}
 	\renewcommand{\arraystretch}{1.25}
@@ -406,12 +407,13 @@ you disconnect the cable.
 	each field.
 		\begin{solution}[1.8in]\keysol{sol21}\end{solution}
 
-	\part From your Question 6 table and your noise run in Question 7(c), explain what
-	the device's check lets a receiver reject, and why a frame with two flipped bits
-	might still pass it.
+	\part From your Question 6 table and your noise run in Question 7(c), explain how a
+	receiver of this device could tell a frame damaged by noise from a good one, and
+	what kinds of damage it could miss.
 		\begin{solution}[1.5in]\keysol{sol22}\end{solution}
 
-	\part Explain why your encoder from Question 7 would operate the real device, and
+	\part Explain why your encoder from Question 7 would operate a device that matched
+	this recording, and
 	describe in words how a rolling code, as in a car key fob, would stop a recording of
 	one press from being reused.
 		\begin{solution}[1.5in]\keysol{sol23}\end{solution}

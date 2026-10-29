@@ -1,0 +1,17 @@
+{
+  "global": {
+    "core:datatype": "cf32_le",
+    "core:sample_rate": 100000.0,
+    "core:version": "1.0.0",
+    "core:hw": "Simulated in GNU Radio; no radio",
+    "core:author": "ECE 448",
+    "core:description": "L17 SigID: unknown signal A, Simulated."
+  },
+  "captures": [
+    {
+      "core:sample_start": 0,
+      "core:frequency": 915000000.0
+    }
+  ],
+  "annotations": []
+}

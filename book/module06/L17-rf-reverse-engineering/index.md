@@ -13,7 +13,7 @@ frame_view: true
 
 <div class="title-rule"></div>
 
-Take an unknown signal from spectrum to bits with GQRX, URH, and GNU Radio.
+Take an unknown signal from spectrum to bits with SDR Flex or GQRX, URH, and GNU Radio.
 
 Lesson 17 · Module 6: Waveform Applications & RF Reverse Engineering · Dr. Neil Rogers
 ::::
@@ -89,7 +89,7 @@ The recording is 2.4 s long and 3.9 MB. `L17-fan-remote-gen.grc` made it: it key
 ::::{frame} Step 1: Find the Carrier
 :::{present}
 <img src="../../viz/img/L17-view-find.png"
-     alt="L17-sigmf-view.grc running on the recording, labeled simulated, with the carrier offset at 0: the spectrum from 349.90 to 350.10 MHz shows a narrow steady line near 349.938 MHz and a wider bump near 350.040 MHz; the waterfall shows a solid vertical line at 349.938 MHz and short bursts near 350.040 MHz; the envelope plot is empty"
+     alt="L17-sigmf-view.grc running on the recording, labeled simulated, with the carrier offset at 0: the spectrum from 349.90 to 350.10 MHz shows a narrow steady line near 349.945 MHz and a wider bump near 350.040 MHz; the waterfall shows a solid vertical line at 349.945 MHz and short bursts near 350.040 MHz; the envelope plot is empty"
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
@@ -97,9 +97,9 @@ The recording is 2.4 s long and 3.9 MB. `L17-fan-remote-gen.grc` made it: it key
 - The steady line never changes; the remote is the one that bursts.
 :::
 
-`L17-sigmf-view.grc` is the 2025 capture flowgraph with a SigMF Source in place of the radio: the recording, a Throttle, and a **Frequency Sink** and **Waterfall Sink** centered at 350 MHz. The recording loops, so the bursts come back every 2.4 s.
+In 2025 the first tool was a GNU Radio capture flowgraph: a PlutoSDR or HackRF source, a **SigMF Sink (Minimal)** to record, and frequency, time, and waterfall sinks. That flowgraph is `L17-capture.grc`; a HackRF works with its own source block in place of the Pluto's. `L17-sigmf-view.grc` is the same flowgraph with a SigMF Source in place of the radio: the recording, a Throttle, and a **Frequency Sink** and **Waterfall Sink** centered at 350 MHz. The recording loops, so the bursts come back every 2.4 s.
 
-Two signals appear. A narrow line near 349.938 MHz stays on the whole time. The bursts near 350.04 MHz come and go five times per loop, once for each button press, and that is the remote. A real band holds many steady carriers, such as another receiver's oscillator or a nearby digital clock, so the waterfall is how we tell them apart: the remote's signal starts and stops when someone presses a button. The bursts are wider on the spectrum than the steady line because switching a carrier on and off spreads it.
+Two signals appear. A narrow line near 349.945 MHz stays on the whole time. The bursts near 350.04 MHz come and go five times per loop, once for each button press, and that is the remote. A real band holds many steady carriers, such as another receiver's oscillator or a nearby digital clock, so the waterfall is how we tell them apart: the remote's signal starts and stops when someone presses a button. The bursts are wider on the spectrum than the steady line because switching a carrier on and off spreads it.
 ::::
 
 ::::{frame} Step 1: Shift the Carrier to 0 Hz
@@ -141,6 +141,24 @@ The question for Step 2 is what the transmitter changes. The envelope plot shows
 Most simple remotes, doorbells, and weather sensors use OOK, because the transmitter is one oscillator and one switch, and the receiver needs only an envelope detector like Lesson 11's.
 ::::
 
+::::{frame} SigID: Name the Signal
+:::{present}
+<img src="../../viz/img/L17-sigid.png"
+     alt="Spectrograms of three Simulated recordings, 0.8 s each, offsets from minus 50 to plus 50 kHz: signal A shows two parallel lines 6 kHz apart near plus 20 kHz, with the energy switching between them; signal B shows one band about 4 kHz wide near minus 15 kHz that stays on; signal C shows a narrow line that jumps to a new frequency every 80 ms among seven positions from minus 30 to plus 30 kHz"
+     style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
+:::
+:::{present}
+- Open `L17-sigid-a`, `-b`, and `-c` in `L17-sigmf-view.grc` and name each modulation.
+- Set `samp_rate` to 100000 and `fc` to 915e6 first.
+:::
+
+The 2025 class practiced Step 2 on a set of unknown recordings, the **SigID** exercise: open each one in a frequency and waterfall flowgraph with a SigMF Source (Minimal) and say what it is. The three recordings here are Simulated, 0.8 s each at 100 kS/s; set `rec` to each file in turn. The figure shows their spectrograms, time going up.
+
+:::{depth}
+Signal A has two lines 6 kHz apart and the energy moves between them: two-level FSK, as in Lesson 8. Signal B is one band that never switches off and does not move: PSK, here QPSK, as in Lesson 15; its envelope stays constant and a constellation plot would show its four phases. Signal C is a narrow tone that jumps to a new frequency every 80 ms: a frequency hopper, as in Lesson 16. The faint horizontal lines in C are FFT frames that straddle a hop.
+:::
+::::
+
 ::::{frame} Step 3: URH
 :::{present}
 <img src="../../viz/img/L17-urh-frame.png"
@@ -148,11 +166,12 @@ Most simple remotes, doorbells, and weather sensors use OOK, because the transmi
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
-- Open the `.sigmf-data` file in URH and enter 200000 as its sample rate.
-- Autodetect finds ASK and 80 samples a symbol.
+1. In URH, choose File, New Project, then open the `.sigmf-data` file.
+2. Enter 200000 as its sample rate.
+3. Autodetect finds ASK and 80 samples a symbol.
 :::
 
-URH reads a file it does not recognize as complex float, which matches `cf32_le`. Choose File, Open, set the filter to All Files, and open `L17-fan-remote.sigmf-data`. URH does not read the meta file, so enter the sample rate, 200000, in the signal's details; for a project, choose File, New Project first, as the 2025 class did, and URH keeps the setting.
+The 2025 class worked in a URH project, which keeps every recording and setting together; choose File, New Project and make a folder for it. URH reads a file it does not recognize as complex float, which matches `cf32_le`, so choose File, Open, set the filter to All Files, and open `L17-fan-remote.sigmf-data`. URH does not read the meta file, so enter the sample rate, 200000, in the signal's details.
 
 On opening, URH's autodetect chose **ASK** and **80 samples per symbol**, and it set the Center, the threshold between off and on. At 200 kS/s, 80 samples is 400 µs, the length of the shortest pulse. URH calls each 400 µs slot a symbol; we call it a **chip**, because the next frame shows it takes more than one chip to make a bit. The text area lists one line of chips per burst, and **Pause** is the silence after it.
 ::::
@@ -168,7 +187,7 @@ On opening, URH's autodetect chose **ASK** and **80 samples per symbol**, and it
 - Every bit starts on, and a long pulse is a 1: pulse-width coding.
 :::
 
-The first line URH lists starts `110 100 110 100 100 110 110 100`. Split into groups of three, every group is `110` or `100`, which is **pulse-width** coding: each bit starts with the carrier on, a 1 stays on for two chips and a 0 for one, and each bit ends off. The figure shows it beside two other common schemes. In **pulse-distance** coding every pulse is short and the length of the gap carries the bit; in **Manchester** coding every bit has a transition in its middle, so the chips come in pairs.
+The first line URH lists starts `110 100 110 100 100 110 110 100`. Split into groups of three, every group is `110` or `100`, which is **pulse-width** coding: each bit starts with the carrier on, a 1 stays on for two chips and a 0 for one, and each bit ends off. The figure shows it beside two other common schemes. In **pulse-distance** coding every pulse is short and the length of the gap carries the bit; in **Manchester** coding every bit has a transition in its middle, so the chips come in pairs. The figure draws a 1 as on then off; IEEE 802.3 Ethernet uses the opposite convention, so a Manchester device can use either.
 
 A frame of 16 bits is 48 chips, yet URH lists 46 or 47. The last chip of every bit is off, and a frame ending in a 0 ends in two off chips, so URH counts those chips as part of the pause. We add them back.
 ::::
@@ -209,7 +228,7 @@ The 2025 slides asked five questions about the encoding. For the Simulated fan r
 | How are 1s and 0s encoded? | pulse width: `110` is a 1 and `100` is a 0, 400 µs a chip |
 | Can we identify parts of the message from the captures? | yes, by comparing the five buttons: the bits that never change are the address, and the bits that do are the command |
 | Is a command sent just once? | no: each press sends the frame 6 times, with about 12 ms of silence between frames |
-| What else do you notice? | the steady carrier at 349.938 MHz is not the remote, and each frame's last off chips run into the pause |
+| What else do you notice? | the steady carrier at 349.945 MHz is not the remote, and each frame's last off chips run into the pause |
 
 The repeats let a receiver that misses one frame, to noise or to a collision with another remote, act on the next. They also mean that a press lasts about 190 ms, long enough to see on the waterfall.
 ::::
@@ -270,9 +289,9 @@ URH shows the same thing on a real recording: as the signal weakens, the lines o
 - **Repeat** and **Stream Mux** set the chip length and the gap.
 :::
 
-The encoder uses the blocks of the 2025 hier block. A **Vector Source** repeats the 16 bits of the chosen button's word. A **Map** replaces each bit with a number whose binary form is its chip pattern, 0 with 4 (`100`) and 1 with 6 (`110`), and **Unpack K Bits** with $K = 3$ writes those three bits out one at a time, most significant first. **Repeat** holds each chip for `chip_len` = 80 samples, 400 µs at 200 kS/s.
+The encoder adapts the 2025 hier block, which held all of these blocks in one. A **Vector Source** repeats the 16 bits of the chosen button's word. A **Map** replaces each bit with a number whose binary form is its chip pattern, 0 with 4 (`100`) and 1 with 6 (`110`), and **Unpack K Bits** with $K = 3$ writes those three bits out one at a time, most significant first. **Repeat** holds each chip for `chip_len` = 80 samples, 400 µs at 200 kS/s.
 
-The **Stream Mux** takes $48 \times 80 = 3840$ samples, one frame, from the encoder, then $30 \times 80 = 2400$ samples of zero from a **Constant Source**, the 12 ms gap, and repeats. **Float To Complex** and a **Multiply** with a 40 kHz **Signal Source** put the envelope on the carrier, as Lesson 12's keyer did. `L17-encoder.grc` packs Map, Unpack K Bits, and Repeat into a hier block, as the GNU Radio wiki's Hier Blocks and Parameters tutorial describes.
+The **Stream Mux** takes $48 \times 80 = 3840$ samples, one frame, from the encoder, then $30 \times 80 = 2400$ samples of zero from a **Constant Source**, the 12 ms gap, and repeats. **Float To Complex** and a **Multiply** with a 40 kHz **Signal Source** put the envelope on the carrier, as Lesson 12's keyer did. `L17-encoder.grc` packs Map, Unpack K Bits, and Repeat into a hier block, as the GNU Radio wiki's Hier Blocks and Parameters tutorial describes, and leaves the Stream Mux and the carrier outside it so the same block serves any frame length. The Map comes before Unpack K Bits because it is the Map that turns each bit into its chip pattern.
 ::::
 
 ::::{frame} Step 4: Check the Encoder
@@ -327,6 +346,7 @@ Reverse engineering runs in five steps: find the carrier, identify the modulatio
 - <a class="doc-link" href="../../grc/L17-fan-tx-sim.grc" download>L17-fan-tx-sim.grc</a>: the encoder with a button chooser and a noise slider, recording to `my-fan-remote.sigmf-data`. No hardware needed.
 - <a class="doc-link" href="../../grc/L17-encoder.grc" download>L17-encoder.grc</a>: the encoder as a hier block, L17 OOK Encoder. Press Generate once to install it.
 - <a class="doc-link" href="../../grc/L17-fan-remote-gen.grc" download>L17-fan-remote-gen.grc</a>: the flowgraph that made the recording. No hardware needed.
+- <a class="doc-link" href="../../grc/L17-sigid-a.sigmf-data" download>L17-sigid-a</a>, <a class="doc-link" href="../../grc/L17-sigid-b.sigmf-data" download>-b</a>, and <a class="doc-link" href="../../grc/L17-sigid-c.sigmf-data" download>-c</a> (.sigmf-data), with <a class="doc-link" href="../../grc/L17-sigid-a.sigmf-meta" download>a</a>, <a class="doc-link" href="../../grc/L17-sigid-b.sigmf-meta" download>b</a>, and <a class="doc-link" href="../../grc/L17-sigid-c.sigmf-meta" download>c</a> meta files: three Simulated unknown signals for SigID, 0.8 s each at 100 kS/s, 640 KB each. <a class="doc-link" href="../../grc/L17-sigid-gen.grc" download>L17-sigid-gen.grc</a> made them.
 - <a class="doc-link" href="../../grc/L17-capture.grc" download>L17-capture.grc</a>: a PlutoSDR Source with spectrum, waterfall, and envelope displays, recording to `capture.sigmf-data`. Receive only; needs a PlutoSDR or another SDR source block.
 - <a class="doc-link" href="../../grc/L17-fan-tx-pluto.grc" download>L17-fan-tx-pluto.grc</a>: the encoder on a PlutoSDR at 350.04 MHz. Transmit only into the cable, through a 30 dB attenuator, to a second SDR.
 - <a class="doc-link" href="https://github.com/jopohl/urh" target="_blank" rel="noopener">Universal Radio Hacker (URH)</a>: its README gives an installer for Windows and `pipx install urh` for Linux and macOS.
@@ -364,7 +384,7 @@ Open a `.grc` file from GRC's File menu, or run `gnuradio-companion L17-sigmf-vi
 - Lessons 18 and 19 decode signals whose formats are published: ADS-B and AIS.
 :::
 
-The L17 Lab is today's process on a device you have not seen. You get a SigMF recording of a Simulated remote with several buttons, at a frequency, sample rate, and encoding of its own, and you find its carrier, modulation, encoding, and fields, build an encoder for it from an empty canvas, check your encoder against the recording in URH, and then send it through a PlutoSDR and a cable to a second SDR.
+The L17 Lab is today's process on a device you have not seen. You get a SigMF recording of a Simulated remote with several buttons, with settings of its own, and you find its carrier, modulation, encoding, and fields, build an encoder for it from an empty canvas, check your encoder against the recording in URH, and then send it through a PlutoSDR and a cable to a second SDR.
 
 Lessons 18 and 19 receive aircraft and ship transponders. Their formats are public standards, so there the work is building and running the receiver rather than discovering the format.
 ::::

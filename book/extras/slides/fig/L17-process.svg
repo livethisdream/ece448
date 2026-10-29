@@ -3,7 +3,7 @@
   <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
    <cc:Work>
     <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
-    <dc:date>2026-10-29T03:29:28.939307</dc:date>
+    <dc:date>2026-10-29T03:55:32.992903</dc:date>
     <dc:format>image/svg+xml</dc:format>
     <dc:creator>
      <cc:Agent>
@@ -39,7 +39,7 @@ L 8.6 77.8
 Q 8.6 83.6 15.0 83.6 
 L 15.0 83.6 
 z
-" clip-path="url(#p10d5786cb0)" style="fill: none; stroke: #004a85; stroke-width: 1.6; stroke-linejoin: miter"/>
+" clip-path="url(#p52da4bd53a)" style="fill: none; stroke: #004a85; stroke-width: 1.6; stroke-linejoin: miter"/>
    </g>
    <g id="patch_3">
     <path d="M 122.1 83.6 
@@ -53,7 +53,7 @@ L 115.7 77.8
 Q 115.7 83.6 122.1 83.6 
 L 122.1 83.6 
 z
-" clip-path="url(#p10d5786cb0)" style="fill: none; stroke: #004a85; stroke-width: 1.6; stroke-linejoin: miter"/>
+" clip-path="url(#p52da4bd53a)" style="fill: none; stroke: #004a85; stroke-width: 1.6; stroke-linejoin: miter"/>
    </g>
    <g id="patch_4">
     <path d="M 229.3 83.6 
@@ -67,7 +67,7 @@ L 222.8 77.8
 Q 222.8 83.6 229.3 83.6 
 L 229.3 83.6 
 z
-" clip-path="url(#p10d5786cb0)" style="fill: none; stroke: #004a85; stroke-width: 1.6; stroke-linejoin: miter"/>
+" clip-path="url(#p52da4bd53a)" style="fill: none; stroke: #004a85; stroke-width: 1.6; stroke-linejoin: miter"/>
    </g>
    <g id="patch_5">
     <path d="M 336.4 83.6 
@@ -81,7 +81,7 @@ L 330.0 77.8
 Q 330.0 83.6 336.4 83.6 
 L 336.4 83.6 
 z
-" clip-path="url(#p10d5786cb0)" style="fill: none; stroke: #004a85; stroke-width: 1.6; stroke-linejoin: miter"/>
+" clip-path="url(#p52da4bd53a)" style="fill: none; stroke: #004a85; stroke-width: 1.6; stroke-linejoin: miter"/>
    </g>
    <g id="patch_6">
     <path d="M 443.5 83.6 
@@ -95,7 +95,7 @@ L 437.1 77.8
 Q 437.1 83.6 443.5 83.6 
 L 443.5 83.6 
 z
-" clip-path="url(#p10d5786cb0)" style="fill: none; stroke: #b01e24; stroke-width: 1.6; stroke-linejoin: miter"/>
+" clip-path="url(#p52da4bd53a)" style="fill: none; stroke: #b01e24; stroke-width: 1.6; stroke-linejoin: miter"/>
    </g>
    <g id="text_1">
     <text style="font-weight: 700; font-size: 11.5px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; fill: #15202b" transform="translate(25.679598 36.171428)">Find the</text>
@@ -197,7 +197,7 @@ z
   </g>
  </g>
  <defs>
-  <clipPath id="p10d5786cb0">
+  <clipPath id="p52da4bd53a">
    <rect x="4.32" y="4.32" width="535.68" height="105.336"/>
   </clipPath>
  </defs>

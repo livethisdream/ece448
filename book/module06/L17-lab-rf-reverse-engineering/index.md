@@ -54,7 +54,7 @@ The recording is a SigMF pair, like the lesson's, but its sample rate and center
 
 Do the Pre-Lab before you arrive. Question 1 asks for the datatype, sample rate, and center frequency from `L17-lab-unknown.sigmf-meta`, and for the values of `rec`, `samp_rate`, and `fc` you set in `L17-sigmf-view.grc` so that it opens this recording. Run it once to check that the spectrum's axis is centered on the recording's center frequency.
 
-Question 2 checks your URH install on the lesson's recording, `L17-fan-remote.sigmf-data`, whose answers the lesson page gives, so you can tell whether URH is working before you meet the unknown. URH's README gives an installer for Windows and `pipx install urh` for Linux and macOS. Question 3 is the arithmetic URH and your encoder need: samples per chip for several chip lengths at this recording's sample rate and at the PlutoSDR flowgraph's 1 MS/s.
+Question 2 checks your URH install on the lesson's recording, `L17-fan-remote.sigmf-data`, whose answers the lesson page gives, so you can tell whether URH is working before you meet the unknown. URH's README gives an installer for Windows and `pipx install urh` for Linux and macOS. Question 3 is the arithmetic URH and your encoder need: samples per chip for several chip lengths at this recording's sample rate and at the PlutoSDR flowgraph's 1 MS/s, so you can convert any length you measure.
 ::::
 
 ::::{frame} Part 2: Find the Carrier
@@ -71,9 +71,9 @@ Question 2 checks your URH install on the lesson's recording, `L17-fan-remote.si
 
 1. In URH, choose File, New Project, then open `L17-lab-unknown.sigmf-data` with the file filter set to All Files. Set the signal's sample rate to the one in the meta file.
 2. Record the Modulation and Samples/Symbol that autodetect chooses, for Question 5(a).
-3. Zoom in on one burst. Select the shortest pulse you can find; URH shows the selection's length in samples below the signal. Do the same for the shortest gap. Record both for Question 5(b). If they disagree with autodetect's Samples/Symbol, set Samples/Symbol to your measurement and record what changes in the lines of chips.
-4. Compare the chips of several bursts. Decide which chips every burst shares and how the rest group into bits, and record your evidence for Question 5(c).
-5. Decode one burst of each button into bits, by hand or with URH's Analysis tab, and fill in Question 6's table. Then compare the buttons and mark which bits never change, which change with the button, and what the rest do.
+3. Zoom in on one burst. Select the shortest pulse you can find; URH shows the selection's length in samples below the signal. Do the same for the shortest gap. Record both for Question 5(b), and decide whether autodetect's Samples/Symbol fits them.
+4. Compare the chips of several bursts. Decide how the chips group into bits, and whether each burst holds anything besides data bits, and record your evidence for Question 5(c).
+5. Decode one burst of each button into bits, by hand or with URH's Analysis tab, and fill in Question 6's table. Then compare the buttons and mark which bits never change and which change with the button.
 6. Count the bursts in one press, and measure the pause between bursts, for Question 6(c).
 ::::
 
@@ -92,7 +92,7 @@ Autodetect is a starting point, not an answer. Check the sample rate first: URH 
 1. Start GRC and choose File, New, QT GUI. Do not open `L17-fan-tx-sim.grc`; build the encoder yourself from standard blocks, with the settings you found. You may look at the lesson page's Step 4 figure.
 2. Set `samp_rate` to the recording's sample rate and `chip_len` to your samples per chip. Add a Variable `bits` that holds one button's bits as a list of 0s and 1s.
 3. Build the envelope: a **Vector Source** of `bits`, a **Map** and **Unpack K Bits** that turn each bit into your chip pattern, **Char To Float**, and a **Repeat** of `chip_len`.
-4. Add anything your measurements show around the bits, with a second Vector Source of chips and a Repeat where you need one, and the pause after each burst, with a **Constant Source** of 0. Join them with a **Stream Mux** whose lengths, in samples, match your measurements.
+4. Add anything your measurements show around the bits, and the pause after each burst, with a **Constant Source** of 0. Join them with a **Stream Mux** whose lengths, in samples, match your measurements.
 5. Put the envelope on a carrier at your offset with **Float To Complex**, a **Signal Source**, and a **Multiply**. Add a **Noise Source** of amplitude 0.05 and an **Add**, then a **Throttle**, a **QT GUI Time Sink** of the envelope from **Complex to Mag**, and a **SigMF Sink (Minimal)** with file name `my-unknown`, the recording's sample rate, and its center frequency. Every arrow must be black.
 6. Run it for about 5 s and close it. Open `my-unknown.sigmf-data` in URH beside the original recording, with the same sample rate and Samples/Symbol, and compare the lines of chips for Question 7(a).
 7. Change `bits` to a second button and repeat for Question 7(b). Then run it again and raise the noise amplitude in steps of 0.1 until URH's lines of chips no longer match; record where for Question 7(c).
@@ -104,7 +104,7 @@ Autodetect is a starting point, not an answer. Check the sample rate first: URH 
 - Connect the cable before the flowgraph runs, and never connect an antenna.
 :::
 
-Save a copy of your encoder for the radio. Delete the Noise Source, the Add, and the Throttle, set `samp_rate` to 1000000 and `chip_len` to your Question 3 value at 1 MS/s, and add a **PlutoSDR Sink** after a Multiply Const of 0.5, tuned to the recording's center frequency. Copy the `tx_atten` QT GUI Range from `L17-fan-tx-pluto.grc` unchanged, from 30 to 89 dB with a default of 60, and set it as the sink's attenuation. Put "Transmit only into the cable" in the flowgraph's description. The second SDR, a PlutoSDR or an RTL-SDR, runs `L17-capture.grc` with its center frequency set to the recording's and records what arrives.
+Save a copy of your encoder for the radio. Delete the Noise Source, the Add, and the Throttle, set `samp_rate` to 1000000 and `chip_len` to your chip length in samples at 1 MS/s, and add a **PlutoSDR Sink** after a Multiply Const of 0.5, tuned to the recording's center frequency. Copy the `tx_atten` QT GUI Range from `L17-fan-tx-pluto.grc` unchanged, from 30 to 89 dB with a default of 60, and set it as the sink's attenuation. Put "Transmit only into the cable" in the flowgraph's description. The second SDR, a PlutoSDR or an RTL-SDR, runs `L17-capture.grc` with its center frequency set to the recording's and records what arrives.
 
 In class we transmit only into a cable, into a shielded enclosure, or at very low power in an ISM band, and only when the lesson says to. This question transmits only into the cable between the first Pluto's TX port and the second SDR's input, through an inline 30 dB SMA attenuator. Never set TX attenuation below 30 dB or change the slider's range; an SDR's input is rated to only a few dBm. We have compiled the Pluto flowgraphs but not run them on a radio, so your bench is their first run on hardware.
 ::::
@@ -122,11 +122,11 @@ In class we transmit only into a cable, into a shielded enclosure, or at very lo
 ::::{frame} Part 3: After the Lab
 :::{present}
 - Give the evidence for the carrier, the modulation, the encoding, and each field.
-- Explain what the check field lets a receiver do, and what it cannot.
+- Explain how a receiver could reject a damaged frame, and what it could miss.
 - Explain why a fixed code can be replayed, and what would stop it.
 :::
 
-The Writeup is Question 9, in three parts. Part (a) lists, step by step, the observation that settled each answer: what you saw on the waterfall, the envelope, and the lines of chips, and which comparison between buttons identified each field. Part (b) explains, from your Question 6 table and your noise run in Question 7(c), what the device's check lets a receiver reject, and why a frame with two flipped bits might still pass. Part (c) explains why your encoder from Question 7 would operate the real device, and describes in words how a rolling code, as in a car key fob, would stop a recording from being reused.
+The Writeup is Question 9, in three parts. Part (a) lists, step by step, the observation that settled each answer: what you saw on the waterfall, the envelope, and the lines of chips, and which comparison between buttons identified each field. Part (b) explains, from your Question 6 table and your noise run in Question 7(c), how a receiver of this device could tell a frame damaged by noise from a good one, and what damage it could miss. Part (c) explains why your encoder from Question 7 would operate a device that matched this recording, and describes in words how a rolling code, as in a car key fob, would stop a recording from being reused.
 ::::
 
 ::::{frame} Lab Packet

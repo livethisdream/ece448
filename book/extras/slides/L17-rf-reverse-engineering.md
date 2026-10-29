@@ -24,7 +24,7 @@ Spring 2027 · Dr. Neil Rogers
 
 - Lesson 11 found a remote's bursts with an energy detector.
 - Lesson 12 keyed a carrier on and off.
-- Lessons 8 to 16 built transmitters whose formats we chose.
+- Lessons 8, 10, 12, 15, and 16 built transmitters whose formats we chose.
 
 Today the format belongs to someone else, and we work it out.
 
@@ -72,7 +72,7 @@ SigMF is the course's recording format. The SigMF Source (Minimal) is a File Sou
 
 ## Step 1: Find the Carrier
 
-<img src="./img/17-rf-reverse-engineering/L17-view-find.png" alt="L17-sigmf-view.grc on the recording, simulated: a steady line near 349.938 MHz and bursts near 350.040 MHz" style="max-height:420px; display:block; margin:0 auto;">
+<img src="./img/17-rf-reverse-engineering/L17-view-find.png" alt="L17-sigmf-view.grc on the recording, simulated: a steady line near 349.945 MHz and bursts near 350.040 MHz" style="max-height:420px; display:block; margin:0 auto;">
 
 The steady line never changes; the remote is the one that bursts.
 
@@ -105,11 +105,22 @@ SDR Flex's browser version opens its example captures from the source chip; its 
 
 ## Step 2: Identify the Modulation
 
-- Two levels on the envelope, one frequency on the waterfall
-- On-off keying (OOK): Lesson 12's keyed carrier, keyed by a circuit
+- The envelope has two levels, and the waterfall shows one frequency.
+- That is on-off keying (OOK), Lesson 12's keyed carrier switched by a circuit.
 
 Note:
 FSK would show two tracks, as in Lesson 8; PSK would stay on at constant amplitude, as in Lesson 15. OOK is one oscillator and one switch, which is why simple remotes, doorbells, and sensors use it.
+
+---
+
+## SigID: Name the Signal
+
+<img src="./img/17-rf-reverse-engineering/L17-sigid.png" alt="Spectrograms of three Simulated recordings: A two lines 6 kHz apart, B one steady band, C a tone hopping every 80 ms" style="max-height:340px; display:block; margin:0 auto;">
+
+Open `L17-sigid-a`, `-b`, and `-c` in the viewer and name each modulation.
+
+Note:
+The 2025 SigID exercise. Set samp_rate to 100000 and fc to 915e6. A is two-level FSK, as in Lesson 8. B is QPSK, one steady band, as in Lesson 15. C is a frequency hopper, as in Lesson 16; the faint horizontal lines are FFT frames that straddle a hop.
 
 ---
 
@@ -120,7 +131,7 @@ FSK would show two tracks, as in Lesson 8; PSK would stay on at constant amplitu
 Autodetect: ASK, 80 samples a symbol, which is a 400 µs chip.
 
 Note:
-File, Open, All Files, then set the sample rate to 200000 in the signal's details; URH does not read the meta file. For a project, File, New Project first. Each line of the text area is one burst; Pause is the silence after it.
+File, New Project first, as in 2025. Then File, Open, All Files, then set the sample rate to 200000 in the signal's details; URH does not read the meta file. For a project, File, New Project first. Each line of the text area is one burst; Pause is the silence after it.
 
 ---
 
@@ -202,9 +213,9 @@ Matching chips are the test of steps 1 to 3. The encoder repeats for as long as 
 
 ## Step 5: Transmit into a Cable
 
-- PlutoSDR at 350.04 MHz, 1 MS/s, `chip_len` = 400
-- TX port, 30 dB attenuator, second SDR running `L17-capture.grc`
-- Never an antenna; TX attenuation 30 dB or more
+- The PlutoSDR sends at 350.04 MHz and 1 MS/s, so `chip_len` is 400.
+- Its TX port feeds a 30 dB attenuator and a second SDR running `L17-capture.grc`.
+- Never connect an antenna, and keep TX attenuation at 30 dB or more.
 
 Note:
 In class we transmit only into a cable, into a shielded enclosure, or at very low power in an ISM band, and only when the lesson says to. 350 MHz is not an ISM band. Both Pluto flowgraphs are compiled only; the L17 Lab is their first run on hardware.
@@ -216,14 +227,14 @@ In class we transmit only into a cable, into a shielded enclosure, or at very lo
 <div class="callout">Find the carrier, identify the modulation, identify the encoding, build an encoder, and transmit. An encoder whose output decodes the same as the recording confirms the first three.</div>
 
 Note:
-The comparison in URH is the proof. If our chips match, the original receiver would accept them.
+Matching chips in URH are the test of steps 1 to 3.
 
 ---
 
 ## Looking Ahead
 
-- L17 Lab: a different remote's recording and no description
-- Lessons 18 and 19: ADS-B and AIS, whose formats are published
+- The L17 Lab hands you a different remote's recording and no description.
+- Lessons 18 and 19 decode ADS-B and AIS, whose formats are published.
 
 Note:
 Before the lab, install URH and open the lesson recording in it, and read the lab recording's meta file.
