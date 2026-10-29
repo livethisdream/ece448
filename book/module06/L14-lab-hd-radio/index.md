@@ -106,7 +106,7 @@ The figure shows the lesson's simulated test file; a live station's host is roug
 
 This part is optional, and Question 6 does not count toward the grade. nrsc5 is not part of radioconda, and it has no PlutoSDR driver, so it decodes a recording you make in GRC. Use a laptop that has a recent nrsc5 installed, your own or one your instructor provides. These steps follow the nrsc5 project's documentation; we have not yet tested them in this course.
 
-1. Open `L14-hd-find.grc` and switch it to the PlutoSDR as the lesson describes, then also enable its Rational Resampler and SigMF Sink. Type your station into Center and set the gain you used before you run it, because the SigMF Sink records the center frequency when the flowgraph starts.
+1. Open `L14-hd-find.grc` and switch it to the PlutoSDR as the lesson describes, then also enable its Rational Resampler and SigMF Sink. Type your station's frequency in MHz into the finder's Center (MHz) and set the gain you used before you run it, because the SigMF Sink records the center frequency when the flowgraph starts.
 2. Run it for about 10 s and stop it. It writes `hd.sigmf-data`, about 60 MB, at 744,188 samples per second, and `hd.sigmf-meta`.
 3. Run `nrsc5 --iq-input-format cf32 -r hd.sigmf-data 0`. It takes a few seconds to synchronize. Record the station name, the song title and artist, and any HD2 or HD3 program it reports, for Question 6(a). Try program 1 for HD2.
 4. Record and decode again at lower gains, a few dB at a time, until nrsc5 stops playing audio. Record the lowest gain at which it plays, and how high the shelves stand above the floor in your meter at that gain, for Question 6(b).

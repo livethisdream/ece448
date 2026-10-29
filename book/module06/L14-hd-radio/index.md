@@ -85,7 +85,7 @@ The digital signal carries the main program, called HD1, and a station can add H
 | Digital sidebands | ±129.4 to ±198.4 kHz | OFDM, QPSK on each subcarrier |
 :::
 
-Each part of an HD Radio station's spectrum uses a different modulation. The host is analog FM, and Lesson 7's demodulator turned it into the **multiplex**: mono audio up to 15 kHz, the 19 kHz stereo pilot, the stereo difference signal as DSB-SC around 38 kHz, and **RBDS**, the US name for RDS, as differentially encoded BPSK at 1187.5 bits per second on 57 kHz, carrying the station name, the time, and text. To see it on the same station, open Lesson 7's `L07-rds-rx.grc`, type the station's frequency into both SDR center and Station, switch it from its File Source to the radio as Lesson 7 describes, and run it: the panel fills with the station's name. PySDR's RDS chapter, which the slides list as an activity, decodes the same signal step by step in Python.
+Each part of an HD Radio station's spectrum uses a different modulation. The host is analog FM, and Lesson 7's demodulator turned it into the **multiplex**: mono audio up to 15 kHz, the 19 kHz stereo pilot, the stereo difference signal as DSB-SC around 38 kHz, and **RBDS**, the US name for RDS, as differentially encoded BPSK at 1187.5 bits per second on 57 kHz, carrying the station name, the time, and text. To see it on the same station, open Lesson 7's `L07-rds-rx.grc`, run it on its recording, and the panel fills with the station's name; Lesson 7 shows how to switch it to the radio for a live station. PySDR's RDS chapter, which the slides list as an activity, decodes the same signal step by step in Python.
 
 :::{depth}
 <img src="../../viz/img/L07-fm-multiplex.svg"
@@ -164,7 +164,7 @@ The left panel shows the spectra of five neighboring subcarriers with the HD Rad
 
 `L14-hd-test-tx.grc` recreates a hybrid station with the OFDM blocks of the previous frames. For each sideband, random QPSK points fill subcarriers 356 to 546 in the **OFDM Carrier Allocator**, a reverse **FFT** of 4096 points turns them into one symbol, and the **OFDM Cyclic Prefixer** adds the 224-sample guard. A Multiply Const sets each sideband's level, here $-23$ dBc. The FM host is filtered noise and a 19 kHz pilot, frequency modulated with the broadcast 75 kHz deviation setting, and an analog-only station sits 400 kHz below.
 
-The sidebands carry random symbols, not NRSC-5 data, so nrsc5 cannot decode this file; it is a test signal for finding and measuring the sidebands. It writes `L14-hd-test.cu8`, unsigned 8-bit I and Q at 1,488,375 samples per second, the default recording format of nrsc5 and of RTL-SDR receivers. Nothing in it transmits: its last block is a File Sink.
+The sidebands carry random symbols, not NRSC-5 data, so nrsc5 cannot decode this file; it is a test signal for finding and measuring the sidebands. It writes `L14-hd-test.cu8`, unsigned 8-bit I and Q at 1,488,375 samples per second, nrsc5's default input format. Nothing in it transmits: its last block is a File Sink.
 ::::
 
 ::::{frame} The Sideband Finder
@@ -244,7 +244,7 @@ nrsc5 --iq-input-format cf32 -r hd.sigmf-data 1  # play HD2
 
 Finding and measuring the sidebands needs only the spectrum. Decoding them needs the rest of NRSC-5: the receiver locks onto the reference subcarriers, reads each subcarrier's QPSK point, corrects errors, and decompresses the audio. GNU Radio has no HD Radio receiver module, so the open-source **nrsc5** project is the decoder, and this step is optional. It plays the chosen program and prints the station's name, the song title and artist, and measures of signal quality as they arrive.
 
-nrsc5 has no PlutoSDR driver, but it reads recordings, and its README lists complex float at 744,188 samples per second, half our rate, as one input format. The finder writes exactly that: enable its Rational Resampler, which halves the rate, and its **SigMF Sink** along with the PlutoSDR Source, run about 10 s on the station, and stop. The SigMF Sink writes `hd.sigmf-data`, about 60 MB, and `hd.sigmf-meta`, which records the rate and the center frequency at the start. Then run the commands above.
+nrsc5 has no PlutoSDR driver, but it reads recordings, and its README lists complex float at 744,188 samples per second, half our rate, as one input format. The finder writes exactly that: enable its Rational Resampler, which halves the rate, and its **SigMF Sink** along with the PlutoSDR Source, run about 10 s on the station, and stop. GRC draws the SigMF Sink with an orange border, its mark for a block it lists as deprecated; it still runs in GNU Radio 3.10. It writes `hd.sigmf-data`, about 60 MB, and `hd.sigmf-meta`, which records the rate and the center frequency at the start. Then run the commands above.
 
 nrsc5 is a C program, not part of radioconda: build it from source on Linux, install it with the project's Homebrew formula on macOS, or use the project's MSYS2 build on Windows, and use a recent version, because `--iq-input-format` is newer than some packages. We have not run it in this course yet. With an optional RTL-SDR, `nrsc5 100.3 0` tunes a station live. The related project gr-nrsc5 is an HD Radio transmitter for GNU Radio, not a receiver, and this course does not transmit on the FM band; gr-rds, from Lesson 7, still decodes the RBDS inside the host.
 ::::

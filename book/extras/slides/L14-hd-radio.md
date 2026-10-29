@@ -76,7 +76,7 @@ NRSC-5 defines all three. Hybrid keeps about 130 kHz of analog signal on each si
 | Digital sidebands | ±129.4 to ±198.4 kHz | OFDM, QPSK on each subcarrier |
 
 Note:
-RBDS is the US name for RDS: differentially encoded BPSK at 1187.5 bits per second on 57 kHz, carrying the station name, time, and text. Demo: rerun Lesson 7's L07-rds-rx.grc on the same station to show its name; PySDR's RDS chapter, the slides' activity, decodes it in Python.
+RBDS is the US name for RDS: differentially encoded BPSK at 1187.5 bits per second on 57 kHz, carrying the station name, time, and text. Demo: run Lesson 7's L07-rds-rx.grc on its recording to show the station name; PySDR's RDS chapter, the slides' activity, decodes it in Python.
 
 ---
 
