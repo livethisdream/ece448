@@ -338,13 +338,16 @@ since they follow this structure. Two changes:
 - **Generators that could transmit say they must not.** 1090 MHz (ADS-B) and
   161.975/162.025 MHz (AIS) carry safety-of-life traffic; their flowgraphs
   write files only, and their descriptions say never to connect a transmitter.
-- **Bench checks for Neil:** L17's PlutoSDR-to-SDR cable link and the
-  RTL-SDR capture path (1.024 MS/s, URH Samples/Symbol 512); live ADS-B on an
-  RTL-SDR; L20's Wi-Fi and LTE steps on a HackRF at 20 MS/s.
+- **Bench checks for Neil** (updated for the Pluto sweep, 2026-10-29):
+  L17's two-Pluto link at 915 MHz (cable, 30 dB pad) read in
+  `L17-chips.grc`, and `L17-explore-pluto.grc` live at 433.72 and
+  314.8 MHz; L20's `L20-band-pluto.grc` bursts at 20 MS/s on Wi-Fi
+  (2.437 GHz) and LTE (729-756 MHz); live ADS-B on a Pluto with gr-adsb.
 - **L17 over-the-air fan demo** (Neil, 2026-10-29): L17 closes with an
   instructor demo that operates the classroom's Hunter fan over the air, at
   very low power and a few meters away, from Neil's own encoder flowgraph
-  (`ECE448-faculty/L20_Remotes`). Cadets still transmit only into a cable.
+  (`ECE448-faculty/L20_Remotes`). Cadets transmit at 915 MHz, by cable or, if the
+  instructor says so, over the air at low power.
 - **Open for Neil:** whether to publish the third-party AIS recording
   ("bebau") from the faculty repo for L19.
 
