@@ -84,7 +84,10 @@ the material. A lesson is a guided walkthrough, not a chapter.
   - Where GNU Radio has a module for a signal, the lesson uses it:
     gr-adsb (`gnuradio-adsb`, shipped in radioconda) for ADS-B, with
     gr-air-modes named as the other module.
-  - RTL-SDRs and HackRFs are optional extras, never required. SDR Flex is
+  - **The PlutoSDR is the only radio** (with the ADALM-PHASER where a
+    lesson uses it). No cadet uses a HackRF; no lesson names one. An
+    RTL-SDR appears at most as one optional line. Lesson threads never
+    add a radio Neil has not named. SDR Flex is
     an optional quick look. GQRX, dump1090, and other apps appear only as
     optional extras.
   - **URH is out** (Neil, 2026-10-29): it is end of life and does not
