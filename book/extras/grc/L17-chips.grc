@@ -51,7 +51,7 @@ blocks:
     rangeType: int
     start: '1'
     step: '1'
-    stop: '1000'
+    stop: '5000'
     value: '80'
     widget: counter_slider
   states:
@@ -174,9 +174,9 @@ blocks:
     min_len: '300'
     orient: QtCore.Qt.Horizontal
     rangeType: float
-    start: '-100000'
+    start: -samp_rate/2
     step: '500'
-    stop: '100000'
+    stop: samp_rate/2
     value: '40000'
     widget: counter_slider
   states:
@@ -240,7 +240,7 @@ blocks:
     marker9: '-1'
     name: '"Envelope after the shift"'
     nconnections: '1'
-    size: '8000'
+    size: int(0.04*samp_rate)
     srate: samp_rate
     stemplot: 'False'
     style1: '1'

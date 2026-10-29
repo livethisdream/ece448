@@ -100,7 +100,7 @@ appear each time the button is pressed.
 		holds two \texttt{ci16} samples. The values would be meaningless, and the displays
 		would show noise-like garbage instead of bursts, with half as many samples as the
 		file holds. Set the Output Type to complex short (\texttt{sc16\_le}) and add an
-		IShort To Complex block, or convert the file to \texttt{cf32\_le} first.
+		IShort To Complex block and a Multiply Const of 1/32768, or convert the file to \texttt{cf32\_le} first.
 		\end{solution}
 
 \end{parts}

@@ -65,7 +65,7 @@ The two lines of the objective from 2025 set the plan: reverse engineer a simple
 
 The process comes from the 2025 slides. First we find the **carrier**, the frequency the transmitter uses. Next we identify the **modulation**, what the transmitter changes to send information. Then we identify the **encoding**: what the commands are, how the bits group into bytes or nibbles, and the bit rate and baud rate. With those three answers we build an **encoder** that produces the same signal, and last we transmit it.
 
-Steps 1 to 3 work entirely from a recording, so they need no radio. Step 5 transmits: a cadet's transmitter goes into a cable with an attenuator, never over the air, and the instructor closes the lesson by operating the real fan over the air. Every step runs in GNU Radio: a capture flowgraph finds the carrier, as in 2025, and `L17-chips.grc` takes the bursts apart. The 2025 class used the Universal Radio Hacker for that; it is no longer maintained, so we do the same work in GNU Radio.
+Steps 1 to 3 work entirely from a recording, so they need no radio. Step 5 transmits: a cadet's transmitter goes into a cable with an attenuator, or over the air at 915 MHz at low power only if the instructor says so, and the instructor closes the lesson by operating the real fan over the air. Every step runs in GNU Radio: a capture flowgraph finds the carrier, as in 2025, and `L17-chips.grc` takes the bursts apart.
 ::::
 
 ::::{frame} The Recording
@@ -127,7 +127,7 @@ At 40,000 Hz the pulses appear. In the 2025 class the next move was to fine-tune
 
 The recording showed one remote; the air around you holds many. `L17-explore-pluto.grc` is `L17-capture.grc` without the SigMF Sink: a **PlutoSDR Source** at 2 MS/s, the same spectrum, waterfall, and envelope displays, and a **Center frequency** control you can change while it runs. It records nothing, so the center frequency does not have to be set before it starts. It opens at 433.72 MHz, 200 kHz below 433.92 MHz, so the Pluto's DC spike at the center stays off the devices.
 
-Look for what Step 1 taught: a steady line is a carrier that never stops, and a remote, a doorbell, or a weather sensor paints short streaks that come and go. Weather sensors send on their own about once a minute, so wait a minute before you move on. If the whole spectrum rises when a strong signal appears, lower the RX gain. Then step the center frequency to 314.8 MHz and look again. The Pluto only receives here.
+Look for what Step 1 taught: a steady line is a carrier that never stops, and a remote, a doorbell, or a weather sensor paints short streaks that come and go. Weather sensors send on their own about once a minute, so wait a minute before you move on. If the whole spectrum rises when a strong signal appears, lower the RX gain. Then step the center frequency to 314.8 MHz and look again; the course Plutos are set to tune from 70 MHz to 6 GHz, so 315 MHz is in range. The Pluto only receives here.
 
 SDR Flex is an optional quick look at the same band; nothing in this lesson needs it.
 ::::
@@ -187,7 +187,7 @@ Signal A has two lines 6 kHz apart and the energy moves between them: two-level 
 
 `L17-chips.grc` starts as Step 1's flowgraph: the SigMF Source, the shift to 0 Hz, and **Complex to Mag** for the envelope. The time sink triggers at the threshold, so it holds a frame still. The shortest pulse lasts 400 µs, and at 200 kS/s that is $200{,}000\ \text{S/s} \times 400\ \mu\text{s} = 80$ samples. We call each 400 µs slot a **chip**, because the next frame shows it takes more than one chip to make a bit.
 
-The other branch turns the envelope into chips. **Add Const** subtracts the threshold, so on is above zero and off below, and **Binary Slicer** outputs a 1 or a 0 for every sample. A **Keep 1 in N** with N = 80 would keep one sample per chip, but it would start counting anywhere. The **Chip Reader**, a short Embedded Python Block saved in the `.grc` file, does the same keeping, but it starts at each burst's first rising edge and takes the sample in the middle of each chip. After 8 off chips it ends the line, prints it in GRC's console, and shows the last one in the window, with the **pause**, the off samples before the next burst. The Envelope gain slider raises a weak capture's pulses to about 1, so the threshold stays near 0.5.
+The other branch turns the envelope into chips. **Add Const** subtracts the threshold, so on is above zero and off below, and **Binary Slicer** outputs a 1 or a 0 for every sample. A **Keep 1 in N** with N = 80 would keep one sample per chip, but it would start counting anywhere. The **Chip Reader**, a short Embedded Python Block saved in the `.grc` file, does the same keeping, but it starts at each burst's first rising edge and takes the sample in the middle of each chip. After 8 off chips the burst has ended; when the next burst starts, the reader prints the line in GRC's console with the **pause**, the off samples between the two bursts, and shows it in the window. The SigMF Source loops the recording, so the last burst prints too. The Envelope gain slider raises a weak capture's pulses to about 1, so the threshold stays near 0.5.
 ::::
 
 ::::{frame} Step 3: Chips to Bits
@@ -201,7 +201,7 @@ The other branch turns the envelope into chips. **Add Const** subtracts the thre
 - Every bit starts on, and a long pulse is a 1: pulse-width coding.
 :::
 
-The first line the Chip Reader prints starts `110 100 110 100 100 110 110 100`. Split into groups of three, every group is `110` or `100`, which is **pulse-width** coding: each bit starts with the carrier on, a 1 stays on for two chips and a 0 for one, and each bit ends off. The figure shows it beside two other common schemes. In **pulse-distance** coding every pulse is short and the length of the gap carries the bit; in **Manchester** coding every bit has a transition in its middle, so the chips come in pairs. The figure draws a 1 as on then off; IEEE 802.3 Ethernet uses the opposite convention, so a Manchester device can use either.
+The Chip Reader prints the Light button's frame as `46 chips: 1101001101001001101101001001001001101101101101  pause 2560 samples`. Split into groups of three, it starts `110 100 110 100 100 110 110 100`, and every group is `110` or `100`, which is **pulse-width** coding: each bit starts with the carrier on, a 1 stays on for two chips and a 0 for one, and each bit ends off. The figure shows it beside two other common schemes. In **pulse-distance** coding every pulse is short and the length of the gap carries the bit; in **Manchester** coding every bit has a transition in its middle, so the chips come in pairs. The figure draws a 1 as on then off; IEEE 802.3 Ethernet uses the opposite convention, so a Manchester device can use either.
 
 A frame of 16 bits is 48 chips, yet the Chip Reader prints 46 or 47. The last chip of every bit is off, and a frame ending in a 0 ends in two off chips; the reader ends a line at its last on chip, so it counts those chips as part of the pause. We add them back.
 ::::
@@ -337,11 +337,11 @@ That comparison is the test of the reverse engineering. If our encoder makes chi
 ::::{frame} Step 5: Transmit
 :::{present}
 - `L17-fan-tx-pluto.grc` sends the encoder from a PlutoSDR at 915.04 MHz, not 350 MHz.
-- Cadets: through a 30 dB attenuator into a second PlutoSDR, or over the air at low power if the instructor says so.
+- Cadets: a 30 dB attenuator and a cable to a second PlutoSDR.
 - Instructor demo: the real fan, over the air, at very low power.
 :::
 
-The last step puts the encoder on a radio. `L17-fan-tx-pluto.grc` is the simulation flowgraph at 1 MS/s, so `chip_len` is 400 samples, with a **PlutoSDR Sink** tuned to 915 MHz in place of the noise and the waterfall; the 40 kHz tone puts the carrier at 915.04 MHz. A signal the course makes never goes out on the real device's frequency, so the encoder leaves the remote's 350 MHz for 915 MHz. A short SMA cable with an inline 30 dB attenuator carries it to a second PlutoSDR running `L17-capture.grc`, with `fc` at its default of 915e6, which records what arrives at 1 MS/s as a SigMF pair. Open that recording in `L17-chips.grc` with `samp_rate` 1000000, `fc` 915e6, and a chip length of 400, and raise the Envelope gain until the pulses reach about 1: the chips should match `L17-fan-remote.sigmf-data`.
+The last step puts the encoder on a radio. `L17-fan-tx-pluto.grc` is the simulation flowgraph at 1 MS/s, so `chip_len` is 400 samples, with a **PlutoSDR Sink** tuned to 915 MHz in place of the noise and the waterfall; the 40 kHz tone puts the carrier at 915.04 MHz. A signal the course makes never goes out on the real device's frequency, so the encoder leaves the remote's 350 MHz for 915 MHz. A short SMA cable with an inline 30 dB attenuator carries it to a second PlutoSDR running `L17-capture.grc`, with `fc` at its default of 915e6, which records what arrives at 1 MS/s as a SigMF pair. Open that recording in `L17-chips.grc` with `samp_rate` 1000000, `fc` 915e6, and a chip length of 400. Two Plutos' clocks can disagree by several kilohertz at 915 MHz, so read the bursts' offset off the capture's spectrum and set the carrier offset to it, not to 40 kHz, and raise the Envelope gain until the pulses reach about 1: the chips should match `L17-fan-remote.sigmf-data`.
 
 Cadets transmit into a cable with the 30 dB attenuator, or, if your instructor says so, over the air at 915 MHz at low power, and only when the lesson says to. 915 MHz is in the U.S. 902 to 928 MHz ISM band; the remote's 350 MHz is an FCC Part 15 frequency, not an ISM band. The TX attenuation slider opens at 60 dB and cannot go below 30 dB; connect an antenna to this flowgraph only when your instructor says so.
 

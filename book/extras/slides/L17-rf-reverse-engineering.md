@@ -99,7 +99,7 @@ The Frequency Xlating FIR Filter shifts the offset to 0 Hz and keeps plus and mi
 3. Retune near 315 MHz and look again.
 
 Note:
-L17-explore-pluto.grc is L17-capture.grc without the SigMF Sink: a PlutoSDR Source at 2 MS/s with a center frequency you change while it runs. 433.72 MHz keeps the Pluto's DC spike 200 kHz off 433.92 MHz. Steady lines are carriers; remotes, doorbells, and weather sensors paint short streaks, and sensors send on their own about once a minute. Lower the RX gain if the whole spectrum jumps. SDR Flex is an optional quick look; nothing needs it.
+L17-explore-pluto.grc is L17-capture.grc without the SigMF Sink: a PlutoSDR Source at 2 MS/s with a center frequency you change while it runs. 433.72 MHz keeps the Pluto's DC spike 200 kHz off 433.92 MHz; the course Plutos tune from 70 MHz to 6 GHz, so 315 MHz is in range. Steady lines are carriers; remotes, doorbells, and weather sensors paint short streaks, and sensors send on their own about once a minute. Lower the RX gain if the whole spectrum jumps. SDR Flex is an optional quick look; nothing needs it.
 
 ---
 
@@ -142,7 +142,7 @@ The 2025 SigID exercise. Set samp_rate to 100000 and fc to 915e6. A is two-level
 The shortest pulse is 400 µs, 80 samples: set the chip length to 80.
 
 Note:
-L17-chips.grc is the viewer's shift and Complex to Mag, then Add Const of minus the threshold, a Binary Slicer, and the Chip Reader, an Embedded Python Block. It keeps the middle sample of each chip, as a Keep 1 in N of 80 would, but starts counting at each burst's first rising edge, and prints one line of chips per burst with the pause after it. The 2025 class used URH here; it is no longer maintained, so the lesson does this in GNU Radio.
+L17-chips.grc is the viewer's shift and Complex to Mag, then Add Const of minus the threshold, a Binary Slicer, and the Chip Reader, an Embedded Python Block. It keeps the middle sample of each chip, as a Keep 1 in N of 80 would, but starts counting at each burst's first rising edge, and prints one line of chips per burst with the pause after it.
 
 ---
 
