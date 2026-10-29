@@ -77,6 +77,12 @@ the material. A lesson is a guided walkthrough, not a chapter.
   - Every receive and transmit path a lesson or lab uses is a GNU Radio
     flowgraph with a PlutoSDR Source or Sink (`soapy_plutosdr_*` or
     `iio_pluto_*`).
+  - **Pluto URI:** course flowgraphs use `ip:192.168.2.1` (Neil,
+    2026-10-29), not a blank URI. Windows (with ADI's driver) and Linux
+    reach it as is; macOS does not support the Pluto's default RNDIS USB
+    mode, so L5 tells Mac users to switch the Pluto to NCM or use the
+    `usb:` URI from `iio_info -s`. Two Plutos on one laptop (L17) use
+    `usb:` URIs.
   - The course Plutos run in extended-frequency (AD9364) mode, 70 MHz to
     6 GHz, so FM broadcast, HD Radio, and AIS are in range. A Pluto
     streams a few MS/s continuously over USB 2.0, so wider signals are
