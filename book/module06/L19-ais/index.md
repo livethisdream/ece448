@@ -224,7 +224,7 @@ Inside, the first 6 bits are the **message ID**, the next 2 a repeat indicator, 
 
 The figure raises the added noise to 0.2. The bursts still show on the waterfall, but the demodulated trace of each burst blurs, some bits land on the wrong side of the slicer, and frames start failing the CRC. Channel B's trace in the time plot now swings wildly: the noise alone is above the −25 dB squelch, so the squelch stays open, and Symbol Sync chases noise between bursts and starts each burst out of step.
 
-Raise the **Squelch** slider until the noise between bursts stays out and the channel B trace goes quiet, and frames come back; raise it too far and the weak ships disappear. A real receiver sets this threshold from the noise it measures. Move both sliders and watch which ships drop out first.
+Raise the **Squelch** slider until the noise between bursts stays out and the channel B trace goes quiet, and frames come back; raise it too far and the weak ships disappear. A real receiver sets this threshold from the noise it measures.
 ::::
 
 ::::{frame} Ready-Made Decoders

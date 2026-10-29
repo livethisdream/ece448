@@ -28,7 +28,7 @@ L18–L19 Lab · Module 6: Waveform Applications & RF Reverse Engineering · Dr.
 
 ::::{frame} From Lesson to Bench
 :::{present}
-- **Pre-Lab:** watch noise on the lesson's ADS-B recording; work out the AIS settings.
+- **Pre-Lab:** fly your own aircraft through the ADS-B generator; work out the AIS settings.
 - **Bench:** build both receivers yourself; decode live aircraft and a recording of ships.
 - **Writeup:** compare the two receivers and explain what you saw.
 :::
@@ -40,11 +40,11 @@ Nothing in this lab transmits. The RTL-SDR receives only, and the AIS recording 
 
 ::::{frame} Part 1: Before the Period
 :::{present}
-- Run the ADS-B generator and receiver, and raise the noise a step at a time.
+- Add your own aircraft to the ADS-B generator, decode it, and raise the noise until it leaves.
 - Work out the AIS receiver's settings from the lab recording's meta file.
 :::
 
-Do the Pre-Lab before you arrive. Question 1 uses the Lesson 18 flowgraphs: put `L18-adsb-tx.grc` and `L18-adsb-rx.grc` in one folder, run the generator once, run the receiver, and raise the Added noise slider in the steps the packet lists, recording which aircraft remain at each step. If GRC reports an error, the L5 lesson page lists the install checks.
+Do the Pre-Lab before you arrive. Question 1 uses the Lesson 18 flowgraphs: put `L18-adsb-tx.grc` and `L18-adsb-rx.grc` in one folder, add an aircraft of your own to the generator's `AIRCRAFT` list as the packet describes, run the generator once, and check that the receiver decodes your aircraft. Then raise the Added noise slider until your aircraft leaves the table. If GRC reports an error, the L5 lesson page lists the install checks.
 
 Question 2 works out the AIS receiver's settings for the lab recording, whose `.sigmf-meta` the packet describes: each channel's offset from the center, the decimation to about 48 kS/s, the samples per bit, and the Quadrature Demod gain. The Lesson 19 page's On the SDR frame describes the same steps for any recording.
 ::::

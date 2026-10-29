@@ -178,15 +178,14 @@ recording and raise the Added noise slider a step at a time.
 		the quiet half of a bit beats the pulse in some pair of almost every message, the
 		parity fails, and the message is dropped. A strong aircraft's pulses are far above
 		the noise, so its bits survive. On a real receiver the weak aircraft are the
-		distant ones, so the range at which aircraft decode shrinks as the noise rises or
-		the gain falls.
+		distant ones, so the range at which aircraft decode shrinks as the noise rises.
 		\end{solution}
 
 \end{parts}
 
 \newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\question \textbf{Live or simulated.} ADS-B is easy to receive and easy to generate.
+\question \textbf{Generating and locating.} Two questions about the L18 flowgraphs.
 \begin{parts}
 
 	\part The L18 generator writes a file. Explain why nothing in the course transmits
@@ -198,13 +197,16 @@ recording and raise the Added noise slider a step at a time.
 		there is illegal without authorization and unsafe.
 		\end{solution}
 
-	\part A flight tracker website shows an aircraft over Colorado Springs that your
-	receiver never decodes. Give two reasons this can happen.
+	\part The Mode S Decoder finds each position from one message by using USAFA as a
+	reference position. Explain, in words, why it needs a reference at all, and what goes
+	wrong for an aircraft 500 nautical miles away.
 		\begin{solution}[1.2in]
-		Any two of: the aircraft is beyond the receiver's line of sight or too weak (low
-		altitude, far away, or blocked by a building); it uses UAT on 978 MHz instead of
-		1090 MHz; the tracker shows it from other receivers or from radar, not from ADS-B
-		this receiver heard; the RTL-SDR's gain is too low or the antenna is poorly placed.
+		A position message carries the latitude and longitude only within one of many zones
+		(Compact Position Reporting), not which zone. The decoder picks the zone nearest its
+		reference, which is right for any aircraft within about 180 nautical miles. An
+		aircraft 500 nautical miles away lies in a different zone, so the decoder places it
+		in the wrong one and reports a position that is badly wrong; pairing an even and an
+		odd message avoids that.
 		\end{solution}
 
 \end{parts}
