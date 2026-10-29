@@ -175,9 +175,9 @@ LESSONS = [
     (6, 14, "L14-hd-radio", "HD Radio", ["6.3"], ["ref-nrsc"], "How HD Radio hides OFDM sidebands beside an FM station, and how to demodulate them."),
     (6, 15, "L15-mpsk", "mPSK", ["6.4"], ["ref-diff"], "BPSK, QPSK, and 8PSK in GNU Radio, with carrier and symbol-timing recovery."),
     (6, 16, "L16-fhss", "Frequency Hopping", ["6.5"], [], "An FHSS transmitter and receiver that stay on the same hop sequence."),
-    (6, 17, "L17-rf-reverse-engineering", "RF Reverse Engineering", ["6.6"], ["rfre"], "Take an unknown signal from spectrum to bits with GQRX, URH, and GNU Radio."),
-    (6, 18, "L18-adsb", "ADS-B", ["6.7"], ["adsb", "ref-adsb", "ref-1090", "ref-magazu"], "Receive and decode aircraft ADS-B messages at 1090 MHz."),
-    (6, 19, "L19-ais", "AIS", ["6.8"], ["ais"], "Receive and decode AIS messages from ships."),
+    (6, 17, "L17-rf-reverse-engineering", "RF Reverse Engineering", ["6.6"], [], "Take an unknown signal from spectrum to bits with SDR Flex or GQRX, URH, and GNU Radio."),
+    (6, 18, "L18-adsb", "ADS-B", ["6.7"], ["ref-adsb", "ref-1090", "ref-magazu"], "Receive and decode aircraft ADS-B messages at 1090 MHz."),
+    (6, 19, "L19-ais", "AIS", ["6.8"], [], "Receive and decode AIS messages from ships."),
 
     (7, 20, "L20-qam-ofdm", "QAM and OFDM", ["7.1"], [], "QAM and OFDM, and where each one is used."),
 ]
@@ -198,7 +198,7 @@ LABS = [
     (6, "L15-mpsk", "L15-lab-mpsk", "L15 Lab — mPSK", "Build an mPSK modem and close the loop on carrier and timing."),
     (6, "L16-fhss", "L16-lab-fhss", "L16 Lab — Frequency Hopping", "Hop a transmitter and keep a receiver on it."),
     (6, "L17-rf-reverse-engineering", "L17-lab-rf-reverse-engineering", "L17 Lab — RF Reverse Engineering", "Reverse-engineer an unknown signal from capture to payload."),
-    (6, "L19-ais", "L18-L19-lab-adsb-ais", "L18–L19 Lab — ADS-B and AIS", "Decode live ADS-B and AIS traffic.", ["6.7", "6.8"]),
+    (6, "L19-ais", "L18-L19-lab-adsb-ais", "L18–L19 Lab — ADS-B and AIS", "Decode live ADS-B and a simulated AIS recording.", ["6.7", "6.8"]),
 ]
 
 # ---- Calendar events with pages of their own --------------------------------
