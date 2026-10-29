@@ -1,0 +1,271 @@
+% !TEX root =./ECE448_Practice_main.tex
+%
+% L17 practice set (RF reverse engineering). Every question is a step of the
+% L17 process on a device of its own: finding the carrier, reading a SigMF
+% meta file, turning chips into bits and fields, setting an encoder's blocks,
+% and naming a modulation from what the displays show.
+% Blank copy: \begin{solution}[h] reserves h of work space.
+% SOLUTIONS copy (\iskey=1) prints the red worked solutions.
+
+\fullwidth{\textbf{Learning Objective 6.6: } I can perform RF reverse engineering on
+an unknown signal: identify its modulation, symbol rate, and payload structure.
+\\[4pt]\normalfont\small Show your work. Write a \textbf{Documentation} line at the
+end (\textbf{None} if you did not collaborate).}
+
+\begin{questions}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{Finding the carrier.} A Simulated wireless doorbell is recorded at
+1 MS/s, centered at 314.900 MHz, which is an FCC Part 15 frequency. Opened in a viewer
+like \texttt{L17-sigmf-view.grc}, the waterfall shows a narrow line 150 kHz below the
+center that stays on the whole recording, and short bursts 80 kHz above the center that
+appear each time the button is pressed.
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Find the doorbell's carrier frequency, and say how you know which signal is
+		the doorbell.
+		\begin{solution}[1.0in]
+		The bursts appear and stop with each press, so they are the doorbell; the steady
+		line belongs to something that is always on.
+		\eq{ f_c = 314.900 + 0.080 = 314.980\ \text{MHz} }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.4in]{314.980 MHz}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Give the Frequency Xlating FIR Filter's Center Frequency that shifts the
+		doorbell to 0 Hz.
+		\begin{solution}[0.7in]
+		The filter's center frequency is the offset from the recording's center that it
+		moves to 0 Hz: $+80{,}000$ Hz.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.4in]{80000}
+	\end{minipage}
+
+	\part The bursts look several kilohertz wide on the spectrum, and the steady line
+	looks almost as thin as one FFT bin. In words, explain why.
+		\begin{solution}[0.9in]
+		Switching a carrier on and off spreads its power over a band of frequencies around
+		it, and the faster it switches, the wider the band. The steady line never changes,
+		so its power stays at one frequency.
+		\end{solution}
+
+\end{parts}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{The meta file.} A teammate sends a SigMF recording. Its
+\texttt{.sigmf-meta} file holds these lines:
+
+\begin{center}
+\texttt{"core:datatype": "ci16\_le"}, \quad \texttt{"core:sample\_rate": 2000000.0}, \quad
+\texttt{"core:frequency": 433000000.0}
+\end{center}
+
+\begin{parts}
+
+	\part Give the SigMF Source (Minimal) block's Output Type, the block that must
+	follow it, and the flowgraph's \texttt{samp\_rate} and \texttt{fc}.
+		\begin{solution}[1.0in]
+		The SigMF Source's documentation says \texttt{ci16\_le} is read as short, followed
+		by an \textbf{IShort To Complex} block, which pairs the shorts into complex
+		samples. \texttt{samp\_rate} = 2000000 and \texttt{fc} = 433e6.
+		\end{solution}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part \texttt{ci16\_le} stores each sample as two 16-bit numbers. How many bytes
+		does a 5 s recording take, and how many would \texttt{cf32\_le} take?
+		\begin{solution}[1.1in]
+		\eq{ 5 \times 2{,}000{,}000 \times 4\ \text{bytes} &= 40\ \text{MB} \\
+		5 \times 2{,}000{,}000 \times 8\ \text{bytes} &= 80\ \text{MB} }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.4in]{40 MB; 80 MB}
+	\end{minipage}
+
+	\part URH reads a file it does not recognize as complex float. Explain in words what
+	URH would show if you opened this \texttt{ci16\_le} file without converting it.
+		\begin{solution}[0.9in]
+		URH would read every 8 bytes as one complex float sample, but each 8 bytes holds
+		two \texttt{ci16} samples. The values would be meaningless, and the display would
+		show noise-like garbage instead of bursts, with half as many samples as the file
+		holds. The file has to be converted to \texttt{cf32\_le} first, or opened with an
+		extension URH recognizes for 16-bit integers.
+		\end{solution}
+
+\end{parts}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{Chips to bits.} URH opens the doorbell's recording at 1 MS/s, chooses
+ASK and 300 samples per symbol, and lists every burst as the same line of chips:
+
+\begin{center}
+\texttt{1000100010101010001010001}
+\end{center}
+
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Find the chip length in microseconds.
+		\begin{solution}[0.6in]
+		\eq{ \frac{300}{1{,}000{,}000\ \text{samples/s}} = 300\ \mu\text{s} }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.4in]{300 $\mu$s}
+	\end{minipage}
+
+	\part Every pulse is one chip long, and the gaps after the pulses are one chip or
+	three chips. Name the encoding, and explain why the line ends with a lone pulse.
+		\begin{solution}[1.0in]
+		This is \textbf{pulse-distance} coding: every pulse is the same, and the length of
+		the gap after it carries the bit. A gap is measured from one pulse to the next, so
+		the last bit's gap needs a pulse after it to end; the lone \texttt{1} at the end
+		closes the last gap.
+		\end{solution}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Take a long gap, \texttt{1000}, as a 1 and a short gap, \texttt{10}, as a 0.
+		Decode the line into 8 bits and write them in hex.
+		\begin{solution}[1.2in]
+		Split the line after each pulse's gap:
+		\texttt{1000 1000 10 10 10 1000 10 1000 1}, which is 1 1 0 0 0 1 0 1 and a final
+		pulse: $1100\ 0101_2 = $ 0xC5.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.4in]{0xC5}
+	\end{minipage}
+
+	\part Find how long this frame lasts, and explain in words why a pulse-distance
+	remote has no single bit rate.
+		\begin{solution}[1.0in]
+		The line is 25 chips: $25 \times 300\ \mu\text{s} = 7.5$ ms. A 1 takes 4 chips and
+		a 0 takes 2, so a frame of mostly 1s takes longer than one of mostly 0s; only the
+		chip rate, $1/300\ \mu\text{s} \approx 3333$ baud, is fixed.
+		\end{solution}
+
+\end{parts}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{Encoder settings.} A Simulated garage remote uses pulse-width coding
+with 4 chips per bit, \texttt{1110} for a 1 and \texttt{1000} for a 0, with 350
+$\mu$s chips. Each frame is 12 bits followed by 10 ms of silence. You build its encoder
+as the L17 lesson did, at $f_s = 1$ MS/s: a Vector Source of the bits, a Map, Unpack K
+Bits, Char To Float, a Repeat, and a Stream Mux with a Constant Source of 0.
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Give the Map's table and Unpack K Bits' $K$.
+		\begin{solution}[1.0in]
+		The Map replaces each bit with the number whose binary form is its chip pattern:
+		0 with $1000_2 = 8$ and 1 with $1110_2 = 14$. Unpack K Bits with $K = 4$ writes
+		those 4 bits out, most significant first.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.4in]{[8, 14]; $K$ = 4}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Give the Repeat's interpolation and the Stream Mux's two lengths.
+		\begin{solution}[1.2in]
+		\eq{ \text{Repeat} &= 350\ \mu\text{s} \times 10^6 = 350 \\
+		\text{frame} &= 12 \times 4 \times 350 = 16{,}800 \\
+		\text{gap} &= 0.010 \times 10^6 = 10{,}000 }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.6in]{350; [16800, 10000]}
+	\end{minipage}
+
+	\part Your encoder's output, opened in URH beside the original recording, shows the
+	same lines of chips except that every one of yours is 4 chips longer. In words, give
+	the most likely mistake.
+		\begin{solution}[0.9in]
+		Four chips are one bit, so the encoder sends 13 bits instead of 12: the Vector
+		Source holds one bit too many, or the Stream Mux's frame length counts 13 bits.
+		Comparing the extra chips with the original shows which bit was added.
+		\end{solution}
+
+\end{parts}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{Which modulation?} Four unknown recordings open in a viewer like
+\texttt{L17-sigmf-view.grc}. Name the modulation of each from what the displays show,
+and say which lesson's signal it resembles.
+\begin{parts}
+
+	\part The waterfall shows two parallel tracks a few kilohertz apart, and the signal
+	is always on one of them; the envelope is constant.
+		\begin{solution}[0.7in]
+		Frequency-shift keying: the carrier moves between two frequencies, which is
+		Lesson 8's FSK.
+		\end{solution}
+
+	\part The waterfall shows one band that stays on and does not move, and the envelope
+	is nearly constant; a constellation plot after carrier recovery shows four clusters.
+		\begin{solution}[0.7in]
+		Phase-shift keying, here QPSK: the amplitude and frequency stay put and the phase
+		carries the data, which is Lesson 15's mPSK.
+		\end{solution}
+
+	\part Short bursts appear at one frequency, and the envelope switches between zero
+	and one level in pulses of two lengths.
+		\begin{solution}[0.7in]
+		On-off keying with pulse-width coding, which is the L17 fan remote, and the
+		keyed carrier of Lessons 11 and 12.
+		\end{solution}
+
+	\part Short dashes of the same width appear at a new frequency every few hundred
+	milliseconds, stepping around a band.
+		\begin{solution}[0.7in]
+		Frequency hopping, as in Lesson 16: one narrowband signal moving from channel to
+		channel. A receiver tuned to one channel would see only one hop in $N$, so the
+		viewer has to show the whole band.
+		\end{solution}
+
+\end{parts}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{Repeats and noise.} The L17 fan remote sends each frame 6 times per
+press and ends each frame with a check nibble.
+\begin{parts}
+
+	\part In words, explain what the repeats and the check each let a receiver do when
+	the signal is weak.
+		\begin{solution}[1.0in]
+		Noise can flip a chip and spoil a frame. The check lets the receiver recognize a
+		spoiled frame and ignore it instead of acting on the wrong command, and the repeats
+		give it five more chances to receive a frame that passes the check.
+		\end{solution}
+
+	\part You lower the signal in the pulse decoder explorer by raising the noise. Name
+	two things you would watch to see the frames start to fail, in the explorer or in
+	URH.
+		\begin{solution}[0.9in]
+		In the explorer, the Frame readout reporting that the check fails, and then groups
+		marked \texttt{?} that are neither \texttt{110} nor \texttt{100}. In URH, the lines
+		of chips for one press no longer matching each other from repeat to repeat.
+		\end{solution}
+
+\end{parts}
+
+\end{questions}
