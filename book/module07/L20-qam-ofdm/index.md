@@ -13,7 +13,7 @@ frame_view: true
 
 <div class="title-rule"></div>
 
-QAM puts more bits on each symbol, OFDM spreads the symbols across many subcarriers, and Wi-Fi, LTE, and HD Radio use both.
+QAM puts more bits on each symbol, OFDM spreads the symbols across many subcarriers, Wi-Fi and LTE use both, and HD Radio uses OFDM.
 
 Lesson 20 · Module 7: Final Project · Dr. Neil Rogers
 ::::
@@ -39,7 +39,7 @@ Lesson 20 · Module 7: Final Project · Dr. Neil Rogers
 ::::{frame} Text over OFDM
 :::{present}
 <img src="../../viz/img/L20-ofdm-clean.png"
-     alt="L20-ofdm-link.grc running on a clean channel: sliders for Taps 1 to 4 at 1, echo delay 8 samples, echo level 0, and noise amplitude 0.02; the received spectrum is a flat-topped block from about minus 41 to plus 41 kHz with steep edges; the subcarrier points before the equalizer lie on rings; after the equalizer they form a clean 4 by 4 grid; the labels read USAFA ECE 448: text over OFDM and 1987 correct of 1987 received in 8 s"
+     alt="L20-ofdm-link.grc, labeled Simulated channel, running on a clean channel: sliders for Taps 1 to 4 at 1, echo delay 8 samples, echo level 0, and noise amplitude 0.02; the received spectrum is a flat-topped block from about minus 41 to plus 41 kHz with steep edges; the subcarrier points before the equalizer lie on rings; after the equalizer they form a clean 4 by 4 grid; the labels read USAFA ECE 448: text over OFDM and 1987 correct of 1987 received in 8 s"
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
@@ -48,7 +48,7 @@ Lesson 20 · Module 7: Final Project · Dr. Neil Rogers
 - After the equalizer, the points form a 4 by 4 grid: 16-QAM.
 :::
 
-The figure is today's second flowgraph, `L20-ofdm-link.grc`, running. It sends a line of text as packets, and each packet travels as **OFDM**: 48 narrow subcarriers side by side, the idea Lesson 14 found beside an HD Radio station. Each subcarrier carries **16-QAM**, a constellation of 16 points on a grid, so every symbol on every subcarrier carries 4 bits. The spectrum is the flat block of all 52 subcarriers, 48 for data and 4 pilots, the left constellation shows the subcarrier points as the receiver's FFT delivers them, and the right one shows them after the receiver's **equalizer** has corrected each subcarrier.
+The figure is today's second flowgraph, `L20-ofdm-link.grc`, running. It sends a line of text as packets, and each packet travels as **OFDM**: 48 narrow subcarriers side by side, the idea Lesson 14 found beside an HD Radio station. Each subcarrier carries **16-QAM**, a constellation of 16 points on a grid, so every symbol on every subcarrier carries 4 bits. The spectrum is the flat block of all 52 subcarriers, 48 for data and 4 pilots, the left constellation shows the subcarrier points as the receiver's FFT delivers them, and the right one shows them after the receiver's **equalizer** has corrected each subcarrier. The left points lie on rings because the receiver starts its FFT a few samples early, inside the guard, which turns each subcarrier by its own angle; the equalizer measures that turn and removes it.
 
 Today we build both halves. We start with QAM on a single carrier, following GNU Radio's constellation objects and **Constellation Modulator** block and PySDR's Digital Modulation chapter, and we watch noise act on QPSK, 16-QAM, and 64-QAM. Then we follow the OFDM transmitter and receiver that ship with GNU Radio as the examples `tx_ofdm.grc` and `rx_ofdm.grc`, with the blocks of the GNU Radio wiki's Basic OFDM Tutorial, and we put Lesson 15's multipath channel and a longer echo in front of them. We finish with which systems use each one and how to recognize it on a live band.
 ::::
@@ -56,7 +56,7 @@ Today we build both halves. We start with QAM on a single carrier, following GNU
 ::::{frame} From PSK to QAM
 :::{present}
 <img src="../../viz/img/L20-qam-low.png"
-     alt="L20-qam-noise.grc at noise amplitude 0.05: three constellation plots, QPSK with four tight points at plus and minus 0.71, 16-QAM with a 4 by 4 grid of tight points at plus and minus 0.32 and 0.95, and 64-QAM with an 8 by 8 grid of small clusters between about minus 1.1 and plus 1.1; below, one spectrum plot shows all three signals with the same flat top from about minus 5.4 to plus 5.4 kHz"
+     alt="L20-qam-noise.grc, labeled Simulated channel, at noise amplitude 0.05: three constellation plots, QPSK with four tight points at plus and minus 0.71, 16-QAM with a 4 by 4 grid of tight points at plus and minus 0.32 and 0.95, and 64-QAM with an 8 by 8 grid of small clusters between about minus 1.1 and plus 1.1; below, one spectrum plot shows all three signals with the same flat top from about minus 5.4 to plus 5.4 kHz"
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
@@ -105,7 +105,7 @@ Each row then adds noise in a **Channel Model** and runs the receiver of Lesson 
 ::::{frame} Noise on QAM
 :::{present}
 <img src="../../viz/img/L20-qam-high.png"
-     alt="L20-qam-noise.grc at noise amplitude 0.3: QPSK shows four round clouds well apart; 16-QAM shows sixteen clouds with gaps still between them and a few stray points; 64-QAM shows the points spread into one square of scattered dots with no gaps; the spectrum shows the same three signals over a floor raised to about minus 50 dB"
+     alt="L20-qam-noise.grc, labeled Simulated channel, at noise amplitude 0.3: QPSK shows four round clouds well apart; 16-QAM shows sixteen clouds with gaps still between them and a few stray points; 64-QAM shows the points spread into one square of scattered dots with no gaps; the spectrum shows the same three signals over a floor raised to about minus 50 dB"
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
@@ -139,7 +139,7 @@ The explorer sends the line `USAFA ECE 448: QAM` over and over with the chosen c
 ::::{frame} Setting the Level
 :::{present}
 <img src="../../viz/img/L20-qam-gain.png"
-     alt="L20-qam-noise.grc at noise amplitude 0.05 with the Receiver gain at 0.6: all three grids have shrunk toward the center; QPSK's points sit at about plus and minus 0.43, 16-QAM's outer points at about plus and minus 0.57, and 64-QAM's grid spans about plus and minus 0.65"
+     alt="L20-qam-noise.grc, labeled Simulated channel, at noise amplitude 0.05 with the Receiver gain at 0.6: all three grids have shrunk toward the center; QPSK's points sit at about plus and minus 0.43, 16-QAM's outer points at about plus and minus 0.57, and 64-QAM's grid spans about plus and minus 0.65"
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
@@ -192,7 +192,7 @@ The bottom rows are the receiver of `rx_ofdm.grc`. The **Schmidl & Cox OFDM sync
 - An echo shorter than the guard spills only into the next guard.
 :::
 
-The **guard interval**, also called the **cyclic prefix**, is a copy of the last 16 samples of each symbol placed in front of it. The figure shows why it is there. An echo arrives 8 samples after the direct signal, so the end of its symbol 1 overlaps the start of the direct path's guard for symbol 2. The receiver's FFT window skips the guard, so it sees only symbol 2 from both paths: the direct one, and the echo's copy, which is the same symbol turned and scaled. On each subcarrier that sum is one point with a new gain and phase, which the equalizer removes.
+The **guard interval**, also called the **cyclic prefix**, is a copy of the last 16 samples of each symbol placed in front of it. The figure shows why it is there. An echo arrives 8 samples after the direct signal, so the end of its symbol 1 overlaps the start of the direct path's guard for symbol 2. The receiver's FFT window skips the guard (in this receiver, about 9 of its 16 samples; see two frames ahead), so it sees only symbol 2 from both paths: the direct one, and the echo's copy, which is the same symbol turned and scaled. On each subcarrier that sum is one point with a new gain and phase, which the equalizer removes.
 
 An echo later than the guard reaches past it into the FFT window, and part of symbol 1 lands in symbol 2's FFT, where the equalizer cannot remove it. In the link flowgraph the guard lasts 16 samples, or 160 µs, and Lesson 14's explorer showed the same effect with HD Radio's guard.
 ::::
@@ -200,7 +200,7 @@ An echo later than the guard reaches past it into the FFT window, and part of sy
 ::::{frame} Lesson 15's Taps on OFDM
 :::{present}
 <img src="../../viz/img/L20-ofdm-taps.png"
-     alt="L20-ofdm-link.grc with Taps 1 to 4 at 0.25, 0.5, 0.6, and 0.6 and noise amplitude 0.02: the spectrum tilts, from about minus 42 dB at the lower edge to minus 30 dB at the upper edge; the points before the equalizer are a shrunken jumble; after the equalizer they form a 4 by 4 grid of small clusters, larger at the outer points; the text arrives, 1861 correct of 1862 in 7 s"
+     alt="L20-ofdm-link.grc, labeled Simulated channel, with Taps 1 to 4 at 0.25, 0.5, 0.6, and 0.6 and noise amplitude 0.02: the spectrum tilts, from about minus 42 dB at the lower edge to minus 30 dB at the upper edge; the points before the equalizer are a shrunken jumble; after the equalizer they form a 4 by 4 grid of small clusters, larger at the outer points; the text arrives, 1861 correct of 1862 in 7 s"
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
@@ -210,13 +210,13 @@ An echo later than the guard reaches past it into the FFT window, and part of sy
 
 The four tap sliders use the expression of `L15-psk-multipath.grc`: each sets the channel's gain at one frequency. At this flowgraph's 100,000 samples per second those frequencies move outward, so Tap 1 now sets the gain near the lower edge, at $-40$ kHz, and Taps 2, 3, and 4 sit at $-20$, 0, and $+20$ kHz, all inside the OFDM block. At Lesson 15's settings the spectrum tilts, weak at the lower edge and strong at the upper one. Before the equalizer the subcarrier points are a jumble, because every subcarrier has a different gain and phase. After it, they form the 16-QAM grid again, and the text arrives.
 
-Lesson 15 needed an adaptive equalizer, a filter that learned the inverse of the channel, to undo the same tap settings on a single QPSK carrier. OFDM needs only one complex number per subcarrier, measured from the preamble. The clusters for the weakest subcarriers come out a little larger, because the equalizer amplifies their noise along with their signal; with the noise amplitude at 0.05 the weak edge corrupts most lines, and only about 40% arrive intact.
+Lesson 15 needed an adaptive equalizer, a filter that learned the inverse of the channel, to undo the same tap settings on a single QPSK carrier. OFDM needs only one complex number per subcarrier, measured from the preamble. The clusters for the weakest subcarriers come out a little larger, because the equalizer amplifies their noise along with their signal; with the noise amplitude at 0.05 the weak edge corrupts about half the lines.
 ::::
 
 ::::{frame} An Echo Inside the Guard
 :::{present}
 <img src="../../viz/img/L20-ofdm-echo-in.png"
-     alt="L20-ofdm-link.grc with the taps at 1, an echo 8 samples late at level 0.5, and noise amplitude 0.02: the spectrum has deep ripples, about six across the signal's band and eight across the 100 kHz window; the points before the equalizer lie on many separate arcs; after the equalizer they form a clean 4 by 4 grid; the text arrives, 1982 correct of 1982"
+     alt="L20-ofdm-link.grc, labeled Simulated channel, with the taps at 1, an echo 8 samples late at level 0.5, and noise amplitude 0.02: the spectrum has deep ripples, about six across the signal's band and eight across the 100 kHz window; the points before the equalizer lie on many separate arcs; after the equalizer they form a clean 4 by 4 grid; the text arrives, 1982 correct of 1982"
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
@@ -232,7 +232,7 @@ The echo ends inside the 16-sample guard, so each subcarrier sees only a fixed c
 ::::{frame} An Echo Past the Guard
 :::{present}
 <img src="../../viz/img/L20-ofdm-echo-out.png"
-     alt="L20-ofdm-link.grc with an echo 20 samples late at level 0.5 and noise amplitude 0.02: the spectrum ripples more finely; the points before the equalizer are scattered; after the equalizer they are scattered clouds with no clear grid; the received line is garbled and 0 of 1861 lines are correct"
+     alt="L20-ofdm-link.grc, labeled Simulated channel, with an echo 20 samples late at level 0.5 and noise amplitude 0.02: the spectrum ripples more finely; the points before the equalizer are scattered; after the equalizer they are scattered clouds with no clear grid; the received line is garbled and 0 of 1861 lines are correct"
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
@@ -263,7 +263,7 @@ Single-carrier QAM serves channels with few echoes, such as cable TV and cable m
 ::::{frame} Choosing a Scheme
 :::{present}
 <img src="../../viz/img/L20-ofdm-noise.png"
-     alt="L20-ofdm-link.grc with the taps at 1, no echo, and noise amplitude 0.15: the spectrum floor has risen; after the equalizer the 16-QAM clusters have spread into clouds that touch; the received line has wrong characters and 324 of 1981 lines are correct"
+     alt="L20-ofdm-link.grc, labeled Simulated channel, with the taps at 1, no echo, and noise amplitude 0.15: the spectrum floor has risen; after the equalizer the 16-QAM clusters have spread into clouds that touch; the received line has wrong characters and 324 of 1981 lines are correct"
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
@@ -279,16 +279,19 @@ Wi-Fi and LTE make the second choice continuously. A receiver close to the acces
 ::::{frame} On the SDR
 :::{present}
 - Wi-Fi: short bursts at 2.4 GHz, mostly flat-topped and about 17 MHz wide.
-- LTE: a flat, steady band around 700 MHz.
+- LTE: a flat, steady band about 9 MHz wide near 740 MHz.
 - HD Radio: two flat shelves beside an FM station.
 :::
 
 These signals are on the air around you, and an SDR shows their spectrum. We look only at the spectrum; we do not decode anyone's traffic. **SDR Flex** is the course's explore tool. Its README says its full version targets radios up to about 10 MS/s, lists drivers for the PlutoSDR, RTL-SDR, USRP, and SoapySDR, and says its author has not yet tried them with a real radio, so **GQRX** is the fallback and, for now, the tested path.
 
-1. In SDR Flex or GQRX, select the RTL-SDR at 2.4 MS/s and tune between 729 and 756 MHz, where US carriers run LTE downlinks; which frequencies are in use varies by area. An LTE carrier is wider than the RTL-SDR's window, so it fills the window with a flat band that stays on, unlike Wi-Fi's bursts.
-2. Tune to an FM station that carries HD Radio and find Lesson 14's flat shelves. In SDR Flex, drag a box across a shelf and choose **Tune here**; in GQRX, click it.
-3. For Wi-Fi, open GQRX with the HackRF at 20 MS/s, its maximum (Lesson 4). SDR Flex's 10 MS/s target shows only half a Wi-Fi channel, a PlutoSDR streams about 4 MS/s, and the RTL-SDR cannot tune to 2.4 GHz.
-4. Tune to 2.437 GHz, Wi-Fi channel 6, and watch the waterfall. Short bursts come and go. Those carrying data are OFDM: a flat top with steep edges about 17 MHz wide, often with a small dip at the center, where the subcarrier at 0 Hz is left empty. Some access points still send beacons in the older 802.11b format, which look rounded instead.
+Live radios need SDR Flex's full version, run from its Docker image or as a server against your own GNU Radio; its browser version has no live radios.
+
+1. With the RTL-SDR at 2.4 MS/s, in SDR Flex, or GQRX, tune to an FM station that carries HD Radio and find Lesson 14's flat shelves. In SDR Flex, drag a box across a shelf and choose **Tune here**; in GQRX, click it.
+2. With the HackRF at 20 MS/s, its maximum (Lesson 4), open GQRX. SDR Flex's 10 MS/s target shows only half a Wi-Fi channel, a PlutoSDR streams about 4 MS/s, and the RTL-SDR cannot tune to 2.4 GHz.
+3. With the HackRF still at 20 MS/s, tune to 2.437 GHz, Wi-Fi channel 6, and watch the waterfall. Short bursts come and go. Those carrying data are OFDM: a flat top with steep edges about 17 MHz wide, often with a small dip at the center, where the subcarrier at 0 Hz is left empty. Some access points still send beacons in the older 802.11b format, which look rounded instead.
+4. With the HackRF still at 20 MS/s, tune between 729 and 756 MHz, where US carriers run LTE downlinks; which frequencies are in use varies by area. A 10 MHz LTE carrier shows as a flat top about 9 MHz wide with steep edges, and unlike Wi-Fi's bursts it stays on.
+5. Optionally, with the RTL-SDR at 2.4 MS/s, find the same LTE carrier. Its window shows only a featureless flat slice, so step the center frequency 2 MHz at a time to find both edges.
 
 As in every lesson, receiving is unrestricted and transmitting is not; nothing in this lesson transmits.
 ::::
@@ -310,7 +313,7 @@ Open a `.grc` file from GRC's File menu, or run `gnuradio-companion L20-ofdm-lin
 
 **What this lesson follows.** L20 has no 2025 slides, so the GNU Radio examples and wiki lead, then PySDR:
 
-- GNU Radio's OFDM examples `tx_ofdm.grc`, `rx_ofdm.grc`, and `ofdm_loopback.grc`, which ship with GNU Radio in `share/gnuradio/examples/digital/ofdm`. `L20-ofdm-link.grc` is `tx_ofdm.grc` and `rx_ofdm.grc` joined, with a text source, a 16-QAM payload, and the Channel Model of `L15-psk-multipath.grc`. It also differs from them in four smaller ways: it drops the CRC blocks, so a damaged line arrives with wrong characters instead of not at all; it scrambles each packet's bits, as the OFDM Transmitter block does, so the repeated text does not put the same point on the same subcarrier every time; its payload equalizer is the static one, which outputs the equalized points instead of its decisions, so the right-hand plot shows the noise; and it runs at 100,000 samples per second.
+- GNU Radio's OFDM examples `tx_ofdm.grc`, `rx_ofdm.grc`, and `ofdm_loopback.grc`, which ship with GNU Radio in `share/gnuradio/examples/digital/ofdm`. `L20-ofdm-link.grc` is `tx_ofdm.grc` and `rx_ofdm.grc` joined, with a text source, a 16-QAM payload, and the Channel Model of `L15-psk-multipath.grc`. It also differs from them in four smaller ways: it drops the CRC blocks, so a damaged line arrives with wrong characters instead of not at all; it scrambles each packet's bits, as the OFDM Transmitter block does with Scramble Bits set to True, so the repeated text does not put the same point on the same subcarrier every time; its payload equalizer is the static one, which outputs the equalized points instead of its decisions, so the right-hand plot shows the noise; and it runs at 100,000 samples per second.
 - <a href="https://wiki.gnuradio.org/index.php/Basic_OFDM_Tutorial" target="_blank" rel="noopener">GNU Radio wiki, Basic OFDM Tutorial</a>: the OFDM Carrier Allocator, FFT, and OFDM Cyclic Prefixer.
 - <a href="https://wiki.gnuradio.org/index.php/Constellation_Modulator" target="_blank" rel="noopener">GNU Radio wiki, Constellation Modulator</a> and <a href="https://wiki.gnuradio.org/index.php/Constellation_Object" target="_blank" rel="noopener">Constellation Object</a>: the blocks of `L20-qam-noise.grc`.
 - <a href="https://pysdr.org/content/digital_modulation.html" target="_blank" rel="noopener">PySDR, Digital Modulation</a> for QAM, <a href="https://pysdr.org/content/multipath_fading.html" target="_blank" rel="noopener">PySDR, Multipath Fading</a>, whose OFDM section is a one-paragraph overview, and <a href="https://pysdr.org/content/channel_coding.html" target="_blank" rel="noopener">PySDR, Channel Coding</a> for modulation and coding schemes.

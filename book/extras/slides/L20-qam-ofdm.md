@@ -48,7 +48,7 @@ Keep GRC open the whole period. Parts 2 and 4 are sliders moved live.
 
 ## Text over OFDM
 
-<img src="./img/20-qam-ofdm/L20-ofdm-clean.png" alt="L20-ofdm-link.grc on a clean channel: a flat-topped spectrum, rings of points before the equalizer, a clean 16-QAM grid after it, and every line of text received" style="max-height:420px; display:block; margin:0 auto;">
+<img src="./img/20-qam-ofdm/L20-ofdm-clean.png" alt="L20-ofdm-link.grc, labeled Simulated channel, on a clean channel: a flat-topped spectrum, rings of points before the equalizer, a clean 16-QAM grid after it, and every line of text received" style="max-height:420px; display:block; margin:0 auto;">
 
 48 data subcarriers carry 16-QAM, and the text arrives.
 
@@ -59,7 +59,7 @@ Run L20-ofdm-link.grc live. The left plot is the spectrum of all 52 subcarriers,
 
 ## From PSK to QAM
 
-<img src="./img/20-qam-ofdm/L20-qam-low.png" alt="L20-qam-noise.grc at noise amplitude 0.05: QPSK, 16-QAM, and 64-QAM constellations with tight points, and one spectrum showing all three in the same band" style="max-height:400px; display:block; margin:0 auto;">
+<img src="./img/20-qam-ofdm/L20-qam-low.png" alt="L20-qam-noise.grc, labeled Simulated channel, at noise amplitude 0.05: QPSK, 16-QAM, and 64-QAM constellations with tight points, and one spectrum showing all three in the same band" style="max-height:400px; display:block; margin:0 auto;">
 
 QAM sets amplitude and phase: 16 points carry 4 bits, 64 points carry 6, in the same band.
 
@@ -97,7 +97,7 @@ Note:
 
 ## Noise on QAM
 
-<img src="./img/20-qam-ofdm/L20-qam-high.png" alt="L20-qam-noise.grc at noise amplitude 0.3: QPSK clouds well apart, 16-QAM clouds still apart with a few stray points, and 64-QAM merged into one square" style="max-height:400px; display:block; margin:0 auto;">
+<img src="./img/20-qam-ofdm/L20-qam-high.png" alt="L20-qam-noise.grc, labeled Simulated channel, at noise amplitude 0.3: QPSK clouds well apart, 16-QAM clouds still apart with a few stray points, and 64-QAM merged into one square" style="max-height:400px; display:block; margin:0 auto;">
 
 The same noise makes the same clouds; 64-QAM's points merge first.
 
@@ -122,7 +122,7 @@ The explorer's noise slider matches the flowgraph's. Wrong decisions and wrong c
 
 ## Setting the Level
 
-<img src="./img/20-qam-ofdm/L20-qam-gain.png" alt="L20-qam-noise.grc with the Receiver gain at 0.6: all three grids shrunk toward the center" style="max-height:400px; display:block; margin:0 auto;">
+<img src="./img/20-qam-ofdm/L20-qam-gain.png" alt="L20-qam-noise.grc, labeled Simulated channel, with the Receiver gain at 0.6: all three grids shrunk toward the center" style="max-height:400px; display:block; margin:0 auto;">
 
 At a gain of 0.6, 16-QAM's outer points sit where its inner points belong; an **AGC** holds the level.
 
@@ -166,18 +166,18 @@ The window holds symbol 2 from both paths; on each subcarrier that sum is one po
 
 ## Lesson 15's Taps on OFDM
 
-<img src="./img/20-qam-ofdm/L20-ofdm-taps.png" alt="The OFDM link with Lesson 15's taps at 0.25, 0.5, 0.6, and 0.6: a tilted spectrum, a jumble before the equalizer, a clean grid after it, and the text arriving" style="max-height:400px; display:block; margin:0 auto;">
+<img src="./img/20-qam-ofdm/L20-ofdm-taps.png" alt="The OFDM link, labeled Simulated channel, with Lesson 15's taps at 0.25, 0.5, 0.6, and 0.6: a tilted spectrum, a jumble before the equalizer, a clean grid after it, and the text arriving" style="max-height:400px; display:block; margin:0 auto;">
 
 The spectrum tilts; one gain and phase per subcarrier restores the grid.
 
 Note:
-At 100 kS/s Tap 1 now sets the lower edge, at minus 40 kHz, so the tilt is steeper than in Lesson 15, which needed an adaptive filter for the same tap settings on one carrier. The weakest subcarriers come out noisier, because the equalizer amplifies their noise too; at noise 0.05 the weak edge corrupts most lines.
+At 100 kS/s Tap 1 now sets the lower edge, at minus 40 kHz, so the tilt is steeper than in Lesson 15, which needed an adaptive filter for the same tap settings on one carrier. The weakest subcarriers come out noisier, because the equalizer amplifies their noise too; at noise 0.05 the weak edge corrupts about half the lines.
 
 ---
 
 ## An Echo Inside the Guard
 
-<img src="./img/20-qam-ofdm/L20-ofdm-echo-in.png" alt="The OFDM link with an echo 8 samples late at level 0.5: a rippled spectrum, points on separate arcs before the equalizer, a clean grid after it, and every line received" style="max-height:400px; display:block; margin:0 auto;">
+<img src="./img/20-qam-ofdm/L20-ofdm-echo-in.png" alt="The OFDM link, labeled Simulated channel, with an echo 8 samples late at level 0.5: a rippled spectrum, points on separate arcs before the equalizer, a clean grid after it, and every line received" style="max-height:400px; display:block; margin:0 auto;">
 
 An echo 8 samples late ripples the spectrum, and every line still arrives.
 
@@ -188,7 +188,7 @@ The ripple repeats every 12.5 kHz, eight times across the window. Each subcarrie
 
 ## An Echo Past the Guard
 
-<img src="./img/20-qam-ofdm/L20-ofdm-echo-out.png" alt="The OFDM link with an echo 20 samples late: the grid after the equalizer scatters and no line arrives intact" style="max-height:400px; display:block; margin:0 auto;">
+<img src="./img/20-qam-ofdm/L20-ofdm-echo-out.png" alt="The OFDM link, labeled Simulated channel, with an echo 20 samples late: the grid after the equalizer scatters and no line arrives intact" style="max-height:400px; display:block; margin:0 auto;">
 
 At 20 samples the echo reaches into the next symbol's FFT window, and the grid scatters.
 
@@ -215,7 +215,7 @@ Note:
 
 ## Choosing a Scheme
 
-<img src="./img/20-qam-ofdm/L20-ofdm-noise.png" alt="The OFDM link at noise amplitude 0.15: the 16-QAM clouds touch and most lines arrive with errors" style="max-height:380px; display:block; margin:0 auto;">
+<img src="./img/20-qam-ofdm/L20-ofdm-noise.png" alt="The OFDM link, labeled Simulated channel, at noise amplitude 0.15: the 16-QAM clouds touch and most lines arrive with errors" style="max-height:380px; display:block; margin:0 auto;">
 
 Echoes choose OFDM; noise chooses how many points.
 
@@ -227,11 +227,11 @@ Wi-Fi and LTE step from 64-QAM down to 16-QAM and QPSK as the signal weakens, ad
 ## On the SDR
 
 - A HackRF at 20 MS/s on 2.437 GHz shows Wi-Fi as flat-topped bursts about 17 MHz wide.
-- An RTL-SDR between 729 and 756 MHz shows LTE as a flat band that stays on.
+- A HackRF at 20 MS/s between 729 and 756 MHz shows LTE as a flat band about 9 MHz wide that stays on.
 - An FM station with HD Radio shows Lesson 14's shelves.
 
 Note:
-Use SDR Flex first for the LTE and HD Radio steps, with GQRX as the fallback; SDR Flex's README says it targets up to about 10 MS/s and its author has not yet tried its radio drivers on a real radio, so GQRX is the tested path. Wi-Fi needs the HackRF at 20 MS/s, so it is a GQRX step. Some beacons use the older 802.11b format and look rounded. Look at the spectrum only; nothing here transmits.
+Live radios need SDR Flex's full version; its browser version has none. Use SDR Flex first for the HD Radio step, with GQRX as the fallback; SDR Flex's README says it targets up to about 10 MS/s and its author has not yet tried its radio drivers on a real radio, so GQRX is the tested path. Wi-Fi and LTE need the HackRF at 20 MS/s, so they are GQRX steps; an RTL-SDR sees only a flat slice of LTE. Some beacons use the older 802.11b format and look rounded. Look at the spectrum only; nothing here transmits.
 
 ---
 

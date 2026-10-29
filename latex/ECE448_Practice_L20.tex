@@ -176,10 +176,10 @@ system and whether it uses OFDM or a single carrier, and give one feature that i
 		subcarriers all at the same power, and the dip is the empty subcarrier at 0 Hz.
 		\end{solution}
 
-	\part An RTL-SDR at 2.4 MS/s tuned to 739 MHz shows a flat band that fills the whole
-	window and stays on.
+	\part The same HackRF tuned to 740 MHz shows a flat band about 9 MHz wide with steep
+	edges, which stays on.
 		\begin{solution}[1.0in]
-		An LTE downlink, OFDM. The carrier is 5 or 10 MHz wide, wider than the window, and
+		An LTE downlink, OFDM. A 10 MHz LTE carrier fills about 9 MHz with subcarriers, and
 		the base station transmits continuously, unlike Wi-Fi's bursts.
 		\end{solution}
 
@@ -207,11 +207,13 @@ system and whether it uses OFDM or a single carrier, and give one feature that i
 and choose QPSK, 16-QAM, or 64-QAM. Explain each choice in a sentence or two.
 \begin{parts}
 
-	\part A data link inside a large metal hangar, where reflections arrive up to 1.5
-	$\mu$s after the direct signal and the signal is strong.
+	\part A 20 MHz-wide data link inside a large metal hangar, where reflections arrive up
+	to 1.5 $\mu$s after the direct signal and the signal is strong.
 		\begin{solution}[1.1in]
-		OFDM with a guard longer than 1.5 $\mu$s, so every reflection stays inside it and
-		the equalizer removes it. The signal is strong, so the clouds stay small and
+		OFDM with a guard longer than 1.5 $\mu$s. A single carrier filling 20 MHz would send
+		symbols well under a tenth of a microsecond long, so each echo would smear across
+		dozens of them; with OFDM every
+		reflection stays inside the guard and the equalizer removes it. The signal is strong, so the clouds stay small and
 		64-QAM can carry the most bits.
 		\end{solution}
 
@@ -233,8 +235,8 @@ and choose QPSK, 16-QAM, or 64-QAM. Explain each choice in a sentence or two.
 	\part In words, state what decides OFDM or a single carrier, and what decides the
 	number of constellation points.
 		\begin{solution}[1.0in]
-		The echoes decide the first: a channel with echoes longer than a few symbols calls
-		for OFDM and a guard longer than the echoes. The noise decides the second: a clean
+		The echoes decide the first: echoes call for OFDM, with a guard longer than the
+		longest echo, while a clean cable or a tower-to-tower link can use one carrier. The noise decides the second: a clean
 		signal supports more points and more bits per symbol, and a noisy one needs fewer.
 		\end{solution}
 
