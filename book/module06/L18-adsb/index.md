@@ -264,7 +264,7 @@ Anyone may receive ADS-B. Transmitting it is another matter: 1090 MHz carries th
 - <a class="doc-link" href="../../grc/L18-adsb-tx.grc" download>L18-adsb-tx.grc</a>: the ADS-B Out generator. Writes `L18-adsb-sim.sigmf-data` and `.sigmf-meta`, 0.5 s (8 MB) of four simulated aircraft at 2 MS/s, then stops. Run it once. No hardware needed.
 - <a class="doc-link" href="../../grc/L18-adsb-rx.grc" download>L18-adsb-rx.grc</a>: the receiver, with the pulse plots, the Mode S Decoder, the Added noise slider, and a disabled RTL-SDR Source for live signals.
 
-Put both flowgraphs in one folder and run the generator first; GRC runs a flowgraph from its own folder, so the receiver finds the recording there. The two decoders are Embedded Python Blocks saved inside the `.grc` files.
+Put both flowgraphs in one folder and run the generator first; GRC runs a flowgraph from its own folder, so the receiver finds the recording there. The two decoders are Embedded Python Blocks saved inside the `.grc` files. GRC 3.10 marks the SigMF Source (Minimal) and SigMF Sink (Minimal) blocks as deprecated and shows a warning when the flowgraph loads; the warning is expected and harmless, and both blocks work.
 
 **What this lesson follows.** The topics and their order come from the slides. The hands-on steps follow the references the slides list and the documentation of the tools:
 

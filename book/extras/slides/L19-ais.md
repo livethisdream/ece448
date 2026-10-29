@@ -73,7 +73,7 @@ Large ships carry Class A transponders; small craft may carry Class B. A moving 
 
 1. RTL-SDR at 250 kS/s or more
 2. Tune to 162.000 MHz
-3. Look for 27 ms bursts at −25 and +25 kHz
+3. Look for bursts just under one 26.67 ms slot at −25 and +25 kHz
 4. Play one with narrow FM: a 9600 b/s buzz
 
 Note:

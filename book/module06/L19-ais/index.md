@@ -74,7 +74,7 @@ On a coast, the first look is the same as for ADS-B, in **SDR Flex** or in **GQR
 
 1. Set the input to the RTL-SDR and the sample rate to 250 kS/s or more, so both channels fit.
 2. Tune to 162.000 MHz, halfway between the channels.
-3. Watch the waterfall for short bursts, each about 27 ms long, at −25 kHz (channel A) and +25 kHz (channel B). In a busy harbor several arrive every second.
+3. Watch the waterfall for short bursts, each a little shorter than one 26.67 ms slot, at −25 kHz (channel A) and +25 kHz (channel B). In a busy harbor several arrive every second.
 4. Select one burst and play it with the narrow FM demodulator to hear the buzz of 9600 b/s data.
 
 In Colorado the waterfall stays empty at 162 MHz, which is why we use recordings. SDR Flex's full version opens your own recordings from a captures folder, as its README describes, along with the drag that selects a signal and the FM demodulator; GQRX opens a recording through its I/Q file input.
@@ -179,7 +179,7 @@ Each channel gets its own chain. A **Frequency Xlating FIR Filter** moves the ch
 - The flag is the one long flat run: six 1s, no change.
 :::
 
-The time sink triggers when channel A's demodulator output crosses 0.5 and shows the next 9 ms. The first 2.5 ms are the 24 training bits: under NRZI, alternating 0s and 1s change the level every other bit, so the trace is a regular square wave with a period of four bits. Then the trace holds high for seven bits, about 0.7 ms: that is the flag, whose six 1s keep the level and whose 0s change it at each end. The data begins after it, with runs whose lengths follow the bits.
+The time sink triggers when channel A's demodulator output crosses 0.5 and shows 10 ms, starting 1 ms before the trigger. The first 2.5 ms are the 24 training bits: under NRZI, alternating 0s and 1s change the level every other bit, so the trace is a regular square wave with a period of four bits. Then the trace holds high for seven bits, about 0.7 ms: that is the flag, whose six 1s keep the level and whose 0s change it at each end. The data begins after it, with runs whose lengths follow the bits.
 
 The edges are rounded and the single-bit swings fall short of ±1: that is the Gaussian filter at BT 0.4, seen from the receiver.
 ::::
@@ -285,7 +285,7 @@ Put the receiver and the recording in one folder; GRC runs a flowgraph from its 
 | AIS | ships report identity and position on VHF | two chains, one per channel |
 | Channels | A at 161.975 MHz, B at 162.025 MHz | Frequency Xlating FIR Filter at ±25 kHz |
 | Slots | 26.67 ms, 256 bits at 9600 b/s | bursts on the waterfall |
-| Burst | ramp, training, flag, message, CRC, flag | the first 4 ms after the trigger |
+| Burst | ramp, training, flag, message, CRC, flag | training and flag: the first 3 ms after the trigger |
 | Coding | bit stuffing, NRZI | the AIS Decoder |
 | GMSK | FSK at ±2.4 kHz through a Gaussian filter, BT 0.4 | Interpolating FIR Filter and Frequency Mod |
 | Receiver | squelch, FM demodulator, Symbol Sync, slicer | Quadrature Demod, Symbol Sync |

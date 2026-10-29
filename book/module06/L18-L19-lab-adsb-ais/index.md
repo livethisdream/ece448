@@ -106,18 +106,18 @@ For ADS-B, check that the RTL-SDR Source's center frequency is 1090e6 and its sa
 ::::{frame} Part 3: After the Lab
 :::{present}
 - Explain why ADS-B needs only the magnitude and AIS needs FM and timing recovery.
-- Rank the ships by strength from your squelch table.
+- Rank the ships you decoded by strength from your squelch table.
 - Compare your aircraft with the flight tracker.
 :::
 
-The Writeup is Question 9, in three parts. Part (a) compares your two receivers and explains why each needs the blocks it has. Part (b) ranks the four ships by received strength from your squelch table, explains what each step told you, and says how you would choose a squelch for a real recording. Part (c) compares your live aircraft with the flight tracker and explains any aircraft the tracker showed that you did not decode.
+The Writeup is Question 9, in three parts. Part (a) compares your two receivers and explains why each needs the blocks it has. Part (b) ranks the ships you decoded by received strength from your squelch table, explains what each step told you, and says how you would choose a squelch for a real recording. Part (c) compares your live aircraft with the flight tracker and explains any aircraft the tracker showed that you did not decode.
 ::::
 
 ::::{frame} Lab Packet
 :class: read-only doc-links
 
 - <a class="doc-link" href="../../labs/ECE448_Lab_L18_ADSBAIS_blank.pdf" target="_blank" rel="noopener">L18–L19 Lab packet (PDF)</a>
-- `L18-L19-lab-ais.sigmf-data` and `.sigmf-meta`, the lab's simulated AIS recording for Questions 2 and 6 to 8: your instructor posts them here before the lab.
+- <a class="doc-link" href="../../grc/L18-L19-lab-ais.sigmf-data" download>L18-L19-lab-ais.sigmf-data</a> and <a class="doc-link" href="../../grc/L18-L19-lab-ais.sigmf-meta" download>L18-L19-lab-ais.sigmf-meta</a>: the lab's simulated AIS recording for Questions 2 and 6 to 8, 7.7 MB. GRC 3.10 marks the SigMF Source (Minimal) and SigMF Sink (Minimal) blocks as deprecated and shows a warning when the flowgraph loads; the warning is expected and harmless, and both blocks work.
 - The Lesson 18 page has `L18-adsb-tx.grc` and `L18-adsb-rx.grc`, and the Lesson 19 page has `L19-ais-rx.grc`, whose decoder blocks you copy into your own flowgraphs.
 - <a href="https://www.itu.int/en/ITU-R/terrestrial/fmd/Pages/mid.aspx" target="_blank" rel="noopener">ITU table of Maritime Identification Digits</a>, for the ships' flags.
 ::::
