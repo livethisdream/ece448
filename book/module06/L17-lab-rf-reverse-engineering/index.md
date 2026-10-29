@@ -28,13 +28,13 @@ L17 Lab · Module 6: Waveform Applications & RF Reverse Engineering · Dr. Neil 
 ::::{frame} From Lesson to Bench
 :::{present}
 - **Pre-Lab:** read the recording's meta file, set up URH, and work out chip settings.
-- **Bench:** take an unknown remote from carrier to fields, build its encoder, then send it through a cable.
+- **Bench:** take an unknown remote from carrier to fields, build its encoder, send it through a cable, and record a real remote.
 - **Writeup:** explain the evidence for each step.
 :::
 
 Lesson 17 took the Simulated fan remote through five steps: find the carrier, identify the modulation, identify the encoding, build an encoder, and transmit. Today you take a different device through the same steps. It is a **Simulated remote outlet switch** with six buttons, and nobody will describe it to you: its recording is all you get. The lab packet has three parts, and you turn it in once, complete, before Lesson 18. **Part 1, the Pre-Lab**, is on your own before the period. **Part 2** is what you find, build, and observe in class. **Part 3, the Writeup**, explains it.
 
-Questions 1 to 7 run on your laptop and transmit nothing. Question 8 transmits, into a cable only, as the PlutoSDR frame below describes.
+Questions 1 to 7 run on your laptop and transmit nothing. Question 8 transmits, into a cable only, as the PlutoSDR frame below describes. Question 9 only receives.
 ::::
 
 ::::{frame} The Recording
@@ -62,7 +62,7 @@ Question 2 checks your URH install on the lesson's recording, `L17-fan-remote.si
 
 1. Run `L17-sigmf-view.grc` with your settings from Question 1. Watch the waterfall through at least two loops of the recording.
 2. Find every signal on the waterfall. For each, decide whether it bursts when a button is pressed or stays on, and record its frequency for Question 4(a).
-3. Move the Carrier offset slider until the envelope plot shows clean pulses, then move it in steps of 1 kHz each way and record the offset where the pulses are tallest. Screenshot the window for Question 4(b).
+3. Read the center of the bursts off the Frequency Sink or the waterfall. To check it, move the Carrier offset slider until the envelope plot shows clean pulses, then find the offset on each side where the pulses drop to half their height and take the midpoint. Record the offset and screenshot the window for Question 4(b).
 4. Record the carrier frequency, the center frequency plus your offset, for Question 4(c).
 ::::
 
@@ -104,9 +104,9 @@ Autodetect is a starting point, not an answer. Check the sample rate first: URH 
 - Connect the cable before the flowgraph runs, and never connect an antenna.
 :::
 
-Save a copy of your encoder for the radio. Delete the Noise Source, the Add, and the Throttle, set `samp_rate` to 1000000 and `chip_len` to your chip length in samples at 1 MS/s, and add a **PlutoSDR Sink** after a Multiply Const of 0.5, tuned to the recording's center frequency. Copy the `tx_atten` QT GUI Range from `L17-fan-tx-pluto.grc` unchanged, from 30 to 89 dB with a default of 60, and set it as the sink's attenuation. Put "Transmit only into the cable" in the flowgraph's description. The second SDR, a PlutoSDR or an RTL-SDR, runs `L17-capture.grc` with its center frequency set to the recording's and records what arrives.
+Save a copy of your encoder for the radio. Delete the Noise Source, the Add, and the Throttle, set `samp_rate` to 1000000 and `chip_len` to your chip length in samples at 1 MS/s, and add a **PlutoSDR Sink** after a Multiply Const of 0.5, tuned to the recording's center frequency. Copy the `tx_atten` QT GUI Range from `L17-fan-tx-pluto.grc` unchanged, from 30 to 89 dB with a default of 60, and set it as the sink's attenuation. Put "Transmit only into the cable" in the flowgraph's description. The second SDR records what arrives: a PlutoSDR runs `L17-capture.grc` and an RTL-SDR runs `L17-capture-rtl.grc`. Set its variable `fc` to the recording's center frequency before you run it; the SigMF Sink writes the center frequency into the meta file when the flowgraph starts.
 
-In class we transmit only into a cable, into a shielded enclosure, or at very low power in an ISM band, and only when the lesson says to. This question transmits only into the cable between the first Pluto's TX port and the second SDR's input, through an inline 30 dB SMA attenuator. Never set TX attenuation below 30 dB or change the slider's range; an SDR's input is rated to only a few dBm. We have compiled the Pluto flowgraphs but not run them on a radio, so your bench is their first run on hardware.
+In class we transmit only into a cable, into a shielded enclosure, or at very low power in an ISM band, and only when the lesson says to. This device's band is an FCC Part 15 frequency, not a US ISM band; transmit only into the cable. This question transmits only into the cable between the first Pluto's TX port and the second SDR's input, through an inline 30 dB SMA attenuator. Never set TX attenuation below 30 dB or change the slider's range; an SDR's input is rated to only a few dBm. We have compiled the Pluto flowgraphs but not run them on a radio, so your bench is their first run on hardware.
 ::::
 
 ::::{frame} PlutoSDR Steps
@@ -114,9 +114,20 @@ In class we transmit only into a cable, into a shielded enclosure, or at very lo
 
 1. With both radios unplugged, connect the first Pluto's TX port to the second SDR's RX input with a short SMA cable and an inline 30 dB SMA attenuator. Do not connect an antenna, and do not connect the cable without the attenuator.
 2. Plug in both radios. Run `iio_info -s` at the radioconda prompt; it should list each PlutoSDR. If you use two Plutos, give each flowgraph its own Pluto's address.
-3. Run `L17-capture.grc` on the second SDR, then run your Pluto encoder. Find your signal on the capture flowgraph's waterfall, and screenshot both windows for Question 8(a). If the signal is weak, raise the capture flowgraph's RX gain a few dB at a time. Never set TX attenuation below 30 dB.
+3. Run `L17-capture.grc` or `L17-capture-rtl.grc` on the second SDR, with `fc` already set, then run your Pluto encoder. Find your signal on the capture flowgraph's waterfall, and screenshot both windows for Question 8(a). If the signal is weak, raise the capture flowgraph's RX gain a few dB at a time. Never set TX attenuation below 30 dB.
 4. Close the capture flowgraph after about 5 s. Open `capture.sigmf-data` in URH at 1 MS/s and compare its chips with the original recording's for Question 8(b).
 5. Set the TX attenuation to 60, 70, 80, and 89 dB in turn, recording 5 s at each, and record whether URH's chips still match, for Question 8(c). Stop both flowgraphs and unplug the radios before you disconnect the cable.
+::::
+
+::::{frame} Part 2: A Real Remote
+:class: read-only
+
+Question 9 only receives; nothing in it transmits, and receiving is always allowed.
+
+1. Choose a real device: a key fob, a wireless doorbell, or a weather sensor, most often at 315 MHz or 433.92 MHz in the U.S.
+2. If URH supports your SDR, open File, Spectrum Analyzer, set it near the device's frequency, hold a button down, and read the carrier off the peak, as the 2025 class did. Otherwise find it on the waterfall of `L17-capture.grc` or `L17-capture-rtl.grc`. Record it for Question 9(a).
+3. Set `fc` in the capture flowgraph about 200 kHz below the carrier, so the SDR's DC spike stays off the signal, and run it. Press one button a few times and close the flowgraph; rename `capture.sigmf-data` and `.sigmf-meta` for that button. Repeat for every button.
+4. Open the recordings in URH and take the device as far through Steps 2 and 3 as you can: the modulation, the chip length, the encoding, and which bits change with the button. Record it for Question 9(b) and (c).
 ::::
 
 ::::{frame} Part 3: After the Lab
@@ -126,7 +137,7 @@ In class we transmit only into a cable, into a shielded enclosure, or at very lo
 - Explain why a fixed code can be replayed, and what would stop it.
 :::
 
-The Writeup is Question 9, in three parts. Part (a) lists, step by step, the observation that settled each answer: what you saw on the waterfall, the envelope, and the lines of chips, and which comparison between buttons identified each field. Part (b) explains, from your Question 6 table and your noise run in Question 7(c), how a receiver of this device could tell a frame damaged by noise from a good one, and what damage it could miss. Part (c) explains why your encoder from Question 7 would operate a device that matched this recording, and describes in words how a rolling code, as in a car key fob, would stop a recording from being reused.
+The Writeup is Question 10, in three parts. Part (a) lists, step by step, the observation that settled each answer: what you saw on the waterfall, the envelope, and the lines of chips, and which comparison between buttons identified each field. Part (b) explains, from your Question 6 table and your noise run in Question 7(c), how a receiver of this device could tell a frame damaged by noise from a good one, and what damage it could miss. Part (c) explains why your encoder from Question 7 would operate a device that matched this recording, and describes in words how a rolling code, as in a car key fob, would stop a recording from being reused.
 ::::
 
 ::::{frame} Lab Packet
@@ -134,7 +145,7 @@ The Writeup is Question 9, in three parts. Part (a) lists, step by step, the obs
 
 - <a class="doc-link" href="../../labs/ECE448_Lab_L17_RFReverseEngineering_blank.pdf" target="_blank" rel="noopener">L17 Lab packet (PDF)</a>
 - <a class="doc-link" href="../../grc/L17-sigmf-view.grc" download>L17-sigmf-view.grc</a>: the viewer for Questions 1 and 4. No hardware needed.
-- <a class="doc-link" href="../../grc/L17-capture.grc" download>L17-capture.grc</a>: the receiving SDR for Question 8, recording to SigMF. Receive only.
+- <a class="doc-link" href="../../grc/L17-capture.grc" download>L17-capture.grc</a> and <a class="doc-link" href="../../grc/L17-capture-rtl.grc" download>L17-capture-rtl.grc</a>: the receiving SDR for Questions 8 and 9, a PlutoSDR or an RTL-SDR, recording to SigMF. Receive only; set `fc` before you run it.
 - <a class="doc-link" href="../../grc/L17-fan-tx-pluto.grc" download>L17-fan-tx-pluto.grc</a>: the lesson's Pluto encoder, for its TX attenuation slider. Transmit only into the cable.
 ::::
 

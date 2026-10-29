@@ -39,7 +39,7 @@ Lesson 17 · Module 6: Waveform Applications & RF Reverse Engineering · Dr. Nei
 ::::{frame} A Remote Nobody Described
 :::{present}
 <img src="../../viz/img/L17-urh-interp.png"
-     alt="URH's Interpretation tab, labeled simulated, with L17-fan-remote.sigmf-data open: Modulation ASK, Samples/Symbol 80, Noise 0.15, Center 0.31; the signal view shows five groups of six bursts, and the text below lists each burst as a line of chips such as 1101001101001001101101001001001001101101101101 followed by a pause of 2560 samples"
+     alt="URH's Interpretation tab, labeled simulated, with L17-fan-remote.sigmf-data open: Modulation ASK, Samples/Symbol 80, Noise 0.14, Center 0.31; the signal view shows five groups of six bursts, and the text below lists each burst as a line of chips such as 1101001101001001101101001001001001101101101101 followed by a pause of 2560 samples"
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
@@ -97,7 +97,7 @@ The recording is 2.4 s long and 3.9 MB. `L17-fan-remote-gen.grc` made it: it key
 - The steady line never changes; the remote is the one that bursts.
 :::
 
-In 2025 the first tool was a GNU Radio capture flowgraph: a PlutoSDR or HackRF source, a **SigMF Sink (Minimal)** to record, and frequency, time, and waterfall sinks. That flowgraph is `L17-capture.grc`; a HackRF works with its own source block in place of the Pluto's. `L17-sigmf-view.grc` is the same flowgraph with a SigMF Source in place of the radio: the recording, a Throttle, and a **Frequency Sink** and **Waterfall Sink** centered at 350 MHz. The recording loops, so the bursts come back every 2.4 s.
+In 2025 the first tool was a GNU Radio capture flowgraph: a PlutoSDR or HackRF source, a **SigMF Sink (Minimal)** to record, and frequency, time, and waterfall sinks. That flowgraph is `L17-capture.grc`, and `L17-capture-rtl.grc` is the same with an RTL-SDR source; a HackRF works with its own source block in place of either. `L17-sigmf-view.grc` is the same flowgraph with a SigMF Source in place of the radio: the recording, a Throttle, and a **Frequency Sink** and **Waterfall Sink** centered at 350 MHz. The recording loops, so the bursts come back every 2.4 s.
 
 Two signals appear. A narrow line near 349.945 MHz stays on the whole time. The bursts near 350.04 MHz come and go five times per loop, once for each button press, and that is the remote. A real band holds many steady carriers, such as another receiver's oscillator or a nearby digital clock, so the waterfall is how we tell them apart: the remote's signal starts and stops when someone presses a button. The bursts are wider on the spectrum than the steady line because switching a carrier on and off spreads it.
 ::::
@@ -125,9 +125,21 @@ At 40,000 Hz the pulses appear. In the 2025 class the next move was to open URH'
 3. In GQRX, play the recording as an I/Q file and find the bursts.
 :::
 
-[SDR Flex](https://livethisdream.github.io/sdr-flex/) is the course's tool for exploring an unknown signal. Its browser version opens one of its example captures when you right-click or long-press the source chip in the top left. Drag across a signal on the waterfall and choose what to do with it; SDR Flex builds a GNU Radio flowgraph behind each choice, and its slicers derive their own rates. Its README does not say whether it opens a SigMF recording of your own, and its external decoders, such as `rtl_433`, run only on its server version, so practice the workflow on its example captures.
+[SDR Flex](https://livethisdream.github.io/sdr-flex/) is the course's tool for exploring an unknown signal. Its browser version opens one of its example captures when you right-click or long-press the source chip in the top left. Drag across a signal on the waterfall and choose what to do with it. The server version builds a GNU Radio flowgraph behind each choice; the browser version runs the same chain in JavaScript. Its slicers derive their own rates. Its README does not say whether it opens a SigMF recording of your own, and its external decoders, such as `rtl_433`, run only on its server version, so practice the workflow on its example captures.
 
 GQRX is the fallback, and it plays back our recording. Choose the device string `file=L17-fan-remote.sigmf-data,freq=350e6,rate=200000,repeat=true,throttle=true` in its I/O Devices dialog, start it, and tune to 350.040 MHz; each press paints a short streak on the waterfall.
+::::
+
+::::{frame} Capture a Real Remote
+:::{present}
+- Record a real 315 or 433.92 MHz key fob, doorbell, or sensor, every button, to SigMF.
+- Find its carrier with URH's Spectrum Analyzer, as in 2025.
+- This step only receives.
+:::
+
+The 2025 class captured a real remote, and every step so far works the same on one. Take a key fob, a wireless doorbell, or a weather sensor; in the U.S. most use 315 MHz or 433.92 MHz, FCC Part 15 frequencies. Run `L17-capture.grc` with a PlutoSDR or `L17-capture-rtl.grc` with an RTL-SDR, with the variable `fc` set near the device's frequency before you start it, because the SigMF Sink writes the center frequency into the meta file when the flowgraph starts. Press each button a few times, close the flowgraph, and rename `capture.sigmf-data` and `.sigmf-meta` for that button.
+
+URH's **Spectrum Analyzer**, under File, shows a live spectrum from any radio URH supports, and in 2025 it was how the class fine-tuned the carrier: hold a button down and read the peak. Then open the recordings in URH as in Step 3. Receiving is always allowed, and nothing in this step transmits. A car key fob usually sends a **rolling code**, which changes with every press, so its frames will not repeat from press to press; the L17 Lab asks why.
 ::::
 
 ::::{frame} Step 2: Identify the Modulation
@@ -269,13 +281,13 @@ The explorer draws one frame of the Simulated fan remote's envelope and reads it
 
 ::::{frame} Noise
 :::{present}
-- Raise the explorer's noise until the frame breaks, and watch the check.
-- A bad frame often fails its check; a frame that passes is usually right.
+- Raise the explorer's noise until the frame breaks.
+- Frames read cleanly to about 0.4; from about 0.45 the groups break apart.
 :::
 
-Raise the Noise amplitude in the explorer a step at a time. Up to about 0.3 the envelope roughens but every chip reads correctly. Near 0.5 a chip now and then lands on the wrong side of the threshold: the frame still reads as 16 bits, but one bit has flipped and the Frame readout says the check fails. By 0.7 the chips no longer group into `110` and `100`, and the groups marked `?` show it.
+Raise the Noise amplitude in the explorer a step at a time, and press new noise a few times at each step. Up to about 0.4 the envelope roughens but the frame reads correctly. From about 0.45 chips start to land on the wrong side of the threshold, and most often that breaks a group, so it reads as neither `110` nor `100` and shows `?`; by 0.5 almost every frame has a broken group. Now and then a flipped chip turns one bit into the other instead, and then the frame still reads as 16 bits but the Frame readout says the check fails.
 
-URH shows the same thing on a real recording: as the signal weakens, the lines of chips stop matching from one repeat to the next. That is the other reason remotes repeat a frame and carry a check. A receiver acts only on a frame whose check agrees, and with six tries one of them usually does.
+URH shows the same thing on a real recording: as the signal weakens, the lines of chips stop matching from one repeat to the next. A receiver throws away a frame it cannot read, and the check catches the rarer frame that reads but has a wrong bit. Remotes repeat each frame so that one of the six tries usually gets through.
 ::::
 
 ::::{frame} Step 4: Build an Encoder
@@ -289,9 +301,9 @@ URH shows the same thing on a real recording: as the signal weakens, the lines o
 - **Repeat** and **Stream Mux** set the chip length and the gap.
 :::
 
-The encoder adapts the 2025 hier block, which held all of these blocks in one. A **Vector Source** repeats the 16 bits of the chosen button's word. A **Map** replaces each bit with a number whose binary form is its chip pattern, 0 with 4 (`100`) and 1 with 6 (`110`), and **Unpack K Bits** with $K = 3$ writes those three bits out one at a time, most significant first. **Repeat** holds each chip for `chip_len` = 80 samples, 400 µs at 200 kS/s.
+The encoder is the 2025 hier block laid out flat. A **Vector Source** repeats the 16 bits of the chosen button's word. A **Map** replaces each bit with a number whose binary form is its chip pattern, 0 with 4 (`100`) and 1 with 6 (`110`), and **Unpack K Bits** with $K = 3$ writes those three bits out one at a time, most significant first. **Repeat** holds each chip for `chip_len` = 80 samples, 400 µs at 200 kS/s.
 
-The **Stream Mux** takes $48 \times 80 = 3840$ samples, one frame, from the encoder, then $30 \times 80 = 2400$ samples of zero from a **Constant Source**, the 12 ms gap, and repeats. **Float To Complex** and a **Multiply** with a 40 kHz **Signal Source** put the envelope on the carrier, as Lesson 12's keyer did. `L17-encoder.grc` packs Map, Unpack K Bits, and Repeat into a hier block, as the GNU Radio wiki's Hier Blocks and Parameters tutorial describes, and leaves the Stream Mux and the carrier outside it so the same block serves any frame length. The Map comes before Unpack K Bits because it is the Map that turns each bit into its chip pattern.
+The **Stream Mux** takes $48 \times 80 = 3840$ samples, one frame, from the encoder, then $30 \times 80 = 2400$ samples of zero from a **Constant Source**, the 12 ms gap, and repeats. **Float To Complex** and a **Multiply** with a 40 kHz **Signal Source** put the envelope on the carrier, as Lesson 12's keyer did. `L17-encoder.grc` packs the whole chain, from the Vector Source to the Multiply, into one hier block, as the 2025 class did and as the GNU Radio wiki's Hier Blocks and Parameters tutorial describes. The Map comes before Unpack K Bits because it is the Map that turns each bit into its chip pattern.
 ::::
 
 ::::{frame} Step 4: Check the Encoder
@@ -314,10 +326,10 @@ That comparison is the test of the reverse engineering. If our encoder makes chi
 :class: read-only
 
 <img src="../../viz/img/L17-grc-encoder.png"
-     alt="L17-encoder.grc in GNU Radio Companion: three parameters, the chip pattern for 0 and 1 (default 4 and 6), chips per bit (default 3), and samples per chip (default 80); a Pad Source of bits, a Map, Unpack K Bits, Char To Float, a Repeat, and a Pad Sink of the envelope"
+     alt="L17-encoder.grc in GNU Radio Companion: seven parameters, the bits of one frame, the chip pattern for 0 and 1 (default 4 and 6), chips per bit (3), samples per chip (80), the gap in chips (30), the carrier offset (40 kHz), and the sample rate (200 kHz); a Vector Source of the bits, Map, Unpack K Bits, Char To Float, Repeat, a Stream Mux with a Constant Source, Float To Complex, and a Multiply with a Signal Source, ending in a Pad Sink"
      style="max-width: 760px; width: 100%; display: block; margin: 0 auto 12px;">
 
-`L17-encoder.grc` is the encoder as a **hier block**, the form the 2025 class built. Its parameters are the chip patterns, the chips per bit, and the samples per chip, so the same block serves any pulse-coded remote. Open it in GRC and press Generate once; GRC installs the block, **L17 OOK Encoder**, under ECE 448 in the block library. The lesson's flowgraphs use the same blocks laid out flat, so they open without that step.
+`L17-encoder.grc` is the encoder as a **hier block**, the form the 2025 class built: Vector Source, Map, Unpack K Bits, Repeat, Stream Mux, and a Multiply with a Signal Source, in one block with no inputs. Its parameters are the frame's bits, the chip patterns, the chips per bit, the samples per chip, the gap, the carrier offset, and the sample rate, so the same block serves any pulse-coded remote of fixed bit length. Open it in GRC and press Generate once; GRC writes `L17_ook_encoder.block.yml` and its Python file to `~/.grc_gnuradio`, and after you press the Reload Blocks button on the toolbar the block, **L17 OOK Encoder**, appears under ECE 448. The lesson's flowgraphs use the same blocks laid out flat, so they open without that step.
 ::::
 
 ::::{frame} Step 5: Transmit into a Cable
@@ -326,7 +338,7 @@ That comparison is the test of the reverse engineering. If our encoder makes chi
 - The Pluto's TX port goes through a 30 dB attenuator into a second SDR, never an antenna.
 :::
 
-The last step puts the encoder on a radio. `L17-fan-tx-pluto.grc` is the simulation flowgraph at 1 MS/s, so `chip_len` is 400 samples, with a **PlutoSDR Sink** tuned to 350 MHz in place of the noise and the waterfall; the 40 kHz tone puts the carrier at 350.04 MHz. A short SMA cable with an inline 30 dB attenuator carries it to a second SDR running `L17-capture.grc`, which records what arrives as a SigMF pair. Open that recording in URH as in Step 3: the chips should match `L17-fan-remote.sigmf-data`.
+The last step puts the encoder on a radio. `L17-fan-tx-pluto.grc` is the simulation flowgraph at 1 MS/s, so `chip_len` is 400 samples, with a **PlutoSDR Sink** tuned to 350 MHz in place of the noise and the waterfall; the 40 kHz tone puts the carrier at 350.04 MHz. A short SMA cable with an inline 30 dB attenuator carries it to a second SDR running `L17-capture.grc` or `L17-capture-rtl.grc`, with `fc` set to 350e6 before it starts, which records what arrives as a SigMF pair. Open that recording in URH as in Step 3: the chips should match `L17-fan-remote.sigmf-data`.
 
 In class we transmit only into a cable, into a shielded enclosure, or at very low power in an ISM band, and only when the lesson says to. 350 MHz is not an ISM band. The TX attenuation slider opens at 60 dB and cannot go below 30 dB; never connect an antenna to this flowgraph. Both Pluto flowgraphs have been compiled but not run on a radio, so the L17 Lab is their first run on hardware.
 ::::
@@ -347,7 +359,8 @@ Reverse engineering runs in five steps: find the carrier, identify the modulatio
 - <a class="doc-link" href="../../grc/L17-encoder.grc" download>L17-encoder.grc</a>: the encoder as a hier block, L17 OOK Encoder. Press Generate once to install it.
 - <a class="doc-link" href="../../grc/L17-fan-remote-gen.grc" download>L17-fan-remote-gen.grc</a>: the flowgraph that made the recording. No hardware needed.
 - <a class="doc-link" href="../../grc/L17-sigid-a.sigmf-data" download>L17-sigid-a</a>, <a class="doc-link" href="../../grc/L17-sigid-b.sigmf-data" download>-b</a>, and <a class="doc-link" href="../../grc/L17-sigid-c.sigmf-data" download>-c</a> (.sigmf-data), with <a class="doc-link" href="../../grc/L17-sigid-a.sigmf-meta" download>a</a>, <a class="doc-link" href="../../grc/L17-sigid-b.sigmf-meta" download>b</a>, and <a class="doc-link" href="../../grc/L17-sigid-c.sigmf-meta" download>c</a> meta files: three Simulated unknown signals for SigID, 0.8 s each at 100 kS/s, 640 KB each. <a class="doc-link" href="../../grc/L17-sigid-gen.grc" download>L17-sigid-gen.grc</a> made them.
-- <a class="doc-link" href="../../grc/L17-capture.grc" download>L17-capture.grc</a>: a PlutoSDR Source with spectrum, waterfall, and envelope displays, recording to `capture.sigmf-data`. Receive only; needs a PlutoSDR or another SDR source block.
+- <a class="doc-link" href="../../grc/L17-capture-rtl.grc" download>L17-capture-rtl.grc</a>: the same capture flowgraph with an RTL-SDR source at 1.024 MS/s. Receive only. Set `fc` before you run it.
+- <a class="doc-link" href="../../grc/L17-capture.grc" download>L17-capture.grc</a>: a PlutoSDR Source with spectrum, waterfall, and envelope displays, recording to `capture.sigmf-data`. Receive only; needs a PlutoSDR. Set `fc` before you run it.
 - <a class="doc-link" href="../../grc/L17-fan-tx-pluto.grc" download>L17-fan-tx-pluto.grc</a>: the encoder on a PlutoSDR at 350.04 MHz. Transmit only into the cable, through a 30 dB attenuator, to a second SDR.
 - <a class="doc-link" href="https://github.com/jopohl/urh" target="_blank" rel="noopener">Universal Radio Hacker (URH)</a>: its README gives an installer for Windows and `pipx install urh` for Linux and macOS.
 - <a class="doc-link" href="https://wiki.gnuradio.org/index.php/Frequency_Shifting" target="_blank" rel="noopener">GNU Radio wiki: Frequency Shifting</a> and <a class="doc-link" href="https://wiki.gnuradio.org/index.php/Hier_Blocks_and_Parameters" target="_blank" rel="noopener">Hier Blocks and Parameters</a>: the tutorials behind Steps 1 and 4.

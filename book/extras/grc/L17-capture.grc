@@ -7,9 +7,11 @@ options:
     comment: ''
     copyright: ''
     description: 'L17: receive only. A PlutoSDR Source with spectrum, waterfall, and
-      envelope displays, recording to capture.sigmf-data and .sigmf-meta. The AGC
-      feeds only the envelope display; the recording keeps the raw samples. Needs
-      a PlutoSDR or another SDR source block.'
+      envelope displays, recording to capture.sigmf-data and .sigmf-meta. Set the
+      variable fc before you run it: the SigMF Sink writes core:frequency when the
+      flowgraph starts, so fc is not a runtime control. The AGC feeds only the envelope
+      display; the recording keeps the raw samples. Needs a PlutoSDR; L17-capture-rtl.grc
+      is the RTL-SDR version.'
     gen_cmake: 'On'
     gen_linking: dynamic
     generate_options: qt_gui
@@ -36,13 +38,9 @@ options:
 
 blocks:
 - name: fc
-  id: variable_qtgui_entry
+  id: variable
   parameters:
     comment: ''
-    entry_signal: editingFinished
-    gui_hint: 0,0,1,1
-    label: Center frequency (Hz)
-    type: real
     value: 350e6
   states:
     bus_sink: false
@@ -54,7 +52,7 @@ blocks:
   id: variable_qtgui_range
   parameters:
     comment: ''
-    gui_hint: 0,1,1,1
+    gui_hint: 0,0,1,2
     label: RX gain (dB)
     min_len: '200'
     orient: QtCore.Qt.Horizontal

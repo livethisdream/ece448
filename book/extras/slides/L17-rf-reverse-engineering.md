@@ -103,6 +103,17 @@ SDR Flex's browser version opens its example captures from the source chip; its 
 
 ---
 
+## Capture a Real Remote
+
+- Record a real 315 or 433.92 MHz key fob, doorbell, or sensor to SigMF.
+- Find its carrier with URH's Spectrum Analyzer, as in 2025.
+- This step only receives.
+
+Note:
+Run L17-capture.grc with a PlutoSDR or L17-capture-rtl.grc with an RTL-SDR, with fc set before it starts, because the SigMF Sink writes the center frequency when the flowgraph starts. Record each button. A car key fob usually sends a rolling code, so its frames change from press to press.
+
+---
+
 ## Step 2: Identify the Modulation
 
 - The envelope has two levels, and the waterfall shows one frequency.
@@ -131,7 +142,7 @@ The 2025 SigID exercise. Set samp_rate to 100000 and fc to 915e6. A is two-level
 Autodetect: ASK, 80 samples a symbol, which is a 400 µs chip.
 
 Note:
-File, New Project first, as in 2025. Then File, Open, All Files, then set the sample rate to 200000 in the signal's details; URH does not read the meta file. For a project, File, New Project first. Each line of the text area is one burst; Pause is the silence after it.
+File, New Project first, as in 2025. Then File, Open, All Files, then set the sample rate to 200000 in the signal's details; URH does not read the meta file. Each line of the text area is one burst; Pause is the silence after it.
 
 ---
 
@@ -180,12 +191,12 @@ URH's symbol is our chip, so URH works at the baud rate. Three chips make one bi
 
 - Find the chip length that leaves no `?` groups.
 - Pick another button and read its command.
-- Raise the noise and watch the check fail.
+- Raise the noise and watch the groups break.
 
 <p class="viz-cue">↗ Interactive on the lesson page</p>
 
 Note:
-It opens at 300 microseconds, which is wrong. At 400 every group is 110 or 100. Noise up to about 0.3 reads cleanly; near 0.5 a bit flips and the check fails; by 0.7 the groups break.
+It opens at 300 microseconds, which is wrong. At 400 every group is 110 or 100. Noise up to about 0.4 reads cleanly; from about 0.45 groups break into question marks, and by 0.5 almost every frame does. Now and then a flipped bit fails the check instead.
 
 ---
 

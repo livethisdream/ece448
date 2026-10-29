@@ -6,12 +6,13 @@ options:
     cmake_opt: ''
     comment: ''
     copyright: ''
-    description: 'L17: OOK pulse encoder hier block. Each input bit (0 or 1) becomes
-      a pattern of on/off chips, each chip held for chip_len samples. Press Generate
-      once to install it as L17 OOK Encoder. It transmits nothing by itself.'
+    description: 'L17: OOK pulse encoder hier block, as in 2025: Vector Source, Map,
+      Unpack K Bits, Repeat, Stream Mux, and a Multiply with a Signal Source. It repeats
+      one frame of bits as chip patterns with a gap, on a carrier at the offset. Press
+      Generate once to install it as L17 OOK Encoder. It transmits nothing by itself.'
     gen_cmake: 'On'
     gen_linking: dynamic
-    generate_options: qt_gui
+    generate_options: hb
     hier_block_src_path: '.:'
     id: L17_ook_encoder
     max_nouts: '0'
@@ -34,7 +35,23 @@ options:
     state: enabled
 
 blocks:
-- name: blocks_char_to_float_0
+- name: bits
+  id: parameter
+  parameters:
+    alias: ''
+    comment: ''
+    hide: none
+    label: Bits of one frame
+    short_id: ''
+    type: ''
+    value: '[1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0]'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [200, 12]
+    state: enabled
+- name: c2f
   id: blocks_char_to_float
   parameters:
     affinity: ''
@@ -48,39 +65,29 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [560, 200]
+    coordinate: [530, 216]
     state: enabled
-- name: blocks_repeat_0
-  id: blocks_repeat
+- name: carrier
+  id: analog_sig_source_x
   parameters:
     affinity: ''
     alias: ''
+    amp: '1'
     comment: ''
-    interp: chip_len
+    freq: offset
     maxoutbuf: '0'
     minoutbuf: '0'
-    type: float
-    vlen: '1'
+    offset: '0'
+    phase: '0'
+    samp_rate: samp_rate
+    showports: 'False'
+    type: complex
+    waveform: analog.GR_COS_WAVE
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [740, 200]
-    state: enabled
-- name: blocks_unpack_k_bits_bb_0
-  id: blocks_unpack_k_bits_bb
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    k: chips_per_bit
-    maxoutbuf: '0'
-    minoutbuf: '0'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [360, 200]
+    coordinate: [800, 400]
     state: enabled
 - name: chip_len
   id: parameter
@@ -96,7 +103,22 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [600, 12]
+    coordinate: [680, 12]
+    state: enabled
+- name: chip_map
+  id: digital_map_bb
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    map: pattern
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [200, 216]
     state: enabled
 - name: chips_per_bit
   id: parameter
@@ -112,58 +134,106 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [400, 12]
+    coordinate: [520, 12]
     state: enabled
-- name: digital_map_bb_0
-  id: digital_map_bb
+- name: f2c
+  id: blocks_float_to_complex
   parameters:
     affinity: ''
     alias: ''
     comment: ''
-    map: pattern
     maxoutbuf: '0'
     minoutbuf: '0'
+    vlen: '1'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [180, 200]
+    coordinate: [1080, 330]
     state: enabled
-- name: pad_sink_0
-  id: pad_sink
+- name: gap_chips
+  id: parameter
+  parameters:
+    alias: ''
+    comment: ''
+    hide: none
+    label: Gap after each frame (chips)
+    short_id: ''
+    type: intx
+    value: '30'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [840, 12]
+    state: enabled
+- name: mult
+  id: blocks_multiply_xx
   parameters:
     affinity: ''
     alias: ''
     comment: ''
-    label: envelope
-    num_streams: '1'
-    optional: 'False'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_inputs: '2'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1060, 440]
+    state: enabled
+- name: mux
+  id: blocks_stream_mux
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    lengths: '[len(bits)*chips_per_bit*chip_len, gap_chips*chip_len]'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_inputs: '2'
     type: float
     vlen: '1'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [920, 200]
+    coordinate: [900, 236]
     state: enabled
-- name: pad_source_0
-  id: pad_source
+- name: offset
+  id: parameter
+  parameters:
+    alias: ''
+    comment: ''
+    hide: none
+    label: Carrier offset (Hz)
+    short_id: ''
+    type: eng_float
+    value: 40e3
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1000, 12]
+    state: enabled
+- name: out
+  id: pad_sink
   parameters:
     affinity: ''
     alias: ''
     comment: ''
-    label: bits
-    maxoutbuf: '0'
-    minoutbuf: '0'
+    label: out
     num_streams: '1'
     optional: 'False'
-    type: byte
+    type: complex
     vlen: '1'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [16, 200]
+    coordinate: [1180, 448]
     state: enabled
 - name: pattern
   id: parameter
@@ -179,15 +249,103 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [200, 12]
+    coordinate: [360, 12]
+    state: enabled
+- name: rep
+  id: blocks_repeat
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    interp: chip_len
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [700, 216]
+    state: enabled
+- name: samp_rate
+  id: parameter
+  parameters:
+    alias: ''
+    comment: ''
+    hide: none
+    label: Sample rate
+    short_id: ''
+    type: eng_float
+    value: 200e3
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1160, 12]
+    state: enabled
+- name: unpack
+  id: blocks_unpack_k_bits_bb
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    k: chips_per_bit
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [350, 216]
+    state: enabled
+- name: vsrc
+  id: blocks_vector_source_x
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    repeat: 'True'
+    tags: '[]'
+    type: byte
+    vector: bits
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [16, 200]
+    state: enabled
+- name: zero
+  id: analog_const_source_x
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    const: '0'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    type: float
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [700, 300]
     state: enabled
 
 connections:
-- [blocks_char_to_float_0, '0', blocks_repeat_0, '0']
-- [blocks_repeat_0, '0', pad_sink_0, '0']
-- [blocks_unpack_k_bits_bb_0, '0', blocks_char_to_float_0, '0']
-- [digital_map_bb_0, '0', blocks_unpack_k_bits_bb_0, '0']
-- [pad_source_0, '0', digital_map_bb_0, '0']
+- [c2f, '0', rep, '0']
+- [carrier, '0', mult, '1']
+- [chip_map, '0', unpack, '0']
+- [f2c, '0', mult, '0']
+- [mult, '0', out, '0']
+- [mux, '0', f2c, '0']
+- [rep, '0', mux, '0']
+- [unpack, '0', c2f, '0']
+- [vsrc, '0', chip_map, '0']
+- [zero, '0', mux, '1']
 
 metadata:
   file_format: 1

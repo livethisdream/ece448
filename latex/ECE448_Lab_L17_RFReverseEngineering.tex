@@ -125,7 +125,8 @@ This packet is the L\labLesson\ Lab, in three parts, and you turn it in once, co
 before Lesson 18. Do \textbf{Part 1} on your own before the lab period: read the
 recording's meta file, check your URH install, and work out the chip settings.
 \textbf{Part 2} is what you find, build, and observe, recorded in class: Questions 4 to
-7 on your own laptop, and Question 8 at a PlutoSDR station with your team. Do
+7 on your own laptop, Question 8 at a PlutoSDR station with your team, and Question 9
+with a real remote of your choice. Do
 \textbf{Part 3} on your own after the lab: explain, in words, the evidence for each
 answer.
 
@@ -140,13 +141,14 @@ else about it is given: finding it out is the lab.
 
 \textbf{Transmitting.} In class we transmit only into a cable, into a shielded
 enclosure, or at very low power in an ISM band, and only when the lesson says to.
-Questions 1 to 7 run on your laptop and transmit nothing. Question 8 transmits from a
+This device's band is an FCC Part 15 frequency, not a US ISM band; transmit only into
+the cable. Questions 1 to 7 run on your laptop and transmit nothing. Question 8 transmits from a
 PlutoSDR's TX port, through a cable with an inline 30 dB SMA attenuator, to a second
 SDR's input. Connect the cable and attenuator before you run the flowgraph, and never
 connect an antenna in this lab. Never set TX attenuation below 30 dB or change the
 slider's range; an SDR's input is rated to only a few dBm. We have compiled the
 PlutoSDR flowgraphs but not run them on a radio, so Question 8 is their first run on
-hardware.
+hardware. Question 9 only receives, which is always allowed.
 
 \begin{questions}
 
@@ -232,8 +234,9 @@ flowgraph's 1 MS/s.
 		\begin{solution}[1.1in]\keysol{sol6}\end{solution}
 
 	\begin{minipage}[t]{0.58\linewidth}
-		\part Record the carrier offset where the pulses are tallest, and paste a screenshot
-		of the window at that offset.
+		\part Record the carrier offset: the center of the bursts on the Frequency Sink or
+		waterfall, checked as the midpoint of the half-height offsets on the envelope.
+		Paste a screenshot of the window at that offset.
 		\begin{solution}[1.6in]\keysol{sol7}\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
@@ -362,7 +365,8 @@ with your settings from Questions 4 to 6.
 \newpage
 \question \textbf{Step 5: transmit into a cable.} At a PlutoSDR station, with your team,
 follow the lab page's steps: connect the first Pluto's TX port to the second SDR
-through the 30 dB attenuator, run \texttt{L17-capture.grc} on the second SDR, and run
+through the 30 dB attenuator, set \texttt{fc} and run \texttt{L17-capture.grc} or
+\texttt{L17-capture-rtl.grc} on the second SDR, and run
 your Pluto encoder. When you finish, stop both flowgraphs and unplug the radios before
 you disconnect the cable.
 
@@ -390,6 +394,27 @@ you disconnect the cable.
 	\end{center}
 
 		\begin{solution}[1.0in]\keysol{sol20}\end{solution}
+
+\end{parts}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\question \textbf{A real remote (receive only).} Follow the lab page's steps with a real
+key fob, doorbell, or sensor of your choice. Answers depend on the device.
+
+\begin{parts}
+
+	\part Name the device, and record its carrier frequency and how you found it: URH's
+	Spectrum Analyzer or the capture flowgraph's waterfall. Paste a screenshot.
+		\begin{solution}[1.4in]\keysol{sol24}\end{solution}
+
+	\part Record the modulation, the chip length, and the encoding, with the evidence
+	from URH for each.
+		\begin{solution}[1.2in]\keysol{sol25}\end{solution}
+
+	\part Compare the recordings of two buttons, and of two presses of the same button.
+	Say which bits change, and whether a press repeats the same frame each time.
+		\begin{solution}[1.2in]\keysol{sol26}\end{solution}
 
 \end{parts}
 
