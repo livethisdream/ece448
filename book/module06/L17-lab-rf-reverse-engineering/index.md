@@ -100,33 +100,33 @@ Autodetect is a starting point, not an answer. Check the sample rate first: URH 
 
 ::::{frame} Part 2: Transmit into a Cable
 :::{present}
-- You send your encoder from one PlutoSDR through a 30 dB attenuator into a second SDR.
+- You send your encoder from one PlutoSDR through a 30 dB attenuator into a second PlutoSDR.
 - Connect the cable before the flowgraph runs, and never connect an antenna.
 :::
 
-Save a copy of your encoder for the radio. Delete the Noise Source, the Add, and the Throttle, set `samp_rate` to 1000000 and `chip_len` to your chip length in samples at 1 MS/s, and add a **PlutoSDR Sink** after a Multiply Const of 0.5, tuned to the recording's center frequency. Copy the `tx_atten` QT GUI Range from `L17-fan-tx-pluto.grc` unchanged, from 30 to 89 dB with a default of 60, and set it as the sink's attenuation. Put "Transmit only into the cable" in the flowgraph's description. The second SDR records what arrives: a PlutoSDR runs `L17-capture.grc` and an RTL-SDR runs `L17-capture-rtl.grc`. Set its variable `fc` to the recording's center frequency before you run it; the SigMF Sink writes the center frequency into the meta file when the flowgraph starts.
+Save a copy of your encoder for the radio. Delete the Noise Source, the Add, and the Throttle, set `samp_rate` to 1000000 and `chip_len` to your chip length in samples at 1 MS/s, and add a **PlutoSDR Sink** after a Multiply Const of 0.5, tuned to the recording's center frequency. Copy the `tx_atten` QT GUI Range from `L17-fan-tx-pluto.grc` unchanged, from 30 to 89 dB with a default of 60, and set it as the sink's attenuation. Put "Transmit only into the cable" in the flowgraph's description. A second PlutoSDR records what arrives with `L17-capture.grc`. Set its variable `fc` to the recording's center frequency before you run it; the SigMF Sink writes the center frequency into the meta file when the flowgraph starts.
 
-In class we transmit only into a cable, into a shielded enclosure, or at very low power in an ISM band, and only when the lesson says to. This device's band is an FCC Part 15 frequency, not a U.S. ISM band; transmit only into the cable. This question transmits only into the cable between the first Pluto's TX port and the second SDR's input, through an inline 30 dB SMA attenuator. Never set TX attenuation below 30 dB or change the slider's range; an SDR's input is rated to only a few dBm. We have compiled the Pluto flowgraphs but not run them on a radio, so your bench is their first run on hardware.
+In class we transmit only into a cable, into a shielded enclosure, or at very low power in an ISM band, and only when the lesson says to. This device's band is an FCC Part 15 frequency, not a U.S. ISM band; transmit only into the cable. This question transmits only into the cable between the first Pluto's TX port and the second Pluto's RX port, through an inline 30 dB SMA attenuator. Never set TX attenuation below 30 dB or change the slider's range; a Pluto's input is rated to only a few dBm. We have compiled the Pluto flowgraphs but not run them on a radio, so your bench is their first run on hardware.
 ::::
 
 ::::{frame} PlutoSDR Steps
 :class: read-only
 
-1. With both radios unplugged, connect the first Pluto's TX port to the second SDR's RX input with a short SMA cable and an inline 30 dB SMA attenuator. Do not connect an antenna, and do not connect the cable without the attenuator.
-2. Plug in both radios. Run `iio_info -s` at the radioconda prompt; it should list each PlutoSDR. An RTL-SDR does not appear there; check it with `rtl_test`. If you use two Plutos, give each flowgraph its own Pluto's address.
-3. Run `L17-capture.grc` or `L17-capture-rtl.grc` on the second SDR, with `fc` already set, then run your Pluto encoder. Find your signal on the capture flowgraph's waterfall, and screenshot both windows for Question 8(a). If the signal is weak, raise the capture flowgraph's RX gain a few dB at a time. Never set TX attenuation below 30 dB.
-4. Close the capture flowgraph after about 5 s. Open `capture.sigmf-data` in URH at the sample rate in its meta file, 1 MS/s from a PlutoSDR or 1.024 MS/s from an RTL-SDR, and compare its chips with the original recording's for Question 8(b).
+1. With both radios unplugged, connect the first Pluto's TX port to the second Pluto's RX port with a short SMA cable and an inline 30 dB SMA attenuator. Do not connect an antenna, and do not connect the cable without the attenuator.
+2. Plug in both radios. Run `iio_info -s` at the radioconda prompt; it should list both PlutoSDRs. Give each flowgraph its own Pluto's address in the `uri` of its PlutoSDR block.
+3. Run `L17-capture.grc` on the second Pluto, with `fc` already set, then run your Pluto encoder. Find your signal on the capture flowgraph's waterfall, and screenshot both windows for Question 8(a). If the signal is weak, raise the capture flowgraph's RX gain a few dB at a time. Never set TX attenuation below 30 dB.
+4. Close the capture flowgraph after about 5 s. Open `capture.sigmf-data` in URH at the sample rate in its meta file, 1 MS/s, and compare its chips with the original recording's for Question 8(b).
 5. Set the TX attenuation to 60, 70, 80, and 89 dB in turn, recording 5 s at each, and record whether URH's chips still match, for Question 8(c). Stop both flowgraphs and unplug the radios before you disconnect the cable.
 ::::
 
 ::::{frame} Part 2: A Real Remote
 :class: read-only
 
-In Question 9 your SDR only receives, and receiving is always allowed.
+In Question 9 your Pluto only receives, and receiving is always allowed.
 
 1. Choose a real device that you own: a key fob, a wireless doorbell, or a weather sensor. Its label or manual usually gives its frequency.
-2. If URH supports your SDR, open File, Spectrum Analyzer, set it near the device's frequency, hold a button down, and read the carrier off the peak, as the 2025 class did. Otherwise find it on the waterfall of `L17-capture.grc` or `L17-capture-rtl.grc`. Record it for Question 9(a).
-3. Set `fc` in the capture flowgraph about 200 kHz below the carrier, so the SDR's DC spike stays off the signal, and run it. Press one button a few times and close the flowgraph; rename `capture.sigmf-data` and `.sigmf-meta` for that button. Repeat for every button.
+2. Run `L17-explore-pluto.grc`, set its center frequency about 200 kHz below the device's frequency, hold a button down, and read the carrier off the spectrum's peak. URH's File, Spectrum Analyzer with the PlutoSDR does the same, as the 2025 class did. Record it for Question 9(a).
+3. Set `fc` in the capture flowgraph about 200 kHz below the carrier, so the Pluto's DC spike stays off the signal, and run it. Press one button a few times and close the flowgraph; rename `capture.sigmf-data` and `.sigmf-meta` for that button. Repeat for every button.
 4. Open the recordings in URH and take the device as far through Steps 2 and 3 as you can: the modulation, the chip length, the encoding, and which bits change with the button. Record it for Question 9(b) and (c).
 ::::
 
@@ -145,7 +145,9 @@ The Writeup is Question 10, in three parts. Part (a) lists, step by step, the ob
 
 - <a class="doc-link" href="../../labs/ECE448_Lab_L17_RFReverseEngineering_blank.pdf" target="_blank" rel="noopener">L17 Lab packet (PDF)</a>
 - <a class="doc-link" href="../../grc/L17-sigmf-view.grc" download>L17-sigmf-view.grc</a>: the viewer for Questions 1 and 4. No hardware needed.
-- <a class="doc-link" href="../../grc/L17-capture.grc" download>L17-capture.grc</a> and <a class="doc-link" href="../../grc/L17-capture-rtl.grc" download>L17-capture-rtl.grc</a>: the receiving SDR for Questions 8 and 9, a PlutoSDR or an RTL-SDR, recording to SigMF. Receive only; set `fc` before you run it.
+- <a class="doc-link" href="../../grc/L17-capture.grc" download>L17-capture.grc</a>: the receiving PlutoSDR for Questions 8 and 9, recording to SigMF. Receive only; set `fc` before you run it.
+- <a class="doc-link" href="../../grc/L17-explore-pluto.grc" download>L17-explore-pluto.grc</a>: a live PlutoSDR spectrum and waterfall with a center frequency you change while it runs, for Question 9(a). Receive only.
+- Optional: an RTL-SDR also works for Question 9 with <a class="doc-link" href="../../grc/L17-capture-rtl.grc" download>L17-capture-rtl.grc</a>, a Soapy RTL-SDR Source at 1.024 MS/s; nothing in the lab needs one.
 - <a class="doc-link" href="../../grc/L17-fan-tx-pluto.grc" download>L17-fan-tx-pluto.grc</a>: the lesson's Pluto encoder, for its TX attenuation slider. Transmit only into the cable.
 ::::
 

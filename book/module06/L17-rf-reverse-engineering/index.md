@@ -13,7 +13,7 @@ frame_view: true
 
 <div class="title-rule"></div>
 
-Take an unknown signal from spectrum to bits with SDR Flex or GQRX, URH, and GNU Radio.
+Take an unknown signal from spectrum to bits with a PlutoSDR, GNU Radio, and URH.
 
 Lesson 17 · Module 6: Waveform Applications & RF Reverse Engineering · Dr. Neil Rogers
 ::::
@@ -97,7 +97,7 @@ The recording is 2.4 s long and 3.9 MB. `L17-fan-remote-gen.grc` made it: it key
 - The steady line never changes; the remote is the one that bursts.
 :::
 
-In 2025 the first tool was a GNU Radio capture flowgraph: a PlutoSDR or HackRF source, a **SigMF Sink (Minimal)** to record, and frequency, time, and waterfall sinks. That flowgraph is `L17-capture.grc`, and `L17-capture-rtl.grc` is the same with an RTL-SDR source; a HackRF works with its own source block in place of either. `L17-sigmf-view.grc` is the same flowgraph with a SigMF Source in place of the radio: the recording, a Throttle, and a **Frequency Sink** and **Waterfall Sink** centered at 350 MHz. The recording loops, so the bursts come back every 2.4 s.
+In 2025 the first tool was a GNU Radio capture flowgraph: a PlutoSDR or HackRF source, a **SigMF Sink (Minimal)** to record, and frequency, time, and waterfall sinks. That flowgraph is `L17-capture.grc`, with a PlutoSDR Source. `L17-sigmf-view.grc` is the same flowgraph with a SigMF Source in place of the radio: the recording, a Throttle, and a **Frequency Sink** and **Waterfall Sink** centered at 350 MHz. The recording loops, so the bursts come back every 2.4 s.
 
 Two signals appear. A narrow line near 349.945 MHz stays on the whole time. The bursts near 350.04 MHz come and go five times per loop, once for each button press, and that is the remote. A real band holds many steady carriers, such as another receiver's oscillator or a nearby digital clock, so the waterfall is how we tell them apart: the remote's signal starts and stops when someone presses a button. The bursts are wider on the spectrum than the steady line because switching a carrier on and off spreads it.
 ::::
@@ -118,28 +118,30 @@ The **Frequency Xlating FIR Filter** shifts the frequency set by the Carrier off
 At 40,000 Hz the pulses appear. In the 2025 class the next move was to open URH's Spectrum Analyzer and fine-tune the carrier; with a recording, the slider does the same thing. Move the offset 10 kHz away from 40 kHz and the pulses drop to half their height, because the signal now sits at the edge of the filter; move it 20 kHz away and they disappear. The carrier is at $350.000 + 0.040 = 350.040$ MHz.
 ::::
 
-::::{frame} Explore: SDR Flex or GQRX
+::::{frame} Explore: The Live Band on the PlutoSDR
 :::{present}
-1. In SDR Flex, open an example capture and drag across a burst.
-2. Choose a demodulator or slicer and read its rate.
-3. In GQRX, play the recording as an I/Q file and find the bursts.
+1. Run `L17-explore-pluto.grc` at 433.72 MHz and watch the waterfall.
+2. Step the center frequency to find bursts that start and stop.
+3. Retune near 315 MHz and look again.
 :::
 
-[SDR Flex](https://livethisdream.github.io/sdr-flex/) is the course's tool for exploring an unknown signal. Its browser version opens one of its example captures when you right-click or long-press the source chip in the top left. Drag across a signal on the waterfall and choose what to do with it. The server version builds a GNU Radio flowgraph behind each choice; the browser version runs the same chain in JavaScript. Its slicers derive their own rates. Its README does not say whether it opens a SigMF recording of your own, and its external decoders, such as `rtl_433`, run only on its server version, so practice the workflow on its example captures.
+The recording showed one remote; the air around you holds many. `L17-explore-pluto.grc` is `L17-capture.grc` without the SigMF Sink: a **PlutoSDR Source** at 2 MS/s, the same spectrum, waterfall, and envelope displays, and a **Center frequency** control you can change while it runs. It records nothing, so the center frequency does not have to be set before it starts. It opens at 433.72 MHz, 200 kHz below 433.92 MHz, so the Pluto's DC spike at the center stays off the devices.
 
-GQRX is the fallback, and it plays back our recording. Choose the device string `file=L17-fan-remote.sigmf-data,freq=350e6,rate=200000,repeat=true,throttle=true` in its I/O Devices dialog, start it, and tune to 350.040 MHz; each press paints a short streak on the waterfall.
+Look for what Step 1 taught: a steady line is a carrier that never stops, and a remote, a doorbell, or a weather sensor paints short streaks that come and go. Weather sensors send on their own about once a minute, so wait a minute before you move on. If the whole spectrum rises when a strong signal appears, lower the RX gain. Then step the center frequency to 314.8 MHz and look again. The Pluto only receives here.
+
+SDR Flex is an optional quick look at the same band; nothing in this lesson needs it.
 ::::
 
 ::::{frame} Capture a Real Remote
 :::{present}
 - Record every button of a real 315 or 433.92 MHz key fob, doorbell, or sensor to SigMF.
 - Find its carrier with URH's Spectrum Analyzer, as in 2025.
-- Your SDR only receives.
+- Your Pluto only receives.
 :::
 
-The 2025 class captured a real remote, and every step so far works the same on one. Take a key fob, a wireless doorbell, or a weather sensor that you own; in the U.S. most use 315 MHz or 433.92 MHz, FCC Part 15 frequencies. Run `L17-capture.grc` with a PlutoSDR or `L17-capture-rtl.grc` with an RTL-SDR, with the variable `fc` set about 200 kHz below the device's frequency, so the SDR's DC spike stays off the signal. Set it before you start the flowgraph, because the SigMF Sink writes the center frequency into the meta file when the flowgraph starts. Press each button a few times, close the flowgraph, and rename `capture.sigmf-data` and `.sigmf-meta` for that button.
+The 2025 class captured a real remote, and every step so far works the same on one. Take a key fob, a wireless doorbell, or a weather sensor that you own; in the U.S. most use 315 MHz or 433.92 MHz, FCC Part 15 frequencies. Find it first with `L17-explore-pluto.grc`, then run `L17-capture.grc` with the variable `fc` set about 200 kHz below the device's frequency, so the Pluto's DC spike stays off the signal. Set it before you start the flowgraph, because the SigMF Sink writes the center frequency into the meta file when the flowgraph starts. Press each button a few times, close the flowgraph, and rename `capture.sigmf-data` and `.sigmf-meta` for that button.
 
-URH's **Spectrum Analyzer**, under File, shows a live spectrum from any radio URH supports, and in 2025 it was how the class fine-tuned the carrier: hold a button down and read the peak. Then open the recordings in URH as in Step 3. Receiving is always allowed, and your SDR only receives in this step. A car key fob usually sends a **rolling code**, which changes with every press, so its frames will not repeat from press to press; the L17 Lab asks why.
+URH's **Spectrum Analyzer**, under File, shows a live spectrum from a PlutoSDR, and in 2025 it was how the class fine-tuned the carrier: hold a button down and read the peak. Then open the recordings in URH as in Step 3. Receiving is always allowed, and your Pluto only receives in this step. A car key fob usually sends a **rolling code**, which changes with every press, so its frames will not repeat from press to press; the L17 Lab asks why.
 ::::
 
 ::::{frame} Step 2: Identify the Modulation
@@ -335,11 +337,11 @@ That comparison is the test of the reverse engineering. If our encoder makes chi
 ::::{frame} Step 5: Transmit
 :::{present}
 - `L17-fan-tx-pluto.grc` sends the encoder from a PlutoSDR at 350.04 MHz.
-- Cadets: through a 30 dB attenuator into a second SDR, never an antenna.
+- Cadets: through a 30 dB attenuator into a second PlutoSDR, never an antenna.
 - Instructor demo: the real fan, over the air, at very low power.
 :::
 
-The last step puts the encoder on a radio. `L17-fan-tx-pluto.grc` is the simulation flowgraph at 1 MS/s, so `chip_len` is 400 samples, with a **PlutoSDR Sink** tuned to 350 MHz in place of the noise and the waterfall; the 40 kHz tone puts the carrier at 350.04 MHz. A short SMA cable with an inline 30 dB attenuator carries it to a second SDR running `L17-capture.grc` or `L17-capture-rtl.grc`, with `fc` set to 350e6 before it starts, which records what arrives as a SigMF pair. Open that recording in URH as in Step 3: the chips should match `L17-fan-remote.sigmf-data`.
+The last step puts the encoder on a radio. `L17-fan-tx-pluto.grc` is the simulation flowgraph at 1 MS/s, so `chip_len` is 400 samples, with a **PlutoSDR Sink** tuned to 350 MHz in place of the noise and the waterfall; the 40 kHz tone puts the carrier at 350.04 MHz. A short SMA cable with an inline 30 dB attenuator carries it to a second PlutoSDR running `L17-capture.grc`, with `fc` set to 350e6 before it starts, which records what arrives as a SigMF pair. Open that recording in URH as in Step 3: the chips should match `L17-fan-remote.sigmf-data`.
 
 Cadets transmit only into a cable, and only when the lesson says to; 350 MHz is an FCC Part 15 frequency, not an ISM band. The TX attenuation slider opens at 60 dB and cannot go below 30 dB; never connect an antenna to this flowgraph.
 
@@ -362,13 +364,14 @@ Reverse engineering runs in five steps: find the carrier, identify the modulatio
 - <a class="doc-link" href="../../grc/L17-encoder.grc" download>L17-encoder.grc</a>: the encoder as a hier block, L17 OOK Encoder. Press Generate once to install it.
 - <a class="doc-link" href="../../grc/L17-fan-remote-gen.grc" download>L17-fan-remote-gen.grc</a>: the flowgraph that made the recording. No hardware needed.
 - <a class="doc-link" href="../../grc/L17-sigid-a.sigmf-data" download>L17-sigid-a</a>, <a class="doc-link" href="../../grc/L17-sigid-b.sigmf-data" download>-b</a>, and <a class="doc-link" href="../../grc/L17-sigid-c.sigmf-data" download>-c</a> (.sigmf-data), with <a class="doc-link" href="../../grc/L17-sigid-a.sigmf-meta" download>a</a>, <a class="doc-link" href="../../grc/L17-sigid-b.sigmf-meta" download>b</a>, and <a class="doc-link" href="../../grc/L17-sigid-c.sigmf-meta" download>c</a> meta files: three Simulated unknown signals for SigID, 0.8 s each at 100 kS/s, 640 KB each. <a class="doc-link" href="../../grc/L17-sigid-gen.grc" download>L17-sigid-gen.grc</a> made them.
-- <a class="doc-link" href="../../grc/L17-capture-rtl.grc" download>L17-capture-rtl.grc</a>: the same capture flowgraph with an RTL-SDR source at 1.024 MS/s. Receive only. Set `fc` before you run it.
-- <a class="doc-link" href="../../grc/L17-capture.grc" download>L17-capture.grc</a>: a PlutoSDR Source with spectrum, waterfall, and envelope displays, recording to `capture.sigmf-data`. Receive only; needs a PlutoSDR. Set `fc` before you run it.
-- <a class="doc-link" href="../../grc/L17-fan-tx-pluto.grc" download>L17-fan-tx-pluto.grc</a>: the encoder on a PlutoSDR at 350.04 MHz. Transmit only into the cable, through a 30 dB attenuator, to a second SDR.
+- <a class="doc-link" href="../../grc/L17-explore-pluto.grc" download>L17-explore-pluto.grc</a>: a PlutoSDR Source at 2 MS/s with spectrum, waterfall, and envelope displays and a center frequency you change while it runs. Receive only; records nothing.
+- <a class="doc-link" href="../../grc/L17-capture.grc" download>L17-capture.grc</a>: a PlutoSDR Source at 1 MS/s with spectrum, waterfall, and envelope displays, recording to `capture.sigmf-data`. Receive only; needs a PlutoSDR. Set `fc` before you run it.
+- <a class="doc-link" href="../../grc/L17-fan-tx-pluto.grc" download>L17-fan-tx-pluto.grc</a>: the encoder on a PlutoSDR at 350.04 MHz. Transmit only into the cable, through a 30 dB attenuator, to a second PlutoSDR.
+- Optional: <a class="doc-link" href="../../grc/L17-capture-rtl.grc" download>L17-capture-rtl.grc</a> is `L17-capture.grc` with a Soapy RTL-SDR Source at 1.024 MS/s, if you own an RTL-SDR. Nothing in the lesson or lab needs it.
 - <a class="doc-link" href="https://github.com/jopohl/urh" target="_blank" rel="noopener">Universal Radio Hacker (URH)</a>: its README gives an installer for Windows and `pipx install urh` for Linux and macOS.
 - <a class="doc-link" href="https://wiki.gnuradio.org/index.php/Frequency_Shifting" target="_blank" rel="noopener">GNU Radio wiki: Frequency Shifting</a> and <a class="doc-link" href="https://wiki.gnuradio.org/index.php/Hier_Blocks_and_Parameters" target="_blank" rel="noopener">Hier Blocks and Parameters</a>: the tutorials behind Steps 1 and 4.
 - <a class="doc-link" href="https://pysdr.org/content/iq_files.html" target="_blank" rel="noopener">PySDR: IQ Files and SigMF</a>: the recording format.
-- <a class="doc-link" href="https://gqrx.dk/" target="_blank" rel="noopener">GQRX</a> and <a class="doc-link" href="https://livethisdream.github.io/sdr-flex/" target="_blank" rel="noopener">SDR Flex</a>: the explore tools.
+- <a class="doc-link" href="https://livethisdream.github.io/sdr-flex/" target="_blank" rel="noopener">SDR Flex</a>: an optional quick look at a band.
 
 Open a `.grc` file from GRC's File menu, or run `gnuradio-companion L17-sigmf-view.grc` from the radioconda prompt, in the folder that holds the recording.
 ::::
@@ -383,7 +386,7 @@ Open a `.grc` file from GRC's File menu, or run `gnuradio-companion L17-sigmf-vi
 | 3. Encoding | URH: chips, then bits, then fields | 400 µs chips, 3-chip pulse width, 16 bits: address, command, check |
 | Rates | chips and bits per second | 2500 baud, 833 bits/s, 6 frames a press |
 | 4. Encoder | Map, Unpack K Bits, Repeat, Stream Mux, carrier | chips match the recording in URH |
-| 5. Transmit | PlutoSDR into a cable with a 30 dB attenuator | a second SDR records it as SigMF |
+| 5. Transmit | PlutoSDR into a cable with a 30 dB attenuator | a second PlutoSDR records it as SigMF |
 | Noise | watch the chips and the check | bad frames fail the check |
 ::::
 
@@ -400,7 +403,7 @@ Open a `.grc` file from GRC's File menu, or run `gnuradio-companion L17-sigmf-vi
 - Lessons 18 and 19 decode signals whose formats are published: ADS-B and AIS.
 :::
 
-The L17 Lab is today's process on a device you have not seen. You get a SigMF recording of a Simulated remote with several buttons, with settings of its own, and you find its carrier, modulation, encoding, and fields, build an encoder for it from an empty canvas, check your encoder against the recording in URH, and then send it through a PlutoSDR and a cable to a second SDR.
+The L17 Lab is today's process on a device you have not seen. You get a SigMF recording of a Simulated remote with several buttons, with settings of its own, and you find its carrier, modulation, encoding, and fields, build an encoder for it from an empty canvas, check your encoder against the recording in URH, and then send it through a PlutoSDR and a cable to a second PlutoSDR.
 
 Lessons 18 and 19 receive aircraft and ship transponders. Their formats are public standards, so there the work is building and running the receiver rather than discovering the format.
 ::::

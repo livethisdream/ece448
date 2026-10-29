@@ -144,9 +144,9 @@ enclosure, or at very low power in an ISM band, and only when the lesson says to
 This device's band is an FCC Part 15 frequency, not a U.S. ISM band; transmit only into
 the cable. Questions 1 to 7 run on your laptop and transmit nothing. Question 8 transmits from a
 PlutoSDR's TX port, through a cable with an inline 30 dB SMA attenuator, to a second
-SDR's input. Connect the cable and attenuator before you run the flowgraph, and never
+PlutoSDR's RX port. Connect the cable and attenuator before you run the flowgraph, and never
 connect an antenna in this lab. Never set TX attenuation below 30 dB or change the
-slider's range; an SDR's input is rated to only a few dBm. We have compiled the
+slider's range; a Pluto's input is rated to only a few dBm. We have compiled the
 PlutoSDR flowgraphs but not run them on a radio, so Question 8 is their first run on
 hardware. Question 9 only receives, which is always allowed.
 
@@ -364,10 +364,9 @@ with your settings from Questions 4 to 6.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newpage
 \question \textbf{Step 5: transmit into a cable.} At a PlutoSDR station, with your team,
-follow the lab page's steps: connect the first Pluto's TX port to the second SDR
-through the 30 dB attenuator, set \texttt{fc} and run \texttt{L17-capture.grc} or
-\texttt{L17-capture-rtl.grc} on the second SDR, and run
-your Pluto encoder. When you finish, stop both flowgraphs and unplug the radios before
+follow the lab page's steps: connect the first Pluto's TX port to the second Pluto's RX port
+through the 30 dB attenuator, set \texttt{fc} and run \texttt{L17-capture.grc} on the
+second Pluto, and run your Pluto encoder. When you finish, stop both flowgraphs and unplug the radios before
 you disconnect the cable.
 
 \begin{parts}
@@ -377,7 +376,7 @@ you disconnect the cable.
 		\begin{solution}[1.5in]\keysol{sol18}\end{solution}
 
 	\part Open \texttt{capture.sigmf-data} in URH at the sample rate in its meta file,
-	1 MS/s from a PlutoSDR or 1.024 MS/s from an RTL-SDR, and compare its lines of
+	1 MS/s, and compare its lines of
 	chips with the original recording's for the same button.
 		\begin{solution}[1.0in]\keysol{sol19}\end{solution}
 
@@ -405,8 +404,8 @@ key fob, doorbell, or sensor of your choice. Answers depend on the device.
 
 \begin{parts}
 
-	\part Name the device, and record its carrier frequency and how you found it: URH's
-	Spectrum Analyzer or the capture flowgraph's waterfall. Paste a screenshot.
+	\part Name the device, and record its carrier frequency and how you found it:
+	\texttt{L17-explore-pluto.grc} or URH's Spectrum Analyzer. Paste a screenshot.
 		\begin{solution}[1.4in]\keysol{sol24}\end{solution}
 
 	\part Record the modulation, the chip length, and the encoding, with the evidence

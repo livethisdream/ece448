@@ -226,12 +226,12 @@ Wi-Fi and LTE step from 64-QAM down to 16-QAM and QPSK as the signal weakens, ad
 
 ## On the SDR
 
-- A HackRF at 20 MS/s on 2.437 GHz shows Wi-Fi as flat-topped bursts about 17 MHz wide.
-- A HackRF at 20 MS/s between 729 and 756 MHz shows LTE as a flat band about 9 MHz wide that stays on.
-- An FM station with HD Radio shows Lesson 14's shelves.
+- `L20-band-pluto.grc` at 2 MS/s near 100 MHz: an FM station with Lesson 14's HD Radio shelves.
+- At 20 MS/s on 2.437 GHz: Wi-Fi as flat-topped bursts about 17 MHz wide.
+- At 20 MS/s between 729 and 756 MHz: LTE as a flat band about 9 MHz wide that stays on.
 
 Note:
-Live radios need SDR Flex's full version; its browser version has none. Use SDR Flex first for the HD Radio step, with GQRX as the fallback; SDR Flex's README says it targets up to about 10 MS/s and its author has not yet tried its radio drivers on a real radio, so GQRX is the tested path. Wi-Fi and LTE need the HackRF at 20 MS/s, so they are GQRX steps; an RTL-SDR sees only a flat slice of LTE. Some beacons use the older 802.11b format and look rounded. Look at the spectrum only; nothing here transmits.
+The flowgraph is a PlutoSDR Source with a center frequency control and a 2 or 20 MS/s choice. A Pluto streams about 4 MS/s continuously over USB 2.0; at 20 MS/s each 131,072-sample buffer, 6.5 ms, is unbroken, with samples lost between buffers, and that is enough for the spectrum's shape. At 2 MS/s LTE shows only a flat slice; step 2 MHz to find its edges. A HackRF with a Soapy HackRF Source streams 20 MS/s without gaps, optionally. Some beacons use the older 802.11b format and look rounded. Look at the spectrum only; nothing here transmits.
 
 ---
 

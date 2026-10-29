@@ -92,14 +92,14 @@ The Frequency Xlating FIR Filter shifts the offset to 0 Hz and keeps plus and mi
 
 ---
 
-## Explore: SDR Flex or GQRX
+## Explore: The Live Band on the PlutoSDR
 
-1. SDR Flex: open an example capture and drag across a burst.
-2. Choose a demodulator or slicer and read its rate.
-3. GQRX: play the recording as an I/Q file.
+1. Run `L17-explore-pluto.grc` at 433.72 MHz and watch the waterfall.
+2. Step the center frequency to find bursts that start and stop.
+3. Retune near 315 MHz and look again.
 
 Note:
-SDR Flex's browser version opens its example captures from the source chip; its slicers derive their own rates. Its external decoders such as rtl_433 need the server version. For GQRX, the device string is file=L17-fan-remote.sigmf-data,freq=350e6,rate=200000,repeat=true,throttle=true.
+L17-explore-pluto.grc is L17-capture.grc without the SigMF Sink: a PlutoSDR Source at 2 MS/s with a center frequency you change while it runs. 433.72 MHz keeps the Pluto's DC spike 200 kHz off 433.92 MHz. Steady lines are carriers; remotes, doorbells, and weather sensors paint short streaks, and sensors send on their own about once a minute. Lower the RX gain if the whole spectrum jumps. SDR Flex is an optional quick look; nothing needs it.
 
 ---
 
@@ -107,10 +107,10 @@ SDR Flex's browser version opens its example captures from the source chip; its 
 
 - Record a real 315 or 433.92 MHz key fob, doorbell, or sensor to SigMF.
 - Find its carrier with URH's Spectrum Analyzer, as in 2025.
-- Your SDR only receives.
+- Your Pluto only receives.
 
 Note:
-Run L17-capture.grc with a PlutoSDR or L17-capture-rtl.grc with an RTL-SDR, with fc set before it starts, because the SigMF Sink writes the center frequency when the flowgraph starts. Record each button. A car key fob usually sends a rolling code, so its frames change from press to press.
+Find the device with L17-explore-pluto.grc, then run L17-capture.grc with fc set about 200 kHz below it before it starts, because the SigMF Sink writes the center frequency when the flowgraph starts. Record each button. A car key fob usually sends a rolling code, so its frames change from press to press.
 
 ---
 
@@ -225,7 +225,7 @@ Matching chips are the test of steps 1 to 3. The encoder repeats for as long as 
 ## Step 5: Transmit
 
 - The PlutoSDR sends at 350.04 MHz and 1 MS/s, so `chip_len` is 400.
-- Cadets: TX port into a 30 dB attenuator and a second SDR running `L17-capture.grc`.
+- Cadets: TX port into a 30 dB attenuator and a second PlutoSDR running `L17-capture.grc`.
 - Instructor demo: the classroom's Hunter fan, over the air, at very low power.
 
 Note:

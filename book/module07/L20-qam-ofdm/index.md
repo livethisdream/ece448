@@ -283,15 +283,16 @@ Wi-Fi and LTE make the second choice continuously. A receiver close to the acces
 - HD Radio: two flat shelves beside an FM station.
 :::
 
-These signals are on the air around you, and an SDR shows their spectrum. We look only at the spectrum; we do not decode anyone's traffic. **SDR Flex** is the course's explore tool. Its README says its full version targets radios up to about 10 MS/s, lists drivers for the PlutoSDR, RTL-SDR, USRP, and SoapySDR, and says its author has not yet tried them with a real radio, so **GQRX** is the fallback and, for now, the tested path.
+These signals are on the air around you, and the PlutoSDR shows their spectrum. We look only at the spectrum; we do not decode anyone's traffic. `L20-band-pluto.grc` is a **PlutoSDR Source** with a frequency sink and a waterfall, a **Center frequency** control you change while it runs, and a **Sample rate** choice of 2 MS/s or 20 MS/s. It opens at 2 MS/s and 100.1 MHz. The course Plutos run from 70 MHz to 6 GHz, so all three signals are in range.
 
-Live radios need SDR Flex's full version, run from its Docker image or as a server against your own GNU Radio; its browser version has no live radios.
+A Pluto streams about 4 MS/s continuously over USB 2.0, and a Wi-Fi channel is 20 MHz wide. At 20 MS/s the Pluto still fills each buffer of 131,072 samples without a break, 6.5 ms of signal, but the laptop cannot take the buffers as fast as they come, so samples are lost between them. The spectrum needs only a short unbroken stretch, so the displays still show the channel's shape; they skip some of what happens between buffers.
 
-1. With the RTL-SDR at 2.4 MS/s, in SDR Flex, or GQRX, tune to an FM station that carries HD Radio and find Lesson 14's flat shelves. In SDR Flex, drag a box across a shelf and choose **Tune here**; in GQRX, click it.
-2. With the HackRF at 20 MS/s, its maximum (Lesson 4), open GQRX. SDR Flex's 10 MS/s target shows only half a Wi-Fi channel, a PlutoSDR streams about 4 MS/s, and the RTL-SDR cannot tune to 2.4 GHz.
-3. With the HackRF still at 20 MS/s, tune to 2.437 GHz, Wi-Fi channel 6, and watch the waterfall. Short bursts come and go. Those carrying data are OFDM: a flat top with steep edges about 17 MHz wide, often with a small dip at the center, where the subcarrier at 0 Hz is left empty. Some access points still send beacons in the older 802.11b format, which look rounded instead.
-4. With the HackRF still at 20 MS/s, tune between 729 and 756 MHz, where US carriers run LTE downlinks; which frequencies are in use varies by area. A 10 MHz LTE carrier shows as a flat top about 9 MHz wide with steep edges, and unlike Wi-Fi's bursts it stays on.
-5. Optionally, with the RTL-SDR at 2.4 MS/s, find the same LTE carrier. Its window shows only a featureless flat slice, so step the center frequency 2 MHz at a time to find both edges.
+1. At 2 MS/s, tune near 100 MHz to an FM station that carries HD Radio and find Lesson 14's flat shelves on each side. If the whole spectrum rises and spreads, lower the RX gain.
+2. Choose 20 MS/s and tune to 2.437 GHz, Wi-Fi channel 6, and watch the waterfall. Short bursts come and go. Those carrying data are OFDM: a flat top with steep edges about 17 MHz wide, often with a small dip at the center, where the subcarrier at 0 Hz is left empty. Some access points still send beacons in the older 802.11b format, which look rounded instead.
+3. Still at 20 MS/s, tune between 729 and 756 MHz, where US carriers run LTE downlinks; which frequencies are in use varies by area. A 10 MHz LTE carrier shows as a flat top about 9 MHz wide with steep edges, and unlike Wi-Fi's bursts it stays on.
+4. At 2 MS/s, find the same LTE carrier. The window shows only a flat slice of it, so step the center frequency 2 MHz at a time to find both edges.
+
+Optionally, a HackRF streams 20 MS/s without gaps; put a Soapy HackRF Source in place of the PlutoSDR Source.
 
 As in every lesson, receiving is unrestricted and transmitting is not; nothing in this lesson transmits.
 ::::
@@ -307,6 +308,7 @@ More QAM points carry more bits but need a cleaner signal. OFDM splits a channel
 :class: read-only doc-links
 
 - <a class="doc-link" href="../../grc/L20-qam-noise.grc" download>L20-qam-noise.grc</a>: random symbols in QPSK, 16-QAM, and 64-QAM through three Channel Models that share one noise slider, with the three constellations and their spectra. No hardware needed.
+- <a class="doc-link" href="../../grc/L20-band-pluto.grc" download>L20-band-pluto.grc</a>: a PlutoSDR Source with spectrum and waterfall, a center frequency you change while it runs, and 2 MS/s or 20 MS/s. Receive only; needs a PlutoSDR.
 - <a class="doc-link" href="../../grc/L20-ofdm-link.grc" download>L20-ofdm-link.grc</a>: a line of text over OFDM with 16-QAM subcarriers, through Lesson 15's four multipath taps, an echo, and noise, with the spectrum, the subcarrier points before and after the equalizer, and the received text. No hardware needed.
 
 Open a `.grc` file from GRC's File menu, or run `gnuradio-companion L20-ofdm-link.grc` from the radioconda prompt. To send QPSK on the subcarriers instead of 16-QAM, double-click the variable `payload_mod`, change it to `digital.constellation_qpsk()`, and run the flowgraph again. The Text Sink is an Embedded Python Block saved inside the `.grc` file.
@@ -317,7 +319,7 @@ Open a `.grc` file from GRC's File menu, or run `gnuradio-companion L20-ofdm-lin
 - <a href="https://wiki.gnuradio.org/index.php/Basic_OFDM_Tutorial" target="_blank" rel="noopener">GNU Radio wiki, Basic OFDM Tutorial</a>: the OFDM Carrier Allocator, FFT, and OFDM Cyclic Prefixer.
 - <a href="https://wiki.gnuradio.org/index.php/Constellation_Modulator" target="_blank" rel="noopener">GNU Radio wiki, Constellation Modulator</a> and <a href="https://wiki.gnuradio.org/index.php/Constellation_Object" target="_blank" rel="noopener">Constellation Object</a>: the blocks of `L20-qam-noise.grc`.
 - <a href="https://pysdr.org/content/digital_modulation.html" target="_blank" rel="noopener">PySDR, Digital Modulation</a> for QAM, <a href="https://pysdr.org/content/multipath_fading.html" target="_blank" rel="noopener">PySDR, Multipath Fading</a>, whose OFDM section is a one-paragraph overview, and <a href="https://pysdr.org/content/channel_coding.html" target="_blank" rel="noopener">PySDR, Channel Coding</a> for modulation and coding schemes.
-- <a href="https://github.com/livethisdream/sdr-flex" target="_blank" rel="noopener">SDR Flex and its README</a>, and GQRX, which radioconda installs, for the live band.
+- <a href="https://wiki.gnuradio.org/index.php/PlutoSDR_Source" target="_blank" rel="noopener">GNU Radio wiki, PlutoSDR Source</a>: the block behind `L20-band-pluto.grc`.
 ::::
 
 ::::{frame} Summary
