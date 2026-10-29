@@ -29,7 +29,7 @@ CW, DTMF, HD Radio, mPSK, frequency hopping, ADS-B, and AIS, each built or decod
   <li>I can transmit and receive CW (Morse) using GNU Radio and decode a received CW stream.</li>
   <li>I can decode DTMF tones from a captured audio signal.</li>
   <li>I can describe how HD Radio works and demodulate an HD Radio signal.</li>
-  <li>I can implement an mPSK modulator and demodulator (BPSK, QPSK, 8PSK), recover carrier and symbol timing, and verify constellation behavior against theory.</li>
+  <li>I can implement an mPSK modulator and demodulator (BPSK, QPSK, 8PSK) and recover carrier and symbol timing.</li>
 </ol>
 ::::
 

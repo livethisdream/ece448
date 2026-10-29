@@ -71,7 +71,7 @@ LO_TEXT = {
     "6.1": "I can transmit and receive CW (Morse) using GNU Radio and decode a received CW stream.",
     "6.2": "I can decode DTMF tones from a captured audio signal.",
     "6.3": "I can describe how HD Radio works and demodulate an HD Radio signal.",
-    "6.4": "I can implement an mPSK modulator and demodulator (BPSK, QPSK, 8PSK), recover carrier and symbol timing, and verify constellation behavior against theory.",
+    "6.4": "I can implement an mPSK modulator and demodulator (BPSK, QPSK, 8PSK) and recover carrier and symbol timing.",
     "6.5": "I can implement FHSS transmission and reception, including hop-sequence synchronization.",
     "6.6": "I can perform RF reverse engineering on an unknown signal: identify its modulation, symbol rate, and payload structure.",
     "6.7": "I can receive and decode ADS-B messages from aircraft transponders.",

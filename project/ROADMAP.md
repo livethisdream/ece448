@@ -291,8 +291,10 @@ since they follow this structure. Two changes:
 - **Bench checks for Neil:** the KEY values marked as estimates in PR #29
   (L5 to L8, notably L7's click onsets), L15's PlutoSDR link and zero-IF DC
   tracking, and L14 on a live HD station with nrsc5.
-- **Open for Neil:** the wording of objective 6.4, and new hidden captures
-  for L13 and L14, whose old answers are in the public history.
+- **Settled after the batch** (Neil, 2026-10-29): objective 6.4 drops "verify
+  constellation behavior against theory"; the legacy HD Radio deck is the one
+  he taught from; the L13 answer left in public history is not worth a new
+  capture (regenerate only if L13's lab is reworked for another reason).
 
 ## Lesson threads (from L6 on)
 

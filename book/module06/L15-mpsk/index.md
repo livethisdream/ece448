@@ -32,7 +32,7 @@ Lesson 15 · Module 6: Waveform Applications & RF Reverse Engineering · Dr. Nei
 ::::{frame} Learning Objectives
 
 <ol class="lo-list" style="--module: '6'; counter-reset: lo 3">
-  <li>I can implement an mPSK modulator and demodulator (BPSK, QPSK, 8PSK), recover carrier and symbol timing, and verify constellation behavior against theory.</li>
+  <li>I can implement an mPSK modulator and demodulator (BPSK, QPSK, 8PSK) and recover carrier and symbol timing.</li>
 </ol>
 ::::
 
