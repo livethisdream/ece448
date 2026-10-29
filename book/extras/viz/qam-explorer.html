@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QAM explorer — QPSK, 16-QAM, 64-QAM, and 256-QAM through noise</title>
+<style>
+  :root { --navy:#004a85; --mid:#0067b9; --edge:#cddce9; --edge2:#b9d2e5; --bg:#f5f9fc;
+          --ink:#15202b; --ink3:#5b6573;
+          --amber:#8a5a00; --red:#b01e24; --grn:#3f7d34; }
+  html,body { margin:0; padding:0; font-family:'Inter',system-ui,-apple-system,sans-serif; color:var(--ink); background:#fff; }
+  .app { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:12px; padding:12px; align-items:start; }
+  @media (max-width:620px) { .app { grid-template-columns:1fr; gap:8px; padding:8px; } }
+  canvas { display:block; box-sizing:border-box; width:100%; height:auto; background:#fff; border:1px solid var(--edge); border-radius:6px; }
+  .side { display:flex; flex-direction:column; gap:8px; min-width:0; }
+  .controls { display:flex; flex-direction:column; gap:8px; padding:9px 12px; background:var(--bg); border:1px solid var(--edge); border-radius:6px; }
+  .ctl { display:grid; grid-template-columns:auto 1fr; column-gap:8px; row-gap:2px; align-items:center; min-width:0; }
+  .ctl label { font-size:10.5px; text-transform:uppercase; letter-spacing:0.05em; color:var(--ink3); font-weight:700; white-space:nowrap; }
+  .ctl .val { color:var(--navy); font-size:12px; font-weight:600; font-variant-numeric:tabular-nums; text-align:right; white-space:nowrap; }
+  .ctl input[type=range]{ grid-column:1 / span 2; width:100%; margin:0; accent-color:var(--mid); }
+  .mods { grid-column:1 / span 2; display:flex; flex-wrap:wrap; gap:4px; }
+  .mods button { font:inherit; font-size:11.5px; font-weight:600; color:var(--navy); background:#fff; border:1px solid var(--edge2); border-radius:14px; padding:3px 9px; cursor:pointer; }
+  .mods button.on { background:var(--navy); color:#fff; border-color:var(--navy); }
+  .readouts { display:grid; gap:6px; grid-template-columns:repeat(3,minmax(0,1fr)); }
+  .ro { display:flex; flex-direction:column; align-items:center; gap:2px; padding:5px 4px 6px; min-width:0;
+        border:1px solid var(--edge2); border-radius:6px; background:#eef4fa; }
+  .ro .k { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:var(--ink3); white-space:nowrap; }
+  .ro .v { font-size:14px; font-weight:700; white-space:nowrap; font-variant-numeric:tabular-nums; color:var(--navy); }
+  .ro.err .v { color:var(--red); }
+  .text { padding:6px 10px 7px; border:1px solid var(--edge2); border-radius:6px; background:#fff; min-width:0; }
+  .text .k { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:var(--ink3); }
+  .text .line { font-family:ui-monospace,Menlo,Consolas,monospace; font-size:13px; white-space:pre; overflow:hidden; color:var(--navy); }
+  .text .line .bad { color:#fff; background:var(--red); border-radius:2px; }
+  .row { display:flex; gap:6px; }
+  .row button { font:inherit; font-size:11.5px; font-weight:600; color:var(--navy); background:#fff; border:1px solid var(--edge2); border-radius:14px; padding:3px 10px; cursor:pointer; }
+</style>
+</head>
+<body>
+<div class="app">
+  <canvas id="iq" aria-label="Received symbols on the I-Q plane with the decision regions shaded; symbols that land in the wrong region are red"></canvas>
+  <div class="side">
+    <div class="controls">
+      <div class="ctl"><label>Modulation</label><span></span>
+        <div class="mods" id="mods"></div></div>
+      <div class="ctl"><label for="na">Noise amplitude</label><span class="val" id="na-v"></span><input type="range" id="na" min="0" max="1" step="0.01" value="0.1"></div>
+    </div>
+    <div class="readouts">
+      <div class="ro"><span class="k">bits/symbol</span><span class="v" id="o-k">—</span></div>
+      <div class="ro"><span class="k">symbols</span><span class="v" id="o-n">—</span></div>
+      <div class="ro err"><span class="k">wrong, %</span><span class="v" id="o-pct">—</span></div>
+    </div>
+    <div class="text"><div class="k">Received text</div><div class="line" id="o-txt"></div></div>
+    <div class="row"><button id="pause">pause</button><button id="clear">clear</button></div>
+  </div>
+</div>
+
+<script>
+'use strict';
+const SANS = 'Inter, system-ui, -apple-system, sans-serif';
+const COL = { navy:'#004a85', mid:'#0067b9', red:'#b01e24', rule:'#cddce9', ink3:'#5b6573' };
+const REGION = ['#e4eef7', '#f8fbfd'];          // alternating decision-region tints
+const MSG = 'USAFA ECE 448: QAM';
+
+// Square QAM, Gray coded on each axis, scaled to an average power of 1, as
+// GNU Radio's constellation objects are. QPSK is the 2 x 2 case.
+const MODS = { 'QPSK':4, '16-QAM':16, '64-QAM':64, '256-QAM':256 };
+function gray(n){ return n ^ (n >> 1); }
+function build(M) {
+  const L = Math.round(Math.sqrt(M)), kAxis = Math.log2(L);
+  const lev = []; for (let i = 0; i < L; i++) lev.push(2*i - (L - 1));
+  const e = 2 * lev.reduce((s, x) => s + x*x, 0) / L;
+  const s = 1 / Math.sqrt(e);
+  // levels[g] is the level carrying Gray value g on one axis
+  const byGray = new Array(L); lev.forEach((x, i) => { byGray[gray(i)] = x * s; });
+  return { M, L, k: 2*kAxis, kAxis, step: 2*s, edge: (L - 1)*s, lev: lev.map(x => x*s), byGray, idxGray: lev.map((_, i) => gray(i)) };
+}
+
+const state = { mod: '16-QAM', c: build(16), rx: [], nSym: 0, nErr: 0, bits: [], out: [], nBytes: 0, running: true };
+const MAXPTS = 2500;
+const naEl = document.getElementById('na'), modsEl = document.getElementById('mods');
+for (const m of Object.keys(MODS)) {
+  const b = document.createElement('button'); b.textContent = m; b.dataset.m = m;
+  b.onclick = () => setMod(m); modsEl.appendChild(b);
+}
+function setMod(m){ state.mod = m; state.c = build(MODS[m]); clear();
+  [...modsEl.children].forEach(b => b.classList.toggle('on', b.dataset.m === m)); }
+function clear(){ state.rx = []; state.nSym = state.nErr = state.nBytes = 0; state.bits = []; state.out = []; bitPos = 0; drawRegions(); draw(); }
+naEl.oninput = () => { labels(); clear(); };
+document.getElementById('clear').onclick = clear;
+document.getElementById('pause').onclick = (e) => { state.running = !state.running; e.target.textContent = state.running ? 'pause' : 'run'; };
+function labels(){ document.getElementById('na-v').textContent = (+naEl.value).toFixed(2); }
+
+// The message as a bit stream, most significant bit first, repeated forever.
+const MSGBITS = [];
+for (const ch of MSG) for (let b = 7; b >= 0; b--) MSGBITS.push((ch.charCodeAt(0) >> b) & 1);
+let bitPos = 0;
+function nextBits(n){ const v = []; for (let i = 0; i < n; i++) { v.push(MSGBITS[bitPos]); bitPos = (bitPos + 1) % MSGBITS.length; } return v; }
+
+function gauss(){ let u = 0, v = 0; while (u === 0) u = Math.random(); v = Math.random();
+  return Math.sqrt(-2*Math.log(u)) * Math.cos(2*Math.PI*v); }
+// The decision on one axis: the nearest level, returned as its Gray value.
+function slice(x){ const c = state.c;
+  let i = Math.round((x + c.edge) / c.step); i = Math.max(0, Math.min(c.L - 1, i)); return c.idxGray[i]; }
+function toInt(b){ return b.reduce((a, x) => 2*a + x, 0); }
+function toBits(v, n){ const b = []; for (let i = n - 1; i >= 0; i--) b.push((v >> i) & 1); return b; }
+
+function step(n) {
+  // The slider is the Channel Model's noise amplitude in L20-qam-noise.grc. At
+  // 4 samples a symbol the matched filter leaves half of that amplitude on each
+  // symbol, and each axis gets 1/sqrt(2) of what is left.
+  const sigma = (+naEl.value) / 2 / Math.SQRT2, c = state.c;
+  for (let j = 0; j < n; j++) {
+    const b = nextBits(c.k);
+    const gi = toInt(b.slice(0, c.kAxis)), gq = toInt(b.slice(c.kAxis));
+    const x = c.byGray[gi] + sigma*gauss(), y = c.byGray[gq] + sigma*gauss();
+    const di = slice(x), dq = slice(y), wrong = di !== gi || dq !== gq;
+    state.nSym++; if (wrong) state.nErr++;
+    state.rx.push([x, y, wrong]);
+    state.bits.push(...toBits(di, c.kAxis), ...toBits(dq, c.kAxis));
+  }
+  // Bytes out. The sender starts the message at bit 0 after every clear, so
+  // decoded byte j is message character j mod its length.
+  while (state.bits.length >= 8) { state.out.push(toInt(state.bits.splice(0, 8))); state.nBytes++; }
+  if (state.out.length > 4*MSG.length) state.out.splice(0, state.out.length - 4*MSG.length);
+  if (state.rx.length > MAXPTS) state.rx.splice(0, state.rx.length - MAXPTS);
+}
+// The last complete copy of the message.
+function received() {
+  const n = MSG.length, end = Math.floor(state.nBytes / n) * n;
+  if (end < n) return null;
+  const back = state.nBytes - end, o = state.out;
+  if (o.length < back + n) return null;
+  return o.slice(o.length - back - n, o.length - back);
+}
+
+const cv = document.getElementById('iq'), ctx = cv.getContext('2d');
+const bg = document.createElement('canvas'), bgx = bg.getContext('2d');
+let W = 300, LIM = 1.55;
+function fit() {
+  const dpr = window.devicePixelRatio || 1;
+  W = Math.max(220, cv.clientWidth || 300);
+  const narrow = window.matchMedia && window.matchMedia('(max-width:620px)').matches;
+  const H = narrow ? Math.min(W, 300) : W;
+  cv.width = Math.round(W*dpr); cv.height = Math.round(H*dpr);
+  cv.style.height = H + 'px';
+  const bh = cv.offsetHeight - cv.clientHeight; if (bh) cv.style.height = (H + bh) + 'px';
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  bg.width = cv.width; bg.height = cv.height;
+  drawRegions(); draw();
+}
+function H(){ return cv.height / (window.devicePixelRatio || 1); }
+function S(){ return Math.min(W, H()) / (2*LIM); }
+function X(x){ return W/2 + x*S(); }
+function Y(y){ return H()/2 - y*S(); }
+
+function drawRegions() {
+  // Square QAM's decision regions are the cells of a grid halfway between levels.
+  const dpr = window.devicePixelRatio || 1, c = state.c;
+  if (!bg.width) return;
+  bgx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  bgx.fillStyle = REGION[1]; bgx.fillRect(0, 0, W, H());
+  const big = 10, b = [-big]; for (let i = 0; i < c.L - 1; i++) b.push((c.lev[i] + c.lev[i+1]) / 2); b.push(big);
+  for (let i = 0; i < c.L; i++) for (let q = 0; q < c.L; q++) {
+    if ((i + q) % 2) continue;
+    bgx.fillStyle = REGION[0];
+    const x0 = X(Math.max(b[i], -LIM*2)), x1 = X(Math.min(b[i+1], LIM*2));
+    const y0 = Y(Math.min(b[q+1], LIM*2)), y1 = Y(Math.max(b[q], -LIM*2));
+    bgx.fillRect(x0, y0, x1 - x0, y1 - y0);
+  }
+}
+
+function draw() {
+  const h = H(), c = state.c;
+  ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.drawImage(bg, 0, 0);
+  const dpr = window.devicePixelRatio || 1; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.strokeStyle = COL.rule; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(0, Y(0)); ctx.lineTo(W, Y(0)); ctx.moveTo(X(0), 0); ctx.lineTo(X(0), h); ctx.stroke();
+  ctx.fillStyle = COL.ink3; ctx.font = '11px ' + SANS; ctx.textBaseline = 'top';
+  ctx.textAlign = 'right'; ctx.fillText('I', W - 4, Y(0) + 3);
+  ctx.textAlign = 'left'; ctx.fillText('Q', X(0) + 4, 3);
+  const dot = c.M > 64 ? 1.1 : 1.6;
+  for (const pass of [false, true]) {
+    ctx.fillStyle = pass ? COL.red : 'rgba(0,103,185,0.45)';
+    for (const r of state.rx) if (r[2] === pass) { ctx.beginPath(); ctx.arc(X(r[0]), Y(r[1]), pass ? dot + 0.6 : dot, 0, 2*Math.PI); ctx.fill(); }
+  }
+  const rad = c.M > 64 ? 2.2 : c.M > 16 ? 3.2 : 4.5;
+  for (const xi of c.lev) for (const yq of c.lev) {
+    ctx.beginPath(); ctx.arc(X(xi), Y(yq), rad, 0, 2*Math.PI);
+    ctx.fillStyle = COL.navy; ctx.fill(); ctx.lineWidth = 1; ctx.strokeStyle = '#fff'; ctx.stroke();
+  }
+  readout();
+}
+
+function readout() {
+  document.getElementById('o-k').textContent = state.c.k;
+  document.getElementById('o-n').textContent = state.nSym.toLocaleString();
+  document.getElementById('o-pct').textContent = state.nSym ? (100 * state.nErr / state.nSym).toFixed(1) : '—';
+  const r = received(), el = document.getElementById('o-txt');
+  el.textContent = '';
+  if (!r) { el.textContent = '…'; return; }
+  r.forEach((v, i) => {
+    const ch = (v >= 32 && v < 127) ? String.fromCharCode(v) : '·';
+    if (v === MSG.charCodeAt(i)) el.appendChild(document.createTextNode(ch));
+    else { const s = document.createElement('span'); s.className = 'bad'; s.textContent = ch; el.appendChild(s); }
+  });
+}
+
+let last = 0;
+function tick(t) {
+  // About 30 updates a second, 24 symbols each.
+  if (state.running && t - last > 33) { step(24); draw(); last = t; }
+  requestAnimationFrame(tick);
+}
+window.addEventListener('resize', fit);
+// A preset by query string: qam-explorer.html?mod=64-QAM&noise=0.1
+const q = new URLSearchParams(location.search);
+if (q.get('noise')) naEl.value = q.get('noise');
+labels(); setMod(MODS[q.get('mod')] ? q.get('mod') : '16-QAM'); fit();
+step(600); draw();
+requestAnimationFrame(tick);
+</script>
+</body>
+</html>

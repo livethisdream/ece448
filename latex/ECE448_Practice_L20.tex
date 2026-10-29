@@ -1,0 +1,243 @@
+% !TEX root =./ECE448_Practice_main.tex
+%
+% L20 practice set (QAM and OFDM). Every question reads a display or sets a
+% block parameter: bits per symbol from a constellation, what noise does to
+% QPSK, 16-QAM, and 64-QAM, an OFDM spectrum and its guard, recognizing signals
+% on a waterfall, and choosing a scheme for a use case.
+% Blank copy: \begin{solution}[h] reserves h of work space.
+% SOLUTIONS copy (\iskey=1) prints the red worked solutions.
+
+\fullwidth{\textbf{Learning Objective 7.1: } I can describe QAM and OFDM and identify
+use cases for each.
+\\[4pt]\normalfont\small Show your work. Write a \textbf{Documentation} line at the
+end (\textbf{None} if you did not collaborate).}
+
+\begin{questions}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{Reading constellations.} A link sends 10,000 symbols per second with RRC
+pulses of roll-off $\alpha = 0.25$. Its constellation display shows, at different times,
+a grid of 4 by 4 points and a grid of 8 by 8 points, both scaled to the same average power.
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Name each constellation and find its bits per symbol and its bit rate.
+		\begin{solution}[1.2in]
+		4 by 4 is 16-QAM: $\log_2 16 = 4$ bits per symbol, so 40 kb/s.
+		8 by 8 is 64-QAM: $\log_2 64 = 6$ bits per symbol, so 60 kb/s.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		16-QAM: \ansbox[1.0in]{40 kb/s}
+
+		\vspace{4pt}
+		64-QAM: \ansbox[1.0in]{60 kb/s}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Find the occupied bandwidth with each constellation.
+		\begin{solution}[1.0in]
+		\eq{ B &= (1 + \alpha) R_s = 1.25 \times 10\ \text{kHz} = 12.5\ \text{kHz} }
+		The same for both: the bandwidth depends on the symbol rate, not on the number
+		of points.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.0in]{12.5 kHz}
+	\end{minipage}
+
+	\part In words, explain how a QAM constellation differs from Lesson 15's 8PSK, and
+	why a QAM receiver needs an AGC that a PSK receiver can do without.
+		\begin{solution}[1.2in]
+		8PSK puts every point on one circle, so only the phase carries data. QAM puts the
+		points on a grid, so both the amplitude and the phase carry data. The decision
+		between an inner and an outer QAM point depends on the amplitude, so the receiver
+		has to hold the signal at the level the constellation expects; a PSK receiver
+		decides by phase alone and can ignore the level.
+		\end{solution}
+
+\end{parts}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{Watching the noise.} You run \texttt{L20-qam-noise.grc} and raise the
+Noise amplitude slider, which adds the same noise to the QPSK, 16-QAM, and 64-QAM rows.
+\begin{parts}
+
+	\part At one setting, the QPSK display shows four round clouds well apart, the 16-QAM
+	display shows sixteen clouds that nearly touch, and the 64-QAM display shows one square
+	of scattered dots with no gaps. Describe what a receiver decoding each signal would
+	deliver at this setting.
+		\begin{solution}[1.3in]
+		QPSK: every symbol lands in its own point's region, so the data arrives intact.
+		16-QAM: most symbols land in the right region, but the clouds' edges cross into
+		neighboring regions now and then, so occasional bits are wrong. 64-QAM: the clouds
+		overlap completely, so the receiver picks the wrong point constantly and the data
+		is unusable.
+		\end{solution}
+
+	\part The noise is the same in all three rows. In words, explain why the three
+	displays look so different.
+		\begin{solution}[1.2in]
+		The noise spreads every point into a cloud of the same size. All three
+		constellations have the same average power, so the more points a constellation
+		has, the closer together they sit: about 1.41 apart for QPSK, 0.63 for 16-QAM, and
+		0.31 for 64-QAM. The same clouds overlap first where the points are closest.
+		\end{solution}
+
+	\part A link carries 64-QAM cleanly at short range. In words, describe what you would
+	see on its constellation display as the receiver moves away, and what Wi-Fi or LTE
+	does at that point.
+		\begin{solution}[1.2in]
+		The signal weakens relative to the noise, so the 64 clouds grow until they touch
+		and merge. Wi-Fi and LTE then step down to a constellation with fewer points,
+		16-QAM and then QPSK, and add more error-correcting code, trading bit rate for
+		a link that still works.
+		\end{solution}
+
+\end{parts}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{An OFDM spectrum and its guard.} A 20 MHz 802.11g Wi-Fi channel uses the
+subcarrier layout of \texttt{L20-ofdm-link.grc}: a 64-point FFT, subcarriers $-26$ to $26$
+with the one at 0 Hz left empty, and a 16-sample guard. It runs at 20 million samples per
+second.
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Find the subcarrier spacing and the width of the occupied band, from the
+		center of subcarrier $-26$ to the center of subcarrier $26$.
+		\begin{solution}[1.2in]
+		\eq{ \Delta f &= 20\ \text{MHz} / 64 = 312.5\ \text{kHz} \\
+		52 \times 312.5\ \text{kHz} &= 16.25\ \text{MHz} }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.0in]{312.5 kHz}
+
+		\vspace{4pt}
+		\ansbox[1.0in]{16.25 MHz}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Find the length of the guard in microseconds.
+		\begin{solution}[0.9in]
+		\eq{ 16 / (20 \times 10^6\ \text{samples/s}) = 0.8\ \mu\text{s} }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.0in]{0.8 $\mu$s}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Radio waves travel 300 m in 1 $\mu$s. A reflection off a wall travels 120 m
+		farther than the direct path, and one off a distant building 600 m farther. How late
+		does each arrive, and which one stays inside the guard?
+		\begin{solution}[1.2in]
+		120 m takes 0.4 $\mu$s, inside the 0.8 $\mu$s guard. 600 m takes 2 $\mu$s, longer
+		than the guard, so it leaks into the next symbol.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.3in]{0.4 $\mu$s, 2 $\mu$s}
+
+		\vspace{4pt}
+		\ansbox[1.3in]{the wall}
+	\end{minipage}
+
+	\part In words, describe what \texttt{L20-ofdm-link.grc} showed for an echo inside the
+	guard and for one past it: the spectrum, the points after the equalizer, and the text.
+		\begin{solution}[1.3in]
+		Inside the guard (8 samples): the spectrum rippled, but the equalizer turned the
+		points back into a clean 16-QAM grid and every line arrived. Past the guard
+		(20 samples): the spectrum rippled more finely, the points after the equalizer
+		scattered with no clear grid, and no line arrived intact, although the noise had
+		not changed.
+		\end{solution}
+
+\end{parts}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{Recognizing signals on a waterfall.} For each description, name the
+system and whether it uses OFDM or a single carrier, and give one feature that identifies it.
+\begin{parts}
+
+	\part A HackRF at 20 MS/s tuned to 2.437 GHz shows short bursts that come and go. Most
+	have a flat top about 17 MHz wide with steep edges and a small dip at the center.
+		\begin{solution}[1.0in]
+		Wi-Fi, OFDM. The bursts are packets; the flat top and steep edges are the
+		subcarriers all at the same power, and the dip is the empty subcarrier at 0 Hz.
+		\end{solution}
+
+	\part An RTL-SDR at 2.4 MS/s tuned to 739 MHz shows a flat band that fills the whole
+	window and stays on.
+		\begin{solution}[1.0in]
+		An LTE downlink, OFDM. The carrier is 5 or 10 MHz wide, wider than the window, and
+		the base station transmits continuously, unlike Wi-Fi's bursts.
+		\end{solution}
+
+	\part An RTL-SDR tuned to an FM station shows a rounded signal whose width changes
+	with the audio, with a flat shelf of constant width on each side from about 130 to
+	200 kHz from its center.
+		\begin{solution}[1.0in]
+		A hybrid HD Radio station, from Lesson 14: the rounded signal is the analog FM
+		host, and the shelves are the OFDM sidebands carrying QPSK.
+		\end{solution}
+
+	\part A cable modem uses 256-QAM. In words, explain why you cannot find its signal
+	with an SDR and an antenna, and why it can use a single carrier.
+		\begin{solution}[1.0in]
+		It travels on coaxial cable, which keeps it off the air. The cable also has few
+		echoes, so a single carrier with a simple equalizer works and OFDM's guard is not
+		needed for that reason.
+		\end{solution}
+
+\end{parts}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{Choosing a scheme.} For each use case, choose OFDM or a single carrier,
+and choose QPSK, 16-QAM, or 64-QAM. Explain each choice in a sentence or two.
+\begin{parts}
+
+	\part A data link inside a large metal hangar, where reflections arrive up to 1.5
+	$\mu$s after the direct signal and the signal is strong.
+		\begin{solution}[1.1in]
+		OFDM with a guard longer than 1.5 $\mu$s, so every reflection stays inside it and
+		the equalizer removes it. The signal is strong, so the clouds stay small and
+		64-QAM can carry the most bits.
+		\end{solution}
+
+	\part A telemetry downlink from a small drone at the edge of its range, in open
+	country with no reflectors nearby, where the signal is weak.
+		\begin{solution}[1.1in]
+		A single carrier is enough, because there are few echoes. The signal is weak, so
+		QPSK, whose points sit farthest apart, keeps the link working where 16-QAM's
+		clouds would merge.
+		\end{solution}
+
+	\part A point-to-point link between two towers with dish antennas aimed at each other,
+	a clear line of sight, and a strong signal.
+		\begin{solution}[1.1in]
+		A single carrier, because the narrow beams leave almost no echoes. The strong
+		signal supports 64-QAM, as microwave links between towers use.
+		\end{solution}
+
+	\part In words, state what decides OFDM or a single carrier, and what decides the
+	number of constellation points.
+		\begin{solution}[1.0in]
+		The echoes decide the first: a channel with echoes longer than a few symbols calls
+		for OFDM and a guard longer than the echoes. The noise decides the second: a clean
+		signal supports more points and more bits per symbol, and a noisy one needs fewer.
+		\end{solution}
+
+\end{parts}
+
+\end{questions}
