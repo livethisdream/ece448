@@ -1,0 +1,654 @@
+options:
+  parameters:
+    author: ECE 448
+    catch_exceptions: 'True'
+    category: '[GRC Hier Blocks]'
+    cmake_opt: ''
+    comment: ''
+    copyright: ''
+    description: 'L19: a simulated harbor of four ships sending AIS on channels A
+      (161.975 MHz) and B (162.025 MHz): NRZI levels at 9600 b/s, a Gaussian filter
+      with BT 0.4, and FM with 2.4 kHz deviation, which is GMSK. Writes 4 s at 96
+      kS/s, centered on 162 MHz, to L19-ais-sim.sigmf-data and .sigmf-meta, labeled
+      Simulated, then stops. Nothing transmits: the last block is a SigMF file sink.
+      Never connect this output to a transmitter: 161.975 and 162.025 MHz carry AIS,
+      a safety-of-life service, and transmitting there is illegal.'
+    gen_cmake: 'On'
+    gen_linking: dynamic
+    generate_options: qt_gui
+    hier_block_src_path: '.:'
+    id: L19_ais_tx
+    max_nouts: '0'
+    output_language: python
+    placement: (0,0)
+    qt_qss_theme: ''
+    realtime_scheduling: ''
+    run: 'True'
+    run_command: '{python} -u {filename}'
+    run_options: prompt
+    sizing_mode: fixed
+    thread_safe_setters: ''
+    title: L19 - AIS Transmitter (Simulated)
+    window_size: (1060, 560)
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [8, 8]
+    rotation: 0
+    state: enabled
+
+blocks:
+- name: baud
+  id: variable
+  parameters:
+    comment: ''
+    value: '9600'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [296, 8]
+    rotation: 0
+    state: enabled
+- name: bt
+  id: variable
+  parameters:
+    comment: ''
+    value: '0.4'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [472, 8]
+    rotation: 0
+    state: enabled
+- name: dev
+  id: variable
+  parameters:
+    comment: ''
+    value: '2400'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [552, 8]
+    rotation: 0
+    state: enabled
+- name: duration
+  id: variable
+  parameters:
+    comment: ''
+    value: '4'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [880, 8]
+    rotation: 0
+    state: enabled
+- name: gtaps
+  id: variable
+  parameters:
+    comment: ''
+    value: np.convolve(firdes.gaussian(1, sps, bt, 4 * sps), np.ones(sps))
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [640, 8]
+    rotation: 0
+    state: enabled
+- name: noise_amp
+  id: variable_qtgui_range
+  parameters:
+    comment: ''
+    gui_hint: 0,0,1,1
+    label: Noise amplitude
+    min_len: '200'
+    orient: QtCore.Qt.Horizontal
+    rangeType: float
+    start: '0'
+    step: '0.01'
+    stop: '0.5'
+    value: '0.05'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [976, 8]
+    rotation: 0
+    state: enabled
+- name: samp_rate
+  id: variable
+  parameters:
+    comment: ''
+    value: '96000'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [200, 8]
+    rotation: 0
+    state: enabled
+- name: sps
+  id: variable
+  parameters:
+    comment: ''
+    value: int(samp_rate / baud)
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [384, 8]
+    rotation: 0
+    state: enabled
+- name: add_0
+  id: blocks_add_xx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_inputs: '3'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [912, 336]
+    rotation: 0
+    state: enabled
+- name: epy_block_0
+  id: epy_block
+  parameters:
+    _source_code: "\"\"\"AIS Frames: a simulated harbor of four ships, as AIS bursts\
+      \ on two channels.\n\nEach burst fills one or two 26.67 ms slots of 256 bits\
+      \ at 9600 b/s:\n8 ramp bits, 24 training bits (0101...), the start flag 0x7E,\
+      \ the message\nand its 16-bit CRC with bit stuffing (a 0 after every five 1s),\
+      \ the end\nflag, and 8 idle bits; the rest of the 256-bit slot is the 24-bit\n\
+      buffer. NRZI then turns the bits into levels: a 0 flips\nthe level and a 1 keeps\
+      \ it.\n\nOutputs, one value per bit (9600 a second): channel A's level (+1 or\
+      \ -1,\n0 when idle) and its on/off gate, then channel B's. Ships report their\n\
+      position (message 1) about every quarter second, about forty times as often\n\
+      as real ones, and their name and voyage (message 5) every two seconds.\nEdit\
+      \ SHIPS to sail your own.\n\nNever connect this output to a transmitter: 161.975\
+      \ and 162.025 MHz carry\nAIS, a safety-of-life service, and transmitting there\
+      \ is illegal.\"\"\"\n\nimport numpy as np\nfrom gnuradio import gr\n\nSIX =\
+      \ '@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\\\]^_ !\"#$%&\\'()*+,-./0123456789:;<=>?'\n\
+      SLOT = 256\n\n# MMSI, name, callsign, latitude, longitude, speed (kt), course\
+      \ (deg),\n# ship type, length (m), draught (m), destination\nSHIPS = [\n   \
+      \ (366944810, 'ECE TRAINER', 'WDE4481', 36.9612, -76.3305, 8.4, 312.0, 52, 32,\
+      \ 3.8, 'NORFOLK'),\n    (367120450, 'FALCON SPIRIT', 'WDF1204', 36.9927, -76.2741,\
+      \ 12.1, 205.5, 70, 188, 10.2, 'BALTIMORE'),\n    (338204077, 'RAMPART', 'WRP2040',\
+      \ 36.9378, -76.3992, 0.0, 0.0, 31, 24, 3.1, 'PORTSMOUTH'),\n    (636019455,\
+      \ 'CAPE TERCEL', 'D5TC9', 37.0185, -76.1874, 15.6, 98.3, 80, 229, 12.4, 'ROTTERDAM'),\n\
+      ]\n\n\ndef bits(v, n):\n    v &= (1 << n) - 1\n    return [(v >> (n - 1 - i))\
+      \ & 1 for i in range(n)]\n\n\ndef text(s, n):\n    out = []\n    for c in (s\
+      \ + '@' * n)[:n]:\n        out += bits(SIX.index(c), 6)\n    return out\n\n\n\
+      def msg1(mmsi, lat, lon, sog, cog, sec):\n    return (bits(1, 6) + bits(0, 2)\
+      \ + bits(mmsi, 30) + bits(0 if sog else 5, 4)\n            + bits(-128, 8) +\
+      \ bits(round(sog * 10), 10) + [1]\n            + bits(round(lon * 600000), 28)\
+      \ + bits(round(lat * 600000), 27)\n            + bits(round(cog * 10), 12) +\
+      \ bits(round(cog) % 360 if sog else 511, 9)\n            + bits(sec % 60, 6)\
+      \ + [0] * 25)\n\n\ndef msg5(mmsi, name, call, stype, length, draught, dest):\n\
+      \    bow = length * 2 // 3\n    return (bits(5, 6) + bits(0, 2) + bits(mmsi,\
+      \ 30) + bits(0, 2) + bits(0, 30)\n            + text(call, 7) + text(name, 20)\
+      \ + bits(stype, 8) + bits(bow, 9)\n            + bits(length - bow, 9) + bits(5,\
+      \ 6) + bits(5, 6) + bits(1, 4)\n            + bits(0, 4) + bits(0, 5) + bits(24,\
+      \ 5) + bits(60, 6)\n            + bits(round(draught * 10), 8) + text(dest,\
+      \ 20) + [0, 0])\n\n\ndef crc16(b):\n    \"\"\"The HDLC check (CRC-16, X.25)\
+      \ over bits in the order they are sent.\"\"\"\n    reg = 0xFFFF\n    for x in\
+      \ b:\n        reg = (reg >> 1) ^ 0x8408 if (reg ^ x) & 1 else reg >> 1\n   \
+      \ return reg ^ 0xFFFF\n\n\ndef burst(payload, start_level):\n    \"\"\"NRZI\
+      \ levels of one burst. Each byte goes least significant bit first.\"\"\"\n \
+      \   p = payload + [0] * (-len(payload) % 8)\n    data = []\n    for i in range(0,\
+      \ len(p), 8):\n        data += p[i:i + 8][::-1]\n    fcs = crc16(data)\n   \
+      \ data += [(fcs >> i) & 1 for i in range(16)]\n    stuffed, run = [], 0\n  \
+      \  for x in data:\n        stuffed.append(x)\n        run = run + 1 if x else\
+      \ 0\n        if run == 5:\n            stuffed.append(0)\n            run =\
+      \ 0\n    flag = [0, 1, 1, 1, 1, 1, 1, 0]\n    line = [0] * 8 + [0, 1] * 12 +\
+      \ flag + stuffed + flag + [0] * 8\n    level, out = start_level, []\n    for\
+      \ x in line:\n        if x == 0:\n            level ^= 1\n        out.append(level)\n\
+      \    return out\n\n\nclass blk(gr.sync_block):\n    def __init__(self, seed=19):\n\
+      \        gr.sync_block.__init__(self, name='AIS Frames', in_sig=None,\n    \
+      \                           out_sig=[np.float32] * 4)\n        self.rng = np.random.default_rng(seed)\n\
+      \        self.queue = []          # (start bit, channel, levels)\n        self.slot\
+      \ = 0\n\n    def plan(self, upto):\n        \"\"\"Schedule bursts slot by slot.\
+      \ Each ship owns a slot in every ten.\"\"\"\n        while self.slot * SLOT\
+      \ < upto:\n            s = self.slot\n            for k, (mmsi, name, call,\
+      \ lat, lon, sog, cog, st, ln, dr, dest) in enumerate(SHIPS):\n             \
+      \   if s % 10 != 2 * k + 1:\n                    continue\n                t\
+      \ = s * SLOT / 9600\n                d = sog * t / 3600 / 60\n             \
+      \   la = lat + d * np.cos(np.radians(cog))\n                lo = lon + d * np.sin(np.radians(cog))\
+      \ / np.cos(np.radians(lat))\n                chan = (s // 10 + k) % 2\n    \
+      \            if (s // 10) % 8 == k:\n                    p = msg5(mmsi, name,\
+      \ call, st, ln, dr, dest)\n                else:\n                    p = msg1(mmsi,\
+      \ la, lo, sog, cog, int(t))\n                lv = burst(p, int(self.rng.integers(2)))\n\
+      \                self.queue.append((s * SLOT, chan, np.array(lv) * 2.0 - 1))\n\
+      \            self.slot += 1\n\n    def work(self, input_items, output_items):\n\
+      \        n = len(output_items[0])\n        n0 = self.nitems_written(0)\n   \
+      \     self.plan(n0 + n + 1)\n        for o in output_items:\n            o[:]\
+      \ = 0\n        keep = []\n        for start, chan, lv in self.queue:\n     \
+      \       a, b = max(start, n0), min(start + len(lv), n0 + n)\n            if\
+      \ a < b:\n                output_items[2 * chan][a - n0:b - n0] = lv[a - start:b\
+      \ - start]\n                output_items[2 * chan + 1][a - n0:b - n0] = 1\n\
+      \            if start + len(lv) > n0 + n:\n                keep.append((start,\
+      \ chan, lv))\n        self.queue = keep\n        return n\n"
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    seed: '19'
+  states:
+    _io_cache: ('AIS Frames', 'blk', [('seed', '19')], [], [('0', 'float', 1), ('1',
+      'float', 1), ('2', 'float', 1), ('3', 'float', 1)], '', [])
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [16, 200]
+    rotation: 0
+    state: enabled
+- name: f2c_a
+  id: blocks_float_to_complex
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [480, 248]
+    rotation: 0
+    state: enabled
+- name: f2c_b
+  id: blocks_float_to_complex
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [480, 568]
+    rotation: 0
+    state: enabled
+- name: fm_a
+  id: analog_frequency_modulator_fc
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    sensitivity: 2 * np.pi * dev / samp_rate
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [480, 168]
+    rotation: 0
+    state: enabled
+- name: fm_b
+  id: analog_frequency_modulator_fc
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    sensitivity: 2 * np.pi * dev / samp_rate
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [480, 488]
+    rotation: 0
+    state: enabled
+- name: head_0
+  id: blocks_head
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_items: int(duration * samp_rate)
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1224, 352]
+    rotation: 0
+    state: enabled
+- name: import_0
+  id: import
+  parameters:
+    alias: ''
+    comment: ''
+    imports: import numpy as np
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1112, 8]
+    rotation: 0
+    state: enabled
+- name: interp_a
+  id: interp_fir_filter_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    interp: sps
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samp_delay: '0'
+    taps: gtaps
+    type: fff
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [264, 160]
+    rotation: 0
+    state: enabled
+- name: interp_b
+  id: interp_fir_filter_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    interp: sps
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samp_delay: '0'
+    taps: gtaps
+    type: fff
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [264, 480]
+    rotation: 0
+    state: enabled
+- name: lo_a
+  id: analog_sig_source_x
+  parameters:
+    affinity: ''
+    alias: ''
+    amp: '1'
+    comment: ''
+    freq: -25e3
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    offset: '0'
+    phase: '0'
+    samp_rate: samp_rate
+    showports: 'False'
+    type: complex
+    waveform: analog.GR_COS_WAVE
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [448, 296]
+    rotation: 0
+    state: enabled
+- name: lo_b
+  id: analog_sig_source_x
+  parameters:
+    affinity: ''
+    alias: ''
+    amp: '1'
+    comment: ''
+    freq: 25e3
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    offset: '0'
+    phase: '0'
+    samp_rate: samp_rate
+    showports: 'False'
+    type: complex
+    waveform: analog.GR_COS_WAVE
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [448, 616]
+    rotation: 0
+    state: enabled
+- name: mul_a
+  id: blocks_multiply_xx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_inputs: '3'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [720, 200]
+    rotation: 0
+    state: enabled
+- name: mul_b
+  id: blocks_multiply_xx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_inputs: '3'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [720, 520]
+    rotation: 0
+    state: enabled
+- name: noise_0
+  id: analog_noise_source_x
+  parameters:
+    affinity: ''
+    alias: ''
+    amp: noise_amp
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    noise_type: analog.GR_GAUSSIAN
+    seed: '162'
+    type: complex
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [720, 368]
+    rotation: 0
+    state: enabled
+- name: rep_a
+  id: blocks_repeat
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    interp: sps
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [264, 248]
+    rotation: 0
+    state: enabled
+- name: rep_b
+  id: blocks_repeat
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    interp: sps
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [264, 568]
+    rotation: 0
+    state: enabled
+- name: sigmf_0
+  id: blocks_sigmf_sink_minimal
+  parameters:
+    affinity: ''
+    alias: ''
+    author: '''ECE 448'''
+    center_freq: 162e6
+    comment: ''
+    description: '''Simulated AIS: four ships from L19-ais-tx.grc, not a real capture'''
+    filename: '''L19-ais-sim.sigmf-data'''
+    hw_info: '''L19-ais-tx.grc'''
+    sample_rate: samp_rate
+    type: complex float (fc32_le)
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1400, 304]
+    rotation: 0
+    state: enabled
+- name: throttle_0
+  id: blocks_throttle2
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    ignoretag: 'True'
+    limit: auto
+    maximum: '0.1'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samples_per_second: samp_rate
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1040, 352]
+    rotation: 0
+    state: enabled
+- name: wf_0
+  id: qtgui_waterfall_sink_x
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha1: '1.0'
+    alpha10: '1.0'
+    alpha2: '1.0'
+    alpha3: '1.0'
+    alpha4: '1.0'
+    alpha5: '1.0'
+    alpha6: '1.0'
+    alpha7: '1.0'
+    alpha8: '1.0'
+    alpha9: '1.0'
+    axislabels: 'True'
+    bw: samp_rate
+    color1: '0'
+    color10: '0'
+    color2: '0'
+    color3: '0'
+    color4: '0'
+    color5: '0'
+    color6: '0'
+    color7: '0'
+    color8: '0'
+    color9: '0'
+    comment: ''
+    fc: '0'
+    fftsize: '512'
+    freqhalf: 'True'
+    grid: 'False'
+    gui_hint: 1,0,1,1
+    int_max: '-20'
+    int_min: '-75'
+    label1: ''
+    label10: ''
+    label2: ''
+    label3: ''
+    label4: ''
+    label5: ''
+    label6: ''
+    label7: ''
+    label8: ''
+    label9: ''
+    legend: 'False'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    name: '"Simulated AIS: channel A at -25 kHz, B at +25 kHz"'
+    nconnections: '1'
+    showports: 'False'
+    type: complex
+    update_time: '0.05'
+    wintype: window.WIN_BLACKMAN_hARRIS
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1400, 488]
+    rotation: 0
+    state: enabled
+
+connections:
+- [add_0, '0', throttle_0, '0']
+- [epy_block_0, '0', interp_a, '0']
+- [epy_block_0, '1', rep_a, '0']
+- [epy_block_0, '2', interp_b, '0']
+- [epy_block_0, '3', rep_b, '0']
+- [f2c_a, '0', mul_a, '1']
+- [f2c_b, '0', mul_b, '1']
+- [fm_a, '0', mul_a, '0']
+- [fm_b, '0', mul_b, '0']
+- [head_0, '0', sigmf_0, '0']
+- [head_0, '0', wf_0, '0']
+- [interp_a, '0', fm_a, '0']
+- [interp_b, '0', fm_b, '0']
+- [lo_a, '0', mul_a, '2']
+- [lo_b, '0', mul_b, '2']
+- [mul_a, '0', add_0, '0']
+- [mul_b, '0', add_0, '1']
+- [noise_0, '0', add_0, '2']
+- [rep_a, '0', f2c_a, '0']
+- [rep_b, '0', f2c_b, '0']
+- [throttle_0, '0', head_0, '0']
+
+metadata:
+  file_format: 1
+  grc_version: 3.10.9.2

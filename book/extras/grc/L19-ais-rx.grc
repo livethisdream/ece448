@@ -1,0 +1,773 @@
+options:
+  parameters:
+    author: ECE 448
+    catch_exceptions: 'True'
+    category: '[GRC Hier Blocks]'
+    cmake_opt: ''
+    comment: ''
+    copyright: ''
+    description: 'L19: receive AIS channels A and B from L19-ais-sim.sigmf-data (96
+      kS/s, centered on 162 MHz): shift each channel to 0 Hz, squelch the noise between
+      bursts, FM-demodulate it, recover the bit timing, slice the bits, and decode
+      them with the AIS Decoder, an Embedded Python Block. Receive only.'
+    gen_cmake: 'On'
+    gen_linking: dynamic
+    generate_options: qt_gui
+    hier_block_src_path: '.:'
+    id: L19_ais_rx
+    max_nouts: '0'
+    output_language: python
+    placement: (0,0)
+    qt_qss_theme: ''
+    realtime_scheduling: ''
+    run: 'True'
+    run_command: '{python} -u {filename}'
+    run_options: prompt
+    sizing_mode: fixed
+    thread_safe_setters: ''
+    title: L19 - AIS Receiver
+    window_size: (1060, 860)
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [8, 8]
+    rotation: 0
+    state: enabled
+
+blocks:
+- name: chan_a
+  id: variable
+  parameters:
+    comment: ''
+    value: -25e3
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [480, 8]
+    rotation: 0
+    state: enabled
+- name: chan_b
+  id: variable
+  parameters:
+    comment: ''
+    value: 25e3
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [576, 8]
+    rotation: 0
+    state: enabled
+- name: decim
+  id: variable
+  parameters:
+    comment: ''
+    value: '2'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [296, 8]
+    rotation: 0
+    state: enabled
+- name: noise
+  id: variable_qtgui_range
+  parameters:
+    comment: ''
+    gui_hint: 0,0,1,1
+    label: Added noise
+    min_len: '200'
+    orient: QtCore.Qt.Horizontal
+    rangeType: float
+    start: '0'
+    step: '0.01'
+    stop: '0.5'
+    value: '0'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [880, 8]
+    rotation: 0
+    state: enabled
+- name: samp_rate
+  id: variable
+  parameters:
+    comment: ''
+    value: '96000'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [200, 8]
+    rotation: 0
+    state: enabled
+- name: sps
+  id: variable
+  parameters:
+    comment: ''
+    value: samp_rate / decim / 9600
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [384, 8]
+    rotation: 0
+    state: enabled
+- name: squelch
+  id: variable_qtgui_range
+  parameters:
+    comment: ''
+    gui_hint: 0,1,1,1
+    label: Squelch (dB)
+    min_len: '200'
+    orient: QtCore.Qt.Horizontal
+    rangeType: float
+    start: '-60'
+    step: '1'
+    stop: '0'
+    value: '-25'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [992, 8]
+    rotation: 0
+    state: enabled
+- name: stats
+  id: variable_function_probe
+  parameters:
+    block_id: epy_block_0
+    comment: ''
+    function_args: ''
+    function_name: stats
+    poll_rate: '2'
+    value: ''''''
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1104, 8]
+    rotation: 0
+    state: enabled
+- name: stats_label
+  id: variable_qtgui_label
+  parameters:
+    comment: ''
+    formatter: None
+    gui_hint: 1,0,1,2
+    label: Frames
+    type: string
+    value: stats
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1424, 8]
+    rotation: 0
+    state: enabled
+- name: table
+  id: variable_function_probe
+  parameters:
+    block_id: epy_block_0
+    comment: ''
+    function_args: ''
+    function_name: table
+    poll_rate: '2'
+    value: ''''''
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1264, 8]
+    rotation: 0
+    state: enabled
+- name: table_label
+  id: variable_qtgui_label
+  parameters:
+    comment: ''
+    formatter: None
+    gui_hint: 3,0,1,2
+    label: Ships
+    type: string
+    value: table
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1536, 8]
+    rotation: 0
+    state: enabled
+- name: taps
+  id: variable
+  parameters:
+    comment: ''
+    value: firdes.low_pass(1, samp_rate, 7e3, 3e3)
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [672, 8]
+    rotation: 0
+    state: enabled
+- name: add_0
+  id: blocks_add_xx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_inputs: '2'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [432, 264]
+    rotation: 0
+    state: enabled
+- name: demod_a
+  id: analog_quadrature_demod_cf
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    gain: samp_rate / decim / (2 * math.pi * 2400)
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [808, 344]
+    rotation: 0
+    state: enabled
+- name: demod_b
+  id: analog_quadrature_demod_cf
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    gain: samp_rate / decim / (2 * math.pi * 2400)
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [808, 552]
+    rotation: 0
+    state: enabled
+- name: epy_block_0
+  id: epy_block
+  parameters:
+    _source_code: "\"\"\"AIS Decoder: turns the sliced bits of channels A and B into\
+      \ AIS messages.\n\nFor each channel, one bit at a time:\n1. Undo NRZI: a bit\
+      \ that keeps the level is a 1, a change is a 0.\n2. Find the start flag, 01111110,\
+      \ and collect bits up to the end flag.\n3. Remove the stuffed bits: drop the\
+      \ 0 that follows five 1s.\n4. Check the 16-bit CRC. A frame that fails is counted\
+      \ and dropped.\n5. Put each byte's bits back in order, print the message as\
+      \ an NMEA\n   !AIVDM sentence, and decode the fields a chart plotter would show.\n\
+      \nFunction Probes read stats() and table() for the QT GUI Labels.\"\"\"\n\n\
+      import numpy as np\nfrom gnuradio import gr\n\nSIX = '@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\\
+      \\]^_ !\"#$%&\\'()*+,-./0123456789:;<=>?'\nFLAG = 0x7E\n\n\ndef val(b, signed=False):\n\
+      \    v = 0\n    for x in b:\n        v = (v << 1) | x\n    return v - (1 <<\
+      \ len(b)) if signed and b[0] else v\n\n\ndef crc_ok(b):\n    reg = 0xFFFF\n\
+      \    for x in b:\n        reg = (reg >> 1) ^ 0x8408 if (reg ^ x) & 1 else reg\
+      \ >> 1\n    return reg == 0xF0B8\n\n\ndef nmea(p, chan):\n    fill = -len(p)\
+      \ % 6\n    p = p + [0] * fill\n    s = ''.join(chr(v + 48 if v < 40 else v +\
+      \ 56)\n                for v in (val(p[i:i + 6]) for i in range(0, len(p), 6)))\n\
+      \    parts = [s[i:i + 60] for i in range(0, len(s), 60)]\n    out = []\n   \
+      \ for k, part in enumerate(parts):\n        f = fill if k == len(parts) - 1\
+      \ else 0\n        body = f'AIVDM,{len(parts)},{k + 1},{\"1\" if len(parts) >\
+      \ 1 else \"\"},{chan},{part},{f}'\n        cs = 0\n        for c in body:\n\
+      \            cs ^= ord(c)\n        out.append(f'!{body}*{cs:02X}')\n    return\
+      \ out\n\n\nclass Channel:\n    def __init__(self):\n        self.prev = 0\n\
+      \        self.shift = 0\n        self.frame = None\n        self.trained = False\n\
+      \n    def bit(self, level):\n        \"\"\"Feed one sliced bit. At a flag, returns\
+      \ (bits since the last flag,\n        whether the training bits came before\
+      \ it); otherwise None.\"\"\"\n        b = 1 if level == self.prev else 0\n \
+      \       self.prev = level\n        self.shift = ((self.shift << 1) | b) & 0xFFFF\n\
+      \        if self.frame is not None:\n            self.frame.append(b)\n    \
+      \        if len(self.frame) > 1100:\n                self.frame = None\n   \
+      \     if self.shift & 0xFF != FLAG:\n            return None\n        done =\
+      \ None\n        if self.frame is not None and len(self.frame) > 8:\n       \
+      \     done = (self.frame[:-8], self.trained)\n        # A new frame may start\
+      \ here. Training bits, 0101..., before the\n        # flag mark a real start\
+      \ rather than noise that happens to match.\n        self.trained = (self.shift\
+      \ >> 8) in (0x55, 0xAA)\n        self.frame = []\n        return done\n\n\n\
+      class blk(gr.sync_block):\n    def __init__(self, settings=None):\n        gr.sync_block.__init__(self,\
+      \ name='AIS Decoder', in_sig=[np.uint8, np.uint8], out_sig=None)\n        self.ch\
+      \ = {'A': Channel(), 'B': Channel()}\n        self.settings = settings\n\n \
+      \   @property\n    def settings(self):\n        return self._settings\n\n  \
+      \  @settings.setter\n    def settings(self, value):\n        # GRC sets this\
+      \ when a slider it names moves: the counts and the\n        # table start over.\n\
+      \        self._settings = value\n        self.ships = {}\n        self.good\
+      \ = 0\n        self.bad = 0\n\n    def work(self, input_items, output_items):\n\
+      \        for name, x in zip('AB', input_items):\n            c = self.ch[name]\n\
+      \            for level in x:\n                got = c.bit(int(level))\n    \
+      \            if got is not None and self.frame(*got, name):\n              \
+      \      c.frame = None    # one frame per burst\n        return len(input_items[0])\n\
+      \n    def frame(self, raw, trained, chan):\n        \"\"\"Unstuff and check\
+      \ one frame. True if it passed the CRC.\"\"\"\n        b, run = [], 0\n    \
+      \    for x in raw:\n            if run == 5:          # the 0 after five 1s\
+      \ was stuffed\n                run = 0\n                continue\n         \
+      \   b.append(x)\n            run = run + 1 if x else 0\n        if len(b) <\
+      \ 72 or (len(b) - 16) % 8 or not crc_ok(b):\n            self.bad += trained\
+      \ and len(b) >= 72\n            return False\n        self.good += 1\n     \
+      \   p = []\n        for i in range(0, len(b) - 16, 8):\n            p += b[i:i\
+      \ + 8][::-1]\n        self.report(p, chan)\n        return True\n\n    def report(self,\
+      \ p, chan):\n        mtype, mmsi = val(p[0:6]), val(p[8:38])\n        s = self.ships.setdefault(mmsi,\
+      \ {})\n        what = f'message {mtype}'\n        if mtype in (1, 2, 3) and\
+      \ len(p) >= 168:\n            s['sog'] = val(p[50:60]) / 10\n            s['lon']\
+      \ = val(p[61:89], True) / 600000\n            s['lat'] = val(p[89:116], True)\
+      \ / 600000\n            s['cog'] = val(p[116:128]) / 10\n            what =\
+      \ f'position {s[\"lat\"]:.4f}, {s[\"lon\"]:.4f}, {s[\"sog\"]} kt, course {s[\"\
+      cog\"]}'\n        elif mtype == 18 and len(p) >= 168:\n            s['sog']\
+      \ = val(p[46:56]) / 10\n            s['lon'] = val(p[57:85], True) / 600000\n\
+      \            s['lat'] = val(p[85:112], True) / 600000\n            s['cog']\
+      \ = val(p[112:124]) / 10\n            what = f'class B position {s[\"lat\"]:.4f},\
+      \ {s[\"lon\"]:.4f}, {s[\"sog\"]} kt'\n        elif mtype == 5 and len(p) >=\
+      \ 420:\n            txt = lambda a, n: ''.join(SIX[val(p[a + 6 * i:a + 6 * i\
+      \ + 6])] for i in range(n)).strip('@ ')\n            s['name'], s['dest'] =\
+      \ txt(112, 20), txt(302, 20)\n            s['type'] = val(p[232:240])\n    \
+      \        s['len'] = val(p[240:249]) + val(p[249:258])\n            what = f'name\
+      \ {s[\"name\"]}, callsign {txt(70, 7)}, type {s[\"type\"]}, {s[\"len\"]} m,\
+      \ to {s[\"dest\"]}'\n        elif mtype == 24 and len(p) >= 160 and val(p[38:40])\
+      \ == 0:\n            s['name'] = ''.join(SIX[val(p[40 + 6 * i:46 + 6 * i])]\
+      \ for i in range(20)).strip('@ ')\n            what = f'name {s[\"name\"]}'\n\
+      \        for line in nmea(p, chan):\n            print(line, flush=True)\n \
+      \       print(f'    channel {chan}  MMSI {mmsi}  {what}', flush=True)\n\n  \
+      \  def stats(self):\n        return f'{self.good} passed CRC, {self.bad} failed'\n\
+      \n    def table(self):\n        rows = []\n        for mmsi, s in sorted(self.ships.items()):\n\
+      \            pos = f'{s[\"lat\"]:.4f}, {s[\"lon\"]:.4f}' if 'lat' in s else\
+      \ 'position ?'\n            rows.append(f'{mmsi}  {s.get(\"name\", \"?\")}:\
+      \  {pos},  {s.get(\"sog\", \"?\")} kt,  '\n                        f'course\
+      \ {s.get(\"cog\", \"?\")}')\n        return '\\n'.join(rows) or '(no ships yet)'\n"
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    settings: (noise,)
+  states:
+    _io_cache: ('AIS Decoder', 'blk', [('settings', 'None')], [('0', 'byte', 1), ('1',
+      'byte', 1)], [], '', ['settings'])
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1432, 360]
+    rotation: 0
+    state: enabled
+- name: noise_0
+  id: analog_noise_source_x
+  parameters:
+    affinity: ''
+    alias: ''
+    amp: noise
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    noise_type: analog.GR_GAUSSIAN
+    seed: '0'
+    type: complex
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [232, 336]
+    rotation: 0
+    state: enabled
+- name: slice_a
+  id: digital_binary_slicer_fb
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1256, 248]
+    rotation: 0
+    state: enabled
+- name: slice_b
+  id: digital_binary_slicer_fb
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1256, 456]
+    rotation: 0
+    state: enabled
+- name: sq_a
+  id: analog_pwr_squelch_xx
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha: '0.05'
+    comment: ''
+    gate: 'False'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    ramp: '0'
+    threshold: squelch
+    type: complex
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [760, 240]
+    rotation: 0
+    state: enabled
+- name: sq_b
+  id: analog_pwr_squelch_xx
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha: '0.05'
+    comment: ''
+    gate: 'False'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    ramp: '0'
+    threshold: squelch
+    type: complex
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [760, 448]
+    rotation: 0
+    state: enabled
+- name: src_0
+  id: blocks_sigmf_source_minimal
+  parameters:
+    affinity: ''
+    alias: ''
+    begin_tag: pmt.PMT_NIL
+    comment: ''
+    file: '''L19-ais-sim.sigmf-data'''
+    length: '0'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    repeat: 'True'
+    type: complex float (fc32_le)
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [16, 216]
+    rotation: 0
+    state: enabled
+- name: sync_a
+  id: digital_symbol_sync_xx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    constellation: digital.constellation_bpsk().base()
+    damping: '1.0'
+    loop_bw: '0.06'
+    max_dev: '1.5'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    nfilters: '128'
+    osps: '1'
+    pfb_mf_taps: '[]'
+    resamp_type: digital.IR_MMSE_8TAP
+    sps: sps
+    ted_gain: '1.0'
+    ted_type: digital.TED_ZERO_CROSSING
+    type: ff
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1000, 216]
+    rotation: 0
+    state: enabled
+- name: sync_b
+  id: digital_symbol_sync_xx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    constellation: digital.constellation_bpsk().base()
+    damping: '1.0'
+    loop_bw: '0.06'
+    max_dev: '1.5'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    nfilters: '128'
+    osps: '1'
+    pfb_mf_taps: '[]'
+    resamp_type: digital.IR_MMSE_8TAP
+    sps: sps
+    ted_gain: '1.0'
+    ted_type: digital.TED_ZERO_CROSSING
+    type: ff
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1000, 424]
+    rotation: 0
+    state: enabled
+- name: throttle_0
+  id: blocks_throttle2
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    ignoretag: 'True'
+    limit: auto
+    maximum: '0.1'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samples_per_second: samp_rate
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [232, 232]
+    rotation: 0
+    state: enabled
+- name: time_0
+  id: qtgui_time_sink_x
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha1: '1.0'
+    alpha10: '1.0'
+    alpha2: '1.0'
+    alpha3: '1.0'
+    alpha4: '1.0'
+    alpha5: '1.0'
+    alpha6: '1.0'
+    alpha7: '1.0'
+    alpha8: '1.0'
+    alpha9: '1.0'
+    autoscale: 'False'
+    axislabels: 'True'
+    color1: blue
+    color10: dark blue
+    color2: red
+    color3: green
+    color4: black
+    color5: cyan
+    color6: magenta
+    color7: yellow
+    color8: dark red
+    color9: dark green
+    comment: ''
+    ctrlpanel: 'False'
+    entags: 'False'
+    grid: 'True'
+    gui_hint: 2,1,1,1
+    label1: '"Channel A"'
+    label10: Signal 10
+    label2: '"Channel B"'
+    label3: Signal 3
+    label4: Signal 4
+    label5: Signal 5
+    label6: Signal 6
+    label7: Signal 7
+    label8: Signal 8
+    label9: Signal 9
+    legend: 'True'
+    marker1: '-1'
+    marker10: '-1'
+    marker2: '-1'
+    marker3: '-1'
+    marker4: '-1'
+    marker5: '-1'
+    marker6: '-1'
+    marker7: '-1'
+    marker8: '-1'
+    marker9: '-1'
+    name: '"FM demodulator output: the start of one burst"'
+    nconnections: '2'
+    size: '480'
+    srate: samp_rate / decim
+    stemplot: 'False'
+    style1: '1'
+    style10: '1'
+    style2: '1'
+    style3: '1'
+    style4: '1'
+    style5: '1'
+    style6: '1'
+    style7: '1'
+    style8: '1'
+    style9: '1'
+    tr_chan: '0'
+    tr_delay: '0.001'
+    tr_level: '0.5'
+    tr_mode: qtgui.TRIG_MODE_NORM
+    tr_slope: qtgui.TRIG_SLOPE_POS
+    tr_tag: '""'
+    type: float
+    update_time: '0.1'
+    width1: '1'
+    width10: '1'
+    width2: '1'
+    width3: '1'
+    width4: '1'
+    width5: '1'
+    width6: '1'
+    width7: '1'
+    width8: '1'
+    width9: '1'
+    ylabel: '"Frequency (x 2.4 kHz)"'
+    ymax: '1.5'
+    ymin: '-1.5'
+    yunit: '""'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1040, 680]
+    rotation: 0
+    state: enabled
+- name: wf_0
+  id: qtgui_waterfall_sink_x
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha1: '1.0'
+    alpha10: '1.0'
+    alpha2: '1.0'
+    alpha3: '1.0'
+    alpha4: '1.0'
+    alpha5: '1.0'
+    alpha6: '1.0'
+    alpha7: '1.0'
+    alpha8: '1.0'
+    alpha9: '1.0'
+    axislabels: 'True'
+    bw: samp_rate
+    color1: '0'
+    color10: '0'
+    color2: '0'
+    color3: '0'
+    color4: '0'
+    color5: '0'
+    color6: '0'
+    color7: '0'
+    color8: '0'
+    color9: '0'
+    comment: ''
+    fc: 162e6
+    fftsize: '512'
+    freqhalf: 'True'
+    grid: 'False'
+    gui_hint: 2,0,1,1
+    int_max: '-20'
+    int_min: '-75'
+    label1: ''
+    label10: ''
+    label2: ''
+    label3: ''
+    label4: ''
+    label5: ''
+    label6: ''
+    label7: ''
+    label8: ''
+    label9: ''
+    legend: 'False'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    name: '"Channels A and B"'
+    nconnections: '1'
+    showports: 'False'
+    type: complex
+    update_time: '0.05'
+    wintype: window.WIN_BLACKMAN_hARRIS
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [560, 120]
+    rotation: 0
+    state: enabled
+- name: xlate_a
+  id: freq_xlating_fir_filter_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    center_freq: chan_a
+    comment: ''
+    decim: decim
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samp_rate: samp_rate
+    taps: taps
+    type: ccc
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [560, 232]
+    rotation: 0
+    state: enabled
+- name: xlate_b
+  id: freq_xlating_fir_filter_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    center_freq: chan_b
+    comment: ''
+    decim: decim
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samp_rate: samp_rate
+    taps: taps
+    type: ccc
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [560, 440]
+    rotation: 0
+    state: enabled
+
+connections:
+- [add_0, '0', wf_0, '0']
+- [add_0, '0', xlate_a, '0']
+- [add_0, '0', xlate_b, '0']
+- [demod_a, '0', sync_a, '0']
+- [demod_a, '0', time_0, '0']
+- [demod_b, '0', sync_b, '0']
+- [demod_b, '0', time_0, '1']
+- [noise_0, '0', add_0, '1']
+- [slice_a, '0', epy_block_0, '0']
+- [slice_b, '0', epy_block_0, '1']
+- [sq_a, '0', demod_a, '0']
+- [sq_b, '0', demod_b, '0']
+- [src_0, '0', throttle_0, '0']
+- [sync_a, '0', slice_a, '0']
+- [sync_b, '0', slice_b, '0']
+- [throttle_0, '0', add_0, '0']
+- [xlate_a, '0', sq_a, '0']
+- [xlate_b, '0', sq_b, '0']
+
+metadata:
+  file_format: 1
+  grc_version: 3.10.9.2

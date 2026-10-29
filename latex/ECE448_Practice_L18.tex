@@ -1,0 +1,214 @@
+% !TEX root =./ECE448_Practice_main.tex
+%
+% L18 practice set (ADS-B). Every question is a step in the L18 flowgraphs:
+% reading PPM chips, splitting a message into its fields, choosing the receiver's
+% sample rate and time sink, and explaining what noise does to the table.
+% Blank copy: \begin{solution}[h] reserves h of work space.
+% SOLUTIONS copy (\iskey=1) prints the red worked solutions.
+
+\fullwidth{\textbf{Learning Objective 6.7: } I can receive and decode ADS-B messages from
+aircraft transponders.
+\\[4pt]\normalfont\small Show your work. Write a \textbf{Documentation} line at the
+end (\textbf{None} if you did not collaborate).}
+
+\begin{questions}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{Reading the chips.} A receiver samples a message at 2 MS/s, so each
+0.5~\textmu s half of a bit is one sample, or chip. After the preamble, the first 16
+chips it reads, in pairs, are
+\begin{center}\texttt{10 01 01 01 10 10 01 10}\end{center}
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Write the 8 bits these chips carry, and the byte in hex.
+		\begin{solution}[1.1in]
+		In PPM a pulse in the first half (\texttt{10}) is a 1 and a pulse in the second
+		half (\texttt{01}) is a 0, so the bits are \texttt{1000 1101}, which is 8D in hex.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		bits: \ansbox[1.2in]{1000 1101}
+
+		\vspace{4pt}
+		hex: \ansbox[1.0in]{8D}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part The first 5 bits are the Downlink Format and the next 3 the capability.
+		Find both, and say whether this is an ADS-B extended squitter.
+		\begin{solution}[0.9in]
+		DF $= 10001_2 = 17$ and CA $= 101_2 = 5$. DF 17 is the extended squitter, so yes.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		DF: \ansbox[0.8in]{17}
+
+		\vspace{4pt}
+		CA: \ansbox[0.8in]{5}
+	\end{minipage}
+
+	\part A noise spike makes the sixth pair read \texttt{11}: both chips high. In words,
+	explain what the receiver does with that bit, and why the parity check matters here.
+		\begin{solution}[1.2in]
+		The receiver compares the two chips and calls the bit by whichever is larger, so it
+		guesses: with both high it may call the bit wrong. It cannot tell from the chips
+		alone. The 24 parity bits catch the wrong bit: the remainder no longer matches, and
+		the decoder drops the whole message rather than report a wrong altitude or address.
+		\end{solution}
+
+\end{parts}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{The message.} The Mode S Decoder prints
+\begin{center}\texttt{8DAE07C220483234D71CA031ACD8}\end{center}
+The 28 hex digits are the 112 bits: DF and CA (8 bits), ICAO (24), ME (56), and PI (24).
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Split the message into its ICAO address, ME field, and parity, in hex.
+		\begin{solution}[1.0in]
+		After the first byte, 8D: ICAO is the next 6 hex digits, AE07C2; ME is the next
+		14, 20483234D71CA0; PI is the last 6, 31ACD8.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		ICAO: \ansbox[1.2in]{AE07C2}
+
+		\vspace{4pt}
+		PI: \ansbox[1.2in]{31ACD8}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part The type code is the first 5 bits of ME. Find it, and say which kind of
+		message this is.
+		\begin{solution}[0.9in]
+		ME begins with 20 hex, \texttt{0010 0000}, so the type code is $00100_2 = 4$:
+		an identification message, which carries a callsign.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.2in]{4, identification}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part After the type code and 3 category bits, the callsign is eight 6-bit
+		characters. In the Mode S character set, 1 to 26 are A to Z, 48 to 57 are the
+		digits 0 to 9, and 32 is a space. The eight values are 18, 3, 8, 52, 53, 49, 50, 32.
+		Write the callsign.
+		\begin{solution}[0.9in]
+		18 is R, 3 is C, 8 is H, and 52, 53, 49, 50 are the digits 4, 5, 1, 2; 32 is a
+		space. The callsign is RCH4512, a USAF airlift flight.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.2in]{RCH4512}
+	\end{minipage}
+
+\end{parts}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{Receiver settings.} The L18 receiver runs at 2 MS/s.
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part How many samples does one whole message take, preamble included? Set the
+		triggered time sink's number of points to show one whole message with about
+		10~\textmu s to spare.
+		\begin{solution}[1.0in]
+		A message is $8 + 112 = 120$~\textmu s, and at 2 MS/s that is 240 samples. With
+		10~\textmu s (20 samples) to spare, about 260 points.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		samples: \ansbox[0.9in]{240}
+
+		\vspace{4pt}
+		points: \ansbox[0.9in]{about 260}
+	\end{minipage}
+
+	\part A classmate sets the RTL-SDR to 1 MS/s to save processing. Explain, in words,
+	why the Mode S Decoder can no longer read the bits.
+		\begin{solution}[1.1in]
+		At 1 MS/s there is one sample per bit, not one per half bit, so the receiver can
+		no longer compare the first half of each bit with the second. Each sample may land
+		on the pulse or on the quiet half, and nothing tells it which half held the pulse.
+		PPM needs at least two samples a bit.
+		\end{solution}
+
+	\part On a live run, the 20~ms plot shows a noise floor near 0.05 and messages
+	whose pulses reach between 0.15 and 0.6. The trigger level is 0.3. Choose a better
+	trigger level and say what you would see with each setting.
+		\begin{solution}[1.2in]
+		At 0.3 the plot freezes only on the stronger aircraft, whose pulses reach above it;
+		the weaker ones never trigger it. A level near 0.1, above the floor but below the
+		weakest pulses, triggers on every message. Much lower and the noise itself
+		triggers it, and the plot shows noise instead of a preamble.
+		\end{solution}
+
+\end{parts}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{What noise does.} You run \texttt{L18-adsb-rx.grc} on the simulated
+recording and raise the Added noise slider a step at a time.
+\begin{parts}
+
+	\part Describe what happens to the 20~ms plot, the Messages label, and the aircraft
+	table as the noise rises.
+		\begin{solution}[1.2in]
+		The noise floor in the plot rises toward the spikes, and the weaker spikes sink
+		into it. The count of messages that pass the parity drops, and the table starts
+		over and fills with fewer aircraft: the strongest ones stay and the weakest ones
+		never return.
+		\end{solution}
+
+	\part Explain, in words, why the weakest aircraft drop out first, and what that
+	means for a real receiver.
+		\begin{solution}[1.2in]
+		A weak aircraft's pulses stand only a little above the noise, so a noise peak in
+		the quiet half of a bit beats the pulse in some pair of almost every message, the
+		parity fails, and the message is dropped. A strong aircraft's pulses are far above
+		the noise, so its bits survive. On a real receiver the weak aircraft are the
+		distant ones, so the range at which aircraft decode shrinks as the noise rises.
+		\end{solution}
+
+\end{parts}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{Generating and locating.} Anyone with an RTL-SDR can receive ADS-B, and a flowgraph can generate it.
+\begin{parts}
+
+	\part The L18 generator writes a file. Explain why nothing in the course transmits
+	its output at 1090 MHz.
+		\begin{solution}[1.1in]
+		Air traffic control and aircraft collision-avoidance systems use 1090 MHz, and
+		nothing in an ADS-B message proves who sent it, so a transmitted message could
+		put a false aircraft on a controller's display or another aircraft's. Transmitting
+		there is illegal without authorization and unsafe.
+		\end{solution}
+
+	\part The Mode S Decoder finds each position from one message by using USAFA as a
+	reference position. Explain, in words, why it needs a reference at all, and what goes
+	wrong for an aircraft 500 nautical miles away.
+		\begin{solution}[1.2in]
+		A position message carries the latitude and longitude only within one of many zones
+		(Compact Position Reporting), not which zone. The decoder picks the zone nearest its
+		reference, which is right for any aircraft within about 180 nautical miles. An
+		aircraft 500 nautical miles away lies in a different zone, so the decoder places it
+		in the wrong one and reports a position that is badly wrong; pairing an even and an
+		odd message avoids that.
+		\end{solution}
+
+\end{parts}
+
+\end{questions}
