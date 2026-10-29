@@ -1,0 +1,454 @@
+\documentclass{exam}
+
+\newif\ifA
+\newif\ifkey
+\newif\ifprintselected   % required by exam_config's \ansbox
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% SET THESE IF VARIABLES
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Lab name -- labs are named by the lesson they belong to, never by a
+% sequential lab number (Neil, 2026-10-12): this is the L17 Lab.
+\def\labLesson{17}
+
+% is this the key or not?
+\ifdefined\iskey
+	\ifnum\iskey=1
+		\keytrue
+	\else
+		\keyfalse
+	\fi
+\else
+	%% Pick one manually
+	\keyfalse % if this is NOT the key
+%	\keytrue     % if this IS the key
+\fi
+
+% set up the header and footer - change for every term
+\ifdefined\thisTermIn
+	\def\thisterm{\thisTermIn}
+\else
+	\def\thisterm{Spring 2027}
+\fi
+%
+\def\thisclass{ECE 448}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% END SET THESE IF VARIABLES
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% packages and shortcuts
+\input{myPackages_gr}
+\usepackage[hidelinks, linkcolor=red]{hyperref}
+\input{myShortcuts}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt}
+
+%% exam class customization
+\input{exam_config}
+\input{ece448_fonts}   % Barlow body text (needs lualatex)
+\printselectedfalse      % full worked solutions in the key, not answers-only
+\CorrectChoiceEmphasis{\color{red}}
+\SolutionEmphasis{\color{red}}
+\renewcommand\questionlabel{\textbf{\thequestion.}}
+\renewcommand{\thepartno}{\alph{partno}}
+\renewcommand{\partlabel}{(\thepartno)}
+
+% Fillable table cell: blank in the student copy, the expected value in red on
+% the KEY. Fixed-width centered columns keep the blank cells writable.
+\newcolumntype{K}[1]{>{\centering\arraybackslash}p{#1}}
+\newcommand{\kv}[1]{\ifkey{\color{red}#1}\fi\rule[-0.10in]{0pt}{0.34in}}
+
+% Answers are not in this public file. Every solution, \kv value, and \ansbox
+% value is \keysol{<id>}, defined in the private ECE448-faculty repo at
+% lab-keys/src/ECE448_Lab_L17_RFReverseEngineering_solutions.tex; build_lab.sh puts that
+% folder on TEXINPUTS (KEYDIR) for the KEY. A KEY build without it stops.
+\long\def\defkeysol#1#2{\expandafter\long\expandafter\def\csname keysol@#1\endcsname{#2}}
+\def\keysol#1{\ifcsname keysol@#1\endcsname\csname keysol@#1\endcsname\fi}
+\ifkey
+	\IfFileExists{ECE448_Lab_L17_RFReverseEngineering_solutions.tex}%
+		{\input{ECE448_Lab_L17_RFReverseEngineering_solutions}}%
+		{\errmessage{KEY build needs ECE448_Lab_L17_RFReverseEngineering_solutions.tex from ECE448-faculty/lab-keys/src (set KEYDIR)}}
+\fi
+
+% print the answers if this is the key
+\ifkey
+	\printanswers % if this IS the key
+\else
+	\noprintanswers  %if this is NOT the key
+\fi
+
+% print the header and footer
+% need to print key on top if this is the key
+\ifkey
+	\firstpageheader{}{\color{red}{ KEY}}{}
+	\runningheader{\thisclass\hspace{1pt} -- \thisterm }{L\labLesson\ Lab\hspace{1pt}\color{red}{ KEY}}{\thepage\hspace{1pt} of\hspace{1pt} \numpages}
+	\firstpagefooter{}{}{}
+	\runningfooter{}{}{}
+\else
+	\firstpageheader{}{}{}
+	\runningheader{\thisclass \hspace{1pt} -- \thisterm }{L\labLesson\ Lab\hspace{1pt}}{\thepage\hspace{1pt} of\hspace{1pt} \numpages}
+	\firstpagefooter{}{}{}
+	\runningfooter{}{}{}
+\fi
+
+\runningheadrule
+
+
+\begin{document}
+\pagestyle{headandfoot}   % exam class
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% title block
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{center}
+USAF ACADEMY \\
+DEPARTMENT OF ELECTRICAL AND COMPUTER ENGINEERING \\
+LESSON \labLesson\ LAB - RF REVERSE ENGINEERING \\
+\textbf{Lab Packet} \\
+\thisterm \\[4mm]
+\end{center}
+
+\vspace{-4pt}
+\textbf{Name:} \rule[-2pt]{2.6in}{0.4pt} \hfill
+\textbf{Section:} \rule[-2pt]{0.9in}{0.4pt} \hfill
+\textbf{Date:} \rule[-2pt]{1.1in}{0.4pt}
+
+\vspace{4pt}
+
+\fullwidth{\textbf{Learning Objective 6.6: } I can perform RF reverse engineering on
+an unknown signal: identify its modulation, symbol rate, and payload structure.}
+
+\vspace{2pt}
+
+This packet is the L\labLesson\ Lab, in three parts, and you turn it in once, complete,
+before Lesson 18. Do \textbf{Part 1} on your own before the lab period: read the
+recording's meta file, check your URH install, and work out the chip settings.
+\textbf{Part 2} is what you find, build, and observe, recorded in class: Questions 4 to
+7 on your own laptop, Question 8 at a PlutoSDR station with your team, and Question 9
+with a real remote of your choice. Do
+\textbf{Part 3} on your own after the lab: explain, in words, the evidence for each
+answer.
+
+\textbf{Grading.} You submit the packet once, we grade it against Objective 6.6 on
+the course's 1 / 0 scale, and you may revise it under course policy. Paste screenshots
+where a question asks for one.
+
+\textbf{The device.} The recording \texttt{L17-lab-unknown.sigmf-data}, with its
+\texttt{.sigmf-meta} file, is on the L17 Lab page. It is a Simulated remote outlet
+switch with six buttons, pressed once each in the order the meta file lists. Nothing
+else about it is given: finding it out is the lab.
+
+\textbf{Transmitting.} In class we transmit only into a cable, into a shielded
+enclosure, or at very low power in an ISM band, and only when the lesson says to.
+This device's band is an FCC Part 15 frequency, not a U.S. ISM band; transmit only into
+the cable. Questions 1 to 7 run on your laptop and transmit nothing. Question 8 transmits from a
+PlutoSDR's TX port, through a cable with an inline 30 dB SMA attenuator, to a second
+SDR's input. Connect the cable and attenuator before you run the flowgraph, and never
+connect an antenna in this lab. Never set TX attenuation below 30 dB or change the
+slider's range; an SDR's input is rated to only a few dBm. We have compiled the
+PlutoSDR flowgraphs but not run them on a radio, so Question 8 is their first run on
+hardware. Question 9 only receives, which is always allowed.
+
+\begin{questions}
+
+\fullwidth{\large\textbf{Part 1: Pre-Lab} \normalsize(individual, before the lab period)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{The meta file.} Open \texttt{L17-lab-unknown.sigmf-meta} in a text
+editor.
+
+\begin{parts}
+
+	\part Record the recording's datatype, sample rate, and center frequency.
+
+	\begin{center}
+	\renewcommand{\arraystretch}{1.25}
+	\begin{tabular}{| l | K{1.3in} | K{1.3in} | K{1.5in} |}
+	\hline
+	& Datatype & Sample rate & Center frequency \\\hline
+	\texttt{L17-lab-unknown} & \kv{\keysol{kv1}} & \kv{\keysol{kv2}} & \kv{\keysol{kv3}} \\\hline
+	\end{tabular}
+	\end{center}
+
+	\part Give the values you set for \texttt{rec}, \texttt{samp\_rate}, and \texttt{fc}
+	in \texttt{L17-sigmf-view.grc}, and the Output Type of its SigMF Source.
+		\begin{solution}[0.9in]\keysol{sol1}\end{solution}
+
+	\part Paste a screenshot of the viewer running on this recording.
+		\begin{solution}[1.6in]\keysol{sol2}\end{solution}
+
+\end{parts}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\question \textbf{URH.} Install URH and open the lesson's recording,
+\texttt{L17-fan-remote.sigmf-data}, with its sample rate set to 200000.
+
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Record the Modulation and Samples/Symbol that autodetect chooses, and the
+		chip length in microseconds that Samples/Symbol gives.
+		\begin{solution}[0.9in]\keysol{sol3}\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.4in]{\keysol{ans1}}
+	\end{minipage}
+
+	\part Paste a screenshot of URH's Interpretation tab with the recording open.
+		\begin{solution}[1.6in]\keysol{sol4}\end{solution}
+
+\end{parts}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{Samples per chip.} URH's Samples/Symbol and your encoder's
+\texttt{chip\_len} are both a chip's length in samples. Fill in the table for each chip
+length at this recording's sample rate, from Question 1(a), and at the PlutoSDR
+flowgraph's 1 MS/s.
+
+	\begin{center}
+	\renewcommand{\arraystretch}{1.25}
+	\begin{tabular}{| l | K{0.8in} | K{0.8in} | K{0.8in} | K{0.8in} |}
+	\hline
+	Chip length & 240 $\mu$s & 300 $\mu$s & 600 $\mu$s & 1 ms \\\hline
+	At the recording's rate & \kv{\keysol{kv4}} & \kv{\keysol{kv5}} & \kv{\keysol{kv6}} & \kv{\keysol{kv7}} \\\hline
+	At 1 MS/s & \kv{\keysol{kv8}} & \kv{\keysol{kv9}} & \kv{\keysol{kv10}} & \kv{\keysol{kv11}} \\\hline
+	\end{tabular}
+	\end{center}
+
+		\begin{solution}[0.7in]\keysol{sol5}\end{solution}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\fullwidth{\large\textbf{Part 2: Measurements} \normalsize(in class)}
+
+\question \textbf{Step 1: the carrier.} Follow the lab page's steps for
+\texttt{L17-sigmf-view.grc}.
+
+\begin{parts}
+
+	\part List every signal on the waterfall, its frequency, and whether it bursts or
+	stays on. Say which one is the device, and why.
+		\begin{solution}[1.1in]\keysol{sol6}\end{solution}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Record the carrier offset: the center of the bursts on the Frequency Sink or
+		waterfall, checked as the midpoint of the half-height offsets on the envelope.
+		Paste a screenshot of the window at that offset.
+		\begin{solution}[1.6in]\keysol{sol7}\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.3in]{\keysol{ans2}}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Record the device's carrier frequency.
+		\begin{solution}[0.6in]\keysol{sol8}\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.3in]{\keysol{ans3}}
+	\end{minipage}
+
+\end{parts}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\question \textbf{Steps 2 and 3: modulation and encoding.} Follow the lab page's steps in
+URH.
+
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Record the Modulation and Samples/Symbol that autodetect chooses for this
+		recording.
+		\begin{solution}[0.7in]\keysol{sol9}\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.3in]{\keysol{ans4}}
+	\end{minipage}
+
+	\part Record the shortest pulse and the shortest gap you measured, in samples and
+	in microseconds. Say whether you kept autodetect's Samples/Symbol or changed it, and
+	why.
+		\begin{solution}[1.2in]\keysol{sol10}\end{solution}
+
+	\part Name the modulation and the encoding. Give the evidence for each from the
+	envelope and the lines of chips, and describe any structure in each burst besides
+	the data bits, if there is any.
+		\begin{solution}[1.4in]\keysol{sol11}\end{solution}
+
+	\part Find the baud rate, in chips per second, and the bit rate, in data bits per
+	second.
+
+	\begin{center}
+	\renewcommand{\arraystretch}{1.25}
+	\begin{tabular}{| l | K{1.2in} | K{1.2in} |}
+	\hline
+	& Baud rate & Bit rate \\\hline
+	The device & \kv{\keysol{kv12}} & \kv{\keysol{kv13}} \\\hline
+	\end{tabular}
+	\end{center}
+
+		\begin{solution}[0.7in]\keysol{sol12}\end{solution}
+
+\end{parts}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\question \textbf{Step 3: the fields.}
+
+\begin{parts}
+
+	\part Decode one burst of each button and write its data bits in hex.
+
+	\begin{center}
+	\renewcommand{\arraystretch}{1.25}
+	\begin{tabular}{| l | K{1.4in} || l | K{1.4in} |}
+	\hline
+	1 On & \kv{\keysol{kv14}} & 2 Off & \kv{\keysol{kv17}} \\\hline
+	1 Off & \kv{\keysol{kv15}} & 3 On & \kv{\keysol{kv18}} \\\hline
+	2 On & \kv{\keysol{kv16}} & 3 Off & \kv{\keysol{kv19}} \\\hline
+	\end{tabular}
+	\end{center}
+
+	\part Mark the fields: which bits never change, which change with the button, and
+	any field that follows neither. If you find such a field, give the rule it follows
+	and check it on two buttons.
+		\begin{solution}[1.6in]\keysol{sol13}\end{solution}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part How many times does one press send its frame, and how long is the pause
+		between frames?
+		\begin{solution}[0.8in]\keysol{sol14}\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.3in]{\keysol{ans5}}
+	\end{minipage}
+
+\end{parts}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\question \textbf{Step 4: build the encoder.} Start GRC with an empty canvas. Do not
+open \texttt{L17-fan-tx-sim.grc}: build the encoder yourself as the lab page lists,
+with your settings from Questions 4 to 6.
+
+\begin{parts}
+
+	\part Paste a screenshot of your flowgraph's canvas, and a screenshot of URH with
+	\texttt{my-unknown.sigmf-data} and the original recording open, showing the lines of
+	chips for the same button.
+		\begin{solution}[1.8in]\keysol{sol15}\end{solution}
+
+	\part Do the same for a second button, and say whether every chip matches.
+		\begin{solution}[1.2in]\keysol{sol16}\end{solution}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Record the noise amplitude at which URH's lines of chips from your
+		recording first stop matching the original, and describe what goes wrong first.
+		\begin{solution}[1.0in]\keysol{sol17}\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.3in]{\keysol{ans6}}
+	\end{minipage}
+
+\end{parts}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\question \textbf{Step 5: transmit into a cable.} At a PlutoSDR station, with your team,
+follow the lab page's steps: connect the first Pluto's TX port to the second SDR
+through the 30 dB attenuator, set \texttt{fc} and run \texttt{L17-capture.grc} or
+\texttt{L17-capture-rtl.grc} on the second SDR, and run
+your Pluto encoder. When you finish, stop both flowgraphs and unplug the radios before
+you disconnect the cable.
+
+\begin{parts}
+
+	\part Paste a screenshot of both windows with your signal on the capture
+	flowgraph's waterfall.
+		\begin{solution}[1.5in]\keysol{sol18}\end{solution}
+
+	\part Open \texttt{capture.sigmf-data} in URH at the sample rate in its meta file,
+	1 MS/s from a PlutoSDR or 1.024 MS/s from an RTL-SDR, and compare its lines of
+	chips with the original recording's for the same button.
+		\begin{solution}[1.0in]\keysol{sol19}\end{solution}
+
+	\part Record whether the chips still match at each TX attenuation, and explain in words,
+	from what you saw on the waterfall and in URH, what limits the link as the attenuation
+	rises.
+
+	\begin{center}
+	\renewcommand{\arraystretch}{1.25}
+	\begin{tabular}{| l | K{0.9in} | K{0.9in} | K{0.9in} | K{0.9in} |}
+	\hline
+	TX attenuation (dB) & 60 & 70 & 80 & 89 \\\hline
+	Chips match? & & & & \\\hline
+	\end{tabular}
+	\end{center}
+
+		\begin{solution}[1.0in]\keysol{sol20}\end{solution}
+
+\end{parts}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\question \textbf{A real remote (receive only).} Follow the lab page's steps with a real
+key fob, doorbell, or sensor of your choice. Answers depend on the device.
+
+\begin{parts}
+
+	\part Name the device, and record its carrier frequency and how you found it: URH's
+	Spectrum Analyzer or the capture flowgraph's waterfall. Paste a screenshot.
+		\begin{solution}[1.4in]\keysol{sol24}\end{solution}
+
+	\part Record the modulation, the chip length, and the encoding, with the evidence
+	from URH for each.
+		\begin{solution}[1.2in]\keysol{sol25}\end{solution}
+
+	\part Compare the recordings of two buttons, and of two presses of the same button.
+	Say which bits change, and whether a press repeats the same frame each time.
+		\begin{solution}[1.2in]\keysol{sol26}\end{solution}
+
+\end{parts}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\fullwidth{\large\textbf{Part 3: Writeup} \normalsize(individual, after the lab)}
+
+\question \textbf{Analysis.}
+
+\begin{parts}
+
+	\part For each of the carrier, the modulation, the encoding, and each field, give
+	the observation that settled your answer: what you saw on the waterfall, the
+	envelope, or the lines of chips, and which comparison between buttons identified
+	each field.
+		\begin{solution}[1.8in]\keysol{sol21}\end{solution}
+
+	\part From your Question 6 table and your noise run in Question 7(c), explain how a
+	receiver of this device could tell a frame damaged by noise from a good one, and
+	what kinds of damage it could miss.
+		\begin{solution}[1.5in]\keysol{sol22}\end{solution}
+
+	\part Explain why your encoder from Question 7 would operate a device that matched
+	this recording, and
+	describe in words how a rolling code, as in a car key fob, would stop a recording of
+	one press from being reused.
+		\begin{solution}[1.5in]\keysol{sol23}\end{solution}
+
+\end{parts}
+
+\end{questions}
+
+\vspace{1.0em}
+\noindent\textbf{Documentation:} \rule[-2pt]{0.6\linewidth}{0.4pt}
+
+\end{document}
