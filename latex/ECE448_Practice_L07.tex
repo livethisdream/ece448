@@ -53,7 +53,7 @@ bandwidth $W$ at about
 
 \newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\question \textbf{The WBFM receiver.} An RTL-SDR records 2.4~MS/s centered on
+\question \textbf{The WBFM receiver.} A PlutoSDR records 2.4~MS/s centered on
 98.8~MHz, and the station we want is at 99.1~MHz. The receiver is
 \texttt{L07-wbfm-rx.grc}.
 \begin{parts}
@@ -116,10 +116,10 @@ bandwidth $W$ at about
 	\end{minipage}
 
 	\part Explain why the flowgraph needs no Throttle, whether it plays a file or
-	receives from the RTL-SDR.
+	receives from the PlutoSDR.
 		\begin{solution}[0.8in]
 		The Audio Sink takes exactly 48,000 samples per second, so it paces a File
-		Source. With the RTL-SDR, the radio's clock and the sound card's already set the
+		Source. With the PlutoSDR, the radio's clock and the sound card's already set the
 		pace, and a Throttle would add yet another clock and cause dropouts.
 		\end{solution}
 
@@ -215,7 +215,7 @@ meters show each receiver's output SNR.
 \newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \question \textbf{An AM receiver for ATIS.} An airport broadcasts its ATIS on
-119.25~MHz. The RTL-SDR runs at 2.4~MS/s centered on 119.0~MHz, and the receiver is
+119.25~MHz. The PlutoSDR runs at 2.4~MS/s centered on 119.0~MHz, and the receiver is
 \texttt{L07-am-rx.grc}.
 \begin{parts}
 

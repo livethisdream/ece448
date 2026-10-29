@@ -262,9 +262,9 @@ The proposal is where you lock in what "done" means for your project.
 
 ## Show & tell
 
-A real SDR, tuned live, on a whip antenna.
+A PlutoSDR, tuned live in GNU Radio, on a whip antenna.
 
-<!-- fire up GNU Radio FFT sink
+<!-- run L05-fm-spectrum.grc on the PlutoSDR (extended-frequency mode, 70 MHz to 6 GHz)
      sweep across FM broadcast · ADS-B (1090) · cellular · WiFi
      point out signals we'll decode by end of semester -->
 

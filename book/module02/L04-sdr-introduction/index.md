@@ -40,17 +40,17 @@ Lesson 4 · Module 2: SDR & GNU Radio Foundations · Dr. Neil Rogers
 ::::{frame} One Radio, Many Signals
 :::{present}
 <img src="../../viz/img/L04-tuning-ranges.svg"
-     alt="Tuning ranges of the four course SDRs on a log frequency axis from 100 kHz to 30 GHz: RTL-SDR Blog V4 from 500 kHz to 1.766 GHz, receive only; HackRF One from 1 MHz to 6 GHz, half duplex; PlutoSDR from 325 MHz to 3.8 GHz, full duplex; ADALM-PHASER from 10.0 to 10.5 GHz, an 8-element array. Dashed lines mark FM broadcast, AIS, 433.92 MHz, ADS-B, GPS L1, and the 2.4 GHz ISM band"
+     alt="Tuning ranges of four SDRs on a log frequency axis from 100 kHz to 30 GHz: the PlutoSDR from 70 MHz to 6 GHz in extended-frequency mode, full duplex; two optional radios, the HackRF One from 1 MHz to 6 GHz and the RTL-SDR Blog V4 from 500 kHz to 1.766 GHz; and the ADALM-PHASER from 10.0 to 10.5 GHz, an 8-element array. Dashed lines mark FM broadcast, AIS, 433.92 MHz, ADS-B, GPS L1, and the 2.4 GHz ISM band"
      style="max-width: 760px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
-- Each bar is one course SDR's tuning range.
+- Each bar is one SDR's tuning range; the PlutoSDR is the course radio.
 - The dashed lines are signals this course receives or decodes.
 :::
 
-The RTL-SDR in your kit plugs into a USB port and receives broadcast FM at 100 MHz, ship AIS at 162 MHz, key fobs at 433.92 MHz, and aircraft ADS-B at 1090 MHz, all with the same hardware. What changes is the software on the laptop, which decides how to filter, demodulate, and decode the samples the radio delivers.
+The PlutoSDR in your kit plugs into a USB port and receives broadcast FM at 100 MHz, ship AIS at 162 MHz, key fobs at 433.92 MHz, aircraft ADS-B at 1090 MHz, and Wi-Fi at 2.4 GHz, all with the same hardware, and it transmits too. What changes is the software on the laptop, which decides how to filter, demodulate, and decode the samples the radio delivers.
 
-The figure places the four radios of this course on one frequency axis, with the signals we will work with marked. The RTL-SDR and the HackRF cover every marked signal below 1.7 GHz, the HackRF and the PlutoSDR reach the 2.4 GHz ISM band where Wi-Fi and Bluetooth operate, and the ADALM-PHASER works only at X band, 10.0 to 10.5 GHz. Choosing a radio for a task starts with checking that its bar covers the signal.
+The figure places the radios on one frequency axis, with the signals we will work with marked. The course Plutos run in **extended-frequency mode**, which tunes 70 MHz to 6 GHz, so the PlutoSDR covers every marked signal. The HackRF and the RTL-SDR are optional extras that cover the same signals below 1.7 GHz, and the ADALM-PHASER works only at X band, 10.0 to 10.5 GHz. Choosing a radio for a task starts with checking that its bar covers the signal.
 ::::
 
 ::::{frame} What Makes a Radio Software Defined
@@ -69,15 +69,15 @@ An SDR still needs analog hardware: an antenna, a filter, an amplifier, and a co
 :::{present}
 | Radio | Tunes | Max rate | Bits | Transmit |
 | :-- | :-- | :-- | :-: | :-- |
-| RTL-SDR | 0.5–1766 MHz | 2.56 MS/s | 8 | no |
-| HackRF | 1–6000 MHz | 20 MS/s | 8 | half duplex |
-| PlutoSDR | 325–3800 MHz | 4 MS/s sustained | 12 | full duplex |
+| PlutoSDR | 70–6000 MHz | 4 MS/s sustained | 12 | full duplex |
 | PHASER | 10.0–10.5 GHz | via Pluto | 12 | — |
+| HackRF | 1–6000 MHz | 20 MS/s | 8 | half duplex |
+| RTL-SDR | 0.5–1766 MHz | 2.56 MS/s | 8 | no |
 :::
 
-The **RTL-SDR Blog V4** is a receive-only USB dongle built around the RTL2832U, whose converter delivers 8-bit samples. Its datasheet gives 2.56 MS/s as the highest rate without dropped samples. The **HackRF One** from Great Scott Gadgets tunes from 1 MHz to 6 GHz and samples at up to 20 MS/s with 8-bit $I$ and 8-bit $Q$. It can transmit, but only half duplex: it transmits or receives, not both at once.
+The **PlutoSDR** (Analog Devices ADALM-PLUTO) is the course radio, and every lab uses it. It has 12-bit converters and one transmitter and one receiver, which can run at the same time (full duplex). Out of the box it tunes 325 MHz to 3.8 GHz; the course Plutos are set to extended-frequency mode, which treats the chip as an AD9364 and tunes 70 MHz to 6 GHz. Its converters sample at up to 61.44 MS/s, but its USB 2.0 link streams only about 4 MS/s without dropped samples, so we keep live flowgraphs at 2 to 4 MS/s and capture anything wider in short bursts. The **ADALM-PHASER** (CN0566) is an 8-element phased array at 10.0 to 10.5 GHz. It converts its signals down to an intermediate frequency of about 2.2 GHz and uses a PlutoSDR to digitize them.
 
-The **PlutoSDR** (Analog Devices ADALM-PLUTO) has 12-bit converters and one transmitter and one receiver, which can run at the same time (full duplex). Its converters sample at up to 61.44 MS/s, but its USB 2.0 link streams only about 4 MS/s without dropped samples, so faster rates work only in short bursts. Its instantaneous bandwidth is at most 20 MHz. The **ADALM-PHASER** (CN0566) is an 8-element phased array at 10.0 to 10.5 GHz. It converts its signals down to an intermediate frequency of about 2.2 GHz and uses a PlutoSDR to digitize them, so its sample rate and bits are the PlutoSDR's. The Sources frame below links each manufacturer's numbers.
+Two other radios are optional extras that no lab requires. The **HackRF One** from Great Scott Gadgets tunes from 1 MHz to 6 GHz and streams up to 20 MS/s of 8-bit samples, half duplex. The **RTL-SDR Blog V4** is a receive-only 8-bit USB dongle whose datasheet gives 2.56 MS/s as its highest rate without dropped samples. The Sources frame below links each manufacturer's numbers.
 ::::
 
 ::::{frame} Sources for the Specifications
@@ -85,12 +85,12 @@ The **PlutoSDR** (Analog Devices ADALM-PLUTO) has 12-bit converters and one tran
 
 Every number in the table above comes from the manufacturer's or the driver project's data:
 
-- <a class="doc-link" href="https://www.rtl-sdr.com/wp-content/uploads/2024/12/RTLSDR_V4_Datasheet_V_1_0.pdf" target="_blank" rel="noopener">RTL-SDR Blog V4 datasheet</a>: 500 kHz to 1.766 GHz, 2.56 MS/s stable (up to 3.2 MS/s with dropped samples).
-- <a class="doc-link" href="https://osmocom.org/projects/rtl-sdr/wiki/Rtl-sdr" target="_blank" rel="noopener">Osmocom rtl-sdr wiki</a>: the RTL2832U delivers 8-bit $I/Q$ samples.
-- <a class="doc-link" href="https://greatscottgadgets.com/hackrf/one/" target="_blank" rel="noopener">Great Scott Gadgets, HackRF One</a>: 1 MHz to 6 GHz, up to 20 million samples per second, 8-bit quadrature samples, half duplex.
-- <a class="doc-link" href="https://www.analog.com/ADALM-PLUTO" target="_blank" rel="noopener">Analog Devices, ADALM-PLUTO</a>: 325 MHz to 3.8 GHz, up to 20 MHz instantaneous bandwidth, 12-bit ADC and DAC, up to 61.44 MSPS, one transmitter and one receiver, half or full duplex.
+- <a class="doc-link" href="https://www.analog.com/ADALM-PLUTO" target="_blank" rel="noopener">Analog Devices, ADALM-PLUTO</a>: 325 MHz to 3.8 GHz as shipped, up to 20 MHz instantaneous bandwidth, 12-bit ADC and DAC, up to 61.44 MSPS, one transmitter and one receiver, half or full duplex.
+- <a class="doc-link" href="https://wiki.analog.com/university/tools/pluto/users/customizing" target="_blank" rel="noopener">Analog Devices wiki, Customizing the Pluto configuration</a>: setting the PlutoSDR to run as an AD9364, 70 MHz to 6 GHz with up to 56 MHz of bandwidth, the extended-frequency mode the course Plutos use.
 - <a class="doc-link" href="https://wiki.analog.com/university/tools/pluto/devs/specs" target="_blank" rel="noopener">Analog Devices wiki, ADALM-PLUTO specifications</a>: USB 2.0 streams up to 4 MSPS with no dropped samples.
 - <a class="doc-link" href="https://wiki.analog.com/resources/eval/user-guides/circuits-from-the-lab/cn0566/overview_setup" target="_blank" rel="noopener">Analog Devices wiki, CN0566 (ADALM-PHASER)</a>: an 8-element array at 10.0 to 10.5 GHz, an LTC5548 mixer to an IF of about 2.2 GHz, and an ADALM-PLUTO to digitize it.
+- <a class="doc-link" href="https://greatscottgadgets.com/hackrf/one/" target="_blank" rel="noopener">Great Scott Gadgets, HackRF One</a> (optional): 1 MHz to 6 GHz, up to 20 million samples per second, 8-bit quadrature samples, half duplex.
+- <a class="doc-link" href="https://www.rtl-sdr.com/wp-content/uploads/2024/12/RTLSDR_V4_Datasheet_V_1_0.pdf" target="_blank" rel="noopener">RTL-SDR Blog V4 datasheet</a> (optional): 500 kHz to 1.766 GHz, 2.56 MS/s stable (up to 3.2 MS/s with dropped samples), 8-bit $I/Q$ samples from the RTL2832U.
 ::::
 
 ::::{frame} Part 1: Inside an SDR
@@ -105,7 +105,7 @@ Every number in the table above comes from the manufacturer's or the driver proj
 - **ADCs**: turn $I$ and $Q$ into numbers for the host.
 :::
 
-Follow the figure from left to right. The **RF front end** comes first: a filter passes the band and a **low-noise amplifier** (LNA) raises it, first in line because, from Lesson 2, the first amplifier sets most of the noise figure. The front end also holds the gain that GNU Radio's and GQRX's gain slider controls. The RTL-SDR and HackRF reach the same $I/Q$ stream by other routes, so GNU Radio sees the same samples from every radio.
+Follow the figure from left to right. The **RF front end** comes first: a filter passes the band and a **low-noise amplifier** (LNA) raises it, first in line because, from Lesson 2, the first amplifier sets most of the noise figure. The front end also holds the gain that the PlutoSDR Source block's gain setting controls. The optional HackRF and RTL-SDR reach the same $I/Q$ stream by other routes, so GNU Radio sees the same samples from every radio.
 
 The **mixer** and **local oscillator** (LO) shift the band down so the converter can sample it, the **low-pass filters** keep only the shifted band, and the two **analog-to-digital converters** (ADCs) turn it into a stream of numbers. A transmitter runs the same chain in reverse, with **digital-to-analog converters** (DACs) and a mixer that shifts the signal up. The samples travel over USB to the **host**, the laptop running GNU Radio.
 ::::
@@ -153,7 +153,7 @@ Together they form one complex sample, $I + jQ$, the point in the plane of Lesso
 - The ADALM-PHASER: 10.0–10.5 GHz to about 2.2 GHz, then a PlutoSDR.
 :::
 
-The chain in the figure goes from RF to 0 Hz in one step, which makes it a **direct-conversion**, or **zero-IF**, receiver. Zero-IF needs few parts, but anything that leaks into the mixer output at 0 Hz lands in the middle of the band, which is one source of the DC spike that Lesson 5 shows.
+The chain in the figure goes from RF to 0 Hz in one step, which makes it a **direct-conversion**, or **zero-IF**, receiver; the PlutoSDR is one. Zero-IF needs few parts, but anything that leaks into the mixer output at 0 Hz lands in the middle of the band, which is one source of the DC spike that Lesson 5 shows.
 
 A **superheterodyne** receiver mixes twice: first to a fixed **intermediate frequency** (IF), then to 0 Hz. The ADALM-PHASER mixes X band to about 2.2 GHz, and the PlutoSDR does the rest. Either way, GNU Radio receives complex samples, so the flowgraph does not depend on how the radio produced them.
 ::::
@@ -165,20 +165,20 @@ A **superheterodyne** receiver mixes twice: first to a fixed **intermediate freq
 - 20 MS/s is 160 MB/s into the flowgraph.
 :::
 
-The sample rate $f_s$ sets how much spectrum we see at once. With complex samples, the window is $f_s$ wide, from $f_{LO} - f_s/2$ to $f_{LO} + f_s/2$. Lesson 5 shows why and what happens to signals outside it. An RTL-SDR at 2.4 MS/s sees 2.4 MHz of the FM band, twelve 200 kHz channels, and a HackRF at 20 MS/s spans the whole 20 MHz band at once. Near the edges of the window the radio's own filters begin to roll off, so the usable bandwidth is somewhat less than $f_s$, and the stations at the very ends of the band sit in that roll-off.
+The sample rate $f_s$ sets how much spectrum we see at once. With complex samples, the window is $f_s$ wide, from $f_{LO} - f_s/2$ to $f_{LO} + f_s/2$. Lesson 5 shows why and what happens to signals outside it. A PlutoSDR at 2.4 MS/s sees 2.4 MHz of the FM band, twelve 200 kHz channels. Seeing the whole 20 MHz band at once takes 20 MS/s, which the PlutoSDR delivers only in a short burst and the optional HackRF streams. Near the edges of the window the radio's own filters begin to roll off, so the usable bandwidth is somewhat less than $f_s$, and the stations at the very ends of the band sit in that roll-off.
 
 A higher rate also means more data. Inside GNU Radio each complex sample is two 32-bit floats, 8 bytes, so a flowgraph handles
 
 $$8 f_s \ \text{bytes per second}$$
 
-which is 19.2 MB/s at 2.4 MS/s and 160 MB/s at 20 MS/s. Every block processes every sample, and a laptop that cannot keep up drops samples; most radio drivers print an overflow message in GNU Radio's console when that happens. The right sample rate is a little more than the bandwidth of the signal we want, not the radio's maximum.
+which is 19.2 MB/s at 2.4 MS/s and 160 MB/s at 20 MS/s. Every block processes every sample, and a laptop or a USB link that cannot keep up drops samples, which shows up as gaps in the plots and clicks in the audio. The right sample rate is a little more than the bandwidth of the signal we want, not the radio's maximum.
 ::::
 
 ::::{frame} SDR Window
 :class: viz-frame
 
 :::{depth}
-The plot is a simulated band, and the shaded region is the part of it the chosen radio sees at its center frequency and sample rate. Start on the FM band with the RTL-SDR at 2.4 MS/s: three stations fit in the window. Switch to the HackRF, which starts at 2.4 MS/s, and raise the sample rate to 20 MS/s to see the whole band, and watch the data rate into GNU Radio grow to 160 MB/s. Choose the PlutoSDR and note that it cannot tune to 98 MHz at all. On the 2.4 GHz ISM band, use the HackRF to find the center frequency that puts one whole 20 MHz Wi-Fi channel in view. Then switch to the PlutoSDR: its slider stops at 4 MS/s, the most its USB link streams without dropped samples, so it shows only a slice of one channel.
+The plot is a simulated band, and the shaded region is the part of it the chosen radio sees at its center frequency and sample rate. Start on the FM band with the PlutoSDR at 2.4 MS/s: three stations fit in the window. Raise the sample rate: the slider stops at 4 MS/s, the most the PlutoSDR's USB link streams without dropped samples. On the 2.4 GHz ISM band the PlutoSDR shows only a slice of one 20 MHz Wi-Fi channel. Switch to the optional HackRF, raise the sample rate to 20 MS/s, find the center frequency that puts one whole Wi-Fi channel in view, and watch the data rate into GNU Radio grow to 160 MB/s. The PlutoSDR reaches that view only in short bursts.
 :::
 
 :::{present}
@@ -186,7 +186,7 @@ The plot is a simulated band, and the shaded region is the part of it the chosen
         width="100%" height="457"
         style="border: 1px solid #cddce9; border-radius: 6px;"
         loading="lazy"
-        title="SDR window: the part of a simulated band that the RTL-SDR, HackRF, or PlutoSDR can see at a chosen center frequency and sample rate, with the data rate into GNU Radio">
+        title="SDR window: the part of a simulated band that the PlutoSDR, or the optional HackRF or RTL-SDR, can see at a chosen center frequency and sample rate, with the data rate into GNU Radio">
 </iframe>
 :::
 ::::
@@ -198,7 +198,7 @@ The plot is a simulated band, and the shaded region is the part of it the chosen
 - Above full scale, the ADC clips.
 :::
 
-An ADC rounds each voltage to the nearest of $2^N$ levels between its negative and positive **full scale**: 256 levels for the 8-bit RTL-SDR and HackRF, 4096 for the 12-bit PlutoSDR. The rounding error acts like a small noise added to every sample, and finer steps mean less of it, so a radio with more bits has a lower floor. The span from the strongest signal the converter can take to that floor is its **dynamic range**, and it decides how weak a signal can be and still show up next to a strong one.
+An ADC rounds each voltage to the nearest of $2^N$ levels between its negative and positive **full scale**: 4096 for the 12-bit PlutoSDR, 256 for the 8-bit HackRF and RTL-SDR. The rounding error acts like a small noise added to every sample, and finer steps mean less of it, so a radio with more bits has a lower floor. The span from the strongest signal the converter can take to that floor is its **dynamic range**, and it decides how weak a signal can be and still show up next to a strong one.
 
 We measure signal levels against full scale in **dBFS**: 0 dBFS is full scale, and a signal at $-6$ dBFS has half the full-scale amplitude. The ADC cannot represent a signal above 0 dBFS, so it **clips** it. The flowgraph below shows both limits on GNU Radio's plots.
 ::::
@@ -216,7 +216,7 @@ We measure signal levels against full scale in **dBFS**: 0 dBFS is full scale, a
 
 The flowgraph `L04-adc-bits.grc` builds the receiver's problem from two tones. A strong tone at 300.7 kHz with amplitude 0.5, which is $-6$ dBFS, stands in for a nearby station, and a weak tone at $-487.3$ kHz, at $-70$ dBFS by default, stands in for a distant one. A Noise Source adds a very small noise floor. A **Multiply Const** applies the receiver's gain from a slider, in dB.
 
-The **ADC** block is an Embedded Python Block, about 15 lines of code saved inside the `.grc` file. It clips $I$ and $Q$ to full scale, $\pm 1$, and rounds each to one of $2^N$ levels, with $N$ chosen from the bits menu: 8 for the RTL-SDR and HackRF, 12 for the PlutoSDR, and 16 for comparison. The frequency sink shows the spectrum after the ADC, and the time sink shows 64 output samples. The sink's 0 dB line is not full scale, so we read differences between levels on its plot, not absolute values.
+The **ADC** block is an Embedded Python Block, about 15 lines of code saved inside the `.grc` file. It clips $I$ and $Q$ to full scale, $\pm 1$, and rounds each to one of $2^N$ levels, with $N$ chosen from the bits menu: 12 for the PlutoSDR, 8 for the HackRF and RTL-SDR, and 16 for comparison. The frequency sink shows the spectrum after the ADC, and the time sink shows 64 output samples. The sink's 0 dB line is not full scale, so we read differences between levels on its plot, not absolute values.
 ::::
 
 ::::{frame} 8 Bits
@@ -274,35 +274,33 @@ The clipping distorts the waveform, and the distortion appears as new signals. T
 3. **Gain**: the strongest signal in the window stays below full scale.
 :::
 
-Every capture in this course starts with the same three choices. For broadcast FM, a station about 200 kHz wide near 100 MHz, the RTL-SDR at 2.4 MS/s is enough, and Lesson 5 does exactly that. A 20 MHz Wi-Fi channel at 2.4 GHz is out of the RTL-SDR's range and too wide for its sample rate, so it needs the HackRF at its 20 MS/s maximum, which leaves no margin at the channel's edges. The PlutoSDR can tune there but streams only about 4 MS/s. A flowgraph that transmits a test signal into a cable through the 30 dB attenuator needs the HackRF or the PlutoSDR, and the PlutoSDR if it must receive at the same time. Finding the direction of an X-band source needs the ADALM-PHASER.
+Every capture in this course starts with the same three choices, and for every lab the radio is the PlutoSDR. For broadcast FM, a station about 200 kHz wide near 100 MHz, the PlutoSDR at 2.4 MS/s is enough, and Lesson 5 does exactly that. A 20 MHz Wi-Fi channel at 2.4 GHz is within its tuning range but wider than the 4 MS/s it streams, so the PlutoSDR captures it in a short burst at 20 MS/s or more; the optional HackRF streams it at 20 MS/s. A flowgraph that transmits a test signal into a cable through the 30 dB attenuator uses the PlutoSDR, which can receive at the same time. Finding the direction of an X-band source needs the ADALM-PHASER.
 
-The gain comes last, set against the strongest signal in the window, not the one we want. A weak signal next to a strong one is where the extra bits of the PlutoSDR matter, and where an 8-bit radio needs a narrower window or a filter ahead of it to keep the strong signal out. Lesson 5 gives the procedure for setting the gain on a live RTL-SDR.
+The gain comes last, set against the strongest signal in the window, not the one we want. A weak signal next to a strong one is where the PlutoSDR's 12 bits matter, and where an 8-bit radio needs a narrower window or a filter ahead of it to keep the strong signal out. Lesson 5 gives the procedure for setting the gain on a live PlutoSDR.
 ::::
 
-::::{frame} Walkthrough: Explore a Band
+::::{frame} Demo: Explore a Band on the PlutoSDR
 :::{present}
-1. SDR Flex: open a capture; select a signal; demodulate.
-2. GQRX, live: tune to 98 MHz; read the waterfall.
-3. Click a station, set WFM, and listen.
+1. Run `L05-fm-spectrum.grc` on the PlutoSDR at 98 MHz.
+2. Read the spectrum and the waterfall.
+3. Drag the center frequency across the band.
 4. Raise the gain until false stations appear; back off.
 :::
 
-Before building a flowgraph for a signal, we find it in an explore tool. Start with <a href="https://livethisdream.github.io/sdr-flex/" target="_blank" rel="noopener">SDR Flex</a>, Dr. Rogers's own tool, which runs in the browser with nothing to install. It opens on a simulated scene of several signals. Right-click the source chip at the top left to open one of its example captures, drag across a signal on the waterfall to select it, and choose a demodulator. On the full SDR Flex server each action builds a GNU Radio flowgraph; the browser copy simulates it.
+Before building a receiver for a signal, we find it with a flowgraph that only looks. This is an instructor demo with the Lesson 5 flowgraph, which cadets run themselves once GNU Radio is installed. A PlutoSDR Source at 2.4 MS/s feeds a spectrum and a waterfall, with sliders for the center frequency and the gain.
 
-The browser version plays captures, not a live radio, so for the live band use GQRX, the fallback. Plug the RTL-SDR into a USB port, open GQRX, and choose the RTL-SDR in the device dialog, and set the input rate to 2.4 MS/s. GQRX comes with radioconda; if it does not start on your laptop, SDR++ has the same controls. Set the frequency to 98 MHz and press the power button to start.
-
-The top plot is the spectrum, 2.4 MHz wide around the center frequency, and the waterfall below it scrolls the same spectrum through time, so a station that stays on the air draws a steady vertical stripe. Each FM station is a stripe about 200 kHz wide. Click the middle of one, set the mode to **WFM (stereo)**, and the station plays. Now raise the gain slider in steps and watch the noise floor and the strongest stations. At first the weak stations rise above the floor; past some setting, new stripes appear where nothing transmits, the clipping of the Too Much Gain frame on a real radio. Back the gain off until they disappear. Use the same steps to find a signal before every lab.
+The top plot is the spectrum, 2.4 MHz wide around the center frequency, and the waterfall below it scrolls the same spectrum through time, so a station that stays on the air draws a steady vertical stripe. Each FM station is a stripe about 200 kHz wide. Drag the center frequency slider and the stripes slide across the display. Now raise the gain slider in steps and watch the noise floor and the strongest stations. At first the weak stations rise above the floor; past some setting, new stripes appear where nothing transmits, the clipping of the Too Much Gain frame on a real radio. Back the gain off until they disappear. Lesson 7 adds the demodulator that plays a station, and the same look-first steps find a signal before every lab.
 ::::
 
 ::::{frame} Other SDR Software
 :class: read-only
 
-GNU Radio is the course's tool, but every radio in this course also works with standalone receivers, which are useful for finding a signal before building a flowgraph for it.
+GNU Radio is the course's tool, and every lab step is a GNU Radio flowgraph. Standalone receivers are optional extras for a quick look on your own time; no lab depends on them.
 
 | Program | What it is for |
 | :-- | :-- |
 | SDR Flex | Dr. Rogers's explore tool: spectrum, waterfall, demodulators, and decoders; runs in a browser |
-| GQRX | a spectrum, waterfall, and AM/FM/SSB receiver built on GNU Radio; it comes with radioconda |
+| GQRX | a spectrum, waterfall, and AM/FM/SSB receiver built on GNU Radio |
 | SDR++ | a cross-platform spectrum, waterfall, and receiver |
 | SDR# (SDRSharp) | a Windows spectrum, waterfall, and receiver |
 | SDRangel | a receiver and transmitter with many built-in demodulators |
@@ -322,7 +320,7 @@ An SDR mixes a band to 0 Hz and digitizes $I$ and $Q$. The sample rate sets the 
 
 - <a class="doc-link" href="../../grc/L04-adc-bits.grc" download>L04-adc-bits.grc</a>: a strong and a weak tone through a simulated ADC, with menus and sliders for the bits, the gain, and the weak signal's level. No hardware needed.
 
-Open it from GRC's File menu, or run `gnuradio-companion L04-adc-bits.grc` from the radioconda prompt. The ADC block is an Embedded Python Block; GRC saves its code inside the `.grc` file, so it needs no other download. Install radioconda first; Lesson 5 walks through the install.
+Open it from GRC's File menu, or run `gnuradio-companion L04-adc-bits.grc` from the radioconda prompt. The ADC block is an Embedded Python Block; GRC saves its code inside the `.grc` file, so it needs no other download. Install radioconda first; Lesson 5 walks through the install and hands out `L05-fm-spectrum.grc`, the PlutoSDR flowgraph of the demo.
 
 This lesson follows Dr. Rogers's 2025 slides and these pages:
 
@@ -331,8 +329,7 @@ This lesson follows Dr. Rogers's 2025 slides and these pages:
 - <a class="doc-link" href="https://pysdr.org/content/hardware.html" target="_blank" rel="noopener">PySDR, SDR Hardware</a>
 - <a class="doc-link" href="https://pysdr.org/content/sampling.html" target="_blank" rel="noopener">PySDR, IQ Sampling</a>
 - <a class="doc-link" href="https://pysdr.org/content/frequency_domain.html" target="_blank" rel="noopener">PySDR, Frequency Domain</a>
-- <a class="doc-link" href="https://livethisdream.github.io/sdr-flex/" target="_blank" rel="noopener">SDR Flex</a>, in the browser
-- <a class="doc-link" href="https://gqrx.dk/" target="_blank" rel="noopener">GQRX</a>
+- <a class="doc-link" href="https://pysdr.org/content/pluto.html" target="_blank" rel="noopener">PySDR, PlutoSDR in Python</a>
 ::::
 
 ::::{frame} Summary
@@ -341,10 +338,10 @@ This lesson follows Dr. Rogers's 2025 slides and these pages:
 | Idea | What it is | Number to remember |
 | :-- | :-- | :-- |
 | SDR | filtering, mixing, demodulation, and decoding in software | one radio, many signals |
-| RTL-SDR Blog V4 | receive only, 8 bits | 0.5–1766 MHz, 2.56 MS/s |
-| HackRF One | half duplex, 8 bits | 1–6000 MHz, 20 MS/s |
-| PlutoSDR | full duplex, 12 bits | 325–3800 MHz, 4 MS/s sustained |
+| PlutoSDR | the course radio: full duplex, 12 bits | 70–6000 MHz (extended mode), 4 MS/s sustained |
 | ADALM-PHASER | 8-element array, digitized by a PlutoSDR | 10.0–10.5 GHz |
+| HackRF One | optional: half duplex, 8 bits | 1–6000 MHz, 20 MS/s |
+| RTL-SDR Blog V4 | optional: receive only, 8 bits | 0.5–1766 MHz, 2.56 MS/s |
 | Mixer | $f_{LO} + \Delta$ comes out at $\Delta$ | center frequency = $f_{LO}$ |
 | $I$ and $Q$ | two mixers 90° apart | tell $+\Delta$ from $-\Delta$ |
 | Sample rate | window $f_s$ wide | $8 f_s$ bytes per second in GNU Radio |
@@ -362,10 +359,10 @@ This lesson follows Dr. Rogers's 2025 slides and these pages:
 ::::{frame} Looking Ahead
 :::{present}
 - Lesson 5 installs GNU Radio and builds the first flowgraphs.
-- It shows complex sampling, aliasing, and gain on a live RTL-SDR.
+- It shows complex sampling, aliasing, and gain on a live PlutoSDR.
 :::
 
-Today we followed a signal from the antenna through the front end, the mixer and LO, and the ADCs to the host, and we saw how the sample rate and the ADC's bits limit what a capture can show. The four course radios differ in tuning range, sample rate, bits, and whether they transmit, and choosing among them is the first step of every lab.
+Today we followed a signal from the antenna through the front end, the mixer and LO, and the ADCs to the host, and we saw how the sample rate and the ADC's bits limit what a capture can show. The radios differ in tuning range, sample rate, bits, and whether they transmit; the PlutoSDR covers every lab, and checking its range, rate, and gain against the signal is the first step of each one.
 
-Lesson 5 picks up where the ADC leaves off. It installs radioconda, builds a flowgraph from a signal source and then from a real RTL-SDR, and shows complex sampling, aliasing, the DC spike, and the gain setting on GNU Radio's plots. Before Lesson 5, download `L04-adc-bits.grc` so it is ready to open once you install GNU Radio.
+Lesson 5 picks up where the ADC leaves off. It installs radioconda, builds a flowgraph from a signal source and then from a real PlutoSDR, and shows complex sampling, aliasing, the DC spike, and the gain setting on GNU Radio's plots. Before Lesson 5, download `L04-adc-bits.grc` so it is ready to open once you install GNU Radio.
 ::::

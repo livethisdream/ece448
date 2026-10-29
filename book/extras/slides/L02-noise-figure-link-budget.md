@@ -22,7 +22,7 @@ Spring 2027 · Dr. Neil Rogers
 
 ## Where We Were
 
-- Lesson 1: the course SDRs, the RTL-SDR, the PlutoSDR, and the HackRF
+- Lesson 1: the course SDR, the PlutoSDR, and the optional RTL-SDR and HackRF
 - Every signal we build or decode has to arrive strong enough to use
 - Before we transmit, we can predict whether it will
 
@@ -77,7 +77,7 @@ This is the 2003 edition; NTIA posts the current one. Let them look for a minute
 - Receiving is unrestricted; in class we transmit only when the lesson says to.
 
 Note:
-Pull up the NTIA allocation chart on the screen if there is time. Point out that nearly everything is licensed. The ISM bands are where Wi-Fi, Bluetooth, and drones live because nobody needs a license there. Note that the RTL-SDR stops short of 2.4 GHz and receives only. Make the transmit rule explicit: cable, shielded box, or very low power in an ISM band, and only when the lesson says so.
+Pull up the NTIA allocation chart on the screen if there is time. Point out that nearly everything is licensed. The ISM bands are where Wi-Fi, Bluetooth, and drones live because nobody needs a license there. Note that the course PlutoSDR, in extended-frequency mode, covers all three common ISM bands, and that the optional RTL-SDR stops short of 2.4 GHz and receives only. Make the transmit rule explicit: cadets transmit only into a cable through a 30 dB attenuator, and only when the lesson says so.
 
 ---
 
@@ -253,12 +253,12 @@ Demo live from the lesson page. Start on the drone preset, double the distance, 
 
 ## Reading SNR on an SDR
 
-1. Open an FM capture in SDR Flex; read the peak and the floor.
-2. Live in GQRX: 99.9 MHz, WFM, AGC off, RF gain 30 dB.
-3. FFT Settings → FFT size 4096 → 8192.
+1. L05-fm-spectrum.grc on the PlutoSDR: 99.9 MHz, gain Manual, 40 dB.
+2. Read the peak and the floor; subtract.
+3. Sink's FFT Size: 2048 → 4096.
 
 Note:
-Instructor demo, with background from PySDR's Noise and dB chapter; cadets repeat it in GRC from Lesson 5. SDR Flex is at livethisdream.github.io/sdr-flex; right-click the source chip for an example capture. Its browser version has no live radio, so GQRX is the fallback for the live band. The peak minus the floor, both in dBFS, is the SNR. In step 3 the floor drops 3 dB; the wide FM station drops with it, so its displayed SNR stays put. A narrow carrier would stay where it was.
+Instructor demo, with background from PySDR's Noise and dB chapter; cadets run the same flowgraph from Lesson 5. Keep the PlutoSDR Source's gain mode on Manual so its AGC does not move the levels. The peak minus the floor, both read on the same dB axis, is the SNR. In step 3 the floor drops 3 dB; the wide FM station drops with it, so its displayed SNR stays put. A narrow carrier would stay where it was.
 
 ---
 

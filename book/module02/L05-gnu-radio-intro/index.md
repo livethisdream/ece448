@@ -55,14 +55,14 @@ The figure is the first flowgraph of this lesson, opened in GRC: a signal source
 
 ::::{frame} Part 1: Install With Radioconda
 :::{present}
-- **Radioconda** installs GNU Radio 3.10 and the drivers for every course SDR in one step.
+- **Radioconda** installs GNU Radio 3.10 and the PlutoSDR's drivers in one step.
 - It runs on Windows, macOS, and Linux.
 - Install it before the lab; the pre-lab checks it.
 :::
 
-The course standard is **radioconda**, a packaged installer built on the conda package manager that the GNU Radio project recommends for Windows and macOS. One installer brings GNU Radio 3.10, GNU Radio Companion, and the drivers and tools for the RTL-SDR, the HackRF, the PlutoSDR, and USRP radios, plus SoapySDR, which lets one GNU Radio block talk to many kinds of hardware. Download the installer for your operating system from the <a href="https://github.com/ryanvolz/radioconda" target="_blank" rel="noopener">radioconda releases page</a> and accept the defaults.
+The course standard is **radioconda**, a packaged installer built on the conda package manager that the GNU Radio project recommends for Windows and macOS. One installer brings GNU Radio 3.10, GNU Radio Companion, and the PlutoSDR's libraries (libiio and libad9361) and GNU Radio blocks, along with drivers for the optional HackRF and RTL-SDR and for USRP radios, plus SoapySDR, which lets one GNU Radio block talk to many kinds of hardware. Download the installer for your operating system from the <a href="https://github.com/ryanvolz/radioconda" target="_blank" rel="noopener">radioconda releases page</a> and accept the defaults.
 
-On Windows, the RTL-SDR also needs its USB driver replaced once, with the Zadig tool that radioconda's instructions link; skip that step and the dongle shows up in Device Manager but no program can open it. The next frame lists the commands that confirm each piece works.
+On Windows, the PlutoSDR also needs Analog Devices' USB driver installed once, from the <a href="https://wiki.analog.com/university/tools/pluto/drivers/windows" target="_blank" rel="noopener">PlutoSDR Windows driver page</a>; without it the Pluto appears only as a USB drive. The next frame lists the commands that confirm each piece works.
 ::::
 
 ::::{frame} Verify the Install
@@ -73,13 +73,12 @@ Open the radioconda prompt (on Windows, "Radioconda Prompt" in the Start menu; o
 | Command | Checks | A working result |
 | :-- | :-- | :-- |
 | `gnuradio-companion` | GRC itself | the GRC window opens |
-| `gqrx` | GQRX, the stand-alone receiver | the GQRX window opens; if GQRX does not start on your laptop, SDR++ has the same controls |
-| `rtl_test` | an RTL-SDR on USB | `Found 1 device(s)` and a tuner name |
-| `hackrf_info` | a HackRF on USB | a serial number and firmware version |
-| `iio_info -s` | a PlutoSDR on USB | a context listing `PlutoSDR` |
-| `SoapySDRUtil --find` | every SoapySDR radio | one entry per plugged-in SDR |
+| `iio_info -s` | the PlutoSDR on USB | a context listing `PlutoSDR` at `192.168.2.1` |
+| `iio_attr -u ip:192.168.2.1 -c ad9361-phy altvoltage0 frequency 100000000` | extended-frequency mode | no error: the Pluto tunes to 100 MHz |
+| `hackrf_info` | an optional HackRF | a serial number and firmware version |
+| `rtl_test` | an optional RTL-SDR | `Found 1 device(s)` and a tuner name |
 
-Plug in only the radio you are testing. A command that reports no device usually means a USB driver problem (on Windows, Zadig for the RTL-SDR) or a cable that carries power but not data.
+A Pluto that reports an error on the `iio_attr` line is still in its stock 325 MHz to 3.8 GHz mode; bring it to EI, where it takes a minute to switch. A command that reports no device usually means a USB driver problem or a cable that carries power but not data.
 ::::
 
 ::::{frame} Part 2: Your First Flowgraph
@@ -152,7 +151,7 @@ This is the wiki's "Signal Data Types" and "Converting Data Types." Each block p
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
 :::
 
-A complex sample stream at rate $f_s$ can represent any frequency from $-f_s/2$ to $+f_s/2$, a band $f_s$ wide. That is twice what real samples at the same rate can show, because real samples cannot tell positive from negative frequencies and so represent only 0 to $f_s/2$. Lesson 4's SDRs all sample complex for that reason: an RTL-SDR at 2.4 MS/s shows 2.4 MHz of spectrum at once.
+A complex sample stream at rate $f_s$ can represent any frequency from $-f_s/2$ to $+f_s/2$, a band $f_s$ wide. That is twice what real samples at the same rate can show, because real samples cannot tell positive from negative frequencies and so represent only 0 to $f_s/2$. Lesson 4's SDRs all sample complex for that reason: a PlutoSDR at 2.4 MS/s shows 2.4 MHz of spectrum at once.
 
 A tone outside the window does not disappear. Its samples are identical to those of a tone $f_s$ higher or lower, so it **aliases** into the window: add or subtract $f_s$ until it lands between $-f_s/2$ and $+f_s/2$. Dragging the slider to 20 kHz puts the spike at $20 - 32 = -12$ kHz. An SDR's filters remove most out-of-band signals before the converter for exactly this reason, and a strong signal that leaks through anyway appears at a frequency where nothing is transmitting.
 ::::
@@ -174,33 +173,32 @@ The left panel plots the tone's last eight samples on the unit circle, one new s
 :::
 ::::
 
-::::{frame} Part 3: Find a Station
+::::{frame} Part 3: Connect the PlutoSDR
 :::{present}
-- Practice in SDR Flex: select a signal, demodulate it.
-- Live: run `gqrx`, choose the RTL-SDR, press power.
-- Set **WFM (stereo)**; click a tall peak and listen.
-- Note its frequency for the flowgraph.
+- Antenna on the **RX** port; USB cable on the middle micro-USB port.
+- The Pluto appears as a network device at `192.168.2.1`.
+- Course Plutos tune 70 MHz to 6 GHz, so the FM band is in range.
 :::
 
-Before building a receiver, find a signal with one that already works. <a href="https://livethisdream.github.io/sdr-flex/" target="_blank" rel="noopener">SDR Flex</a>, in the browser, has the same moves on its example captures: drag across a signal on the waterfall and choose a demodulator. On the full SDR Flex server each action builds a GNU Radio flowgraph; the browser copy simulates it and has no live radio, so for the RTL-SDR use GQRX. **GQRX** comes with radioconda and is a spectrum, waterfall, and receiver in one window; if GQRX does not start on your laptop, SDR++ has the same controls. Start it from the radioconda prompt with `gqrx`, pick the RTL-SDR in the device dialog, set the frequency to about 100 MHz, and press the power button at the top left. Set the mode to WFM (stereo), click on one of the tall bands in the spectrum, and the station plays through the speaker.
+The PlutoSDR has two SMA connectors, TX and RX, and two micro-USB ports: the middle one carries data and power, and the one at the end carries power only. Screw the antenna onto RX and connect the data port to the laptop. The Pluto shows up as a small USB network adapter at `192.168.2.1`, which is the address GNU Radio's PlutoSDR Source opens; `iio_info -s` from the Verify table finds it.
 
-Write down the frequency of the strongest station you can hear, then quit GQRX; only one program can open the RTL-SDR at a time. The next flowgraph uses that frequency as its center frequency, so the station we just heard is the one we look at in GRC.
+Out of the box a Pluto tunes 325 MHz to 3.8 GHz, which misses broadcast FM. The course Plutos are set to extended-frequency mode, which tunes 70 MHz to 6 GHz; the `iio_attr` line in the Verify table confirms it. Only one flowgraph can stream from the Pluto at a time, so stop one before starting the next.
 ::::
 
 ::::{frame} A Real Signal in GRC
 :::{present}
 <img src="../../viz/img/L05-grc-fm.png"
-     alt="GNU Radio Companion with the L5 FM flowgraph open: a Soapy RTLSDR Source at 2.4 MS/s tuned by a center-frequency slider, feeding a QT GUI Sink, with a disabled File Sink below"
+     alt="GNU Radio Companion with the L5 FM flowgraph open: a PlutoSDR Source at 2.4 MS/s with manual gain, tuned by a center-frequency slider, feeding a QT GUI Sink, with a disabled File Sink below and a DC tracking check box above"
      style="max-width: 690px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
-- The **Soapy RTLSDR Source** sets center frequency, sample rate, and gain.
+- The **PlutoSDR Source** sets center frequency, sample rate, and gain.
 - The display spans $f_c \pm f_s/2$: 2.4 MHz of the FM band at once.
 :::
 
-The second flowgraph replaces the signal source with an RTL-SDR. The **Soapy RTLSDR Source** block has three settings that matter today: the **center frequency** $f_c$ the radio tunes to, the **sample rate** $f_s$ it digitizes at, and the **RF gain**. Its output is the same complex stream as the tone flowgraph's, so the plots work unchanged. We give the **QT GUI Sink** the center frequency so its axis reads in real frequencies, from $f_c - f_s/2$ to $f_c + f_s/2$. Set the center frequency to the station you found in GQRX. At 2.4 MS/s centered on 100.1 MHz, the display spans 98.9 to 101.3 MHz, enough to see several FM stations at once.
+The second flowgraph replaces the signal source with a PlutoSDR. The **PlutoSDR Source** block has three settings that matter today: the **LO frequency**, the center frequency $f_c$ the radio tunes to; the **sample rate** $f_s$ it digitizes at, 2.4 MS/s, well inside the 4 MS/s its USB link streams; and the **gain**, set to Manual so a slider controls it. Its output is the same complex stream as the tone flowgraph's, so the plots work unchanged. We give the **QT GUI Sink** the center frequency so its axis reads in real frequencies, from $f_c - f_s/2$ to $f_c + f_s/2$. At 2.4 MS/s centered on 100.1 MHz, the display spans 98.9 to 101.3 MHz, enough to see several FM stations at once; drag the center frequency slider through 88 to 108 MHz to find the tallest one.
 
-The File Sink below is disabled, which GRC draws in gray. Enabling it records every sample to a file, which the last part of this lesson reads in Python. There is no throttle here: the RTL-SDR delivers samples at exactly 2.4 MS/s, so the hardware sets the pace.
+The File Sink below is disabled, which GRC draws in gray. Enabling it records every sample to a file, which the last part of this lesson reads in Python. There is no throttle here: the PlutoSDR delivers samples at exactly 2.4 MS/s, so the hardware sets the pace. An optional RTL-SDR also works in place of the Pluto, with the Soapy RTLSDR Source at the same 2.4 MS/s.
 ::::
 
 ::::{frame} Reading the Spectrum and Waterfall
@@ -211,12 +209,12 @@ The File Sink below is disabled, which GRC draws in gray. Enabling it records ev
 :::
 :::{present}
 - Each FM station is about 200 kHz wide, on odd tenths of a MHz.
-- The spike at the center is the receiver's own DC offset, not a signal.
+- A spike at the center is the receiver's own DC offset, not a signal.
 :::
 
 The figure is a simulation of what the flowgraph shows, so we know what to look for before the lab; the lab replaces it with the real band. The **frequency display** on top averages the spectrum. US broadcast FM stations sit on the odd tenths of a megahertz from 88.1 to 107.9 MHz, and each occupies about 200 kHz. Their heights differ by tens of dB because the stations are at different distances and powers, which is Lesson 2's link budget in action. The flat region between them is the noise floor.
 
-The **waterfall** below stacks the spectrum over time, newest at the top, with color for power. A steady carrier is a straight vertical line, a station's audio makes its band wander, and a burst transmitter, such as a key fob, appears as short dashes. The thin line exactly at the center frequency is the **DC spike**: a small offset in the receiver's own mixer and converter that looks like a signal at 0 Hz. Many SDRs show one, and the fix is to tune a little off a signal of interest rather than directly onto it.
+The **waterfall** below stacks the spectrum over time, newest at the top, with color for power. A steady carrier is a straight vertical line, a station's audio makes its band wander, and a burst transmitter, such as a key fob, appears as short dashes. The thin line exactly at the center frequency is the **DC spike**: a small offset in the receiver's own mixer and converter that looks like a signal at 0 Hz. Every zero-IF SDR makes one. The PlutoSDR's DC tracking, the flowgraph's **DC tracking** check box, subtracts most of it; uncheck the box and the spike stands up. Tracking removes whatever sits at exactly 0 Hz, a station's center included, so either way tune a little off a signal of interest rather than directly onto it.
 ::::
 
 ::::{frame} Setting the Gain
@@ -228,7 +226,7 @@ The **waterfall** below stacks the spectrum over time, newest at the top, with c
 
 The RF gain sets how loud the signal is when it reaches the analog-to-digital converter, and both extremes hurt. Too little gain leaves weak signals below the converter's own noise, so they never appear. Too much drives strong signals past the top of the converter's range, and the clipping creates false signals, spurs and copies of strong stations at frequencies where nothing transmits. A useful procedure: start low, raise the gain until the noise floor on the display rises by a few dB, which means the antenna's noise now dominates the converter's, and stop there.
 
-The RTL-SDR's converter has only 8 bits, the coarsest of the course radios, so the span from its own noise to full scale is small. A strong local station and a distant weak one can differ by more than that span, which is why no single gain setting shows both well. Lesson 4's quantizer flowgraph showed the same thing with two tones.
+The PlutoSDR's 12-bit converter gives a wider span from its own noise to full scale than an 8-bit radio, but the span is still finite. A strong local station and a distant weak one can differ by more than that span, which is why no single gain setting shows both well. Lesson 4's quantizer flowgraph showed the same thing with two tones. The PlutoSDR Source also offers automatic gain, Slow Attack, which holds the strongest signal below full scale on its own; we keep Manual here so the slider shows the trade-off.
 ::::
 
 ::::{frame} Recording IQ
@@ -274,7 +272,7 @@ An SDR hands GNU Radio a stream of complex samples that shows $f_s$ of spectrum 
 :class: read-only doc-links
 
 - <a class="doc-link" href="../../grc/L05-tone.grc" download>L05-tone.grc</a>: a complex tone in time and frequency, with a frequency slider for the aliasing demonstration. No hardware needed.
-- <a class="doc-link" href="../../grc/L05-fm-spectrum.grc" download>L05-fm-spectrum.grc</a>: the FM band from an RTL-SDR as a spectrum and waterfall, with frequency and gain sliders and a File Sink to enable for recording.
+- <a class="doc-link" href="../../grc/L05-fm-spectrum.grc" download>L05-fm-spectrum.grc</a>: the FM band from a PlutoSDR as a spectrum and waterfall, with frequency and gain sliders, a DC tracking check box, and a File Sink to enable for recording.
 - <a class="doc-link" href="../../grc/L05-psd.py" download>L05-psd.py</a>: reads a File Sink capture and plots its power spectral density.
 
 Open a `.grc` file from GRC's File menu, or run `gnuradio-companion L05-tone.grc` from the radioconda prompt.
@@ -290,11 +288,12 @@ Open a `.grc` file from GRC's File menu, or run `gnuradio-companion L05-tone.grc
 
 The next three Beginner Tutorials come back in later lessons: <a class="doc-link" href="https://wiki.gnuradio.org/index.php?title=Packing_Bits" target="_blank" rel="noopener">Packing Bits</a>, <a class="doc-link" href="https://wiki.gnuradio.org/index.php?title=Streams_and_Vectors" target="_blank" rel="noopener">Streams and Vectors</a>, and <a class="doc-link" href="https://wiki.gnuradio.org/index.php?title=Hier_Blocks_and_Parameters" target="_blank" rel="noopener">Hier Blocks and Parameters</a>.
 
-PySDR and receivers:
+PySDR and the PlutoSDR:
 
 - <a class="doc-link" href="https://pysdr.org/content/sampling.html" target="_blank" rel="noopener">PySDR: IQ Sampling</a>
 - <a class="doc-link" href="https://pysdr.org/content/frequency_domain.html" target="_blank" rel="noopener">PySDR: Frequency Domain</a>
-- <a class="doc-link" href="https://livethisdream.github.io/sdr-flex/" target="_blank" rel="noopener">SDR Flex</a>, in the browser, and <a class="doc-link" href="https://gqrx.dk/" target="_blank" rel="noopener">GQRX</a>, for finding a station
+- <a class="doc-link" href="https://pysdr.org/content/pluto.html" target="_blank" rel="noopener">PySDR: PlutoSDR in Python</a>
+- <a class="doc-link" href="https://wiki.analog.com/university/tools/pluto/users/customizing" target="_blank" rel="noopener">Analog Devices wiki: Customizing the Pluto configuration</a>, which sets extended-frequency mode
 ::::
 
 ::::{frame} Summary
@@ -307,7 +306,7 @@ PySDR and receivers:
 | Throttle | paces a flowgraph with no hardware | never with an SDR |
 | Complex samples | $I + jQ$, 8 bytes each | show $-f_s/2$ to $+f_s/2$ |
 | Aliasing | a tone outside the window moves by $f_s$ | 20 kHz at 32 kHz appears at $-12$ kHz |
-| DC spike | the receiver's own offset at $f_c$ | tune a little off the signal |
+| DC spike | the receiver's own offset at $f_c$ | Pluto's DC tracking hides it; tune a little off the signal |
 | Gain | raise until the floor lifts a few dB | stop before spurs appear |
 | IQ file size | $8 f_s$ bytes per second | 19.2 MB/s at 2.4 MS/s |
 ::::
@@ -326,7 +325,7 @@ PySDR and receivers:
 - Lesson 7 turns today's FM spectrum into audio.
 :::
 
-Today we built a flowgraph from a signal source and from a real SDR, and saw what complex sampling, aliasing, the DC spike, and the gain setting look like on GNU Radio's plots. The L5 Lab is the hands-on version: install radioconda before the lab, build the tone flowgraph from an empty canvas, measure aliasing, then find and record broadcast FM stations with an RTL-SDR and plot the recording in Python.
+Today we built a flowgraph from a signal source and from a real SDR, and saw what complex sampling, aliasing, the DC spike, and the gain setting look like on GNU Radio's plots. The L5 Lab is the hands-on version: install radioconda before the lab, build the tone flowgraph from an empty canvas, measure aliasing, then find and record broadcast FM stations with a PlutoSDR and plot the recording in Python.
 
 Lesson 6 adds the first processing blocks between source and sink to modulate and demodulate AM, and Lesson 7 returns to today's FM band to demodulate a station into audio and decode its RDS data. Before the next lesson, have radioconda installed and `gnuradio-companion` opening on your laptop.
 ::::

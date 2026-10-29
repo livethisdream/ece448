@@ -17,14 +17,16 @@ collaborate).}
 \begin{questions}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\question \textbf{Choosing a radio.} The course SDRs are the RTL-SDR Blog V4
-(0.5 to 1766 MHz, 2.56 MS/s, 8 bits, receive only), the HackRF One (1 to 6000 MHz,
-20 MS/s, 8 bits, half duplex), the PlutoSDR (325 to 3800 MHz, about 4 MS/s sustained over USB,
-12 bits, full duplex), and the ADALM-PHASER (10.0 to 10.5 GHz, digitized by a PlutoSDR).
+\question \textbf{Choosing a radio.} The course radio is the PlutoSDR (70 to 6000 MHz
+in the extended-frequency mode the course Plutos use, about 4 MS/s sustained over USB
+and up to 61.44 MS/s in short bursts, 12 bits, full duplex), with the ADALM-PHASER
+(10.0 to 10.5 GHz, digitized by a PlutoSDR) for X band. The HackRF One (1 to 6000 MHz,
+20 MS/s, 8 bits, half duplex) and the RTL-SDR Blog V4 (0.5 to 1766 MHz, 2.56 MS/s,
+8 bits, receive only) are optional extras.
 \begin{parts}
 
-	\part For each task, name a course SDR that can do it, and give the specification
-	that rules out each of the others.
+	\part For each task, say whether the PlutoSDR can do it, and how, or which radio
+	the task needs instead and the specification that rules the PlutoSDR out.
 	\begin{enumerate}[label=(\roman*)]
 		\item Receive ship AIS at 162 MHz.
 		\item Display the whole FM broadcast band, 88 to 108 MHz, at once.
@@ -32,30 +34,28 @@ collaborate).}
 		\item Find the direction of a 10.3 GHz beacon.
 	\end{enumerate}
 		\begin{solution}[2.3in]
-		(i) The RTL-SDR or the HackRF; 162 MHz is inside both tuning ranges. The
-		PlutoSDR starts at 325 MHz and the ADALM-PHASER works only at 10.0 to 10.5 GHz.
+		(i) Yes. 162 MHz is inside the extended-frequency range, 70 to 6000 MHz; a
+		stock Pluto, which starts at 325 MHz, could not tune it.
 
-		(ii) The HackRF at 20 MS/s, which shows a 20 MHz window. That leaves no
-		margin, so the stations at the very edges of the band sit in the filters'
-		roll-off. The RTL-SDR's 2.56 MS/s shows only 2.56 MHz, the PlutoSDR cannot tune
-		to 100 MHz, and the ADALM-PHASER works only at X band.
+		(ii) Not while streaming: its 4 MS/s shows only 4 MHz of the 20 MHz band. A
+		short burst capture at 20 MS/s or more shows the whole band at once, and a
+		rate above 20 MS/s leaves margin for the filters' roll-off at the edges. (The
+		optional HackRF streams 20 MS/s, with no margin.)
 
-		(iii) The PlutoSDR, the only full-duplex radio, with its transmit port cabled
-		through the 30 dB attenuator to its receive port. The HackRF transmits or receives
-		but not both at once, the RTL-SDR cannot transmit, and the ADALM-PHASER does
-		not cover 915 MHz.
+		(iii) Yes. The PlutoSDR is full duplex, so its transmit port is cabled through
+		the 30 dB attenuator to its receive port and both run at once.
 
-		(iv) The ADALM-PHASER: 10.3 GHz is inside its band, its 8 elements let it find
-		direction, and every other radio stops at 6 GHz or below.
+		(iv) No. The PlutoSDR stops at 6 GHz. The ADALM-PHASER covers 10.3 GHz, and
+		its 8 elements let it find direction.
 		\end{solution}
 
 	\part Explain how an SDR differs from a hardware FM radio, and why the same
-	RTL-SDR can decode both broadcast FM and aircraft ADS-B.
+	PlutoSDR can decode both broadcast FM and aircraft ADS-B.
 		\begin{solution}[1.1in]
 		A hardware radio builds its filters and demodulator as circuits for one kind of
 		signal. An SDR only tunes, filters, and digitizes a band, and software does the
 		filtering, demodulation, and decoding. Both 100 MHz and 1090 MHz are inside the
-		RTL-SDR's tuning range, so receiving either one is a matter of setting the
+		PlutoSDR's extended-frequency tuning range, so receiving either one is a matter of setting the
 		center frequency and running a different flowgraph.
 		\end{solution}
 
@@ -104,8 +104,8 @@ to 433.0 MHz, and a key fob transmits at 433.92 MHz.
 \newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \question \textbf{Sample rate and data rate.} A team captures a 10 MHz-wide test signal
-centered on 2437 MHz with a HackRF. The usable window is somewhat narrower than $f_s$,
-because the radio's filters roll off near its edges.
+centered on 2437 MHz with a PlutoSDR, in a short burst. The usable window is somewhat
+narrower than $f_s$, because the radio's filters roll off near its edges.
 \begin{parts}
 
 	\begin{minipage}[t]{0.58\linewidth}
@@ -145,22 +145,25 @@ because the radio's filters roll off near its edges.
 	\end{minipage}
 
 	\begin{minipage}[t]{0.58\linewidth}
-		\part The HackRF sends 8-bit $I$ and 8-bit $Q$ over USB. Find the USB data rate
-		at 12.5 MS/s, and how many times larger the flowgraph's rate is.
+		\part The PlutoSDR sends each 12-bit $I$ and $Q$ over USB as a 16-bit word.
+		Find the USB data rate at 12.5 MS/s, and compare it with the rate at the
+		4 MS/s the Pluto streams without dropped samples.
 		\begin{solution}[0.9in]
-		\eq{ 2\ \text{bytes} \times 12.5\times10^{6} = 25\ \text{MB/s}, \qquad \frac{100}{25} = 4 }
+		\eq{ 4\ \text{bytes} \times 12.5\times10^{6} &= 50\ \text{MB/s} \\ 4\ \text{bytes} \times 4\times10^{6} &= 16\ \text{MB/s} }
+		The capture needs about three times what the USB 2.0 link sustains, so it
+		works only as a short burst into the Pluto's memory.
 		\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
 		\raggedleft \vspace{12pt}
-		USB: \ansbox[1.2in]{25 MB/s}
+		USB: \ansbox[1.2in]{50 MB/s}
 
 		\vspace{4pt}
-		ratio: \ansbox[1.2in]{4}
+		at 4 MS/s: \ansbox[1.2in]{16 MB/s}
 	\end{minipage}
 
-	\part A teammate suggests the RTL-SDR instead. Give two separate reasons it
-	cannot make this capture.
+	\part A teammate suggests the optional RTL-SDR instead. Give two separate reasons
+	it cannot make this capture.
 		\begin{solution}[0.9in]
 		Its tuning range stops at 1766 MHz, below 2437 MHz. Even inside its range, its
 		2.56 MS/s shows only 2.56 MHz, far less than the 10 MHz signal.

@@ -54,11 +54,13 @@ def write(name, fig):
 
 
 def tuning_ranges():
-    # Manufacturer tuning ranges in Hz. RTL-SDR Blog V4 datasheet; Great Scott
-    # Gadgets (HackRF One); Analog Devices (ADALM-PLUTO, CN0566 ADALM-PHASER).
-    radios = [("RTL-SDR Blog V4", 0.5e6, 1.766e9, "receive"),
-              ("HackRF One", 1e6, 6e9, "half duplex"),
-              ("PlutoSDR", 325e6, 3.8e9, "full duplex"),
+    # Tuning ranges in Hz. Analog Devices (ADALM-PLUTO in extended-frequency,
+    # AD9364, mode, as the course Plutos run; CN0566 ADALM-PHASER); Great Scott
+    # Gadgets (HackRF One); RTL-SDR Blog V4 datasheet. The HackRF and RTL-SDR
+    # are optional extras.
+    radios = [("PlutoSDR", 70e6, 6e9, "full duplex"),
+              ("HackRF One", 1e6, 6e9, "optional"),
+              ("RTL-SDR Blog V4", 0.5e6, 1.766e9, "optional"),
               ("ADALM-PHASER", 10.0e9, 10.5e9, "8-element array")]
     signals = [("FM", 98e6), ("AIS", 162e6), ("433.92", 433.92e6), ("ADS-B", 1090e6),
                ("GPS L1", 1575.42e6), ("2.4 GHz ISM", 2.44e9)]

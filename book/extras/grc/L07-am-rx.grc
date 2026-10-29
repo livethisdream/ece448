@@ -7,8 +7,8 @@ options:
     comment: ''
     copyright: ''
     description: 'L7: an AM receiver for the aircraft band. Plays L07-am-test.cfile;
-      disable the File Source and enable the RTL-SDR Source to receive a live AM station
-      such as an airport ATIS.'
+      disable the File Source and enable the PlutoSDR Source to receive a live AM
+      station such as an airport ATIS.'
     gen_cmake: 'On'
     gen_linking: dynamic
     generate_options: qt_gui
@@ -98,8 +98,8 @@ blocks:
     rangeType: float
     start: '0'
     step: '1'
-    stop: '49'
-    value: '30'
+    stop: '71'
+    value: '50'
     widget: counter_slider
   states:
     bus_sink: false
@@ -467,6 +467,37 @@ blocks:
     coordinate: [16, 240]
     rotation: 0
     state: enabled
+- name: pluto
+  id: iio_pluto_source
+  parameters:
+    affinity: ''
+    alias: ''
+    bandwidth: int(samp_rate)
+    bbdc: 'True'
+    buffer_size: '32768'
+    comment: ''
+    filter: '""'
+    filter_source: '''Auto'''
+    fpass: '0'
+    frequency: int(fc_mhz * 1e6)
+    fstop: '0'
+    gain1: '''manual'''
+    len_tag_key: '""'
+    manual_gain1: rf_gain
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    quadrature: 'True'
+    rfdc: 'True'
+    samplerate: int(samp_rate)
+    type: fc32
+    uri: '"ip:192.168.2.1"'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [16, 390]
+    rotation: 0
+    state: disabled
 - name: rf_spectrum
   id: qtgui_freq_sink_x
   parameters:
@@ -548,30 +579,6 @@ blocks:
     coordinate: [300, 120]
     rotation: 0
     state: enabled
-- name: rtl_sdr
-  id: soapy_rtlsdr_source
-  parameters:
-    affinity: ''
-    agc: 'False'
-    alias: ''
-    bias: 'False'
-    bufflen: '16384'
-    center_freq: fc_mhz * 1e6
-    comment: ''
-    dev_args: ''''''
-    freq_correction: '0'
-    gain: rf_gain
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    samp_rate: samp_rate
-    type: fc32
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [16, 390]
-    rotation: 0
-    state: disabled
 - name: volume
   id: blocks_multiply_const_vxx
   parameters:
@@ -601,8 +608,8 @@ connections:
 - [envelope_lpf, '0', dc_block, '0']
 - [file_source, '0', channel_filter, '0']
 - [file_source, '0', rf_spectrum, '0']
-- [rtl_sdr, '0', channel_filter, '0']
-- [rtl_sdr, '0', rf_spectrum, '0']
+- [pluto, '0', channel_filter, '0']
+- [pluto, '0', rf_spectrum, '0']
 - [volume, '0', audio_sink, '0']
 
 metadata:

@@ -76,13 +76,13 @@ The chart shows every allocation in the United States, from 3 kHz at the top lef
 :::
 :::{present}
 <img src="../../viz/img/L02-ism-bands.svg"
-     alt="The US ISM bands at 6.78, 13.56, 27.12, and 40.68 MHz and at 915, 2450, and 5800 MHz on a log frequency axis, with the tuning ranges of the RTL-SDR, 24 MHz to 1.766 GHz, the PlutoSDR, 325 MHz to 3.8 GHz, and the HackRF One, 1 MHz to 6 GHz"
+     alt="The US ISM bands at 6.78, 13.56, 27.12, and 40.68 MHz and at 915, 2450, and 5800 MHz on a log frequency axis, with the tuning ranges of the course PlutoSDR, 70 MHz to 6 GHz in extended-frequency mode, and of two optional radios, the HackRF One, 1 MHz to 6 GHz, and the RTL-SDR, 24 MHz to 1.766 GHz"
      style="max-width: 720px; width: 100%; display: block; margin: 0 auto;">
 :::
 
-In the United States the FCC (and the NTIA, for federal users) allocates the radio spectrum, and the allocation chart shows who holds each band. Almost all of it requires a license to transmit. The exceptions that matter most in this course are the **industrial, scientific, and medical (ISM)** bands. Part 15 of the FCC rules lets anyone transmit there at low power without a license, provided they accept interference from everyone else, and that is why Wi-Fi, Bluetooth, garage-door openers, and most hobby drones share 915 MHz, 2.4 GHz, and 5.8 GHz.
+In the United States the FCC (and the NTIA, for federal users) allocates the radio spectrum, and the allocation chart shows who holds each band. Almost all of it requires a license to transmit. The exceptions that matter most in this course are the **industrial, scientific, and medical (ISM)** bands. Part 15 of the FCC rules lets anyone transmit there at low power without a license, provided they accept interference from everyone else, and that is why Wi-Fi, Bluetooth, and most hobby drones share 915 MHz, 2.4 GHz, and 5.8 GHz.
 
-Two rules govern what we do with the SDRs. Receiving is unrestricted: we can tune anywhere the hardware reaches and look at whatever is there, which is most of this course. Transmitting is not: in class we transmit only into a cable, into a shielded enclosure, or at very low power in an ISM band, and only when the lesson says to. The figure shows where the ISM bands fall against the tuning range of each course SDR. The RTL-SDR receives only, and it reaches 915 MHz but not 2.4 GHz; the PlutoSDR and the HackRF cover all three of the common ISM bands.
+Two rules govern what we do with the SDRs. Receiving is unrestricted: we can tune anywhere the hardware reaches and look at whatever is there, which is most of this course. Transmitting is not: in class, cadets transmit only into a cable through a 30 dB attenuator, and only when the lesson says to. The figure shows where the ISM bands fall against the tuning range of each SDR. The course PlutoSDR, in its extended-frequency mode, covers all three of the common ISM bands and can transmit in them, as can the optional HackRF; the optional RTL-SDR receives only, and it reaches 915 MHz but not 2.4 GHz.
 ::::
 
 ::::{frame} Part 2: The Friis Equation
@@ -299,18 +299,18 @@ The widget starts on the drone link above. The four steps are the transmitter, t
 
 ::::{frame} Reading SNR on an SDR
 :::{present}
-1. Open an FM capture in SDR Flex; read the peak and the floor.
-2. Live in GQRX: 99.9 MHz, WFM, AGC off, RF gain 30 dB.
-3. FFT Settings → FFT size 4096 → 8192.
+1. PlutoSDR flowgraph: 99.9 MHz, gain Manual, 40 dB.
+2. Read the peak and the floor; subtract.
+3. Sink's FFT Size: 2048 → 4096.
 :::
 
-This is an instructor demo, with background from PySDR's *Noise and dB* chapter; cadets repeat it in GNU Radio's frequency sink once the Lesson 5 install is done. Start in <a href="https://livethisdream.github.io/sdr-flex/" target="_blank" rel="noopener">SDR Flex</a>, in the browser: right-click the source chip, open one of its example FM captures, and read the level of a station's peak and of the floor beside it. Then go live with an RTL-SDR in GQRX, the fallback, since SDR Flex in the browser has no live radio:
+This is an instructor demo, with background from PySDR's *Noise and dB* chapter; cadets run the same flowgraph themselves once the Lesson 5 install is done. It is `L05-fm-spectrum.grc`, a PlutoSDR Source feeding GNU Radio's spectrum display:
 
-1. Device: the RTL-SDR. Frequency 99.9 MHz (or any local station), mode WFM, AGC off, RF gain 30 dB.
-2. Read the station's peak and the floor beside it, in dBFS. The difference is the SNR. Tune a weak station and compare.
-3. FFT Settings → FFT size from 4096 to 8192. The floor drops 3 dB.
+1. Run it with the center frequency at 99.9 MHz (or any local station) and the gain slider at 40 dB. The PlutoSDR Source's gain mode is Manual, so its AGC does not move the levels while we read them.
+2. Read the station's peak and the floor beside it. The difference is the SNR. Tune a weak station and compare.
+3. In the sink's FFT Size menu, go from 2048 to 4096. The floor drops 3 dB.
 
-The vertical axis is in **dBFS**, decibels relative to the full scale of the analog-to-digital converter, not in dBm. Turning dBFS into dBm takes a calibration against a known source, but an SNR does not need one: it is the difference between two levels on the same axis. In step 3 each FFT bin gets half as wide and holds half the noise, so the floor drops 3 dB. A 200 kHz FM station spans many bins, so its level drops 3 dB too and the displayed SNR stays the same; a narrow carrier, all in one bin, would stay where it was and its SNR would rise.
+The vertical axis is in decibels relative to the full scale of the analog-to-digital converter, **dBFS**, offset by a fixed amount the sink adds, not in dBm. Turning it into dBm takes a calibration against a known source, but an SNR does not need one: it is the difference between two levels on the same axis. In step 3 each FFT bin gets half as wide and holds half the noise, so the floor drops 3 dB. A 200 kHz FM station spans many bins, so its level drops 3 dB too and the displayed SNR stays the same; a narrow carrier, all in one bin, would stay where it was and its SNR would rise.
 ::::
 
 ::::{frame} Key Point
@@ -328,7 +328,7 @@ This lesson follows Dr. Rogers's 2025 slides, <a href="../../legacy/L02-noise-fi
 - PySDR, <a href="https://pysdr.org/content/noise.html" target="_blank" rel="noopener">Noise and dB</a>: decibels, noise power, and SNR.
 - PySDR, <a href="https://pysdr.org/content/link_budgets.html" target="_blank" rel="noopener">Link Budgets</a>: path loss, noise figure, and an end-to-end budget.
 
-The hands-on step, reading SNR off a spectrum display, is an instructor demo in SDR Flex and then GQRX with an RTL-SDR, repeated in GNU Radio from Lesson 5.
+The hands-on step, reading SNR off a spectrum display, is an instructor demo with the Lesson 5 PlutoSDR flowgraph, `L05-fm-spectrum.grc`, which cadets repeat from Lesson 5.
 ::::
 
 ::::{frame} Summary

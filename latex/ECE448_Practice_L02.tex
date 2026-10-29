@@ -48,12 +48,13 @@ with 2 dB of loss.
 		EIRP = \ansbox[1.3in]{$501$ mW}
 	\end{minipage}
 
-	\part Which of the course SDRs (RTL-SDR, PlutoSDR, HackRF One) can receive the
-	2.4 GHz ISM band, and which can transmit in it?
+	\part Which of these SDRs, the course PlutoSDR and the optional HackRF One and
+	RTL-SDR, can receive the 2.4 GHz ISM band, and which can transmit in it?
 		\begin{solution}[0.9in]
-		The PlutoSDR (325 MHz to 3.8 GHz) and the HackRF One (1 MHz to 6 GHz) both
-		cover 2.4 GHz and can both transmit. The RTL-SDR tops out near 1.77 GHz and is
-		receive-only, so it can reach the 915 MHz band but not 2.4 GHz.
+		The PlutoSDR (70 MHz to 6 GHz in the course's extended-frequency mode) and the
+		HackRF One (1 MHz to 6 GHz) both cover 2.4 GHz and can both transmit. The
+		RTL-SDR tops out near 1.77 GHz and is receive-only, so it can reach the 915 MHz
+		band but not 2.4 GHz.
 		\end{solution}
 
 	\part Explain in one or two sentences why Wi-Fi, Bluetooth, and most hobby
@@ -128,7 +129,7 @@ delivers 1 W to its antenna.
 
 \newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\question \textbf{The noise floor.} An RTL-SDR with a 6 dB noise figure receives a
+\question \textbf{The noise floor.} A PlutoSDR with a 6 dB noise figure receives a
 broadcast FM station. One FM channel occupies about 200 kHz.
 \begin{parts}
 
@@ -277,7 +278,7 @@ bandwidth.
 \newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \question \textbf{Reading SNR on an SDR.} A GNU Radio frequency sink shows an
-unmodulated carrier from a signal generator, received by an RTL-SDR running at
+unmodulated carrier from a signal generator, received by a PlutoSDR running at
 $f_s = 2.4$ MHz with an FFT size of 2048. The carrier's peak reads $-32$ dBFS and
 the noise floor beside it reads $-78$ dBFS.
 \begin{parts}

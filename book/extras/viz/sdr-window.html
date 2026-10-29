@@ -37,7 +37,7 @@
   <div class="controls">
     <div class="segs">
       <div class="seg" id="band"><button data-b="fm" class="on">FM broadcast</button><button data-b="adsb">ADS-B</button><button data-b="ism">2.4 GHz ISM</button></div>
-      <div class="seg" id="radio"><button data-r="rtl" class="on">RTL-SDR</button><button data-r="hackrf">HackRF</button><button data-r="pluto">PlutoSDR</button></div>
+      <div class="seg" id="radio"><button data-r="pluto" class="on">PlutoSDR</button><button data-r="hackrf">HackRF</button><button data-r="rtl">RTL-SDR</button></div>
     </div>
     <div class="ctl"><label for="fc">Center frequency</label><span class="val" id="fc-v"></span>
       <input type="range" id="fc"></div>
@@ -54,14 +54,16 @@
 <script>
 'use strict';
 // Frequencies in MHz throughout. Tuning ranges and sample rates are the
-// manufacturers' numbers: RTL-SDR Blog V4 datasheet (2.56 MS/s is its stable
-// rate), Great Scott Gadgets (HackRF One), and Analog Devices (ADALM-PLUTO,
-// whose USB 2.0 link streams about 4 MS/s without dropped samples; its
-// 61.44 MS/s converters reach higher rates only in bursts).
+// manufacturers' numbers: Analog Devices (ADALM-PLUTO in extended-frequency,
+// AD9364, mode, as the course Plutos run: 70 MHz to 6 GHz and up to 56 MHz of
+// bandwidth; its USB 2.0 link streams about 4 MS/s without dropped samples,
+// and its 61.44 MS/s converters reach higher rates only in bursts), and, for
+// the optional radios, Great Scott Gadgets (HackRF One) and the RTL-SDR Blog
+// V4 datasheet (2.56 MS/s is its stable rate).
 const RADIOS = {
   rtl:    { name: 'RTL-SDR', lo: 0.5,  hi: 1766, fsMin: 0.25,  fsMax: 2.56, bw: Infinity },
   hackrf: { name: 'HackRF',  lo: 1,    hi: 6000, fsMin: 2,     fsMax: 20,   bw: Infinity },
-  pluto:  { name: 'PlutoSDR', lo: 325, hi: 3800, fsMin: 0.521, fsMax: 4,    bw: 20 },
+  pluto:  { name: 'PlutoSDR', lo: 70,  hi: 6000, fsMin: 0.521, fsMax: 4,    bw: 56 },
 };
 // The bands are simulated: plausible signals, not a survey of any one place.
 function fmStations() {
@@ -81,9 +83,9 @@ const BANDS = {
 const SANS = 'Inter, system-ui, -apple-system, sans-serif';
 const C = { navy:'#004a85', mid:'#0067b9', red:'#b01e24', amber:'#8a5a00', rule:'#cddce9', ink:'#15202b', ink3:'#5b6573', fill:'rgba(0,103,185,0.12)' };
 const $ = id => document.getElementById(id);
-let band = 'fm', radio = 'rtl';
+let band = 'fm', radio = 'pluto';
 const fcByBand = { fm: BANDS.fm.fc, adsb: BANDS.adsb.fc, ism: BANDS.ism.fc };
-const fsByRadio = { rtl: 2.4, hackrf: 2.4, pluto: 4 };
+const fsByRadio = { rtl: 2.4, hackrf: 2.4, pluto: 2.4 };
 
 function configure() {
   const B = BANDS[band], R = RADIOS[radio];

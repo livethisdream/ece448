@@ -290,7 +290,7 @@ DSB-AM puts most of its power in a carrier so the receiver can be an envelope de
 
 Each of today's signals is on the air. AM broadcast fills 540 to 1700 kHz, and every aircraft and control tower talks in AM between 118 and 137 MHz, including the recorded airport weather broadcasts (ATIS), which make a good first target for Lesson 7's AM receiver. SSB carries long-range HF voice: military and maritime stations use USB, and amateurs use LSB below 10 MHz and USB above it. DSB-SC rides inside every FM stereo broadcast.
 
-An SDR delivers complex samples centered on its tuned frequency, so a signal arrives with its carrier already at 0 Hz. The envelope is then the magnitude of each sample, and the whole envelope detector is one **Complex to Mag** block, which is what GNU Radio's AM Demod block contains. An SSB receiver on an SDR keeps the real part after a frequency shift. Lesson 7 builds the AM receiver around an RTL-SDR.
+An SDR delivers complex samples centered on its tuned frequency, so a signal arrives with its carrier already at 0 Hz. The envelope is then the magnitude of each sample, and the whole envelope detector is one **Complex to Mag** block, which is what GNU Radio's AM Demod block contains. An SSB receiver on an SDR keeps the real part after a frequency shift. Lesson 7 builds the AM receiver around a PlutoSDR.
 ::::
 
 ::::{frame} Downloads and Sources
@@ -331,10 +331,10 @@ The deck's opening sampling and data-type demos are in Lesson 5.
 ::::{frame} Looking Ahead
 :::{present}
 - The L6 Lab builds DSB-AM from an empty canvas and measures DSB-SC and SSB.
-- Lesson 7 receives real AM and FM with an RTL-SDR.
+- Lesson 7 receives real AM and FM with a PlutoSDR.
 :::
 
 Today we built DSB-AM, DSB-SC, and SSB transmitters in GNU Radio, received each one, and compared the output with the message on a time sink and by ear. The L6 Lab is the hands-on version: build the DSB-AM flowgraph yourself, find its overmodulation point with the slider, and then watch and listen to what LO phase and tuning errors do to the DSB-SC and SSB receivers.
 
-Lesson 7 replaces the simulated transmitter with the air. An RTL-SDR delivers complex samples, the envelope detector becomes a Complex to Mag block, and we receive an aircraft band AM station, then a broadcast FM station with its RDS data.
+Lesson 7 replaces the simulated transmitter with the air. A PlutoSDR delivers complex samples, the envelope detector becomes a Complex to Mag block, and we receive an aircraft band AM station, then a broadcast FM station with its RDS data.
 ::::

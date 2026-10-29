@@ -13,7 +13,7 @@ frame_view: true
 
 <div class="title-rule"></div>
 
-Build a flowgraph from an empty canvas, measure aliasing, then find an FM station in GQRX and record the band in GNU Radio.
+Build a flowgraph from an empty canvas, measure aliasing, then find FM stations on the PlutoSDR and record the band in GNU Radio.
 
 L5 Lab · Module 2: SDR & GNU Radio Foundations · Dr. Neil Rogers
 ::::
@@ -29,23 +29,23 @@ L5 Lab · Module 2: SDR & GNU Radio Foundations · Dr. Neil Rogers
 ::::{frame} From Lesson to Bench
 :::{present}
 - **Pre-Lab:** install radioconda and work out the numbers your settings fix.
-- **Bench:** build the tone flowgraph yourself, find an FM station in GQRX, then receive and record the band in GNU Radio.
+- **Bench:** build the tone flowgraph yourself, then receive and record the FM band on the PlutoSDR in GNU Radio.
 - **Writeup:** compare, and explain the differences.
 :::
 
-Lesson 5 showed both flowgraphs running. Today you build one from an empty canvas and run the other against real signals. The lab packet has three parts, and you turn it in once, complete, before Lesson 6. **Part 1, the Pre-Lab**, is on your own before the period: install radioconda, confirm it sees your RTL-SDR, and work out where the tones will appear, the band the display shows, and the file size. **Part 2** is your own measurements and observations in class. **Part 3, the Writeup**, explains what you saw.
+Lesson 5 showed both flowgraphs running. Today you build one from an empty canvas and run the other against real signals. The lab packet has three parts, and you turn it in once, complete, before Lesson 6. **Part 1, the Pre-Lab**, is on your own before the period: install radioconda, confirm it sees your PlutoSDR, and work out where the tones will appear, the band the display shows, and the file size. **Part 2** is your own measurements and observations in class. **Part 3, the Writeup**, explains what you saw.
 
-Nothing in this lab transmits. The RTL-SDR is receive-only, and the tone flowgraph never leaves your laptop.
+Nothing in this lab transmits. The FM flowgraph uses only the PlutoSDR's receiver, and the tone flowgraph never leaves your laptop.
 ::::
 
 ::::{frame} Part 1: Before the Period
 :::{present}
 - `gnuradio-config-info --version` reports 3.10.
-- `rtl_test` finds your RTL-SDR and names its tuner.
+- `iio_info -s` finds your PlutoSDR, and the `iio_attr` check tunes it to 100 MHz.
 - `L05-tone.grc` runs and shows one spike at $+1$ kHz.
 :::
 
-Do the Pre-Lab before you arrive; the bench time assumes a working install. The three checks on the slide are the packet's Question 1. If any fails, the L5 lesson page lists the fixes, and the most common one on Windows is the Zadig driver step for the RTL-SDR. Bring the problem to EI before the lab rather than to the lab itself.
+Do the Pre-Lab before you arrive; the bench time assumes a working install. The three checks on the slide are the packet's Question 1. If any fails, the L5 lesson page lists the fixes: the most common one on Windows is Analog Devices' PlutoSDR USB driver, and a Pluto that fails the `iio_attr` check needs switching to extended-frequency mode. Bring the problem to EI before the lab rather than to the lab itself.
 
 Question 2 is quick arithmetic from your block settings: where five tones appear at a 48 kHz sample rate, the band the FM display shows at a given center frequency, and the size of a 3 s recording. Part 2 checks the tones and the file size on the screen. The tone results are exact, because a computed tone has no noise or hardware in the way; if a measurement disagrees with your arithmetic, check `samp_rate` first.
 ::::
@@ -66,12 +66,11 @@ Question 2 is quick arithmetic from your block settings: where five tones appear
 ::::{frame} Part 2: The FM Band
 :class: read-only
 
-1. Optional warm-up, not graded: on an example capture in <a href="https://livethisdream.github.io/sdr-flex/" target="_blank" rel="noopener">SDR Flex</a> (livethisdream.github.io/sdr-flex), drag across a signal and choose a demodulator. Skip it if you are short on time.
-2. Connect the antenna to the RTL-SDR and plug it in. Run `gqrx`, choose the RTL-SDR, set the mode to WFM (stereo), and press the power button. GQRX comes with radioconda; if GQRX does not start on your laptop, SDR++ has the same controls.
-3. Click across the FM band until you hear a station clearly. Record its frequency for Question 4(a), then quit GQRX; only one program can open the RTL-SDR at a time.
-4. Open `L05-fm-spectrum.grc`, set the center frequency to the station you found, and run it. Drag the center frequency across 88 to 108 MHz. Record the three strongest stations' frequencies and peak levels, and how wide each looks next to the others, for Question 4(b).
-5. Center a station exactly on the spike in the middle of the display, then tune 300 kHz away. Note what moves for Question 4(c).
-6. With the strongest station on screen, set the gain to 0, 20, 30, 40, and 49 dB. At each, record the noise floor away from any station, and whether new signals appear between stations, for Question 4(d).
+1. Screw the antenna onto the PlutoSDR's RX port and plug the Pluto into your laptop.
+2. Open and run `L05-fm-spectrum.grc`. Drag the center frequency slowly from 88 to 108 MHz and record the tallest station's frequency for Question 4(a).
+3. Center the display on that station, then drag across 88 to 108 MHz again. Record the three strongest stations' frequencies and peak levels, and how wide each looks next to the others, for Question 4(b).
+4. Uncheck DC tracking. Center a station exactly on the spike in the middle of the display, then tune 300 kHz away. Note what moves, then check DC tracking again and note what changes, for Question 4(c).
+5. With the strongest station on screen, set the gain to 0, 20, 40, 60, and 71 dB. At each, record the noise floor away from any station, and whether new signals appear between stations, for Question 4(d).
 ::::
 
 ::::{frame} Part 2: Record and Plot
@@ -87,9 +86,9 @@ Question 2 is quick arithmetic from your block settings: where five tones appear
 ::::{frame} No Hardware?
 :class: read-only
 
-:::{admonition} If your RTL-SDR is missing or will not open
+:::{admonition} If your PlutoSDR is missing or will not open
 :class: tip
-Do Question 3 on your laptop as written; it needs no hardware. For Questions 4 and 5, pair with a classmate whose RTL-SDR works, take turns at their laptop, and record your own numbers and your own capture. Say in the packet whose hardware you used. Bring the failed dongle to EI so it is working before the L6 Lab.
+Do Question 3 on your laptop as written; it needs no hardware. For Questions 4 and 5, pair with a classmate whose PlutoSDR works, take turns at their laptop, and record your own numbers and your own capture. Say in the packet whose hardware you used. Bring the failed Pluto to EI so it is working before the L7 Lab.
 :::
 ::::
 

@@ -35,7 +35,7 @@ L7 Lab · Module 3: Analog Modulation · Dr. Neil Rogers
 
 Lesson 7 ran every receiver on simulated test files. Today you build the WBFM receiver yourself, then run the receivers on your own L5 capture and on the air. The lab packet has three parts, and you turn it in once, complete, before Lesson 8. **Part 1, the Pre-Lab**, is on your own before the period: the receiver settings for an example capture and your own, the rates and gain of the receiver you build, and a local ATIS. **Part 2** is your own measurements and observations in class. **Part 3, the Writeup**, explains them.
 
-Bring your RTL-SDR, its antenna, your `fm_capture.cfile` from the L5 Lab, and headphones, and check that GQRX starts. GQRX comes with radioconda; if it does not start on your laptop, SDR++ has the same controls.
+Bring your PlutoSDR, its antenna, your `fm_capture.cfile` from the L5 Lab, and headphones.
 ::::
 
 ::::{frame} Part 1: Before the Period
@@ -75,13 +75,11 @@ The setup also takes a few minutes, and some of it needs a network connection, w
 ::::{frame} Part 2: Live FM and RDS
 :class: read-only
 
-Optional, before the radio: open <a href="https://livethisdream.github.io/sdr-flex/" target="_blank" rel="noopener">SDR Flex</a>, select an FM signal in one of its example captures, and demodulate it, to practice select-and-demodulate.
-
-1. Connect the antenna and the RTL-SDR. Open **GQRX**, choose the RTL-SDR, and start it.
-2. Click a strong station between 88 and 108 MHz and set the mode to **WFM (stereo)**. Open the RDS panel and turn decoding on. Record the frequency and the station name GQRX shows for Question 4(a), then close GQRX; only one program can use the RTL-SDR at a time.
-3. Open `L07-rds-rx.grc`. Right-click the File Source and choose Disable; right-click the RTL-SDR Source and choose Enable.
+1. Connect the antenna to the PlutoSDR's RX port. Run `L05-fm-spectrum.grc`, find a strong station between 88 and 108 MHz, and stop it; only one flowgraph can stream from the Pluto at a time.
+2. Open `L07-wbfm-rx.grc`. Disable the File Source, enable the PlutoSDR Source, and run it with SDR center about 300 kHz below the station and Station set to it. Listen, and record the frequency, the call sign the station announces (or the FCC lists for it), and whether the 19 kHz pilot shows on the multiplex sink, for Question 4(a). Stop it.
+3. Open `L07-rds-rx.grc`. Right-click the File Source and choose Disable; right-click the PlutoSDR Source and choose Enable.
 4. Run it. Type an SDR center about 300 kHz below the station you found, set Station to its frequency, and set RF gain from your L5 gain table.
-5. Wait for the station name and check it against GQRX's. Fill in the rest of the table for Question 4(b); the panel shows the PI code under "Program Type" and the program type under "PI".
+5. Wait for the station name and compare it with the call sign. Fill in the rest of the table for Question 4(b); the panel shows the PI code under "Program Type" and the program type under "PI".
 6. Screenshot the constellation and the panel for Question 4(c).
 7. Stop and restart the flowgraph three times, and time how long the name takes to appear, for Question 4(d).
 ::::
@@ -90,8 +88,8 @@ Optional, before the radio: open <a href="https://livethisdream.github.io/sdr-fl
 :class: read-only
 
 1. Open `L07-am-rx.grc` and run it on `L07-am-test.cfile`. The audio is the L6 two-tone message.
-2. Stop it. Disable the File Source, enable the RTL-SDR Source, and run it again.
-3. Enter the SDR center and Station from Question 1(c), and set RF gain to 40 dB to start.
+2. Stop it. Disable the File Source, enable the PlutoSDR Source, and run it again.
+3. Enter the SDR center and Station from Question 1(c), and set RF gain to 50 dB to start.
 4. Screenshot the receiver and record the information letter and the altimeter setting for Question 5(a).
 5. Lower RF gain until the voice is hard to understand, and describe it for Question 5(b).
 ::::
@@ -108,11 +106,11 @@ Optional, before the radio: open <a href="https://livethisdream.github.io/sdr-fl
 ::::{frame} No Signal?
 :class: read-only
 
-:::{admonition} If the station name, the ATIS, or the RTL-SDR does not work
+:::{admonition} If the station name, the ATIS, or the PlutoSDR does not work
 :class: tip
-- **No station name:** if GQRX showed one, check that Station matches its frequency. Otherwise choose a stronger station, or raise RF gain until the RDS constellation shows two clusters. RDS needs more signal than the audio does.
+- **No station name:** check that Station matches the frequency you heard the station on. Otherwise choose a stronger station, or raise RF gain until the RDS constellation shows two clusters. RDS needs more signal than the audio does.
 - **No ATIS:** aircraft band stations need line of sight. Try a window, a higher floor, or the airport's other frequency, and say in the packet what you tried. If none works, answer Question 5 from the test file and say so.
-- **No RTL-SDR:** pair with a classmate whose RTL-SDR works for Questions 4 and 5, take turns at their laptop, and record your own numbers. Questions 2, 3, and 6 need no hardware.
+- **No PlutoSDR:** pair with a classmate whose PlutoSDR works for Questions 4 and 5, take turns at their laptop, and record your own numbers. Questions 2, 3, and 6 need no hardware.
 - **Audio error:** an Audio Sink that cannot open your sound card stops the flowgraph. Plug in your headphones and run it again, as in the L6 Lab.
 :::
 ::::

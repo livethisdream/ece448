@@ -39,11 +39,11 @@ Open GRC on the projector before class with the tone flowgraph loaded. The first
 2. Your first flowgraph: a tone in time and frequency
 3. Variables and sliders; data types and converting them
 4. Complex sampling and aliasing
-5. Find a station (SDR Flex, GQRX), then view it in GRC
+5. Connect the PlutoSDR and view the FM band in GRC
 6. Gain, recording IQ, and reading it in Python
 
 Note:
-Items two through four follow the GNU Radio wiki's Beginner Tutorials, built live from an empty canvas. Item five needs an RTL-SDR and an antenna at the front of the room.
+Items two through four follow the GNU Radio wiki's Beginner Tutorials, built live from an empty canvas. Item five needs a PlutoSDR in extended-frequency mode and an antenna at the front of the room.
 
 ---
 
@@ -60,14 +60,14 @@ Point out source, throttle, and the two sinks, then press run. Show them the gen
 
 ## Install With Radioconda
 
-- One installer: GNU Radio 3.10 plus drivers for every course SDR
+- One installer: GNU Radio 3.10 plus the PlutoSDR's drivers and blocks
 - Windows, macOS, and Linux
-- Windows RTL-SDR users also run Zadig once
+- Windows users also install Analog Devices' PlutoSDR USB driver once
 
-Verify: `gnuradio-companion`, `gqrx`, `rtl_test`, `hackrf_info`, `iio_info -s`, `SoapySDRUtil --find`
+Verify: `gnuradio-companion`, `iio_info -s`, and the `iio_attr` check that the Pluto tunes 100 MHz
 
 Note:
-The installer link and the full verification table are on the lesson page. The pre-lab requires a working install, so anyone stuck should come to EI before the lab.
+The installer link and the full verification table are on the lesson page. A Pluto that fails the iio_attr line is still in its stock 325 MHz to 3.8 GHz mode and needs switching to extended-frequency mode at EI. The pre-lab requires a working install, so anyone stuck should come to EI before the lab.
 
 ---
 
@@ -147,26 +147,25 @@ This is the wagon-wheel effect from movies. Each sample advances more than half 
 
 ---
 
-## Find a Station
+## Connect the PlutoSDR
 
-- Practice in SDR Flex: select a signal, demodulate it.
-- Live: run `gqrx`, choose the RTL-SDR, press power.
-- Mode **WFM (stereo)**; click a tall peak and listen.
-- Note the frequency; quit GQRX before opening GRC.
+- Antenna on the **RX** port; USB cable on the middle micro-USB port.
+- The Pluto appears as a network device at `192.168.2.1`.
+- Course Plutos tune 70 MHz to 6 GHz, so the FM band is in range.
 
 Note:
-SDR Flex (livethisdream.github.io/sdr-flex) on an example capture shows the select-and-demodulate moves. On the full SDR Flex server each action builds a GNU Radio flowgraph; the browser copy simulates it and has no live radio, so GQRX does the live part. Explore first, so they hear the station before they build anything. Only one program can open the RTL-SDR at a time, so quit GQRX before running the flowgraph. GQRX comes with radioconda; if GQRX does not start on a laptop, SDR++ has the same controls.
+Out of the box a Pluto tunes 325 MHz to 3.8 GHz; the course Plutos are in extended-frequency (AD9364) mode. Only one flowgraph can stream from the Pluto at a time. SDR Flex in the browser is an optional quick look for anyone who wants one; no step needs it.
 
 ---
 
 ## A Real Signal in GRC
 
-<img src="./img/05-gnu-radio/L05-grc-fm.png" alt="The L5 FM flowgraph: Soapy RTLSDR Source feeding a QT GUI Sink, with a disabled File Sink" style="max-height:400px; display:block; margin:0 auto;">
+<img src="./img/05-gnu-radio/L05-grc-fm.png" alt="The L5 FM flowgraph: PlutoSDR Source feeding a QT GUI Sink, with a disabled File Sink" style="max-height:400px; display:block; margin:0 auto;">
 
 The display spans $f_c \pm f_s/2$: 2.4 MHz of the FM band at once.
 
 Note:
-Set the center frequency to the station found in GQRX. No throttle here. Tune across the band and name the local stations.
+PlutoSDR Source: LO frequency from the slider, 2.4 MS/s, gain Manual from the slider. No throttle here. Drag the center frequency across the band and name the local stations.
 
 ---
 
@@ -175,7 +174,7 @@ Set the center frequency to the station found in GQRX. No throttle here. Tune ac
 <div class="fig" data-inline-svg="./fig/L05-fm-band-sim.svg" style="max-width:820px; margin:0 auto;"></div>
 
 Note:
-This figure is simulated; the live display is the real one. Stations are about 200 kHz wide on odd tenths of a megahertz. Point out the DC spike at the center and tune a little off a station to move it.
+This figure is simulated; the live display is the real one. Stations are about 200 kHz wide on odd tenths of a megahertz. Uncheck DC tracking live to show the spike the Pluto's tracking hides, then check it again. Tune a little off a station either way, since tracking also removes whatever sits at 0 Hz.
 
 ---
 
@@ -186,7 +185,7 @@ This figure is simulated; the live display is the real one. Stations are about 2
 - No single setting shows a strong local station and a weak distant one well.
 
 Note:
-Demo both extremes live: gain at zero hides the weak stations; gain at maximum makes spurs appear between stations. Then find the setting in between.
+Demo both extremes live: gain at zero hides the weak stations; gain at 71 dB makes spurs appear between stations. Then find the setting in between. The Pluto's Slow Attack AGC is the automatic alternative; we keep Manual to see the trade-off.
 
 ---
 

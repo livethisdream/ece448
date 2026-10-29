@@ -22,7 +22,7 @@ Spring 2027 · Dr. Neil Rogers
 
 ## Where We Were
 
-- In Lesson 5 an RTL-SDR recorded 2.4 MS/s of the FM band to a file.
+- In Lesson 5 a PlutoSDR recorded 2.4 MS/s of the FM band to a file.
 - In Lesson 6 we built and received AM, DSB-SC, and SSB in simulation.
 - Today the signal comes from a capture or from the air.
 
@@ -57,12 +57,12 @@ The width rule is Carson's rule, a rule of thumb; we use it only to set the chan
 
 ## The Receiver Flowgraph
 
-<img src="./img/07-am-fm-receivers/L07-grc-wbfm-rx.png" alt="L07-wbfm-rx.grc: File Source or RTL-SDR, Frequency Xlating FIR Filter, Quadrature Demod, Decimating FIR Filter, FM Deemphasis, Audio Sink" style="max-height:380px; display:block; margin:0 auto;">
+<img src="./img/07-am-fm-receivers/L07-grc-wbfm-rx.png" alt="L07-wbfm-rx.grc: File Source or PlutoSDR, Frequency Xlating FIR Filter, Quadrature Demod, Decimating FIR Filter, FM Deemphasis, Audio Sink" style="max-height:380px; display:block; margin:0 auto;">
 
 A channel filter, a demodulator, an audio filter, and de-emphasis feed the speaker.
 
 Note:
-We disabled the RTL-SDR Source; switching to live means disabling the File Source and enabling the SDR. The flowgraph needs no Throttle, because the Audio Sink paces the File Source, as in Lesson 6.
+We disabled the PlutoSDR Source (2.4 MS/s, manual gain); switching to live means disabling the File Source and enabling the SDR. The flowgraph needs no Throttle, because the Audio Sink paces the File Source, as in Lesson 6.
 
 ---
 
@@ -213,24 +213,24 @@ Broadcast FM is strong and has a 200 kHz channel. Aircraft use AM: a weak AM sig
 
 ## Find the Station
 
-- SDR Flex: select an FM signal, demodulate it.
-- Live: tune the FM band in GQRX; choose **WFM (stereo)**.
-- Turn on RDS, read the name, and note the frequency.
-- Then try **NFM** on NOAA weather, 162.400–162.550 MHz.
+- Run L05-fm-spectrum.grc on the PlutoSDR; pick a strong station.
+- Play it live in L07-wbfm-rx.grc with the PlutoSDR Source.
+- Note the frequency and the call sign the station announces.
+- Then tune NOAA weather, 162.400–162.550 MHz: faint, and noisy.
 
 Note:
-Open SDR Flex (livethisdream.github.io/sdr-flex) on an example capture and demodulate an FM signal; RDS there needs the full server. Then demo live: choose the RTL-SDR in GQRX, click a strong station, set WFM (stereo), open the RDS panel and enable decoding. Write the frequency and name on the board, close GQRX (one program per RTL-SDR), then run L07-rds-rx.grc on that station and check that the names match. Before closing, switch GQRX to NFM on a NOAA weather channel (162.400 to 162.550 MHz, receive only): about 5 kHz deviation and a channel tens of kHz wide, against 75 kHz and 200 kHz for broadcast. GQRX comes with radioconda; if it does not start on a laptop, SDR++ has the same controls.
+Demo live on the PlutoSDR: find a tall stripe in L05-fm-spectrum.grc, stop it (one flowgraph per Pluto), then run L07-wbfm-rx.grc with the PlutoSDR Source enabled and SDR center a few hundred kHz off the station. Write the frequency and call sign on the board, then run L07-rds-rx.grc on that station and check that the RDS name matches. Then tune the WBFM receiver to a NOAA weather channel (162.400 to 162.550 MHz, receive only): about 5 kHz deviation, a fifteenth of what the receiver expects, so the voice is faint and the wide channel filter lets in noise. SDR Flex is an optional quick look on its example captures.
 
 ---
 
 ## On the SDR
 
-- Tune a few hundred kHz off the station, away from the DC spike.
+- Tune a few hundred kHz off the station, away from 0 Hz.
 - Set RF gain from your L5 gain table.
-- Receiving is unrestricted, and the RTL-SDR receives only.
+- Receiving is unrestricted; these flowgraphs only receive.
 
 Note:
-ATIS frequencies are in the FAA Chart Supplement and on sectional charts. RDS needs a stronger signal than the audio, because 57 kHz sits where the multiplex noise is highest.
+The PlutoSDR's DC tracking removes whatever sits at 0 Hz, so a station tuned onto the center loses its middle. ATIS frequencies are in the FAA Chart Supplement and on sectional charts. RDS needs a stronger signal than the audio, because 57 kHz sits where the multiplex noise is highest.
 
 ---
 

@@ -80,15 +80,15 @@ An FM signal is a little wider than $2\Delta f$, because the frequency swings at
 ::::{frame} The Receiver Flowgraph
 :::{present}
 <img src="../../viz/img/L07-grc-wbfm-rx.png"
-     alt="GNU Radio Companion with L07-wbfm-rx.grc open: a File Source and a disabled Soapy RTLSDR Source feed a Frequency Xlating FIR Filter with decimation 10, then a Quadrature Demod, a Decimating FIR Filter with decimation 5, an FM Deemphasis block, a volume Multiply Const, and an Audio Sink; frequency sinks show the received band, the demodulated multiplex, and the audio"
+     alt="GNU Radio Companion with L07-wbfm-rx.grc open: a File Source and a disabled PlutoSDR Source feed a Frequency Xlating FIR Filter with decimation 10, then a Quadrature Demod, a Decimating FIR Filter with decimation 5, an FM Deemphasis block, a volume Multiply Const, and an Audio Sink; frequency sinks show the received band, the demodulated multiplex, and the audio"
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
-- The source is a File Source or the RTL-SDR.
+- The source is a File Source or the PlutoSDR.
 - A channel filter, a demodulator, an audio filter, and de-emphasis feed the speaker.
 :::
 
-`L07-wbfm-rx.grc` is the whole receiver in six processing blocks. The File Source plays a recording, and the Soapy RTLSDR Source receives live; GRC grays it out because we disabled it. Both feed the same channel filter, so switching from a file to the air means disabling one source and enabling the other. Neither path needs a Throttle: the Audio Sink takes exactly 48,000 samples per second, as in Lesson 6, and that paces the File Source too.
+`L07-wbfm-rx.grc` is the whole receiver in six processing blocks. The File Source plays a recording, and the PlutoSDR Source receives live at the same 2.4 MS/s, with manual gain from the RF gain slider; GRC grays it out because we disabled it. Both feed the same channel filter, so switching from a file to the air means disabling one source and enabling the other. Neither path needs a Throttle: the Audio Sink takes exactly 48,000 samples per second, as in Lesson 6, and that paces the File Source too.
 
 The two variables at the top tie the receiver to the radio. `fc_mhz` is the frequency we tune the SDR to, or the center frequency we recorded the file at, and `station_mhz` is the station we want. The next four frames describe the chain one block at a time.
 ::::
@@ -169,7 +169,7 @@ The transmitter boosts the treble of its audio before modulating, a step called 
 
 The figure is the receiver running on the test file. The bottom right sink is the audio after de-emphasis, with the 1 kHz and 2.5 kHz tones of the message and nothing else above the floor, which is the check that the receiver works: the demodulated audio matches what the test transmitter sent. Type 99.5 into Station and the audio changes to the second station's single, different test tone.
 
-To use your own L5 capture, set the File Source's file to `fm_capture.cfile`, type the center frequency you recorded at into SDR center, and set Station to the station you centered. To receive live, disable the File Source, enable the RTL-SDR Source, and run it again. A real station's audio sink will show music or speech rather than two lines.
+To use your own L5 capture, set the File Source's file to `fm_capture.cfile`, type the center frequency you recorded at into SDR center, and set Station to the station you centered. To receive live, disable the File Source, enable the PlutoSDR Source, and run it again. A real station's audio sink will show music or speech rather than two lines.
 ::::
 
 ::::{frame} RDS
@@ -218,11 +218,11 @@ The panel shows "ECE 448" and the test transmitter's radiotext. It also shows th
 - **Complex to Mag** is the envelope detector.
 :::
 
-Aircraft and control towers talk in AM between 118 and 137 MHz, and most airports with a control tower broadcast an **ATIS**, a recorded loop of the current weather and runway in use, continuously on one of those frequencies. That makes ATIS a steady signal to receive, as Lesson 6 suggested. `L07-am-rx.grc` has the same front end as the FM receiver: a File Source or the RTL-SDR, and a Frequency Xlating FIR Filter. This one cuts off around 5 kHz, just above the 3 kHz voice band, and it decimates by 50, from 2.4 MS/s straight to the sound card's 48 kS/s.
+Aircraft and control towers talk in AM between 118 and 137 MHz, and most airports with a control tower broadcast an **ATIS**, a recorded loop of the current weather and runway in use, continuously on one of those frequencies. That makes ATIS a steady signal to receive, as Lesson 6 suggested. `L07-am-rx.grc` has the same front end as the FM receiver: a File Source or the PlutoSDR, and a Frequency Xlating FIR Filter. This one cuts off around 5 kHz, just above the 3 kHz voice band, and it decimates by 50, from 2.4 MS/s straight to the sound card's 48 kS/s.
 
 :::{depth}
 <img src="../../viz/img/L07-grc-am-rx.png"
-     alt="GNU Radio Companion with L07-am-rx.grc open: a File Source and a disabled Soapy RTLSDR Source feed a Frequency Xlating FIR Filter with decimation 50, then Complex to Mag, a Decimating FIR Filter with the 3 kHz low-pass taps, a DC Blocker, an AGC, a volume Multiply Const, and an Audio Sink"
+     alt="GNU Radio Companion with L07-am-rx.grc open: a File Source and a disabled PlutoSDR Source feed a Frequency Xlating FIR Filter with decimation 50, then Complex to Mag, a Decimating FIR Filter with the 3 kHz low-pass taps, a DC Blocker, an AGC, a volume Multiply Const, and an Audio Sink"
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
 :::
 
@@ -294,29 +294,29 @@ FM spreads the message over a wider channel and, while the signal is strong, com
 
 ::::{frame} Find the Station
 :::{present}
-- SDR Flex: select an FM signal, demodulate it.
-- Live: tune the FM band in GQRX and choose **WFM (stereo)**.
-- Turn on RDS, read the name, and note the frequency.
-- Then try **NFM** on NOAA weather, 162.400–162.550 MHz.
+- Run `L05-fm-spectrum.grc` on the PlutoSDR; pick a strong station.
+- Play it live in `L07-wbfm-rx.grc` with the PlutoSDR Source.
+- Note the frequency and the call sign the station announces.
+- Then tune NOAA weather, 162.400–162.550 MHz: faint, and noisy.
 :::
 
-Before building anything on the air, find the station with a ready-made receiver. In <a href="https://livethisdream.github.io/sdr-flex/" target="_blank" rel="noopener">SDR Flex</a>, drag across an FM signal in an example capture and choose the FM demodulator. Its RDS decoder is an external program that needs the full SDR Flex server. The browser version has no live radio, so the live station uses GQRX. **GQRX** runs on the same RTL-SDR: choose the RTL-SDR as the input device, start it, and click a strong station on the spectrum or waterfall between 88 and 108 MHz. Set the mode to **WFM (stereo)**; the audio plays, and the stereo indicator lights if the station sends a pilot. Open GQRX's RDS panel and turn decoding on, and within a few seconds it shows the station name.
+Before decoding anything on the air, find the station and hear it. Run the Lesson 5 flowgraph, `L05-fm-spectrum.grc`, on the PlutoSDR and drag across 88 to 108 MHz; a strong station is a tall stripe about 200 kHz wide on the waterfall. Stop it, since only one flowgraph can stream from the Pluto at a time. Open `L07-wbfm-rx.grc`, disable the File Source, enable the PlutoSDR Source, and run it with Station set to that frequency and SDR center a few hundred kilohertz away; the next frame says why. The station plays.
 
-GQRX comes with radioconda; if it does not start on your laptop, SDR++ has the same controls. Write down the station's frequency and name, and close GQRX, since only one program can use the RTL-SDR at a time. The next step builds the same receiver in GRC on that station, and the name GQRX showed is the check that the RDS flowgraph decodes it correctly.
+Write down the frequency and the call sign the station gives at the top of the hour, or the one the FCC lists for that frequency in your area. That name is the check that the RDS flowgraph decodes the station correctly.
 
-While GQRX is open, hear narrowband FM too. Set the mode to **NFM** and tune a NOAA weather radio channel, 162.400 to 162.550 MHz in 25 kHz steps, which broadcasts continuously; this is receive only, like everything in this lesson. The deviation is about 5 kHz instead of 75, so the channel is a few tens of kilohertz wide instead of 200, and the same voice in WFM mode would sound faint and thin.
+The same receiver also plays narrowband FM, badly, which shows what its settings are for. Tune a NOAA weather radio channel, 162.400 to 162.550 MHz in 25 kHz steps, which broadcasts continuously; this is receive only, like everything in this lesson. The deviation is about 5 kHz instead of 75, so the voice comes out about a fifteenth as loud as the receiver expects, and the 180 kHz channel filter lets in far more noise than the few tens of kilohertz the signal occupies.
 ::::
 
 ::::{frame} On the SDR
 :::{present}
-- Tune the SDR a few hundred kHz off the station, away from the DC spike.
+- Tune the SDR a few hundred kHz off the station, away from 0 Hz.
 - Set RF gain from your L5 gain table.
-- Receiving is unrestricted, and the RTL-SDR receives only.
+- Receiving is unrestricted; these flowgraphs only receive.
 :::
 
-On the air, the receivers need three settings from Lesson 5. Tune the SDR a few hundred kilohertz away from the station, so the RTL-SDR's DC spike at the center stays out of the channel filter, and type the station's real frequency into Station. A shift under about 100 kHz leaves the DC spike inside the channel, where it shows up as a tone or hum. Set the RF gain slider to the highest gain in your L5 Lab gain table at which no new signals appeared between stations. For ATIS, look up the airport's frequency in the FAA Chart Supplement or on a sectional chart, and expect a weaker signal than broadcast FM, because aircraft band stations are lower in power and need line of sight.
+On the air, the receivers need three settings from Lesson 5. Tune the SDR a few hundred kilohertz away from the station, so the center of the band stays out of the channel filter, and type the station's real frequency into Station. The PlutoSDR's DC tracking removes whatever sits at 0 Hz, and whatever offset it leaves behind is a spike there, so a shift under about 100 kHz puts a notch or a tone inside the channel, where it shows up as distortion or hum. Set the RF gain slider to the highest gain in your L5 Lab gain table at which no new signals appeared between stations. For ATIS, look up the airport's frequency in the FAA Chart Supplement or on a sectional chart, and expect a weaker signal than broadcast FM, because aircraft band stations are lower in power and need line of sight.
 
-RDS needs a stronger signal than the audio does, because its 57 kHz subcarrier sits where the multiplex noise is highest. If the station name never appears, raise the gain or choose a stronger station before changing the flowgraph. As Lesson 2 said, receiving is unrestricted and transmitting is not; the RTL-SDR receives only, and nothing in this lesson transmits.
+RDS needs a stronger signal than the audio does, because its 57 kHz subcarrier sits where the multiplex noise is highest. If the station name never appears, raise the gain or choose a stronger station before changing the flowgraph. As Lesson 2 said, receiving is unrestricted and transmitting is not; every flowgraph here uses only the PlutoSDR's receive port, and nothing in this lesson transmits.
 ::::
 
 ::::{frame} Downloads and Sources
@@ -327,14 +327,12 @@ This lesson follows:
 - <a class="doc-link" href="../../legacy/L08-am-fm-receivers.pdf" target="_blank" rel="noopener">Dr. Rogers's 2025 slides, AM and FM Receivers (PDF)</a>
 - <a class="doc-link" href="https://wiki.gnuradio.org/index.php?title=Simulation_example:_Narrowband_FM_transceiver" target="_blank" rel="noopener">GNU Radio wiki, Simulation example: Narrowband FM transceiver</a>
 - <a class="doc-link" href="https://pysdr.org/content/rds.html" target="_blank" rel="noopener">PySDR, RDS: an end-to-end example</a>
-- <a class="doc-link" href="https://livethisdream.github.io/sdr-flex/" target="_blank" rel="noopener">SDR Flex</a>, for practicing select-and-demodulate on example captures
-- <a class="doc-link" href="https://gqrx.dk/" target="_blank" rel="noopener">GQRX</a>, for finding a station before building a receiver for it
 
 Downloads:
 
 - <a class="doc-link" href="../../grc/L07-fm-test-tx.grc" download>L07-fm-test-tx.grc</a>: writes `L07-fm-test.cfile`, 4 s (76.8 MB) of a simulated FM band around 100.0 MHz with two stations, one carrying RDS. It needs gr-rds. Run it once; it stops on its own.
 - <a class="doc-link" href="../../grc/L07-am-test-tx.grc" download>L07-am-test-tx.grc</a>: writes `L07-am-test.cfile`, 4 s (76.8 MB) of a simulated AM station at 126.2 MHz carrying the L6 two-tone message.
-- <a class="doc-link" href="../../grc/L07-wbfm-rx.grc" download>L07-wbfm-rx.grc</a>: the broadcast FM receiver, playing the test file, your L5 capture, or the RTL-SDR.
+- <a class="doc-link" href="../../grc/L07-wbfm-rx.grc" download>L07-wbfm-rx.grc</a>: the broadcast FM receiver, playing the test file, your L5 capture, or the PlutoSDR.
 - <a class="doc-link" href="../../grc/L07-rds-rx.grc" download>L07-rds-rx.grc</a>: the same receiver with the RDS decoder. It also needs gr-rds.
 - <a class="doc-link" href="../../grc/L07-am-rx.grc" download>L07-am-rx.grc</a>: the AM receiver for the aircraft band.
 - <a class="doc-link" href="../../grc/L07-am-vs-fm.grc" download>L07-am-vs-fm.grc</a>: one tone as AM and as FM in the same noise, with output SNR meters and an Input SNR slider. It needs no hardware.

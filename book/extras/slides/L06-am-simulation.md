@@ -253,7 +253,7 @@ An SDR delivers the signal at complex baseband with the carrier at 0 Hz, so the 
 ## Looking Ahead
 
 - L6 Lab: build DSB-AM from an empty canvas, then measure DSB-SC and SSB
-- Lesson 7: real AM and FM with an RTL-SDR
+- Lesson 7: real AM and FM with a PlutoSDR
 
 Note:
 The pre-lab is block settings and spectrum reading; the bench is where they turn the sliders and record what they see.

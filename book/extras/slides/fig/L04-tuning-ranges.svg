@@ -3,7 +3,7 @@
   <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
    <cc:Work>
     <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
-    <dc:date>2026-10-19T19:25:12.692953</dc:date>
+    <dc:date>2026-10-29T13:09:04.800323</dc:date>
     <dc:format>image/svg+xml</dc:format>
     <dc:creator>
      <cc:Agent>
@@ -39,40 +39,40 @@ z
    <g id="line2d_1">
     <path d="M 309.610436 207.32367 
 L 309.610436 24.37167 
-" clip-path="url(#p6ad3b03e33)" style="fill: none; stroke-dasharray: 3,3; stroke-dashoffset: 0; stroke: #b01e24"/>
+" clip-path="url(#p2e71ea9336)" style="fill: none; stroke-dasharray: 3,3; stroke-dashoffset: 0; stroke: #b01e24"/>
    </g>
    <g id="line2d_2">
     <path d="M 328.291124 207.32367 
 L 328.291124 24.37167 
-" clip-path="url(#p6ad3b03e33)" style="fill: none; stroke-dasharray: 3,3; stroke-dashoffset: 0; stroke: #b01e24"/>
+" clip-path="url(#p2e71ea9336)" style="fill: none; stroke-dasharray: 3,3; stroke-dashoffset: 0; stroke: #b01e24"/>
    </g>
    <g id="line2d_3">
     <path d="M 364.909408 207.32367 
 L 364.909408 24.37167 
-" clip-path="url(#p6ad3b03e33)" style="fill: none; stroke-dasharray: 3,3; stroke-dashoffset: 0; stroke: #b01e24"/>
+" clip-path="url(#p2e71ea9336)" style="fill: none; stroke-dasharray: 3,3; stroke-dashoffset: 0; stroke: #b01e24"/>
    </g>
    <g id="line2d_4">
     <path d="M 399.141969 207.32367 
 L 399.141969 24.37167 
-" clip-path="url(#p6ad3b03e33)" style="fill: none; stroke-dasharray: 3,3; stroke-dashoffset: 0; stroke: #b01e24"/>
+" clip-path="url(#p2e71ea9336)" style="fill: none; stroke-dasharray: 3,3; stroke-dashoffset: 0; stroke: #b01e24"/>
    </g>
    <g id="line2d_5">
     <path d="M 412.831838 207.32367 
 L 412.831838 24.37167 
-" clip-path="url(#p6ad3b03e33)" style="fill: none; stroke-dasharray: 3,3; stroke-dashoffset: 0; stroke: #b01e24"/>
+" clip-path="url(#p2e71ea9336)" style="fill: none; stroke-dasharray: 3,3; stroke-dashoffset: 0; stroke: #b01e24"/>
    </g>
    <g id="line2d_6">
     <path d="M 429.091062 207.32367 
 L 429.091062 24.37167 
-" clip-path="url(#p6ad3b03e33)" style="fill: none; stroke-dasharray: 3,3; stroke-dashoffset: 0; stroke: #b01e24"/>
+" clip-path="url(#p2e71ea9336)" style="fill: none; stroke-dasharray: 3,3; stroke-dashoffset: 0; stroke: #b01e24"/>
    </g>
    <g id="patch_3">
-    <path d="M 113.444199 93.79084 
-L 417.076013 93.79084 
-L 417.076013 74.640724 
-L 113.444199 74.640724 
+    <path d="M 297.10512 93.79084 
+L 462.531566 93.79084 
+L 462.531566 74.640724 
+L 297.10512 74.640724 
 z
-" clip-path="url(#p6ad3b03e33)" style="fill: #0067b9; opacity: 0.9"/>
+" clip-path="url(#p2e71ea9336)" style="fill: #0067b9; opacity: 0.9"/>
    </g>
    <g id="patch_4">
     <path d="M 139.205685 127.987475 
@@ -80,15 +80,15 @@ L 462.531566 127.987475
 L 462.531566 108.837359 
 L 139.205685 108.837359 
 z
-" clip-path="url(#p6ad3b03e33)" style="fill: #0067b9; opacity: 0.9"/>
+" clip-path="url(#p2e71ea9336)" style="fill: #0067b9; opacity: 0.9"/>
    </g>
    <g id="patch_5">
-    <path d="M 354.167143 162.184111 
-L 445.555698 162.184111 
-L 445.555698 143.033995 
-L 354.167143 143.033995 
+    <path d="M 113.444199 162.184111 
+L 417.076013 162.184111 
+L 417.076013 143.033995 
+L 113.444199 143.033995 
 z
-" clip-path="url(#p6ad3b03e33)" style="fill: #0067b9; opacity: 0.9"/>
+" clip-path="url(#p2e71ea9336)" style="fill: #0067b9; opacity: 0.9"/>
    </g>
    <g id="patch_6">
     <path d="M 481.516894 196.380746 
@@ -96,18 +96,18 @@ L 483.330228 196.380746
 L 483.330228 177.23063 
 L 481.516894 177.23063 
 z
-" clip-path="url(#p6ad3b03e33)" style="fill: #8a5a00; opacity: 0.9"/>
+" clip-path="url(#p2e71ea9336)" style="fill: #8a5a00; opacity: 0.9"/>
    </g>
    <g id="matplotlib.axis_1">
     <g id="xtick_1">
      <g id="line2d_7">
       <defs>
-       <path id="m0e0ff9523d" d="M 0 0 
+       <path id="m8be4f7962b" d="M 0 0 
 L 0 3.5 
 " style="stroke: #5b6573; stroke-width: 0.8"/>
       </defs>
       <g>
-       <use xlink:href="#m0e0ff9523d" x="53.627883" y="207.32367" style="fill: #5b6573; stroke: #5b6573; stroke-width: 0.8"/>
+       <use xlink:href="#m8be4f7962b" x="53.627883" y="207.32367" style="fill: #5b6573; stroke: #5b6573; stroke-width: 0.8"/>
       </g>
      </g>
      <g id="text_1">
@@ -117,7 +117,7 @@ L 0 3.5
     <g id="xtick_2">
      <g id="line2d_8">
       <g>
-       <use xlink:href="#m0e0ff9523d" x="139.205685" y="207.32367" style="fill: #5b6573; stroke: #5b6573; stroke-width: 0.8"/>
+       <use xlink:href="#m8be4f7962b" x="139.205685" y="207.32367" style="fill: #5b6573; stroke: #5b6573; stroke-width: 0.8"/>
       </g>
      </g>
      <g id="text_2">
@@ -127,7 +127,7 @@ L 0 3.5
     <g id="xtick_3">
      <g id="line2d_9">
       <g>
-       <use xlink:href="#m0e0ff9523d" x="224.783487" y="207.32367" style="fill: #5b6573; stroke: #5b6573; stroke-width: 0.8"/>
+       <use xlink:href="#m8be4f7962b" x="224.783487" y="207.32367" style="fill: #5b6573; stroke: #5b6573; stroke-width: 0.8"/>
       </g>
      </g>
      <g id="text_3">
@@ -137,7 +137,7 @@ L 0 3.5
     <g id="xtick_4">
      <g id="line2d_10">
       <g>
-       <use xlink:href="#m0e0ff9523d" x="310.361289" y="207.32367" style="fill: #5b6573; stroke: #5b6573; stroke-width: 0.8"/>
+       <use xlink:href="#m8be4f7962b" x="310.361289" y="207.32367" style="fill: #5b6573; stroke: #5b6573; stroke-width: 0.8"/>
       </g>
      </g>
      <g id="text_4">
@@ -147,7 +147,7 @@ L 0 3.5
     <g id="xtick_5">
      <g id="line2d_11">
       <g>
-       <use xlink:href="#m0e0ff9523d" x="395.939092" y="207.32367" style="fill: #5b6573; stroke: #5b6573; stroke-width: 0.8"/>
+       <use xlink:href="#m8be4f7962b" x="395.939092" y="207.32367" style="fill: #5b6573; stroke: #5b6573; stroke-width: 0.8"/>
       </g>
      </g>
      <g id="text_5">
@@ -157,7 +157,7 @@ L 0 3.5
     <g id="xtick_6">
      <g id="line2d_12">
       <g>
-       <use xlink:href="#m0e0ff9523d" x="481.516894" y="207.32367" style="fill: #5b6573; stroke: #5b6573; stroke-width: 0.8"/>
+       <use xlink:href="#m8be4f7962b" x="481.516894" y="207.32367" style="fill: #5b6573; stroke: #5b6573; stroke-width: 0.8"/>
       </g>
      </g>
      <g id="text_6">
@@ -175,22 +175,22 @@ L 522.347883 207.32367
 " style="fill: none; stroke: #5b6573; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
    </g>
    <g id="text_8">
-    <text style="font-weight: 700; font-size: 11px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: end; fill: #15202b" x="108.309531" y="87.073633" transform="rotate(-0 108.309531 87.073633)">RTL-SDR Blog V4</text>
+    <text style="font-weight: 700; font-size: 11px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: end; fill: #15202b" x="291.970452" y="87.073633" transform="rotate(-0 291.970452 87.073633)">PlutoSDR</text>
    </g>
    <g id="text_9">
-    <text style="font-size: 10px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: start; fill: #5b6573" x="422.210681" y="86.813829" transform="rotate(-0 422.210681 86.813829)">receive</text>
+    <text style="font-size: 10px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: start; fill: #5b6573" x="467.666234" y="86.813829" transform="rotate(-0 467.666234 86.813829)">full duplex</text>
    </g>
    <g id="text_10">
     <text style="font-weight: 700; font-size: 11px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: end; fill: #15202b" x="134.071017" y="121.270269" transform="rotate(-0 134.071017 121.270269)">HackRF One</text>
    </g>
    <g id="text_11">
-    <text style="font-size: 10px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: start; fill: #5b6573" x="467.666234" y="121.010464" transform="rotate(-0 467.666234 121.010464)">half duplex</text>
+    <text style="font-size: 10px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: start; fill: #5b6573" x="467.666234" y="121.010464" transform="rotate(-0 467.666234 121.010464)">optional</text>
    </g>
    <g id="text_12">
-    <text style="font-weight: 700; font-size: 11px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: end; fill: #15202b" x="349.032474" y="155.466904" transform="rotate(-0 349.032474 155.466904)">PlutoSDR</text>
+    <text style="font-weight: 700; font-size: 11px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: end; fill: #15202b" x="108.309531" y="155.466904" transform="rotate(-0 108.309531 155.466904)">RTL-SDR Blog V4</text>
    </g>
    <g id="text_13">
-    <text style="font-size: 10px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: start; fill: #5b6573" x="450.690366" y="155.2071" transform="rotate(-0 450.690366 155.2071)">full duplex</text>
+    <text style="font-size: 10px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: start; fill: #5b6573" x="422.210681" y="155.2071" transform="rotate(-0 422.210681 155.2071)">optional</text>
    </g>
    <g id="text_14">
     <text style="font-weight: 700; font-size: 11px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: end; fill: #15202b" x="476.382226" y="189.66311" transform="rotate(-0 476.382226 189.66311)">ADALM-PHASER</text>
@@ -219,7 +219,7 @@ L 522.347883 207.32367
   </g>
  </g>
  <defs>
-  <clipPath id="p6ad3b03e33">
+  <clipPath id="p2e71ea9336">
    <rect x="53.627883" y="24.37167" width="468.72" height="182.952"/>
   </clipPath>
  </defs>

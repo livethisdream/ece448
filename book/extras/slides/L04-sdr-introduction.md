@@ -27,22 +27,22 @@ Spring 2027 · Dr. Neil Rogers
 - Today: the hardware that turns a band of spectrum into those points
 
 Note:
-Bring the RTL-SDR, HackRF, PlutoSDR, and ADALM-PHASER to the front of the room and pass the first three around while the next slides are up.
+Bring the PlutoSDR and the ADALM-PHASER to the front of the room, with an RTL-SDR and a HackRF as optional extras, and pass the small radios around while the next slides are up.
 
 ---
 
 ## Today's Plan
 
 1. What makes a radio software defined
-2. The four course SDRs
+2. The course SDR: the PlutoSDR, and the optional extras
 3. Inside an SDR: front end, mixer and LO, I and Q, ADCs
 4. Sample rate and bandwidth
 5. Bits and clipping, in a flowgraph
 6. Choosing the radio and its settings
-7. Explore a band: SDR Flex, then GQRX
+7. Explore a band on the PlutoSDR, in GNU Radio
 
 Note:
-Item five runs live from L04-adc-bits.grc, which needs no hardware. If GNU Radio is not yet installed on the projector laptop, use the screenshots on the lesson page. Item seven opens SDR Flex in the browser, then needs an RTL-SDR on the projector laptop for GQRX.
+Item five runs live from L04-adc-bits.grc, which needs no hardware. If GNU Radio is not yet installed on the projector laptop, use the screenshots on the lesson page. Item seven runs L05-fm-spectrum.grc on a PlutoSDR from the projector laptop.
 
 ---
 
@@ -53,7 +53,7 @@ Item five runs live from L04-adc-bits.grc, which needs no hardware. If GNU Radio
 Each bar is a course SDR's tuning range; the dashed lines are signals this course decodes.
 
 Note:
-The RTL-SDR receives FM at 100 MHz, AIS at 162 MHz, key fobs at 433.92 MHz, and ADS-B at 1090 MHz with the same hardware. Only the software changes. Point out that the PlutoSDR cannot reach the FM band and that only the ADALM-PHASER works at X band.
+The PlutoSDR receives FM at 100 MHz, AIS at 162 MHz, key fobs at 433.92 MHz, ADS-B at 1090 MHz, and Wi-Fi at 2.4 GHz with the same hardware. Only the software changes. Point out that the course Plutos run in extended-frequency mode, 70 MHz to 6 GHz (325 MHz to 3.8 GHz as shipped), that the HackRF and RTL-SDR are optional, and that only the ADALM-PHASER works at X band.
 
 ---
 
@@ -72,16 +72,16 @@ An SDR is a radio in which software defines some or all of the physical layer. I
 
 | Radio | Tunes | Max rate | Bits | Transmit |
 | :-- | :-- | :-- | :-: | :-- |
-| RTL-SDR Blog V4 | 0.5–1766 MHz | 2.56 MS/s | 8 | no |
-| HackRF One | 1–6000 MHz | 20 MS/s | 8 | half duplex |
-| PlutoSDR | 325–3800 MHz | 4 MS/s sustained | 12 | full duplex |
+| PlutoSDR | 70–6000 MHz | 4 MS/s sustained | 12 | full duplex |
 | ADALM-PHASER | 10.0–10.5 GHz | via its Pluto | 12 | — |
+| HackRF One (optional) | 1–6000 MHz | 20 MS/s | 8 | half duplex |
+| RTL-SDR V4 (optional) | 0.5–1766 MHz | 2.56 MS/s | 8 | no |
 
 - The PlutoSDR's converters reach 61.44 MS/s, but its USB 2.0 link streams about 4 MS/s without drops.
 - Every number comes from the manufacturer's data, linked on the lesson page.
 
 Note:
-The RTL-SDR's 2.56 MS/s is the datasheet's rate without dropped samples. The ADALM-PHASER mixes 10.0 to 10.5 GHz down to about 2.2 GHz and a PlutoSDR digitizes it, so its rate and bits are the PlutoSDR's.
+The PlutoSDR is every lab's radio. Its 70 MHz to 6 GHz is extended-frequency (AD9364) mode, which the course Plutos are set to; live flowgraphs stay at 2 to 4 MS/s and wider signals are captured in bursts. The RTL-SDR's 2.56 MS/s is the datasheet's rate without dropped samples. The ADALM-PHASER mixes 10.0 to 10.5 GHz down to about 2.2 GHz and a PlutoSDR digitizes it, so its rate and bits are the PlutoSDR's.
 
 ---
 
@@ -131,7 +131,7 @@ Lesson 5 shows the negative frequencies this makes possible on GNU Radio's plots
 GNU Radio receives complex samples whatever the architecture.
 
 Note:
-Zero-IF puts anything that leaks into the mixer output at 0 Hz in the middle of the band, which is one source of Lesson 5's DC spike. The ADALM-PHASER mixes X band to about 2.2 GHz and the PlutoSDR does the rest. The PlutoSDR follows the zero-IF chain; the RTL-SDR and HackRF reach the same I/Q stream by other routes.
+Zero-IF puts anything that leaks into the mixer output at 0 Hz in the middle of the band, which is one source of Lesson 5's DC spike. The ADALM-PHASER mixes X band to about 2.2 GHz and the PlutoSDR does the rest. The PlutoSDR follows the zero-IF chain; the optional RTL-SDR and HackRF reach the same I/Q stream by other routes.
 
 ---
 
@@ -152,14 +152,14 @@ A laptop that cannot keep up drops samples, and most drivers print an overflow m
 
 ## SDR Window
 
-- FM on the RTL-SDR at 2.4 MS/s: three stations in view
-- HackRF at 20 MS/s: the whole FM band, 160 MB/s into GNU Radio
-- PlutoSDR: cannot tune to 98 MHz, and streams at most 4 MS/s
+- FM on the PlutoSDR at 2.4 MS/s: three stations in view
+- PlutoSDR: streams at most 4 MS/s, a slice of one Wi-Fi channel
+- Optional HackRF at 20 MS/s: a whole Wi-Fi channel, 160 MB/s
 
 <p class="viz-cue">↗ Interactive on the lesson page</p>
 
 Note:
-Start on FM with the RTL-SDR, switch to the HackRF and raise the rate to 20 MS/s, then pick the PlutoSDR. On the ISM band, put one Wi-Fi channel in view with the HackRF, then show how little of it the PlutoSDR's 4 MS/s covers.
+Start on FM with the PlutoSDR and raise the rate to its 4 MS/s stop. On the ISM band, show how little of one Wi-Fi channel the PlutoSDR's 4 MS/s covers, then put the whole channel in view with the HackRF at 20 MS/s. The PlutoSDR gets that view only as a short burst capture.
 
 ---
 
@@ -227,19 +227,19 @@ On a real SDR these false signals look exactly like transmissions. Set the gain 
 3. **Gain**: the strongest signal in the window stays below full scale.
 
 Note:
-Broadcast FM: RTL-SDR at 2.4 MS/s. A 20 MHz Wi-Fi channel: HackRF at its 20 MS/s maximum, with no margin at the edges; the PlutoSDR streams only about 4 MS/s. Transmit into a cable through the 30 dB attenuator: HackRF or PlutoSDR. Direction of an X-band source: ADALM-PHASER.
+Broadcast FM: PlutoSDR at 2.4 MS/s. A 20 MHz Wi-Fi channel: a PlutoSDR burst capture at 20 MS/s or more, or the optional HackRF streaming at 20 MS/s. Transmit into a cable through the 30 dB attenuator: PlutoSDR, which can receive at the same time. Direction of an X-band source: ADALM-PHASER.
 
 ---
 
-## Walkthrough: Explore a Band
+## Demo: Explore a Band on the PlutoSDR
 
-1. SDR Flex: open an example capture; drag across a signal; demodulate it.
-2. GQRX on the RTL-SDR: tune to 98 MHz; read the waterfall.
-3. Click a station, set the mode to WFM, and listen.
+1. Run L05-fm-spectrum.grc on the PlutoSDR at 98 MHz.
+2. Read the spectrum and the waterfall.
+3. Drag the center frequency across the band.
 4. Raise the gain until false stations appear; back it off.
 
 Note:
-Run this live. SDR Flex is at livethisdream.github.io/sdr-flex: right-click the source chip for an example capture, drag a box across a signal, pick a demodulator. On the full SDR Flex server each action builds a GNU Radio flowgraph; the browser copy simulates it and has no live radio, so switch to GQRX for the band. Each station is a steady stripe about 200 kHz wide in the waterfall. Raise the gain in steps: weak stations rise first, then new stripes appear where nothing transmits, the clipping from the flowgraph on a real radio. GQRX comes with radioconda; if it does not start on a laptop, SDR++ has the same controls.
+Run this live from the projector laptop with a PlutoSDR and a whip; cadets run the same flowgraph in Lesson 5. Each station is a steady stripe about 200 kHz wide in the waterfall. Raise the gain in steps: weak stations rise first, then new stripes appear where nothing transmits, the clipping from the flowgraph on a real radio. Lesson 7 adds the demodulator that plays a station. SDR Flex in the browser is an optional quick look on its example captures.
 
 ---
 
@@ -252,7 +252,7 @@ Run this live. SDR Flex is at livethisdream.github.io/sdr-flex: right-click the 
 ## Looking Ahead
 
 - Lesson 5: install GNU Radio and build the first flowgraphs
-- Complex sampling, aliasing, the DC spike, and gain on a live RTL-SDR
+- Complex sampling, aliasing, the DC spike, and gain on a live PlutoSDR
 - Download L04-adc-bits.grc before then
 
 Note:
