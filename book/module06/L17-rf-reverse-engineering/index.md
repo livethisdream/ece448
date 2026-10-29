@@ -55,7 +55,7 @@ The two lines of the objective from 2025 set the plan: reverse engineer a simple
 ::::{frame} The Process
 :::{present}
 <img src="../../viz/img/L17-process.svg"
-     alt="Five boxes joined by arrows: Step 1 find the carrier, with a spectrum and waterfall; Step 2 identify the modulation, OOK, FSK, PSK; Step 3 identify the encoding, bits, fields, rates; Step 4 build an encoder, a GNU Radio flowgraph; Step 5 transmit, into a cable only. Steps 1 to 3 work from a recording, and steps 4 and 5 build it back"
+     alt="Five boxes joined by arrows: Step 1 find the carrier, with a spectrum and waterfall; Step 2 identify the modulation, OOK, FSK, PSK; Step 3 identify the encoding, bits, fields, rates; Step 4 build an encoder, a GNU Radio flowgraph; Step 5 transmit: cadets into a cable, the instructor demo over the air to the fan. Steps 1 to 3 work from a recording, and steps 4 and 5 build it back"
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
@@ -65,7 +65,7 @@ The two lines of the objective from 2025 set the plan: reverse engineer a simple
 
 The process comes from the 2025 slides. First we find the **carrier**, the frequency the transmitter uses. Next we identify the **modulation**, what the transmitter changes to send information. Then we identify the **encoding**: what the commands are, how the bits group into bytes or nibbles, and the bit rate and baud rate. With those three answers we build an **encoder** that produces the same signal, and last we transmit it.
 
-Steps 1 to 3 work entirely from a recording, so they need no radio. Step 5 transmits, and in this course it goes into a cable with an attenuator, never over the air. The lesson's tools are the ones Neil used: a GNU Radio capture flowgraph to find the carrier, then URH to take the bursts apart.
+Steps 1 to 3 work entirely from a recording, so they need no radio. Step 5 transmits: a cadet's transmitter goes into a cable with an attenuator, never over the air, and the instructor closes the lesson by operating the real fan over the air. The lesson's tools are the ones Neil used: a GNU Radio capture flowgraph to find the carrier, then URH to take the bursts apart.
 ::::
 
 ::::{frame} The Recording
@@ -332,15 +332,18 @@ That comparison is the test of the reverse engineering. If our encoder makes chi
 `L17-encoder.grc` is the encoder as a **hier block**, the form the 2025 class built: Vector Source, Map, Unpack K Bits, Repeat, Stream Mux, and a Multiply with a Signal Source, in one block with no inputs. Its parameters are the frame's bits, the chip patterns, the chips per bit, the samples per chip, the gap, the carrier offset, and the sample rate, so the same block serves any pulse-coded remote of fixed bit length. Open it in GRC and press Generate once; GRC writes `L17_ook_encoder.block.yml` and its Python file to `~/.grc_gnuradio`, and after you press the Reload Blocks button on the toolbar the block, **L17 OOK Encoder**, appears under ECE 448. The lesson's flowgraphs use the same blocks laid out flat, so they open without that step.
 ::::
 
-::::{frame} Step 5: Transmit into a Cable
+::::{frame} Step 5: Transmit
 :::{present}
 - `L17-fan-tx-pluto.grc` sends the encoder from a PlutoSDR at 350.04 MHz.
-- The Pluto's TX port goes through a 30 dB attenuator into a second SDR, never an antenna.
+- Cadets: through a 30 dB attenuator into a second SDR, never an antenna.
+- Instructor demo: the real fan, over the air, at very low power.
 :::
 
 The last step puts the encoder on a radio. `L17-fan-tx-pluto.grc` is the simulation flowgraph at 1 MS/s, so `chip_len` is 400 samples, with a **PlutoSDR Sink** tuned to 350 MHz in place of the noise and the waterfall; the 40 kHz tone puts the carrier at 350.04 MHz. A short SMA cable with an inline 30 dB attenuator carries it to a second SDR running `L17-capture.grc` or `L17-capture-rtl.grc`, with `fc` set to 350e6 before it starts, which records what arrives as a SigMF pair. Open that recording in URH as in Step 3: the chips should match `L17-fan-remote.sigmf-data`.
 
-In class we transmit only into a cable, into a shielded enclosure, or at very low power in an ISM band, and only when the lesson says to. 350 MHz is not an ISM band. The TX attenuation slider opens at 60 dB and cannot go below 30 dB; never connect an antenna to this flowgraph. Both Pluto flowgraphs have been compiled but not run on a radio, so the L17 Lab is their first run on hardware.
+Cadets transmit only into a cable, and only when the lesson says to; 350 MHz is an FCC Part 15 frequency, not an ISM band. The TX attenuation slider opens at 60 dB and cannot go below 30 dB; never connect an antenna to this flowgraph.
+
+The 2025 class ended by operating the fan, and this one does too, as an instructor demo. Dr. Rogers records the classroom's Hunter fan remote, decodes it with the same steps, and sends its Light command from his own encoder flowgraph over the air, a few meters from the fan, at the lowest power that still works it. The fan answers a transmitter it has never seen, which is the point of the lesson: a fixed code has no way to tell the two apart. Both Pluto flowgraphs have been compiled but not run on a radio, so the L17 Lab is their first run on hardware.
 ::::
 
 ::::{frame} Key Point
