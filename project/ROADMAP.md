@@ -311,9 +311,12 @@ since they follow this structure. Two changes:
 - **Bench checks for Neil:** L17's PlutoSDR-to-SDR cable link and the
   RTL-SDR capture path (1.024 MS/s, URH Samples/Symbol 512); live ADS-B on an
   RTL-SDR; L20's Wi-Fi and LTE steps on a HackRF at 20 MS/s.
-- **Open for Neil:** an over-the-air Hunter fan demo for L17 (as written,
-  nothing transmits over the air), and whether to publish the third-party
-  AIS recording ("bebau") from the faculty repo for L19.
+- **L17 over-the-air fan demo** (Neil, 2026-10-29): L17 closes with an
+  instructor demo that operates the classroom's Hunter fan over the air, at
+  very low power and a few meters away, from Neil's own encoder flowgraph
+  (`ECE448-faculty/L20_Remotes`). Cadets still transmit only into a cable.
+- **Open for Neil:** whether to publish the third-party AIS recording
+  ("bebau") from the faculty repo for L19.
 
 ## Lesson threads (from L6 on)
 

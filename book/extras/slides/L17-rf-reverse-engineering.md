@@ -222,14 +222,14 @@ Matching chips are the test of steps 1 to 3. The encoder repeats for as long as 
 
 ---
 
-## Step 5: Transmit into a Cable
+## Step 5: Transmit
 
 - The PlutoSDR sends at 350.04 MHz and 1 MS/s, so `chip_len` is 400.
-- Its TX port feeds a 30 dB attenuator and a second SDR running `L17-capture.grc`.
-- Never connect an antenna, and keep TX attenuation at 30 dB or more.
+- Cadets: TX port into a 30 dB attenuator and a second SDR running `L17-capture.grc`.
+- Instructor demo: the classroom's Hunter fan, over the air, at very low power.
 
 Note:
-In class we transmit only into a cable, into a shielded enclosure, or at very low power in an ISM band, and only when the lesson says to. 350 MHz is not an ISM band. Both Pluto flowgraphs are compiled only; the L17 Lab is their first run on hardware.
+Cadets transmit only into a cable, never an antenna, with TX attenuation at 30 dB or more; 350 MHz is an FCC Part 15 frequency, not an ISM band. Then run the demo: record the classroom fan's remote, decode it with Steps 1 to 3, and send its Light command from your own encoder flowgraph over the air, a few meters from the fan, at the lowest power that still works it. The fan obeys a transmitter it has never seen, because a fixed code cannot tell the two apart. Both cadet Pluto flowgraphs are compiled only; the L17 Lab is their first run on hardware.
 
 ---
 

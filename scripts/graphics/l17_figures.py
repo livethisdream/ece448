@@ -3,7 +3,7 @@
 
   L17-process   : the five steps of the 2025 lesson: find the carrier, identify
                   the modulation, identify the encoding, build an encoder, and
-                  transmit, into a cable only.
+                  transmit (cadets into a cable; the instructor's demo over the air to the fan).
   L17-frame     : one frame of the Simulated fan remote's Light button: the
                   on/off chips, the 3-chip PWM bits, and the three fields.
   L17-encodings : the same four bits keyed three common ways: pulse width,
@@ -67,7 +67,7 @@ def process():
              ("2", "Identify the\nmodulation", "OOK, FSK,\nPSK, ..."),
              ("3", "Identify the\nencoding", "bits, fields,\nrates"),
              ("4", "Build an\nencoder", "GNU Radio\nflowgraph"),
-             ("5", "Transmit", "into a cable\nonly")]
+             ("5", "Transmit", "cadets: a cable\ndemo: the fan")]
     fig, ax = plt.subplots(figsize=(9.6, 1.9))
     ax.set_xlim(0, 10); ax.set_ylim(0, 2.15); ax.axis("off")
     for i, (n, title, sub) in enumerate(steps):
