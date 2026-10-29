@@ -1,0 +1,389 @@
+\documentclass{exam}
+
+\newif\ifA
+\newif\ifkey
+\newif\ifprintselected   % required by exam_config's \ansbox
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% SET THESE IF VARIABLES
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Lab name -- labs are named by the lesson they belong to, never by a
+% sequential lab number (Neil, 2026-10-12): this is the L18--L19 Lab.
+\def\labLesson{18--L19}
+
+% is this the key or not?
+\ifdefined\iskey
+	\ifnum\iskey=1
+		\keytrue
+	\else
+		\keyfalse
+	\fi
+\else
+	%% Pick one manually
+	\keyfalse % if this is NOT the key
+%	\keytrue     % if this IS the key
+\fi
+
+% set up the header and footer - change for every term
+\ifdefined\thisTermIn
+	\def\thisterm{\thisTermIn}
+\else
+	\def\thisterm{Spring 2027}
+\fi
+%
+\def\thisclass{ECE 448}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% END SET THESE IF VARIABLES
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% packages and shortcuts
+\input{myPackages_gr}
+\usepackage[hidelinks, linkcolor=red]{hyperref}
+\input{myShortcuts}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt}
+
+%% exam class customization
+\input{exam_config}
+\input{ece448_fonts}   % Barlow body text (needs lualatex)
+\printselectedfalse      % full worked solutions in the key, not answers-only
+\CorrectChoiceEmphasis{\color{red}}
+\SolutionEmphasis{\color{red}}
+\renewcommand\questionlabel{\textbf{\thequestion.}}
+\renewcommand{\thepartno}{\alph{partno}}
+\renewcommand{\partlabel}{(\thepartno)}
+
+% Fillable table cell: blank in the student copy, the expected value in red on
+% the KEY. Fixed-width centered columns keep the blank cells writable.
+\newcolumntype{K}[1]{>{\centering\arraybackslash}p{#1}}
+\newcommand{\kv}[1]{\ifkey{\color{red}#1}\fi\rule[-0.10in]{0pt}{0.34in}}
+
+% Answers are not in this public file. Every solution, \kv value, and \ansbox
+% value is \keysol{<id>}, defined in the private ECE448-faculty repo at
+% lab-keys/src/ECE448_Lab_L18_ADSBAIS_solutions.tex; build_lab.sh puts that
+% folder on TEXINPUTS (KEYDIR) for the KEY. A KEY build without it stops.
+\long\def\defkeysol#1#2{\expandafter\long\expandafter\def\csname keysol@#1\endcsname{#2}}
+\def\keysol#1{\ifcsname keysol@#1\endcsname\csname keysol@#1\endcsname\fi}
+\ifkey
+	\IfFileExists{ECE448_Lab_L18_ADSBAIS_solutions.tex}%
+		{\input{ECE448_Lab_L18_ADSBAIS_solutions}}%
+		{\errmessage{KEY build needs ECE448_Lab_L18_ADSBAIS_solutions.tex from ECE448-faculty/lab-keys/src (set KEYDIR)}}
+\fi
+
+% print the answers if this is the key
+\ifkey
+	\printanswers % if this IS the key
+\else
+	\noprintanswers  %if this is NOT the key
+\fi
+
+% print the header and footer
+% need to print key on top if this is the key
+\ifkey
+	\firstpageheader{}{\color{red}{ KEY}}{}
+	\runningheader{\thisclass\hspace{1pt} -- \thisterm }{L\labLesson\ Lab\hspace{1pt}\color{red}{ KEY}}{\thepage\hspace{1pt} of\hspace{1pt} \numpages}
+	\firstpagefooter{}{}{}
+	\runningfooter{}{}{}
+\else
+	\firstpageheader{}{}{}
+	\runningheader{\thisclass \hspace{1pt} -- \thisterm }{L\labLesson\ Lab\hspace{1pt}}{\thepage\hspace{1pt} of\hspace{1pt} \numpages}
+	\firstpagefooter{}{}{}
+	\runningfooter{}{}{}
+\fi
+
+\runningheadrule
+\begin{document}
+\pagestyle{headandfoot}   % exam class
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% title block
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{center}
+USAF ACADEMY \\
+DEPARTMENT OF ELECTRICAL AND COMPUTER ENGINEERING \\
+LESSONS 18--19 LAB - ADS-B AND AIS \\
+\textbf{Lab Packet} \\
+\thisterm \\[4mm]
+\end{center}
+
+\vspace{-4pt}
+\textbf{Name:} \rule[-2pt]{2.6in}{0.4pt} \hfill
+\textbf{Section:} \rule[-2pt]{0.9in}{0.4pt} \hfill
+\textbf{Date:} \rule[-2pt]{1.1in}{0.4pt}
+
+\vspace{4pt}
+
+\fullwidth{\textbf{Learning Objective 6.7: } I can receive and decode ADS-B messages from
+aircraft transponders.\\
+\textbf{Learning Objective 6.8: } I can receive and decode AIS messages from marine vessels.}
+
+\vspace{2pt}
+
+This packet is the L18--L19 Lab, in three parts, and you turn it in once, complete,
+before Lesson 20. Do \textbf{Part 1} on your own before the lab period: run the lesson
+flowgraphs and work out the settings for the lab's AIS recording. \textbf{Part 2} is your
+own measurements, recorded in class: Questions 3 to 5 with an RTL-SDR and live aircraft,
+and Questions 6 to 8 on the lab's AIS recording. Do \textbf{Part 3} on your own after the
+lab: explain what you saw.
+
+\textbf{Grading.} You submit the packet once, we grade it against Objectives 6.7 and 6.8
+on the course's 1 / 0 scale, and you may revise it under course policy. Paste screenshots
+where a question asks for one.
+
+\textbf{Receive only.} Nothing in this lab transmits. The RTL-SDR receives only, and the
+AIS recording is simulated, written by a GNU Radio flowgraph rather than captured from an
+antenna. Never connect the ADS-B or AIS generators to a transmitter: 1090 MHz and the AIS
+channels carry safety-of-life traffic.
+
+The flowgraphs are on the L18 and L19 lesson pages: \texttt{L18-adsb-tx.grc},
+\texttt{L18-adsb-rx.grc}, and \texttt{L19-ais-rx.grc}. The lab's AIS recording,
+\texttt{L18-L19-lab-ais.sigmf-data} and its \texttt{.sigmf-meta}, is on the lab page.
+Its meta file gives the datatype \texttt{cf32\_le}, a sample rate of 192000, and a
+center frequency of 162025000.
+
+\begin{questions}
+
+\fullwidth{\large\textbf{Part 1: Pre-Lab} \normalsize(individual, before the lab period)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{Noise on the lesson recording.} Put \texttt{L18-adsb-tx.grc} and
+\texttt{L18-adsb-rx.grc} in one folder, run the generator once, then run the receiver.
+
+\begin{parts}
+
+	\part Raise the Added noise slider from 0 to 0.28 in steps of 0.04, waiting about
+	10~s at each step, and record which aircraft are still in the table at each step.
+	The table starts over each time the slider moves.
+
+	\begin{center}
+	\renewcommand{\arraystretch}{1.25}
+	\small\setlength{\tabcolsep}{2pt}
+	\begin{tabular}{| l | *{8}{K{0.5in} |}}
+	\hline
+	Added noise & 0 & 0.04 & 0.08 & 0.12 & 0.16 & 0.20 & 0.24 & 0.28 \\\hline
+	Aircraft & \kv{\keysol{kv1}} & \kv{\keysol{kv2}} & \kv{\keysol{kv3}} & \kv{\keysol{kv4}} & \kv{\keysol{kv5}} & \kv{\keysol{kv6}} & \kv{\keysol{kv7}} & \kv{\keysol{kv8}} \\\hline
+	\end{tabular}
+	\end{center}
+		\begin{solution}[0.6in]\keysol{sol1}\end{solution}
+
+	\part Paste a screenshot of the receiver at the step where only two aircraft remain.
+		\begin{solution}[1.5in]\keysol{sol2}\end{solution}
+
+\end{parts}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\question \textbf{AIS settings for the lab recording.} Your AIS receiver in Question 6
+plays \texttt{L18-L19-lab-ais.sigmf-data}, whose meta file is described above.
+
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Find the center frequency of each channel's Frequency Xlating FIR Filter.
+		\begin{solution}[0.9in]\keysol{sol3}\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		A: \ansbox[1.0in]{\keysol{ans1}}
+
+		\vspace{4pt}
+		B: \ansbox[1.0in]{\keysol{ans2}}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Choose \texttt{decim} for 48 kS/s after the filter, and find the samples per
+		bit and the Quadrature Demod gain.
+		\begin{solution}[1.0in]\keysol{sol4}\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		decim: \ansbox[0.9in]{\keysol{ans3}}
+
+		\vspace{4pt}
+		sps: \ansbox[0.9in]{\keysol{ans4}}
+
+		\vspace{4pt}
+		gain: \ansbox[0.9in]{\keysol{ans5}}
+	\end{minipage}
+
+\end{parts}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\fullwidth{\large\textbf{Part 2: Measurements} \normalsize(in class)}
+
+\question \textbf{Build an ADS-B front end.} Start GRC with an empty canvas and build the
+front end the lab page lists: a Soapy RTLSDR Source at 1090 MHz and 2 MS/s, Complex to
+Mag, and a triggered QT GUI Time Sink.
+
+\begin{parts}
+
+	\part Paste a screenshot of your flowgraph on the GRC canvas. Every connection must be
+	black, not red.
+		\begin{solution}[1.4in]\keysol{sol5}\end{solution}
+
+	\part Paste a screenshot of the time sink frozen on a live preamble. Record the trigger
+	level you chose, the noise floor, and the pulse heights of the strongest and weakest
+	messages you saw.
+		\begin{solution}[1.6in]\keysol{sol6}\end{solution}
+
+\end{parts}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\question \textbf{Live aircraft.} Copy the Mode S Decoder and its two Function Probes and
+QT GUI Labels from \texttt{L18-adsb-rx.grc} into your flowgraph, connect the decoder to
+Complex to Mag, and run it for 10 minutes with the antenna at a window.
+
+\begin{parts}
+
+	\part Record up to five aircraft, and find each one on a public flight tracker such as
+	ADS-B Exchange or FlightAware. Mark whether the tracker agrees.
+
+	\begin{center}
+	\renewcommand{\arraystretch}{1.3}
+	\small
+	\begin{tabular}{| K{0.65in} | K{0.8in} | K{0.7in} | K{0.6in} | K{1.2in} | K{0.7in} |}
+	\hline
+	ICAO & Callsign & Altitude (ft) & Speed (kt) & Latitude, longitude & Tracker agrees? \\\hline
+	& & & & & \\\hline
+	& & & & & \\\hline
+	& & & & & \\\hline
+	& & & & & \\\hline
+	& & & & & \\\hline
+	\end{tabular}
+	\end{center}
+		\begin{solution}[0.6in]\keysol{sol7}\end{solution}
+
+	\part Paste a screenshot of the running window with the Messages label and the table.
+		\begin{solution}[1.4in]\keysol{sol8}\end{solution}
+
+\end{parts}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\question \textbf{Gain.} With the decoder running live, set the RF gain to each value in
+turn, wait 60~s, and record the Messages label and the number of aircraft in the table.
+
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{| l | K{0.8in} | K{0.8in} | K{0.8in} | K{0.8in} | K{0.8in} |}
+\hline
+RF gain (dB) & 49.6 & 40 & 30 & 20 & 10 \\\hline
+Passed parity in 60 s & & & & & \\\hline
+Aircraft & & & & & \\\hline
+\end{tabular}
+\end{center}
+
+\begin{parts}
+	\part Describe which aircraft dropped out first as the gain fell, and how their
+	altitude or position compared with the ones that stayed.
+		\begin{solution}[1.3in]\keysol{sol9}\end{solution}
+\end{parts}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\question \textbf{Build an AIS receiver.} Start GRC with an empty canvas and build the
+two-channel receiver the lab page lists for \texttt{L18-L19-lab-ais.sigmf-data}, with
+your Question 2 settings and the Squelch slider at $-30$ dB.
+
+\begin{parts}
+
+	\part Paste a screenshot of your flowgraph on the GRC canvas. Every connection must be
+	black, not red.
+		\begin{solution}[1.5in]\keysol{sol10}\end{solution}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Run it for one pass through the 5~s recording and record the Frames label.
+		How many ships are in the table?
+		\begin{solution}[0.9in]\keysol{sol11}\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		ships: \ansbox[0.9in]{\keysol{ans6}}
+	\end{minipage}
+
+\end{parts}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\question \textbf{The ships.} Read the decoder's printout in the GRC console and the table.
+
+\begin{parts}
+
+	\part Record every ship. The flag country comes from the first three digits of the
+	MMSI, its Maritime Identification Digits; look them up in the ITU's MID table.
+
+	\begin{center}
+	\renewcommand{\arraystretch}{1.3}
+	\footnotesize\setlength{\tabcolsep}{3pt}
+	\begin{tabular}{| K{0.75in} | K{0.95in} | K{0.75in} | K{0.75in} | K{1.1in} | K{0.75in} |}
+	\hline
+	MMSI & Name & Flag & Destination & Latitude, longitude & Speed, course \\\hline
+	\kv{\keysol{sh1a}} & \kv{\keysol{sh1b}} & \kv{\keysol{sh1c}} & \kv{\keysol{sh1d}} & \kv{\keysol{sh1e}} & \kv{\keysol{sh1f}} \\\hline
+	\kv{\keysol{sh2a}} & \kv{\keysol{sh2b}} & \kv{\keysol{sh2c}} & \kv{\keysol{sh2d}} & \kv{\keysol{sh2e}} & \kv{\keysol{sh2f}} \\\hline
+	\kv{\keysol{sh3a}} & \kv{\keysol{sh3b}} & \kv{\keysol{sh3c}} & \kv{\keysol{sh3d}} & \kv{\keysol{sh3e}} & \kv{\keysol{sh3f}} \\\hline
+	\kv{\keysol{sh4a}} & \kv{\keysol{sh4b}} & \kv{\keysol{sh4c}} & \kv{\keysol{sh4d}} & \kv{\keysol{sh4e}} & \kv{\keysol{sh4f}} \\\hline
+	\end{tabular}
+	\end{center}
+		\begin{solution}[0.5in]\keysol{sol12}\end{solution}
+
+	\part Copy one complete \texttt{!AIVDM} sentence from the console, paste it into
+	\texttt{pyais} or an online AIVDM decoder, and record whether its fields match your
+	table.
+		\begin{solution}[1.0in]\keysol{sol13}\end{solution}
+
+\end{parts}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\question \textbf{The squelch.} Set the Squelch slider to each value in turn, wait for
+two passes through the recording, and mark which ships are in the table.
+
+\begin{center}
+\renewcommand{\arraystretch}{1.25}
+\small\setlength{\tabcolsep}{3pt}
+\begin{tabular}{| l | *{7}{K{0.62in} |}}
+\hline
+Squelch (dB) & $-40$ & $-30$ & $-20$ & $-15$ & $-10$ & $-5$ & 0 \\\hline
+Ships decoded & \kv{\keysol{sq1}} & \kv{\keysol{sq2}} & \kv{\keysol{sq3}} & \kv{\keysol{sq4}} & \kv{\keysol{sq5}} & \kv{\keysol{sq6}} & \kv{\keysol{sq7}} \\\hline
+\end{tabular}
+\end{center}
+
+\begin{parts}
+	\part At $-40$ dB, describe the time plot and the Frames label, and explain why fewer
+	frames pass there than at $-30$ dB.
+		\begin{solution}[1.2in]\keysol{sol14}\end{solution}
+\end{parts}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\fullwidth{\large\textbf{Part 3: Writeup} \normalsize(individual, after the lab)}
+
+\question \textbf{Analysis.}
+
+\begin{parts}
+
+	\part Compare your two receivers. Explain why the ADS-B receiver needs only the
+	magnitude of each sample, while the AIS receiver needs an FM demodulator and timing
+	recovery.
+		\begin{solution}[1.5in]\keysol{sol15}\end{solution}
+
+	\part Use your squelch table to rank the four ships by received strength, and explain
+	what each step of the table tells you. Then explain how you would choose the squelch
+	for a real recording.
+		\begin{solution}[1.5in]\keysol{sol16}\end{solution}
+
+	\part Compare your live aircraft with the flight tracker. Explain any aircraft the
+	tracker showed that you did not decode, and any differences in altitude or position.
+		\begin{solution}[1.5in]\keysol{sol17}\end{solution}
+
+\end{parts}
+
+\end{questions}
+
+\vspace{1.0em}
+\noindent\textbf{Documentation:} \rule[-2pt]{0.6\linewidth}{0.4pt}
+
+\end{document}

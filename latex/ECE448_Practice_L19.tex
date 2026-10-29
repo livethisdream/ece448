@@ -1,0 +1,228 @@
+% !TEX root =./ECE448_Practice_main.tex
+%
+% L19 practice set (AIS). Every question is a step in the L19 flowgraphs:
+% slots and bursts, bit stuffing and NRZI by hand, the receiver's settings for a
+% recording, reading an NMEA sentence, and explaining what noise and the squelch do.
+% Blank copy: \begin{solution}[h] reserves h of work space.
+% SOLUTIONS copy (\iskey=1) prints the red worked solutions.
+
+\fullwidth{\textbf{Learning Objective 6.8: } I can receive and decode AIS messages from
+marine vessels.
+\\[4pt]\normalfont\small Show your work. Write a \textbf{Documentation} line at the
+end (\textbf{None} if you did not collaborate).}
+
+\begin{questions}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{Slots.} Each AIS channel divides every minute into 2,250 slots, and
+sends 9600 b/s.
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Find the length of one slot in milliseconds and in bits.
+		\begin{solution}[1.0in]
+		\eq{ \frac{60\ \text{s}}{2250} = 26.67\ \text{ms}, \qquad
+		9600 \times 0.02667 = 256\ \text{bits} }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		ms: \ansbox[0.9in]{26.67}
+
+		\vspace{4pt}
+		bits: \ansbox[0.9in]{256}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part A burst carries an 8-bit ramp, 24 training bits, two 8-bit flags, the message,
+		and a 16-bit CRC. How many slots does a 168-bit position report need, and how
+		many does a 424-bit name and voyage report need, before stuffed bits?
+		\begin{solution}[1.1in]
+		The overhead is $8 + 24 + 8 + 16 + 8 = 64$ bits. A position report is
+		$64 + 168 = 232$ bits, which fits in one slot of 256 with room for stuffed bits.
+		A name and voyage report is $64 + 424 = 488$ bits, so it needs two slots.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		position: \ansbox[0.9in]{1}
+
+		\vspace{4pt}
+		name: \ansbox[0.9in]{2}
+	\end{minipage}
+
+\end{parts}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{Stuffing and NRZI by hand.} The data bits \texttt{011111111100} are
+about to be sent. The transmitter stuffs a 0 after every five 1s in a row, then applies
+NRZI: a 0 changes the level and a 1 keeps it. The level before the first bit is high (H).
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Write the bits after stuffing.
+		\begin{solution}[0.9in]
+		After the first five 1s a 0 goes in; the count then restarts, and the four 1s that
+		remain are fewer than five: \texttt{0111110111100}, 13 bits.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.5in]{0111110111100}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Write the level, H or L, of each of the 13 transmitted bits.
+		\begin{solution}[1.0in]
+		The first 0 changes H to L, the five 1s keep L, the stuffed 0 changes to H, the
+		four 1s keep H, and the last two 0s change to L and back to H:
+		\texttt{LLLLLLHHHHHLH}.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.5in]{LLLLLLHHHHHLH}
+	\end{minipage}
+
+	\part In words, explain why the receiver does not need to know which FM frequency,
+	up or down, stands for H.
+		\begin{solution}[1.0in]
+		Under NRZI the bit is in whether the level changed, not in which level it is. If
+		the receiver swapped H and L, every change would still be a change and every
+		repeat a repeat, so the bits come out the same.
+		\end{solution}
+
+\end{parts}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{Receiver settings.} A classmate brings back a SigMF recording whose
+\texttt{.sigmf-meta} file says \texttt{cf32\_le}, a sample rate of 250000, and a
+center frequency of 162000000.
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Set the Frequency Xlating FIR Filter's center frequency for channel A and
+		for channel B.
+		\begin{solution}[0.9in]
+		Channel A is $161.975 - 162.000 = -0.025$ MHz, or $-25$ kHz; channel B is
+		$162.025 - 162.000 = +25$ kHz.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		A: \ansbox[1.0in]{$-25$ kHz}
+
+		\vspace{4pt}
+		B: \ansbox[1.0in]{$+25$ kHz}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Choose \texttt{decim} so that the rate after the filter is about 48 kS/s, and
+		find the samples per bit that Symbol Sync needs.
+		\begin{solution}[1.0in]
+		$250/48 \approx 5.2$, so \texttt{decim} $= 5$, which gives 50 kS/s and
+		$50000/9600 = 5.21$ samples per bit. Symbol Sync accepts a fractional value.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		decim: \ansbox[0.9in]{5}
+
+		\vspace{4pt}
+		sps: \ansbox[0.9in]{5.21}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part The Quadrature Demod's gain is the rate after decimation divided by
+		$2\pi \times 2400$, so that a 2.4 kHz shift comes out as 1. Find it.
+		\begin{solution}[0.9in]
+		\eq{ \frac{50000}{2\pi \times 2400} = 3.32 }
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[0.9in]{3.32}
+	\end{minipage}
+
+\end{parts}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{An NMEA sentence.} The AIS Decoder prints
+\begin{center}\small
+\texttt{!AIVDM,2,1,7,B,55NQj<02D1o9L@gGG788iDF0PE8tp0000000000t:0I8840Ht>0CSPD3k2Dh,0*14}\\
+\texttt{!AIVDM,2,2,7,B,00000000000,2*20}
+\end{center}
+\begin{parts}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Which channel carried it, and into how many sentences was it split?
+		\begin{solution}[0.8in]
+		Channel B, in 2 sentences; the 7 is the sequence number that ties them together.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.2in]{B, 2}
+	\end{minipage}
+
+	\begin{minipage}[t]{0.58\linewidth}
+		\part Each character carries 6 bits: subtract 48 from its ASCII code (and 8 more if
+		the result is above 39). The first character is \texttt{5}, ASCII 53. Find the
+		message ID and say what kind of message it is.
+		\begin{solution}[0.9in]
+		$53 - 48 = 5$: message 5, the static and voyage report with the ship's name,
+		callsign, type, size, and destination.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		\ansbox[1.2in]{5, name and voyage}
+	\end{minipage}
+
+	\part Explain why this message needed two sentences when a position report needs one.
+		\begin{solution}[1.0in]
+		A message 5 is 424 bits, which takes 71 characters at 6 bits each, more than one
+		sentence holds; a position report is 168 bits, 28 characters, and fits in one. The
+		same message filled two slots on the air.
+		\end{solution}
+
+\end{parts}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\question \textbf{Noise and the squelch.} You run \texttt{L19-ais-rx.grc} on the lesson's
+recording.
+\begin{parts}
+
+	\part You raise the Added noise slider until channel B's trace in the time plot
+	swings wildly between bursts and frames start failing the CRC. Explain what has
+	happened, and which slider you move to fix it.
+		\begin{solution}[1.3in]
+		The noise between bursts is now above the squelch threshold, so the Power Squelch
+		stays open and passes noise to the FM demodulator. Symbol Sync then chases that
+		noise between bursts and starts each burst out of step, so bits come out wrong and
+		the CRC fails. Raising the Squelch slider above the noise closes it between bursts
+		again.
+		\end{solution}
+
+	\part Explain what goes wrong if you raise the Squelch slider too far.
+		\begin{solution}[0.9in]
+		The squelch then shuts out the weaker ships' bursts as well as the noise, so their
+		frames never reach the decoder and they drop out of the table.
+		\end{solution}
+
+	\part AIS uses a Gaussian filter with BT = 0.4. In words, say what a smaller BT
+	would gain and what it would cost, as the bit explorer shows.
+		\begin{solution}[1.1in]
+		A smaller BT rounds the steps more, so the spectrum gets narrower and less power
+		spills into the next channel. It also smears each bit into its neighbors, so a
+		single bit's frequency swing falls short of $\pm 2.4$ kHz and noise pushes it
+		across the slicer's threshold more easily.
+		\end{solution}
+
+\end{parts}
+
+\end{questions}
