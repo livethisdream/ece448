@@ -26,7 +26,7 @@ What is inside an SDR, how sample rate and bandwidth trade, and your first GNU R
 ::::{frame} Learning Objectives
 
 <ol class="lo-list" style="--module: '2'">
-  <li>I can describe what a Software Defined Radio is, contrast it with a traditional hardware radio, and identify the SDR platforms used in this course (RTL-SDR, HackRF, PlutoSDR, ADALM-PHASER).</li>
+  <li>I can describe what a Software Defined Radio is, contrast it with a traditional hardware radio, and identify the SDR platforms used in this course (PlutoSDR, ADALM-PHASER).</li>
   <li>I can identify the roles of the RF frontend, ADC/DAC, and host in an SDR signal chain and describe sample-rate, bandwidth, and dynamic-range trade-offs.</li>
   <li>I can install GNU Radio and use GNU Radio Companion (GRC) to build, inspect, and run a basic flowgraph.</li>
   <li>I can capture a real RF signal using an SDR and interpret its time- and frequency-domain representations.</li>

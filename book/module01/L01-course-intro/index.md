@@ -169,7 +169,7 @@ See the [syllabus](../../syllabus.md) for the full schedule, the midterm (a fox 
 
 ::::{frame} Show & Tell: A Real SDR, Live
 
-_Bring in the course SDR set (RTL-SDR, HackRF, PlutoSDR, ADALM-PHASER) plus a broadband whip antenna. Fire up GNU Radio's FFT sink, sweep across a few bands, and identify signals in real time — broadcast FM, ADS-B at 1090 MHz, cellular, WiFi, LTE, an FRS handheld. Point out that we'll decode most of these ourselves by the end of the semester._
+_Bring in the course SDRs (PlutoSDR, ADALM-PHASER) plus a broadband whip antenna. Fire up GNU Radio's FFT sink, sweep across a few bands, and identify signals in real time — broadcast FM, ADS-B at 1090 MHz, cellular, WiFi, LTE, an FRS handheld. Point out that we'll decode most of these ourselves by the end of the semester._
 
 _Hardware checklist:_ `_TBD_`
 ::::
