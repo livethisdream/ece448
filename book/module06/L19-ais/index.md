@@ -49,7 +49,7 @@ Lesson 19 · Module 6: Waveform Applications & RF Reverse Engineering · Dr. Nei
 
 Ships do on VHF what aircraft did on 1090 MHz in Lesson 18: they announce who they are and where they are, several times a minute, to anyone listening. The figure is today's receiver, `L19-ais-rx.grc`, playing a simulated recording of four ships off Norfolk, Virginia. Each mark on the waterfall is one burst, on one of two channels 50 kHz apart. The plot on the right is one burst after the FM demodulator, and the table lists each ship by its number, its name, and where it is.
 
-There are essentially no ships near USAFA, so this lesson works from recordings: one we make ourselves with a simulated transmitter, and any real one you bring back from a coast. The topics and their order follow the 2025 slides: what AIS is, its message, its modulation, the NMEA sentences decoders print, and the tools.
+There are essentially no ships near USAFA, so this lesson works from recordings: one we make ourselves with a simulated transmitter, and any real one you bring back from a coast. The topics follow the 2025 slides: what AIS is, its message, its modulation, the NMEA sentences decoders print, and the tools, with the slides' CRC placed where the decoder checks it.
 ::::
 
 ::::{frame} The Automatic Identification System
@@ -118,14 +118,14 @@ The second is **NRZI**, Non-Return-to-Zero Inverted: a 0 changes the transmitted
 
 The levels go on the air as **Gaussian Minimum Shift Keying** (GMSK), a type of FSK, as the slides say. The frequency moves 2.4 kHz up for one level and 2.4 kHz down for the other, the smallest shift for which the receiver can still separate the two tones at 9600 b/s; that is what "minimum shift" means. Before the frequency modulator, a **Gaussian filter** rounds each step from one level to the other, which keeps the signal's power inside its 25 kHz channel instead of spreading it into the neighbors.
 
-The filter's sharpness is set by its **BT**, the product of its bandwidth and one bit's duration. AIS uses BT = 0.4. A smaller BT gives a narrower spectrum but smears each bit into its neighbors, and the explorer shows both effects. GMSK, like FM, has a **constant envelope**: only the frequency changes, so the transmitter's amplifier can run at full power without distorting it. GSM phones use GMSK for the same reason.
+The filter's sharpness is set by its **BT**, the product of its bandwidth and one bit's duration. AIS uses BT = 0.4. A smaller BT gives a narrower spectrum but smears each bit into its neighbors; the explorer shows the smearing. GMSK, like FM, has a **constant envelope**: only the frequency changes, so the transmitter's amplifier can run at full power without distorting it. GSM phones use GMSK for the same reason.
 ::::
 
 ::::{frame} AIS Bit Explorer
 :class: viz-frame
 
 :::{depth}
-The explorer follows one short stretch of a burst through the transmitter of `L19-ais-tx.grc`: the bits with any stuffed 0 shaded amber, the NRZI level, and the frequency after the Gaussian filter, with the unfiltered level dashed. The bottom rows are a receiver: the frequency it demodulates with noise added, a sample at the center of each bit, and the bits it decides after undoing NRZI. Choose "Five 1s" to watch a stuffed 0 appear, lower the BT until the rounded levels no longer reach ±2.4 kHz on single bits, and then raise the noise until a sample lands on the wrong side and a bit turns red.
+The explorer follows one short stretch of a burst through the transmitter of `L19-ais-tx.grc`: the bits with any stuffed 0 shaded amber, the NRZI level, and the frequency after the Gaussian filter, with the unfiltered level dashed. The bottom rows are a receiver: the frequency it demodulates with noise added, a sample at the center of each bit, and the bits it decides after undoing NRZI. Choose "Five 1s" to watch a stuffed 0 appear, start at BT 0.4, where single bits already fall short of ±2.4 kHz, lower it and watch them shrink further, and then raise the noise until a sample lands on the wrong side and a bit turns red.
 :::
 
 :::{present}
@@ -149,7 +149,7 @@ The explorer follows one short stretch of a burst through the transmitter of `L1
 - An Interpolating FIR Filter applies the Gaussian; **Frequency Mod** makes GMSK.
 :::
 
-`L19-ais-tx.grc` follows the GMSK test flowgraph Neil built in 2025: levels, a Gaussian filter, and FM. The **AIS Frames** block is an Embedded Python Block that does the framing of the last frames for four ships: message, CRC, stuffing, flags, and NRZI. It outputs, for each channel, the level of every bit and a gate that is 1 during a burst. An **Interpolating FIR Filter** holds each level for 10 samples and applies the Gaussian filter, with taps built from `firdes.gaussian` at BT 0.4, and **Frequency Mod** turns the result into ±2.4 kHz. The gate switches the carrier on and off, and a Signal Source moves each channel to −25 or +25 kHz.
+`L19-ais-tx.grc` follows the GMSK test plots on the 2025 slides: levels, a Gaussian filter, and FM. The **AIS Frames** block is an Embedded Python Block that does the framing of the last frames for four ships: message, CRC, stuffing, flags, and NRZI. It outputs, for each channel, the level of every bit and a gate that is 1 during a burst. An **Interpolating FIR Filter** holds each level for 10 samples and applies the Gaussian filter, with taps built from `firdes.gaussian` at BT 0.4, and **Frequency Mod** turns the result into ±2.4 kHz. The gate switches the carrier on and off, and a Signal Source moves each channel to −25 or +25 kHz.
 
 A Noise Source adds noise, and a **SigMF Sink** writes 4 s at 96 kS/s, centered on 162 MHz, to `L19-ais-sim.sigmf-data`, labeled Simulated in its `.sigmf-meta`. The ships report much more often than real ones, so a few seconds hold every message type. Nothing transmits.
 ::::
@@ -192,7 +192,7 @@ The edges are rounded and the single-bit swings fall short of ±1: that is the G
 
 The **AIS Decoder** is an Embedded Python Block, and it runs the transmitter's steps backward on each channel's bits. It undoes NRZI by asking whether each bit's level matches the one before, watches for the flag 01111110, and collects the bits up to the next flag. It removes every 0 that follows five 1s, then checks the 16-bit **CRC**; a frame that fails is counted and dropped. HDLC sends each byte least significant bit first, so the decoder reverses each byte to recover the message, then prints it and updates the table.
 
-The slides compute a CRC with Python's `crc` library; the decoder does the same calculation in a few lines, CRC-16 in the form HDLC uses. The **Frames** label counts frames that passed and failed the CRC.
+The slides show Python's `crc` library with a CRC-8 example; AIS uses a 16-bit CRC, the X.25 form that HDLC uses, which the decoder computes in a few lines. The **Frames** label counts frames that passed and failed the CRC.
 ::::
 
 ::::{frame} NMEA Sentences and Fields
@@ -206,9 +206,9 @@ The slides compute a CRC with Python's `crc` library; the decoder does the same 
 | Position | 55 | longitude, latitude in 1/10,000 minute |
 :::
 
-Decoders hand their results to chart plotters in **NMEA 0183** sentences, the format in the slides. `!AIVDM` marks an AIS message received from another ship; then come the number of sentences in this message and this sentence's number, a sequence number for messages that need more than one sentence, the channel, the message itself, the number of fill bits, and after the `*` a two-digit checksum, an XOR of the sentence's characters. The message is packed 6 bits to a character, so the slides' 28 characters carry a 168-bit position report. Our decoder prints every message this way, and you can paste a sentence into `pyais` or an online decoder to check it.
+Decoders hand their results to chart plotters in **NMEA 0183** sentences, the format in the slides. `!AIVDM` marks an AIS message received from another ship; then come the number of sentences in this message and this sentence's number, a sequence number for messages that need more than one sentence, the channel, the message itself, the number of fill bits, and after the `*` a two-digit checksum: the XOR of every character between the `!` and the `*`, not the CRC the 2025 slide names. The message is packed 6 bits to a character, so the slides' 28 characters carry a 168-bit position report. Our decoder prints every message this way, and you can paste a sentence into `pyais` or an online decoder to check it.
 
-Inside, the first 6 bits are the **message ID**, the next 2 a repeat indicator, and the next 30 the **MMSI**, the ship's Maritime Mobile Service Identity; its first three digits say which country registered it, 366 to 369 for the US. A position report goes on to the navigation status, speed, longitude, latitude, course, and heading. Our decoder reads message IDs 1, 2, 3, 5, 18, and 24, which cover the positions and names of both classes.
+Inside, the first 6 bits are the **message ID**, the next 2 a repeat indicator, and the next 30 the **MMSI**, the ship's Maritime Mobile Service Identity; its first three digits say which country registered it, such as 338 and 366 to 369 for the US; the ITU's table of Maritime Identification Digits lists them all. A position report goes on to the navigation status, speed, longitude, latitude, course, and heading. Our decoder reads message IDs 1, 2, 3, 5, 18, and 24, which cover the positions and names of both classes.
 ::::
 
 ::::{frame} What Noise Does
@@ -236,7 +236,7 @@ Raise the **Squelch** slider until the noise between bursts stays out and the ch
 
 The slides list gr-ais, gr-satellites, SDR Angel, and SCEPTRE. **gr-ais**, by Nick Foster, is an out-of-tree GNU Radio module with an AIS receiver; a fork has a branch for GNU Radio 3.10, but we have not built it in this course, so our flowgraph uses the AIS Decoder above. **gr-satellites** decodes AIS among its many satellite telemetry formats, since satellites in low orbit receive AIS over the open ocean. **SDRangel** has an AIS demodulator, and **SCEPTRE** is a commercial signal analysis tool.
 
-For a coast, **AIS-catcher** and **rtl_ais** are command-line decoders that tune an RTL-SDR to both channels and print NMEA sentences. The slides' first activity builds an NMEA sentence with **pyais**, which also decodes them: `pyais.decode(sentence)` returns every field.
+For a coast, **AIS-catcher** and **rtl_ais** are command-line decoders that tune an RTL-SDR to both channels and print NMEA sentences. The slides' first activity builds an NMEA sentence with **pyais**, which also decodes them: `pyais.decode(sentence)` returns every field. Their second activity, a SigMF recording from the Noir CTF challenge, is replaced here by the lesson's own recording.
 ::::
 
 ::::{frame} Key Point
@@ -285,7 +285,7 @@ Put the receiver and the recording in one folder; GRC runs a flowgraph from its 
 | AIS | ships report identity and position on VHF | two chains, one per channel |
 | Channels | A at 161.975 MHz, B at 162.025 MHz | Frequency Xlating FIR Filter at ±25 kHz |
 | Slots | 26.67 ms, 256 bits at 9600 b/s | bursts on the waterfall |
-| Burst | ramp, training, flag, message, CRC, flag | the time sink's first 5 ms |
+| Burst | ramp, training, flag, message, CRC, flag | the first 4 ms after the trigger |
 | Coding | bit stuffing, NRZI | the AIS Decoder |
 | GMSK | FSK at ±2.4 kHz through a Gaussian filter, BT 0.4 | Interpolating FIR Filter and Frequency Mod |
 | Receiver | squelch, FM demodulator, Symbol Sync, slicer | Quadrature Demod, Symbol Sync |

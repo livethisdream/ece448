@@ -43,7 +43,7 @@ Open L19-ais-tx.grc and L19-ais-rx.grc before class, with L19-ais-sim.sigmf-data
 6. NMEA sentences, noise, and tools
 
 Note:
-These follow the 2025 slides in order, with the GMSK test flowgraph from 2025 as the transmitter.
+These follow the 2025 slides in order, with the 2025 GMSK test plots as the model for the transmitter.
 
 ---
 
@@ -119,7 +119,7 @@ Note:
 <iframe src="../viz/ais-bits.html" width="100%" height="528" style="border:1px solid #cddce9; border-radius:6px;" title="AIS bit explorer"></iframe>
 
 Note:
-Pick Five 1s to see a stuffed 0. Lower BT and watch single-bit swings fall short. Raise the noise until a decided bit turns red.
+Pick Five 1s to see a stuffed 0. At BT 0.4 single bits already fall short of 2.4 kHz; lower BT and watch them shrink further. Raise the noise until a decided bit turns red.
 
 ---
 
@@ -127,7 +127,7 @@ Pick Five 1s to see a stuffed 0. Lower BT and watch single-bit swings fall short
 
 <img src="./img/19-ais/L19-grc-tx.png" alt="L19-ais-tx.grc in GRC: AIS Frames block, Gaussian Interpolating FIR Filters, Frequency Mod, a gate, channel shifts, noise, and a SigMF Sink" style="max-height:360px; display:block; margin:0 auto;">
 
-Levels, a Gaussian filter, and FM: the 2025 GMSK test flowgraph.
+Levels, a Gaussian filter, and FM, as in the 2025 GMSK test plots.
 
 Note:
 AIS Frames is an Embedded Python Block: message, CRC, stuffing, flags, NRZI, for four ships. The Interpolating FIR Filter holds each level 10 samples and applies firdes.gaussian at BT 0.4; Frequency Mod gives plus or minus 2.4 kHz; a gate keys the carrier, and Signal Sources move the channels to minus and plus 25 kHz. It writes 4 s at 96 kS/s as SigMF, labeled Simulated. Nothing transmits.
@@ -165,7 +165,7 @@ The 24 training bits change the level every other bit, a period of four bits, fo
 5. Reverse each byte's bits and read the fields.
 
 Note:
-The AIS Decoder runs the transmitter backward on each channel. HDLC sends each byte least significant bit first. The slides compute a CRC with Python's crc library; the decoder does the same CRC-16 in a few lines and drops frames that fail.
+The AIS Decoder runs the transmitter backward on each channel. HDLC sends each byte least significant bit first. The slides show Python's crc library with a CRC-8 example; AIS uses the 16-bit X.25 CRC of HDLC, which the decoder computes in a few lines, dropping frames that fail.
 
 ---
 
@@ -180,7 +180,7 @@ The AIS Decoder runs the transmitter backward on each channel. HDLC sends each b
 | Position | 55 | 1/10,000 minute |
 
 Note:
-Sentence count, sentence number, sequence number, channel, the message packed 6 bits to a character, fill bits, and a two-digit XOR checksum. The MMSI's first three digits give the flag country, 366 to 369 for the US. Paste a sentence into pyais to check it.
+Sentence count, sentence number, sequence number, channel, the message packed 6 bits to a character, fill bits, and a two-digit checksum, the XOR of the characters between ! and *, not a CRC. The MMSI's first three digits give the flag country, 338 and 366 to 369 for the US; the ITU's MID table lists them all. Paste a sentence into pyais to check it.
 
 ---
 

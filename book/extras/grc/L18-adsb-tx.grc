@@ -271,8 +271,8 @@ blocks:
       \ at 1 Mb/s after an\n8 us preamble. At 2 MS/s every bit is two samples, or\
       \ chips: a 1 is a pulse\nthen quiet (1, 0), and a 0 is quiet then a pulse (0,\
       \ 1). The output is the\npulse envelope, 0 or the aircraft's amplitude, ready\
-      \ to put on a carrier.\n\nThe aircraft send about six times as often as real\
-      \ ones do, so a short\nrecording holds a few dozen messages. Edit AIRCRAFT to\
+      \ to put on a carrier.\n\nThe aircraft send ten or more times as often as real\
+      \ ones do, so a short\nrecording holds dozens of messages. Edit AIRCRAFT to\
       \ fly your own.\"\"\"\n\nimport math\n\nimport numpy as np\nfrom gnuradio import\
       \ gr\n\nCHARS = '#ABCDEFGHIJKLMNOPQRSTUVWXYZ##### ###############0123456789######'\n\
       \n# ICAO address, callsign, latitude, longitude, altitude (ft), ground speed\

@@ -280,17 +280,17 @@ blocks:
       \    v = 0\n    for x in b:\n        v = (v << 1) | x\n    return v - (1 <<\
       \ len(b)) if signed and b[0] else v\n\n\ndef crc_ok(b):\n    reg = 0xFFFF\n\
       \    for x in b:\n        reg = (reg >> 1) ^ 0x8408 if (reg ^ x) & 1 else reg\
-      \ >> 1\n    return reg == 0xF0B8\n\n\ndef nmea(p, chan):\n    p = p + [0] *\
-      \ (-len(p) % 6)\n    s = ''.join(chr(v + 48 if v < 40 else v + 56)\n       \
-      \         for v in (val(p[i:i + 6]) for i in range(0, len(p), 6)))\n    parts\
-      \ = [s[i:i + 60] for i in range(0, len(s), 60)]\n    out = []\n    for k, part\
-      \ in enumerate(parts):\n        fill = -len(p) % 6 if k == len(parts) - 1 else\
-      \ 0\n        body = f'AIVDM,{len(parts)},{k + 1},{\"1\" if len(parts) > 1 else\
-      \ \"\"},{chan},{part},{fill}'\n        cs = 0\n        for c in body:\n    \
-      \        cs ^= ord(c)\n        out.append(f'!{body}*{cs:02X}')\n    return out\n\
-      \n\nclass Channel:\n    def __init__(self):\n        self.prev = 0\n       \
-      \ self.shift = 0\n        self.frame = None\n        self.trained = False\n\n\
-      \    def bit(self, level):\n        \"\"\"Feed one sliced bit. At a flag, returns\
+      \ >> 1\n    return reg == 0xF0B8\n\n\ndef nmea(p, chan):\n    fill = -len(p)\
+      \ % 6\n    p = p + [0] * fill\n    s = ''.join(chr(v + 48 if v < 40 else v +\
+      \ 56)\n                for v in (val(p[i:i + 6]) for i in range(0, len(p), 6)))\n\
+      \    parts = [s[i:i + 60] for i in range(0, len(s), 60)]\n    out = []\n   \
+      \ for k, part in enumerate(parts):\n        f = fill if k == len(parts) - 1\
+      \ else 0\n        body = f'AIVDM,{len(parts)},{k + 1},{\"1\" if len(parts) >\
+      \ 1 else \"\"},{chan},{part},{f}'\n        cs = 0\n        for c in body:\n\
+      \            cs ^= ord(c)\n        out.append(f'!{body}*{cs:02X}')\n    return\
+      \ out\n\n\nclass Channel:\n    def __init__(self):\n        self.prev = 0\n\
+      \        self.shift = 0\n        self.frame = None\n        self.trained = False\n\
+      \n    def bit(self, level):\n        \"\"\"Feed one sliced bit. At a flag, returns\
       \ (bits since the last flag,\n        whether the training bits came before\
       \ it); otherwise None.\"\"\"\n        b = 1 if level == self.prev else 0\n \
       \       self.prev = level\n        self.shift = ((self.shift << 1) | b) & 0xFFFF\n\

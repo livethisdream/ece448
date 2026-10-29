@@ -22,7 +22,7 @@ sends 9600 b/s.
 		\part Find the length of one slot in milliseconds and in bits.
 		\begin{solution}[1.0in]
 		\eq{ \frac{60\ \text{s}}{2250} = 26.67\ \text{ms}, \qquad
-		9600 \times 0.02667 = 256\ \text{bits} }
+		9600 \times \frac{60}{2250} = 256\ \text{bits} }
 		\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
@@ -150,7 +150,7 @@ center frequency of 162000000.
 
 \newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\question \textbf{An NMEA sentence.} The AIS Decoder prints
+\question \textbf{An NMEA sentence.} A decoder prints
 \begin{center}\small
 \texttt{!AIVDM,2,1,7,B,55NQj<02D1o9L@gGG788iDF0PE8tp0000000000t:0I8840Ht>0CSPD3k2Dh,0*14}\\
 \texttt{!AIVDM,2,2,7,B,00000000000,2*20}
@@ -215,7 +215,7 @@ recording.
 		\end{solution}
 
 	\part AIS uses a Gaussian filter with BT = 0.4. In words, say what a smaller BT
-	would gain and what it would cost, as the bit explorer shows.
+	would gain and what it would cost.
 		\begin{solution}[1.1in]
 		A smaller BT rounds the steps more, so the spectrum gets narrower and less power
 		spills into the next channel. It also smears each bit into its neighbors, so a

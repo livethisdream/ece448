@@ -49,7 +49,7 @@ Lesson 18 · Module 6: Waveform Applications & RF Reverse Engineering · Dr. Nei
 
 Every airliner over Colorado Springs announces its identity, altitude, position, and velocity several times a second on 1090 MHz, and an RTL-SDR on a windowsill can hear them. The figure is today's receiver, `L18-adsb-rx.grc`, playing a simulated recording of four aircraft near USAFA. Each spike in the left plot is one message, 120 µs long; the right plot zooms in on one of them; and the table at the bottom fills in as the decoder reads each message.
 
-The topics and their order follow the 2025 slides: what ADS-B is, its pulses, a generator that builds them, the message, and the tools that decode it. We build the generator and the receiver in GNU Radio, then point the receiver at the sky.
+After a first look on the air, the topics and their order follow the 2025 slides: what ADS-B is, its pulses, a generator that builds them, the message, and the tools that decode it. We build the generator and the receiver in GNU Radio, then point the receiver at the sky.
 ::::
 
 ::::{frame} ADS-B and Mode S
@@ -126,7 +126,7 @@ The explorer draws three real messages as the chips a receiver sees at 2 MS/s: t
 
 The slides build their test signal in steps: PPM, then AM on a carrier, then noise. `L18-adsb-tx.grc` does the same in GNU Radio. The **ADS-B Out** block is an Embedded Python Block, the kind the L11 lesson built, and it writes the chips of every message for four simulated aircraft near USAFA. Float To Complex and a Multiply put those chips on a carrier 75 kHz from the center, the Noise Source adds noise, and a **SigMF Sink** writes 0.5 s to `L18-adsb-sim.sigmf-data` with its sample rate and the 1090 MHz center frequency in `L18-adsb-sim.sigmf-meta`, whose description says Simulated.
 
-The aircraft send several times as often as real ones do, so the half second holds about 60 messages. Nothing transmits: the last block is a file sink.
+The aircraft send ten or more times as often as real ones do, so the half second holds about 75 messages. Nothing transmits: the last block is a file sink.
 ::::
 
 ::::{frame} Inside the PPM Block
@@ -180,7 +180,7 @@ The slides' example, `8D4840D6202CC371C32CE0576098`, comes from Sun's book. Its 
 
 The first 5 bits of the ME field are its **type code**, which says how to read the other 51. An **identification** message carries the callsign as eight 6-bit characters. An **airborne position** message carries the altitude in 25 ft steps and a compressed latitude and longitude. A **velocity** message carries the east and north speeds, from which the decoder finds ground speed and track, and the climb rate. Sun's book lists every type code; these three are the ones our decoder reads.
 
-Position takes a little care. To fit in 34 bits, it is sent in **Compact Position Reporting** (CPR), which gives the position within one of many zones but not which zone. Aircraft alternate two zone sizes, called even and odd, and a receiver either pairs an even and an odd message or uses a reference position it already knows within 180 nautical miles. Our decoder uses USAFA as its reference, so its positions are right anywhere in Colorado.
+Position takes a little care. To fit in 34 bits, it is sent in **Compact Position Reporting** (CPR), which gives the position within one of many zones but not which zone. Aircraft alternate two zone sizes, called even and odd, and a receiver either pairs an even and an odd message or uses a reference position it already knows within 180 nautical miles. Our decoder uses USAFA as its reference, so its positions are right within about 180 nautical miles of USAFA, which covers all of Colorado except its far western edge.
 ::::
 
 ::::{frame} The Receiver
@@ -255,7 +255,7 @@ ADS-B sends 112-bit messages on 1090 MHz as pulses: each bit is one 0.5 µs puls
 
 To go live, select the SigMF Source and the Throttle in `L18-adsb-rx.grc`, press D to disable both, enable the Soapy RTLSDR Source, and run it; it is already at 1090 MHz and 2 MS/s. A quarter wavelength at 1090 MHz is about 6.9 cm, so the RTL-SDR's small antenna works, and a window facing the approach to Colorado Springs or Denver works best. Live pulses arrive weaker than the simulated ones, so if the triggered plot never fires, lower its trigger level in the time sink's settings.
 
-Anyone may receive ADS-B. Transmitting it is another matter: 1090 MHz carries the replies that air traffic control and collision-avoidance systems depend on, and nothing in a message proves who sent it, which is why false targets are a research topic (the slides' Magazu thesis). Our generator writes a file and never connects to a transmitter, and no flowgraph in this course transmits on 1090 MHz.
+Anyone may receive ADS-B. Transmitting it is another matter: 1090 MHz carries the replies that air traffic control and collision-avoidance systems depend on, and nothing in a message proves who sent it, which is why false targets are a research topic (the Magazu AFIT thesis linked below). Our generator writes a file and never connects to a transmitter, and no flowgraph in this course transmits on 1090 MHz.
 ::::
 
 ::::{frame} Downloads
@@ -269,7 +269,7 @@ Put both flowgraphs in one folder and run the generator first; GRC runs a flowgr
 **What this lesson follows.** The topics and their order come from the slides. The hands-on steps follow the references the slides list and the documentation of the tools:
 
 - <a class="doc-link" href="../../legacy/L35-adsb.pdf" target="_blank" rel="noopener">ADS-B slides (PDF)</a>
-- <a class="doc-link" href="../../legacy/refs/1090_Riddle.pdf" target="_blank" rel="noopener">The 1090 Megahertz Riddle, Junzi Sun (PDF)</a>: the message, the type codes, the parity, and CPR. Its earlier version is the <a class="doc-link" href="../../legacy/refs/adsb-decode-guide.pdf" target="_blank" rel="noopener">ADS-B Decoding Guide (PDF)</a>.
+- <a class="doc-link" href="../../legacy/refs/1090_Riddle.pdf" target="_blank" rel="noopener">The 1090 Megahertz Riddle, Junzi Sun (PDF)</a>: the message, the type codes, the parity, and CPR. The slides also cite the DRWXR and HABR ADS-B decoding write-ups, which cover the same ground as Sun's book and are not repeated here. Sun's earlier version is the <a class="doc-link" href="../../legacy/refs/adsb-decode-guide.pdf" target="_blank" rel="noopener">ADS-B Decoding Guide (PDF)</a>.
 - <a class="doc-link" href="../../legacy/refs/adsb_magazu_usaf.pdf" target="_blank" rel="noopener">Magazu, AFIT thesis on ADS-B false targets (PDF)</a>: why ADS-B is open to spoofing.
 - <a href="https://wiki.gnuradio.org/index.php/Embedded_Python_Block" target="_blank" rel="noopener">GNU Radio wiki, Embedded Python Block</a>, for the ADS-B Out and Mode S Decoder blocks, and the wiki pages of the other blocks, which have the same names as the blocks.
 - <a href="https://github.com/livethisdream/sdr-flex" target="_blank" rel="noopener">SDR Flex and its README</a>, the course's explore tool, and GQRX, which radioconda installs, as the fallback.

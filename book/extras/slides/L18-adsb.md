@@ -108,7 +108,7 @@ Start with the first 16 bits: each bit's pulse sits in one half. Raise the noise
 PPM chips, then a carrier, then noise, as on the 2025 slides.
 
 Note:
-The ADS-B Out block is an Embedded Python Block like Lesson 11's. It writes 0.5 s to L18-adsb-sim.sigmf-data and .sigmf-meta, labeled Simulated. The aircraft send several times more often than real ones, so the half second holds about 60 messages. Nothing transmits: the last block is a file sink.
+The ADS-B Out block is an Embedded Python Block like Lesson 11's. It writes 0.5 s to L18-adsb-sim.sigmf-data and .sigmf-meta, labeled Simulated. The aircraft send ten or more times as often as real ones, so the half second holds about 75 messages. Nothing transmits: the last block is a file sink.
 
 ---
 
@@ -213,7 +213,7 @@ The decoder needs only the magnitude of the signal.
 - Receive only: never transmit on 1090 MHz.
 
 Note:
-A quarter wave at 1090 MHz is about 6.9 cm, so the RTL-SDR's antenna works. Live pulses are weaker; lower the trigger level if the right plot never fires. 1090 MHz carries replies that air traffic control and collision avoidance depend on, and nothing in a message proves who sent it; the slides' Magazu thesis studies false targets. Our generator only writes a file.
+A quarter wave at 1090 MHz is about 6.9 cm, so the RTL-SDR's antenna works. Live pulses are weaker; lower the trigger level if the right plot never fires. 1090 MHz carries replies that air traffic control and collision avoidance depend on, and nothing in a message proves who sent it; the Magazu AFIT thesis studies false targets. Our generator only writes a file.
 
 ---
 
