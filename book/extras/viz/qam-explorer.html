@@ -47,7 +47,7 @@
     <div class="readouts">
       <div class="ro"><span class="k">bits/symbol</span><span class="v" id="o-k">—</span></div>
       <div class="ro"><span class="k">symbols</span><span class="v" id="o-n">—</span></div>
-      <div class="ro err"><span class="k">wrong, %</span><span class="v" id="o-pct">—</span></div>
+      <div class="ro err"><span class="k">wrong symbols</span><span class="v" id="o-pct">—</span></div>
     </div>
     <div class="text"><div class="k">Received text</div><div class="line" id="o-txt"></div></div>
     <div class="row"><button id="pause">pause</button><button id="clear">clear</button></div>
@@ -62,7 +62,7 @@ const REGION = ['#e4eef7', '#f8fbfd'];          // alternating decision-region t
 const MSG = 'USAFA ECE 448: QAM';
 
 // Square QAM, Gray coded on each axis, scaled to an average power of 1, as
-// GNU Radio's constellation objects are. QPSK is the 2 x 2 case.
+// L20-qam-noise.grc's constellation objects are. QPSK is the 2 x 2 case.
 const MODS = { 'QPSK':4, '16-QAM':16, '64-QAM':64, '256-QAM':256 };
 function gray(n){ return n ^ (n >> 1); }
 function build(M) {
@@ -194,7 +194,7 @@ function draw() {
 function readout() {
   document.getElementById('o-k').textContent = state.c.k;
   document.getElementById('o-n').textContent = state.nSym.toLocaleString();
-  document.getElementById('o-pct').textContent = state.nSym ? (100 * state.nErr / state.nSym).toFixed(1) : '—';
+  document.getElementById('o-pct').textContent = state.nErr.toLocaleString();
   const r = received(), el = document.getElementById('o-txt');
   el.textContent = '';
   if (!r) { el.textContent = '…'; return; }

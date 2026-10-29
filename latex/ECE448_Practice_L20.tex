@@ -1,9 +1,9 @@
 % !TEX root =./ECE448_Practice_main.tex
 %
-% L20 practice set (QAM and OFDM). Every question reads a display or sets a
+% L20 practice set (QAM and OFDM). Every question reads a display or works with a
 % block parameter: bits per symbol from a constellation, what noise does to
-% QPSK, 16-QAM, and 64-QAM, an OFDM spectrum and its guard, recognizing signals
-% on a waterfall, and choosing a scheme for a use case.
+% QPSK, 16-QAM, and 64-QAM, an OFDM spectrum and the link's guard and echo
+% sliders, recognizing signals on a waterfall, and choosing a scheme for a use case.
 % Blank copy: \begin{solution}[h] reserves h of work space.
 % SOLUTIONS copy (\iskey=1) prints the red worked solutions.
 
@@ -67,7 +67,7 @@ Noise amplitude slider, which adds the same noise to the QPSK, 16-QAM, and 64-QA
 \begin{parts}
 
 	\part At one setting, the QPSK display shows four round clouds well apart, the 16-QAM
-	display shows sixteen clouds that nearly touch, and the 64-QAM display shows one square
+	display shows sixteen clouds with gaps between them and a few stray points, and the 64-QAM display shows one square
 	of scattered dots with no gaps. Describe what a receiver decoding each signal would
 	deliver at this setting.
 		\begin{solution}[1.3in]
@@ -93,8 +93,8 @@ Noise amplitude slider, which adds the same noise to the QPSK, 16-QAM, and 64-QA
 		\begin{solution}[1.2in]
 		The signal weakens relative to the noise, so the 64 clouds grow until they touch
 		and merge. Wi-Fi and LTE then step down to a constellation with fewer points,
-		16-QAM and then QPSK, and add more error-correcting code, trading bit rate for
-		a link that still works.
+		16-QAM and then QPSK, and add more error-correcting code, giving up bit rate to
+		keep the link working.
 		\end{solution}
 
 \end{parts}
@@ -135,20 +135,20 @@ second.
 	\end{minipage}
 
 	\begin{minipage}[t]{0.58\linewidth}
-		\part Radio waves travel 300 m in 1 $\mu$s. A reflection off a wall travels 120 m
-		farther than the direct path, and one off a distant building 600 m farther. How late
-		does each arrive, and which one stays inside the guard?
+		\part \texttt{L20-ofdm-link.grc} uses the same 16-sample guard at 100,000 samples
+		per second. Find the guard's length there, and the delays of its Echo delay slider at
+		8 and at 20 samples. Which echo ends inside the guard?
 		\begin{solution}[1.2in]
-		120 m takes 0.4 $\mu$s, inside the 0.8 $\mu$s guard. 600 m takes 2 $\mu$s, longer
-		than the guard, so it leaks into the next symbol.
+		\eq{ 16 / 100{,}000 &= 160\ \mu\text{s} }
+		8 samples is 80 $\mu$s, inside the guard; 20 samples is 200 $\mu$s, past it.
 		\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
 		\raggedleft \vspace{12pt}
-		\ansbox[1.3in]{0.4 $\mu$s, 2 $\mu$s}
+		\ansbox[1.3in]{160 $\mu$s}
 
 		\vspace{4pt}
-		\ansbox[1.3in]{the wall}
+		\ansbox[1.3in]{8 samples (80 $\mu$s)}
 	\end{minipage}
 
 	\part In words, describe what \texttt{L20-ofdm-link.grc} showed for an echo inside the
