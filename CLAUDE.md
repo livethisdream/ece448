@@ -107,7 +107,9 @@ ships goes through three steps before it is committed:
 Every radio path is a flowgraph with a PlutoSDR Source or Sink; the Plutos
 run in extended-frequency mode (70 MHz to 6 GHz). Where GNU Radio has a module
 for a signal (gr-adsb in radioconda), use it. RTL-SDR, HackRF, SDR Flex, and
-GQRX are optional extras. See `project/ROADMAP.md`, "How Neil teaches it".
+GQRX are optional extras, and URH is out. A signal the course generates is
+recorded or sent at 915 MHz, never on its real frequency. See
+`project/ROADMAP.md`, "How Neil teaches it".
 
 Recordings a cadet downloads or makes are **SigMF** (`.sigmf-data` plus
 `.sigmf-meta`), the preferred data format (Neil, 2026-10-23); see

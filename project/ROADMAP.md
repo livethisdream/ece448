@@ -86,7 +86,15 @@ the material. A lesson is a guided walkthrough, not a chapter.
     gr-air-modes named as the other module.
   - RTL-SDRs and HackRFs are optional extras, never required. SDR Flex is
     an optional quick look. GQRX, dump1090, and other apps appear only as
-    optional extras, or where the 2025 lesson used them (URH in L17).
+    optional extras.
+  - **URH is out** (Neil, 2026-10-29): it is end of life and does not
+    work. L17's analysis is done in GNU Radio.
+  - **Synthesized signals go out at 915 MHz or as recordings** (Neil,
+    2026-10-29). A signal the course generates (ADS-B, AIS, FSK, PSK,
+    CW, hopping, a simulated remote) is never sent on its real
+    frequency: it is recorded as SigMF, or transmitted at 915 MHz. Live
+    reception of real signals on their own frequencies (FM, HD Radio,
+    ADS-B aircraft) is unchanged.
 - **SDR Flex is an explore tool** (Neil, 2026-10-21; narrowed 2026-10-29
   by the rule above). Neil's own
   `livethisdream/sdr-flex` starts at the spectrum and builds a GNU Radio

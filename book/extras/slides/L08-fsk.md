@@ -225,7 +225,7 @@ Demo at noise 0.3 and 400 Hz, then keep dragging until lines start to have error
 Tone spacing gives $2\Delta f$; the shortest dwell gives $1/R_s$.
 
 Note:
-This waterfall is simulated. The tracks are 40 kHz apart, so the deviation is 20 kHz, and the preamble's shortest dwell is 1 ms, so the symbol rate is 1000 baud. On a live waterfall a row often lasts longer than a bit, so measure the dwell in URH or on the Quadrature Demod output. To run today's link over the air, replace the Channel Model with a Pluto or HackRF sink and source. In class we transmit only into a cable through the 30 dB attenuator, and only when the lesson says to. Nothing today transmits.
+This waterfall is simulated. The tracks are 40 kHz apart, so the deviation is 20 kHz, and the preamble's shortest dwell is 1 ms, so the symbol rate is 1000 baud. On a live waterfall a row often lasts longer than a bit, so measure the dwell on the Quadrature Demod output. To run today's link over the air, replace the Channel Model with a Pluto or HackRF sink and source. In class we transmit only into a cable through the 30 dB attenuator, and only when the lesson says to. Nothing today transmits.
 
 ---
 

@@ -117,7 +117,7 @@ CW, DTMF, HD Radio, mPSK, frequency hopping, ADS-B, and AIS, each built or decod
   <a class="mt-card mt-lesson" href="L17-rf-reverse-engineering/index.html">
     <span class="mt-kind">Lesson · L17</span>
     <h4>RF Reverse Engineering</h4>
-    <p>Take an unknown signal from spectrum to bits with SDR Flex or GQRX, URH, and GNU Radio. Objective 6.6.</p>
+    <p>Take an unknown signal from spectrum to bits in GNU Radio. Objective 6.6.</p>
   </a>
   <a class="mt-card mt-lesson" href="L17-lab-rf-reverse-engineering/index.html">
     <span class="mt-kind">L17 Lab</span>
