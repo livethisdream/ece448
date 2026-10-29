@@ -77,7 +77,7 @@ Directed the Academy Center for UAS Research (ACUASR) at USAFA through 2025.
 </p>
 
 **Field Applications Engineer** with the team behind the
-**ADALM-PLUTO** and **ADALM-PHASER** you'll use in this course.
+**ADALM-PLUTO** you'll use in this course.
 
 ---
 

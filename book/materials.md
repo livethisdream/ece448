@@ -16,10 +16,7 @@ work through alongside the in-class flowgraphs.
 ## Hardware & software
 
 - **GNU Radio** with **GNU Radio Companion (GRC)**: install instructions are posted with L5.
-- **RTL-SDR**: introductory receive-only SDR (25 MHz–1.75 GHz).
-- **HackRF One**: half-duplex Tx/Rx SDR (1 MHz–6 GHz).
-- **PlutoSDR / ADALM-PLUTO**: full-duplex Tx/Rx SDR (325 MHz–3.8 GHz).
-- **ADALM-PHASER**: phased-array SDR platform, shared with ECE 444.
+- **PlutoSDR / ADALM-PLUTO**: full-duplex Tx/Rx SDR, issued to every cadet, set to extended-frequency mode (70 MHz–6 GHz).
 - **Directional antennas** (Yagi and log-periodic): for the midterm fox hunt.
 
 ## Lab packets

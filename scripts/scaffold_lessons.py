@@ -52,7 +52,7 @@ LO_TEXT = {
     "1.1": "I can define noise figure and explain how each stage of a receiver chain, the first above all, sets the system's noise performance.",
     "1.2": "I can compute a link budget for a specified geometry, transmitter, and antenna configuration, and compare it with the signal an SDR shows.",
     "1.3": "I can describe signal-space concepts (basis functions, constellations, decision regions) and apply them to a digital modulation scheme.",
-    "2.1": "I can describe what a Software Defined Radio is, contrast it with a traditional hardware radio, and identify the SDR platforms used in this course (PlutoSDR, ADALM-PHASER).",
+    "2.1": "I can describe what a Software Defined Radio is, contrast it with a traditional hardware radio, and identify the SDR used in this course, the PlutoSDR.",
     "2.2": "I can identify the roles of the RF frontend, ADC/DAC, and host in an SDR signal chain and describe sample-rate, bandwidth, and dynamic-range trade-offs.",
     "2.3": "I can install GNU Radio and use GNU Radio Companion (GRC) to build, inspect, and run a basic flowgraph.",
     "2.4": "I can capture a real RF signal using an SDR and interpret its time- and frequency-domain representations.",

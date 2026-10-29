@@ -82,7 +82,7 @@ _Retirement from active duty — cadets sent me off with "No More Blues."_
 
 ::::{frame} Now: Analog Devices
 
-Today my day job with **Analog Devices** puts me shoulder-to-shoulder with the team designing the **ADALM-PLUTO** and **ADALM-PHASER** we'll use in this course.
+Today my day job with **Analog Devices** puts me shoulder-to-shoulder with the team designing the **ADALM-PLUTO**, the radio you'll use in this course.
 
 ![Analog Devices booth](img/nr-adi.jpg)
 _Field Applications Engineer at Analog Devices — the folks who make the ADALM-PLUTO and ADALM-PHASER._
@@ -139,7 +139,7 @@ Two ideas we'll keep coming back to:
 
 ::::{frame} Why This Matters to You
 
-SDRs are how modern militaries build agile, reconfigurable RF systems. The same platform in your hands (a Pluto or Phaser) is a smaller sibling of what flies on aircraft, satellites, and deployed EW pods.
+SDRs are how modern militaries build agile, reconfigurable RF systems. The same platform in your hands (a Pluto) is a smaller sibling of what flies on aircraft, satellites, and deployed EW pods.
 
 - **Communications** — tactical radios, data links, SATCOM, Link-16.
 - **Electronic warfare** — DF, jamming, protection, cognitive EW.
@@ -169,7 +169,7 @@ See the [syllabus](../../syllabus.md) for the full schedule, the midterm (a fox 
 
 ::::{frame} Show & Tell: A Real SDR, Live
 
-_Bring in the course SDRs (PlutoSDR, ADALM-PHASER) plus a broadband whip antenna. Fire up GNU Radio's FFT sink, sweep across a few bands, and identify signals in real time — broadcast FM, ADS-B at 1090 MHz, cellular, WiFi, LTE, an FRS handheld. Point out that we'll decode most of these ourselves by the end of the semester._
+_Bring in a PlutoSDR plus a broadband whip antenna. Fire up GNU Radio's FFT sink, sweep across a few bands, and identify signals in real time — broadcast FM, ADS-B at 1090 MHz, cellular, WiFi, LTE, an FRS handheld. Point out that we'll decode most of these ourselves by the end of the semester._
 
 _Hardware checklist:_ `_TBD_`
 ::::
