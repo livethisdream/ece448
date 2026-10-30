@@ -9,8 +9,9 @@ options:
     description: 'L18: a simulated sky of four aircraft sending ADS-B extended squitters,
       built from pulse-position modulation (PPM) at 2 MS/s. Writes 0.5 s to L18-adsb-sim.sigmf-data
       and .sigmf-meta, labeled Simulated, then stops. Nothing transmits: the last
-      block is a SigMF file sink. Never connect this output to a transmitter: 1090
-      MHz carries ATC and collision-avoidance traffic, and transmitting there is illegal.'
+      block is a SigMF file sink. Never transmit this signal on 1090 MHz, which carries
+      ATC and collision-avoidance traffic; L18-adsb-tx-pluto.grc sends it at 915 MHz
+      into a cable instead.'
     gen_cmake: 'On'
     gen_linking: dynamic
     generate_options: qt_gui
@@ -274,52 +275,54 @@ blocks:
       \ 1). The output is the\npulse envelope, 0 or the aircraft's amplitude, ready\
       \ to put on a carrier.\n\nThe aircraft send ten or more times as often as real\
       \ ones do, so a short\nrecording holds dozens of messages. Edit AIRCRAFT to\
-      \ fly your own.\n\nNever connect this output to a transmitter: 1090 MHz carries\
-      \ ATC and\ncollision-avoidance traffic, and transmitting there is illegal.\"\
-      \"\"\n\nimport math\n\nimport numpy as np\nfrom gnuradio import gr\n\nCHARS\
-      \ = '#ABCDEFGHIJKLMNOPQRSTUVWXYZ##### ###############0123456789######'\n\n#\
-      \ ICAO address, callsign, latitude, longitude, altitude (ft), ground speed (kt),\n\
-      # track (deg), vertical rate (ft/min), amplitude\nAIRCRAFT = [\n    (0xA00448,\
-      \ 'ECE448', 38.912, -104.512, 9500, 140, 300, 0, 0.9),\n    (0xAE1F21, 'FALCON21',\
-      \ 39.105, -104.702, 14025, 245, 175, -1600, 0.6),\n    (0xA9A1B2, 'N731RG',\
-      \ 38.701, -104.950, 11300, 118, 20, 640, 0.35),\n    (0xA5C3D7, 'SKW3301', 39.402,\
-      \ -104.388, 23875, 386, 228, -1984, 0.2),\n]\n\n\ndef bits(v, n):\n    return\
-      \ [(v >> (n - 1 - i)) & 1 for i in range(n)]\n\n\ndef parity(b):\n    \"\"\"\
-      The 24 parity bits of an 88-bit message: generator 0x1FFF409.\"\"\"\n    reg\
-      \ = 0\n    for x in b + [0] * 24:\n        reg = (reg << 1) | x\n        if\
-      \ reg & 0x1000000:\n            reg ^= 0x1FFF409\n    return bits(reg, 24)\n\
-      \n\ndef nl(lat):\n    if abs(lat) >= 87:\n        return 1\n    a = 1 - math.cos(math.pi\
-      \ / 30)\n    return int(2 * math.pi / math.acos(1 - a / math.cos(math.radians(lat))\
-      \ ** 2))\n\n\ndef ident(cs):\n    me = bits(4, 5) + bits(3, 3)\n    for c in\
-      \ (cs + ' ' * 8)[:8]:\n        me += bits(CHARS.index(c), 6)\n    return me\n\
-      \n\ndef position(alt, lat, lon, odd):\n    n = bits(int(round((alt + 1000) /\
-      \ 25)), 11)\n    dlat = 360 / (59 if odd else 60)\n    yz = int(2 ** 17 * (lat\
-      \ % dlat) / dlat + 0.5)\n    rlat = dlat * (yz / 2 ** 17 + math.floor(lat /\
-      \ dlat))\n    dlon = 360 / max(nl(rlat) - odd, 1)\n    xz = int(2 ** 17 * (lon\
-      \ % dlon) / dlon + 0.5)\n    return (bits(11, 5) + [0, 0, 0] + n[:7] + [1] +\
-      \ n[7:] + [0, odd]\n            + bits(yz % 2 ** 17, 17) + bits(xz % 2 ** 17,\
-      \ 17))\n\n\ndef velocity(gs, trk, vr):\n    ve, vn = gs * math.sin(math.radians(trk)),\
-      \ gs * math.cos(math.radians(trk))\n    return (bits(19, 5) + bits(1, 3) + [0,\
-      \ 0, 0, 0, 0]\n            + [int(ve < 0)] + bits(int(round(abs(ve))) + 1, 10)\n\
-      \            + [int(vn < 0)] + bits(int(round(abs(vn))) + 1, 10)\n         \
-      \   + [1, int(vr < 0)] + bits(int(round(abs(vr) / 64)) + 1, 9) + [0] * 10)\n\
-      \n\ndef chips(icao, me):\n    \"\"\"Preamble plus 112 bits of PPM: 16 + 224\
-      \ chips.\"\"\"\n    b = bits(17, 5) + bits(5, 3) + bits(icao, 24) + me\n   \
-      \ b += parity(b)\n    out = [1, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0]\n\
-      \    for x in b:\n        out += [1, 0] if x else [0, 1]\n    return np.array(out,\
-      \ dtype=np.float32)\n\n\nclass blk(gr.sync_block):\n    def __init__(self, samp_rate=2e6,\
-      \ seed=18):\n        gr.sync_block.__init__(self, name='ADS-B Out', in_sig=None,\
-      \ out_sig=[np.float32])\n        self.fs = samp_rate\n        self.rng = np.random.default_rng(seed)\n\
-      \        self.queue = []          # (start sample, chips)\n        self.planned\
-      \ = 0         # samples scheduled so far\n        self.slot = 0\n\n    def plan(self,\
-      \ upto):\n        \"\"\"Schedule messages from every aircraft up to sample `upto`.\"\
-      \"\"\n        while self.planned < upto:\n            t0, t1 = self.planned,\
-      \ self.planned + int(0.05 * self.fs)\n            for k, (icao, cs, lat, lon,\
-      \ alt, gs, trk, vr, amp) in enumerate(AIRCRAFT):\n                t = t0 / self.fs\n\
-      \                d = gs * t / 3600 / 60          # degrees of latitude flown\n\
-      \                la = lat + d * math.cos(math.radians(trk))\n              \
-      \  lo = lon + d * math.sin(math.radians(trk)) / math.cos(math.radians(lat))\n\
-      \                # position every slot, even and odd in turn; velocity every\n\
+      \ fly your own.\n\nNever transmit this on 1090 MHz: that frequency carries ATC\
+      \ and\ncollision-avoidance traffic, and transmitting there is illegal. In this\n\
+      course it goes to a SigMF file (L18-adsb-tx.grc) or to a PlutoSDR at\n915 MHz,\
+      \ into a cable through a 30 dB attenuator (L18-adsb-tx-pluto.grc).\"\"\"\n\n\
+      import math\n\nimport numpy as np\nfrom gnuradio import gr\n\nCHARS = '#ABCDEFGHIJKLMNOPQRSTUVWXYZ#####\
+      \ ###############0123456789######'\n\n# ICAO address, callsign, latitude, longitude,\
+      \ altitude (ft), ground speed (kt),\n# track (deg), vertical rate (ft/min),\
+      \ amplitude\nAIRCRAFT = [\n    (0xA00448, 'ECE448', 38.912, -104.512, 9500,\
+      \ 140, 300, 0, 0.9),\n    (0xAE1F21, 'FALCON21', 39.105, -104.702, 14025, 245,\
+      \ 175, -1600, 0.6),\n    (0xA9A1B2, 'N731RG', 38.701, -104.950, 11300, 118,\
+      \ 20, 640, 0.35),\n    (0xA5C3D7, 'SKW3301', 39.402, -104.388, 23875, 386, 228,\
+      \ -1984, 0.2),\n]\n\n\ndef bits(v, n):\n    return [(v >> (n - 1 - i)) & 1 for\
+      \ i in range(n)]\n\n\ndef parity(b):\n    \"\"\"The 24 parity bits of an 88-bit\
+      \ message: generator 0x1FFF409.\"\"\"\n    reg = 0\n    for x in b + [0] * 24:\n\
+      \        reg = (reg << 1) | x\n        if reg & 0x1000000:\n            reg\
+      \ ^= 0x1FFF409\n    return bits(reg, 24)\n\n\ndef nl(lat):\n    if abs(lat)\
+      \ >= 87:\n        return 1\n    a = 1 - math.cos(math.pi / 30)\n    return int(2\
+      \ * math.pi / math.acos(1 - a / math.cos(math.radians(lat)) ** 2))\n\n\ndef\
+      \ ident(cs):\n    me = bits(4, 5) + bits(3, 3)\n    for c in (cs + ' ' * 8)[:8]:\n\
+      \        me += bits(CHARS.index(c), 6)\n    return me\n\n\ndef position(alt,\
+      \ lat, lon, odd):\n    n = bits(int(round((alt + 1000) / 25)), 11)\n    dlat\
+      \ = 360 / (59 if odd else 60)\n    yz = int(2 ** 17 * (lat % dlat) / dlat +\
+      \ 0.5)\n    rlat = dlat * (yz / 2 ** 17 + math.floor(lat / dlat))\n    dlon\
+      \ = 360 / max(nl(rlat) - odd, 1)\n    xz = int(2 ** 17 * (lon % dlon) / dlon\
+      \ + 0.5)\n    return (bits(11, 5) + [0, 0, 0] + n[:7] + [1] + n[7:] + [0, odd]\n\
+      \            + bits(yz % 2 ** 17, 17) + bits(xz % 2 ** 17, 17))\n\n\ndef velocity(gs,\
+      \ trk, vr):\n    ve, vn = gs * math.sin(math.radians(trk)), gs * math.cos(math.radians(trk))\n\
+      \    return (bits(19, 5) + bits(1, 3) + [0, 0, 0, 0, 0]\n            + [int(ve\
+      \ < 0)] + bits(int(round(abs(ve))) + 1, 10)\n            + [int(vn < 0)] + bits(int(round(abs(vn)))\
+      \ + 1, 10)\n            + [1, int(vr < 0)] + bits(int(round(abs(vr) / 64)) +\
+      \ 1, 9) + [0] * 10)\n\n\ndef chips(icao, me):\n    \"\"\"Preamble plus 112 bits\
+      \ of PPM: 16 + 224 chips.\"\"\"\n    b = bits(17, 5) + bits(5, 3) + bits(icao,\
+      \ 24) + me\n    b += parity(b)\n    out = [1, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0,\
+      \ 0, 0, 0, 0, 0]\n    for x in b:\n        out += [1, 0] if x else [0, 1]\n\
+      \    return np.array(out, dtype=np.float32)\n\n\nclass blk(gr.sync_block):\n\
+      \    def __init__(self, samp_rate=2e6, seed=18):\n        gr.sync_block.__init__(self,\
+      \ name='ADS-B Out', in_sig=None, out_sig=[np.float32])\n        self.fs = samp_rate\n\
+      \        self.rng = np.random.default_rng(seed)\n        self.queue = []   \
+      \       # (start sample, chips)\n        self.planned = 0         # samples\
+      \ scheduled so far\n        self.slot = 0\n\n    def plan(self, upto):\n   \
+      \     \"\"\"Schedule messages from every aircraft up to sample `upto`.\"\"\"\
+      \n        while self.planned < upto:\n            t0, t1 = self.planned, self.planned\
+      \ + int(0.05 * self.fs)\n            for k, (icao, cs, lat, lon, alt, gs, trk,\
+      \ vr, amp) in enumerate(AIRCRAFT):\n                t = t0 / self.fs\n     \
+      \           d = gs * t / 3600 / 60          # degrees of latitude flown\n  \
+      \              la = lat + d * math.cos(math.radians(trk))\n                lo\
+      \ = lon + d * math.sin(math.radians(trk)) / math.cos(math.radians(lat))\n  \
+      \              # position every slot, even and odd in turn; velocity every\n\
       \                # second slot; identification every third\n               \
       \ msgs = [position(alt + vr * t / 60, la, lo, self.slot % 2)]\n            \
       \    if (self.slot + k) % 2 == 0:\n                    msgs.append(velocity(gs,\

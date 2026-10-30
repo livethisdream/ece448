@@ -9,7 +9,10 @@ options:
     description: 'L19: receive AIS channels A and B from L19-ais-sim.sigmf-data (96
       kS/s, centered on 162 MHz): shift each channel to 0 Hz, squelch the noise between
       bursts, FM-demodulate it, recover the bit timing, slice the bits, and decode
-      them with the AIS Decoder, an Embedded Python Block. Receive only.'
+      them with the AIS Decoder, an Embedded Python Block. To receive with a PlutoSDR,
+      disable the SigMF Source and the Throttle and enable the PlutoSDR Source and
+      its Low Pass Filter: fc 915e6 for L19-ais-tx-pluto.grc through the cable, or
+      162e6 for live AIS on a coast. Receive only.'
     gen_cmake: 'On'
     gen_linking: dynamic
     generate_options: qt_gui
@@ -26,7 +29,7 @@ options:
     sizing_mode: fixed
     thread_safe_setters: ''
     title: L19 - AIS Receiver
-    window_size: (1060, 860)
+    window_size: (1060, 900)
   states:
     bus_sink: false
     bus_source: false
@@ -72,6 +75,18 @@ blocks:
     coordinate: [296, 8]
     rotation: 0
     state: enabled
+- name: fc
+  id: variable
+  parameters:
+    comment: ''
+    value: 162e6
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [296, 88]
+    rotation: 0
+    state: enabled
 - name: noise
   id: variable_qtgui_range
   parameters:
@@ -91,6 +106,39 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [880, 8]
+    rotation: 0
+    state: enabled
+- name: radio_rate
+  id: variable
+  parameters:
+    comment: ''
+    value: 6 * samp_rate
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [384, 88]
+    rotation: 0
+    state: enabled
+- name: rx_gain
+  id: variable_qtgui_range
+  parameters:
+    comment: ''
+    gui_hint: 4,0,1,2
+    label: Pluto RX gain (dB)
+    min_len: '200'
+    orient: QtCore.Qt.Horizontal
+    rangeType: float
+    start: '0'
+    step: '1'
+    stop: '70'
+    value: '40'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [200, 672]
     rotation: 0
     state: enabled
 - name: samp_rate
@@ -365,6 +413,30 @@ blocks:
     coordinate: [1432, 360]
     rotation: 0
     state: enabled
+- name: lpf_0
+  id: low_pass_filter
+  parameters:
+    affinity: ''
+    alias: ''
+    beta: '6.76'
+    comment: ''
+    cutoff_freq: 40e3
+    decim: '6'
+    gain: '1'
+    interp: '1'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samp_rate: radio_rate
+    type: fir_filter_ccf
+    width: 10e3
+    win: window.WIN_HAMMING
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [200, 440]
+    rotation: 0
+    state: disabled
 - name: noise_0
   id: analog_noise_source_x
   parameters:
@@ -384,6 +456,37 @@ blocks:
     coordinate: [232, 336]
     rotation: 0
     state: enabled
+- name: pluto_0
+  id: iio_pluto_source
+  parameters:
+    affinity: ''
+    alias: ''
+    bandwidth: '200000'
+    bbdc: 'True'
+    buffer_size: '32768'
+    comment: ''
+    filter: ''
+    filter_source: '''Auto'''
+    fpass: '0'
+    frequency: int(fc)
+    fstop: '0'
+    gain1: '''manual'''
+    len_tag_key: packet_len
+    manual_gain1: rx_gain
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    quadrature: 'True'
+    rfdc: 'True'
+    samplerate: int(radio_rate)
+    type: fc32
+    uri: '"ip:192.168.2.1"'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [16, 440]
+    rotation: 0
+    state: disabled
 - name: slice_a
   id: digital_binary_slicer_fb
   parameters:
@@ -674,7 +777,7 @@ blocks:
     color8: '0'
     color9: '0'
     comment: ''
-    fc: 162e6
+    fc: fc
     fftsize: '512'
     freqhalf: 'True'
     grid: 'False'
@@ -756,7 +859,9 @@ connections:
 - [demod_a, '0', time_0, '0']
 - [demod_b, '0', sync_b, '0']
 - [demod_b, '0', time_0, '1']
+- [lpf_0, '0', add_0, '0']
 - [noise_0, '0', add_0, '1']
+- [pluto_0, '0', lpf_0, '0']
 - [slice_a, '0', epy_block_0, '0']
 - [slice_b, '0', epy_block_0, '1']
 - [sq_a, '0', demod_a, '0']

@@ -11,8 +11,8 @@ options:
       with BT 0.4, and FM with 2.4 kHz deviation, which is GMSK. Writes 4 s at 96
       kS/s, centered on 162 MHz, to L19-ais-sim.sigmf-data and .sigmf-meta, labeled
       Simulated, then stops. Nothing transmits: the last block is a SigMF file sink.
-      Never connect this output to a transmitter: 161.975 and 162.025 MHz carry AIS,
-      a safety-of-life service, and transmitting there is illegal.'
+      Never transmit this signal on 161.975 or 162.025 MHz, which carry AIS, a safety-of-life
+      service; L19-ais-tx-pluto.grc sends it at 915 MHz into a cable instead.'
     gen_cmake: 'On'
     gen_linking: dynamic
     generate_options: qt_gui
@@ -175,61 +175,63 @@ blocks:
       \ -1,\n0 when idle) and its on/off gate, then channel B's. Ships report their\n\
       position (message 1) about every quarter second, about forty times as often\n\
       as real ones, and their name and voyage (message 5) every two seconds.\nEdit\
-      \ SHIPS to sail your own.\n\nNever connect this output to a transmitter: 161.975\
-      \ and 162.025 MHz carry\nAIS, a safety-of-life service, and transmitting there\
-      \ is illegal.\"\"\"\n\nimport numpy as np\nfrom gnuradio import gr\n\nSIX =\
-      \ '@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\\\]^_ !\"#$%&\\'()*+,-./0123456789:;<=>?'\n\
-      SLOT = 256\n\n# MMSI, name, callsign, latitude, longitude, speed (kt), course\
-      \ (deg),\n# ship type, length (m), draught (m), destination\nSHIPS = [\n   \
-      \ (366944810, 'ECE TRAINER', 'WDE4481', 36.9612, -76.3305, 8.4, 312.0, 52, 32,\
-      \ 3.8, 'NORFOLK'),\n    (367120450, 'FALCON SPIRIT', 'WDF1204', 36.9927, -76.2741,\
-      \ 12.1, 205.5, 70, 188, 10.2, 'BALTIMORE'),\n    (338204077, 'RAMPART', 'WRP2040',\
-      \ 36.9378, -76.3992, 0.0, 0.0, 31, 24, 3.1, 'PORTSMOUTH'),\n    (636019455,\
-      \ 'CAPE TERCEL', 'D5TC9', 37.0185, -76.1874, 15.6, 98.3, 80, 229, 12.4, 'ROTTERDAM'),\n\
-      ]\n\n\ndef bits(v, n):\n    v &= (1 << n) - 1\n    return [(v >> (n - 1 - i))\
-      \ & 1 for i in range(n)]\n\n\ndef text(s, n):\n    out = []\n    for c in (s\
-      \ + '@' * n)[:n]:\n        out += bits(SIX.index(c), 6)\n    return out\n\n\n\
-      def msg1(mmsi, lat, lon, sog, cog, sec):\n    return (bits(1, 6) + bits(0, 2)\
-      \ + bits(mmsi, 30) + bits(0 if sog else 5, 4)\n            + bits(-128, 8) +\
-      \ bits(round(sog * 10), 10) + [1]\n            + bits(round(lon * 600000), 28)\
-      \ + bits(round(lat * 600000), 27)\n            + bits(round(cog * 10), 12) +\
-      \ bits(round(cog) % 360 if sog else 511, 9)\n            + bits(sec % 60, 6)\
-      \ + [0] * 25)\n\n\ndef msg5(mmsi, name, call, stype, length, draught, dest):\n\
-      \    bow = length * 2 // 3\n    return (bits(5, 6) + bits(0, 2) + bits(mmsi,\
-      \ 30) + bits(0, 2) + bits(0, 30)\n            + text(call, 7) + text(name, 20)\
-      \ + bits(stype, 8) + bits(bow, 9)\n            + bits(length - bow, 9) + bits(5,\
-      \ 6) + bits(5, 6) + bits(1, 4)\n            + bits(0, 4) + bits(0, 5) + bits(24,\
-      \ 5) + bits(60, 6)\n            + bits(round(draught * 10), 8) + text(dest,\
-      \ 20) + [0, 0])\n\n\ndef crc16(b):\n    \"\"\"The HDLC check (CRC-16, X.25)\
-      \ over bits in the order they are sent.\"\"\"\n    reg = 0xFFFF\n    for x in\
-      \ b:\n        reg = (reg >> 1) ^ 0x8408 if (reg ^ x) & 1 else reg >> 1\n   \
-      \ return reg ^ 0xFFFF\n\n\ndef burst(payload, start_level):\n    \"\"\"NRZI\
-      \ levels of one burst. Each byte goes least significant bit first.\"\"\"\n \
-      \   p = payload + [0] * (-len(payload) % 8)\n    data = []\n    for i in range(0,\
-      \ len(p), 8):\n        data += p[i:i + 8][::-1]\n    fcs = crc16(data)\n   \
-      \ data += [(fcs >> i) & 1 for i in range(16)]\n    stuffed, run = [], 0\n  \
-      \  for x in data:\n        stuffed.append(x)\n        run = run + 1 if x else\
-      \ 0\n        if run == 5:\n            stuffed.append(0)\n            run =\
-      \ 0\n    flag = [0, 1, 1, 1, 1, 1, 1, 0]\n    line = [0] * 8 + [0, 1] * 12 +\
-      \ flag + stuffed + flag + [0] * 8\n    level, out = start_level, []\n    for\
-      \ x in line:\n        if x == 0:\n            level ^= 1\n        out.append(level)\n\
-      \    return out\n\n\nclass blk(gr.sync_block):\n    def __init__(self, seed=19):\n\
-      \        gr.sync_block.__init__(self, name='AIS Frames', in_sig=None,\n    \
-      \                           out_sig=[np.float32] * 4)\n        self.rng = np.random.default_rng(seed)\n\
-      \        self.queue = []          # (start bit, channel, levels)\n        self.slot\
-      \ = 0\n\n    def plan(self, upto):\n        \"\"\"Schedule bursts slot by slot.\
-      \ Each ship owns a slot in every ten.\"\"\"\n        while self.slot * SLOT\
-      \ < upto:\n            s = self.slot\n            for k, (mmsi, name, call,\
-      \ lat, lon, sog, cog, st, ln, dr, dest) in enumerate(SHIPS):\n             \
-      \   if s % 10 != 2 * k + 1:\n                    continue\n                t\
-      \ = s * SLOT / 9600\n                d = sog * t / 3600 / 60\n             \
-      \   la = lat + d * np.cos(np.radians(cog))\n                lo = lon + d * np.sin(np.radians(cog))\
-      \ / np.cos(np.radians(lat))\n                chan = (s // 10 + k) % 2\n    \
-      \            if (s // 10) % 8 == k:\n                    p = msg5(mmsi, name,\
-      \ call, st, ln, dr, dest)\n                else:\n                    p = msg1(mmsi,\
-      \ la, lo, sog, cog, int(t))\n                lv = burst(p, int(self.rng.integers(2)))\n\
-      \                self.queue.append((s * SLOT, chan, np.array(lv) * 2.0 - 1))\n\
-      \            self.slot += 1\n\n    def work(self, input_items, output_items):\n\
+      \ SHIPS to sail your own.\n\nNever transmit this on 161.975 or 162.025 MHz:\
+      \ they carry AIS, a\nsafety-of-life service, and transmitting there is illegal.\
+      \ In this course it\ngoes to a SigMF file (L19-ais-tx.grc) or to a PlutoSDR\
+      \ at 915 MHz, into a\ncable through a 30 dB attenuator (L19-ais-tx-pluto.grc).\"\
+      \"\"\n\nimport numpy as np\nfrom gnuradio import gr\n\nSIX = '@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\\
+      \\]^_ !\"#$%&\\'()*+,-./0123456789:;<=>?'\nSLOT = 256\n\n# MMSI, name, callsign,\
+      \ latitude, longitude, speed (kt), course (deg),\n# ship type, length (m), draught\
+      \ (m), destination\nSHIPS = [\n    (366944810, 'ECE TRAINER', 'WDE4481', 36.9612,\
+      \ -76.3305, 8.4, 312.0, 52, 32, 3.8, 'NORFOLK'),\n    (367120450, 'FALCON SPIRIT',\
+      \ 'WDF1204', 36.9927, -76.2741, 12.1, 205.5, 70, 188, 10.2, 'BALTIMORE'),\n\
+      \    (338204077, 'RAMPART', 'WRP2040', 36.9378, -76.3992, 0.0, 0.0, 31, 24,\
+      \ 3.1, 'PORTSMOUTH'),\n    (636019455, 'CAPE TERCEL', 'D5TC9', 37.0185, -76.1874,\
+      \ 15.6, 98.3, 80, 229, 12.4, 'ROTTERDAM'),\n]\n\n\ndef bits(v, n):\n    v &=\
+      \ (1 << n) - 1\n    return [(v >> (n - 1 - i)) & 1 for i in range(n)]\n\n\n\
+      def text(s, n):\n    out = []\n    for c in (s + '@' * n)[:n]:\n        out\
+      \ += bits(SIX.index(c), 6)\n    return out\n\n\ndef msg1(mmsi, lat, lon, sog,\
+      \ cog, sec):\n    return (bits(1, 6) + bits(0, 2) + bits(mmsi, 30) + bits(0\
+      \ if sog else 5, 4)\n            + bits(-128, 8) + bits(round(sog * 10), 10)\
+      \ + [1]\n            + bits(round(lon * 600000), 28) + bits(round(lat * 600000),\
+      \ 27)\n            + bits(round(cog * 10), 12) + bits(round(cog) % 360 if sog\
+      \ else 511, 9)\n            + bits(sec % 60, 6) + [0] * 25)\n\n\ndef msg5(mmsi,\
+      \ name, call, stype, length, draught, dest):\n    bow = length * 2 // 3\n  \
+      \  return (bits(5, 6) + bits(0, 2) + bits(mmsi, 30) + bits(0, 2) + bits(0, 30)\n\
+      \            + text(call, 7) + text(name, 20) + bits(stype, 8) + bits(bow, 9)\n\
+      \            + bits(length - bow, 9) + bits(5, 6) + bits(5, 6) + bits(1, 4)\n\
+      \            + bits(0, 4) + bits(0, 5) + bits(24, 5) + bits(60, 6)\n       \
+      \     + bits(round(draught * 10), 8) + text(dest, 20) + [0, 0])\n\n\ndef crc16(b):\n\
+      \    \"\"\"The HDLC check (CRC-16, X.25) over bits in the order they are sent.\"\
+      \"\"\n    reg = 0xFFFF\n    for x in b:\n        reg = (reg >> 1) ^ 0x8408 if\
+      \ (reg ^ x) & 1 else reg >> 1\n    return reg ^ 0xFFFF\n\n\ndef burst(payload,\
+      \ start_level):\n    \"\"\"NRZI levels of one burst. Each byte goes least significant\
+      \ bit first.\"\"\"\n    p = payload + [0] * (-len(payload) % 8)\n    data =\
+      \ []\n    for i in range(0, len(p), 8):\n        data += p[i:i + 8][::-1]\n\
+      \    fcs = crc16(data)\n    data += [(fcs >> i) & 1 for i in range(16)]\n  \
+      \  stuffed, run = [], 0\n    for x in data:\n        stuffed.append(x)\n   \
+      \     run = run + 1 if x else 0\n        if run == 5:\n            stuffed.append(0)\n\
+      \            run = 0\n    flag = [0, 1, 1, 1, 1, 1, 1, 0]\n    line = [0] *\
+      \ 8 + [0, 1] * 12 + flag + stuffed + flag + [0] * 8\n    level, out = start_level,\
+      \ []\n    for x in line:\n        if x == 0:\n            level ^= 1\n     \
+      \   out.append(level)\n    return out\n\n\nclass blk(gr.sync_block):\n    def\
+      \ __init__(self, seed=19):\n        gr.sync_block.__init__(self, name='AIS Frames',\
+      \ in_sig=None,\n                               out_sig=[np.float32] * 4)\n \
+      \       self.rng = np.random.default_rng(seed)\n        self.queue = []    \
+      \      # (start bit, channel, levels)\n        self.slot = 0\n\n    def plan(self,\
+      \ upto):\n        \"\"\"Schedule bursts slot by slot. Each ship owns a slot\
+      \ in every ten.\"\"\"\n        while self.slot * SLOT < upto:\n            s\
+      \ = self.slot\n            for k, (mmsi, name, call, lat, lon, sog, cog, st,\
+      \ ln, dr, dest) in enumerate(SHIPS):\n                if s % 10 != 2 * k + 1:\n\
+      \                    continue\n                t = s * SLOT / 9600\n       \
+      \         d = sog * t / 3600 / 60\n                la = lat + d * np.cos(np.radians(cog))\n\
+      \                lo = lon + d * np.sin(np.radians(cog)) / np.cos(np.radians(lat))\n\
+      \                chan = (s // 10 + k) % 2\n                if (s // 10) % 8\
+      \ == k:\n                    p = msg5(mmsi, name, call, st, ln, dr, dest)\n\
+      \                else:\n                    p = msg1(mmsi, la, lo, sog, cog,\
+      \ int(t))\n                lv = burst(p, int(self.rng.integers(2)))\n      \
+      \          self.queue.append((s * SLOT, chan, np.array(lv) * 2.0 - 1))\n   \
+      \         self.slot += 1\n\n    def work(self, input_items, output_items):\n\
       \        n = len(output_items[0])\n        n0 = self.nitems_written(0)\n   \
       \     self.plan(n0 + n + 1)\n        for o in output_items:\n            o[:]\
       \ = 0\n        keep = []\n        for start, chan, lv in self.queue:\n     \
