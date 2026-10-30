@@ -71,13 +71,12 @@ Large ships carry Class A transponders; small craft may carry Class B. A moving 
 
 ## Find It on the Air
 
-1. RTL-SDR at 250 kS/s or more
-2. Tune to 162.000 MHz
+1. In L19-ais-rx.grc, disable the SigMF Source and Throttle
+2. Enable the PlutoSDR Source and Low Pass Filter: `fc` = 162e6
 3. Look for bursts just under one 26.67 ms slot at −25 and +25 kHz
-4. Play one with narrow FM: a 9600 b/s buzz
 
 Note:
-In Colorado the waterfall stays empty, which is why we use recordings. SDR Flex's README lists no AIS decoder, so in SDR Flex and in GQRX the first look ends at the waterfall.
+The course Plutos run from 70 MHz to 6 GHz, so 162 MHz is in range; the URI is ip:192.168.2.1. In Colorado the waterfall stays empty, which is why we use recordings and send our own ships at 915 MHz.
 
 ---
 
@@ -130,18 +129,18 @@ Pick Five 1s to see a stuffed 0. At BT 0.4 single bits already fall short of 2.4
 Levels, a Gaussian filter, and FM, as in the 2025 GMSK test plots.
 
 Note:
-AIS Frames is an Embedded Python Block: message, CRC, stuffing, flags, NRZI, for four ships. The Interpolating FIR Filter holds each level 10 samples and applies firdes.gaussian at BT 0.4; Frequency Mod gives plus or minus 2.4 kHz; a gate keys the carrier, and Signal Sources move the channels to minus and plus 25 kHz. It writes 4 s at 96 kS/s as SigMF, labeled Simulated. Nothing transmits.
+AIS Frames is an Embedded Python Block: message, CRC, stuffing, flags, NRZI, for four ships. The Interpolating FIR Filter holds each level 10 samples and applies firdes.gaussian at BT 0.4; Frequency Mod gives plus or minus 2.4 kHz; a gate keys the carrier, and Signal Sources move the channels to minus and plus 25 kHz. It writes 4 s at 96 kS/s as SigMF, labeled Simulated. Nothing transmits. L19-ais-tx-pluto.grc sends the same ships from a Pluto at 915 MHz, never on the AIS channels.
 
 ---
 
 ## The Receiver
 
-<img src="./img/19-ais/L19-grc-rx.png" alt="L19-ais-rx.grc in GRC: for each channel a Frequency Xlating FIR Filter, Power Squelch, Quadrature Demod, Symbol Sync, and Binary Slicer, into the AIS Decoder" style="max-height:360px; display:block; margin:0 auto;">
+<img src="./img/19-ais/L19-grc-rx.png" alt="L19-ais-rx.grc in GRC: a SigMF Source or a disabled PlutoSDR Source and Low Pass Filter, then for each channel a Frequency Xlating FIR Filter, Power Squelch, Quadrature Demod, Symbol Sync, and Binary Slicer, into the AIS Decoder" style="max-height:360px; display:block; margin:0 auto;">
 
 Shift, squelch, FM-demodulate, recover the timing, slice.
 
 Note:
-Decimation 2 gives 48 kS/s, 5 samples per bit. The squelch outputs zeros between bursts so the timing loop does not chase noise. Quadrature Demod's gain makes 2.4 kHz come out as 1. Symbol Sync uses the zero-crossing detector, which locks within the 24 training bits.
+For a radio, a PlutoSDR Source at 576 kS/s and a Low Pass Filter decimating by 6 replace the SigMF Source and Throttle; the Pluto streams no slower than about 521 kS/s. Decimation 2 gives 48 kS/s, 5 samples per bit. The squelch outputs zeros between bursts so the timing loop does not chase noise. Quadrature Demod's gain makes 2.4 kHz come out as 1. Symbol Sync uses the zero-crossing detector, which locks within the 24 training bits.
 
 ---
 
@@ -186,23 +185,23 @@ Sentence count, sentence number, sequence number, channel, the message packed 6 
 
 ## What Noise Does
 
-<img src="./img/19-ais/L19-ais-noise.png" alt="The receiver at added noise 0.2: some frames fail the CRC and channel B's squelch has opened on noise" style="max-height:420px; display:block; margin:0 auto;">
+<img src="./img/19-ais/L19-ais-noise.png" alt="The receiver at added noise 0.2: some frames fail the CRC and the squelch has opened on noise" style="max-height:420px; display:block; margin:0 auto;">
 
 Frames fail the CRC; past the squelch, noise opens it.
 
 Note:
-At 0.2 channel B's trace swings wildly: the noise alone is above minus 25 dB, the squelch stays open, and Symbol Sync wanders between bursts. Raise the Squelch slider until the noise stays out; too far and weak ships vanish.
+At 0.2 both traces swing wildly: the noise alone is above minus 25 dB, the squelch stays open, and Symbol Sync wanders between bursts. Raise the Squelch slider until the noise stays out; too far and weak ships vanish.
 
 ---
 
 ## Ready-Made Decoders
 
-- **AIS-catcher**, **rtl_ais**: both channels from an RTL-SDR
+- radioconda has no AIS module: our decoder is an Embedded Python Block
 - **gr-ais**, **gr-satellites**: GNU Radio modules
 - **pyais**: NMEA in Python
 
 Note:
-The slides list gr-ais, gr-satellites, SDR Angel, and SCEPTRE. A gr-ais fork has a 3.10 branch, but we have not built it; our decoder needs only radioconda. gr-satellites decodes AIS received by satellites. The slides' first activity builds an NMEA sentence with pyais.
+The slides list gr-ais, gr-satellites, SDR Angel, and SCEPTRE. A gr-ais fork has a 3.10 branch, but radioconda does not ship it and we have not built it. Optional: on a coast, AIS-catcher and rtl_ais decode from an RTL-SDR outside GNU Radio. gr-satellites decodes AIS received by satellites. The slides' first activity builds an NMEA sentence with pyais.
 
 ---
 
@@ -217,12 +216,12 @@ Same job as ADS-B, different physical layer.
 
 ## On the SDR
 
-- On a coast, record 162 MHz at 250 kS/s or more as SigMF.
-- Match `samp_rate`, `decim`, and the channel offsets.
-- Receive only: the AIS channels are for ships' safety.
+- Your own ships: L19-ais-tx-pluto.grc at 915 MHz; receiver at `fc` = 915e6.
+- A real recording: match `samp_rate`, `decim`, and the channel offsets.
+- Never transmit on the AIS channels: they are for ships' safety.
 
 Note:
-Read the sample rate and center frequency from the .sigmf-meta file. Choose decim for about 48 kS/s. The channel offsets are 161.975 and 162.025 MHz minus the center. The slides' last activity, sending AIS to someone, stays inside GNU Radio.
+The 915 MHz link goes from the Pluto's TX port through a 30 dB attenuator to an RX port, or over the air at 915 MHz at low power if the instructor says so; TX attenuation never below 30 dB. Two Plutos on one laptop use usb: URIs. It decoded all four ships in simulation; it has not yet run on hardware. For a recording, read the sample rate and center frequency from the .sigmf-meta file, choose decim for about 48 kS/s, and set the channel offsets to 161.975 and 162.025 MHz minus the center. The slides' last activity, sending AIS to someone, goes out at 915 MHz or into a file.
 
 ---
 

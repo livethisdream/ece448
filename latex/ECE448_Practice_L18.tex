@@ -2,7 +2,7 @@
 %
 % L18 practice set (ADS-B). Every question is a step in the L18 flowgraphs:
 % reading PPM chips, splitting a message into its fields, choosing the receiver's
-% sample rate and time sink, and explaining what noise does to the table.
+% sample rate, time sink, and Framer threshold, and explaining what noise does.
 % Blank copy: \begin{solution}[h] reserves h of work space.
 % SOLUTIONS copy (\iskey=1) prints the red worked solutions.
 
@@ -63,7 +63,7 @@ chips it reads, in pairs, are
 
 \newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\question \textbf{The message.} The Mode S Decoder prints
+\question \textbf{The message.} gr-adsb's ADS-B Demod passes on these bits, written in hex:
 \begin{center}\texttt{8DAE07C220483234D71CA031ACD8}\end{center}
 The 28 hex digits are the 112 bits: DF and CA (8 bits), ICAO (24), ME (56), and PI (24).
 \begin{parts}
@@ -135,8 +135,8 @@ The 28 hex digits are the 112 bits: DF and CA (8 bits), ICAO (24), ME (56), and 
 		points: \ansbox[0.9in]{about 260}
 	\end{minipage}
 
-	\part A classmate sets the RTL-SDR to 1 MS/s to save processing. Explain, in words,
-	why the Mode S Decoder can no longer read the bits.
+	\part A classmate sets the PlutoSDR and the gr-adsb blocks to 1 MS/s to save processing.
+	Explain, in words, why the ADS-B Demod can no longer read the bits.
 		\begin{solution}[1.1in]
 		At 1 MS/s there is one sample per bit, not one per half bit, so the receiver can
 		no longer compare the first half of each bit with the second. Each sample may land
@@ -144,14 +144,15 @@ The 28 hex digits are the 112 bits: DF and CA (8 bits), ICAO (24), ME (56), and 
 		PPM needs at least two samples a bit.
 		\end{solution}
 
-	\part On a live run, the 20~ms plot shows a noise floor near 0.05 and messages
-	whose pulses reach between 0.15 and 0.6. The trigger level is 0.3. Choose a better
-	trigger level and say what you would see with each setting.
+	\part On a live run, the 20~ms plot of power shows a noise floor near 0.003 and
+	messages whose pulses reach between 0.02 and 0.4. The ADS-B Framer's threshold is 0.1.
+	Choose a better threshold and say what the Aircraft Table would show with each setting.
 		\begin{solution}[1.2in]
-		At 0.3 the plot freezes only on the stronger aircraft, whose pulses reach above it;
-		the weaker ones never trigger it. A level near 0.1, above the floor but below the
-		weakest pulses, triggers on every message. Much lower and the noise itself
-		triggers it, and the plot shows noise instead of a preamble.
+		At 0.1 the Framer finds only the stronger aircraft, whose pulses reach above it; the
+		weaker ones never start a burst, so they never reach the table. A threshold near
+		0.01, above the floor but below the weakest pulses, frames every message. Much lower
+		and the noise itself crosses it, the Framer sees pulses everywhere, and fewer real
+		preambles are found, so even strong aircraft decode less often.
 		\end{solution}
 
 \end{parts}
@@ -162,8 +163,8 @@ The 28 hex digits are the 112 bits: DF and CA (8 bits), ICAO (24), ME (56), and 
 recording and raise the Added noise slider a step at a time.
 \begin{parts}
 
-	\part Describe what happens to the 20~ms plot, the Messages label, and the aircraft
-	table as the noise rises.
+	\part Describe what happens to the 20~ms plot, the Messages label, and the Aircraft
+	Table as the noise rises.
 		\begin{solution}[1.2in]
 		The noise floor in the plot rises toward the spikes, and the weaker spikes sink
 		into it. The count of messages that pass the parity drops, and the table starts
@@ -185,11 +186,12 @@ recording and raise the Added noise slider a step at a time.
 
 \newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\question \textbf{Generating and locating.} Anyone with an RTL-SDR can receive ADS-B, and a flowgraph can generate it.
+\question \textbf{Generating and locating.} Anyone with an SDR can receive ADS-B, and a flowgraph can generate it.
 \begin{parts}
 
-	\part The L18 generator writes a file. Explain why nothing in the course transmits
-	its output at 1090 MHz.
+	\part The L18 generator writes a file, and \texttt{L18-adsb-tx-pluto.grc} sends the
+	same aircraft from a PlutoSDR at 915 MHz. Explain why the course never transmits them
+	at 1090 MHz.
 		\begin{solution}[1.1in]
 		Air traffic control and aircraft collision-avoidance systems use 1090 MHz, and
 		nothing in an ADS-B message proves who sent it, so a transmitted message could
@@ -197,16 +199,18 @@ recording and raise the Added noise slider a step at a time.
 		there is illegal without authorization and unsafe.
 		\end{solution}
 
-	\part The Mode S Decoder finds each position from one message by using USAFA as a
-	reference position. Explain, in words, why it needs a reference at all, and what goes
-	wrong for an aircraft 500 nautical miles away.
+	\part gr-adsb shows an aircraft's callsign as soon as one message arrives, but its
+	position only after it holds an even and an odd position message from that aircraft.
+	Explain, in words, why one position message is not enough, and what a receiver that
+	used its own location as a reference instead would get wrong for an aircraft
+	500 nautical miles away.
 		\begin{solution}[1.2in]
 		A position message carries the latitude and longitude only within one of many zones
-		(Compact Position Reporting), not which zone. The decoder picks the zone nearest its
-		reference, which is right for any aircraft within about 180 nautical miles. An
-		aircraft 500 nautical miles away lies in a different zone, so the decoder places it
-		in the wrong one and reports a position that is badly wrong; pairing an even and an
-		odd message avoids that.
+		(Compact Position Reporting), not which zone. Even and odd messages use two zone
+		sizes, and together they pin down the zone, wherever the aircraft is. A receiver
+		with a reference picks the zone nearest the reference, which is right for any
+		aircraft within about 180 nautical miles. An aircraft 500 nautical miles away lies in
+		a different zone, so it would be placed in the wrong one, badly wrong.
 		\end{solution}
 
 \end{parts}
