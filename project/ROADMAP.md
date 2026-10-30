@@ -72,7 +72,43 @@ the material. A lesson is a guided walkthrough, not a chapter.
 - **The page is a demo script.** Frames walk through what to build, run, and
   watch in GRC or GQRX, in the order Neil does it live. Explanation is the
   minimum needed to know what to look at.
-- **SDR Flex is the primary explore tool** (Neil, 2026-10-21). Neil's own
+- **The PlutoSDR is the radio, and GNU Radio is the tool** (Neil,
+  2026-10-29). This rule outranks the SDR Flex bullet below.
+  - Every receive and transmit path a lesson or lab uses is a GNU Radio
+    flowgraph with a PlutoSDR Source or Sink (`soapy_plutosdr_*` or
+    `iio_pluto_*`).
+  - **Pluto URI:** course flowgraphs use `ip:192.168.2.1` (Neil,
+    2026-10-29), not a blank URI. Windows (with ADI's driver) and Linux
+    reach it as is; macOS does not support the Pluto's default RNDIS USB
+    mode, so L5 tells Mac users to switch the Pluto to NCM or use the
+    `usb:` URI from `iio_info -s`. Two Plutos on one laptop (L17) use
+    `usb:` URIs.
+  - The course Plutos run in extended-frequency (AD9364) mode, 70 MHz to
+    6 GHz, so FM broadcast, HD Radio, and AIS are in range. A Pluto
+    streams a few MS/s continuously over USB 2.0, so wider signals are
+    captured in bursts.
+  - Where GNU Radio has a module for a signal, the lesson uses it:
+    gr-adsb (`gnuradio-adsb`, shipped in radioconda) for ADS-B, with
+    gr-air-modes named as the other module.
+  - **Every cadet is issued a PlutoSDR**, and every lesson and lab is
+    written for it. Other radios are not banned, but no lesson names,
+    requires, or is written around one (no HackRF, no ADALM-PHASER); an
+    RTL-SDR appears at most as one optional line. Lesson threads never
+    add hardware Neil has not named. SDR Flex is
+    an optional quick look. GQRX, dump1090, and other apps appear only as
+    optional extras.
+  - **URH is out** (Neil, 2026-10-29): it is end of life and does not
+    work. L17's analysis is done in GNU Radio.
+  - **Synthesized signals go out at 915 MHz or as recordings** (Neil,
+    2026-10-29). A signal the course generates (ADS-B, AIS, FSK, PSK,
+    CW, hopping, a simulated remote) is never sent on its real
+    frequency: it is recorded as SigMF, or transmitted at 915 MHz, either
+    into a cable through the 30 dB attenuator or over the air at low
+    power, as the instructor chooses for that lab. Live
+    reception of real signals on their own frequencies (FM, HD Radio,
+    ADS-B aircraft) is unchanged.
+- **SDR Flex is an explore tool** (Neil, 2026-10-21; narrowed 2026-10-29
+  by the rule above). Neil's own
   `livethisdream/sdr-flex` starts at the spectrum and builds a GNU Radio
   flowgraph behind each drag, demodulator, and decoder, so a lesson can show
   cadets the flowgraph they just made. Use it for receive-and-explore steps
@@ -85,8 +121,8 @@ the material. A lesson is a guided walkthrough, not a chapter.
     decoders; use it only for steps that work on its example captures or
     the client-side decoders.
   - **Write explore steps as actions** (tune, select a signal, demodulate,
-    attach a decoder), so they read the same in SDR Flex and GQRX. GQRX is
-    the named fallback.
+    attach a decoder). The GNU Radio flowgraph is the path every cadet
+    takes; SDR Flex is optional.
   - **Go/no-go: first week of January 2027.** Neil is testing it on macOS
     and Windows (outside WSL it is untested, and the image is amd64 only).
     Until then no lab *requires* SDR Flex; after it, the Integrator makes
@@ -308,13 +344,16 @@ since they follow this structure. Two changes:
 - **Generators that could transmit say they must not.** 1090 MHz (ADS-B) and
   161.975/162.025 MHz (AIS) carry safety-of-life traffic; their flowgraphs
   write files only, and their descriptions say never to connect a transmitter.
-- **Bench checks for Neil:** L17's PlutoSDR-to-SDR cable link and the
-  RTL-SDR capture path (1.024 MS/s, URH Samples/Symbol 512); live ADS-B on an
-  RTL-SDR; L20's Wi-Fi and LTE steps on a HackRF at 20 MS/s.
+- **Bench checks for Neil** (updated for the Pluto sweep, 2026-10-29):
+  L17's two-Pluto link at 915 MHz (cable, 30 dB pad) read in
+  `L17-chips.grc`, and `L17-explore-pluto.grc` live at 433.72 and
+  314.8 MHz; L20's `L20-band-pluto.grc` bursts at 20 MS/s on Wi-Fi
+  (2.437 GHz) and LTE (729-756 MHz); live ADS-B on a Pluto with gr-adsb.
 - **L17 over-the-air fan demo** (Neil, 2026-10-29): L17 closes with an
   instructor demo that operates the classroom's Hunter fan over the air, at
   very low power and a few meters away, from Neil's own encoder flowgraph
-  (`ECE448-faculty/L20_Remotes`). Cadets still transmit only into a cable.
+  (`ECE448-faculty/L20_Remotes`). Cadets transmit at 915 MHz, by cable or, if the
+  instructor says so, over the air at low power.
 - **Open for Neil:** whether to publish the third-party AIS recording
   ("bebau") from the faculty repo for L19.
 

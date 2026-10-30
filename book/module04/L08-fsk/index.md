@@ -252,9 +252,9 @@ Keep going. As the lower level nears zero, and the filter starts to cut off the 
 - To transmit, use a cable through the 30 dB attenuator, and only when the lesson says to; nothing in L8 transmits.
 :::
 
-On a waterfall, FSK is two tracks side by side with the signal jumping between them. The figure simulates a 433.92 MHz remote, the kind Lesson 17 decodes. Read two numbers off it: the tracks are 40 kHz apart, so $\Delta f = 20$ kHz, and the shortest stay on one track, in the preamble, is 1 ms, so the symbol rate is 1000 baud. A live waterfall row often lasts longer than one bit, so measure the dwell in URH or on the Quadrature Demod output. Those two numbers set the receiver's filter, gain, and samples per symbol.
+On a waterfall, FSK is two tracks side by side with the signal jumping between them. The figure simulates a 433.92 MHz remote, the kind Lesson 17 decodes. Read two numbers off it: the tracks are 40 kHz apart, so $\Delta f = 20$ kHz, and the shortest stay on one track, in the preamble, is 1 ms, so the symbol rate is 1000 baud. A live waterfall row often lasts longer than one bit, so measure the dwell on the Quadrature Demod output. Those two numbers set the receiver's filter, gain, and samples per symbol.
 
-To run this link over the air, replace the Throttle and Channel Model with a PlutoSDR or HackRF sink on one side and a source on the other, with a resampler to raise the 32 kHz stream to a rate the radio supports. In class we transmit only into a cable through the 30 dB attenuator, and only when the lesson says to. Nothing in this lesson or its lab transmits.
+To run this link over the air, replace the Throttle and Channel Model with a PlutoSDR Sink on one side and a source on the other, with a resampler to raise the 32 kHz stream to a rate the radio supports. In class we transmit only into a cable through the 30 dB attenuator, and only when the lesson says to. Nothing in this lesson or its lab transmits.
 ::::
 
 ::::{frame} Key Point

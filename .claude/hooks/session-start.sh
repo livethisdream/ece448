@@ -93,6 +93,39 @@ else
   $SUDO apt-get install -y -qq --no-install-recommends "${GR_PKGS[@]}"
 fi
 
+# --- ADS-B modules (L18): gr-adsb and gr-air-modes ---------------------------
+# Neil, 2026-10-29: where GNU Radio has a module for a signal, the lesson uses
+# it. radioconda ships gr-adsb (conda package gnuradio-adsb) on cadet laptops;
+# Ubuntu does not package it, so it is built here from a pinned commit of its
+# maint-3.10 branch. gr-air-modes, the other ADS-B module, is an apt package.
+# Both install under /usr, where check_grc.py's grcc finds their blocks.
+if dpkg -s gr-air-modes >/dev/null 2>&1; then
+  log "gr-air-modes present, skipping apt install"
+else
+  log "installing gr-air-modes"
+  export DEBIAN_FRONTEND=noninteractive
+  $SUDO apt-get install -y -qq --no-install-recommends gr-air-modes || log "gr-air-modes install failed"
+fi
+GR_ADSB_REV=b1b5b139c8849d0090319ba12140bdc88fce236f
+if [ -f /usr/share/gnuradio/grc/blocks/adsb_demod.block.yml ]; then
+  log "gr-adsb present, skipping build"
+else
+  log "building gr-adsb ${GR_ADSB_REV:0:7}"
+  ADSB_SRC="$(mktemp -d)"
+  if git clone -q -b maint-3.10 https://github.com/mhostetter/gr-adsb.git "$ADSB_SRC" \
+     && git -C "$ADSB_SRC" checkout -q "$GR_ADSB_REV" \
+     && cmake -S "$ADSB_SRC" -B "$ADSB_SRC/build" -DCMAKE_INSTALL_PREFIX=/usr \
+          -DPYTHON_EXECUTABLE=/usr/bin/python3.12 >/dev/null \
+     && make -C "$ADSB_SRC/build" -j"$(nproc)" >/dev/null \
+     && $SUDO make -C "$ADSB_SRC/build" install >/dev/null; then
+    $SUDO ldconfig
+    log "gr-adsb installed"
+  else
+    log "gr-adsb build failed"
+  fi
+  rm -rf "$ADSB_SRC"
+fi
+
 # --- where the house macros live --------------------------------------------
 # myPackages_gr / myShortcuts / exam_config live in the PRIVATE livethisdream/
 # latex-tools repo, which is not vendored here and cannot be cloned by a hook.

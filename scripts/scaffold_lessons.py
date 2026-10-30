@@ -52,7 +52,7 @@ LO_TEXT = {
     "1.1": "I can define noise figure and explain how each stage of a receiver chain, the first above all, sets the system's noise performance.",
     "1.2": "I can compute a link budget for a specified geometry, transmitter, and antenna configuration, and compare it with the signal an SDR shows.",
     "1.3": "I can describe signal-space concepts (basis functions, constellations, decision regions) and apply them to a digital modulation scheme.",
-    "2.1": "I can describe what a Software Defined Radio is, contrast it with a traditional hardware radio, and identify the SDR platforms used in this course (RTL-SDR, HackRF, PlutoSDR, ADALM-PHASER).",
+    "2.1": "I can describe what a Software Defined Radio is, contrast it with a traditional hardware radio, and identify the SDR used in this course, the PlutoSDR.",
     "2.2": "I can identify the roles of the RF frontend, ADC/DAC, and host in an SDR signal chain and describe sample-rate, bandwidth, and dynamic-range trade-offs.",
     "2.3": "I can install GNU Radio and use GNU Radio Companion (GRC) to build, inspect, and run a basic flowgraph.",
     "2.4": "I can capture a real RF signal using an SDR and interpret its time- and frequency-domain representations.",
@@ -175,7 +175,7 @@ LESSONS = [
     (6, 14, "L14-hd-radio", "HD Radio", ["6.3"], ["ref-nrsc"], "How HD Radio hides OFDM sidebands beside an FM station, and how to demodulate them."),
     (6, 15, "L15-mpsk", "mPSK", ["6.4"], ["ref-diff"], "BPSK, QPSK, and 8PSK in GNU Radio, with carrier and symbol-timing recovery."),
     (6, 16, "L16-fhss", "Frequency Hopping", ["6.5"], [], "An FHSS transmitter and receiver that stay on the same hop sequence."),
-    (6, 17, "L17-rf-reverse-engineering", "RF Reverse Engineering", ["6.6"], [], "Take an unknown signal from spectrum to bits with SDR Flex or GQRX, URH, and GNU Radio."),
+    (6, 17, "L17-rf-reverse-engineering", "RF Reverse Engineering", ["6.6"], [], "Take an unknown signal from spectrum to bits with a PlutoSDR and GNU Radio."),
     (6, 18, "L18-adsb", "ADS-B", ["6.7"], ["ref-adsb", "ref-1090", "ref-magazu"], "Receive and decode aircraft ADS-B messages at 1090 MHz."),
     (6, 19, "L19-ais", "AIS", ["6.8"], [], "Receive and decode AIS messages from ships."),
 

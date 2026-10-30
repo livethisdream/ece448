@@ -79,7 +79,7 @@ mastery-based portion of the grade.
 
 | LO | Description |
 | :-: | :- |
-| 2.1 | I can describe what a Software Defined Radio is, contrast it with a traditional hardware radio, and identify the SDR platforms used in this course (RTL-SDR, HackRF, PlutoSDR, ADALM-PHASER). |
+| 2.1 | I can describe what a Software Defined Radio is, contrast it with a traditional hardware radio, and identify the SDR used in this course, the PlutoSDR. |
 | 2.2 | I can identify the roles of the RF frontend, ADC/DAC, and host in an SDR signal chain and describe sample-rate, bandwidth, and dynamic-range trade-offs. |
 | 2.3 | I can install GNU Radio and use GNU Radio Companion (GRC) to build, inspect, and run a basic flowgraph. |
 | 2.4 | I can capture a real RF signal using an SDR and interpret its time- and frequency-domain representations. |
@@ -405,8 +405,5 @@ See the [materials page](materials.md).
 ## Software & hardware
 
 - **GNU Radio** with GNU Radio Companion (GRC)
-- **RTL-SDR** — introductory receive-only SDR
-- **HackRF** — half-duplex SDR (Tx and Rx)
-- **PlutoSDR / ADALM-PLUTO** — full-duplex SDR
-- **ADALM-PHASER** — phased-array SDR platform (guest appearance from ECE 444)
+- **PlutoSDR / ADALM-PLUTO** — full-duplex SDR, issued to every cadet, in extended-frequency mode (70 MHz–6 GHz)
 - **Directional antennas** — for the midterm fox hunt
