@@ -57,18 +57,18 @@ Question 2 works out the AIS receiver's settings for the lab recording, whose `.
 3. Add a **PlutoSDR Source**: IIO context URI `"ip:192.168.2.1"` with the quotes, LO frequency `int(fc)`, sample rate `int(samp_rate)`, Gain Mode (RX1) Manual, Manual Gain (RX1) `rx_gain`, Filter Configuration Auto (needed below 2.084 MS/s), output type Complex float32.
 4. Add an **AGC3** after it: attack rate 1, decay rate 1e-6, reference 1, gain 1, maximum gain 1e9, type complex. It scales the strongest recent pulses to a power near 1, as in `L18-adsb-rx.grc`.
 5. Add **Complex to Mag^2** after the AGC.
-6. Add a **QT GUI Time Sink**: type float, 120 points, sample rate `samp_rate`, Y axis from 0 to 1.2, grid on. In its Trigger tab set the mode to Normal, the slope to Positive, the level to 0.3, and the delay to 5e-6. Every arrow must be black.
+6. Add a **QT GUI Time Sink**: type float, 120 points, sample rate `samp_rate`, Y axis from 0 to 1.2, grid on. In its Trigger tab set the mode to Normal, the slope to Positive, the level to 1.2, the top of the Y axis, and the delay to 5e-6. Every arrow must be black.
 7. Plug in the Pluto, put it and its antenna at a window, and run the flowgraph. Screenshot the canvas for Question 3(a).
-8. Watch the time sink. Raise or lower the trigger level until it freezes on preambles, four pulses in the first 5 µs, and not on noise. Screenshot one, and record the level, the floor, and the heights of the strongest and weakest messages you see, in power, for Question 3(b).
+8. Watch the time sink. Lower the trigger level a step at a time until it freezes on preambles, four pulses in the first 5 µs, and not on noise. Screenshot one, and record the level, the floor, and the heights of the strongest and weakest messages you see, in power, for Question 3(b).
 ::::
 
 ::::{frame} Part 2: Live Aircraft
 :class: read-only
 
-1. Add a **QT GUI Range** with ID `threshold`, label Framer threshold, from 0.0001 to 0.2 in steps of 0.0001, default 0.01.
+1. Add a **QT GUI Range** with ID `threshold`, label Framer threshold, from 0.0001 to 0.2 in steps of 0.0001, default 0.2.
 2. From the ADS-B group of GRC's block list, add gr-adsb's **ADS-B Framer** (sample rate `samp_rate`, detection threshold `threshold`), **ADS-B Demod** (sample rate `samp_rate`), and **ADS-B Decoder** (Extended Squitter Only, Error Correction None, Print Level Verbose). Connect Complex to Mag^2 to the Framer, the Framer to the Demod, the Demod's `out` to a **Null Sink**, and the Demod's `demodulated` to the Decoder's.
 3. Open `L18-adsb-rx.grc` in a second GRC tab. Select the **Aircraft Table**, the two **Function Probes** (`stats` and `table`), and the two **QT GUI Labels**, copy them with Ctrl+C, and paste them into your flowgraph with Ctrl+V. If GRC renames the table on pasting, set each Function Probe's Block ID to its new name. Connect the Demod's `demodulated` to the table's `found` and the Decoder's `decoded` to its `decoded`, and set its `settings` to `(rx_gain, threshold)`.
-4. Run it for 10 minutes. Set the Framer threshold above the floor you recorded and below the weakest pulses. Each message also prints in the GRC console, which fills quickly on the air, so read the Aircraft Table. The console's Heading is measured counterclockwise from east; the table's track is the compass value a flight tracker shows.
+4. Run it. The Framer threshold starts at 0.2; lower it until it sits just above the floor you recorded for Question 3(b), then run for 10 minutes. Each message also prints in the GRC console, which fills quickly on the air, so read the Aircraft Table. The console's Heading is measured counterclockwise from east; the table's track is the compass value a flight tracker shows.
 5. Fill in the Question 4 table with up to five aircraft, and look each one up by callsign or ICAO address on a public flight tracker, such as ADS-B Exchange or FlightAware. Screenshot the window for Question 4(b).
 6. Set the Pluto RX gain to 70, 60, 50, 40, and 30 dB in turn. At each, wait 60 s and record the Messages label's decoded count, the messages the Decoder turned into an identity, a position, or a velocity, and the number of aircraft, for Question 5.
 

@@ -144,13 +144,13 @@ The 28 hex digits are the 112 bits: DF and CA (8 bits), ICAO (24), ME (56), and 
 		PPM needs at least two samples a bit; in GRC the ADS-B Framer stops with the error \texttt{slice step cannot be zero}.
 		\end{solution}
 
-	\part On a live run, the 20~ms plot of power shows a noise floor near 0.003 and
-	messages whose pulses reach between 0.02 and 0.4. The ADS-B Framer's threshold is 0.1.
+	\part On a run, the 20~ms plot of power shows a noise floor near 0.02 and messages
+	whose pulses reach between 0.1 and 0.8. The ADS-B Framer's threshold is 0.3.
 	Choose a better threshold and say what the Aircraft Table would show with each setting.
 		\begin{solution}[1.2in]
-		At 0.1 the Framer finds only the stronger aircraft, whose pulses reach above it; the
+		At 0.3 the Framer finds only the stronger aircraft, whose pulses reach above it; the
 		weaker ones never start a burst, so they never reach the table. A threshold near
-		0.01, above the floor but below the weakest pulses, frames every message. Much lower
+		0.05, above the floor but below the weakest pulses, frames every message. Much lower
 		and the noise itself crosses it, the Framer sees pulses everywhere, and fewer real
 		preambles are found, so even strong aircraft decode less often.
 		\end{solution}
