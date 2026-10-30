@@ -10,8 +10,8 @@ options:
       2 MS/s, show the pulses, and decode each message with gr-adsb''s Framer, Demod,
       and Decoder. The Aircraft Table block only displays what the Decoder sends it.
       To go live, disable the SigMF Source and the Throttle and enable the PlutoSDR
-      Source: fc 1090e6 for real aircraft, or 915e6 for L18-adsb-tx-pluto.grc through
-      the cable. Receive only.'
+      Source and its AGC: fc 1090e6 for real aircraft, or 915e6 for L18-adsb-tx-pluto.grc
+      through the cable. Receive only.'
     gen_cmake: 'On'
     gen_linking: dynamic
     generate_options: qt_gui
@@ -177,8 +177,8 @@ blocks:
     min_len: '200'
     orient: QtCore.Qt.Horizontal
     rangeType: float
-    start: '0.001'
-    step: '0.001'
+    start: '0.0001'
+    step: '0.0001'
     stop: '0.2'
     value: '0.01'
     widget: counter_slider
@@ -240,6 +240,28 @@ blocks:
     coordinate: [560, 480]
     rotation: 0
     state: enabled
+- name: agc_0
+  id: analog_agc3_xx
+  parameters:
+    affinity: ''
+    alias: ''
+    attack_rate: '1.0'
+    comment: ''
+    decay_rate: 1e-6
+    gain: '1.0'
+    iir_update_decim: '1'
+    max_gain: 1e9
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    reference: '1.0'
+    type: complex
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [216, 480]
+    rotation: 0
+    state: disabled
 - name: analog_noise_source_x_0
   id: analog_noise_source_x
   parameters:
@@ -581,16 +603,16 @@ blocks:
   parameters:
     _source_code: "\"\"\"Aircraft Table: shows what gr-adsb's ADS-B Decoder has decoded.\n\
       \nThis block decodes nothing. gr-adsb's Demod sends every burst it finds to\
-      \ the\n\"found\" port, and its Decoder sends every message that passed parity,\
-      \ with\neverything it knows about that aircraft so far, to the \"decoded\" port.\
-      \ This\nblock counts both and keeps one row per aircraft. Function Probes read\n\
-      stats() and table() for the QT GUI Labels; both start over when a slider in\n\
-      `settings` moves.\"\"\"\n\nimport math\n\nimport numpy as np\nimport pmt\nfrom\
-      \ gnuradio import gr\n\n\ndef num(v, fmt):\n    try:\n        v = float(v)\n\
-      \    except (TypeError, ValueError):\n        return ''\n    return '' if math.isnan(v)\
-      \ else fmt.format(v)\n\n\nclass blk(gr.basic_block):\n    def __init__(self,\
-      \ settings=None):\n        gr.basic_block.__init__(self, name='Aircraft Table',\
-      \ in_sig=None, out_sig=None)\n        self.message_port_register_in(pmt.intern('found'))\n\
+      \ the\n\"found\" port, and its Decoder sends every message it decodes into an\n\
+      identity, a position, or a velocity, with everything it knows about that\naircraft\
+      \ so far, to the \"decoded\" port. This\nblock counts both and keeps one row\
+      \ per aircraft. Function Probes read\nstats() and table() for the QT GUI Labels;\
+      \ both start over when a slider in\n`settings` moves.\"\"\"\n\nimport math\n\
+      \nimport numpy as np\nimport pmt\nfrom gnuradio import gr\n\n\ndef num(v, fmt):\n\
+      \    try:\n        v = float(v)\n    except (TypeError, ValueError):\n     \
+      \   return ''\n    return '' if math.isnan(v) else fmt.format(v)\n\n\nclass\
+      \ blk(gr.basic_block):\n    def __init__(self, settings=None):\n        gr.basic_block.__init__(self,\
+      \ name='Aircraft Table', in_sig=None, out_sig=None)\n        self.message_port_register_in(pmt.intern('found'))\n\
       \        self.message_port_register_in(pmt.intern('decoded'))\n        self.set_msg_handler(pmt.intern('found'),\
       \ self.on_found)\n        self.set_msg_handler(pmt.intern('decoded'), self.on_decoded)\n\
       \        self._settings = settings\n        self.reset()\n\n    def reset(self):\n\
@@ -603,15 +625,16 @@ blocks:
       \        self.planes[d.get('icao', '?')] = d\n\n    def stats(self):\n     \
       \   return f'{self.n_found} bursts found, {self.n_decoded} decoded'\n\n    def\
       \ table(self):\n        rows = []\n        for icao, d in sorted(self.planes.items()):\n\
-      \            cs = (d.get('callsign') or '').strip()\n            alt = num(d.get('altitude'),\
-      \ '{:.0f} ft')\n            spd = num(d.get('speed'), '{:.0f} kt')\n       \
-      \     # gr-adsb's heading is a math angle, 0 east and 90 north;\n          \
-      \  # a track is a compass angle, 0 north and 90 east\n            hdg = d.get('heading')\n\
-      \            trk = num(None if hdg is None else (90 - float(hdg)) % 360, 'track\
-      \ {:.0f}')\n            lat, lon = num(d.get('latitude'), '{:.3f}'), num(d.get('longitude'),\
-      \ '{:.3f}')\n            pos = f'{lat}, {lon}' if lat and lon else ''\n    \
-      \        rows.append(f'{icao.upper()}  {cs}:  ' + ',  '.join(x for x in (alt,\
-      \ spd, trk, pos) if x))\n        return '\\n'.join(rows)\n"
+      \            cs = (d.get('callsign') or '').strip()\n            alt = d.get('altitude')\n\
+      \            alt = '' if alt == -1 else num(alt, '{:.0f} ft')   # -1: a format\
+      \ gr-adsb cannot read\n            spd = num(d.get('speed'), '{:.0f} kt')\n\
+      \            # gr-adsb's heading is a math angle, 0 east and 90 north;\n   \
+      \         # a track is a compass angle, 0 north and 90 east\n            hdg\
+      \ = d.get('heading')\n            trk = num(None if hdg is None else (90 - float(hdg))\
+      \ % 360, 'track {:.0f}')\n            lat, lon = num(d.get('latitude'), '{:.3f}'),\
+      \ num(d.get('longitude'), '{:.3f}')\n            pos = f'{lat}, {lon}' if lat\
+      \ and lon else ''\n            rows.append(f'{icao.upper()}  {cs}:  ' + ', \
+      \ '.join(x for x in (alt, spd, trk, pos) if x))\n        return '\\n'.join(rows)\n"
     affinity: ''
     alias: ''
     comment: ''
@@ -634,6 +657,7 @@ connections:
 - [adsb_demod_0, demodulated, adsb_decoder_0, demodulated]
 - [adsb_demod_0, demodulated, table_0, found]
 - [adsb_framer_0, '0', adsb_demod_0, '0']
+- [agc_0, '0', blocks_add_xx_0, '0']
 - [analog_noise_source_x_0, '0', blocks_add_xx_0, '1']
 - [blocks_add_xx_0, '0', blocks_complex_to_mag_squared_0, '0']
 - [blocks_complex_to_mag_squared_0, '0', adsb_framer_0, '0']
@@ -641,7 +665,7 @@ connections:
 - [blocks_complex_to_mag_squared_0, '0', qtgui_time_sink_x_1, '0']
 - [blocks_sigmf_source_minimal_0, '0', blocks_throttle2_0, '0']
 - [blocks_throttle2_0, '0', blocks_add_xx_0, '0']
-- [iio_pluto_source_0, '0', blocks_add_xx_0, '0']
+- [iio_pluto_source_0, '0', agc_0, '0']
 
 metadata:
   file_format: 1

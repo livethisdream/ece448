@@ -10,9 +10,10 @@ options:
       kS/s, centered on 162 MHz): shift each channel to 0 Hz, squelch the noise between
       bursts, FM-demodulate it, recover the bit timing, slice the bits, and decode
       them with the AIS Decoder, an Embedded Python Block. To receive with a PlutoSDR,
-      disable the SigMF Source and the Throttle and enable the PlutoSDR Source and
-      its Low Pass Filter: fc 915e6 for L19-ais-tx-pluto.grc through the cable, or
-      162e6 for live AIS on a coast. Receive only.'
+      disable the SigMF Source and the Throttle and enable the PlutoSDR Source, its
+      Low Pass Filter, and its AGC, and start the squelch near -10 dB: fc 915e6 for
+      L19-ais-tx-pluto.grc through the cable, or 162e6 for live AIS on a coast. Receive
+      only.'
     gen_cmake: 'On'
     gen_linking: dynamic
     generate_options: qt_gui
@@ -138,7 +139,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [200, 672]
+    coordinate: [16, 664]
     rotation: 0
     state: enabled
 - name: samp_rate
@@ -280,6 +281,28 @@ blocks:
     coordinate: [432, 264]
     rotation: 0
     state: enabled
+- name: agc_0
+  id: analog_agc3_xx
+  parameters:
+    affinity: ''
+    alias: ''
+    attack_rate: '1.0'
+    comment: ''
+    decay_rate: 1e-4
+    gain: '1.0'
+    iir_update_decim: '1'
+    max_gain: 1e9
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    reference: '1.0'
+    type: complex
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [200, 600]
+    rotation: 0
+    state: disabled
 - name: demod_a
   id: analog_quadrature_demod_cf
   parameters:
@@ -855,11 +878,12 @@ connections:
 - [add_0, '0', wf_0, '0']
 - [add_0, '0', xlate_a, '0']
 - [add_0, '0', xlate_b, '0']
+- [agc_0, '0', add_0, '0']
 - [demod_a, '0', sync_a, '0']
 - [demod_a, '0', time_0, '0']
 - [demod_b, '0', sync_b, '0']
 - [demod_b, '0', time_0, '1']
-- [lpf_0, '0', add_0, '0']
+- [lpf_0, '0', agc_0, '0']
 - [noise_0, '0', add_0, '1']
 - [pluto_0, '0', lpf_0, '0']
 - [slice_a, '0', epy_block_0, '0']

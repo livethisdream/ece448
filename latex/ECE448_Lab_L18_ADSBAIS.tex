@@ -214,8 +214,8 @@ plays \texttt{L18-L19-lab-ais.sigmf-data}, whose meta file is described above.
 \fullwidth{\large\textbf{Part 2: Measurements} \normalsize(in class)}
 
 \question \textbf{Build an ADS-B front end.} Start GRC with an empty canvas and build the
-front end the lab page lists: a PlutoSDR Source at 1090 MHz and 2 MS/s, Complex to Mag\^{}2,
-and a triggered QT GUI Time Sink.
+front end the lab page lists: a PlutoSDR Source at 1090 MHz and 2 MS/s, an AGC3, Complex
+to Mag\^{}2, and a triggered QT GUI Time Sink.
 
 \begin{parts}
 
@@ -236,7 +236,8 @@ and a triggered QT GUI Time Sink.
 Complex to Mag\^{}2, copy the Aircraft Table and its two Function Probes and QT GUI Labels from
 \texttt{L18-adsb-rx.grc}, and run it for 10 minutes with the Pluto at a window, as the lab
 page lists. If no aircraft decode, decode your own Question 1 aircraft sent from
-\texttt{L18-adsb-tx-pluto.grc} at 915 MHz, or the lesson's recording, and say which.
+\texttt{L18-adsb-tx-pluto.grc} at 915 MHz into a cable through the 30 dB attenuator (see
+the box above), or the lesson's recording, and say which.
 
 \begin{parts}
 
@@ -267,8 +268,9 @@ page lists. If no aircraft decode, decode your own Question 1 aircraft sent from
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newpage
 \question \textbf{Gain.} With the decoder running live, set the Pluto RX gain to each value
-in turn, wait 60~s, and record the number decoded on the Messages label and the number of
-aircraft in the table.
+in turn, wait 60~s, and record the number decoded on the Messages label (messages the
+Decoder turned into an identity, a position, or a velocity) and the number of aircraft in
+the table.
 
 \begin{center}
 \renewcommand{\arraystretch}{1.3}

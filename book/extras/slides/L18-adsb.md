@@ -72,12 +72,12 @@ Automatic: no one asks. Dependent: the position comes from the aircraft's GPS. B
 ## Find It on the Air
 
 1. In L18-adsb-rx.grc, disable the SigMF Source and Throttle
-2. Enable the PlutoSDR Source: `fc` = 1090e6, 2 MS/s
+2. Enable the PlutoSDR Source and AGC: `fc` = 1090e6, 2 MS/s
 3. Pluto at a window; watch for spikes in time
 4. Aircraft fill the table as gr-adsb decodes them
 
 Note:
-Same flowgraph as the rest of the lesson. The URI is ip:192.168.2.1. A position appears only after gr-adsb has an even and an odd position message from the aircraft. If nothing shows in a few minutes, raise the RX gain and try another window.
+Same flowgraph as the rest of the lesson. The URI is ip:192.168.2.1. The AGC brings the strongest recent pulses near a power of 1, so the threshold keeps its meaning. A position appears only after gr-adsb has an even and an odd position message from the aircraft. If nothing shows in a few minutes, raise the RX gain and try another window.
 
 ---
 
@@ -108,7 +108,7 @@ Start with the first 16 bits: each bit's pulse sits in one half. Raise the noise
 PPM chips, then a carrier, then noise, as on the 2025 slides.
 
 Note:
-The ADS-B Out block is an Embedded Python Block like Lesson 11's. It writes 0.5 s to L18-adsb-sim.sigmf-data and .sigmf-meta, labeled Simulated. The aircraft send ten or more times as often as real ones, so the half second holds about 75 messages. Nothing transmits: the last block is a file sink. L18-adsb-tx-pluto.grc sends the same aircraft from a Pluto at 915 MHz, never 1090.
+The ADS-B Out block is an Embedded Python Block like Lesson 11's. It writes 0.5 s to L18-adsb-sim.sigmf-data and .sigmf-meta, labeled Simulated. The aircraft send ten or more times as often as real ones, so the half second holds about 75 messages. Nothing transmits: the last block is a file sink. L18-adsb-tx-pluto.grc sends the same aircraft from a Pluto at 915 MHz into a cable through the 30 dB attenuator, never at 1090.
 
 ---
 
@@ -155,23 +155,23 @@ The callsign is eight 6-bit characters; the altitude is in 25 ft steps. Position
 
 ## The Receiver
 
-<img src="./img/18-adsb/L18-grc-rx.png" alt="L18-adsb-rx.grc in GRC: SigMF Source, Throttle, a disabled PlutoSDR Source, noise, Complex to Mag^2, two time sinks, and gr-adsb's Framer, Demod, and Decoder" style="max-height:330px; display:block; margin:0 auto;">
+<img src="./img/18-adsb/L18-grc-rx.png" alt="L18-adsb-rx.grc in GRC: SigMF Source, Throttle, a disabled PlutoSDR Source and AGC, noise, Complex to Mag^2, two time sinks, and gr-adsb's Framer, Demod, and Decoder" style="max-height:330px; display:block; margin:0 auto;">
 
 **Complex to Mag^2** gives pulse power; gr-adsb's three blocks decode it.
 
 Note:
-PPM needs only the power, not the phase; gr-adsb's examples use Complex to Mag^2. The left time sink runs freely over 20 ms. The right one triggers at 0.3 and shows 60 us from just before the first pulse. For live signals, the PlutoSDR Source replaces the SigMF Source and Throttle. radioconda ships gr-adsb as gnuradio-adsb; its blocks are under ADS-B in the block list.
+PPM needs only the power, not the phase; gr-adsb's examples use Complex to Mag^2. The left time sink runs freely over 20 ms. The right one triggers at 0.3 and shows 60 us from just before the first pulse. For live signals, the PlutoSDR Source and an AGC replace the SigMF Source and Throttle. radioconda ships gr-adsb as gnuradio-adsb; its blocks are under ADS-B in the block list.
 
 ---
 
 ## Decoding Step by Step
 
-1. **Framer:** find four preamble pulses with quiet between them.
-2. **Demod:** compare each pair of chips; the larger half is the pulse.
-3. **Decoder:** check the parity, then read the fields.
+1. The **Framer** finds four preamble pulses with quiet between them.
+2. The **Demod** compares each pair of chips; the larger half is the pulse.
+3. The **Decoder** checks the parity, then reads the fields.
 
 Note:
-The Framer's Detection Threshold is the Framer threshold slider. Error Correction is None, so a message that fails parity is dropped. Print Level Verbose prints every field in the GRC console; Brief needs a terminal window. The Aircraft Table block decodes nothing: it shows what the Decoder sends it, and counts bursts found and messages decoded.
+The Framer's Detection Threshold is the Framer threshold slider. Error Correction is None, so a message that fails parity is dropped. Print Level Verbose prints every field in the GRC console; Brief needs a terminal window. The Aircraft Table block decodes nothing: it shows what the Decoder sends it, and counts bursts found and messages decoded into an identity, a position, or a velocity. The console's Heading is measured from east; the table shows a compass track.
 
 ---
 
@@ -182,17 +182,17 @@ The Framer's Detection Threshold is the Framer threshold slider. Error Correctio
 Raise **Added noise**: the weak aircraft drop out first. Then raise the **Framer threshold**.
 
 Note:
-At 0.15 the floor rises until only the two strongest aircraft stand clear. The others still send, but noise beats a pulse in some chip pair of almost every message, so the parity fails. The Framer's threshold of 0.01 is now under the noise, so even the strong two decode less often; at 0.1 they decoded about twenty times as often in our runs, and the weak two stayed gone. Distance does the same thing to real aircraft.
+At 0.15 the floor rises until only the two strongest aircraft stand clear. The others still send, but noise beats a pulse in some chip pair of almost every message, so the parity fails. The Framer's threshold of 0.01 is now under the noise, so even the strong two decode less often; at 0.1 they decode about twenty times as often, and the weak two stay gone. Distance does the same thing to real aircraft.
 
 ---
 
 ## Two GNU Radio Modules
 
-- **gr-adsb**: Framer, Demod, and Decoder; radioconda ships it
-- **gr-air-modes**: the other Mode S module, with `modes_rx`
+- **gr-adsb** has the Framer, Demod, and Decoder, and radioconda ships it.
+- **gr-air-modes** is the other Mode S module, with `modes_rx`.
 
 Note:
-gr-adsb is Matt Hostetter's module; on the recording it lists the four aircraft exactly as the generator's AIRCRAFT list has them. gr-air-modes is Nick Foster's. Optional: dump1090 and SDRangel, the slides' other tools, decode ADS-B outside GNU Radio.
+gr-adsb is Matt Hostetter's module. On the recording it lists the four aircraft exactly as the generator's AIRCRAFT list has them. gr-air-modes is Nick Foster's. Optional: dump1090 and SDRangel, the slides' other tools, decode ADS-B outside GNU Radio.
 
 ---
 
@@ -207,13 +207,13 @@ The receiver needs only the power of the signal, not its phase.
 
 ## On the SDR
 
-<img src="./img/18-adsb/L18-grc-tx-pluto.png" alt="L18-adsb-tx-pluto.grc in GRC: the ADS-B Out block on a 75 kHz carrier, scaled by 0.5, into a PlutoSDR Sink at 915 MHz with TX attenuation from 30 dB up" style="max-height:300px; display:block; margin:0 auto;">
+<img src="./img/18-adsb/L18-grc-tx-pluto.png" alt="L18-adsb-tx-pluto.grc in GRC: the ADS-B Out block on a 75 kHz carrier, scaled by 0.5, into a PlutoSDR Sink at 915 MHz with TX attenuation from a 30 to 89 dB slider, default 60" style="max-height:300px; display:block; margin:0 auto;">
 
-- Live aircraft: `fc` = 1090e6, RX gain near 50 dB. Receive only.
-- Your own aircraft: L18-adsb-tx-pluto.grc at 915 MHz, receiver at `fc` = 915e6.
+- For live aircraft, set `fc` to 1090e6 and RX gain near 50 dB, and only receive.
+- Your own aircraft go out from L18-adsb-tx-pluto.grc at 915 MHz; the receiver tunes to 915e6.
 
 Note:
-Set the Framer threshold above the floor on the 20 ms plot and below the spikes. The 915 MHz link goes from the Pluto's TX port through a 30 dB attenuator to an RX port, or over the air at 915 MHz at low power if the instructor says so; TX attenuation never below 30 dB. Two Plutos on one laptop use usb: URIs. Never transmit on 1090 MHz: it carries replies that ATC and collision avoidance depend on, and nothing in a message proves who sent it; the Magazu AFIT thesis studies false targets. The Pluto flowgraphs are compiled but not yet run on hardware.
+Set the Framer threshold above the floor on the 20 ms plot and below the spikes. The 915 MHz link goes from the Pluto's TX port through the 30 dB attenuator to an RX port, or over the air at 915 MHz at low power if the instructor says so; TX attenuation never below 30 dB. Two Plutos on one laptop use usb: URIs; on one Pluto, start the transmitter first, since TX and RX share one sample-rate clock. Never transmit on 1090 MHz: it carries replies that ATC and collision avoidance depend on, and nothing in a message proves who sent it; the Magazu AFIT thesis studies false targets.
 
 ---
 

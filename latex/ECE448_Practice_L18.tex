@@ -141,7 +141,7 @@ The 28 hex digits are the 112 bits: DF and CA (8 bits), ICAO (24), ME (56), and 
 		At 1 MS/s there is one sample per bit, not one per half bit, so the receiver can
 		no longer compare the first half of each bit with the second. Each sample may land
 		on the pulse or on the quiet half, and nothing tells it which half held the pulse.
-		PPM needs at least two samples a bit.
+		PPM needs at least two samples a bit; in GRC the ADS-B Framer stops with the error \texttt{slice step cannot be zero}.
 		\end{solution}
 
 	\part On a live run, the 20~ms plot of power shows a noise floor near 0.003 and
@@ -167,7 +167,7 @@ recording and raise the Added noise slider a step at a time.
 	Table as the noise rises.
 		\begin{solution}[1.2in]
 		The noise floor in the plot rises toward the spikes, and the weaker spikes sink
-		into it. The count of messages that pass the parity drops, and the table starts
+		into it. The count of messages decoded drops, and the table starts
 		over and fills with fewer aircraft: the strongest ones stay and the weakest ones
 		never return.
 		\end{solution}
