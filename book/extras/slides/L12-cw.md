@@ -206,10 +206,10 @@ Same noise, three filters: drag the CW filter slider live. A narrower filter pas
 - L12 Lab: one PlutoSDR, TX port to RX port, 30 dB attenuator
 - An AGC restores the envelope level; check the threshold line
 - Nothing in L12 transmits over the air
-- SDR Flex or GQRX: hear a VOR's Morse identifier in AM
+- L12-vor-pluto.grc: hear a VOR's Morse identifier in AM
 
 Note:
-In class we transmit only into a cable, into a shielded enclosure, or at very low power in an ISM band, and only when the lesson says to. The PlutoSDR flowgraph has run only in simulation so far; the lab is its first run on hardware. In SDR Flex (GQRX as the fallback), tune the nearest VOR (108 to 118 MHz; its frequency and identifier are on an FAA sectional, free at SkyVector) in AM mode and wait for its identifier, a 1020 Hz tone. Most amateur CW is on HF (needs an upconverter or direct sampling); 2 m CW at 144.0 to 144.1 MHz is in range.
+In class we transmit only into a cable, into a shielded enclosure, or at very low power in an ISM band, and only when the lesson says to. The PlutoSDR flowgraph has run only in simulation so far; the lab is its first run on hardware. Run L12-vor-pluto.grc, type the nearest VOR's frequency (108 to 118 MHz; its frequency and identifier are on an FAA sectional, free at SkyVector), and wait for its identifier, a 1020 Hz tone, as dashes either side of the carrier on the channel waterfall. The Pluto tunes 100 kHz low so its DC correction leaves the carrier alone, with slow-attack AGC; GNU Radio's AM Demod block makes the audio. Course Plutos run in extended-frequency mode, 70 MHz to 6 GHz. Not yet run on a live VOR. Most amateur CW is on HF, below the Pluto's 70 MHz; 2 m CW at 144.0 to 144.1 MHz is in range.
 
 ---
 

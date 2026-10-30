@@ -264,14 +264,14 @@ Every column breaks the same way as the noise rises, and the narrower the filter
 :::{present}
 - The L12 Lab sends CW through a PlutoSDR, TX to RX, with a 30 dB attenuator.
 - Nothing in L12 transmits over the air.
-- In SDR Flex or GQRX, an RTL-SDR hears a VOR's Morse identifier in AM.
+- `L12-vor-pluto.grc` hears a VOR's Morse identifier in AM on the PlutoSDR.
 :::
 
 The L12 Lab moves this link onto a PlutoSDR. The transmit half ends at a PlutoSDR Sink at 915 MHz instead of the Noise Source, and the receive half starts at a PlutoSDR Source, with the same Xlating filter, product detector, CW filter, envelope detector, threshold, and decoder. As in L10, a Rational Resampler raises the 32 kHz stream by 32, to 1.024 MS/s, on the way out and lowers it again on the way in. The received level depends on the cable, the attenuator, and the Pluto's gain, and at the course's settings it is thousands of times smaller than in the simulation, so the lab flowgraph adds an **AGC** after the Xlating filter. It holds the tuned carrier near amplitude 1, which puts the envelope's mark level back near 0.64 at any attenuation, and the envelope plot shows the threshold as a red line so you can check it sits halfway between the space and mark levels.
 
 In class we transmit only into a cable, into a shielded enclosure, or at very low power in an ISM band, and only when the lesson says to. Nothing in this lesson transmits; the L12 Lab transmits from the Pluto's TX port through an inline 30 dB attenuator into its own RX port. We have run the PlutoSDR flowgraph only in simulation, with a model of the cable in place of the radio, so the lab is its first run on hardware.
 
-To hear real Morse, open [SDR Flex](https://livethisdream.github.io/sdr-flex/) with an RTL-SDR, or GQRX if SDR Flex is not set up, tune a nearby VOR, and choose AM. VORs sit between 108 and 118 MHz; find the frequency of the nearest one on an FAA sectional chart, free at [SkyVector](https://skyvector.com/), where each VOR's box lists its frequency and its Morse identifier. Every few seconds the station keys its two- or three-letter identifier as a 1020 Hz tone, and the waterfall shows each mark as a short dash beside the carrier. The CW demodulator in SDR Flex, and GQRX's CW-U and CW-L modes, work like today's product detector: they turn a keyed carrier into a tone you can hear. Most amateur CW is on HF, which needs an upconverter or direct sampling; 2 m CW at 144.0 to 144.1 MHz is in range. Listening is receive-only.
+To hear real Morse, run `L12-vor-pluto.grc`, an AM receiver for a **VOR**, the aircraft navigation beacons between 108 and 118 MHz. Find the frequency of the nearest one on an FAA sectional chart, free at [SkyVector](https://skyvector.com/), where each VOR's box lists its frequency and its Morse identifier, and type it into the VOR control. The course Plutos run in extended-frequency mode, 70 MHz to 6 GHz, so the VOR band is in range. The PlutoSDR tunes 100 kHz below the station at 1.536 MS/s, because its DC correction at the center would also remove an AM carrier sitting there. A Frequency Xlating FIR Filter brings the VOR to 0 Hz at 48 kHz, an AGC holds its carrier near 1, and GNU Radio's **AM Demod** block turns it into audio. The Pluto's gain runs in its slow-attack automatic mode, which suits a steady broadcast of unknown strength. Every few seconds the station keys its two- or three-letter identifier as a 1020 Hz tone, and the channel waterfall shows each mark as a short dash 1020 Hz either side of the carrier. Most amateur CW is on HF, below the Pluto's 70 MHz; 2 m CW at 144.0 to 144.1 MHz is in range. Listening is receive-only. The flowgraph is compiled but not yet run on a live VOR.
 ::::
 
 ::::{frame} Key Point
@@ -286,6 +286,7 @@ CW keys a carrier on and off, and a dit lasts $1.2/W$ s at $W$ WPM. Shaped edges
 
 - <a class="doc-link" href="../../grc/L12-cw-tx.grc" download>L12-cw-tx.grc</a>: a hard-keyed and a shaped Morse keyer side by side, in time and in frequency. No hardware needed.
 - <a class="doc-link" href="../../grc/L12-cw-link.grc" download>L12-cw-link.grc</a>: the whole CW link, with sliders for the noise, the CW filter, the threshold, the tuning, and both speeds, a waterfall, the envelope, the audio, and the decoded text. No hardware needed.
+- <a class="doc-link" href="../../grc/L12-vor-pluto.grc" download>L12-vor-pluto.grc</a>: an AM receiver for a VOR's Morse identifier, 108 to 118 MHz, with the band, a channel waterfall, and audio. Needs a PlutoSDR; receive only.
 
 Open a `.grc` file from GRC's File menu, or run `gnuradio-companion L12-cw-link.grc` from the radioconda prompt. The Morse Keyer and the CW Decoder are Embedded Python Blocks, saved inside the `.grc` file; double-click one and choose Open in Editor to read its code. The L12 Lab page has the PlutoSDR version of the link.
 

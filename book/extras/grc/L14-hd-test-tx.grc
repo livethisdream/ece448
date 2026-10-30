@@ -9,8 +9,8 @@ options:
     description: 'L14: writes L14-hd-test.cu8, 4 s of a simulated hybrid HD Radio
       station: an FM host, two OFDM sidebands at levels set by upper_dbc and lower_dbc,
       an analog-only neighbor, and noise, as unsigned 8-bit IQ at 1,488,375 samples
-      per second, the RTL-SDR format. Simulated: the sidebands carry random QPSK,
-      not NRSC-5 data. Nothing transmits.'
+      per second, the default input format of nrsc5. Simulated: the sidebands carry
+      random QPSK, not NRSC-5 data. Nothing transmits.'
     gen_cmake: 'On'
     gen_linking: dynamic
     generate_options: no_gui

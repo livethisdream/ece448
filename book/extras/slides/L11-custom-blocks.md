@@ -38,7 +38,7 @@ Have GRC open with L11-keyed-carrier.grc, and a terminal at the radioconda promp
 2. Write the Energy Detector: work() and its YAML file
 3. Test, build, and install it
 
-Then we set its levels and use it on a laptop and an RTL-SDR.
+Then we set its levels and use it on a laptop and a PlutoSDR.
 
 Note:
 Parts 1 and 3 are LO 5.1, the packaging. Part 2 and the levels are LO 5.2, the block itself.
@@ -225,14 +225,14 @@ macOS also needs xcode-select --install; we did not test a Mac or the Windows Bu
 
 ---
 
-## OOK on an RTL-SDR
+## OOK on a PlutoSDR
 
-<img src="./img/11-custom-blocks/L11-grc-ook.png" alt="The L11 RTL-SDR flowgraph in GRC: RTL-SDR source near 433.92 MHz, frequency shift and decimate to 128 kHz, Energy Detector averaging 4 samples, the key scaled onto the power plot, time and frequency sinks" style="max-height:400px; display:block; margin:0 auto;">
+<img src="./img/11-custom-blocks/L11-grc-ook.png" alt="The L11 PlutoSDR flowgraph in GRC: PlutoSDR Source near 433.92 MHz with manual gain, frequency shift and decimate to 128 kHz, Energy Detector averaging 4 samples, the key scaled onto the power plot, time, frequency, and waterfall sinks" style="max-height:400px; display:block; margin:0 auto;">
 
 The same block keys on a 433.92 MHz remote. The flowgraph only receives.
 
 Note:
-Find the bursts first in SDR Flex (GQRX as the fallback): tune 433.92 MHz and watch the waterfall while pressing the remote. SDR Flex can pass them to rtl_433, a ready-made decoder that names the device. Then close the explore tool and open the flowgraph. Tuned 200 kHz low to keep the DC spike off the signal. N = 4 at 128 kHz is about 31 microseconds per output, short enough for pulses a few hundred microseconds long. Not run for the page: it needs an RTL-SDR and a remote.
+Run L11-ook-pluto.grc and find the bursts on its waterfall while pressing the remote. The Pluto runs at 1.024 MS/s with manual gain, so the floor holds still under the threshold. Tuned 200 kHz low to keep the signal off the radio's DC correction. N = 4 at 128 kHz is about 31 microseconds per output, short enough for pulses a few hundred microseconds long. Optional: rtl_433 names the device, on an RTL-SDR or on the Pluto through SoapySDR. Not run for the page: it needs a PlutoSDR and a remote.
 
 ---
 

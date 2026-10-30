@@ -126,7 +126,7 @@ demodulate an HD Radio signal.}
 This packet is the L\labLesson\ Lab, in three parts, and you turn it in once, complete,
 before Lesson 15. Do \textbf{Part 1} on your own before the lab period: run the sideband
 finder, change one test-file setting, and slide Inner subcarrier to see what it does. \textbf{Part 2} is your own
-measurements, recorded in class on your own laptop with your RTL-SDR. Do \textbf{Part 3}
+measurements, recorded in class on your own laptop with a PlutoSDR. Do \textbf{Part 3}
 on your own after the lab: explain what you measured and answer the
 analysis questions.
 
@@ -134,13 +134,13 @@ analysis questions.
 1 / 0 scale, with revision allowed under course policy. Paste screenshots where a
 question asks for one.
 
-\textbf{Transmitting.} Nothing in this lab transmits. The RTL-SDR receives only, and both
+\textbf{Transmitting.} Nothing in this lab transmits. The PlutoSDR only receives, and both
 captures came from GNU Radio flowgraphs, not from an antenna.
 
 The flowgraphs are on the L14 lesson page, \texttt{L14-hd-test-tx.grc} and
 \texttt{L14-hd-find.grc}, and the capture \texttt{L14-lab-capture.cu8}, which your instructor posts on
 the L14 Lab page before the lab. Both captures are simulated: unsigned 8-bit I and Q at 1,488,375 samples per second,
-the format the RTL-SDR and nrsc5 record. Every number below uses the hybrid values from
+the default format nrsc5 reads. Every number below uses the hybrid values from
 the lesson: subcarriers 363.4 Hz apart, one FFT bin at \texttt{fft\_len} 4096, sidebands from
 subcarrier 356 to 546 on each side, partitions of 19 subcarriers, and an extended hybrid
 station adding one, two, or four partitions inside subcarrier 356 on each side.
@@ -281,12 +281,12 @@ upper sideband reading at each step.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newpage
-\question \textbf{A live station.} Add the RTL-SDR Source to your meter and find a local
+\question \textbf{A live station.} Add the PlutoSDR Source to your meter and find a local
 station with HD Radio, as the lab page lists.
 
 \begin{parts}
 
-	\part Paste a screenshot with the shelves visible, and record the station, the RF
+	\part Paste a screenshot with the shelves visible, and record the station, the Pluto RX
 	gain, and the height of the shelves above the floor.
 		\begin{solution}[1.6in]\keysol{sol10}\end{solution}
 
@@ -311,9 +311,10 @@ station with HD Radio, as the lab page lists.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newpage
-\question \textbf{Decode it.} Decode the same station with nrsc5, as the lab page lists.
-These steps are documented usage from the nrsc5 README; we have not yet tested them in
-this course.
+\question \textbf{Decode it (optional).} This question is optional and does not count
+toward the grade. Record the same station with \texttt{L14-hd-find.grc} and decode the
+recording with nrsc5, as the lab page lists. These steps are documented usage from the nrsc5
+README; we have not yet tested them in this course.
 
 \begin{parts}
 
@@ -321,22 +322,10 @@ this course.
 	programs the station carries.
 		\begin{solution}[1.0in]\keysol{sol13}\end{solution}
 
-	\part Lower the gain until the audio stops. At what gain does it stop? Then stop nrsc5,
-	run your meter at that gain, and record how high the shelves stand above the floor.
+	\part Record and decode again at lower gains until the audio stops. What is the lowest
+	gain at which nrsc5 still plays, and how high do the shelves stand above the floor in
+	your meter at that gain?
 		\begin{solution}[1.0in]\keysol{sol14}\end{solution}
-
-	\begin{minipage}[t]{0.58\linewidth}
-		\part Record 10 s with \texttt{nrsc5 -w}, open the recording in your meter, and
-		record both readings. Do they match Question 5(c)?
-		\begin{solution}[0.9in]\keysol{sol15}\end{solution}
-	\end{minipage}\hfill%
-	\begin{minipage}[t]{0.37\linewidth}
-		\raggedleft \vspace{12pt}
-		upper \ansbox[1.1in]{}
-
-		\vspace{4pt}
-		lower \ansbox[1.1in]{}
-	\end{minipage}
 
 \end{parts}
 

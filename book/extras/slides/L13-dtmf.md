@@ -211,14 +211,14 @@ Run the link live and pull the SNR slider down. With bins 39 Hz apart, nulls 39 
 ## DTMF on a Real Radio
 
 - Repeaters and remote sites take DTMF over FM.
-- Listen in SDR Flex (or GQRX) on an RTL-SDR, narrow FM; multimon-ng prints the digits.
-- Or feed 8 kHz FM audio to the DTMF Decoder.
+- L13-nfm-pluto.grc: narrow FM on the PlutoSDR.
+- Its 8 kHz audio feeds the same DTMF Decoder.
 - The L13 Lab decodes a phone through the laptop microphone.
 
 Note:
 Nothing in this lesson transmits. In class we transmit only into a cable, into a shielded enclosure, or at very low power in an ISM band, and only when the lesson says to.
 
-GQRX fallback (Linux or macOS; not yet tested live): press UDP, then nc -l -u 7355 | sox -t raw -e signed-integer -b 16 -r 48000 -c 1 - -t raw -e signed-integer -b 16 -r 22050 -c 1 - | multimon-ng -t raw -a DTMF -
+L13-nfm-pluto.grc: type a channel that carries DTMF (a local 2 m repeater output) into Channel. Course Plutos run in extended-frequency mode, 70 MHz to 6 GHz. The Pluto tunes 200 kHz low at 1.536 MS/s with slow-attack AGC; the Xlating filter brings the channel to 48 kHz, and NBFM Receive (5 kHz deviation) decimates the audio by 6 to 8 kHz. Compiled, not yet run on a live channel. Optional: multimon-ng prints the digits from a recording: sox L13-capture.wav -t raw -e signed-integer -b 16 -r 22050 -c 1 - | multimon-ng -t raw -a DTMF -
 
 Tutorials this lesson follows: GNU Radio wiki Embedded Python Block, Goertzel, Signal Source, and Wav File Source pages; multimon-ng is the deck's ready-made decoder.
 

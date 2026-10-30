@@ -7,8 +7,11 @@ options:
     comment: ''
     copyright: ''
     description: 'L14: the spectrum, waterfall, and sideband power of an FM station
-      with HD Radio, from L14-hd-test.cu8, an RTL-SDR capture at 1,488,375 samples
-      per second, or the RTL-SDR live. Receive only.'
+      with HD Radio, from L14-hd-test.cu8, any unsigned 8-bit recording at 1,488,375
+      samples per second, or a PlutoSDR live. To go live, disable the File Source
+      and the six blocks after it and enable the PlutoSDR Source. The disabled Rational
+      Resampler and SigMF Sink record the Pluto at half rate, 744,187.5 samples per
+      second, as hd.sigmf-data for nrsc5. Receive only.'
     gen_cmake: 'On'
     gen_linking: dynamic
     generate_options: qt_gui
@@ -150,18 +153,18 @@ blocks:
     coordinate: [520, 8]
     rotation: 0
     state: enabled
-- name: rf_gain
+- name: rx_gain
   id: variable_qtgui_range
   parameters:
     comment: ''
     gui_hint: 0,1,1,1
-    label: RF gain (dB)
+    label: Pluto RX gain (dB)
     min_len: '200'
     orient: QtCore.Qt.Horizontal
     rangeType: float
     start: '0'
-    step: '0.1'
-    stop: '49.6'
+    step: '1'
+    stop: '70'
     value: '30'
     widget: counter_slider
   states:
@@ -265,6 +268,26 @@ blocks:
     coordinate: [16, 300]
     rotation: 0
     state: enabled
+- name: half_rate
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    decim: '2'
+    fbw: '0'
+    interp: '1'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    taps: '[]'
+    type: ccc
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [200, 900]
+    rotation: 0
+    state: disabled
 - name: host_average
   id: blocks_moving_average_xx
   parameters:
@@ -469,6 +492,26 @@ blocks:
     coordinate: [960, 792]
     rotation: 0
     state: enabled
+- name: nrsc5_file
+  id: blocks_sigmf_sink_minimal
+  parameters:
+    affinity: ''
+    alias: ''
+    author: ''
+    center_freq: fc_mhz * 1e6
+    comment: ''
+    description: ''
+    filename: hd
+    hw_info: PlutoSDR
+    sample_rate: samp_rate / 2
+    type: complex float (fc32_le)
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [400, 900]
+    rotation: 0
+    state: disabled
 - name: number
   id: qtgui_number_sink
   parameters:
@@ -532,6 +575,37 @@ blocks:
     coordinate: [1560, 680]
     rotation: 0
     state: enabled
+- name: pluto
+  id: iio_pluto_source
+  parameters:
+    affinity: ''
+    alias: ''
+    bandwidth: int(samp_rate)
+    bbdc: 'True'
+    buffer_size: '32768'
+    comment: ''
+    filter: '""'
+    filter_source: '''Auto'''
+    fpass: '0'
+    frequency: int(fc_mhz * 1e6)
+    fstop: '0'
+    gain1: '''manual'''
+    len_tag_key: '""'
+    manual_gain1: rx_gain
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    quadrature: 'True'
+    rfdc: 'True'
+    samplerate: int(samp_rate)
+    type: fc32
+    uri: '"ip:192.168.2.1"'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [16, 420]
+    rotation: 0
+    state: disabled
 - name: recenter
   id: blocks_add_const_vxx
   parameters:
@@ -568,30 +642,6 @@ blocks:
     coordinate: [672, 316]
     rotation: 0
     state: enabled
-- name: rtl_sdr
-  id: soapy_rtlsdr_source
-  parameters:
-    affinity: ''
-    agc: 'False'
-    alias: ''
-    bias: 'False'
-    bufflen: '16384'
-    center_freq: fc_mhz * 1e6
-    comment: ''
-    dev_args: ''''''
-    freq_correction: '0'
-    gain: rf_gain
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    samp_rate: samp_rate
-    type: fc32
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [16, 440]
-    rotation: 0
-    state: disabled
 - name: spectrum
   id: qtgui_freq_sink_x
   parameters:
@@ -920,6 +970,7 @@ blocks:
 connections:
 - [difference, '0', number, '2']
 - [file_source, '0', throttle, '0']
+- [half_rate, '0', nrsc5_file, '0']
 - [host_average, '0', host_slow, '0']
 - [host_db, '0', lower_dbc, '1']
 - [host_db, '0', upper_dbc, '1']
@@ -933,13 +984,14 @@ connections:
 - [lower_filter, '0', lower_power, '0']
 - [lower_power, '0', lower_average, '0']
 - [lower_slow, '0', lower_db, '0']
+- [pluto, '0', half_rate, '0']
+- [pluto, '0', host_filter, '0']
+- [pluto, '0', lower_filter, '0']
+- [pluto, '0', spectrum, '0']
+- [pluto, '0', upper_filter, '0']
+- [pluto, '0', waterfall, '0']
 - [recenter, '0', rescale, '0']
 - [rescale, '0', split_iq, '0']
-- [rtl_sdr, '0', host_filter, '0']
-- [rtl_sdr, '0', lower_filter, '0']
-- [rtl_sdr, '0', spectrum, '0']
-- [rtl_sdr, '0', upper_filter, '0']
-- [rtl_sdr, '0', waterfall, '0']
 - [split_iq, '0', to_complex, '0']
 - [split_iq, '1', to_complex, '1']
 - [throttle, '0', to_float, '0']

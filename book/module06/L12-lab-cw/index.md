@@ -34,7 +34,7 @@ L12 Lab · Module 6: Waveform Applications & RF Reverse Engineering · Dr. Neil 
 
 Lesson 12 keyed, received, and decoded CW in one flowgraph. Today you first build a keyer yourself from standard blocks and see its key clicks, then measure where the simulated link stops decoding, and then run the same link on a PlutoSDR. The lab packet has three parts, and you turn it in once, complete, before Lesson 13. **Part 1, the Pre-Lab**, is on your own before the period: run `L12-cw-link.grc`, watch what the noise slider does, and work out the timing and settings Part 2 uses. **Part 2** is your own measurements in class. **Part 3, the Writeup**, explains them.
 
-Questions 1 to 5 run on your laptop and transmit nothing. Question 6 transmits, into a cable only, as the PlutoSDR frame below describes.
+Questions 1 to 5 run on your laptop and transmit nothing. Question 6 transmits at 915 MHz, into a cable unless your instructor says otherwise, as the PlutoSDR frame below describes.
 ::::
 
 ::::{frame} Part 1: Before the Period
@@ -114,12 +114,12 @@ Close the flowgraph and run it again with the sliders at their defaults, where e
 :::
 :::{present}
 - You cable one Pluto's TX port to its RX port through a 30 dB attenuator, at 915 MHz.
-- Connect the cable before the flowgraph runs, and never connect an antenna.
+- Connect the cable before the flowgraph runs; use antennas only on your instructor's word.
 :::
 
 `L12-cw-pluto.grc` is the Lesson 12 link with the simulated channel replaced by a PlutoSDR. The transmit half raises the 32 kHz stream to 1.024 MS/s and sends the keyed carrier from the Pluto's TX port at 915 MHz plus 5 kHz; the receive half takes it from the RX port, lowers it to 32 kHz, and runs the same receiver. The received level depends on the cable, the attenuator, and the gain, and it is far weaker than in the simulated link, so an **AGC** after the Xlating filter holds the tuned carrier near amplitude 1. The envelope's mark level should then sit near 0.6 at any attenuation, and the envelope plot shows the threshold as a red line instead of the key. The waterfall's color scale runs from $-120$ to $-40$ dB; if the carrier does not show, right-click the waterfall and choose Auto Scale. You type the message into the Message box. We have run this flowgraph only in simulation, with a model of the cable in place of the radio, so your bench is its first run on hardware.
 
-In class we transmit only into a cable, into a shielded enclosure, or at very low power in an ISM band, and only when the lesson says to. This question transmits only into the cable between the Pluto's own TX and RX ports, through an inline 30 dB SMA attenuator. The TX attenuation slider opens at 60 dB and cannot go below 30 dB. Never set TX attenuation below 30 dB or change the slider's range; the RX input is rated to only a few dBm, and the transmitter can put out more than that.
+In class we transmit only into a cable, into a shielded enclosure, or at very low power in an ISM band, and only when the lesson says to. This question transmits into the cable between the Pluto's own TX and RX ports, through an inline 30 dB SMA attenuator. Or, if your instructor says so, it goes over the air at 915 MHz at low power, with an antenna on each port in place of the cable; the 30 dB floor on TX attenuation still holds. The TX attenuation slider opens at 60 dB and cannot go below 30 dB. Never set TX attenuation below 30 dB or change the slider's range; the RX input is rated to only a few dBm, and the transmitter can put out more than that.
 ::::
 
 ::::{frame} What Success Looks Like
@@ -135,7 +135,7 @@ The figure is the PlutoSDR flowgraph run in simulation, with the Pluto Sink and 
 ::::{frame} PlutoSDR Steps
 :class: read-only
 
-1. With the Pluto unplugged, connect its TX port to its RX port with a short SMA cable and an inline 30 dB SMA attenuator. Do not connect an antenna, and do not connect the cable without the attenuator.
+1. With the Pluto unplugged, connect its TX port to its RX port with a short SMA cable and an inline 30 dB SMA attenuator. Do not connect the cable without the attenuator, and connect antennas only if your instructor says to run over the air.
 2. Plug the Pluto into USB and run `iio_info -s` at the radioconda prompt; it should list a PlutoSDR context. The flowgraph uses the Pluto's default address, `ip:192.168.2.1`.
 3. Open and run `L12-cw-pluto.grc`. Find the keyed carrier on the waterfall at +5 kHz. On the envelope plot, read the space and mark levels and set the threshold halfway between them; the default of 0.3 should be close. If no marks appear, raise the RX gain a few dB at a time. Never set TX attenuation below 30 dB or change the slider's range.
 4. Once `USAFA ECE 448` decodes, screenshot the window for Question 6(a).
