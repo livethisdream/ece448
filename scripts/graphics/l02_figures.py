@@ -137,10 +137,10 @@ ISM = [  # (low MHz, high MHz, label) -- US ISM allocations, 47 CFR 18.301
     (40.66, 40.70, "40.68"), (902, 928, "915"), (2400, 2500, "2450"),
     (5725, 5875, "5800"),
 ]
-SDRS = [  # (name, low MHz, high MHz) -- stock tuning ranges
-    ("RTL-SDR", 24, 1766),
-    ("PlutoSDR", 325, 3800),
-    ("HackRF One", 1, 6000),
+SDRS = [  # (name, low MHz, high MHz) -- the PlutoSDR in the extended-frequency
+    # (AD9364) mode the course Plutos use, and as shipped
+    ("PlutoSDR", 70, 6000),
+    ("as shipped", 325, 3800),
 ]
 
 
@@ -173,7 +173,7 @@ def ism_bands() -> None:
                      else f'<text x="{X(lo) + 8:.1f}" y="{y + 16}" font-size="12" fill="#fff">{rng}</text>')
     svg = (f'<svg viewBox="0 0 {W} {H}" xmlns="http://www.w3.org/2000/svg" role="img" '
            f'aria-label="The US ISM bands at 6.78, 13.56, 27.12, and 40.68 MHz and at 915, 2450, and 5800 MHz on a log frequency axis, '
-           f'with the tuning ranges of the RTL-SDR, 24 MHz to 1.766 GHz, the PlutoSDR, 325 MHz to 3.8 GHz, and the HackRF One, 1 MHz to 6 GHz">'
+           f'with the tuning range of the course PlutoSDR, 70 MHz to 6 GHz in extended-frequency mode, and 325 MHz to 3.8 GHz as shipped">'
            + "".join(parts) + "</svg>")
     write("L02-ism-bands", svg)
 

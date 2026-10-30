@@ -1,9 +1,9 @@
-<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="573.391146pt" height="244.645388pt" viewBox="0 0 573.391146 244.645388" xmlns="http://www.w3.org/2000/svg" version="1.1">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="508.767828pt" height="183.640096pt" viewBox="0 0 508.767828 183.640096" xmlns="http://www.w3.org/2000/svg" version="1.1">
  <metadata>
   <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
    <cc:Work>
     <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
-    <dc:date>2026-10-19T19:25:12.692953</dc:date>
+    <dc:date>2026-10-29T13:44:03.525239</dc:date>
     <dc:format>image/svg+xml</dc:format>
     <dc:creator>
      <cc:Agent>
@@ -18,209 +18,161 @@
  </defs>
  <g id="figure_1">
   <g id="patch_1">
-   <path d="M 0 244.645388 
-L 573.391146 244.645388 
-L 573.391146 0 
+   <path d="M 0 183.640096 
+L 508.767828 183.640096 
+L 508.767828 0 
 L 0 0 
-L 0 244.645388 
+L 0 183.640096 
 z
 " style="fill: none"/>
   </g>
   <g id="axes_1">
    <g id="patch_2">
-    <path d="M 53.627883 207.32367 
-L 522.347883 207.32367 
-L 522.347883 24.37167 
-L 53.627883 24.37167 
-L 53.627883 207.32367 
+    <path d="M 4.32 146.319236 
+L 473.04 146.319236 
+L 473.04 13.263236 
+L 4.32 13.263236 
+L 4.32 146.319236 
 z
 " style="fill: none"/>
    </g>
    <g id="line2d_1">
-    <path d="M 309.610436 207.32367 
-L 309.610436 24.37167 
-" clip-path="url(#p6ad3b03e33)" style="fill: none; stroke-dasharray: 3,3; stroke-dashoffset: 0; stroke: #b01e24"/>
+    <path d="M 176.017153 146.319236 
+L 176.017153 13.263236 
+" clip-path="url(#p089cdd1be7)" style="fill: none; stroke-dasharray: 3,3; stroke-dashoffset: 0; stroke: #b01e24"/>
    </g>
    <g id="line2d_2">
-    <path d="M 328.291124 207.32367 
-L 328.291124 24.37167 
-" clip-path="url(#p6ad3b03e33)" style="fill: none; stroke-dasharray: 3,3; stroke-dashoffset: 0; stroke: #b01e24"/>
+    <path d="M 202.957123 146.319236 
+L 202.957123 13.263236 
+" clip-path="url(#p089cdd1be7)" style="fill: none; stroke-dasharray: 3,3; stroke-dashoffset: 0; stroke: #b01e24"/>
    </g>
    <g id="line2d_3">
-    <path d="M 364.909408 207.32367 
-L 364.909408 24.37167 
-" clip-path="url(#p6ad3b03e33)" style="fill: none; stroke-dasharray: 3,3; stroke-dashoffset: 0; stroke: #b01e24"/>
+    <path d="M 255.76543 146.319236 
+L 255.76543 13.263236 
+" clip-path="url(#p089cdd1be7)" style="fill: none; stroke-dasharray: 3,3; stroke-dashoffset: 0; stroke: #b01e24"/>
    </g>
    <g id="line2d_4">
-    <path d="M 399.141969 207.32367 
-L 399.141969 24.37167 
-" clip-path="url(#p6ad3b03e33)" style="fill: none; stroke-dasharray: 3,3; stroke-dashoffset: 0; stroke: #b01e24"/>
+    <path d="M 305.133216 146.319236 
+L 305.133216 13.263236 
+" clip-path="url(#p089cdd1be7)" style="fill: none; stroke-dasharray: 3,3; stroke-dashoffset: 0; stroke: #b01e24"/>
    </g>
    <g id="line2d_5">
-    <path d="M 412.831838 207.32367 
-L 412.831838 24.37167 
-" clip-path="url(#p6ad3b03e33)" style="fill: none; stroke-dasharray: 3,3; stroke-dashoffset: 0; stroke: #b01e24"/>
+    <path d="M 324.875779 146.319236 
+L 324.875779 13.263236 
+" clip-path="url(#p089cdd1be7)" style="fill: none; stroke-dasharray: 3,3; stroke-dashoffset: 0; stroke: #b01e24"/>
    </g>
    <g id="line2d_6">
-    <path d="M 429.091062 207.32367 
-L 429.091062 24.37167 
-" clip-path="url(#p6ad3b03e33)" style="fill: none; stroke-dasharray: 3,3; stroke-dashoffset: 0; stroke: #b01e24"/>
+    <path d="M 348.323685 146.319236 
+L 348.323685 13.263236 
+" clip-path="url(#p089cdd1be7)" style="fill: none; stroke-dasharray: 3,3; stroke-dashoffset: 0; stroke: #b01e24"/>
    </g>
    <g id="patch_3">
-    <path d="M 113.444199 93.79084 
-L 417.076013 93.79084 
-L 417.076013 74.640724 
-L 113.444199 74.640724 
+    <path d="M 157.982868 96.844893 
+L 396.549222 96.844893 
+L 396.549222 75.855777 
+L 157.982868 75.855777 
 z
-" clip-path="url(#p6ad3b03e33)" style="fill: #0067b9; opacity: 0.9"/>
+" clip-path="url(#p089cdd1be7)" style="fill: #0067b9; opacity: 0.9"/>
    </g>
    <g id="patch_4">
-    <path d="M 139.205685 127.987475 
-L 462.531566 127.987475 
-L 462.531566 108.837359 
-L 139.205685 108.837359 
+    <path d="M 240.273693 134.325456 
+L 372.067822 134.325456 
+L 372.067822 113.336341 
+L 240.273693 113.336341 
 z
-" clip-path="url(#p6ad3b03e33)" style="fill: #0067b9; opacity: 0.9"/>
-   </g>
-   <g id="patch_5">
-    <path d="M 354.167143 162.184111 
-L 445.555698 162.184111 
-L 445.555698 143.033995 
-L 354.167143 143.033995 
-z
-" clip-path="url(#p6ad3b03e33)" style="fill: #0067b9; opacity: 0.9"/>
-   </g>
-   <g id="patch_6">
-    <path d="M 481.516894 196.380746 
-L 483.330228 196.380746 
-L 483.330228 177.23063 
-L 481.516894 177.23063 
-z
-" clip-path="url(#p6ad3b03e33)" style="fill: #8a5a00; opacity: 0.9"/>
+" clip-path="url(#p089cdd1be7)" style="fill: #5b6573; opacity: 0.9"/>
    </g>
    <g id="matplotlib.axis_1">
     <g id="xtick_1">
      <g id="line2d_7">
       <defs>
-       <path id="m0e0ff9523d" d="M 0 0 
+       <path id="m3eaedfc203" d="M 0 0 
 L 0 3.5 
 " style="stroke: #5b6573; stroke-width: 0.8"/>
       </defs>
       <g>
-       <use xlink:href="#m0e0ff9523d" x="53.627883" y="207.32367" style="fill: #5b6573; stroke: #5b6573; stroke-width: 0.8"/>
+       <use xlink:href="#m3eaedfc203" x="53.685709" y="146.319236" style="fill: #5b6573; stroke: #5b6573; stroke-width: 0.8"/>
       </g>
      </g>
      <g id="text_1">
-      <text style="font-size: 11px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #5b6573" x="53.627883" y="222.681951" transform="rotate(-0 53.627883 222.681951)">100 kHz</text>
+      <text style="font-size: 11px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #5b6573" x="53.685709" y="161.676658" transform="rotate(-0 53.685709 161.676658)">10 MHz</text>
      </g>
     </g>
     <g id="xtick_2">
      <g id="line2d_8">
       <g>
-       <use xlink:href="#m0e0ff9523d" x="139.205685" y="207.32367" style="fill: #5b6573; stroke: #5b6573; stroke-width: 0.8"/>
+       <use xlink:href="#m3eaedfc203" x="177.09998" y="146.319236" style="fill: #5b6573; stroke: #5b6573; stroke-width: 0.8"/>
       </g>
      </g>
      <g id="text_2">
-      <text style="font-size: 11px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #5b6573" x="139.205685" y="222.681092" transform="rotate(-0 139.205685 222.681092)">1 MHz</text>
+      <text style="font-size: 11px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #5b6573" x="177.09998" y="161.676658" transform="rotate(-0 177.09998 161.676658)">100 MHz</text>
      </g>
     </g>
     <g id="xtick_3">
      <g id="line2d_9">
       <g>
-       <use xlink:href="#m0e0ff9523d" x="224.783487" y="207.32367" style="fill: #5b6573; stroke: #5b6573; stroke-width: 0.8"/>
+       <use xlink:href="#m3eaedfc203" x="300.514252" y="146.319236" style="fill: #5b6573; stroke: #5b6573; stroke-width: 0.8"/>
       </g>
      </g>
      <g id="text_3">
-      <text style="font-size: 11px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #5b6573" x="224.783487" y="222.681092" transform="rotate(-0 224.783487 222.681092)">10 MHz</text>
+      <text style="font-size: 11px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #5b6573" x="300.514252" y="161.676658" transform="rotate(-0 300.514252 161.676658)">1 GHz</text>
      </g>
     </g>
     <g id="xtick_4">
      <g id="line2d_10">
       <g>
-       <use xlink:href="#m0e0ff9523d" x="310.361289" y="207.32367" style="fill: #5b6573; stroke: #5b6573; stroke-width: 0.8"/>
+       <use xlink:href="#m3eaedfc203" x="423.928524" y="146.319236" style="fill: #5b6573; stroke: #5b6573; stroke-width: 0.8"/>
       </g>
      </g>
      <g id="text_4">
-      <text style="font-size: 11px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #5b6573" x="310.361289" y="222.681092" transform="rotate(-0 310.361289 222.681092)">100 MHz</text>
+      <text style="font-size: 11px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #5b6573" x="423.928524" y="161.676658" transform="rotate(-0 423.928524 161.676658)">10 GHz</text>
      </g>
     </g>
-    <g id="xtick_5">
-     <g id="line2d_11">
-      <g>
-       <use xlink:href="#m0e0ff9523d" x="395.939092" y="207.32367" style="fill: #5b6573; stroke: #5b6573; stroke-width: 0.8"/>
-      </g>
-     </g>
-     <g id="text_5">
-      <text style="font-size: 11px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #5b6573" x="395.939092" y="222.681092" transform="rotate(-0 395.939092 222.681092)">1 GHz</text>
-     </g>
-    </g>
-    <g id="xtick_6">
-     <g id="line2d_12">
-      <g>
-       <use xlink:href="#m0e0ff9523d" x="481.516894" y="207.32367" style="fill: #5b6573; stroke: #5b6573; stroke-width: 0.8"/>
-      </g>
-     </g>
-     <g id="text_6">
-      <text style="font-size: 11px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #5b6573" x="481.516894" y="222.681092" transform="rotate(-0 481.516894 222.681092)">10 GHz</text>
-     </g>
-    </g>
-    <g id="text_7">
-     <text style="font-size: 11px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #15202b" x="287.987883" y="237.68281" transform="rotate(-0 287.987883 237.68281)">tuning range (log scale)</text>
+    <g id="text_5">
+     <text style="font-size: 11px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #15202b" x="238.68" y="176.677518" transform="rotate(-0 238.68 176.677518)">tuning range (log scale)</text>
     </g>
    </g>
    <g id="matplotlib.axis_2"/>
-   <g id="patch_7">
-    <path d="M 53.627883 207.32367 
-L 522.347883 207.32367 
+   <g id="patch_5">
+    <path d="M 4.32 146.319236 
+L 473.04 146.319236 
 " style="fill: none; stroke: #5b6573; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
    </g>
+   <g id="text_6">
+    <text style="font-weight: 700; font-size: 11px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: end; fill: #15202b" x="150.578011" y="89.208187" transform="rotate(-0 150.578011 89.208187)">PlutoSDR, course mode</text>
+   </g>
+   <g id="text_7">
+    <text style="font-size: 10px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: start; fill: #5b6573" x="403.954078" y="88.948382" transform="rotate(-0 403.954078 88.948382)">extended frequency</text>
+   </g>
    <g id="text_8">
-    <text style="font-weight: 700; font-size: 11px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: end; fill: #15202b" x="108.309531" y="87.073633" transform="rotate(-0 108.309531 87.073633)">RTL-SDR Blog V4</text>
+    <text style="font-weight: 700; font-size: 11px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: end; fill: #15202b" x="232.868836" y="126.68875" transform="rotate(-0 232.868836 126.68875)">PlutoSDR, as shipped</text>
    </g>
    <g id="text_9">
-    <text style="font-size: 10px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: start; fill: #5b6573" x="422.210681" y="86.813829" transform="rotate(-0 422.210681 86.813829)">receive</text>
+    <text style="font-size: 10px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: start; fill: #5b6573" x="379.472679" y="126.428945" transform="rotate(-0 379.472679 126.428945)">stock AD9363</text>
    </g>
    <g id="text_10">
-    <text style="font-weight: 700; font-size: 11px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: end; fill: #15202b" x="134.071017" y="121.270269" transform="rotate(-0 134.071017 121.270269)">HackRF One</text>
+    <text style="font-size: 9.5px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; fill: #b01e24" transform="translate(169.415427 61.987969) rotate(-90)">FM</text>
    </g>
    <g id="text_11">
-    <text style="font-size: 10px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: start; fill: #5b6573" x="467.666234" y="121.010464" transform="rotate(-0 467.666234 121.010464)">half duplex</text>
+    <text style="font-size: 9.5px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; fill: #b01e24" transform="translate(196.355397 61.987969) rotate(-90)">AIS</text>
    </g>
    <g id="text_12">
-    <text style="font-weight: 700; font-size: 11px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: end; fill: #15202b" x="349.032474" y="155.466904" transform="rotate(-0 349.032474 155.466904)">PlutoSDR</text>
+    <text style="font-size: 9.5px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; fill: #b01e24" transform="translate(249.163704 61.987969) rotate(-90)">433.92</text>
    </g>
    <g id="text_13">
-    <text style="font-size: 10px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: start; fill: #5b6573" x="450.690366" y="155.2071" transform="rotate(-0 450.690366 155.2071)">full duplex</text>
+    <text style="font-size: 9.5px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; fill: #b01e24" transform="translate(298.53149 61.987969) rotate(-90)">ADS-B</text>
    </g>
    <g id="text_14">
-    <text style="font-weight: 700; font-size: 11px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: end; fill: #15202b" x="476.382226" y="189.66311" transform="rotate(-0 476.382226 189.66311)">ADALM-PHASER</text>
+    <text style="font-size: 9.5px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; fill: #b01e24" transform="translate(318.274053 61.987969) rotate(-90)">GPS L1</text>
    </g>
    <g id="text_15">
-    <text style="font-size: 10px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: start; fill: #5b6573" x="488.464896" y="189.403735" transform="rotate(-0 488.464896 189.403735)">8-element array</text>
-   </g>
-   <g id="text_16">
-    <text style="font-size: 9.5px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; fill: #b01e24" transform="translate(304.332987 61.987969) rotate(-90)">FM</text>
-   </g>
-   <g id="text_17">
-    <text style="font-size: 9.5px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; fill: #b01e24" transform="translate(323.013674 61.987969) rotate(-90)">AIS</text>
-   </g>
-   <g id="text_18">
-    <text style="font-size: 9.5px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; fill: #b01e24" transform="translate(359.631958 61.987969) rotate(-90)">433.92</text>
-   </g>
-   <g id="text_19">
-    <text style="font-size: 9.5px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; fill: #b01e24" transform="translate(393.86452 61.987969) rotate(-90)">ADS-B</text>
-   </g>
-   <g id="text_20">
-    <text style="font-size: 9.5px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; fill: #b01e24" transform="translate(407.554388 61.987969) rotate(-90)">GPS L1</text>
-   </g>
-   <g id="text_21">
-    <text style="font-size: 9.5px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; fill: #b01e24" transform="translate(423.813612 61.987969) rotate(-90)">2.4 GHz ISM</text>
+    <text style="font-size: 9.5px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; fill: #b01e24" transform="translate(341.721959 61.987969) rotate(-90)">2.4 GHz ISM</text>
    </g>
   </g>
  </g>
  <defs>
-  <clipPath id="p6ad3b03e33">
-   <rect x="53.627883" y="24.37167" width="468.72" height="182.952"/>
+  <clipPath id="p089cdd1be7">
+   <rect x="4.32" y="13.263236" width="468.72" height="133.056"/>
   </clipPath>
  </defs>
 </svg>

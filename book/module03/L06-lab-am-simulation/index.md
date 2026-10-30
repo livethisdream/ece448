@@ -108,9 +108,9 @@ The Writeup is three questions. The first explains your $m$ table: which lines m
 
 ::::{frame} Looking Ahead
 :::{present}
-- Lesson 7 replaces the simulated transmitter with an RTL-SDR.
+- Lesson 7 replaces the simulated transmitter with a PlutoSDR.
 - The envelope detector becomes one block: Complex to Mag.
 :::
 
-Keep your DSB-AM flowgraph. Lesson 7 receives real AM with an RTL-SDR, and its receiver keeps your low-pass filter and DC Blocker but replaces the Abs block with Complex to Mag, because the SDR delivers the signal as complex samples with its carrier already at 0 Hz.
+Keep your DSB-AM flowgraph. Lesson 7 receives real AM with a PlutoSDR, and its receiver keeps your low-pass filter and DC Blocker but replaces the Abs block with Complex to Mag, because the SDR delivers the signal as complex samples with its carrier already at 0 Hz.
 ::::

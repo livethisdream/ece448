@@ -6,8 +6,9 @@ options:
     cmake_opt: ''
     comment: ''
     copyright: ''
-    description: 'L5: the broadcast FM band from an RTL-SDR, in the frequency domain
-      and as a waterfall. Enable the File Sink to record IQ.'
+    description: 'L5: the broadcast FM band from a PlutoSDR in extended-frequency
+      mode (70 MHz to 6 GHz), in the frequency domain and as a waterfall. Enable the
+      File Sink to record IQ.'
     gen_cmake: 'On'
     gen_linking: dynamic
     generate_options: qt_gui
@@ -23,7 +24,7 @@ options:
     run_options: prompt
     sizing_mode: fixed
     thread_safe_setters: ''
-    title: L5 - Broadcast FM on an RTL-SDR
+    title: L5 - Broadcast FM on a PlutoSDR
     window_size: (1100,900)
   states:
     bus_sink: false
@@ -34,6 +35,23 @@ options:
     state: enabled
 
 blocks:
+- name: dc_track
+  id: variable_qtgui_check_box
+  parameters:
+    comment: ''
+    'false': 'False'
+    gui_hint: 1,1,1,1
+    label: DC tracking
+    'true': 'True'
+    type: bool
+    value: 'True'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [720, 12]
+    rotation: 0
+    state: enabled
 - name: freq
   id: variable_qtgui_range
   parameters:
@@ -59,15 +77,15 @@ blocks:
   id: variable_qtgui_range
   parameters:
     comment: ''
-    gui_hint: 1,0,1,2
+    gui_hint: 1,0,1,1
     label: RF gain (dB)
     min_len: '200'
     orient: QtCore.Qt.Horizontal
     rangeType: float
     start: '0'
     step: '1'
-    stop: '49'
-    value: '30'
+    stop: '71'
+    value: '40'
     widget: counter_slider
   states:
     bus_sink: false
@@ -106,6 +124,37 @@ blocks:
     coordinate: [360, 308]
     rotation: 0
     state: disabled
+- name: pluto
+  id: iio_pluto_source
+  parameters:
+    affinity: ''
+    alias: ''
+    bandwidth: int(samp_rate)
+    bbdc: dc_track
+    buffer_size: '32768'
+    comment: ''
+    filter: '""'
+    filter_source: '''Auto'''
+    fpass: '0'
+    frequency: int(freq)
+    fstop: '0'
+    gain1: '''manual'''
+    len_tag_key: '""'
+    manual_gain1: gain
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    quadrature: 'True'
+    rfdc: dc_track
+    samplerate: int(samp_rate)
+    type: fc32
+    uri: '"ip:192.168.2.1"'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [40, 220]
+    rotation: 0
+    state: enabled
 - name: qtgui_sink_x_0
   id: qtgui_sink_x
   parameters:
@@ -135,34 +184,10 @@ blocks:
     coordinate: [360, 180]
     rotation: 0
     state: enabled
-- name: soapy_rtlsdr_source_0
-  id: soapy_rtlsdr_source
-  parameters:
-    affinity: ''
-    agc: 'False'
-    alias: ''
-    bias: 'False'
-    bufflen: '16384'
-    center_freq: freq
-    comment: ''
-    dev_args: ''
-    freq_correction: '0'
-    gain: gain
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    samp_rate: samp_rate
-    type: fc32
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [40, 220]
-    rotation: 0
-    state: enabled
 
 connections:
-- [soapy_rtlsdr_source_0, '0', blocks_file_sink_0, '0']
-- [soapy_rtlsdr_source_0, '0', qtgui_sink_x_0, '0']
+- [pluto, '0', blocks_file_sink_0, '0']
+- [pluto, '0', qtgui_sink_x_0, '0']
 
 metadata:
   file_format: 1

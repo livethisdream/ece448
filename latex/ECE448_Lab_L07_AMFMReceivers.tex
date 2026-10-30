@@ -126,15 +126,15 @@ trade-off between bandwidth and noise performance for AM vs.\ FM.}
 This packet is the L\labLesson\ Lab, in three parts, and you turn it in once, complete,
 before Lesson 8. Do \textbf{Part 1} on your own before the lab period: work out the
 receiver settings you will need. \textbf{Part 2} is your own
-measurements and observations, on your own laptop and RTL-SDR, recorded in class. Do
+measurements and observations, on your own laptop and PlutoSDR, recorded in class. Do
 \textbf{Part 3} on your own after the lab: explain what you saw.
 
 \textbf{Grading.} We grade one submission against Objectives 3.3 and 3.4 on the
 course's 1 / 0 scale, and you may revise it under course policy. Paste screenshots
 where a question asks for one.
 
-\textbf{Receive only.} Every flowgraph in this lab receives or simulates. The RTL-SDR
-cannot transmit, and nothing in this lab needs a license. Start every receiver with
+\textbf{Receive only.} Every flowgraph in this lab receives or simulates. The receivers
+use only the PlutoSDR's receive port, and nothing in this lab needs a license. Start every receiver with
 the volume low.
 
 \textbf{Files.} Download the six L7 flowgraphs from the L7 lesson page into one
@@ -143,8 +143,8 @@ folder, with your \texttt{fm\_capture.cfile} from the L5 Lab. Open
 comes with radioconda; if GRC reports the RDS blocks missing, run
 \texttt{mamba install gnuradio-rds} from the radioconda prompt. Then, before the
 period, run \texttt{L07-fm-test-tx.grc}, which also uses an RDS block, and
-\texttt{L07-am-test-tx.grc} once each; they write \texttt{L07-fm-test.cfile} and
-\texttt{L07-am-test.cfile} into that folder and stop on their own.
+\texttt{L07-am-test-tx.grc} once each; they write \texttt{L07-fm-test.sigmf-data} and
+\texttt{L07-am-test.sigmf-data} into that folder and stop on their own.
 
 \begin{questions}
 
@@ -204,14 +204,14 @@ period, run \texttt{L07-fm-test-tx.grc}, which also uses an RDS block, and
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newpage
-\fullwidth{\large\textbf{Part 2: Measurements} \normalsize(your own laptop and RTL-SDR, in class)}
+\fullwidth{\large\textbf{Part 2: Measurements} \normalsize(your own laptop and PlutoSDR, in class)}
 
 \question \textbf{Build the WBFM receiver.} Start GRC with an empty canvas. Do not
 open \texttt{L07-wbfm-rx.grc}: build the receiver yourself.
 \begin{itemize}\setlength{\itemsep}{0pt}
 	\item \texttt{samp\_rate} 2.4e6, a QT GUI Entry \texttt{fc\_mhz} (100.0), a QT GUI
 	Entry \texttt{station\_mhz} (100.3), and a QT GUI Range \texttt{vol} from 0 to 1.
-	\item A File Source on \texttt{L07-fm-test.cfile}, repeat on.
+	\item A File Source on \texttt{L07-fm-test.sigmf-data}, repeat on.
 	\item A Frequency Xlating FIR Filter, decimation 5, center frequency
 	\texttt{(station\_mhz - fc\_mhz) * 1e6}, with a Low-pass Filter Taps variable
 	\texttt{chan\_taps}: cutoff 105 kHz, transition 30 kHz, at \texttt{samp\_rate}.
@@ -260,33 +260,35 @@ Quadrature Demod output, with bandwidth \texttt{samp\_rate/5}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newpage
-\question \textbf{Live FM and RDS.} Find a station in GQRX first, then receive it with
-your own flowgraph.
+\question \textbf{Live FM and RDS.} Find and hear a station on the PlutoSDR first,
+then decode its RDS data.
 
 \begin{parts}
 
-	\part Open GQRX, choose the RTL-SDR, and click a strong station between 88 and
-	108~MHz. Set the mode to WFM (stereo), open the RDS panel, and turn decoding on.
-	Record the station's frequency and the name GQRX shows, and whether the stereo
-	indicator lights. Then close GQRX. (GQRX comes with radioconda; if it does not start on your laptop,
-	SDR++ has the same controls.)
+	\part Run \texttt{L05-fm-spectrum.grc}, find a strong station between 88 and
+	108~MHz, and stop it. Then run \texttt{L07-wbfm-rx.grc} with the File Source
+	disabled and the PlutoSDR Source enabled, SDR center about 300~kHz below the
+	station, and Station set to it. Record the frequency, the call sign the station
+	announces (or the FCC lists for it), and whether the 19~kHz stereo pilot shows on
+	the demodulated multiplex.
 
 	\begin{center}
 	\renewcommand{\arraystretch}{1.25}
 	\begin{tabular}{| l | p{1.3in} | p{1.3in} | p{0.8in} |}
 	\hline
-	& Frequency (MHz) & Station name & Stereo? \\\hline
-	GQRX & & & \\\hline
+	& Frequency (MHz) & Call sign & Pilot? \\\hline
+	Station & & & \\\hline
 	\end{tabular}
 	\end{center}
 
 		\begin{solution}[0.4in]\keysol{sol9}\end{solution}
 
-	Now open \texttt{L07-rds-rx.grc}. Disable the File Source, enable the RTL-SDR
-	Source, set SDR center about 300~kHz below the station you found in GQRX, and
+	Now stop it and open \texttt{L07-rds-rx.grc}. Disable the File Source, enable the
+	PlutoSDR Source, set SDR center about 300~kHz below the station from part (a), and
 	set Station to its frequency. Set RF gain from your L5 Lab gain table.
 
-	\part Record what the RDS panel shows, and check the station name against GQRX's. The panel prints the PI code under
+	\part Record what the RDS panel shows, and compare the station name with the call
+	sign from part (a). The panel prints the PI code under
 	``Program Type'' and the program type under ``PI''; record each under its correct
 	name.
 
@@ -322,7 +324,7 @@ your own flowgraph.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \question \textbf{ATIS.} Open \texttt{L07-am-rx.grc}. Check it first on
-\texttt{L07-am-test.cfile}, then disable the File Source, enable the RTL-SDR Source,
+\texttt{L07-am-test.sigmf-data}, then disable the File Source, enable the PlutoSDR Source,
 and enter the settings of Question 1(c).
 
 \begin{parts}

@@ -126,7 +126,7 @@ and interpret its time- and frequency-domain representations.}
 This packet is the L\labLesson\ Lab, in three parts, and you turn it in once, complete,
 before Lesson 6. Do \textbf{Part 1} on your own before the lab period: install
 GNU Radio and work out the numbers your block settings fix. \textbf{Part 2} is
-your own measurements and observations, with your own laptop and RTL-SDR,
+your own measurements and observations, with your own laptop and PlutoSDR,
 recorded in class. Do \textbf{Part 3} on your own after the lab: explain what you
 saw.
 
@@ -134,8 +134,8 @@ saw.
 course's 1 / 0 scale, with revision allowed under course policy. Paste screenshots
 where a question asks for one.
 
-\textbf{Receive only.} Nothing in this lab transmits. The RTL-SDR cannot transmit,
-and the tone flowgraph never leaves your laptop.
+\textbf{Receive only.} Nothing in this lab transmits. The FM flowgraph uses only
+the PlutoSDR's receiver, and the tone flowgraph never leaves your laptop.
 
 The flowgraphs and the Python script are on the L5 lesson page:
 \texttt{L05-tone.grc}, \texttt{L05-fm-spectrum.grc}, and \texttt{L05-psd.py}.
@@ -146,7 +146,7 @@ The flowgraphs and the Python script are on the L5 lesson page:
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \question \textbf{Install and verify.} Install radioconda as the L5 lesson page
-describes, plug in your RTL-SDR, and run the commands below from the radioconda
+describes, plug in your PlutoSDR, and run the commands below from the radioconda
 prompt.
 
 \begin{parts}
@@ -161,13 +161,13 @@ prompt.
 	\end{minipage}
 
 	\begin{minipage}[t]{0.58\linewidth}
-		\part Run \texttt{rtl\_test} and record the tuner it reports. Stop it with
-		Ctrl-C after a few seconds.
+		\part Run \texttt{iio\_info -s} and record the device it reports. Then
+		run the lesson page's \texttt{iio\_attr} check, which must show 70 MHz to 6 GHz.
 		\begin{solution}[0.5in]\keysol{sol2}\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
 		\raggedleft \vspace{12pt}
-		tuner = \ansbox[1.3in]{\keysol{ans2}}
+		device = \ansbox[1.3in]{\keysol{ans2}}
 	\end{minipage}
 
 	\part Open \texttt{L05-tone.grc} in GRC, run it, and paste a screenshot of the
@@ -219,7 +219,7 @@ prompt.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newpage
-\fullwidth{\large\textbf{Part 2: Measurements} \normalsize(your own laptop and RTL-SDR, in class)}
+\fullwidth{\large\textbf{Part 2: Measurements} \normalsize(your own laptop and PlutoSDR, in class)}
 
 \question \textbf{Build the tone flowgraph.} Start GRC with an empty canvas. Do not
 open \texttt{L05-tone.grc}: build it yourself from the Options block, a
@@ -250,16 +250,15 @@ a QT GUI Frequency Sink.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newpage
-\question \textbf{The FM band.} Connect the antenna to the RTL-SDR. Find a station
-in GQRX first, then look at the band in GNU Radio.
+\question \textbf{The FM band.} Connect the antenna to the PlutoSDR's RX port and
+look at the band in GNU Radio.
 
 \begin{parts}
 
 	\begin{minipage}[t]{0.58\linewidth}
-		\part Run \texttt{gqrx}, choose the RTL-SDR, set the mode to WFM (stereo), and
-		press the power button. Click across the FM band until a station plays
-		clearly, and record its frequency. Then quit GQRX. GQRX comes with radioconda;
-		if GQRX does not start on your laptop, SDR++ has the same controls.
+		\part Run \texttt{L05-fm-spectrum.grc}. Drag the center frequency slowly
+		from 88 to 108 MHz and record the frequency of the tallest station you
+		see.
 		\begin{solution}[0.6in]\keysol{sol9}\end{solution}
 	\end{minipage}\hfill%
 	\begin{minipage}[t]{0.37\linewidth}
@@ -267,8 +266,8 @@ in GQRX first, then look at the band in GNU Radio.
 		station = \ansbox[1.3in]{\keysol{ans5}}
 	\end{minipage}
 
-	\part Run \texttt{L05-fm-spectrum.grc} with its center frequency set to the
-	station from part (a). Then tune across 88 to 108 MHz and record the three strongest stations: the
+	\part Center the display on the station from part (a). Then tune across 88 to
+	108 MHz and record the three strongest stations: the
 	frequency, the peak level on the display, and how wide each looks next to
 	the others (narrow, medium, wide).
 
@@ -285,8 +284,9 @@ in GQRX first, then look at the band in GNU Radio.
 
 		\begin{solution}[0.5in]\keysol{sol10}\end{solution}
 
-	\part Find the DC spike. Tune so that a station sits on it, then tune 300 kHz
-	away. Describe what moves and what does not.
+	\part Uncheck DC tracking and find the DC spike. Tune so that a station sits on
+	it, then tune 300 kHz away. Describe what moves and what does not, and what
+	changes at the center when you check DC tracking again.
 		\begin{solution}[0.9in]\keysol{sol11}\end{solution}
 
 	\part With the strongest station on screen, set the gain to each value and
@@ -297,7 +297,7 @@ in GQRX first, then look at the band in GNU Radio.
 	\renewcommand{\arraystretch}{1.25}
 	\begin{tabular}{| l | K{0.7in} | K{0.7in} | K{0.7in} | K{0.7in} | K{0.7in} |}
 	\hline
-	Gain (dB) & $0$ & $20$ & $30$ & $40$ & $49$ \\\hline
+	Gain (dB) & $0$ & $20$ & $40$ & $60$ & $71$ \\\hline
 	Floor (dB) & & & & & \\\hline
 	Spurs? & & & & & \\\hline
 	\end{tabular}
@@ -344,7 +344,7 @@ DC spike and set the highest gain in your 4(d) table at which no spurs appeared.
 		\begin{solution}[1.2in]\keysol{sol15}\end{solution}
 
 	\part Using your table in Question 4(d), describe in words what happened as you
-	raised the gain from 0 to 49 dB: to the noise floor, to how far the strongest
+	raised the gain from 0 to 71 dB: to the noise floor, to how far the strongest
 	station stood above it, and to the space between stations.
 		\begin{solution}[1.5in]\keysol{sol16}\end{solution}
 

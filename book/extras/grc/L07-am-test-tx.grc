@@ -6,9 +6,9 @@ options:
     cmake_opt: ''
     comment: ''
     copyright: ''
-    description: 'L7: writes L07-am-test.cfile, 4 s of 2.4 MS/s IQ centered on 126.0
-      MHz with one DSB-AM station at 126.2 MHz carrying the L6 two-tone message at
-      m = 0.5. Simulated; nothing transmits.'
+    description: 'L7: writes L07-am-test.sigmf-data and .sigmf-meta, 4 s of 2.4 MS/s
+      IQ centered on 126.0 MHz with one DSB-AM station at 126.2 MHz carrying the L6
+      two-tone message at m = 0.5. Simulated; nothing transmits.'
     gen_cmake: 'On'
     gen_linking: dynamic
     generate_options: no_gui
@@ -155,16 +155,19 @@ blocks:
     rotation: 0
     state: enabled
 - name: file_sink
-  id: blocks_file_sink
+  id: blocks_sigmf_sink_minimal
   parameters:
     affinity: ''
     alias: ''
-    append: 'False'
+    author: ECE 448
+    center_freq: 126e6
     comment: ''
-    file: L07-am-test.cfile
-    type: complex
-    unbuffered: 'False'
-    vlen: '1'
+    description: 'L7 AM test station, Simulated: DSB-AM at 126.2 MHz with the L6 two-tone
+      message.'
+    filename: L07-am-test
+    hw_info: Simulated in GNU Radio; no radio
+    sample_rate: samp_rate
+    type: complex float (fc32_le)
   states:
     bus_sink: false
     bus_source: false
