@@ -99,6 +99,9 @@ fi
 # Ubuntu does not package it, so it is built here from a pinned commit of its
 # maint-3.10 branch. gr-air-modes, the other ADS-B module, is an apt package.
 # Both install under /usr, where check_grc.py's grcc finds their blocks.
+# GR_PYTHON_DIR puts gr-adsb's Python package beside GNU Radio's own, in
+# dist-packages; its default, site-packages, is not on /usr/bin/python3.12's
+# path, so grcc compiles a flowgraph that then fails to import gnuradio.adsb.
 if dpkg -s gr-air-modes >/dev/null 2>&1; then
   log "gr-air-modes present, skipping apt install"
 else
@@ -115,7 +118,8 @@ else
   if git clone -q -b maint-3.10 https://github.com/mhostetter/gr-adsb.git "$ADSB_SRC" \
      && git -C "$ADSB_SRC" checkout -q "$GR_ADSB_REV" \
      && cmake -S "$ADSB_SRC" -B "$ADSB_SRC/build" -DCMAKE_INSTALL_PREFIX=/usr \
-          -DPYTHON_EXECUTABLE=/usr/bin/python3.12 >/dev/null \
+          -DPYTHON_EXECUTABLE=/usr/bin/python3.12 \
+          -DGR_PYTHON_DIR=/usr/lib/python3/dist-packages >/dev/null \
      && make -C "$ADSB_SRC/build" -j"$(nproc)" >/dev/null \
      && $SUDO make -C "$ADSB_SRC/build" install >/dev/null; then
     $SUDO ldconfig
