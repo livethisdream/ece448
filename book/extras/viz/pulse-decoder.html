@@ -63,8 +63,8 @@
 // frame of address 0xA6, a 4-bit command, and a check nibble that is the
 // command's complement. The envelope here is |carrier + noise| after a 20-sample
 // moving average, as in L17-sigmf-view.grc. The reader samples the middle of
-// each chip cell of the chosen length, as URH's Samples/Symbol setting does,
-// and compares it with the threshold, as URH's Center setting does.
+// each chip cell of the chosen length, as the Chip Reader in L17-chips.grc does,
+// and compares it with the threshold, as its Add Const and Binary Slicer do.
 const FS = 200000, TRUE_CHIP = 80, ADDR = 0xA6, LEAD = 40, SANS = 'Inter, system-ui, -apple-system, sans-serif';
 const C = { navy:'#004a85', amber:'#8a5a00', grn:'#3f7d34', red:'#b01e24', rule:'#cddce9', ink3:'#5b6573', ink:'#15202b' };
 const $ = id => document.getElementById(id);
@@ -95,7 +95,7 @@ function simulate() {
   }
   let acc = 0;
   for (let i = 0; i < n; i++) { acc += raw[i] - (i >= 20 ? raw[i - 20] : 0); env[Math.max(0, i - 10)] = acc / Math.min(i + 1, 20); }
-  // the reader starts at the first rising edge it finds, as URH does
+  // the reader starts at the first rising edge it finds, as the Chip Reader does
   let start = 0; while (start < n - 1 && env[start] < thr) start++;
   const L = chipUs * 1e-6 * FS, read = [];
   for (let t = start; t + L / 2 < n - 3 * TRUE_CHIP; t += L) read.push(env[Math.min(n - 1, Math.round(t + L / 2))] > thr ? 1 : 0);

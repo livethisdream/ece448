@@ -169,21 +169,22 @@ second.
 system and whether it uses OFDM or a single carrier, and give one feature that identifies it.
 \begin{parts}
 
-	\part A HackRF at 20 MS/s tuned to 2.437 GHz shows short bursts that come and go. Most
-	have a flat top about 17 MHz wide with steep edges and a small dip at the center.
+	\part A PlutoSDR at 20 MS/s tuned to 2.437 GHz shows short bursts that come and go. Most
+	have a flat top about 17 MHz wide with steep edges and a small dip at the center of
+	each burst, which moves with the burst when you retune.
 		\begin{solution}[1.0in]
 		Wi-Fi, OFDM. The bursts are packets; the flat top and steep edges are the
 		subcarriers all at the same power, and the dip is the empty subcarrier at 0 Hz.
 		\end{solution}
 
-	\part The same HackRF tuned to 740 MHz shows a flat band about 9 MHz wide with steep
+	\part The same PlutoSDR tuned to 740 MHz shows a flat band about 9 MHz wide with steep
 	edges, which stays on.
 		\begin{solution}[1.0in]
 		An LTE downlink, OFDM. A 10 MHz LTE carrier fills about 9 MHz with subcarriers, and
 		the base station transmits continuously, unlike Wi-Fi's bursts.
 		\end{solution}
 
-	\part An RTL-SDR tuned to an FM station shows a rounded signal whose width changes
+	\part A PlutoSDR at 2 MS/s tuned to an FM station shows a rounded signal whose width changes
 	with the audio, with a flat shelf of constant width on each side from about 130 to
 	200 kHz from its center.
 		\begin{solution}[1.0in]

@@ -11,7 +11,7 @@ options:
       variable fc before you run it: the SigMF Sink writes core:frequency when the
       flowgraph starts, so fc is not a runtime control. The AGC feeds only the envelope
       display; the recording keeps the raw samples. Needs a PlutoSDR; L17-capture-rtl.grc
-      is the RTL-SDR version.'
+      is an optional RTL-SDR version.'
     gen_cmake: 'On'
     gen_linking: dynamic
     generate_options: qt_gui
@@ -41,7 +41,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: 350e6
+    value: 915e6
   states:
     bus_sink: false
     bus_source: false
