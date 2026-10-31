@@ -44,25 +44,14 @@ Lesson 4 · Module 2: SDR & GNU Radio Foundations · Dr. Neil Rogers
      style="max-width: 760px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
-- The PlutoSDR's tuning range, in the course's extended-frequency mode and as shipped.
-- The dashed lines are signals this course receives or decodes.
-:::
-
-The PlutoSDR in your kit plugs into a USB port and receives broadcast FM at 100 MHz, ship AIS at 162 MHz, key fobs at 433.92 MHz, aircraft ADS-B at 1090 MHz, and Wi-Fi at 2.4 GHz, all with the same hardware, and it transmits too. What changes is the software on the laptop, which decides how to filter, demodulate, and decode the samples the radio delivers.
-
-The figure places the PlutoSDR's tuning range on one frequency axis, with the signals we will work with marked. As shipped, a Pluto tunes 325 MHz to 3.8 GHz, which misses broadcast FM and AIS. The course Plutos are set to **extended-frequency mode**, which tunes 70 MHz to 6 GHz, so the PlutoSDR covers every marked signal. Planning a capture starts with checking that the signal falls inside that range.
-::::
-
-::::{frame} What Makes a Radio Software Defined
-:::{present}
-- A hardware radio builds each function as a circuit: one radio, one job.
+- One PlutoSDR covers every dashed signal; only the software changes.
 - An SDR digitizes early and does the rest in software.
-- Changing the job means changing the flowgraph, not the hardware.
+- A new job means a new flowgraph, not new hardware.
 :::
 
-A traditional analog radio, such as a classic FM receiver, builds each step as a circuit. Its filters pass one channel width, its demodulator handles one modulation, and receiving a different kind of signal means building a different radio. A **software defined radio** (SDR) is a radio in which some or all of the physical layer, the filtering, mixing, demodulation, and decoding, happens in software. The hardware only tunes to a band, filters it, and converts it to numbers.
+The PlutoSDR in your kit plugs into a USB port and receives broadcast FM at 100 MHz, ship AIS at 162 MHz, key fobs at 433.92 MHz, aircraft ADS-B at 1090 MHz, and Wi-Fi at 2.4 GHz, all with the same hardware, and it transmits too. As shipped, a Pluto tunes 325 MHz to 3.8 GHz, which misses broadcast FM and AIS. The course Plutos are set to **extended-frequency mode**, which tunes 70 MHz to 6 GHz, so the PlutoSDR covers every marked signal. Planning a capture starts with checking that the signal falls inside that range.
 
-An SDR still needs analog hardware: an antenna, a filter, an amplifier, and a converter. Everything after the converter is a program, so the same box becomes an FM receiver, an ADS-B decoder, or a spectrum analyzer depending on which flowgraph runs. In this course that program is a GNU Radio flowgraph, which Lesson 5 introduces.
+A traditional analog radio, such as a classic FM receiver, builds each step as a circuit: its filters pass one channel width, its demodulator handles one modulation, and a different signal means a different radio. A **software defined radio** (SDR) is a radio in which some or all of the physical layer, the filtering, mixing, demodulation, and decoding, happens in software. It still needs an antenna, a filter, an amplifier, and a converter, but everything after the converter is a program, so the same box becomes an FM receiver, an ADS-B decoder, or a spectrum analyzer depending on which flowgraph runs. In this course that program is a GNU Radio flowgraph, which Lesson 5 introduces.
 ::::
 
 ::::{frame} The Course SDR: the PlutoSDR
@@ -144,16 +133,40 @@ Look again at the second branch of the chain figure. The signal goes to two mixe
 Together they form one complex sample, $I + jQ$, the point in the plane of Lesson 3. A signal above the LO makes that point rotate one way and a signal below makes it rotate the other way, so the 98.6 MHz station of the last figure comes out at $-1.4$ MHz, clear of the one at $+1.4$ MHz. Lesson 5 shows what this looks like on GNU Radio's plots, including the negative frequencies it makes possible.
 ::::
 
-::::{frame} Zero-IF and Superheterodyne
-:::{present}
-- **Zero-IF**: one quadrature mixer straight to 0 Hz.
-- **Superheterodyne**: first to a fixed IF, then to 0 Hz.
-- The PlutoSDR is zero-IF; a classic FM radio is a superheterodyne.
+::::{frame} Superheterodyne
+:class: viz-frame
+
+:::{depth}
+A **superheterodyne** receiver mixes twice: first to a fixed **intermediate frequency** (IF), then to 0 Hz. The widget follows a classic FM radio, which mixes every station to 10.7 MHz. The wanted station is at 100.3 MHz and the first LO at 111.0 MHz, so 111.0 − 100.3 = 10.7 MHz. A station at 111.0 + 10.7 = 121.7 MHz also comes out at 10.7 MHz; that is the **image**. Press Step and watch the spectrum after each block: the preselector knocks the image down, the LNA raises the signals and the noise floor together (the first amplifier sets the noise figure, from Lesson 2), the mixer moves everything by 111.0 MHz and adds sum products, the IF filter keeps one channel, and the second mixer brings it to 0 Hz for the ADC. Then check **Preselector off**: the 121.7 MHz station lands on 10.7 MHz on top of the wanted one, and no filter after the mixer can separate them. **Transmit** runs the chain backward: the band-pass removes the mixer's unwanted product at 121.7 MHz and the LO leakage before the PA raises the output. This is a broadcast station's chain; a course transmitter sends its test signal at 915 MHz.
 :::
 
-The chain in the figure goes from RF to 0 Hz in one step, which makes it a **direct-conversion**, or **zero-IF**, receiver; the PlutoSDR is one. Zero-IF needs few parts, but anything that leaks into the mixer output at 0 Hz lands in the middle of the band, which is one source of the DC spike that Lesson 5 shows.
+:::{present}
+<iframe src="../../viz/superhet.html"
+        width="100%" height="468"
+        style="border: 1px solid #cddce9; border-radius: 6px;"
+        loading="lazy"
+        title="Superheterodyne: the simulated spectrum after each block of an FM superhet receiver or transmitter, stepping through the chain, with a switch that turns off the preselector so the image lands on the wanted station">
+</iframe>
+:::
+::::
 
-A **superheterodyne** receiver mixes twice: first to a fixed **intermediate frequency** (IF), then to 0 Hz. A classic FM radio mixes every station to 10.7 MHz and filters there. Either way, GNU Radio receives complex samples, so the flowgraph does not depend on how the radio produced them.
+::::{frame} Three Receiver Architectures
+:::{present}
+<img src="../../viz/img/L04-architectures.svg"
+     alt="Three receiver chains, one above the other. Superheterodyne: antenna, preselector, LNA, a mixer with LO1, IF filter, IF amp, an I/Q mixer with LO2, LPF, ADC, GNU Radio; trade-off, two mixers and more parts, and the filter ahead of the first mixer must reject the image. Zero-IF, the PlutoSDR: antenna, filter, LNA, an I/Q mixer with the LO, LPF, ADC, GNU Radio; trade-off, few parts, a DC spike at 0 Hz and I/Q imbalance. Direct RF sampling: antenna, anti-alias filter, LNA, a very fast ADC, GNU Radio; trade-off, no analog mixer, a very fast ADC, and a filter that keeps out everything above half the sample rate"
+     style="max-width: 760px; width: 100%; display: block; margin: 0 auto;">
+:::
+:::{present}
+- **Superheterodyne**: two mixers; image rejection and more parts.
+- **Zero-IF** (the PlutoSDR): one I/Q mixer; a DC spike and I/Q imbalance.
+- **Direct sampling**: no mixer; a very fast ADC and strong anti-alias filtering.
+:::
+
+The three rows move the ADC closer to the antenna. The **superheterodyne** does most of its filtering and gain at one fixed IF, which works well for every station it tunes, but it needs two mixers, two LOs, and a preselector that removes the image before the first mixer.
+
+The chain in the Inside an SDR figure goes from RF to 0 Hz in one step, which makes it a **direct-conversion**, or **zero-IF**, receiver; the PlutoSDR is one. Zero-IF needs few parts, but anything that leaks into the mixer output at 0 Hz lands in the middle of the band, one source of the DC spike that Lesson 5 shows, and two mixer paths that are not perfectly matched leave a faint mirror image of each signal, called **I/Q imbalance**.
+
+A **direct-sampling** receiver has no analog mixer at all. A filter and an amplifier feed an ADC fast enough to digitize the RF band itself, and the mixing happens in software. That takes a very fast ADC and a filter that keeps out everything above half the sample rate, which would otherwise alias into the band (Lesson 5). Whatever the architecture, GNU Radio receives complex samples, so the flowgraph does not depend on how the radio produced them.
 ::::
 
 ::::{frame} Part 2: Sample Rate and Bandwidth
@@ -338,6 +351,7 @@ This lesson follows Dr. Rogers's 2025 slides and these pages:
 | PlutoSDR | the course radio: full duplex, 12 bits | 70–6000 MHz (extended mode), 4 MS/s streaming |
 | Mixer | $f_{LO} + \Delta$ comes out at $\Delta$ | center frequency = $f_{LO}$ |
 | $I$ and $Q$ | two mixers 90° apart | tell $+\Delta$ from $-\Delta$ |
+| Architectures | superhet, zero-IF, direct sampling | the PlutoSDR is zero-IF; FM IF 10.7 MHz |
 | Sample rate | window $f_s$ wide | $8 f_s$ bytes per second in GNU Radio |
 | ADC bits | more bits, lower floor | 8 bits: 256 levels; 12 bits: 4096 |
 | Clipping | strongest signal above 0 dBFS | false signals across the band |
