@@ -1,0 +1,259 @@
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="497.624128pt" height="169.416pt" viewBox="0 0 497.624128 169.416" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:date>2026-10-19T17:34:32.497140</dc:date>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.11.2, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 169.4 
+L 497.6 169.4 
+L 497.6 0 
+L 0 0 
+L 0 169.4 
+z
+" style="fill: none"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 8.8 68.9 
+L 146.6 68.9 
+L 146.6 41.3 
+L 8.8 41.3 
+L 8.8 68.9 
+z
+" clip-path="url(#pfe7e1d7a2f)" style="fill: none; stroke: #004a85; stroke-width: 1.4; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_3">
+    <path d="M 148.7 68.9 
+L 286.6 68.9 
+L 286.6 41.3 
+L 148.7 41.3 
+L 148.7 68.9 
+z
+" clip-path="url(#pfe7e1d7a2f)" style="fill: none; stroke: #004a85; stroke-width: 1.4; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_4">
+    <path d="M 288.7 68.9 
+L 426.5 68.9 
+L 426.5 41.3 
+L 288.7 41.3 
+L 288.7 68.9 
+z
+" clip-path="url(#pfe7e1d7a2f)" style="fill: none; stroke: #004a85; stroke-width: 1.4; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_5">
+    <path d="M 26.3 124.7 
+L 164.1 124.7 
+L 164.1 97.1 
+L 26.3 97.1 
+L 26.3 124.7 
+z
+" clip-path="url(#pfe7e1d7a2f)" style="fill: none; stroke: #b01e24; stroke-width: 1.4; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_6">
+    <path d="M 166.2 124.7 
+L 304.0 124.7 
+L 304.0 97.1 
+L 166.2 97.1 
+L 166.2 124.7 
+z
+" clip-path="url(#pfe7e1d7a2f)" style="fill: none; stroke: #b01e24; stroke-width: 1.4; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_7">
+    <path d="M 306.1 124.7 
+L 426.5 124.7 
+L 426.5 97.1 
+L 306.1 97.1 
+L 306.1 124.7 
+z
+" clip-path="url(#pfe7e1d7a2f)" style="fill: none; stroke-dasharray: 4.2,2.8; stroke-dashoffset: 0; stroke: #b01e24; stroke-width: 1.4; stroke-linejoin: miter"/>
+   </g>
+   <g id="text_1">
+    <text style="font-size: 12px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #15202b" x="16.562687" y="58.294902" transform="rotate(-0 16.562687 58.294902)">0</text>
+   </g>
+   <g id="text_2">
+    <text style="font-size: 12px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #15202b" x="34.052239" y="58.294902" transform="rotate(-0 34.052239 58.294902)">1</text>
+   </g>
+   <g id="text_3">
+    <text style="font-size: 12px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #15202b" x="51.541791" y="58.294902" transform="rotate(-0 51.541791 58.294902)">0</text>
+   </g>
+   <g id="text_4">
+    <text style="font-size: 12px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #15202b" x="69.031343" y="58.294902" transform="rotate(-0 69.031343 58.294902)">1</text>
+   </g>
+   <g id="text_5">
+    <text style="font-size: 12px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #15202b" x="86.520896" y="58.294902" transform="rotate(-0 86.520896 58.294902)">0</text>
+   </g>
+   <g id="text_6">
+    <text style="font-size: 12px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #15202b" x="104.010448" y="58.294902" transform="rotate(-0 104.010448 58.294902)">1</text>
+   </g>
+   <g id="text_7">
+    <text style="font-size: 12px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #15202b" x="121.5" y="58.294902" transform="rotate(-0 121.5 58.294902)">0</text>
+   </g>
+   <g id="text_8">
+    <text style="font-size: 12px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #15202b" x="138.989552" y="58.294902" transform="rotate(-0 138.989552 58.294902)">1</text>
+   </g>
+   <g id="text_9">
+    <text style="font-size: 12px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #15202b" x="156.479104" y="58.294902" transform="rotate(-0 156.479104 58.294902)">0</text>
+   </g>
+   <g id="text_10">
+    <text style="font-size: 12px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #15202b" x="173.968657" y="58.294902" transform="rotate(-0 173.968657 58.294902)">1</text>
+   </g>
+   <g id="text_11">
+    <text style="font-size: 12px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #15202b" x="191.458209" y="58.294902" transform="rotate(-0 191.458209 58.294902)">0</text>
+   </g>
+   <g id="text_12">
+    <text style="font-size: 12px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #15202b" x="208.947761" y="58.294902" transform="rotate(-0 208.947761 58.294902)">1</text>
+   </g>
+   <g id="text_13">
+    <text style="font-size: 12px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #15202b" x="226.437313" y="58.294902" transform="rotate(-0 226.437313 58.294902)">0</text>
+   </g>
+   <g id="text_14">
+    <text style="font-size: 12px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #15202b" x="243.926866" y="58.294902" transform="rotate(-0 243.926866 58.294902)">0</text>
+   </g>
+   <g id="text_15">
+    <text style="font-size: 12px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #15202b" x="261.416418" y="58.294902" transform="rotate(-0 261.416418 58.294902)">1</text>
+   </g>
+   <g id="text_16">
+    <text style="font-size: 12px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #15202b" x="278.90597" y="58.294902" transform="rotate(-0 278.90597 58.294902)">1</text>
+   </g>
+   <g id="text_17">
+    <text style="font-size: 12px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #15202b" x="296.395522" y="58.294902" transform="rotate(-0 296.395522 58.294902)">0</text>
+   </g>
+   <g id="text_18">
+    <text style="font-size: 12px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #15202b" x="313.885075" y="58.294902" transform="rotate(-0 313.885075 58.294902)">1</text>
+   </g>
+   <g id="text_19">
+    <text style="font-size: 12px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #15202b" x="331.374627" y="58.294902" transform="rotate(-0 331.374627 58.294902)">0</text>
+   </g>
+   <g id="text_20">
+    <text style="font-size: 12px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #15202b" x="348.864179" y="58.294902" transform="rotate(-0 348.864179 58.294902)">0</text>
+   </g>
+   <g id="text_21">
+    <text style="font-size: 12px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #15202b" x="366.353731" y="58.294902" transform="rotate(-0 366.353731 58.294902)">0</text>
+   </g>
+   <g id="text_22">
+    <text style="font-size: 12px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #15202b" x="383.843284" y="58.294902" transform="rotate(-0 383.843284 58.294902)">0</text>
+   </g>
+   <g id="text_23">
+    <text style="font-size: 12px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #15202b" x="401.332836" y="58.294902" transform="rotate(-0 401.332836 58.294902)">0</text>
+   </g>
+   <g id="text_24">
+    <text style="font-size: 12px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #15202b" x="418.822388" y="58.294902" transform="rotate(-0 418.822388 58.294902)">1</text>
+   </g>
+   <g id="text_25">
+    <text style="font-size: 12px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #15202b" x="16.562687" y="114.07433" transform="rotate(-0 16.562687 114.07433)">0</text>
+   </g>
+   <g id="text_26">
+    <text style="font-size: 12px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #15202b" x="34.052239" y="114.07433" transform="rotate(-0 34.052239 114.07433)">1</text>
+   </g>
+   <g id="text_27">
+    <text style="font-size: 12px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #15202b" x="51.541791" y="114.07433" transform="rotate(-0 51.541791 114.07433)">0</text>
+   </g>
+   <g id="text_28">
+    <text style="font-size: 12px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #15202b" x="69.031343" y="114.07433" transform="rotate(-0 69.031343 114.07433)">1</text>
+   </g>
+   <g id="text_29">
+    <text style="font-size: 12px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #15202b" x="86.520896" y="114.07433" transform="rotate(-0 86.520896 114.07433)">0</text>
+   </g>
+   <g id="text_30">
+    <text style="font-size: 12px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #15202b" x="104.010448" y="114.07433" transform="rotate(-0 104.010448 114.07433)">1</text>
+   </g>
+   <g id="text_31">
+    <text style="font-size: 12px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #15202b" x="121.5" y="114.07433" transform="rotate(-0 121.5 114.07433)">0</text>
+   </g>
+   <g id="text_32">
+    <text style="font-size: 12px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #15202b" x="138.989552" y="114.07433" transform="rotate(-0 138.989552 114.07433)">1</text>
+   </g>
+   <g id="text_33">
+    <text style="font-size: 12px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #15202b" x="156.479104" y="114.07433" transform="rotate(-0 156.479104 114.07433)">0</text>
+   </g>
+   <g id="text_34">
+    <text style="font-size: 12px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #15202b" x="173.968657" y="114.07433" transform="rotate(-0 173.968657 114.07433)">1</text>
+   </g>
+   <g id="text_35">
+    <text style="font-size: 12px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #15202b" x="191.458209" y="114.07433" transform="rotate(-0 191.458209 114.07433)">0</text>
+   </g>
+   <g id="text_36">
+    <text style="font-size: 12px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #15202b" x="208.947761" y="114.07433" transform="rotate(-0 208.947761 114.07433)">1</text>
+   </g>
+   <g id="text_37">
+    <text style="font-size: 12px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #15202b" x="226.437313" y="114.07433" transform="rotate(-0 226.437313 114.07433)">0</text>
+   </g>
+   <g id="text_38">
+    <text style="font-size: 12px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #15202b" x="243.926866" y="114.07433" transform="rotate(-0 243.926866 114.07433)">0</text>
+   </g>
+   <g id="text_39">
+    <text style="font-size: 12px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #15202b" x="261.416418" y="114.07433" transform="rotate(-0 261.416418 114.07433)">1</text>
+   </g>
+   <g id="text_40">
+    <text style="font-size: 12px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #15202b" x="278.90597" y="114.07433" transform="rotate(-0 278.90597 114.07433)">1</text>
+   </g>
+   <g id="text_41">
+    <text style="font-size: 12px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #15202b" x="296.395522" y="114.07433" transform="rotate(-0 296.395522 114.07433)">0</text>
+   </g>
+   <g id="text_42">
+    <text style="font-size: 12px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #15202b" x="313.885075" y="114.07433" transform="rotate(-0 313.885075 114.07433)">1</text>
+   </g>
+   <g id="text_43">
+    <text style="font-size: 12px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #15202b" x="331.374627" y="114.07433" transform="rotate(-0 331.374627 114.07433)">0</text>
+   </g>
+   <g id="text_44">
+    <text style="font-size: 12px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #15202b" x="348.864179" y="114.07433" transform="rotate(-0 348.864179 114.07433)">0</text>
+   </g>
+   <g id="text_45">
+    <text style="font-size: 12px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #15202b" x="366.353731" y="114.07433" transform="rotate(-0 366.353731 114.07433)">0</text>
+   </g>
+   <g id="text_46">
+    <text style="font-size: 12px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #15202b" x="383.843284" y="114.07433" transform="rotate(-0 383.843284 114.07433)">0</text>
+   </g>
+   <g id="text_47">
+    <text style="font-size: 12px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #15202b" x="401.332836" y="114.07433" transform="rotate(-0 401.332836 114.07433)">0</text>
+   </g>
+   <g id="text_48">
+    <text style="font-size: 12px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #15202b" x="418.822388" y="114.07433" transform="rotate(-0 418.822388 114.07433)">1</text>
+   </g>
+   <g id="text_49">
+    <text style="font-weight: 700; font-size: 11.5px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #004a85" x="77.776119" y="31.915876" transform="rotate(-0 77.776119 31.915876)">0x55  'U'</text>
+   </g>
+   <g id="text_50">
+    <text style="font-weight: 700; font-size: 11.5px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #004a85" x="217.692537" y="31.915876" transform="rotate(-0 217.692537 31.915876)">0x53  'S'</text>
+   </g>
+   <g id="text_51">
+    <text style="font-weight: 700; font-size: 11.5px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #004a85" x="357.608955" y="31.915876" transform="rotate(-0 357.608955 31.915876)">0x41  'A'</text>
+   </g>
+   <g id="text_52">
+    <text style="font-weight: 700; font-size: 11.5px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #b01e24" x="95.265672" y="140.19359" transform="rotate(-0 95.265672 140.19359)">0xAA  (not ASCII)</text>
+   </g>
+   <g id="text_53">
+    <text style="font-weight: 700; font-size: 11.5px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #b01e24" x="235.18209" y="140.19359" transform="rotate(-0 235.18209 140.19359)">0xA6  (not ASCII)</text>
+   </g>
+   <g id="text_54">
+    <text style="font-weight: 700; font-size: 11.5px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #b01e24" x="366.353731" y="140.19359" transform="rotate(-0 366.353731 140.19359)">0x82…</text>
+   </g>
+   <g id="text_55">
+    <text style="font-size: 10px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: start; fill: #004a85" x="436.31194" y="57.775761" transform="rotate(-0 436.31194 57.775761)">from bit 0</text>
+   </g>
+   <g id="text_56">
+    <text style="font-size: 10px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: start; fill: #b01e24" x="436.31194" y="113.55519" transform="rotate(-0 436.31194 113.55519)">one bit late</text>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="pfe7e1d7a2f">
+   <rect x="4.32" y="4.32" width="468.72" height="160.776"/>
+  </clipPath>
+ </defs>
+</svg>

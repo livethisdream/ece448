@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="en" data-mode="read">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>L17 Lab — RF Reverse Engineering &mdash; ECE 448 — Software Defined Radios</title>
+<meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+<link rel="icon" href="../../_static/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap"><link rel="stylesheet" href="../../_static/custom.css?v=ec0f297254">
+<link rel="stylesheet" href="../../_static/shell.css?v=78396bd831">
+<link rel="stylesheet" href="../../_static/frames.css?v=fa285d3703">
+</head>
+<body>
+
+<div class="rail"><span id="railfill"></span></div>
+
+<div class="laser" id="laser" aria-hidden="true"></div>
+<div class="spot" id="spot" aria-hidden="true"></div>
+
+<div class="index" id="index" role="dialog" aria-label="Jump to a frame or another lesson">
+  <button class="index-close" id="btnIndexClose" type="button" aria-label="Close">&times;</button>
+  <div class="wrap">
+    <div class="index-cols">
+      <div class="index-here">
+        <h2>This lesson</h2>
+        <ol id="indexlist"></ol>
+      </div>
+      <div class="index-toc">
+        <h2>Course</h2>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Course Information</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../syllabus.html">Syllabus</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../materials.html">Materials</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 1 — Foundations of Detection &amp; Link Budgets</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module01/index.html">Module 1 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module01/L01-course-intro/index.html">L1 — Course Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module01/L02-noise-figure-link-budget/index.html">L2 — Noise Figure and Link Budget</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module01/L03-signal-space/index.html">L3 — Signal Space</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 2 — SDR &amp; GNU Radio Foundations</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module02/index.html">Module 2 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module02/L04-sdr-introduction/index.html">L4 — SDR Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module02/L05-gnu-radio-intro/index.html">L5 — GNU Radio Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module02/L05-lab-first-flowgraphs/index.html">L5 Lab — First Flowgraphs</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 3 — Analog Modulation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module03/index.html">Module 3 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module03/L06-am-simulation/index.html">L6 — AM Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module03/L06-lab-am-simulation/index.html">L6 Lab — AM Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module03/L07-am-fm-receivers/index.html">L7 — AM and FM Receivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module03/L07-lab-am-fm-receivers/index.html">L7 Lab — AM and FM Receivers</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 4 — Digital Modulation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/index.html">Module 4 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/L08-fsk/index.html">L8 — FSK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/L08-lab-fsk/index.html">L8 Lab — FSK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/L09-pam-theory/index.html">L9 — PAM Theory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/L10-ascii-pam/index.html">L10 — ASCII over PAM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/L10-lab-pam-link/index.html">L10 Lab — PAM Link</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 5 — Custom Blocks &amp; Midterm</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module05/index.html">Module 5 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module05/L11-custom-blocks/index.html">L11 — Out-of-Tree Modules and Custom Blocks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module05/L11-lab-custom-block/index.html">L11 Lab — Custom Block</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module05/midterm/index.html">Midterm — Fox Hunt and CTF</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 6 — Waveform Applications &amp; RF Reverse Engineering</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Module 6 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L12-cw/index.html">L12 — CW</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L12-lab-cw/index.html">L12 Lab — CW</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L13-dtmf/index.html">L13 — DTMF</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L13-lab-dtmf/index.html">L13 Lab — DTMF</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L14-hd-radio/index.html">L14 — HD Radio</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L14-lab-hd-radio/index.html">L14 Lab — HD Radio</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L15-mpsk/index.html">L15 — mPSK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L15-lab-mpsk/index.html">L15 Lab — mPSK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L16-fhss/index.html">L16 — Frequency Hopping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L16-lab-fhss/index.html">L16 Lab — Frequency Hopping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L17-rf-reverse-engineering/index.html">L17 — RF Reverse Engineering</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">L17 Lab — RF Reverse Engineering</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L18-adsb/index.html">L18 — ADS-B</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L19-ais/index.html">L19 — AIS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L18-L19-lab-adsb-ais/index.html">L18–L19 Lab — ADS-B and AIS</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 7 — Final Project</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module07/index.html">Module 7 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module07/L20-qam-ofdm/index.html">L20 — QAM and OFDM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module07/final-project/index.html">Final Project</a></li>
+</ul>
+
+      </div>
+    </div>
+  </div>
+</div><div class="hud">
+<div class="hud-group">
+  <button id="btnSite" class="site" type="button"
+          aria-expanded="false" aria-controls="sitepop"
+          title="Elsewhere on this site">ECE 448</button>
+</div>
+<div class="pop" id="sitepop" role="group" aria-label="Site" hidden>
+  <a href="https://livethisdream.github.io/">Home</a>
+  <a href="https://livethisdream.github.io/ece343/intro.html">ECE 343</a>
+  <a href="https://livethisdream.github.io/ece444/intro.html">ECE 444</a>
+  <a href="../../intro.html" aria-current="page">ECE 448</a>
+  <a href="https://livethisdream.github.io/projects">Projects</a>
+  <button class="pop-help" type="button" data-help>Help<kbd>?</kbd></button>
+</div>
+
+  <div class="hud-group hud-mid"><button id="btnMode" type="button" aria-expanded="false" aria-controls="modepop"
+            title="How the lesson is laid out (P)">read</button>
+    <button id="btnTools" type="button" aria-expanded="false" aria-controls="toolspop"
+            title="Presenter tools">tools</button>
+  </div>
+
+  <div class="hud-group"><button id="btnIndex" class="counter" type="button" aria-pressed="false"
+            title="Contents (G) · double-tap for the top"><b id="cur">1</b>/<span id="tot">0</span></button>
+  </div><div class="pop" id="modepop" role="group" aria-label="View mode" hidden>
+    <button id="btnPresent" class="choice" type="button" aria-pressed="false">
+      present<span class="pop-note">one frame at a time</span></button>
+    <button id="btnRead" class="choice" type="button" aria-pressed="true">
+      read<span class="pop-note">the whole lesson, continuous</span></button>
+  </div><div class="pop" id="toolspop" role="group" aria-label="Presenter tools" hidden>
+    <button id="btnLaser" type="button" aria-pressed="false">laser<kbd>L</kbd></button>
+    <button id="btnSpot" type="button" aria-pressed="false">spotlight<kbd>S</kbd></button>
+    <button id="btnFull" type="button">fullscreen<kbd>F</kbd></button>
+    <button id="btnHelp" type="button" data-help>help<kbd>?</kbd></button>
+  </div>
+</div>
+<div class="help" id="help" role="dialog" aria-modal="true" aria-labelledby="helpTitle" hidden>
+  <div class="help-card">
+    <button class="help-close" id="btnHelpClose" type="button" aria-label="Close help">&times;</button>
+    <h2 id="helpTitle">Getting around</h2>
+    <p class="help-lead">Everything is in the bar at the bottom of the screen.</p>
+    <dl class="help-list">
+      <dt><span class="help-chip">ECE 448</span></dt>
+      <dd>The other course sites, the home page, and this help.</dd>
+      <dt><span class="help-chip">read</span></dt>
+      <dd><b>Read</b> shows the whole lesson as one page. <b>Present</b> shows one frame at a time, for class.<span class="help-keys"> <kbd>P</kbd> switches.</span></dd>
+      <dt><span class="help-chip">tools</span></dt>
+      <dd>Laser pointer<span class="help-keys"> <kbd>L</kbd></span>, spotlight<span class="help-keys"> <kbd>S</kbd></span>, and fullscreen<span class="help-keys"> <kbd>F</kbd></span>.</dd>
+      <dt><span class="help-chip">3/9</span></dt>
+      <dd>Where you are in the lesson. Tap it for every frame here and every lesson in the course<span class="help-keys"> <kbd>G</kbd></span>. Double-tap to go back to the top.</dd>
+    </dl>
+    <h3 class="help-keys">Presenting</h3>
+    <p class="help-keys"><kbd>&rarr;</kbd> or <kbd>Space</kbd> next frame, <kbd>&larr;</kbd> back, <kbd>D</kbd> this frame&rsquo;s detail, <kbd>Esc</kbd> close a panel.</p>
+    <h3>Printing</h3>
+    <p>Print from present mode for the slides, one frame a page. Print from read mode for the whole lesson.</p>
+    <p class="help-foot"><span class="help-keys">Press <kbd>?</kbd> to open this again.</span><span class="help-touch">Open this again from the ECE 448 menu.</span></p>
+  </div>
+</div>
+
+<div class="help-hint" id="helpHint" hidden>
+  <button id="btnHintOpen" type="button" data-help>New here? How the bar works</button>
+  <button id="btnHintClose" class="help-hint-close" type="button" aria-label="Dismiss">&times;</button>
+</div><main class="deck bd-article" id="deck" tabindex="-1">
+<section class="tex2jax_ignore mathjax_ignore" id="l17-lab-rf-reverse-engineering">
+<h1>L17 Lab — RF Reverse Engineering<a class="headerlink" href="#l17-lab-rf-reverse-engineering" title="Permalink to this heading">#</a></h1>
+<div class="frame title-frame docutils container" id="frame-1">
+<div class="wrap docutils container">
+<div class="course-mark">ECE 448 · Spring 2027</div>
+<h1 class="frame-title">RF Reverse Engineering</h1>
+<div class="title-rule"></div>
+<p>Reverse-engineer an unknown signal from capture to payload.</p>
+<p>L17 Lab · Module 6: Waveform Applications &amp; RF Reverse Engineering · Dr. Neil Rogers</p>
+</div>
+</div>
+<div class="frame docutils container" id="frame-learning-objectives">
+<div class="wrap docutils container">
+<p class="rubric">Learning Objectives</p>
+<ol class="lo-list" style="--module: '6'; counter-reset: lo 5">
+  <li>I can perform RF reverse engineering on an unknown signal: identify its modulation, symbol rate, and payload structure.</li>
+</ol>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-from-lesson-to-bench">
+<div class="wrap docutils container">
+<p class="rubric">From Lesson to Bench</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<ul class="simple">
+<li><p><strong>Pre-Lab:</strong> read the recording’s meta file, read chips in GNU Radio, and work out chip settings.</p></li>
+<li><p><strong>Bench:</strong> take an unknown remote from carrier to fields, build its encoder, send it through a cable, and record a real remote.</p></li>
+<li><p><strong>Writeup:</strong> explain the evidence for each step.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>Lesson 17 took the Simulated fan remote through five steps: find the carrier, identify the modulation, identify the encoding, build an encoder, and transmit. Today you take a different device through the same steps. It is a <strong>Simulated remote outlet switch</strong> with six buttons, and nobody will describe it to you: its recording is all you get. The lab packet has three parts, and you turn it in once, complete, before Lesson 18. <strong>Part 1, the Pre-Lab</strong>, is on your own before the period. <strong>Part 2</strong> is what you find, build, and observe in class. <strong>Part 3, the Writeup</strong>, explains it.</p>
+<p>Questions 1 to 7 run on your laptop and transmit nothing. Question 8 transmits, into a cable only, as the PlutoSDR frame below describes. Question 9 only receives.</p>
+</div>
+</div>
+</div>
+<div class="frame read-only doc-links docutils container" id="frame-the-recording">
+<div class="wrap docutils container">
+<p class="rubric">The Recording</p>
+<ul class="simple">
+<li><p><a class="doc-link" href="../../grc/L17-lab-unknown.sigmf-data" download>L17-lab-unknown.sigmf-data</a> and <a class="doc-link" href="../../grc/L17-lab-unknown.sigmf-meta" download>L17-lab-unknown.sigmf-meta</a>: the unknown device, labeled Simulated in its meta file, one press of each of its six buttons. Keep the two files in the same folder.</p></li>
+</ul>
+<p>The recording is a SigMF pair, like the lesson’s, but its sample rate and center frequency are its own: read them from the meta file before you open it anywhere. The meta file’s description lists the buttons in the order they were pressed, which tells you which burst is which. It does not describe the signal.</p>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-part-1-before-the-period">
+<div class="wrap docutils container">
+<p class="rubric">Part 1: Before the Period</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<ul class="simple">
+<li><p>Read the meta file and set up <code class="docutils literal notranslate"><span class="pre">L17-sigmf-view.grc</span></code> for this recording.</p></li>
+<li><p>Open the lesson’s recording in <code class="docutils literal notranslate"><span class="pre">L17-chips.grc</span></code> and read its chips.</p></li>
+<li><p>Work out samples per chip for a few chip lengths.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>Do the Pre-Lab before you arrive. Question 1 asks for the datatype, sample rate, and center frequency from <code class="docutils literal notranslate"><span class="pre">L17-lab-unknown.sigmf-meta</span></code>, and for the values of <code class="docutils literal notranslate"><span class="pre">rec</span></code>, <code class="docutils literal notranslate"><span class="pre">samp_rate</span></code>, and <code class="docutils literal notranslate"><span class="pre">fc</span></code> you set in <code class="docutils literal notranslate"><span class="pre">L17-sigmf-view.grc</span></code> so that it opens this recording. Run it once to check that the spectrum’s axis is centered on the recording’s center frequency.</p>
+<p>Question 2 checks <code class="docutils literal notranslate"><span class="pre">L17-chips.grc</span></code> on the lesson’s recording, <code class="docutils literal notranslate"><span class="pre">L17-fan-remote.sigmf-data</span></code>, whose answers the lesson page gives, so you can tell whether the flowgraph is working before you meet the unknown. Set <code class="docutils literal notranslate"><span class="pre">samp_rate</span></code> to 200000, <code class="docutils literal notranslate"><span class="pre">fc</span></code> to 350e6, and the carrier offset to 40000 Hz, measure the shortest pulse on the envelope, and set the chip length to it. Question 3 is the arithmetic the Chip Reader and your encoder need: samples per chip for several chip lengths at this recording’s sample rate and at the PlutoSDR flowgraph’s 1 MS/s, so you can convert any length you measure.</p>
+</div>
+</div>
+</div>
+<div class="frame read-only docutils container" id="frame-part-2-find-the-carrier">
+<div class="wrap docutils container">
+<p class="rubric">Part 2: Find the Carrier</p>
+<ol class="arabic simple">
+<li><p>Run <code class="docutils literal notranslate"><span class="pre">L17-sigmf-view.grc</span></code> with your settings from Question 1. Watch the waterfall through at least two loops of the recording.</p></li>
+<li><p>Find every signal on the waterfall. For each, decide whether it bursts when a button is pressed or stays on, and record its frequency for Question 4(a).</p></li>
+<li><p>Read the center of the bursts off the Frequency Sink or the waterfall. To check it, move the Carrier offset slider until the envelope plot shows clean pulses, then find the offset on each side where the pulses drop to half their height and take the midpoint. Record the offset and screenshot the window for Question 4(b).</p></li>
+<li><p>Record the carrier frequency, the center frequency plus your offset, for Question 4(c).</p></li>
+</ol>
+</div>
+</div>
+<div class="frame read-only docutils container" id="frame-part-2-modulation-and-encoding-in-gnu-radio">
+<div class="wrap docutils container">
+<p class="rubric">Part 2: Modulation and Encoding in GNU Radio</p>
+<ol class="arabic simple">
+<li><p>Open <code class="docutils literal notranslate"><span class="pre">L17-lab-unknown.sigmf-data</span></code> in <code class="docutils literal notranslate"><span class="pre">L17-chips.grc</span></code>. Set <code class="docutils literal notranslate"><span class="pre">rec</span></code>, <code class="docutils literal notranslate"><span class="pre">samp_rate</span></code>, and <code class="docutils literal notranslate"><span class="pre">fc</span></code> as in Question 1, and the carrier offset to your answer to Question 4(b).</p></li>
+<li><p>Set the threshold about halfway between the envelope’s off and on levels. On the time sink, find the shortest pulse; the time axis is in milliseconds, so convert it to samples at the recording’s rate. Record it for Question 5(a), and set the chip length to it.</p></li>
+<li><p>Find the shortest gap the same way. Record it for Question 5(b), and decide whether it fits your chip length.</p></li>
+<li><p>Read the lines of chips the Chip Reader prints in GRC’s console. Compare several bursts, decide how the chips group into bits, and whether each burst holds anything besides data bits, and record your evidence for Question 5(c).</p></li>
+<li><p>Decode one burst of each button into bits by hand, and fill in Question 6’s table. Then compare the buttons and mark which bits never change and which change with the button.</p></li>
+<li><p>Count the bursts in one press, and read the pause between bursts from the Chip Reader, for Question 6(c).</p></li>
+</ol>
+</div>
+</div>
+<div class="frame read-only docutils container" id="frame-if-the-chips-look-wrong">
+<div class="wrap docutils container">
+<p class="rubric">If the Chips Look Wrong</p>
+<div class="tip admonition">
+<p class="admonition-title">If the lines of chips change from burst to burst, or the groups never repeat</p>
+<p>Check the sample rate first: a wrong <code class="docutils literal notranslate"><span class="pre">samp_rate</span></code> makes every time on the envelope wrong. Then check the carrier offset: if the pulses are low or ragged, the signal sits at the edge of the filter. If short pulses never cross the threshold, lower it, or raise the Envelope gain. If a line is a chip short or long in the middle, your chip length is a little off; measure the pulse again, over several pulses. If a weak capture’s lines shift by a chip at random, a noise spike just before a burst may have started the chip clock early; raise the gain or the threshold a little. If some lines are a chip or two shorter than others at the end, look at what the last bits of each line are: the Chip Reader ends a line at its last on chip, so off chips at the end of a burst count as part of the pause.</p>
+</div>
+</div>
+</div>
+<div class="frame read-only docutils container" id="frame-part-2-build-the-encoder">
+<div class="wrap docutils container">
+<p class="rubric">Part 2: Build the Encoder</p>
+<ol class="arabic simple">
+<li><p>Start GRC and choose File, New, QT GUI. Do not open <code class="docutils literal notranslate"><span class="pre">L17-fan-tx-sim.grc</span></code>; build the encoder yourself from standard blocks, with the settings you found. You may look at the lesson page’s Step 4 figure.</p></li>
+<li><p>Set <code class="docutils literal notranslate"><span class="pre">samp_rate</span></code> to the recording’s sample rate and <code class="docutils literal notranslate"><span class="pre">chip_len</span></code> to your samples per chip. Add a Variable <code class="docutils literal notranslate"><span class="pre">bits</span></code> that holds one button’s bits as a list of 0s and 1s.</p></li>
+<li><p>Build the envelope: a <strong>Vector Source</strong> of <code class="docutils literal notranslate"><span class="pre">bits</span></code>, a <strong>Map</strong> and <strong>Unpack K Bits</strong> that turn each bit into your chip pattern, <strong>Char To Float</strong>, and a <strong>Repeat</strong> of <code class="docutils literal notranslate"><span class="pre">chip_len</span></code>.</p></li>
+<li><p>Add anything your measurements show around the bits, and the pause after each burst, with a <strong>Constant Source</strong> of 0. Join them with a <strong>Stream Mux</strong> whose lengths, in samples, match your measurements.</p></li>
+<li><p>Put the envelope on a carrier at your offset with <strong>Float To Complex</strong>, a <strong>Signal Source</strong>, and a <strong>Multiply</strong>. Add a <strong>Noise Source</strong> of amplitude 0.05 and an <strong>Add</strong>, then a <strong>Throttle</strong>, a <strong>QT GUI Time Sink</strong> of the envelope from <strong>Complex to Mag</strong>, and a <strong>SigMF Sink (Minimal)</strong> with file name <code class="docutils literal notranslate"><span class="pre">my-unknown</span></code>, the recording’s sample rate, and its center frequency. Every arrow must be black.</p></li>
+<li><p>Run it for about 5 s and close it. Set <code class="docutils literal notranslate"><span class="pre">rec</span></code> in <code class="docutils literal notranslate"><span class="pre">L17-chips.grc</span></code> to <code class="docutils literal notranslate"><span class="pre">my-unknown.sigmf-data</span></code>, with the same settings as for the original recording, and compare the lines of chips for Question 7(a).</p></li>
+<li><p>Change <code class="docutils literal notranslate"><span class="pre">bits</span></code> to a second button and repeat for Question 7(b). Then run it again and raise the noise amplitude in steps of 0.1 until the Chip Reader’s lines of chips no longer match; record where for Question 7(c).</p></li>
+</ol>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-part-2-transmit-into-a-cable">
+<div class="wrap docutils container">
+<p class="rubric">Part 2: Transmit into a Cable</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<ul class="simple">
+<li><p>You send your encoder at 915 MHz from one PlutoSDR through a 30 dB attenuator into a second PlutoSDR.</p></li>
+<li><p>Connect the cable before the flowgraph runs; an antenna only if your instructor says so.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>Save a copy of your encoder for the radio. Delete the Noise Source, the Add, and the Throttle, set <code class="docutils literal notranslate"><span class="pre">samp_rate</span></code> to 1000000 and <code class="docutils literal notranslate"><span class="pre">chip_len</span></code> to your chip length in samples at 1 MS/s, and rescale every Stream Mux length and the pause to 1 MS/s; writing them as multiples of <code class="docutils literal notranslate"><span class="pre">chip_len</span></code>, as <code class="docutils literal notranslate"><span class="pre">L17-fan-tx-pluto.grc</span></code> does, makes them follow it, and add a <strong>PlutoSDR Sink</strong> after a Multiply Const of 0.5, tuned to 915 MHz. A signal the course makes never goes out on the real device’s frequency, so your encoder leaves the device’s band for 915 MHz, in the 902 to 928 MHz ISM band; keep your carrier offset, so the carrier lands at 915 MHz plus the offset. Copy the <code class="docutils literal notranslate"><span class="pre">tx_atten</span></code> QT GUI Range from <code class="docutils literal notranslate"><span class="pre">L17-fan-tx-pluto.grc</span></code> unchanged, from 30 to 89 dB with a default of 60, and set it as the sink’s attenuation. Put “Transmit into the cable unless your instructor says otherwise” in the flowgraph’s description. A second PlutoSDR records what arrives with <code class="docutils literal notranslate"><span class="pre">L17-capture.grc</span></code>. Leave its variable <code class="docutils literal notranslate"><span class="pre">fc</span></code> at 915e6, its default, and set it before you run it if you changed it; the SigMF Sink writes the center frequency into the meta file when the flowgraph starts.</p>
+<p>In class we transmit only into a cable, into a shielded enclosure, or at very low power in an ISM band, and only when the lesson says to. This device’s band is an FCC Part 15 frequency, not a U.S. ISM band, which is why the encoder moves to 915 MHz. By default this question transmits only into the cable between the first Pluto’s TX port and the second Pluto’s RX port, through an inline 30 dB SMA attenuator, or, if your instructor says so, over the air at 915 MHz at low power. Never set TX attenuation below 30 dB or change the slider’s range; a Pluto’s input is rated to only a few dBm. We have compiled the Pluto flowgraphs but not run them on a radio, so your bench is their first run on hardware.</p>
+</div>
+</div>
+</div>
+<div class="frame read-only docutils container" id="frame-plutosdr-steps">
+<div class="wrap docutils container">
+<p class="rubric">PlutoSDR Steps</p>
+<ol class="arabic simple">
+<li><p>With both radios unplugged, connect the first Pluto’s TX port to the second Pluto’s RX port with a short SMA cable and an inline 30 dB SMA attenuator. Do not connect an antenna, and do not connect the cable without the attenuator.</p></li>
+<li><p>Plug in both radios. Run <code class="docutils literal notranslate"><span class="pre">iio_info</span> <span class="pre">-s</span></code> at the radioconda prompt; it should list both PlutoSDRs, each with a <code class="docutils literal notranslate"><span class="pre">usb:</span></code> address such as <code class="docutils literal notranslate"><span class="pre">usb:1.5.5</span></code>. Every Pluto has the same default address, <code class="docutils literal notranslate"><span class="pre">ip:192.168.2.1</span></code>, so on one laptop copy each Pluto’s <code class="docutils literal notranslate"><span class="pre">usb:</span></code> address into the <code class="docutils literal notranslate"><span class="pre">uri</span></code> of its flowgraph’s PlutoSDR block, or run each Pluto from its own laptop.</p></li>
+<li><p>Run <code class="docutils literal notranslate"><span class="pre">L17-capture.grc</span></code> on the second Pluto, with <code class="docutils literal notranslate"><span class="pre">fc</span></code> already set, then run your Pluto encoder. Find your signal on the capture flowgraph’s waterfall, and screenshot both windows for Question 8(a). If the signal is weak, raise the capture flowgraph’s RX gain a few dB at a time. Never set TX attenuation below 30 dB.</p></li>
+<li><p>Close the capture flowgraph after about 5 s. Open <code class="docutils literal notranslate"><span class="pre">capture.sigmf-data</span></code> in <code class="docutils literal notranslate"><span class="pre">L17-chips.grc</span></code> with <code class="docutils literal notranslate"><span class="pre">samp_rate</span></code> 1000000, <code class="docutils literal notranslate"><span class="pre">fc</span></code> 915e6, and your chip length at 1 MS/s. Two Plutos’ clocks can disagree by several kilohertz at 915 MHz, so read the bursts’ offset off the capture flowgraph’s spectrum and set the carrier offset to it. Raise the Envelope gain until the pulses reach about 1, and compare its chips with the original recording’s for Question 8(b).</p></li>
+<li><p>Set the TX attenuation to 60, 70, 80, and 89 dB in turn, recording 5 s at each, and record whether the Chip Reader’s chips still match, for Question 8(c). Stop both flowgraphs and unplug the radios before you disconnect the cable.</p></li>
+</ol>
+</div>
+</div>
+<div class="frame read-only docutils container" id="frame-part-2-a-real-remote">
+<div class="wrap docutils container">
+<p class="rubric">Part 2: A Real Remote</p>
+<p>In Question 9 your Pluto only receives, and receiving is always allowed.</p>
+<ol class="arabic simple">
+<li><p>Choose a real device that you own: a key fob, a wireless doorbell, or a weather sensor. Its label or manual usually gives its frequency.</p></li>
+<li><p>Run <code class="docutils literal notranslate"><span class="pre">L17-explore-pluto.grc</span></code>, set its center frequency about 200 kHz below the device’s frequency (the course Plutos tune from 70 MHz to 6 GHz, so 315 MHz is in range), hold a button down, and read the carrier off the spectrum’s peak. The 2025 class read it off a live spectrum the same way. Record it for Question 9(a).</p></li>
+<li><p>Set <code class="docutils literal notranslate"><span class="pre">fc</span></code> in the capture flowgraph about 200 kHz below the carrier, so the Pluto’s DC spike stays off the signal, and run it. Press one button a few times and close the flowgraph; rename <code class="docutils literal notranslate"><span class="pre">capture.sigmf-data</span></code> and <code class="docutils literal notranslate"><span class="pre">.sigmf-meta</span></code> for that button. Repeat for every button.</p></li>
+<li><p>Open the recordings in <code class="docutils literal notranslate"><span class="pre">L17-chips.grc</span></code> and take the device as far through Steps 2 and 3 as you can: the modulation, the chip length, the encoding, and which bits change with the button. Record it for Question 9(b) and (c).</p></li>
+</ol>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-part-3-after-the-lab">
+<div class="wrap docutils container">
+<p class="rubric">Part 3: After the Lab</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<ul class="simple">
+<li><p>Give the evidence for the carrier, the modulation, the encoding, and each field.</p></li>
+<li><p>Explain how a receiver could reject a damaged frame, and what it could miss.</p></li>
+<li><p>Explain why a fixed code can be replayed, and what would stop it.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>The Writeup is Question 10, in three parts. Part (a) lists, step by step, the observation that settled each answer: what you saw on the waterfall, the envelope, and the lines of chips, and which comparison between buttons identified each field. Part (b) explains, from your Question 6 table and your noise run in Question 7(c), how a receiver of this device could tell a frame damaged by noise from a good one, and what damage it could miss. Part (c) explains why your encoder from Question 7 would operate a device that matched this recording, and describes in words how a rolling code, as in a car key fob, would stop a recording from being reused.</p>
+</div>
+</div>
+</div>
+<div class="frame read-only doc-links docutils container" id="frame-lab-packet">
+<div class="wrap docutils container">
+<p class="rubric">Lab Packet</p>
+<ul class="simple">
+<li><p><a class="doc-link" href="../../labs/ECE448_Lab_L17_RFReverseEngineering_blank.pdf" target="_blank" rel="noopener">L17 Lab packet (PDF)</a></p></li>
+<li><p><a class="doc-link" href="../../grc/L17-sigmf-view.grc" download>L17-sigmf-view.grc</a>: the viewer for Questions 1 and 4. No hardware needed.</p></li>
+<li><p><a class="doc-link" href="../../grc/L17-chips.grc" download>L17-chips.grc</a>: the envelope, threshold, and Chip Reader for Questions 2, 5 to 9. No hardware needed.</p></li>
+<li><p><a class="doc-link" href="../../grc/L17-capture.grc" download>L17-capture.grc</a>: the receiving PlutoSDR for Questions 8 and 9, recording to SigMF. Receive only; set <code class="docutils literal notranslate"><span class="pre">fc</span></code> before you run it.</p></li>
+<li><p><a class="doc-link" href="../../grc/L17-explore-pluto.grc" download>L17-explore-pluto.grc</a>: a live PlutoSDR spectrum and waterfall with a center frequency you change while it runs, for Question 9(a). Receive only.</p></li>
+<li><p>Optional: an RTL-SDR also works for Question 9 with <a class="doc-link" href="../../grc/L17-capture-rtl.grc" download>L17-capture-rtl.grc</a>, a Soapy RTL-SDR Source at 1.024 MS/s; nothing in the lab needs one.</p></li>
+<li><p><a class="doc-link" href="../../grc/L17-fan-tx-pluto.grc" download>L17-fan-tx-pluto.grc</a>: the lesson’s Pluto encoder, for its TX attenuation slider. Transmit into the cable unless your instructor says otherwise.</p></li>
+</ul>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-looking-ahead">
+<div class="wrap docutils container">
+<p class="rubric">Looking Ahead</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<ul class="simple">
+<li><p>Lesson 18 receives ADS-B from aircraft at 1090 MHz.</p></li>
+<li><p>Its format is a public standard, so the work is the receiver.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>Keep your encoder and your Question 6 table. Lessons 18 and 19 decode aircraft and ship transponders, whose formats are published, and the L18–L19 Lab decodes live traffic. The same first steps apply there: find the carrier on a waterfall, and identify the modulation before you build anything.</p>
+</div>
+</div>
+</div>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./module06/L17-lab-rf-reverse-engineering"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+</main>
+
+<script src="../../_static/shell.js?v=ac36f07766"></script>
+<script src="../../_static/frames.js?v=89e4b02ee3"></script><script src="../../_static/viz-autosize.js?v=4fe0c4e159"></script>
+</body>
+</html>

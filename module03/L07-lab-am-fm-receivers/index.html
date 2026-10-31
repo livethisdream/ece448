@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="en" data-mode="read">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>L7 Lab — AM and FM Receivers &mdash; ECE 448 — Software Defined Radios</title>
+<meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+<link rel="icon" href="../../_static/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap"><link rel="stylesheet" href="../../_static/custom.css?v=ec0f297254">
+<link rel="stylesheet" href="../../_static/shell.css?v=78396bd831">
+<link rel="stylesheet" href="../../_static/frames.css?v=fa285d3703">
+</head>
+<body>
+
+<div class="rail"><span id="railfill"></span></div>
+
+<div class="laser" id="laser" aria-hidden="true"></div>
+<div class="spot" id="spot" aria-hidden="true"></div>
+
+<div class="index" id="index" role="dialog" aria-label="Jump to a frame or another lesson">
+  <button class="index-close" id="btnIndexClose" type="button" aria-label="Close">&times;</button>
+  <div class="wrap">
+    <div class="index-cols">
+      <div class="index-here">
+        <h2>This lesson</h2>
+        <ol id="indexlist"></ol>
+      </div>
+      <div class="index-toc">
+        <h2>Course</h2>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Course Information</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../syllabus.html">Syllabus</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../materials.html">Materials</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 1 — Foundations of Detection &amp; Link Budgets</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module01/index.html">Module 1 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module01/L01-course-intro/index.html">L1 — Course Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module01/L02-noise-figure-link-budget/index.html">L2 — Noise Figure and Link Budget</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module01/L03-signal-space/index.html">L3 — Signal Space</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 2 — SDR &amp; GNU Radio Foundations</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module02/index.html">Module 2 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module02/L04-sdr-introduction/index.html">L4 — SDR Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module02/L05-gnu-radio-intro/index.html">L5 — GNU Radio Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module02/L05-lab-first-flowgraphs/index.html">L5 Lab — First Flowgraphs</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 3 — Analog Modulation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Module 3 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L06-am-simulation/index.html">L6 — AM Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L06-lab-am-simulation/index.html">L6 Lab — AM Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L07-am-fm-receivers/index.html">L7 — AM and FM Receivers</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">L7 Lab — AM and FM Receivers</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 4 — Digital Modulation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/index.html">Module 4 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/L08-fsk/index.html">L8 — FSK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/L08-lab-fsk/index.html">L8 Lab — FSK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/L09-pam-theory/index.html">L9 — PAM Theory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/L10-ascii-pam/index.html">L10 — ASCII over PAM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/L10-lab-pam-link/index.html">L10 Lab — PAM Link</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 5 — Custom Blocks &amp; Midterm</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module05/index.html">Module 5 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module05/L11-custom-blocks/index.html">L11 — Out-of-Tree Modules and Custom Blocks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module05/L11-lab-custom-block/index.html">L11 Lab — Custom Block</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module05/midterm/index.html">Midterm — Fox Hunt and CTF</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 6 — Waveform Applications &amp; RF Reverse Engineering</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/index.html">Module 6 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L12-cw/index.html">L12 — CW</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L12-lab-cw/index.html">L12 Lab — CW</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L13-dtmf/index.html">L13 — DTMF</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L13-lab-dtmf/index.html">L13 Lab — DTMF</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L14-hd-radio/index.html">L14 — HD Radio</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L14-lab-hd-radio/index.html">L14 Lab — HD Radio</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L15-mpsk/index.html">L15 — mPSK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L15-lab-mpsk/index.html">L15 Lab — mPSK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L16-fhss/index.html">L16 — Frequency Hopping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L16-lab-fhss/index.html">L16 Lab — Frequency Hopping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L17-rf-reverse-engineering/index.html">L17 — RF Reverse Engineering</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L17-lab-rf-reverse-engineering/index.html">L17 Lab — RF Reverse Engineering</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L18-adsb/index.html">L18 — ADS-B</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L19-ais/index.html">L19 — AIS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L18-L19-lab-adsb-ais/index.html">L18–L19 Lab — ADS-B and AIS</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 7 — Final Project</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module07/index.html">Module 7 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module07/L20-qam-ofdm/index.html">L20 — QAM and OFDM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module07/final-project/index.html">Final Project</a></li>
+</ul>
+
+      </div>
+    </div>
+  </div>
+</div><div class="hud">
+<div class="hud-group">
+  <button id="btnSite" class="site" type="button"
+          aria-expanded="false" aria-controls="sitepop"
+          title="Elsewhere on this site">ECE 448</button>
+</div>
+<div class="pop" id="sitepop" role="group" aria-label="Site" hidden>
+  <a href="https://livethisdream.github.io/">Home</a>
+  <a href="https://livethisdream.github.io/ece343/intro.html">ECE 343</a>
+  <a href="https://livethisdream.github.io/ece444/intro.html">ECE 444</a>
+  <a href="../../intro.html" aria-current="page">ECE 448</a>
+  <a href="https://livethisdream.github.io/projects">Projects</a>
+  <button class="pop-help" type="button" data-help>Help<kbd>?</kbd></button>
+</div>
+
+  <div class="hud-group hud-mid"><button id="btnMode" type="button" aria-expanded="false" aria-controls="modepop"
+            title="How the lesson is laid out (P)">read</button>
+    <button id="btnTools" type="button" aria-expanded="false" aria-controls="toolspop"
+            title="Presenter tools">tools</button>
+  </div>
+
+  <div class="hud-group"><button id="btnIndex" class="counter" type="button" aria-pressed="false"
+            title="Contents (G) · double-tap for the top"><b id="cur">1</b>/<span id="tot">0</span></button>
+  </div><div class="pop" id="modepop" role="group" aria-label="View mode" hidden>
+    <button id="btnPresent" class="choice" type="button" aria-pressed="false">
+      present<span class="pop-note">one frame at a time</span></button>
+    <button id="btnRead" class="choice" type="button" aria-pressed="true">
+      read<span class="pop-note">the whole lesson, continuous</span></button>
+  </div><div class="pop" id="toolspop" role="group" aria-label="Presenter tools" hidden>
+    <button id="btnLaser" type="button" aria-pressed="false">laser<kbd>L</kbd></button>
+    <button id="btnSpot" type="button" aria-pressed="false">spotlight<kbd>S</kbd></button>
+    <button id="btnFull" type="button">fullscreen<kbd>F</kbd></button>
+    <button id="btnHelp" type="button" data-help>help<kbd>?</kbd></button>
+  </div>
+</div>
+<div class="help" id="help" role="dialog" aria-modal="true" aria-labelledby="helpTitle" hidden>
+  <div class="help-card">
+    <button class="help-close" id="btnHelpClose" type="button" aria-label="Close help">&times;</button>
+    <h2 id="helpTitle">Getting around</h2>
+    <p class="help-lead">Everything is in the bar at the bottom of the screen.</p>
+    <dl class="help-list">
+      <dt><span class="help-chip">ECE 448</span></dt>
+      <dd>The other course sites, the home page, and this help.</dd>
+      <dt><span class="help-chip">read</span></dt>
+      <dd><b>Read</b> shows the whole lesson as one page. <b>Present</b> shows one frame at a time, for class.<span class="help-keys"> <kbd>P</kbd> switches.</span></dd>
+      <dt><span class="help-chip">tools</span></dt>
+      <dd>Laser pointer<span class="help-keys"> <kbd>L</kbd></span>, spotlight<span class="help-keys"> <kbd>S</kbd></span>, and fullscreen<span class="help-keys"> <kbd>F</kbd></span>.</dd>
+      <dt><span class="help-chip">3/9</span></dt>
+      <dd>Where you are in the lesson. Tap it for every frame here and every lesson in the course<span class="help-keys"> <kbd>G</kbd></span>. Double-tap to go back to the top.</dd>
+    </dl>
+    <h3 class="help-keys">Presenting</h3>
+    <p class="help-keys"><kbd>&rarr;</kbd> or <kbd>Space</kbd> next frame, <kbd>&larr;</kbd> back, <kbd>D</kbd> this frame&rsquo;s detail, <kbd>Esc</kbd> close a panel.</p>
+    <h3>Printing</h3>
+    <p>Print from present mode for the slides, one frame a page. Print from read mode for the whole lesson.</p>
+    <p class="help-foot"><span class="help-keys">Press <kbd>?</kbd> to open this again.</span><span class="help-touch">Open this again from the ECE 448 menu.</span></p>
+  </div>
+</div>
+
+<div class="help-hint" id="helpHint" hidden>
+  <button id="btnHintOpen" type="button" data-help>New here? How the bar works</button>
+  <button id="btnHintClose" class="help-hint-close" type="button" aria-label="Dismiss">&times;</button>
+</div><main class="deck bd-article" id="deck" tabindex="-1">
+<section class="tex2jax_ignore mathjax_ignore" id="l7-lab-am-and-fm-receivers">
+<h1>L7 Lab — AM and FM Receivers<a class="headerlink" href="#l7-lab-am-and-fm-receivers" title="Permalink to this heading">#</a></h1>
+<div class="frame title-frame docutils container" id="frame-1">
+<div class="wrap docutils container">
+<div class="course-mark">ECE 448 · Spring 2027</div>
+<h1 class="frame-title">AM and FM Receivers</h1>
+<div class="title-rule"></div>
+<p>Receive a live FM broadcast and decode its RDS data.</p>
+<p>L7 Lab · Module 3: Analog Modulation · Dr. Neil Rogers</p>
+</div>
+</div>
+<div class="frame docutils container" id="frame-learning-objectives">
+<div class="wrap docutils container">
+<p class="rubric">Learning Objectives</p>
+<ol class="lo-list" style="--module: '3'; counter-reset: lo 2">
+  <li>I can implement an FM receiver in GNU Radio, demodulate a live broadcast FM signal, and decode its RDS data.</li>
+  <li>I can explain and demonstrate the trade-off between bandwidth and noise performance for AM vs. FM.</li>
+</ol>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-from-lesson-to-bench">
+<div class="wrap docutils container">
+<p class="rubric">From Lesson to Bench</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<ul class="simple">
+<li><p><strong>Pre-Lab:</strong> work out receiver settings for a capture, your receiver, and ATIS.</p></li>
+<li><p><strong>Bench:</strong> build the WBFM receiver; receive your L5 capture, live FM with RDS, and ATIS; turn up the noise.</p></li>
+<li><p><strong>Writeup:</strong> explain what you saw and heard.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>Lesson 7 ran every receiver on simulated test files. Today you build the WBFM receiver yourself, then run the receivers on your own L5 capture and on the air. The lab packet has three parts, and you turn it in once, complete, before Lesson 8. <strong>Part 1, the Pre-Lab</strong>, is on your own before the period: the receiver settings for an example capture and your own, the rates and gain of the receiver you build, and a local ATIS. <strong>Part 2</strong> is your own measurements and observations in class. <strong>Part 3, the Writeup</strong>, explains them.</p>
+<p>Bring your PlutoSDR, its antenna, your <code class="docutils literal notranslate"><span class="pre">fm_capture.cfile</span></code> from the L5 Lab, and headphones.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-part-1-before-the-period">
+<div class="wrap docutils container">
+<p class="rubric">Part 1: Before the Period</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<ul class="simple">
+<li><p>Work out the shifts, rates, and Quadrature Demod gain for your build.</p></li>
+<li><p>Plan a local ATIS receiver.</p></li>
+<li><p>Set up the files before class.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>Do the Pre-Lab before you arrive. Question 1 asks for the shift for two captures, the rates and Quadrature Demod gain of the receiver you build at the bench, which decimates differently from the lesson’s, and the AM receiver’s settings for a local ATIS.</p>
+<p>The setup also takes a few minutes, and some of it needs a network connection, which the lab room may not have. Put the six flowgraphs from the Lesson 7 page in one folder with <code class="docutils literal notranslate"><span class="pre">fm_capture.cfile</span></code>. Open <code class="docutils literal notranslate"><span class="pre">L07-rds-rx.grc</span></code> first and check that GRC reports no missing blocks: gr-rds comes with radioconda; if GRC reports the RDS blocks missing, run <code class="docutils literal notranslate"><span class="pre">mamba</span> <span class="pre">install</span> <span class="pre">gnuradio-rds</span></code> from the radioconda prompt. Then run <code class="docutils literal notranslate"><span class="pre">L07-fm-test-tx.grc</span></code>, which also uses an RDS block, and <code class="docutils literal notranslate"><span class="pre">L07-am-test-tx.grc</span></code> once each; they record the two test files as SigMF, 76.8 MB of samples each, into that folder and stop on their own. For Question 1(c), the FAA Chart Supplement and every sectional chart list an airport’s ATIS frequency.</p>
+</div>
+</div>
+</div>
+<div class="frame read-only docutils container" id="frame-part-2-build-the-wbfm-receiver">
+<div class="wrap docutils container">
+<p class="rubric">Part 2: Build the WBFM Receiver</p>
+<ol class="arabic simple">
+<li><p>Start GRC and choose File, New, QT GUI. Do not open <code class="docutils literal notranslate"><span class="pre">L07-wbfm-rx.grc</span></code>; build it yourself.</p></li>
+<li><p>Set <code class="docutils literal notranslate"><span class="pre">samp_rate</span></code> to 2.4e6. Add QT GUI Entries <code class="docutils literal notranslate"><span class="pre">fc_mhz</span></code> (100.0) and <code class="docutils literal notranslate"><span class="pre">station_mhz</span></code> (100.3), and a QT GUI Range <code class="docutils literal notranslate"><span class="pre">vol</span></code> from 0 to 1.</p></li>
+<li><p>Add a <strong>File Source</strong> on <code class="docutils literal notranslate"><span class="pre">L07-fm-test.sigmf-data</span></code> with Repeat on.</p></li>
+<li><p>Add a <strong>Low-pass Filter Taps</strong> variable <code class="docutils literal notranslate"><span class="pre">chan_taps</span></code>: cutoff 105 kHz, transition 30 kHz, at <code class="docutils literal notranslate"><span class="pre">samp_rate</span></code>. Use it in a <strong>Frequency Xlating FIR Filter</strong> with decimation 5 and center frequency <code class="docutils literal notranslate"><span class="pre">(station_mhz</span> <span class="pre">-</span> <span class="pre">fc_mhz)</span> <span class="pre">*</span> <span class="pre">1e6</span></code>.</p></li>
+<li><p>Add a <strong>Quadrature Demod</strong> with the gain from Question 1(b).</p></li>
+<li><p>Add a <strong>Decimating FIR Filter</strong>, decimation 10, with taps <code class="docutils literal notranslate"><span class="pre">firdes.low_pass(1,</span> <span class="pre">samp_rate/5,</span> <span class="pre">15e3,</span> <span class="pre">3e3)</span></code>.</p></li>
+<li><p>Finish with <strong>FM Deemphasis</strong> at 48 kHz and 75 μs, a Multiply Const <code class="docutils literal notranslate"><span class="pre">vol</span></code>, and an <strong>Audio Sink</strong> at 48 kHz, with a float QT GUI Frequency Sink on the de-emphasis output. Do not add a Throttle.</p></li>
+<li><p>Screenshot the canvas for Question 2(a). Run it with the volume low, and read the audio sink for Question 2(b).</p></li>
+<li><p>Type 99.5 into Station, listen, and answer Question 2(c).</p></li>
+</ol>
+</div>
+</div>
+<div class="frame read-only docutils container" id="frame-part-2-your-capture">
+<div class="wrap docutils container">
+<p class="rubric">Part 2: Your Capture</p>
+<ol class="arabic simple">
+<li><p>Stop your receiver. Set the File Source’s file to <code class="docutils literal notranslate"><span class="pre">fm_capture.cfile</span></code>.</p></li>
+<li><p>Run it, type the center frequency you recorded at into SDR center, and set Station to the station you centered.</p></li>
+<li><p>Add a float QT GUI Frequency Sink on the Quadrature Demod output at <code class="docutils literal notranslate"><span class="pre">samp_rate/5</span></code>. Screenshot the demodulated multiplex and mark its parts for Question 3(a). Describe the audio for Question 3(b).</p></li>
+</ol>
+</div>
+</div>
+<div class="frame read-only docutils container" id="frame-part-2-live-fm-and-rds">
+<div class="wrap docutils container">
+<p class="rubric">Part 2: Live FM and RDS</p>
+<ol class="arabic simple">
+<li><p>Connect the antenna to the PlutoSDR’s RX port. Run <code class="docutils literal notranslate"><span class="pre">L05-fm-spectrum.grc</span></code>, find a strong station between 88 and 108 MHz, and stop it; only one flowgraph can stream from the Pluto at a time.</p></li>
+<li><p>Open <code class="docutils literal notranslate"><span class="pre">L07-wbfm-rx.grc</span></code>. Disable the File Source, enable the PlutoSDR Source, and run it with SDR center about 300 kHz below the station and Station set to it. Listen, and record the frequency, the call sign the station announces (or the FCC lists for it), and whether the 19 kHz pilot shows on the multiplex sink, for Question 4(a). Stop it.</p></li>
+<li><p>Open <code class="docutils literal notranslate"><span class="pre">L07-rds-rx.grc</span></code>. Right-click the File Source and choose Disable; right-click the PlutoSDR Source and choose Enable.</p></li>
+<li><p>Run it. Type an SDR center about 300 kHz below the station you found, set Station to its frequency, and set RF gain from your L5 gain table.</p></li>
+<li><p>Wait for the station name and compare it with the call sign. Fill in the rest of the table for Question 4(b); the panel shows the PI code under “Program Type” and the program type under “PI”.</p></li>
+<li><p>Screenshot the constellation and the panel for Question 4(c).</p></li>
+<li><p>Stop and restart the flowgraph three times, and time how long the name takes to appear, for Question 4(d).</p></li>
+</ol>
+</div>
+</div>
+<div class="frame read-only docutils container" id="frame-part-2-atis">
+<div class="wrap docutils container">
+<p class="rubric">Part 2: ATIS</p>
+<ol class="arabic simple">
+<li><p>Open <code class="docutils literal notranslate"><span class="pre">L07-am-rx.grc</span></code> and run it on <code class="docutils literal notranslate"><span class="pre">L07-am-test.sigmf-data</span></code>. The audio is the L6 two-tone message.</p></li>
+<li><p>Stop it. Disable the File Source, enable the PlutoSDR Source, and run it again.</p></li>
+<li><p>Enter the SDR center and Station from Question 1(c), and set RF gain to 50 dB to start.</p></li>
+<li><p>Screenshot the receiver and record the information letter and the altimeter setting for Question 5(a).</p></li>
+<li><p>Lower RF gain until the voice is hard to understand, and describe it for Question 5(b).</p></li>
+</ol>
+</div>
+</div>
+<div class="frame read-only docutils container" id="frame-part-2-am-and-fm-in-the-same-noise">
+<div class="wrap docutils container">
+<p class="rubric">Part 2: AM and FM in the Same Noise</p>
+<ol class="arabic simple">
+<li><p>Open and run <code class="docutils literal notranslate"><span class="pre">L07-am-vs-fm.grc</span></code>. It needs no hardware.</p></li>
+<li><p>Set FM deviation to 25 kHz and Input SNR to 30 dB. Record both output SNR meters for Question 6(a).</p></li>
+<li><p>Choose FM under Listen To. Turn the noise up: lower Input SNR slowly until you first hear clicks, and record the slider value. Keep going to 10 dB and describe what you hear for Question 6(b).</p></li>
+<li><p>Repeat step 3 at 5 kHz and at 50 kHz deviation, and record the FM meter at 30 dB for each.</p></li>
+</ol>
+</div>
+</div>
+<div class="frame read-only docutils container" id="frame-no-signal">
+<div class="wrap docutils container">
+<p class="rubric">No Signal?</p>
+<div class="tip admonition">
+<p class="admonition-title">If the station name, the ATIS, or the PlutoSDR does not work</p>
+<ul class="simple">
+<li><p><strong>No station name:</strong> check that Station matches the frequency you heard the station on. Otherwise choose a stronger station, or raise RF gain until the RDS constellation shows two clusters. RDS needs more signal than the audio does.</p></li>
+<li><p><strong>No ATIS:</strong> aircraft band stations need line of sight. If it plays but sounds muffled, the Pluto’s frequency may be a few kilohertz off; nudge Station by 1 to 3 kHz. Try a window, a higher floor, or the airport’s other frequency, and say in the packet what you tried. If none works, answer Question 5 from the test file and say so.</p></li>
+<li><p><strong>No PlutoSDR:</strong> pair with a classmate whose PlutoSDR works for Questions 4 and 5, take turns at their laptop, and record your own numbers. Questions 2, 3, and 6 need no hardware.</p></li>
+<li><p><strong>Audio error:</strong> an Audio Sink that cannot open your sound card stops the flowgraph. Plug in your headphones and run it again, as in the L6 Lab.</p></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-part-3-after-the-lab">
+<div class="wrap docutils container">
+<p class="rubric">Part 3: After the Lab</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<ul class="simple">
+<li><p>Explain why a mono receiver plays a stereo station correctly.</p></li>
+<li><p>Describe what a wider FM deviation buys and what it costs.</p></li>
+<li><p>Explain why aircraft use AM and broadcasters use wideband FM.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>The Writeup is three questions. The first uses your multiplex screenshot to explain why a mono receiver plays a stereo station correctly. The second uses your Question 6 table to say, in words, what a wider FM deviation buys and what it costs. The third connects your ATIS and FM listening to the reasons each service chose its modulation.</p>
+</div>
+</div>
+</div>
+<div class="frame read-only doc-links docutils container" id="frame-lab-packet">
+<div class="wrap docutils container">
+<p class="rubric">Lab Packet</p>
+<ul class="simple">
+<li><p><a class="doc-link" href="../../labs/ECE448_Lab_L07_AMFMReceivers_blank.pdf" target="_blank" rel="noopener">L7 Lab packet (PDF)</a></p></li>
+<li><p><a class="doc-link" href="../../grc/L07-wbfm-rx.grc" download>L07-wbfm-rx.grc</a>, <a class="doc-link" href="../../grc/L07-rds-rx.grc" download>L07-rds-rx.grc</a>, <a class="doc-link" href="../../grc/L07-am-rx.grc" download>L07-am-rx.grc</a>, and <a class="doc-link" href="../../grc/L07-am-vs-fm.grc" download>L07-am-vs-fm.grc</a></p></li>
+<li><p><a class="doc-link" href="../../grc/L07-fm-test-tx.grc" download>L07-fm-test-tx.grc</a> and <a class="doc-link" href="../../grc/L07-am-test-tx.grc" download>L07-am-test-tx.grc</a>, which write the test files</p></li>
+</ul>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-looking-ahead">
+<div class="wrap docutils container">
+<p class="rubric">Looking Ahead</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<ul class="simple">
+<li><p>Lesson 8 sends bits as FSK: FM with a two-valued message.</p></li>
+<li><p>Keep your WBFM receiver; its Quadrature Demod reappears in the FSK receiver.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>Keep your receivers. Lesson 8 moves to digital modulation, starting with frequency-shift keying, which switches the carrier between two frequencies. Its receiver uses the same Quadrature Demod you used today, after a channel filter, and follows it with a decision on each bit instead of a speaker.</p>
+</div>
+</div>
+</div>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./module03/L07-lab-am-fm-receivers"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+</main>
+
+<script src="../../_static/shell.js?v=ac36f07766"></script>
+<script src="../../_static/frames.js?v=89e4b02ee3"></script><script src="../../_static/viz-autosize.js?v=4fe0c4e159"></script>
+</body>
+</html>

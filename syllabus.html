@@ -1,0 +1,951 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Syllabus &mdash; ECE 448 — Software Defined Radios</title>
+<meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+<link rel="icon" href="_static/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap">
+<link rel="stylesheet" href="_static/pygments.css"><link rel="stylesheet" href="_static/custom.css?v=ec0f297254">
+<link rel="stylesheet" href="_static/shell.css?v=78396bd831">
+<link rel="stylesheet" href="_static/page.css?v=302c5f6a6a">
+<script src="_static/viz-autosize.js"></script>
+</head>
+<body data-search="search.html">
+
+<div class="rail"><span id="railfill"></span></div>
+
+
+<div class="index" id="index" role="dialog" aria-label="Contents and search">
+  <button class="index-close" id="btnIndexClose" type="button" aria-label="Close">&times;</button>
+  <div class="wrap">
+    <form class="index-search" id="searchform" role="search" onsubmit="return false">
+      <input type="search" id="q" autocomplete="off" spellcheck="false"
+             placeholder="Search the course&hellip;" aria-label="Search the course">
+    </form>
+    <div class="index-cols">
+      <div class="index-here">
+        <h2>This page</h2>
+        <div class="index-pagetoc" id="pagetoc"><ul>
+<li><a class="reference internal" href="#">Syllabus</a><ul>
+<li><a class="reference internal" href="#course">Course</a></li>
+<li><a class="reference internal" href="#instructor">Instructor</a></li>
+<li><a class="reference internal" href="#meeting-time-location">Meeting time &amp; location</a></li>
+<li><a class="reference internal" href="#course-overview">Course overview</a><ul>
+<li><a class="reference internal" href="#an-applications-course">An applications course</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#course-goals">Course goals</a></li>
+<li><a class="reference internal" href="#learning-objectives">Learning objectives</a><ul>
+<li><a class="reference internal" href="#module-1-foundations-of-detection-link-budgets">Module 1 — Foundations of Detection &amp; Link Budgets</a></li>
+<li><a class="reference internal" href="#module-2-sdr-gnu-radio-foundations">Module 2 — SDR &amp; GNU Radio Foundations</a></li>
+<li><a class="reference internal" href="#module-3-analog-modulation">Module 3 — Analog Modulation</a></li>
+<li><a class="reference internal" href="#module-4-digital-modulation">Module 4 — Digital Modulation</a></li>
+<li><a class="reference internal" href="#module-5-custom-blocks-midterm">Module 5 — Custom Blocks &amp; Midterm</a></li>
+<li><a class="reference internal" href="#module-6-waveform-applications-rf-reverse-engineering">Module 6 — Waveform Applications &amp; RF Reverse Engineering</a></li>
+<li><a class="reference internal" href="#module-7-final-project">Module 7 — Final Project</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#grading">Grading</a><ul>
+<li><a class="reference internal" href="#final-grade">Final grade</a></li>
+<li><a class="reference internal" href="#mastery-based-assessment">Mastery-based assessment</a></li>
+<li><a class="reference internal" href="#labs">Labs</a></li>
+<li><a class="reference internal" href="#midterm">Midterm</a></li>
+<li><a class="reference internal" href="#final-project">Final project</a></li>
+<li><a class="reference internal" href="#engagement-credits-ec">Engagement credits (EC)</a></li>
+<li><a class="reference internal" href="#grade-scale">Grade scale</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#course-policies">Course policies</a><ul>
+<li><a class="reference internal" href="#instructor-philosophy">Instructor philosophy</a></li>
+<li><a class="reference internal" href="#absences">1. Absences</a></li>
+<li><a class="reference internal" href="#academic-honor">2. Academic honor</a></li>
+<li><a class="reference internal" href="#assignment-availability-late-work">3. Assignment availability &amp; late work</a></li>
+<li><a class="reference internal" href="#authorized-resources">4. Authorized resources</a></li>
+<li><a class="reference internal" href="#collaboration">5. Collaboration</a></li>
+<li><a class="reference internal" href="#documentation">6. Documentation</a></li>
+<li><a class="reference internal" href="#extra-instruction-ei">7. Extra Instruction (EI)</a></li>
+<li><a class="reference internal" href="#generative-ai">8. Generative AI</a></li>
+<li><a class="reference internal" href="#submission-standards">9. Submission standards</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#course-schedule">Course schedule</a><ul>
+<li><a class="reference internal" href="#id1">Module 1 — Foundations of Detection &amp; Link Budgets</a></li>
+<li><a class="reference internal" href="#id2">Module 2 — SDR &amp; GNU Radio Foundations</a></li>
+<li><a class="reference internal" href="#id3">Module 3 — Analog Modulation</a></li>
+<li><a class="reference internal" href="#id4">Module 4 — Digital Modulation</a></li>
+<li><a class="reference internal" href="#id5">Module 5 — Custom Blocks &amp; Midterm</a></li>
+<li><a class="reference internal" href="#id6">Module 6 — Waveform Applications &amp; RF Reverse Engineering</a></li>
+<li><a class="reference internal" href="#id7">Module 7 — Final Project</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#textbooks-materials">Textbooks &amp; materials</a></li>
+<li><a class="reference internal" href="#software-hardware">Software &amp; hardware</a></li>
+</ul>
+</li>
+</ul>
+</div>
+      </div>
+      <div class="index-toc">
+        <h2>Course</h2>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Course Information</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Syllabus</a></li>
+<li class="toctree-l1"><a class="reference internal" href="materials.html">Materials</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 1 — Foundations of Detection &amp; Link Budgets</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="module01/index.html">Module 1 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module01/L01-course-intro/index.html">L1 — Course Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module01/L02-noise-figure-link-budget/index.html">L2 — Noise Figure and Link Budget</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module01/L03-signal-space/index.html">L3 — Signal Space</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 2 — SDR &amp; GNU Radio Foundations</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="module02/index.html">Module 2 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module02/L04-sdr-introduction/index.html">L4 — SDR Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module02/L05-gnu-radio-intro/index.html">L5 — GNU Radio Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module02/L05-lab-first-flowgraphs/index.html">L5 Lab — First Flowgraphs</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 3 — Analog Modulation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="module03/index.html">Module 3 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module03/L06-am-simulation/index.html">L6 — AM Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module03/L06-lab-am-simulation/index.html">L6 Lab — AM Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module03/L07-am-fm-receivers/index.html">L7 — AM and FM Receivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module03/L07-lab-am-fm-receivers/index.html">L7 Lab — AM and FM Receivers</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 4 — Digital Modulation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="module04/index.html">Module 4 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module04/L08-fsk/index.html">L8 — FSK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module04/L08-lab-fsk/index.html">L8 Lab — FSK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module04/L09-pam-theory/index.html">L9 — PAM Theory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module04/L10-ascii-pam/index.html">L10 — ASCII over PAM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module04/L10-lab-pam-link/index.html">L10 Lab — PAM Link</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 5 — Custom Blocks &amp; Midterm</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="module05/index.html">Module 5 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module05/L11-custom-blocks/index.html">L11 — Out-of-Tree Modules and Custom Blocks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module05/L11-lab-custom-block/index.html">L11 Lab — Custom Block</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module05/midterm/index.html">Midterm — Fox Hunt and CTF</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 6 — Waveform Applications &amp; RF Reverse Engineering</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="module06/index.html">Module 6 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module06/L12-cw/index.html">L12 — CW</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module06/L12-lab-cw/index.html">L12 Lab — CW</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module06/L13-dtmf/index.html">L13 — DTMF</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module06/L13-lab-dtmf/index.html">L13 Lab — DTMF</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module06/L14-hd-radio/index.html">L14 — HD Radio</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module06/L14-lab-hd-radio/index.html">L14 Lab — HD Radio</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module06/L15-mpsk/index.html">L15 — mPSK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module06/L15-lab-mpsk/index.html">L15 Lab — mPSK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module06/L16-fhss/index.html">L16 — Frequency Hopping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module06/L16-lab-fhss/index.html">L16 Lab — Frequency Hopping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module06/L17-rf-reverse-engineering/index.html">L17 — RF Reverse Engineering</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module06/L17-lab-rf-reverse-engineering/index.html">L17 Lab — RF Reverse Engineering</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module06/L18-adsb/index.html">L18 — ADS-B</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module06/L19-ais/index.html">L19 — AIS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module06/L18-L19-lab-adsb-ais/index.html">L18–L19 Lab — ADS-B and AIS</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 7 — Final Project</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="module07/index.html">Module 7 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module07/L20-qam-ofdm/index.html">L20 — QAM and OFDM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module07/final-project/index.html">Final Project</a></li>
+</ul>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="hud">
+<div class="hud-group">
+  <button id="btnSite" class="site" type="button"
+          aria-expanded="false" aria-controls="sitepop"
+          title="Elsewhere on this site">ECE 448</button>
+</div>
+<div class="pop" id="sitepop" role="group" aria-label="Site" hidden>
+  <a href="https://livethisdream.github.io/">Home</a>
+  <a href="https://livethisdream.github.io/ece343/intro.html">ECE 343</a>
+  <a href="https://livethisdream.github.io/ece444/intro.html">ECE 444</a>
+  <a href="intro.html" aria-current="page">ECE 448</a>
+  <a href="https://livethisdream.github.io/projects">Projects</a>
+  <button class="pop-help" type="button" data-help>Help<kbd>?</kbd></button>
+</div><div class="hud-group hud-mid"></div>
+
+  <div class="hud-group"><button id="btnIndex" class="counter" type="button" aria-pressed="false"
+            title="Contents and search (G)"><span id="pct">0%</span></button>
+  </div>
+</div>
+<div class="help" id="help" role="dialog" aria-modal="true" aria-labelledby="helpTitle" hidden>
+  <div class="help-card">
+    <button class="help-close" id="btnHelpClose" type="button" aria-label="Close help">&times;</button>
+    <h2 id="helpTitle">Getting around</h2>
+    <p class="help-lead">Everything is in the bar at the bottom of the screen.</p>
+    <dl class="help-list">
+      <dt><span class="help-chip">ECE 448</span></dt>
+      <dd>The other course sites, the home page, and this help.</dd>
+      <dt><span class="help-chip">42%</span></dt>
+      <dd>How far down the page you are. Tap it for this page&rsquo;s sections, the whole course, and search<span class="help-keys"> <kbd>G</kbd> <kbd>/</kbd></span>.</dd>
+    </dl>
+    <p class="help-foot"><span class="help-keys">Press <kbd>?</kbd> to open this again.</span><span class="help-touch">Open this again from the ECE 448 menu.</span></p>
+  </div>
+</div>
+
+<div class="help-hint" id="helpHint" hidden>
+  <button id="btnHintOpen" type="button" data-help>New here? How the bar works</button>
+  <button id="btnHintClose" class="help-hint-close" type="button" aria-label="Dismiss">&times;</button>
+</div><main class="page bd-article" id="page">
+<section class="tex2jax_ignore mathjax_ignore" id="syllabus">
+<h1>Syllabus<a class="headerlink" href="#syllabus" title="Permalink to this heading">#</a></h1>
+<section id="course">
+<h2>Course<a class="headerlink" href="#course" title="Permalink to this heading">#</a></h2>
+<p><strong>ECE 448 — Software Defined Radios</strong>
+Spring 2027</p>
+</section>
+<section id="instructor">
+<h2>Instructor<a class="headerlink" href="#instructor" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p><strong>Dr. Neil Rogers</strong></p></li>
+<li><p>Office hours: <strong>by appointment only</strong></p></li>
+<li><p>Phone: <strong>937-361-2545</strong></p></li>
+</ul>
+</section>
+<section id="meeting-time-location">
+<h2>Meeting time &amp; location<a class="headerlink" href="#meeting-time-location" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p>See USAFA class schedule for room assignment</p></li>
+</ul>
+</section>
+<section id="course-overview">
+<h2>Course overview<a class="headerlink" href="#course-overview" title="Permalink to this heading">#</a></h2>
+<p>Have you ever thought about the sheer number of wireless signals surrounding
+you in the modern world? From cell phones to WiFi to Bluetooth — wireless
+communications enable just about everything you do. This course looks at those
+signals — how they’re generated, transmitted, and received — through the lens
+of <strong>Software Defined Radios (SDRs)</strong>.</p>
+<p>ECE 447 (Communications Theory) covers the fundamental principles of many
+methods of communication. <strong>This course focuses on the applied side</strong> of
+wireless communications: introducing SDRs, familiarizing you with the benefits
+and limitations of various SDR platforms and, more importantly, the various
+software packages used to interact with them. You’ll spend most of your time
+in <strong>GNU Radio</strong>, building real flowgraphs against real signals. The course
+culminates in a substantial, <strong>self-defined final project</strong> that integrates
+every concept in the course into a specific wireless application of your
+choosing.</p>
+<section id="an-applications-course">
+<h3>An applications course<a class="headerlink" href="#an-applications-course" title="Permalink to this heading">#</a></h3>
+<p><strong>Watch what the signal does; don’t calculate it.</strong> We use real radios and
+GNU Radio to observe effects, such as what happens when the noise goes up, and,
+when it helps, tie what we see back to theory. ECE 447 derives communications
+theory; here we use it. Every lesson starts with a
+signal to build, receive, or decode, and most of every period is spent in
+GNU Radio with real hardware and real captures. When a lesson brings in an
+equation, it is because a block parameter, a sample rate, or a filter needs
+it.</p>
+</section>
+</section>
+<section id="course-goals">
+<h2>Course goals<a class="headerlink" href="#course-goals" title="Permalink to this heading">#</a></h2>
+<p>By the end of this course, you will be able to:</p>
+<ol class="arabic simple">
+<li><p>Make use of modern software applications to simulate, receive, and transmit
+signals using modern modulation and encoding techniques.</p></li>
+<li><p>Describe the principles of basic signal-processing techniques, such as
+filtering, interpolation, decimation, and matched filtering.</p></li>
+<li><p>Implement basic signal-processing techniques in the presence of noise and
+other non-idealities.</p></li>
+<li><p>Reverse-engineer, decode, and characterize an unknown RF signal captured
+off the air.</p></li>
+<li><p>Define, execute, and defend a self-directed SDR project against your own
+engineering success criteria.</p></li>
+</ol>
+</section>
+<section id="learning-objectives">
+<h2>Learning objectives<a class="headerlink" href="#learning-objectives" title="Permalink to this heading">#</a></h2>
+<p>The course is organized around specific, testable learning objectives (LOs).
+Each LO is assessed at least once. Mastery of every LO earns an “A” on the
+mastery-based portion of the grade.</p>
+<div class="lo-table" markdown="1">
+<section id="module-1-foundations-of-detection-link-budgets">
+<h3>Module 1 — Foundations of Detection &amp; Link Budgets<a class="headerlink" href="#module-1-foundations-of-detection-link-budgets" title="Permalink to this heading">#</a></h3>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head text-center"><p>LO</p></th>
+<th class="head text-left"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-center"><p>1.1</p></td>
+<td class="text-left"><p>I can define noise figure and explain how each stage of a receiver chain, the first above all, sets the system’s noise performance.</p></td>
+</tr>
+<tr class="row-odd"><td class="text-center"><p>1.2</p></td>
+<td class="text-left"><p>I can compute a link budget for a specified geometry, transmitter, and antenna configuration, and compare it with the signal an SDR shows.</p></td>
+</tr>
+<tr class="row-even"><td class="text-center"><p>1.3</p></td>
+<td class="text-left"><p>I can describe signal-space concepts (basis functions, constellations, decision regions) and apply them to a digital modulation scheme.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="module-2-sdr-gnu-radio-foundations">
+<h3>Module 2 — SDR &amp; GNU Radio Foundations<a class="headerlink" href="#module-2-sdr-gnu-radio-foundations" title="Permalink to this heading">#</a></h3>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head text-center"><p>LO</p></th>
+<th class="head text-left"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-center"><p>2.1</p></td>
+<td class="text-left"><p>I can describe what a Software Defined Radio is, contrast it with a traditional hardware radio, and identify the SDR used in this course, the PlutoSDR.</p></td>
+</tr>
+<tr class="row-odd"><td class="text-center"><p>2.2</p></td>
+<td class="text-left"><p>I can identify the roles of the RF frontend, ADC/DAC, and host in an SDR signal chain and describe sample-rate, bandwidth, and dynamic-range trade-offs.</p></td>
+</tr>
+<tr class="row-even"><td class="text-center"><p>2.3</p></td>
+<td class="text-left"><p>I can install GNU Radio and use GNU Radio Companion (GRC) to build, inspect, and run a basic flowgraph.</p></td>
+</tr>
+<tr class="row-odd"><td class="text-center"><p>2.4</p></td>
+<td class="text-left"><p>I can capture a real RF signal using an SDR and interpret its time- and frequency-domain representations.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="module-3-analog-modulation">
+<h3>Module 3 — Analog Modulation<a class="headerlink" href="#module-3-analog-modulation" title="Permalink to this heading">#</a></h3>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head text-center"><p>LO</p></th>
+<th class="head text-left"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-center"><p>3.1</p></td>
+<td class="text-left"><p>I can describe DSB-AM, DSB-SC, and SSB and identify each on a spectrum.</p></td>
+</tr>
+<tr class="row-odd"><td class="text-center"><p>3.2</p></td>
+<td class="text-left"><p>I can implement an AM modulator and demodulator in GNU Radio and verify demodulated audio against the source.</p></td>
+</tr>
+<tr class="row-even"><td class="text-center"><p>3.3</p></td>
+<td class="text-left"><p>I can implement an FM receiver in GNU Radio, demodulate a live broadcast FM signal, and decode its RDS data.</p></td>
+</tr>
+<tr class="row-odd"><td class="text-center"><p>3.4</p></td>
+<td class="text-left"><p>I can explain and demonstrate the trade-off between bandwidth and noise performance for AM vs. FM.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="module-4-digital-modulation">
+<h3>Module 4 — Digital Modulation<a class="headerlink" href="#module-4-digital-modulation" title="Permalink to this heading">#</a></h3>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head text-center"><p>LO</p></th>
+<th class="head text-left"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-center"><p>4.1</p></td>
+<td class="text-left"><p>I can describe FSK modulation and implement an FSK transmitter and receiver in GNU Radio.</p></td>
+</tr>
+<tr class="row-odd"><td class="text-center"><p>4.2</p></td>
+<td class="text-left"><p>I can describe PAM theory and identify the pulse-shaping, symbol-rate, and bandwidth trade-offs.</p></td>
+</tr>
+<tr class="row-even"><td class="text-center"><p>4.3</p></td>
+<td class="text-left"><p>I can apply matched filtering and symbol-timing recovery to a received PAM signal.</p></td>
+</tr>
+<tr class="row-odd"><td class="text-center"><p>4.4</p></td>
+<td class="text-left"><p>I can implement a PAM link that transmits and receives ASCII text end-to-end.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="module-5-custom-blocks-midterm">
+<h3>Module 5 — Custom Blocks &amp; Midterm<a class="headerlink" href="#module-5-custom-blocks-midterm" title="Permalink to this heading">#</a></h3>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head text-center"><p>LO</p></th>
+<th class="head text-left"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-center"><p>5.1</p></td>
+<td class="text-left"><p>I can create a GNU Radio out-of-tree (OOT) module and add a custom Python block to it.</p></td>
+</tr>
+<tr class="row-odd"><td class="text-center"><p>5.2</p></td>
+<td class="text-left"><p>I can implement a custom signal-processing block from scratch and integrate it into a GNU Radio flowgraph.</p></td>
+</tr>
+<tr class="row-even"><td class="text-center"><p>5.3</p></td>
+<td class="text-left"><p>I can find a hidden transmitter in a direction-finding fox hunt using an SDR and a directional antenna.</p></td>
+</tr>
+<tr class="row-odd"><td class="text-center"><p>5.4</p></td>
+<td class="text-left"><p>I can solve capture-the-flag challenges that require finding, capturing, demodulating, and decoding unknown signals with GNU Radio.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="module-6-waveform-applications-rf-reverse-engineering">
+<h3>Module 6 — Waveform Applications &amp; RF Reverse Engineering<a class="headerlink" href="#module-6-waveform-applications-rf-reverse-engineering" title="Permalink to this heading">#</a></h3>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head text-center"><p>LO</p></th>
+<th class="head text-left"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-center"><p>6.1</p></td>
+<td class="text-left"><p>I can transmit and receive CW (Morse) using GNU Radio and decode a received CW stream.</p></td>
+</tr>
+<tr class="row-odd"><td class="text-center"><p>6.2</p></td>
+<td class="text-left"><p>I can decode DTMF tones from a captured audio signal.</p></td>
+</tr>
+<tr class="row-even"><td class="text-center"><p>6.3</p></td>
+<td class="text-left"><p>I can describe how HD Radio works and demodulate an HD Radio signal.</p></td>
+</tr>
+<tr class="row-odd"><td class="text-center"><p>6.4</p></td>
+<td class="text-left"><p>I can implement an mPSK modulator and demodulator (BPSK, QPSK, 8PSK) and recover carrier and symbol timing.</p></td>
+</tr>
+<tr class="row-even"><td class="text-center"><p>6.5</p></td>
+<td class="text-left"><p>I can implement FHSS transmission and reception, including hop-sequence synchronization.</p></td>
+</tr>
+<tr class="row-odd"><td class="text-center"><p>6.6</p></td>
+<td class="text-left"><p>I can perform RF reverse engineering on an unknown signal: identify its modulation, symbol rate, and payload structure.</p></td>
+</tr>
+<tr class="row-even"><td class="text-center"><p>6.7</p></td>
+<td class="text-left"><p>I can receive and decode ADS-B messages from aircraft transponders.</p></td>
+</tr>
+<tr class="row-odd"><td class="text-center"><p>6.8</p></td>
+<td class="text-left"><p>I can receive and decode AIS messages from marine vessels.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="module-7-final-project">
+<h3>Module 7 — Final Project<a class="headerlink" href="#module-7-final-project" title="Permalink to this heading">#</a></h3>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head text-center"><p>LO</p></th>
+<th class="head text-left"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-center"><p>7.1</p></td>
+<td class="text-left"><p>I can describe QAM and OFDM and identify use cases for each.</p></td>
+</tr>
+<tr class="row-odd"><td class="text-center"><p>7.2</p></td>
+<td class="text-left"><p>I can define the scope, objectives, and measurable success criteria for a self-directed SDR project.</p></td>
+</tr>
+<tr class="row-even"><td class="text-center"><p>7.3</p></td>
+<td class="text-left"><p>I can research, design, and implement a wireless communication system using an SDR and GNU Radio.</p></td>
+</tr>
+<tr class="row-odd"><td class="text-center"><p>7.4</p></td>
+<td class="text-left"><p>I can present my project results in a professional-grade report and live demonstration and defend engineering trade-offs against my own stated success criteria.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+</section>
+<section id="grading">
+<h2>Grading<a class="headerlink" href="#grading" title="Permalink to this heading">#</a></h2>
+<p>Grades are based on <strong>mastery</strong> of the learning objectives, demonstrated by
+what you build: lab flowgraphs, the midterm, and the final project.</p>
+<section id="final-grade">
+<h3>Final grade<a class="headerlink" href="#final-grade" title="Permalink to this heading">#</a></h3>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head text-left"><p>Component</p></th>
+<th class="head text-center"><p>Weight</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-left"><p>Final project</p></td>
+<td class="text-center"><p>40%</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>Labs</p></td>
+<td class="text-center"><p>25%</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>Engagement</p></td>
+<td class="text-center"><p>20%</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>Midterm</p></td>
+<td class="text-center"><p>15%</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="mastery-based-assessment">
+<h3>Mastery-based assessment<a class="headerlink" href="#mastery-based-assessment" title="Permalink to this heading">#</a></h3>
+<p>Labs, the midterm, and the final project checkpoints are assessed against the
+learning objectives on a <strong>binary scale</strong>:</p>
+<ul class="simple">
+<li><p><strong>1</strong>: you have mastered the objective.</p></li>
+<li><p><strong>0</strong>: you have not <em>yet</em> mastered the objective.</p></li>
+</ul>
+<p>You may <strong>revise your work</strong> based on the detailed feedback provided, unless no
+effort is evident (the work is blank, incomplete, or significantly late).</p>
+<p>The bar is simple: I want you to <em>learn this material</em>, and I would rather you
+learn it late than not at all.</p>
+</section>
+<section id="labs">
+<h3>Labs<a class="headerlink" href="#labs" title="Permalink to this heading">#</a></h3>
+<p>Each lab is <strong>one packet, one submission</strong>, hung off the lesson it follows:</p>
+<ul class="simple">
+<li><p><strong>Part 1, Pre-Lab</strong>: individual, before the period.</p></li>
+<li><p><strong>Part 2, Bench</strong>: in class, on the hardware.</p></li>
+<li><p><strong>Part 3, Writeup</strong>: after the lab, in report format.</p></li>
+</ul>
+</section>
+<section id="midterm">
+<h3>Midterm<a class="headerlink" href="#midterm" title="Permalink to this heading">#</a></h3>
+<p>The midterm follows Lesson 11 and has two parts: a <strong>fox hunt</strong>, finding a
+hidden transmitter with an SDR and a directional antenna, and a
+<strong>capture-the-flag</strong>, a set of challenges that require finding, capturing,
+demodulating, and decoding unknown signals. It is an individual effort.</p>
+</section>
+<section id="final-project">
+<h3>Final project<a class="headerlink" href="#final-project" title="Permalink to this heading">#</a></h3>
+<p>The final project is intentionally open-ended. You choose the wireless
+application, <strong>write your own success criteria</strong> for A-, B-, and C-level
+outcomes, and defend the result. Each checkpoint below develops a section of
+your final report and is graded 1 / 0, with revisions under course policy:</p>
+<ol class="arabic simple">
+<li><p><strong>Project proposal</strong>: what you want to build, why it is meaningful and
+feasible, and your success criteria.</p></li>
+<li><p><strong>Background research</strong>: at least four high-quality sources and how your
+project builds on them.</p></li>
+<li><p><strong>Design description</strong>: your initial design, its critical components, use
+cases, and test plan.</p></li>
+<li><p><strong>Prototype description</strong>: build and test results, and your plan to
+finish.</p></li>
+<li><p><strong>Final report and presentation</strong>: an IEEE-quality report (typically 7-10
+pages) and a five-minute presentation and live demonstration. Code goes in
+a GitHub repository.</p></li>
+</ol>
+</section>
+<section id="engagement-credits-ec">
+<h3>Engagement credits (EC)<a class="headerlink" href="#engagement-credits-ec" title="Permalink to this heading">#</a></h3>
+<p>Engagement is earned in several ways:</p>
+<ul class="simple">
+<li><p><strong>Weekly quizzes</strong> on Gradescope, 1 EC each. Revisions are allowed.</p></li>
+<li><p><strong>Practice problems.</strong> Graded for a genuine, documented attempt, not for
+correctness.</p></li>
+<li><p><strong>Extra Instruction (EI).</strong> 1 EC for each session you schedule and attend.</p></li>
+<li><p><strong>Peer review.</strong> 1 EC for reviewing or revising a classmate’s report.</p></li>
+<li><p><strong>Course improvement.</strong> Spotted a bug in a lab packet, an unclear slide, or
+a broken link on this site? Tell me and it counts.</p></li>
+</ul>
+<p>Request EC for EI and peer review through the running Gradescope assignment.</p>
+</section>
+<section id="grade-scale">
+<h3>Grade scale<a class="headerlink" href="#grade-scale" title="Permalink to this heading">#</a></h3>
+<table class="grade-scale">
+  <thead>
+    <tr>
+      <th>A</th><th>A−</th><th>B+</th><th>B</th><th>B−</th>
+      <th>C+</th><th>C</th><th>C−</th><th>D</th><th>F</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>100%</td><td>93%</td><td>90%</td><td>87%</td><td>83%</td>
+      <td>80%</td><td>77%</td><td>73%</td><td>70%</td><td>≤ 60%</td>
+    </tr>
+  </tbody>
+</table>
+</section>
+</section>
+<section id="course-policies">
+<h2>Course policies<a class="headerlink" href="#course-policies" title="Permalink to this heading">#</a></h2>
+<section id="instructor-philosophy">
+<h3>Instructor philosophy<a class="headerlink" href="#instructor-philosophy" title="Permalink to this heading">#</a></h3>
+<p>You have chosen one of the most difficult majors at USAFA — I applaud your
+commitment. My role in your journey is to enable your success. My intent is to
+do this by creating an inclusive environment and putting in the work <em>with</em>
+you. If you work hard and communicate with me, I will do everything in my power
+to make sure you succeed.</p>
+<p>Have questions? <strong>Ask</strong> — there is genuinely no such thing as a stupid question.
+Have concerns, especially about your learning environment? Let’s talk. You face
+many challenges here at USAFA; I am in your corner — so let’s go.</p>
+</section>
+<section id="absences">
+<h3>1. Absences<a class="headerlink" href="#absences" title="Permalink to this heading">#</a></h3>
+<p>Communicate with me <strong>beforehand</strong> in the event of an absence. If you will miss
+any graded event due to a scheduled absence (SCA, sport team trip, scheduled
+medical procedure), a makeup plan should be in place <strong>before</strong> the absence
+occurs. In the event of bedrest, notify me <strong>via email</strong> as soon as possible
+after receiving approval.</p>
+</section>
+<section id="academic-honor">
+<h3>2. Academic honor<a class="headerlink" href="#academic-honor" title="Permalink to this heading">#</a></h3>
+<p>Your honor is extremely important. The course’s academic security policies are
+designed to help you succeed in meeting academic requirements while practicing
+the honorable behavior our country rightfully demands of its military. Do not
+compromise your integrity by violating academic security or by taking unfair
+advantage of your classmates.</p>
+</section>
+<section id="assignment-availability-late-work">
+<h3>3. Assignment availability &amp; late work<a class="headerlink" href="#assignment-availability-late-work" title="Permalink to this heading">#</a></h3>
+<p>All work will be available through Teams, the course website, and/or Gradescope.
+A <strong>24-hour grace period</strong> is generally observed, after which <strong>25% of available
+points will be deducted for each calendar day</strong> the graded assignment is late.
+I may waive part or all of this penalty for legitimate, pre-coordinated
+extenuating circumstances.</p>
+</section>
+<section id="authorized-resources">
+<h3>4. Authorized resources<a class="headerlink" href="#authorized-resources" title="Permalink to this heading">#</a></h3>
+<p>The midterm and final project have their own resource policies
+described in their assignment packets. When electronic devices are authorized
+for viewing reference materials during any graded event, use of <strong>internet,
+Teams, and generative AI tools is not allowed</strong> unless explicitly permitted.</p>
+</section>
+<section id="collaboration">
+<h3>5. Collaboration<a class="headerlink" href="#collaboration" title="Permalink to this heading">#</a></h3>
+<p><strong>Collaboration (not copying)</strong> on skill checkpoints and assessments is highly
+encouraged, unless your instructor provides direction otherwise. A good litmus
+test: you must be able to <strong>explain every step</strong> on your submitted work.
+If you can’t, it’s copying, not collaboration. All help received on graded work
+must be documented per the documentation policy below.</p>
+<p>Collaboration is allowed on the Final Project, but must be <strong>explicitly and
+thoroughly documented</strong> per the Dean’s documentation policy.</p>
+</section>
+<section id="documentation">
+<h3>6. Documentation<a class="headerlink" href="#documentation" title="Permalink to this heading">#</a></h3>
+<p>In accordance with the Dean’s policy for documentation, all ECE assignments
+must have a documentation statement. For team projects, you are not required
+to document collaboration within your own team. The statement should be
+clearly identified with the word <strong>“Documentation.”</strong> If you did not
+collaborate, write <strong>“Documentation: None.”</strong> Assignments without a
+documentation statement are incomplete and may be returned for completion; a
+1-day-late penalty (up to 25%) may be assessed in lieu of returning the
+assignment.</p>
+</section>
+<section id="extra-instruction-ei">
+<h3>7. Extra Instruction (EI)<a class="headerlink" href="#extra-instruction-ei" title="Permalink to this heading">#</a></h3>
+<p>EI is one of the best and easiest ways to succeed in this class. Walk-in EI is
+not generally available — please book with me directly.</p>
+</section>
+<section id="generative-ai">
+<h3>8. Generative AI<a class="headerlink" href="#generative-ai" title="Permalink to this heading">#</a></h3>
+<p>I am <strong>pro-AI</strong>; however, I expect you to use generative AI platforms
+(ChatGPT, Copilot, Claude, etc.) as a <strong>tool</strong>, not as a replacement for your
+own learning. It will be very clear if you are using AI irresponsibly: these
+tools frequently generate incorrect solutions to the DSP and RF problems
+you’ll encounter here, and often produce GNU Radio flowgraphs that don’t quite
+work or don’t align with our course conventions. <strong>If you use generative AI on
+any assignment, include a documentation statement</strong> as outlined in the
+Documentation policy.</p>
+</section>
+<section id="submission-standards">
+<h3>9. Submission standards<a class="headerlink" href="#submission-standards" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>All homework must be submitted electronically.</p></li>
+<li><p>Skill checkpoints and lab writeups should be submitted in <strong>report format</strong>
+with appropriate sections (Introduction, Background, Implementation,
+Results, Discussion). Tailor sections as needed, but include enough detail
+to demonstrate mastery.</p></li>
+<li><p>Use engineering units consistently.</p></li>
+<li><p>All submissions <strong>MUST BE TYPED</strong> and well-organized unless specifically
+noted. Use of <strong>LaTeX</strong> is encouraged.</p></li>
+</ul>
+</section>
+</section>
+<section id="course-schedule">
+<h2>Course schedule<a class="headerlink" href="#course-schedule" title="Permalink to this heading">#</a></h2>
+<p>Lessons are topics, not class periods: a lesson takes as many periods as it
+needs, and its lab follows on the bench. Dates will follow the Spring 2027
+academic calendar.</p>
+<section id="id1">
+<h3>Module 1 — Foundations of Detection &amp; Link Budgets<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h3>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head text-center"><p>Lesson</p></th>
+<th class="head text-left"><p>Topic</p></th>
+<th class="head text-left"><p>Objectives</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-center"><p>L1</p></td>
+<td class="text-left"><p><a class="reference internal" href="module01/L01-course-intro/index.html"><span class="doc std std-doc">Course Introduction</span></a></p></td>
+<td class="text-left"><p>—</p></td>
+</tr>
+<tr class="row-odd"><td class="text-center"><p>L2</p></td>
+<td class="text-left"><p><a class="reference internal" href="module01/L02-noise-figure-link-budget/index.html"><span class="doc std std-doc">Noise Figure and Link Budget</span></a></p></td>
+<td class="text-left"><p>1.1, 1.2</p></td>
+</tr>
+<tr class="row-even"><td class="text-center"><p>L3</p></td>
+<td class="text-left"><p><a class="reference internal" href="module01/L03-signal-space/index.html"><span class="doc std std-doc">Signal Space</span></a></p></td>
+<td class="text-left"><p>1.3</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="id2">
+<h3>Module 2 — SDR &amp; GNU Radio Foundations<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h3>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head text-center"><p>Lesson</p></th>
+<th class="head text-left"><p>Topic</p></th>
+<th class="head text-left"><p>Objectives</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-center"><p>L4</p></td>
+<td class="text-left"><p><a class="reference internal" href="module02/L04-sdr-introduction/index.html"><span class="doc std std-doc">SDR Introduction</span></a></p></td>
+<td class="text-left"><p>2.1, 2.2</p></td>
+</tr>
+<tr class="row-odd"><td class="text-center"><p>L5</p></td>
+<td class="text-left"><p><a class="reference internal" href="module02/L05-gnu-radio-intro/index.html"><span class="doc std std-doc">GNU Radio Introduction</span></a></p></td>
+<td class="text-left"><p>2.3, 2.4</p></td>
+</tr>
+<tr class="row-even"><td class="text-center"><p>L5 Lab</p></td>
+<td class="text-left"><p><a class="reference internal" href="module02/L05-lab-first-flowgraphs/index.html"><span class="doc std std-doc">First Flowgraphs</span></a></p></td>
+<td class="text-left"><p>2.3, 2.4</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="id3">
+<h3>Module 3 — Analog Modulation<a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h3>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head text-center"><p>Lesson</p></th>
+<th class="head text-left"><p>Topic</p></th>
+<th class="head text-left"><p>Objectives</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-center"><p>L6</p></td>
+<td class="text-left"><p><a class="reference internal" href="module03/L06-am-simulation/index.html"><span class="doc std std-doc">AM Simulation</span></a></p></td>
+<td class="text-left"><p>3.1, 3.2</p></td>
+</tr>
+<tr class="row-odd"><td class="text-center"><p>L6 Lab</p></td>
+<td class="text-left"><p><a class="reference internal" href="module03/L06-lab-am-simulation/index.html"><span class="doc std std-doc">AM Simulation</span></a></p></td>
+<td class="text-left"><p>3.1, 3.2</p></td>
+</tr>
+<tr class="row-even"><td class="text-center"><p>L7</p></td>
+<td class="text-left"><p><a class="reference internal" href="module03/L07-am-fm-receivers/index.html"><span class="doc std std-doc">AM and FM Receivers</span></a></p></td>
+<td class="text-left"><p>3.3, 3.4</p></td>
+</tr>
+<tr class="row-odd"><td class="text-center"><p>L7 Lab</p></td>
+<td class="text-left"><p><a class="reference internal" href="module03/L07-lab-am-fm-receivers/index.html"><span class="doc std std-doc">AM and FM Receivers</span></a></p></td>
+<td class="text-left"><p>3.3, 3.4</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="id4">
+<h3>Module 4 — Digital Modulation<a class="headerlink" href="#id4" title="Permalink to this heading">#</a></h3>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head text-center"><p>Lesson</p></th>
+<th class="head text-left"><p>Topic</p></th>
+<th class="head text-left"><p>Objectives</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-center"><p>L8</p></td>
+<td class="text-left"><p><a class="reference internal" href="module04/L08-fsk/index.html"><span class="doc std std-doc">FSK</span></a></p></td>
+<td class="text-left"><p>4.1</p></td>
+</tr>
+<tr class="row-odd"><td class="text-center"><p>L8 Lab</p></td>
+<td class="text-left"><p><a class="reference internal" href="module04/L08-lab-fsk/index.html"><span class="doc std std-doc">FSK</span></a></p></td>
+<td class="text-left"><p>4.1</p></td>
+</tr>
+<tr class="row-even"><td class="text-center"><p>L9</p></td>
+<td class="text-left"><p><a class="reference internal" href="module04/L09-pam-theory/index.html"><span class="doc std std-doc">PAM Theory</span></a></p></td>
+<td class="text-left"><p>4.2, 4.3</p></td>
+</tr>
+<tr class="row-odd"><td class="text-center"><p>L10</p></td>
+<td class="text-left"><p><a class="reference internal" href="module04/L10-ascii-pam/index.html"><span class="doc std std-doc">ASCII over PAM</span></a></p></td>
+<td class="text-left"><p>4.4</p></td>
+</tr>
+<tr class="row-even"><td class="text-center"><p>L10 Lab</p></td>
+<td class="text-left"><p><a class="reference internal" href="module04/L10-lab-pam-link/index.html"><span class="doc std std-doc">PAM Link</span></a></p></td>
+<td class="text-left"><p>4.4</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="id5">
+<h3>Module 5 — Custom Blocks &amp; Midterm<a class="headerlink" href="#id5" title="Permalink to this heading">#</a></h3>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head text-center"><p>Lesson</p></th>
+<th class="head text-left"><p>Topic</p></th>
+<th class="head text-left"><p>Objectives</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-center"><p>L11</p></td>
+<td class="text-left"><p><a class="reference internal" href="module05/L11-custom-blocks/index.html"><span class="doc std std-doc">Out-of-Tree Modules and Custom Blocks</span></a></p></td>
+<td class="text-left"><p>5.1, 5.2</p></td>
+</tr>
+<tr class="row-odd"><td class="text-center"><p>L11 Lab</p></td>
+<td class="text-left"><p><a class="reference internal" href="module05/L11-lab-custom-block/index.html"><span class="doc std std-doc">Custom Block</span></a></p></td>
+<td class="text-left"><p>5.1, 5.2</p></td>
+</tr>
+<tr class="row-even"><td class="text-center"><p></p></td>
+<td class="text-left"><p><a class="reference internal" href="module05/midterm/index.html"><span class="doc std std-doc">Midterm — Fox Hunt and CTF</span></a></p></td>
+<td class="text-left"><p>5.3, 5.4</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="id6">
+<h3>Module 6 — Waveform Applications &amp; RF Reverse Engineering<a class="headerlink" href="#id6" title="Permalink to this heading">#</a></h3>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head text-center"><p>Lesson</p></th>
+<th class="head text-left"><p>Topic</p></th>
+<th class="head text-left"><p>Objectives</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-center"><p>L12</p></td>
+<td class="text-left"><p><a class="reference internal" href="module06/L12-cw/index.html"><span class="doc std std-doc">CW</span></a></p></td>
+<td class="text-left"><p>6.1</p></td>
+</tr>
+<tr class="row-odd"><td class="text-center"><p>L12 Lab</p></td>
+<td class="text-left"><p><a class="reference internal" href="module06/L12-lab-cw/index.html"><span class="doc std std-doc">CW</span></a></p></td>
+<td class="text-left"><p>6.1</p></td>
+</tr>
+<tr class="row-even"><td class="text-center"><p>L13</p></td>
+<td class="text-left"><p><a class="reference internal" href="module06/L13-dtmf/index.html"><span class="doc std std-doc">DTMF</span></a></p></td>
+<td class="text-left"><p>6.2</p></td>
+</tr>
+<tr class="row-odd"><td class="text-center"><p>L13 Lab</p></td>
+<td class="text-left"><p><a class="reference internal" href="module06/L13-lab-dtmf/index.html"><span class="doc std std-doc">DTMF</span></a></p></td>
+<td class="text-left"><p>6.2</p></td>
+</tr>
+<tr class="row-even"><td class="text-center"><p>L14</p></td>
+<td class="text-left"><p><a class="reference internal" href="module06/L14-hd-radio/index.html"><span class="doc std std-doc">HD Radio</span></a></p></td>
+<td class="text-left"><p>6.3</p></td>
+</tr>
+<tr class="row-odd"><td class="text-center"><p>L14 Lab</p></td>
+<td class="text-left"><p><a class="reference internal" href="module06/L14-lab-hd-radio/index.html"><span class="doc std std-doc">HD Radio</span></a></p></td>
+<td class="text-left"><p>6.3</p></td>
+</tr>
+<tr class="row-even"><td class="text-center"><p>L15</p></td>
+<td class="text-left"><p><a class="reference internal" href="module06/L15-mpsk/index.html"><span class="doc std std-doc">mPSK</span></a></p></td>
+<td class="text-left"><p>6.4</p></td>
+</tr>
+<tr class="row-odd"><td class="text-center"><p>L15 Lab</p></td>
+<td class="text-left"><p><a class="reference internal" href="module06/L15-lab-mpsk/index.html"><span class="doc std std-doc">mPSK</span></a></p></td>
+<td class="text-left"><p>6.4</p></td>
+</tr>
+<tr class="row-even"><td class="text-center"><p>L16</p></td>
+<td class="text-left"><p><a class="reference internal" href="module06/L16-fhss/index.html"><span class="doc std std-doc">Frequency Hopping</span></a></p></td>
+<td class="text-left"><p>6.5</p></td>
+</tr>
+<tr class="row-odd"><td class="text-center"><p>L16 Lab</p></td>
+<td class="text-left"><p><a class="reference internal" href="module06/L16-lab-fhss/index.html"><span class="doc std std-doc">Frequency Hopping</span></a></p></td>
+<td class="text-left"><p>6.5</p></td>
+</tr>
+<tr class="row-even"><td class="text-center"><p>L17</p></td>
+<td class="text-left"><p><a class="reference internal" href="module06/L17-rf-reverse-engineering/index.html"><span class="doc std std-doc">RF Reverse Engineering</span></a></p></td>
+<td class="text-left"><p>6.6</p></td>
+</tr>
+<tr class="row-odd"><td class="text-center"><p>L17 Lab</p></td>
+<td class="text-left"><p><a class="reference internal" href="module06/L17-lab-rf-reverse-engineering/index.html"><span class="doc std std-doc">RF Reverse Engineering</span></a></p></td>
+<td class="text-left"><p>6.6</p></td>
+</tr>
+<tr class="row-even"><td class="text-center"><p>L18</p></td>
+<td class="text-left"><p><a class="reference internal" href="module06/L18-adsb/index.html"><span class="doc std std-doc">ADS-B</span></a></p></td>
+<td class="text-left"><p>6.7</p></td>
+</tr>
+<tr class="row-odd"><td class="text-center"><p>L19</p></td>
+<td class="text-left"><p><a class="reference internal" href="module06/L19-ais/index.html"><span class="doc std std-doc">AIS</span></a></p></td>
+<td class="text-left"><p>6.8</p></td>
+</tr>
+<tr class="row-even"><td class="text-center"><p>L18–L19 Lab</p></td>
+<td class="text-left"><p><a class="reference internal" href="module06/L18-L19-lab-adsb-ais/index.html"><span class="doc std std-doc">ADS-B and AIS</span></a></p></td>
+<td class="text-left"><p>6.7, 6.8</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="id7">
+<h3>Module 7 — Final Project<a class="headerlink" href="#id7" title="Permalink to this heading">#</a></h3>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head text-center"><p>Lesson</p></th>
+<th class="head text-left"><p>Topic</p></th>
+<th class="head text-left"><p>Objectives</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-center"><p>L20</p></td>
+<td class="text-left"><p><a class="reference internal" href="module07/L20-qam-ofdm/index.html"><span class="doc std std-doc">QAM and OFDM</span></a></p></td>
+<td class="text-left"><p>7.1</p></td>
+</tr>
+<tr class="row-odd"><td class="text-center"><p></p></td>
+<td class="text-left"><p><a class="reference internal" href="module07/final-project/index.html"><span class="doc std std-doc">Final Project</span></a></p></td>
+<td class="text-left"><p>7.2, 7.3, 7.4</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
+<section id="textbooks-materials">
+<h2>Textbooks &amp; materials<a class="headerlink" href="#textbooks-materials" title="Permalink to this heading">#</a></h2>
+<p>See the <a class="reference internal" href="materials.html"><span class="doc std std-doc">materials page</span></a>.</p>
+</section>
+<section id="software-hardware">
+<h2>Software &amp; hardware<a class="headerlink" href="#software-hardware" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p><strong>GNU Radio</strong> with GNU Radio Companion (GRC)</p></li>
+<li><p><strong>PlutoSDR / ADALM-PLUTO</strong> — full-duplex SDR, issued to every cadet, in extended-frequency mode (70 MHz–6 GHz)</p></li>
+<li><p><strong>Directional antennas</strong> — for the midterm fox hunt</p></li>
+</ul>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+</main>
+
+<script src="_static/shell.js?v=ac36f07766"></script>
+<script src="_static/page.js?v=1a75f8777a"></script>
+</body>
+</html>

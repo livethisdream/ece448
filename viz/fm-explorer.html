@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FM explorer — the line spectrum of a tone, and Carson's bandwidth</title>
+<style>
+  :root { --navy:#004a85; --mid:#0067b9; --edge:#cddce9; --edge2:#b9d2e5; --bg:#f5f9fc;
+          --ink:#15202b; --ink3:#5b6573;
+          --amber:#8a5a00; --red:#b01e24; --grn:#3f7d34; }
+  html,body { margin:0; padding:0; font-family:'Inter',system-ui,-apple-system,sans-serif; color:var(--ink); background:#fff; }
+  .app { display:flex; flex-direction:column; gap:8px; padding:12px; }
+  .plots { display:grid; grid-template-columns:minmax(0,1.5fr) minmax(0,1fr); gap:10px; }
+  @media (max-width:620px) { .plots { grid-template-columns:1fr; } }
+  canvas { display:block; box-sizing:border-box; width:100%; height:auto; background:#fff; border:1px solid var(--edge); border-radius:6px; }
+  .controls { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:8px 16px; align-items:center;
+              padding:8px 12px; background:var(--bg); border:1px solid var(--edge); border-radius:6px; }
+  @media (max-width:620px) { .controls { grid-template-columns:1fr; } }
+  .ctl { display:grid; grid-template-columns:auto 1fr; column-gap:8px; row-gap:2px; align-items:center; min-width:0; }
+  .ctl label { font-size:11px; letter-spacing:0.02em; color:var(--ink3); font-weight:700; white-space:nowrap; }
+  .ctl .val { color:var(--navy); font-size:12px; font-weight:600; font-variant-numeric:tabular-nums; text-align:right; white-space:nowrap; }
+  .ctl input[type=range]{ grid-column:1 / span 2; width:100%; margin:0; accent-color:var(--mid); }
+  .seg { display:flex; gap:4px; flex-wrap:wrap; grid-column:1 / -1; }
+  .seg button { font:inherit; font-size:11.5px; font-weight:600; color:var(--navy); background:#fff; border:1px solid var(--edge2); border-radius:14px; padding:3px 10px; cursor:pointer; }
+  .seg button.on { background:var(--navy); color:#fff; border-color:var(--navy); }
+  .readouts { display:grid; gap:6px; grid-template-columns:repeat(4,minmax(0,1fr)); }
+  @media (max-width:620px) { .readouts { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+  .ro { display:flex; flex-direction:column; align-items:center; gap:2px; padding:5px 4px 6px; min-width:0;
+        border:1px solid var(--edge2); border-radius:6px; background:#eef4fa; }
+  .ro .k { font-size:10.5px; font-weight:700; letter-spacing:0.02em; color:var(--ink3); white-space:nowrap; }
+  .ro .v { font-size:14px; font-weight:700; white-space:nowrap; font-variant-numeric:tabular-nums; color:var(--navy); }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="plots">
+    <canvas id="spec" aria-label="The spectral lines of a carrier frequency modulated by one tone, with Carson's bandwidth shaded"></canvas>
+    <canvas id="cum" aria-label="The fraction of the signal's power inside a band centered on the carrier, against the band's width"></canvas>
+  </div>
+  <div class="controls">
+    <div class="seg" id="preset"><button data-p="25,1" class="on">L7 flowgraph</button><button data-p="5,3">voice NBFM</button><button data-p="75,15">broadcast</button></div>
+    <div class="ctl"><label for="dev">Deviation Δf</label><span class="val" id="dev-v"></span>
+      <input type="range" id="dev" min="0.5" max="100" step="0.1" value="25"></div>
+    <div class="ctl"><label for="fm">Tone frequency f<sub>m</sub></label><span class="val" id="fm-v"></span>
+      <input type="range" id="fm" min="0.5" max="15" step="0.5" value="1"></div>
+  </div>
+  <div class="readouts">
+    <div class="ro"><span class="k">β = Δf / f<sub>m</sub></span><span class="v" id="o-beta">—</span></div>
+    <div class="ro"><span class="k">Carson 2(Δf + f<sub>m</sub>)</span><span class="v" id="o-bw">—</span></div>
+    <div class="ro"><span class="k">power in Carson band</span><span class="v" id="o-in">—</span></div>
+    <div class="ro"><span class="k">power in carrier</span><span class="v" id="o-car">—</span></div>
+  </div>
+</div>
+
+<script>
+'use strict';
+// A carrier frequency modulated by one tone has lines at fc + n*fm with
+// amplitudes J_n(beta), beta = deviation / fm. Frequencies are offsets from
+// the carrier, in kHz.
+const SANS = 'Inter, system-ui, -apple-system, sans-serif';
+const C = { navy:'#004a85', mid:'#0067b9', red:'#b01e24', amber:'#8a5a00', rule:'#cddce9', ink:'#15202b', ink3:'#5b6573', grn:'#3f7d34', pale:'#eef4fa' };
+const devEl = document.getElementById('dev'), fmEl = document.getElementById('fm');
+devEl.oninput = fmEl.oninput = () => { document.querySelectorAll('#preset button').forEach(b => b.classList.remove('on')); update(); };
+document.querySelectorAll('#preset button').forEach(b => b.onclick = () => {
+  const [d, f] = b.dataset.p.split(',').map(Number); devEl.value = d; fmEl.value = f;
+  document.querySelectorAll('#preset button').forEach(x => x.classList.toggle('on', x === b)); update(); });
+
+// J_n(x) = (1/2pi) * integral over one period of cos(n t - x sin t); the
+// trapezoid rule on a periodic integrand converges once M exceeds x + n.
+function besselJ(n, x) {
+  const M = 2 * Math.ceil(x + Math.abs(n)) + 64; let s = 0;
+  for (let k = 0; k < M; k++) { const t = 2 * Math.PI * k / M; s += Math.cos(n * t - x * Math.sin(t)); }
+  return s / M;
+}
+
+function setup(cv, aspect, narrowH){
+  const dpr = window.devicePixelRatio || 1, w = Math.max(200, cv.clientWidth || 300);
+  const narrow = window.matchMedia && window.matchMedia('(max-width:620px)').matches;
+  const h = narrow ? narrowH : Math.round(Math.min(w * aspect, 250));
+  cv.width = Math.round(w*dpr); cv.height = Math.round(h*dpr); cv.style.height = h + 'px';
+  const bh = cv.offsetHeight - cv.clientHeight; if (bh) cv.style.height = (h + bh) + 'px';
+  const ctx = cv.getContext('2d'); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); return { ctx, w, h };
+}
+function txt(ctx, s, x, y, px, col, align, bold){ ctx.fillStyle = col; ctx.font = (bold?'700 ':'') + px + 'px ' + SANS;
+  ctx.textAlign = align || 'left'; ctx.textBaseline = 'middle'; ctx.fillText(s, x, y); }
+function niceStep(span) { const r = span / 4, p = Math.pow(10, Math.floor(Math.log10(r))), m = r / p;
+  return (m < 1.5 ? 1 : m < 3.5 ? 2 : m < 7.5 ? 5 : 10) * p; }
+
+function compute() {
+  const dev = +devEl.value, fm = +fmEl.value, beta = dev / fm;
+  const half = Math.max(1.35 * (dev + fm), 3.5 * fm), N = Math.floor(half / fm);
+  const J = []; for (let n = 0; n <= N; n++) J.push(besselJ(n, beta));
+  return { dev, fm, beta, half, N, J, carson: dev + fm };
+}
+
+function drawSpec(s) {
+  const cv = document.getElementById('spec'), { ctx, w, h } = setup(cv, 0.5, 180);
+  ctx.clearRect(0, 0, w, h);
+  const mL = 12, mR = 12, y0 = h - 34, top = 26;
+  const X = f => mL + (f + s.half) / (2 * s.half) * (w - mL - mR), A = a => y0 - Math.min(a, 1) * (y0 - top);
+  ctx.fillStyle = C.pale; ctx.fillRect(X(-s.carson), top - 8, X(s.carson) - X(-s.carson), y0 - top + 8);
+  txt(ctx, "Carson's band", (X(-s.carson) + X(s.carson)) / 2, top - 14 + 6, 10.5, C.ink3, 'center');
+  ctx.strokeStyle = C.ink3; ctx.lineWidth = 1.2;
+  ctx.beginPath(); ctx.moveTo(mL, y0); ctx.lineTo(w - mR, y0); ctx.stroke();
+  const st = niceStep(s.half);
+  for (let f = -Math.floor(s.half / st) * st; f <= s.half + 1e-9; f += st) {
+    ctx.beginPath(); ctx.moveTo(X(f), y0); ctx.lineTo(X(f), y0 + 5); ctx.stroke();
+    txt(ctx, String(+f.toFixed(2)), X(f), y0 + 15, 11, C.ink3, 'center');
+  }
+  txt(ctx, 'kHz from the carrier', w - mR, y0 + 27, 10.5, C.ink3, 'right');
+  const lw = Math.max(1, Math.min(3, (w - mL - mR) / (2 * s.N + 1) * 0.6));
+  for (let n = -s.N; n <= s.N; n++) {
+    const a = Math.abs(s.J[Math.abs(n)]), f = n * s.fm;
+    ctx.strokeStyle = n === 0 ? C.amber : C.navy; ctx.lineWidth = n === 0 ? Math.max(lw, 2) : lw;
+    ctx.beginPath(); ctx.moveTo(X(f), y0); ctx.lineTo(X(f), A(a)); ctx.stroke();
+  }
+  txt(ctx, 'line amplitude', mL + 2, 10, 11, C.ink3, 'left', true);
+  txt(ctx, 'carrier', w - mR - 2, 10, 11, C.amber, 'right', true);
+}
+
+function drawCum(s) {
+  const cv = document.getElementById('cum'), { ctx, w, h } = setup(cv, 0.75, 150);
+  ctx.clearRect(0, 0, w, h);
+  const mL = 34, mR = 12, y0 = h - 34, top = 22, B = 2 * s.half;
+  const X = b => mL + b / B * (w - mL - mR), Y = p => y0 - p * (y0 - top);
+  ctx.strokeStyle = C.rule; ctx.lineWidth = 1;
+  for (const p of [0, 0.5, 1]) { ctx.beginPath(); ctx.moveTo(mL, Y(p)); ctx.lineTo(w - mR, Y(p)); ctx.stroke();
+    txt(ctx, Math.round(100 * p) + '%', mL - 4, Y(p), 10.5, C.ink3, 'right'); }
+  // Power inside a band of total width b: the lines with 2|n| fm <= b.
+  ctx.strokeStyle = C.navy; ctx.lineWidth = 2; ctx.beginPath();
+  let p = s.J[0] * s.J[0]; ctx.moveTo(X(0), Y(p));
+  for (let n = 1; n <= s.N; n++) { const b = 2 * n * s.fm; ctx.lineTo(X(b), Y(p)); p += 2 * s.J[n] * s.J[n]; ctx.lineTo(X(b), Y(p)); }
+  ctx.lineTo(X(B), Y(p)); ctx.stroke();
+  ctx.strokeStyle = C.red; ctx.setLineDash([4, 3]); ctx.lineWidth = 1.4;
+  ctx.beginPath(); ctx.moveTo(X(2 * s.carson), y0); ctx.lineTo(X(2 * s.carson), top - 6); ctx.stroke(); ctx.setLineDash([]);
+  txt(ctx, 'Carson', X(2 * s.carson) - 3, top - 8 + 4, 10.5, C.red, 'right', true);
+  ctx.strokeStyle = C.ink3; ctx.beginPath(); ctx.moveTo(mL, y0); ctx.lineTo(w - mR, y0); ctx.stroke();
+  txt(ctx, '0', X(0), y0 + 13, 11, C.ink3, 'center');
+  txt(ctx, (+B.toFixed(1)) + ' kHz', X(B), y0 + 13, 11, C.ink3, 'right');
+  txt(ctx, 'power inside a band this wide', w - mR, y0 + 27, 10.5, C.ink3, 'right');
+}
+
+function update() {
+  const s = compute();
+  document.getElementById('dev-v').textContent = s.dev.toFixed(1) + ' kHz';
+  document.getElementById('fm-v').textContent = s.fm.toFixed(1) + ' kHz';
+  document.getElementById('o-beta').textContent = s.beta < 10 ? s.beta.toFixed(2) : s.beta.toFixed(1);
+  document.getElementById('o-bw').textContent = (2 * s.carson).toFixed(1) + ' kHz';
+  let pin = s.J[0] * s.J[0];
+  for (let n = 1; n * s.fm <= s.carson + 1e-9 && n <= s.N; n++) pin += 2 * s.J[n] * s.J[n];
+  document.getElementById('o-in').textContent = (100 * pin).toFixed(1) + '%';
+  document.getElementById('o-car').textContent = (100 * s.J[0] * s.J[0]).toFixed(1) + '%';
+  drawSpec(s); drawCum(s);
+}
+
+window.addEventListener('resize', update);
+const q = new URLSearchParams(location.search);
+if (q.get('dev')) devEl.value = q.get('dev');
+if (q.get('fm')) fmEl.value = q.get('fm');
+if (q.get('dev') || q.get('fm')) document.querySelectorAll('#preset button').forEach(b => b.classList.remove('on'));
+update();
+</script>
+</body>
+</html>

@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Materials &mdash; ECE 448 — Software Defined Radios</title>
+<meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+<link rel="icon" href="_static/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap">
+<link rel="stylesheet" href="_static/pygments.css"><link rel="stylesheet" href="_static/custom.css?v=ec0f297254">
+<link rel="stylesheet" href="_static/shell.css?v=78396bd831">
+<link rel="stylesheet" href="_static/page.css?v=302c5f6a6a">
+<script src="_static/viz-autosize.js"></script>
+</head>
+<body data-search="search.html">
+
+<div class="rail"><span id="railfill"></span></div>
+
+
+<div class="index" id="index" role="dialog" aria-label="Contents and search">
+  <button class="index-close" id="btnIndexClose" type="button" aria-label="Close">&times;</button>
+  <div class="wrap">
+    <form class="index-search" id="searchform" role="search" onsubmit="return false">
+      <input type="search" id="q" autocomplete="off" spellcheck="false"
+             placeholder="Search the course&hellip;" aria-label="Search the course">
+    </form>
+    <div class="index-cols">
+      <div class="index-here">
+        <h2>This page</h2>
+        <div class="index-pagetoc" id="pagetoc"><ul>
+<li><a class="reference internal" href="#">Materials</a><ul>
+<li><a class="reference internal" href="#primary-references">Primary references</a></li>
+<li><a class="reference internal" href="#hardware-software">Hardware &amp; software</a></li>
+<li><a class="reference internal" href="#lab-packets">Lab packets</a></li>
+<li><a class="reference internal" href="#legacy-slides">Legacy slides</a></li>
+<li><a class="reference internal" href="#supplemental-references">Supplemental references</a></li>
+</ul>
+</li>
+</ul>
+</div>
+      </div>
+      <div class="index-toc">
+        <h2>Course</h2>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Course Information</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="syllabus.html">Syllabus</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Materials</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 1 — Foundations of Detection &amp; Link Budgets</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="module01/index.html">Module 1 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module01/L01-course-intro/index.html">L1 — Course Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module01/L02-noise-figure-link-budget/index.html">L2 — Noise Figure and Link Budget</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module01/L03-signal-space/index.html">L3 — Signal Space</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 2 — SDR &amp; GNU Radio Foundations</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="module02/index.html">Module 2 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module02/L04-sdr-introduction/index.html">L4 — SDR Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module02/L05-gnu-radio-intro/index.html">L5 — GNU Radio Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module02/L05-lab-first-flowgraphs/index.html">L5 Lab — First Flowgraphs</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 3 — Analog Modulation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="module03/index.html">Module 3 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module03/L06-am-simulation/index.html">L6 — AM Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module03/L06-lab-am-simulation/index.html">L6 Lab — AM Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module03/L07-am-fm-receivers/index.html">L7 — AM and FM Receivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module03/L07-lab-am-fm-receivers/index.html">L7 Lab — AM and FM Receivers</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 4 — Digital Modulation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="module04/index.html">Module 4 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module04/L08-fsk/index.html">L8 — FSK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module04/L08-lab-fsk/index.html">L8 Lab — FSK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module04/L09-pam-theory/index.html">L9 — PAM Theory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module04/L10-ascii-pam/index.html">L10 — ASCII over PAM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module04/L10-lab-pam-link/index.html">L10 Lab — PAM Link</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 5 — Custom Blocks &amp; Midterm</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="module05/index.html">Module 5 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module05/L11-custom-blocks/index.html">L11 — Out-of-Tree Modules and Custom Blocks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module05/L11-lab-custom-block/index.html">L11 Lab — Custom Block</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module05/midterm/index.html">Midterm — Fox Hunt and CTF</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 6 — Waveform Applications &amp; RF Reverse Engineering</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="module06/index.html">Module 6 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module06/L12-cw/index.html">L12 — CW</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module06/L12-lab-cw/index.html">L12 Lab — CW</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module06/L13-dtmf/index.html">L13 — DTMF</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module06/L13-lab-dtmf/index.html">L13 Lab — DTMF</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module06/L14-hd-radio/index.html">L14 — HD Radio</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module06/L14-lab-hd-radio/index.html">L14 Lab — HD Radio</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module06/L15-mpsk/index.html">L15 — mPSK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module06/L15-lab-mpsk/index.html">L15 Lab — mPSK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module06/L16-fhss/index.html">L16 — Frequency Hopping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module06/L16-lab-fhss/index.html">L16 Lab — Frequency Hopping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module06/L17-rf-reverse-engineering/index.html">L17 — RF Reverse Engineering</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module06/L17-lab-rf-reverse-engineering/index.html">L17 Lab — RF Reverse Engineering</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module06/L18-adsb/index.html">L18 — ADS-B</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module06/L19-ais/index.html">L19 — AIS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module06/L18-L19-lab-adsb-ais/index.html">L18–L19 Lab — ADS-B and AIS</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 7 — Final Project</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="module07/index.html">Module 7 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module07/L20-qam-ofdm/index.html">L20 — QAM and OFDM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module07/final-project/index.html">Final Project</a></li>
+</ul>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="hud">
+<div class="hud-group">
+  <button id="btnSite" class="site" type="button"
+          aria-expanded="false" aria-controls="sitepop"
+          title="Elsewhere on this site">ECE 448</button>
+</div>
+<div class="pop" id="sitepop" role="group" aria-label="Site" hidden>
+  <a href="https://livethisdream.github.io/">Home</a>
+  <a href="https://livethisdream.github.io/ece343/intro.html">ECE 343</a>
+  <a href="https://livethisdream.github.io/ece444/intro.html">ECE 444</a>
+  <a href="intro.html" aria-current="page">ECE 448</a>
+  <a href="https://livethisdream.github.io/projects">Projects</a>
+  <button class="pop-help" type="button" data-help>Help<kbd>?</kbd></button>
+</div><div class="hud-group hud-mid"></div>
+
+  <div class="hud-group"><button id="btnIndex" class="counter" type="button" aria-pressed="false"
+            title="Contents and search (G)"><span id="pct">0%</span></button>
+  </div>
+</div>
+<div class="help" id="help" role="dialog" aria-modal="true" aria-labelledby="helpTitle" hidden>
+  <div class="help-card">
+    <button class="help-close" id="btnHelpClose" type="button" aria-label="Close help">&times;</button>
+    <h2 id="helpTitle">Getting around</h2>
+    <p class="help-lead">Everything is in the bar at the bottom of the screen.</p>
+    <dl class="help-list">
+      <dt><span class="help-chip">ECE 448</span></dt>
+      <dd>The other course sites, the home page, and this help.</dd>
+      <dt><span class="help-chip">42%</span></dt>
+      <dd>How far down the page you are. Tap it for this page&rsquo;s sections, the whole course, and search<span class="help-keys"> <kbd>G</kbd> <kbd>/</kbd></span>.</dd>
+    </dl>
+    <p class="help-foot"><span class="help-keys">Press <kbd>?</kbd> to open this again.</span><span class="help-touch">Open this again from the ECE 448 menu.</span></p>
+  </div>
+</div>
+
+<div class="help-hint" id="helpHint" hidden>
+  <button id="btnHintOpen" type="button" data-help>New here? How the bar works</button>
+  <button id="btnHintClose" class="help-hint-close" type="button" aria-label="Dismiss">&times;</button>
+</div><main class="page bd-article" id="page">
+<section class="tex2jax_ignore mathjax_ignore" id="materials">
+<h1>Materials<a class="headerlink" href="#materials" title="Permalink to this heading">#</a></h1>
+<p>Everything you download or reference in this course lives on this page: the
+references, the hardware and software, the legacy slides, and the supporting
+documents. Each lesson page links its own materials in place; this is the one
+place they are all together.</p>
+<section id="primary-references">
+<h2>Primary references<a class="headerlink" href="#primary-references" title="Permalink to this heading">#</a></h2>
+<p>This is a hands-on course, so the “textbooks” are two free web references we
+work through alongside the in-class flowgraphs.</p>
+<ul class="simple">
+<li><p><strong><a href="https://wiki.gnuradio.org/index.php/Tutorials" target="_blank" rel="noopener">GNU Radio Tutorials</a></strong>: the official GNU Radio wiki tutorials. The primary reference for GRC, flowgraph construction, and out-of-tree module development.</p></li>
+<li><p><strong><a href="https://pysdr.org/" target="_blank" rel="noopener">PySDR: A Guide to SDR and DSP using Python</a></strong> (Marc Lichtman): a free online textbook covering SDR fundamentals, DSP basics, and hands-on examples with PlutoSDR, RTL-SDR, and USRP.</p></li>
+</ul>
+</section>
+<section id="hardware-software">
+<h2>Hardware &amp; software<a class="headerlink" href="#hardware-software" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p><strong>GNU Radio</strong> with <strong>GNU Radio Companion (GRC)</strong>: install instructions are posted with L5.</p></li>
+<li><p><strong>PlutoSDR / ADALM-PLUTO</strong>: full-duplex Tx/Rx SDR, issued to every cadet, set to extended-frequency mode (70 MHz–6 GHz).</p></li>
+<li><p><strong>Directional antennas</strong> (Yagi and log-periodic): for the midterm fox hunt.</p></li>
+</ul>
+</section>
+<section id="lab-packets">
+<h2>Lab packets<a class="headerlink" href="#lab-packets" title="Permalink to this heading">#</a></h2>
+<p>Each lab packet is posted on its lab page, and here, before the lab.</p>
+</section>
+<section id="legacy-slides">
+<h2>Legacy slides<a class="headerlink" href="#legacy-slides" title="Permalink to this heading">#</a></h2>
+<p>The slides each topic was last taught from, posted as they were while the
+lessons are converted to the new format. As each lesson is converted, its new
+notes and slides replace these on the lesson page.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head text-left"><p>Deck</p></th>
+<th class="head text-center"><p>Lesson</p></th>
+<th class="head text-left"><p>Slides</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-left"><p>Noise Figure and Link Budget</p></td>
+<td class="text-center"><p>L2</p></td>
+<td class="text-left"><p><a class="doc-link" href="legacy/L02-noise-figure-link-budget.pdf" target="_blank" rel="noopener">slides</a></p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>Signal Space</p></td>
+<td class="text-center"><p>L3</p></td>
+<td class="text-left"><p><a class="doc-link" href="legacy/L03-signal-space.pdf" target="_blank" rel="noopener">slides</a></p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>SDR Introduction</p></td>
+<td class="text-center"><p>L4</p></td>
+<td class="text-left"><p><a class="doc-link" href="legacy/L04-sdr-introduction.pdf" target="_blank" rel="noopener">slides</a></p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>AM Simulation</p></td>
+<td class="text-center"><p>L6</p></td>
+<td class="text-left"><p><a class="doc-link" href="legacy/L07-am-simulation.pdf" target="_blank" rel="noopener">slides</a></p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>AM and FM Receivers</p></td>
+<td class="text-center"><p>L7</p></td>
+<td class="text-left"><p><a class="doc-link" href="legacy/L08-am-fm-receivers.pdf" target="_blank" rel="noopener">slides</a></p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>PAM Theory</p></td>
+<td class="text-center"><p>L9</p></td>
+<td class="text-left"><p><a class="doc-link" href="legacy/L13-pam-theory.pdf" target="_blank" rel="noopener">slides</a></p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>ASCII over PAM</p></td>
+<td class="text-center"><p>L10</p></td>
+<td class="text-left"><p><a class="doc-link" href="legacy/L14-ascii-pam.pdf" target="_blank" rel="noopener">Mathys (2016), Motivating Undergraduate Communication Theory Using GNU Radio</a></p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>DTMF</p></td>
+<td class="text-center"><p>L13</p></td>
+<td class="text-left"><p><a class="doc-link" href="legacy/L22-dtmf.pdf" target="_blank" rel="noopener">slides</a></p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>HD Radio</p></td>
+<td class="text-center"><p>L14</p></td>
+<td class="text-left"><p><a class="doc-link" href="legacy/L24-hd-radio.pdf" target="_blank" rel="noopener">slides</a></p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>RF Reverse Engineering</p></td>
+<td class="text-center"><p>L17</p></td>
+<td class="text-left"><p><a class="doc-link" href="legacy/L31-rf-reverse-engineering.pdf" target="_blank" rel="noopener">slides</a></p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>ADS-B</p></td>
+<td class="text-center"><p>L18</p></td>
+<td class="text-left"><p><a class="doc-link" href="legacy/L35-adsb.pdf" target="_blank" rel="noopener">slides</a></p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>AIS</p></td>
+<td class="text-center"><p>L19</p></td>
+<td class="text-left"><p><a class="doc-link" href="legacy/L36-ais.pdf" target="_blank" rel="noopener">slides</a></p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>Final Project Introduction</p></td>
+<td class="text-center"><p>Final Project</p></td>
+<td class="text-left"><p><a class="doc-link" href="legacy/L16-final-project-intro.pdf" target="_blank" rel="noopener">slides</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="supplemental-references">
+<h2>Supplemental references<a class="headerlink" href="#supplemental-references" title="Permalink to this heading">#</a></h2>
+<p>Third-party technical documents referenced by specific lessons.</p>
+<ul class="simple">
+<li><p><a class="doc-link" href="legacy/refs/nrsc-1011s_hd-radio.pdf" target="_blank" rel="noopener">NRSC-1011s HD Radio specification (PDF)</a>: companion reference for L14.</p></li>
+<li><p><a class="doc-link" href="legacy/refs/differential-encoding-tutorial.pdf" target="_blank" rel="noopener">Differential encoding tutorial (PDF)</a>: companion reference for L15 (mPSK).</p></li>
+<li><p><a class="doc-link" href="legacy/refs/adsb-decode-guide.pdf" target="_blank" rel="noopener">ADS-B decoding guide (PDF)</a>: companion reference for L18.</p></li>
+<li><p><a class="doc-link" href="legacy/refs/1090_Riddle.pdf" target="_blank" rel="noopener">The 1090 MHz Riddle (PDF)</a>: Mode S and ADS-B background reading for L18.</p></li>
+<li><p><a class="doc-link" href="legacy/refs/adsb_magazu_usaf.pdf" target="_blank" rel="noopener">ADS-B, Magazu, USAF (PDF)</a>: additional ADS-B reference.</p></li>
+</ul>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+</main>
+
+<script src="_static/shell.js?v=ac36f07766"></script>
+<script src="_static/page.js?v=1a75f8777a"></script>
+</body>
+</html>

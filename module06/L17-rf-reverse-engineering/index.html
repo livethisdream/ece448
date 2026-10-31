@@ -1,0 +1,798 @@
+<!doctype html>
+<html lang="en" data-mode="read">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>L17 - RF Reverse Engineering &mdash; ECE 448 — Software Defined Radios</title>
+<meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+<link rel="icon" href="../../_static/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap"><link rel="stylesheet" href="../../_static/custom.css?v=ec0f297254">
+<link rel="stylesheet" href="../../_static/shell.css?v=78396bd831">
+<link rel="stylesheet" href="../../_static/frames.css?v=fa285d3703">
+<script>window.MathJax = {"tex": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processEscapes": true}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+<script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js"></script>
+</head>
+<body>
+
+<div class="rail"><span id="railfill"></span></div>
+
+<div class="laser" id="laser" aria-hidden="true"></div>
+<div class="spot" id="spot" aria-hidden="true"></div>
+
+<div class="index" id="index" role="dialog" aria-label="Jump to a frame or another lesson">
+  <button class="index-close" id="btnIndexClose" type="button" aria-label="Close">&times;</button>
+  <div class="wrap">
+    <div class="index-cols">
+      <div class="index-here">
+        <h2>This lesson</h2>
+        <ol id="indexlist"></ol>
+      </div>
+      <div class="index-toc">
+        <h2>Course</h2>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Course Information</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../syllabus.html">Syllabus</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../materials.html">Materials</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 1 — Foundations of Detection &amp; Link Budgets</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module01/index.html">Module 1 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module01/L01-course-intro/index.html">L1 — Course Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module01/L02-noise-figure-link-budget/index.html">L2 — Noise Figure and Link Budget</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module01/L03-signal-space/index.html">L3 — Signal Space</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 2 — SDR &amp; GNU Radio Foundations</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module02/index.html">Module 2 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module02/L04-sdr-introduction/index.html">L4 — SDR Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module02/L05-gnu-radio-intro/index.html">L5 — GNU Radio Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module02/L05-lab-first-flowgraphs/index.html">L5 Lab — First Flowgraphs</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 3 — Analog Modulation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module03/index.html">Module 3 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module03/L06-am-simulation/index.html">L6 — AM Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module03/L06-lab-am-simulation/index.html">L6 Lab — AM Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module03/L07-am-fm-receivers/index.html">L7 — AM and FM Receivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module03/L07-lab-am-fm-receivers/index.html">L7 Lab — AM and FM Receivers</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 4 — Digital Modulation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/index.html">Module 4 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/L08-fsk/index.html">L8 — FSK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/L08-lab-fsk/index.html">L8 Lab — FSK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/L09-pam-theory/index.html">L9 — PAM Theory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/L10-ascii-pam/index.html">L10 — ASCII over PAM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/L10-lab-pam-link/index.html">L10 Lab — PAM Link</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 5 — Custom Blocks &amp; Midterm</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module05/index.html">Module 5 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module05/L11-custom-blocks/index.html">L11 — Out-of-Tree Modules and Custom Blocks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module05/L11-lab-custom-block/index.html">L11 Lab — Custom Block</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module05/midterm/index.html">Midterm — Fox Hunt and CTF</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 6 — Waveform Applications &amp; RF Reverse Engineering</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Module 6 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L12-cw/index.html">L12 — CW</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L12-lab-cw/index.html">L12 Lab — CW</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L13-dtmf/index.html">L13 — DTMF</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L13-lab-dtmf/index.html">L13 Lab — DTMF</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L14-hd-radio/index.html">L14 — HD Radio</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L14-lab-hd-radio/index.html">L14 Lab — HD Radio</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L15-mpsk/index.html">L15 — mPSK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L15-lab-mpsk/index.html">L15 Lab — mPSK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L16-fhss/index.html">L16 — Frequency Hopping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L16-lab-fhss/index.html">L16 Lab — Frequency Hopping</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">L17 — RF Reverse Engineering</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L17-lab-rf-reverse-engineering/index.html">L17 Lab — RF Reverse Engineering</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L18-adsb/index.html">L18 — ADS-B</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L19-ais/index.html">L19 — AIS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L18-L19-lab-adsb-ais/index.html">L18–L19 Lab — ADS-B and AIS</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 7 — Final Project</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module07/index.html">Module 7 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module07/L20-qam-ofdm/index.html">L20 — QAM and OFDM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module07/final-project/index.html">Final Project</a></li>
+</ul>
+
+      </div>
+    </div>
+  </div>
+</div><div class="hud">
+<div class="hud-group">
+  <button id="btnSite" class="site" type="button"
+          aria-expanded="false" aria-controls="sitepop"
+          title="Elsewhere on this site">ECE 448</button>
+</div>
+<div class="pop" id="sitepop" role="group" aria-label="Site" hidden>
+  <a href="https://livethisdream.github.io/">Home</a>
+  <a href="https://livethisdream.github.io/ece343/intro.html">ECE 343</a>
+  <a href="https://livethisdream.github.io/ece444/intro.html">ECE 444</a>
+  <a href="../../intro.html" aria-current="page">ECE 448</a>
+  <a href="https://livethisdream.github.io/projects">Projects</a>
+  <button class="pop-help" type="button" data-help>Help<kbd>?</kbd></button>
+</div>
+
+  <div class="hud-group hud-mid"><button id="btnMode" type="button" aria-expanded="false" aria-controls="modepop"
+            title="How the lesson is laid out (P)">read</button>
+    <button id="btnTools" type="button" aria-expanded="false" aria-controls="toolspop"
+            title="Presenter tools">tools</button>
+  </div>
+
+  <div class="hud-group"><button id="btnIndex" class="counter" type="button" aria-pressed="false"
+            title="Contents (G) · double-tap for the top"><b id="cur">1</b>/<span id="tot">0</span></button>
+  </div><div class="pop" id="modepop" role="group" aria-label="View mode" hidden>
+    <button id="btnPresent" class="choice" type="button" aria-pressed="false">
+      present<span class="pop-note">one frame at a time</span></button>
+    <button id="btnRead" class="choice" type="button" aria-pressed="true">
+      read<span class="pop-note">the whole lesson, continuous</span></button>
+  </div><div class="pop" id="toolspop" role="group" aria-label="Presenter tools" hidden>
+    <button id="btnLaser" type="button" aria-pressed="false">laser<kbd>L</kbd></button>
+    <button id="btnSpot" type="button" aria-pressed="false">spotlight<kbd>S</kbd></button>
+    <button id="btnFull" type="button">fullscreen<kbd>F</kbd></button>
+    <button id="btnHelp" type="button" data-help>help<kbd>?</kbd></button>
+  </div>
+</div>
+<div class="help" id="help" role="dialog" aria-modal="true" aria-labelledby="helpTitle" hidden>
+  <div class="help-card">
+    <button class="help-close" id="btnHelpClose" type="button" aria-label="Close help">&times;</button>
+    <h2 id="helpTitle">Getting around</h2>
+    <p class="help-lead">Everything is in the bar at the bottom of the screen.</p>
+    <dl class="help-list">
+      <dt><span class="help-chip">ECE 448</span></dt>
+      <dd>The other course sites, the home page, and this help.</dd>
+      <dt><span class="help-chip">read</span></dt>
+      <dd><b>Read</b> shows the whole lesson as one page. <b>Present</b> shows one frame at a time, for class.<span class="help-keys"> <kbd>P</kbd> switches.</span></dd>
+      <dt><span class="help-chip">tools</span></dt>
+      <dd>Laser pointer<span class="help-keys"> <kbd>L</kbd></span>, spotlight<span class="help-keys"> <kbd>S</kbd></span>, and fullscreen<span class="help-keys"> <kbd>F</kbd></span>.</dd>
+      <dt><span class="help-chip">3/9</span></dt>
+      <dd>Where you are in the lesson. Tap it for every frame here and every lesson in the course<span class="help-keys"> <kbd>G</kbd></span>. Double-tap to go back to the top.</dd>
+    </dl>
+    <h3 class="help-keys">Presenting</h3>
+    <p class="help-keys"><kbd>&rarr;</kbd> or <kbd>Space</kbd> next frame, <kbd>&larr;</kbd> back, <kbd>D</kbd> this frame&rsquo;s detail, <kbd>Esc</kbd> close a panel.</p>
+    <h3>Printing</h3>
+    <p>Print from present mode for the slides, one frame a page. Print from read mode for the whole lesson.</p>
+    <p class="help-foot"><span class="help-keys">Press <kbd>?</kbd> to open this again.</span><span class="help-touch">Open this again from the ECE 448 menu.</span></p>
+  </div>
+</div>
+
+<div class="help-hint" id="helpHint" hidden>
+  <button id="btnHintOpen" type="button" data-help>New here? How the bar works</button>
+  <button id="btnHintClose" class="help-hint-close" type="button" aria-label="Dismiss">&times;</button>
+</div><main class="deck bd-article" id="deck" tabindex="-1">
+<section class="tex2jax_ignore mathjax_ignore" id="l17-rf-reverse-engineering">
+<h1>L17 - RF Reverse Engineering<a class="headerlink" href="#l17-rf-reverse-engineering" title="Permalink to this heading">#</a></h1>
+<div class="frame title-frame docutils container" id="frame-1">
+<div class="wrap docutils container">
+<div class="course-mark">ECE 448 · Spring 2027</div>
+<h1 class="frame-title">RF Reverse Engineering</h1>
+<div class="title-rule"></div>
+<p>Take an unknown signal from spectrum to bits with a PlutoSDR and GNU Radio.</p>
+<p>Lesson 17 · Module 6: Waveform Applications &amp; RF Reverse Engineering · Dr. Neil Rogers</p>
+</div>
+</div>
+<div class="frame read-only docutils container" id="frame-slides">
+<div class="wrap docutils container">
+<p class="rubric">Slides</p>
+<div class="slides admonition">
+<p class="admonition-title">Slides</p>
+<p><a href="../../slides/L17-rf-reverse-engineering.html" target="_blank" rel="noopener">html slides</a>
+<a href="../../slides/L17-rf-reverse-engineering.html?print-pdf" target="_blank" rel="noopener">pdf slides</a>
+<a href="../../slides/L17-rf-reverse-engineering.md" target="_blank" rel="noopener">raw markdown slides</a></p>
+</div>
+</div>
+</div>
+<div class="frame docutils container" id="frame-learning-objectives">
+<div class="wrap docutils container">
+<p class="rubric">Learning Objectives</p>
+<ol class="lo-list" style="--module: '6'; counter-reset: lo 5">
+  <li>I can perform RF reverse engineering on an unknown signal: identify its modulation, symbol rate, and payload structure.</li>
+</ol>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-a-remote-nobody-described">
+<div class="wrap docutils container">
+<p class="rubric">A Remote Nobody Described</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<p><img src="../../viz/img/L17-chips.png"
+     alt="L17-chips.grc running on L17-fan-remote.sigmf-data, labeled simulated, with the carrier offset at 40000 Hz, envelope gain 0 dB, threshold 0.5, and chip length 80 samples: the envelope plot shows 40 ms, a frame of 16 on-off pulses of two widths, a quiet gap of about 12 ms, and the start of the next frame; the line below reads Last burst: 46 chips: 1101001101001001101101001001001001101101101101, pause 2560 samples"
+     style="max-width: 820px; width: 100%; display: block; margin: 0 auto;"></p>
+</div>
+<div class="present docutils container">
+<ul class="simple">
+<li><p>A ceiling-fan remote sends five commands near 350 MHz, and no one gave us its manual.</p></li>
+<li><p>Today we go from the recording to the bits, then build a transmitter for it.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>Neil’s 2025 class reverse-engineered a Hunter ceiling-fan remote, a low-power transmitter near 350 MHz that operates under FCC Part 15. Not every cadet has that fan, so this lesson uses a <strong>Simulated</strong> fan remote of our own with five buttons: Light, Fan Off, Low, Medium, and High. Its recording, <code class="docutils literal notranslate"><span class="pre">L17-fan-remote.sigmf-data</span></code>, holds one press of each button, and the figure is that recording in <code class="docutils literal notranslate"><span class="pre">L17-chips.grc</span></code>, a GNU Radio flowgraph that reads each burst as a line of on and off chips.</p>
+<p>The two lines of the objective from 2025 set the plan: reverse engineer a simple RF transmitter, and create a GNU Radio flowgraph that operates the fan. Lesson 11 found the bursts of a 433.92 MHz remote with an energy detector, and Lesson 12 keyed a carrier on and off. Today we read what those bursts say.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-the-process">
+<div class="wrap docutils container">
+<p class="rubric">The Process</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<p><img src="../../viz/img/L17-process.svg"
+     alt="Five boxes joined by arrows: Step 1 find the carrier, with a spectrum and waterfall; Step 2 identify the modulation, OOK, FSK, PSK; Step 3 identify the encoding, bits, fields, rates; Step 4 build an encoder, a GNU Radio flowgraph; Step 5 transmit: cadets into a cable, the instructor demo over the air to the fan. Steps 1 to 3 work from a recording, and steps 4 and 5 build it back"
+     style="max-width: 820px; width: 100%; display: block; margin: 0 auto;"></p>
+</div>
+<div class="present docutils container">
+<ul class="simple">
+<li><p>These are the five steps of the 2025 slides, in their order.</p></li>
+<li><p>Steps 1 to 3 need only the recording.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>The process comes from the 2025 slides. First we find the <strong>carrier</strong>, the frequency the transmitter uses. Next we identify the <strong>modulation</strong>, what the transmitter changes to send information. Then we identify the <strong>encoding</strong>: what the commands are, how the bits group into bytes or nibbles, and the bit rate and baud rate. With those three answers we build an <strong>encoder</strong> that produces the same signal, and last we transmit it.</p>
+<p>Steps 1 to 3 work entirely from a recording, so they need no radio. Step 5 transmits: a cadet’s transmitter goes into a cable with an attenuator, or over the air at 915 MHz at low power only if the instructor says so, and the instructor closes the lesson by operating the real fan over the air. Every step runs in GNU Radio: a capture flowgraph finds the carrier, as in 2025, and <code class="docutils literal notranslate"><span class="pre">L17-chips.grc</span></code> takes the bursts apart.</p>
+</div>
+</div>
+</div>
+<div class="frame read-only docutils container" id="frame-the-recording">
+<div class="wrap docutils container">
+<p class="rubric">The Recording</p>
+<p>A recording a cadet downloads or makes in this course is a <strong>SigMF</strong> pair. The samples are in <code class="docutils literal notranslate"><span class="pre">L17-fan-remote.sigmf-data</span></code>, and <code class="docutils literal notranslate"><span class="pre">L17-fan-remote.sigmf-meta</span></code> is a short text file that says how to read them:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head text-left"><p>Field in the meta file</p></th>
+<th class="head text-left"><p>Value</p></th>
+<th class="head text-left"><p>What it sets</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">core:datatype</span></code></p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">cf32_le</span></code></p></td>
+<td class="text-left"><p>complex float, 8 bytes a sample: the Output Type of the SigMF Source</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">core:sample_rate</span></code></p></td>
+<td class="text-left"><p>200000</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">samp_rate</span></code> in every flowgraph that opens the recording</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">core:frequency</span></code></p></td>
+<td class="text-left"><p>350000000</p></td>
+<td class="text-left"><p>the center of the recording, 350.000 MHz</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">core:hw</span></code></p></td>
+<td class="text-left"><p>Simulated in GNU Radio; no radio</p></td>
+<td class="text-left"><p>where the recording came from</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">core:description</span></code></p></td>
+<td class="text-left"><p>the buttons, in the order pressed</p></td>
+<td class="text-left"><p>which burst is which</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>GNU Radio 3.10 reads and writes this pair with the <strong>SigMF Source (Minimal)</strong> and <strong>SigMF Sink (Minimal)</strong> blocks. The source block is a File Source with SigMF documentation, so we point it at the <code class="docutils literal notranslate"><span class="pre">.sigmf-data</span></code> file and set its Output Type from <code class="docutils literal notranslate"><span class="pre">core:datatype</span></code> by hand. GRC marks both blocks as deprecated, because a fuller SigMF module is planned, but they work in 3.10 and draw no error. PySDR’s chapter on IQ files and SigMF describes the format.</p>
+<p>The recording is 2.4 s long and 3.9 MB. <code class="docutils literal notranslate"><span class="pre">L17-fan-remote-gen.grc</span></code> made it: it keys a carrier 40 kHz above 350 MHz with each button’s frame, adds noise, and adds a weak steady carrier that has nothing to do with the remote.</p>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-step-1-find-the-carrier">
+<div class="wrap docutils container">
+<p class="rubric">Step 1: Find the Carrier</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<p><img src="../../viz/img/L17-view-find.png"
+     alt="L17-sigmf-view.grc running on the recording, labeled simulated, with the carrier offset at 0: the spectrum from 349.90 to 350.10 MHz shows a narrow steady line near 349.945 MHz and a wider bump near 350.040 MHz; the waterfall shows a solid vertical line at 349.945 MHz and short bursts near 350.040 MHz; the envelope plot is empty"
+     style="max-width: 820px; width: 100%; display: block; margin: 0 auto;"></p>
+</div>
+<div class="present docutils container">
+<ul class="simple">
+<li><p>Run <code class="docutils literal notranslate"><span class="pre">L17-sigmf-view.grc</span></code> and watch the waterfall while the recording loops.</p></li>
+<li><p>The steady line never changes; the remote is the one that bursts.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>In 2025 the first tool was a GNU Radio capture flowgraph: a PlutoSDR Source, a <strong>SigMF Sink (Minimal)</strong> to record, and frequency, time, and waterfall sinks. That flowgraph is <code class="docutils literal notranslate"><span class="pre">L17-capture.grc</span></code>, with a PlutoSDR Source. <code class="docutils literal notranslate"><span class="pre">L17-sigmf-view.grc</span></code> is the same flowgraph with a SigMF Source in place of the radio: the recording, a Throttle, and a <strong>Frequency Sink</strong> and <strong>Waterfall Sink</strong> centered at 350 MHz. The recording loops, so the bursts come back every 2.4 s.</p>
+<p>Two signals appear. A narrow line near 349.945 MHz stays on the whole time. The bursts near 350.04 MHz come and go five times per loop, once for each button press, and that is the remote. A real band holds many steady carriers, such as another receiver’s oscillator or a nearby digital clock, so the waterfall is how we tell them apart: the remote’s signal starts and stops when someone presses a button. The bursts are wider on the spectrum than the steady line because switching a carrier on and off spreads it.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-step-1-shift-the-carrier-to-0-hz">
+<div class="wrap docutils container">
+<p class="rubric">Step 1: Shift the Carrier to 0 Hz</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<p><img src="../../viz/img/L17-view-tuned.png"
+     alt="L17-sigmf-view.grc running on the recording, labeled simulated, with the carrier offset at 40000 Hz: the spectrum and waterfall are as before, and the envelope plot shows 40 ms of the signal after the shift: a frame of 16 on-off pulses of two widths, about 20 ms long, a quiet gap of about 12 ms, and the start of the next frame"
+     style="max-width: 820px; width: 100%; display: block; margin: 0 auto;"></p>
+</div>
+<div class="present docutils container">
+<ul class="simple">
+<li><p>Set the carrier offset to 40000 Hz; the envelope plot fills with pulses.</p></li>
+<li><p>Each frame lasts about 20 ms, and the frames repeat.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>The <strong>Frequency Xlating FIR Filter</strong> shifts the frequency set by the Carrier offset slider down to 0 Hz and keeps <span class="math notranslate nohighlight">\(\pm 10\)</span> kHz around it, as in the GNU Radio wiki’s Frequency Shifting tutorial. A <strong>Complex to Mag</strong> block then gives the signal’s envelope, and the time sink triggers on a rising edge at 0.5, so it holds one frame still on screen.</p>
+<p>At 40,000 Hz the pulses appear. In the 2025 class the next move was to fine-tune the carrier on a live spectrum; with a recording, the slider does the same thing. Move the offset 10 kHz away from 40 kHz and the pulses drop to half their height, because the signal now sits at the edge of the filter; move it 20 kHz away and they disappear. The carrier is at <span class="math notranslate nohighlight">\(350.000 + 0.040 = 350.040\)</span> MHz.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-explore-the-live-band-on-the-plutosdr">
+<div class="wrap docutils container">
+<p class="rubric">Explore: The Live Band on the PlutoSDR</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<ol class="arabic simple">
+<li><p>Run <code class="docutils literal notranslate"><span class="pre">L17-explore-pluto.grc</span></code> at 433.72 MHz and watch the waterfall.</p></li>
+<li><p>Step the center frequency to find bursts that start and stop.</p></li>
+<li><p>Retune near 315 MHz and look again.</p></li>
+</ol>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>The recording showed one remote; the air around you holds many. <code class="docutils literal notranslate"><span class="pre">L17-explore-pluto.grc</span></code> is <code class="docutils literal notranslate"><span class="pre">L17-capture.grc</span></code> without the SigMF Sink: a <strong>PlutoSDR Source</strong> at 2 MS/s, the same spectrum, waterfall, and envelope displays, and a <strong>Center frequency</strong> control you can change while it runs. It records nothing, so the center frequency does not have to be set before it starts. It opens at 433.72 MHz, 200 kHz below 433.92 MHz, so the Pluto’s DC spike at the center stays off the devices.</p>
+<p>Look for what Step 1 taught: a steady line is a carrier that never stops, and a remote, a doorbell, or a weather sensor paints short streaks that come and go. Weather sensors send on their own about once a minute, so wait a minute before you move on. If the whole spectrum rises when a strong signal appears, lower the RX gain. Then step the center frequency to 314.8 MHz and look again; the course Plutos are set to tune from 70 MHz to 6 GHz, so 315 MHz is in range. The Pluto only receives here.</p>
+<p>SDR Flex is an optional quick look at the same band; nothing in this lesson needs it.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-capture-a-real-remote">
+<div class="wrap docutils container">
+<p class="rubric">Capture a Real Remote</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<ul class="simple">
+<li><p>Record every button of a real 315 or 433.92 MHz key fob, doorbell, or sensor to SigMF.</p></li>
+<li><p>Hold a button down and read its carrier off the spectrum, as in 2025.</p></li>
+<li><p>Your Pluto only receives.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>The 2025 class captured a real remote, and every step so far works the same on one. Take a key fob, a wireless doorbell, or a weather sensor that you own; in the U.S. most use 315 MHz or 433.92 MHz, FCC Part 15 frequencies. Find it first with <code class="docutils literal notranslate"><span class="pre">L17-explore-pluto.grc</span></code>, then run <code class="docutils literal notranslate"><span class="pre">L17-capture.grc</span></code> with the variable <code class="docutils literal notranslate"><span class="pre">fc</span></code> set about 200 kHz below the device’s frequency, so the Pluto’s DC spike stays off the signal. Set it before you start the flowgraph, because the SigMF Sink writes the center frequency into the meta file when the flowgraph starts. Press each button a few times, close the flowgraph, and rename <code class="docutils literal notranslate"><span class="pre">capture.sigmf-data</span></code> and <code class="docutils literal notranslate"><span class="pre">.sigmf-meta</span></code> for that button.</p>
+<p>In 2025 the class fine-tuned the carrier on a live spectrum: hold a button down and read the peak off <code class="docutils literal notranslate"><span class="pre">L17-explore-pluto.grc</span></code>’s spectrum. Then open the recordings in <code class="docutils literal notranslate"><span class="pre">L17-chips.grc</span></code> as in Step 3. Receiving is always allowed, and your Pluto only receives in this step. A car key fob usually sends a <strong>rolling code</strong>, which changes with every press, so its frames will not repeat from press to press; the L17 Lab asks why.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-step-2-identify-the-modulation">
+<div class="wrap docutils container">
+<p class="rubric">Step 2: Identify the Modulation</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<ul class="simple">
+<li><p>The envelope switches between two levels, and the carrier’s frequency does not move.</p></li>
+<li><p>That is on-off keying (OOK), Lesson 12’s keyed carrier.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>The question for Step 2 is what the transmitter changes. The envelope plot shows the amplitude jumping between zero and one level, with nothing in between. The waterfall shows the bursts in one place; an FSK signal would show two tracks, as in Lesson 8, and a PSK signal would stay on at constant amplitude, as in Lesson 15. A carrier switched fully on and off is <strong>on-off keying</strong> (OOK), the simplest form of amplitude-shift keying (ASK). It is Lesson 12’s CW, keyed hundreds of times faster by a circuit instead of a hand.</p>
+<p>Most simple remotes, doorbells, and weather sensors use OOK, because the transmitter is one oscillator and one switch, and the receiver needs only an envelope detector like Lesson 11’s.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-sigid-name-the-signal">
+<div class="wrap docutils container">
+<p class="rubric">SigID: Name the Signal</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<p><img src="../../viz/img/L17-sigid.png"
+     alt="Spectrograms of three Simulated recordings, 0.8 s each, offsets from minus 50 to plus 50 kHz: signal A shows two parallel lines 6 kHz apart near plus 20 kHz, with the energy switching between them; signal B shows one band about 4 kHz wide near minus 15 kHz that stays on; signal C shows a narrow line that jumps to a new frequency every 80 ms among seven positions from minus 30 to plus 30 kHz"
+     style="max-width: 820px; width: 100%; display: block; margin: 0 auto;"></p>
+</div>
+<div class="present docutils container">
+<ul class="simple">
+<li><p>Open <code class="docutils literal notranslate"><span class="pre">L17-sigid-a</span></code>, <code class="docutils literal notranslate"><span class="pre">-b</span></code>, and <code class="docutils literal notranslate"><span class="pre">-c</span></code> in <code class="docutils literal notranslate"><span class="pre">L17-sigmf-view.grc</span></code> and name each modulation.</p></li>
+<li><p>Set <code class="docutils literal notranslate"><span class="pre">samp_rate</span></code> to 100000 and <code class="docutils literal notranslate"><span class="pre">fc</span></code> to 915e6 first.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>The 2025 class practiced Step 2 on a set of unknown recordings, the <strong>SigID</strong> exercise: open each one in a frequency and waterfall flowgraph with a SigMF Source (Minimal) and say what it is. The three recordings here are Simulated, 0.8 s each at 100 kS/s; set <code class="docutils literal notranslate"><span class="pre">rec</span></code> to each file in turn. The figure shows their spectrograms, time going up.</p>
+</div>
+<div class="depth docutils container">
+<p>Signal A has two lines 6 kHz apart and the energy moves between them: two-level FSK, as in Lesson 8. Signal B is one band that never switches off and does not move: PSK, here QPSK, as in Lesson 15; its envelope stays constant and a constellation plot would show its four phases. Signal C is a narrow tone that jumps to a new frequency every 80 ms: a frequency hopper, as in Lesson 16. The faint horizontal lines in C are FFT frames that straddle a hop.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-step-3-read-the-chips">
+<div class="wrap docutils container">
+<p class="rubric">Step 3: Read the Chips</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<p><img src="../../viz/img/L17-grc-chips.png"
+     alt="L17-chips.grc in GNU Radio Companion: a SigMF Source (Minimal), a Throttle, a Frequency Xlating FIR Filter at the carrier offset, Complex to Mag, a Multiply Const for the envelope gain, then a QT GUI Time Sink on one branch and an Add Const of minus the threshold, a Binary Slicer, and the Chip Reader, an Embedded Python Block, on the other; QT GUI Ranges set the carrier offset, envelope gain, threshold, and chip length, and a Function Probe feeds a QT GUI Label"
+     style="max-width: 820px; width: 100%; display: block; margin: 0 auto;"></p>
+</div>
+<div class="present docutils container">
+<ol class="arabic simple">
+<li><p>Open the recording in <code class="docutils literal notranslate"><span class="pre">L17-chips.grc</span></code> with the carrier offset at 40000 Hz.</p></li>
+<li><p>Measure the shortest pulse on the envelope: 400 µs, 80 samples.</p></li>
+<li><p>Set the chip length to 80 and read one line of chips per burst.</p></li>
+</ol>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p><code class="docutils literal notranslate"><span class="pre">L17-chips.grc</span></code> starts as Step 1’s flowgraph: the SigMF Source, the shift to 0 Hz, and <strong>Complex to Mag</strong> for the envelope. The time sink triggers at the threshold, so it holds a frame still. The shortest pulse lasts 400 µs, and at 200 kS/s that is <span class="math notranslate nohighlight">\(200{,}000\ \text{S/s} \times 400\ \mu\text{s} = 80\)</span> samples. We call each 400 µs slot a <strong>chip</strong>, because the next frame shows it takes more than one chip to make a bit.</p>
+<p>The other branch turns the envelope into chips. <strong>Add Const</strong> subtracts the threshold, so on is above zero and off below, and <strong>Binary Slicer</strong> outputs a 1 or a 0 for every sample. A <strong>Keep 1 in N</strong> with N = 80 would keep one sample per chip, but it would start counting anywhere. The <strong>Chip Reader</strong>, a short Embedded Python Block saved in the <code class="docutils literal notranslate"><span class="pre">.grc</span></code> file, does the same keeping, but it starts at each burst’s first rising edge and takes the sample in the middle of each chip. After 8 off chips the burst has ended; when the next burst starts, the reader prints the line in GRC’s console with the <strong>pause</strong>, the off samples between the two bursts, and shows it in the window. The SigMF Source loops the recording, so the last burst prints too. The Envelope gain slider raises a weak capture’s pulses to about 1, so the threshold stays near 0.5.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-step-3-chips-to-bits">
+<div class="wrap docutils container">
+<p class="rubric">Step 3: Chips to Bits</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<p><img src="../../viz/img/L17-encodings.svg"
+     alt="The bits 1 0 1 1 drawn three ways: pulse width, where every bit starts on and a 1 is a long pulse and a 0 a short one; pulse distance, where every pulse is short and the gap after it is long for a 1 and short for a 0; and Manchester, where a 1 is on then off and a 0 is off then on"
+     style="max-width: 760px; width: 100%; display: block; margin: 0 auto;"></p>
+</div>
+<div class="present docutils container">
+<ul class="simple">
+<li><p>The fan remote’s chips come in threes: <code class="docutils literal notranslate"><span class="pre">110</span></code> and <code class="docutils literal notranslate"><span class="pre">100</span></code>.</p></li>
+<li><p>Every bit starts on, and a long pulse is a 1: pulse-width coding.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>The Chip Reader prints the Light button’s frame as <code class="docutils literal notranslate"><span class="pre">46</span> <span class="pre">chips:</span> <span class="pre">1101001101001001101101001001001001101101101101</span>&#160; <span class="pre">pause</span> <span class="pre">2560</span> <span class="pre">samples</span></code>. Split into groups of three, it starts <code class="docutils literal notranslate"><span class="pre">110</span> <span class="pre">100</span> <span class="pre">110</span> <span class="pre">100</span> <span class="pre">100</span> <span class="pre">110</span> <span class="pre">110</span> <span class="pre">100</span></code>, and every group is <code class="docutils literal notranslate"><span class="pre">110</span></code> or <code class="docutils literal notranslate"><span class="pre">100</span></code>, which is <strong>pulse-width</strong> coding: each bit starts with the carrier on, a 1 stays on for two chips and a 0 for one, and each bit ends off. The figure shows it beside two other common schemes. In <strong>pulse-distance</strong> coding every pulse is short and the length of the gap carries the bit; in <strong>Manchester</strong> coding every bit has a transition in its middle, so the chips come in pairs. The figure draws a 1 as on then off; IEEE 802.3 Ethernet uses the opposite convention, so a Manchester device can use either.</p>
+<p>A frame of 16 bits is 48 chips, yet the Chip Reader prints 46 or 47. The last chip of every bit is off, and a frame ending in a 0 ends in two off chips; the reader ends a line at its last on chip, so it counts those chips as part of the pause. We add them back.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-step-3-the-fields">
+<div class="wrap docutils container">
+<p class="rubric">Step 3: The Fields</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<p><img src="../../viz/img/L17-frame.svg"
+     alt="One frame of the Simulated fan remote's Light button: 48 chips of 400 microseconds, read as 16 bits, 1010 0110 0001 1110; the first 8 bits are the address 0xA6, the next 4 the command 0x1, and the last 4 the check 0xE; the frame lasts 19.2 ms"
+     style="max-width: 820px; width: 100%; display: block; margin: 0 auto;"></p>
+</div>
+<div class="present docutils container">
+<ul class="simple">
+<li><p>Eight bits never change: the <strong>address</strong>.</p></li>
+<li><p>Four bits change with the button: the <strong>command</strong>.</p></li>
+<li><p>The last four are the command inverted: a <strong>check</strong>.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>Reading every press the same way gives one 16-bit word per button:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head text-left"><p>Button</p></th>
+<th class="head text-center"><p>Word</p></th>
+<th class="head text-center"><p>Address</p></th>
+<th class="head text-center"><p>Command</p></th>
+<th class="head text-center"><p>Check</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-left"><p>Light</p></td>
+<td class="text-center"><p>0xA61E</p></td>
+<td class="text-center"><p>0xA6</p></td>
+<td class="text-center"><p>0x1</p></td>
+<td class="text-center"><p>0xE</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>Fan Off</p></td>
+<td class="text-center"><p>0xA62D</p></td>
+<td class="text-center"><p>0xA6</p></td>
+<td class="text-center"><p>0x2</p></td>
+<td class="text-center"><p>0xD</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>Low</p></td>
+<td class="text-center"><p>0xA63C</p></td>
+<td class="text-center"><p>0xA6</p></td>
+<td class="text-center"><p>0x3</p></td>
+<td class="text-center"><p>0xC</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>Medium</p></td>
+<td class="text-center"><p>0xA64B</p></td>
+<td class="text-center"><p>0xA6</p></td>
+<td class="text-center"><p>0x4</p></td>
+<td class="text-center"><p>0xB</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>High</p></td>
+<td class="text-center"><p>0xA65A</p></td>
+<td class="text-center"><p>0xA6</p></td>
+<td class="text-center"><p>0x5</p></td>
+<td class="text-center"><p>0xA</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The first byte is the same for every button, so it identifies the remote, the way the DIP switches inside a real fan remote pick its code. The third nibble counts up with the buttons. The last nibble is the third one with every bit flipped, so a receiver can reject a frame whose two nibbles disagree.</p>
+</div>
+</div>
+</div>
+<div class="frame read-only docutils container" id="frame-the-2025-questions">
+<div class="wrap docutils container">
+<p class="rubric">The 2025 Questions</p>
+<p>The 2025 slides asked five questions about the encoding. For the Simulated fan remote, the answers come from the Chip Reader’s lines and the table above.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head text-left"><p>Question</p></th>
+<th class="head text-left"><p>What the fan remote shows</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-left"><p>What fields would we expect in a simple message?</p></td>
+<td class="text-left"><p>an address that picks the fan, a command that picks the button, and a check</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>How are 1s and 0s encoded?</p></td>
+<td class="text-left"><p>pulse width: <code class="docutils literal notranslate"><span class="pre">110</span></code> is a 1 and <code class="docutils literal notranslate"><span class="pre">100</span></code> is a 0, 400 µs a chip</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>Can we identify parts of the message from the captures?</p></td>
+<td class="text-left"><p>yes, by comparing the five buttons: the bits that never change are the address, and the bits that do are the command</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>Is a command sent just once?</p></td>
+<td class="text-left"><p>no: each press sends the frame 6 times, with about 12 ms of silence between frames</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>What else do you notice?</p></td>
+<td class="text-left"><p>the steady carrier at 349.945 MHz is not the remote, and each frame’s last off chips run into the pause</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The repeats let a receiver that misses one frame, to noise or to a collision with another remote, act on the next. They also mean that a press lasts about 190 ms, long enough to see on the waterfall.</p>
+</div>
+</div>
+<div class="frame read-only docutils container" id="frame-bit-rate-and-baud-rate">
+<div class="wrap docutils container">
+<p class="rubric">Bit Rate and Baud Rate</p>
+<p>The chip is the shortest thing the transmitter switches, so the <strong>baud rate</strong>, the rate the Chip Reader keeps samples at, is one chip per symbol. The <strong>bit rate</strong> counts data bits, and each bit takes three chips:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\text{chip} &amp;= \frac{80}{200{,}000 \text{ S/s}} \\
+&amp;= 400\ \mu\text{s}, \\
+\text{baud rate} &amp;= \frac{1}{400\ \mu\text{s}} \\
+&amp;= 2500 \text{ baud}, \\
+\text{bit rate} &amp;= \frac{2500}{3} \\
+&amp;= 833 \text{ bits/s}.
+\end{aligned}\end{split}\]</div>
+<p>A frame of 16 bits takes <span class="math notranslate nohighlight">\(16 \times 1.2 = 19.2\)</span> ms, and with the 12 ms gap a frame starts every 31.2 ms. These are the numbers the encoder needs: its Repeat block holds each chip for <code class="docutils literal notranslate"><span class="pre">chip_len</span></code> samples, and its Stream Mux inserts the gap.</p>
+</div>
+</div>
+<div class="frame viz-frame cut docutils container" id="frame-pulse-decoder-explorer">
+<div class="wrap docutils container">
+<p class="rubric">Pulse Decoder Explorer</p>
+<div class="depth docutils container">
+<p>The explorer draws one frame of the Simulated fan remote’s envelope and reads it the way the Chip Reader does: it divides the frame into chips of the chosen length from the first rising edge, compares the middle of each chip with the threshold, and groups the chips in threes. It opens at a chip length of 300 µs, which is wrong. Move the Chip length slider until no group is marked <code class="docutils literal notranslate"><span class="pre">?</span></code>, then pick another button, then raise the noise.</p>
+</div>
+<div class="stage docutils container">
+<div class="present docutils container">
+<iframe src="../../viz/pulse-decoder.html"
+        width="100%" height="441"
+        style="border: 1px solid #cddce9; border-radius: 6px;"
+        loading="lazy"
+        title="Pulse decoder explorer: the Simulated fan remote's envelope with a threshold and a grid of chips of a chosen length, the chips grouped in threes as pulse-width bits, the address, command, and check fields, and readouts of the chips read, the groups that are neither 110 nor 100, the bit rate, and the frame in hex">
+</iframe>
+</div>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-noise">
+<div class="wrap docutils container">
+<p class="rubric">Noise</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<ul class="simple">
+<li><p>Raise the explorer’s noise until the frame breaks.</p></li>
+<li><p>Frames read cleanly to about 0.4; from about 0.45 the groups break apart.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>Raise the Noise amplitude in the explorer a step at a time, and press new noise a few times at each step. Up to about 0.4 the envelope roughens but the frame reads correctly. From about 0.45 chips start to land on the wrong side of the threshold, and most often that breaks a group, so it reads as neither <code class="docutils literal notranslate"><span class="pre">110</span></code> nor <code class="docutils literal notranslate"><span class="pre">100</span></code> and shows <code class="docutils literal notranslate"><span class="pre">?</span></code>; by 0.5 almost every frame has a broken group. Now and then a flipped chip turns one bit into the other instead, and then the frame still reads as 16 bits but the Frame readout says the check fails.</p>
+<p>The Chip Reader shows the same thing on a real recording: as the signal weakens, its lines of chips stop matching from one repeat to the next. A receiver throws away a frame it cannot read. The check catches a frame that reads but has a wrong bit in the command; a flipped address bit passes it, and the frame then reads as another remote’s. Remotes repeat each frame so that one of the six tries usually gets through.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-step-4-build-an-encoder">
+<div class="wrap docutils container">
+<p class="rubric">Step 4: Build an Encoder</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<p><img src="../../viz/img/L17-grc-tx-sim.png"
+     alt="L17-fan-tx-sim.grc in GNU Radio Companion: a QT GUI Chooser of the five buttons sets the variables word and bits; a Vector Source of bits, a Map of 4 and 6, Unpack K Bits with K 3, Char To Float, a Repeat of 80, and a Stream Mux with a Constant Source of 0 make the envelope; Float To Complex and a Multiply with a 40 kHz Signal Source put it on a carrier; a Noise Source, an Add, a Throttle, a waterfall, an envelope time sink, and a SigMF Sink follow"
+     style="max-width: 820px; width: 100%; display: block; margin: 0 auto;"></p>
+</div>
+<div class="present docutils container">
+<ul class="simple">
+<li><p><strong>Map</strong> turns a 0 into 4 and a 1 into 6; <strong>Unpack K Bits</strong> with K = 3 gives <code class="docutils literal notranslate"><span class="pre">100</span></code> and <code class="docutils literal notranslate"><span class="pre">110</span></code>.</p></li>
+<li><p><strong>Repeat</strong> and <strong>Stream Mux</strong> set the chip length and the gap.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>The encoder is the 2025 hier block laid out flat. A <strong>Vector Source</strong> repeats the 16 bits of the chosen button’s word. A <strong>Map</strong> replaces each bit with a number whose binary form is its chip pattern, 0 with 4 (<code class="docutils literal notranslate"><span class="pre">100</span></code>) and 1 with 6 (<code class="docutils literal notranslate"><span class="pre">110</span></code>), and <strong>Unpack K Bits</strong> with <span class="math notranslate nohighlight">\(K = 3\)</span> writes those three bits out one at a time, most significant first. <strong>Repeat</strong> holds each chip for <code class="docutils literal notranslate"><span class="pre">chip_len</span></code> = 80 samples, 400 µs at 200 kS/s.</p>
+<p>The <strong>Stream Mux</strong> takes <span class="math notranslate nohighlight">\(48 \times 80 = 3840\)</span> samples, one frame, from the encoder, then <span class="math notranslate nohighlight">\(30 \times 80 = 2400\)</span> samples of zero from a <strong>Constant Source</strong>, the 12 ms gap, and repeats. <strong>Float To Complex</strong> and a <strong>Multiply</strong> with a 40 kHz <strong>Signal Source</strong> put the envelope on the carrier, as Lesson 12’s keyer did. <code class="docutils literal notranslate"><span class="pre">L17-encoder.grc</span></code> packs the whole chain, from the Vector Source to the Multiply, into one hier block, as the 2025 class did and as the GNU Radio wiki’s Hier Blocks and Parameters tutorial describes. The Map comes before Unpack K Bits because it is the Map that turns each bit into its chip pattern.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-step-4-check-the-encoder">
+<div class="wrap docutils container">
+<p class="rubric">Step 4: Check the Encoder</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<p><img src="../../viz/img/L17-tx-sim.png"
+     alt="L17-fan-tx-sim.grc running, labeled simulated, with the Light button chosen and noise amplitude 0.05: the waterfall shows a steady signal near 350.04 MHz, and the envelope shows a frame of 16 pulses of two widths, a 12 ms gap, and the next frame, matching the recording"
+     style="max-width: 820px; width: 100%; display: block; margin: 0 auto;"></p>
+</div>
+<div class="present docutils container">
+<ul class="simple">
+<li><p>Run <code class="docutils literal notranslate"><span class="pre">L17-fan-tx-sim.grc</span></code> and choose a button; compare the envelope with the recording.</p></li>
+<li><p>Open <code class="docutils literal notranslate"><span class="pre">my-fan-remote.sigmf-data</span></code> in <code class="docutils literal notranslate"><span class="pre">L17-chips.grc</span></code>: the chips should match.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p><code class="docutils literal notranslate"><span class="pre">L17-fan-tx-sim.grc</span></code> runs the encoder with no radio. Its envelope plot should match the recording’s frame for the same button, pulse for pulse, and its SigMF Sink writes what it makes to <code class="docutils literal notranslate"><span class="pre">my-fan-remote.sigmf-data</span></code> and <code class="docutils literal notranslate"><span class="pre">.sigmf-meta</span></code> while it runs. Run it for a few seconds, close it, and set <code class="docutils literal notranslate"><span class="pre">rec</span></code> in <code class="docutils literal notranslate"><span class="pre">L17-chips.grc</span></code> to <code class="docutils literal notranslate"><span class="pre">my-fan-remote.sigmf-data</span></code>: with the same settings as for <code class="docutils literal notranslate"><span class="pre">L17-fan-remote.sigmf-data</span></code>, the lines of chips should be identical.</p>
+<p>That comparison is the test of the reverse engineering. If our encoder makes chips the original receiver would accept, we have found the carrier, the modulation, the encoding, and the fields correctly. One difference remains: the encoder repeats its frame for as long as it runs, while the remote stops after six.</p>
+</div>
+</div>
+</div>
+<div class="frame read-only docutils container" id="frame-the-hier-block">
+<div class="wrap docutils container">
+<p class="rubric">The Hier Block</p>
+<p><img src="../../viz/img/L17-grc-encoder.png"
+     alt="L17-encoder.grc in GNU Radio Companion: seven parameters, the bits of one frame, the chip pattern for 0 and 1 (default 4 and 6), chips per bit (3), samples per chip (80), the gap in chips (30), the carrier offset (40 kHz), and the sample rate (200 kHz); a Vector Source of the bits, Map, Unpack K Bits, Char To Float, Repeat, a Stream Mux with a Constant Source, Float To Complex, and a Multiply with a Signal Source, ending in a Pad Sink"
+     style="max-width: 760px; width: 100%; display: block; margin: 0 auto 12px;"></p>
+<p><code class="docutils literal notranslate"><span class="pre">L17-encoder.grc</span></code> is the encoder as a <strong>hier block</strong>, the form the 2025 class built: Vector Source, Map, Unpack K Bits, Repeat, Stream Mux, and a Multiply with a Signal Source, in one block with no inputs. Its parameters are the frame’s bits, the chip patterns, the chips per bit, the samples per chip, the gap, the carrier offset, and the sample rate, so the same block serves any pulse-coded remote of fixed bit length. Open it in GRC and press Generate once; GRC writes <code class="docutils literal notranslate"><span class="pre">L17_ook_encoder.block.yml</span></code> and its Python file to <code class="docutils literal notranslate"><span class="pre">~/.grc_gnuradio</span></code>, and after you press the Reload Blocks button on the toolbar the block, <strong>L17 OOK Encoder</strong>, appears under ECE 448. The lesson’s flowgraphs use the same blocks laid out flat, so they open without that step.</p>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-step-5-transmit">
+<div class="wrap docutils container">
+<p class="rubric">Step 5: Transmit</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">L17-fan-tx-pluto.grc</span></code> sends the encoder from a PlutoSDR at 915.04 MHz, not 350 MHz.</p></li>
+<li><p>Cadets: a 30 dB attenuator and a cable to a second PlutoSDR.</p></li>
+<li><p>Instructor demo: the real fan, over the air, at very low power.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>The last step puts the encoder on a radio. <code class="docutils literal notranslate"><span class="pre">L17-fan-tx-pluto.grc</span></code> is the simulation flowgraph at 1 MS/s, so <code class="docutils literal notranslate"><span class="pre">chip_len</span></code> is 400 samples, with a <strong>PlutoSDR Sink</strong> tuned to 915 MHz in place of the noise and the waterfall; the 40 kHz tone puts the carrier at 915.04 MHz. A signal the course makes never goes out on the real device’s frequency, so the encoder leaves the remote’s 350 MHz for 915 MHz. A short SMA cable with an inline 30 dB attenuator carries it to a second PlutoSDR running <code class="docutils literal notranslate"><span class="pre">L17-capture.grc</span></code>, with <code class="docutils literal notranslate"><span class="pre">fc</span></code> at its default of 915e6, which records what arrives at 1 MS/s as a SigMF pair. Open that recording in <code class="docutils literal notranslate"><span class="pre">L17-chips.grc</span></code> with <code class="docutils literal notranslate"><span class="pre">samp_rate</span></code> 1000000, <code class="docutils literal notranslate"><span class="pre">fc</span></code> 915e6, and a chip length of 400. Two Plutos’ clocks can disagree by several kilohertz at 915 MHz, so read the bursts’ offset off the capture’s spectrum and set the carrier offset to it, not to 40 kHz, and raise the Envelope gain until the pulses reach about 1: the chips should match <code class="docutils literal notranslate"><span class="pre">L17-fan-remote.sigmf-data</span></code>.</p>
+<p>Cadets transmit into a cable with the 30 dB attenuator, or, if your instructor says so, over the air at 915 MHz at low power, and only when the lesson says to. 915 MHz is in the U.S. 902 to 928 MHz ISM band; the remote’s 350 MHz is an FCC Part 15 frequency, not an ISM band. The TX attenuation slider opens at 60 dB and cannot go below 30 dB; connect an antenna to this flowgraph only when your instructor says so.</p>
+<p>The 2025 class ended by operating the fan, and this one does too, as an instructor demo. Dr. Rogers records the classroom’s Hunter fan remote, decodes it with the same steps, and sends its Light command from his own encoder flowgraph over the air, a few meters from the fan, at the lowest power that still works it. The fan answers a transmitter it has never seen, which is the point of the lesson: a fixed code has no way to tell the two apart. The cadet Pluto flowgraphs have been compiled but not run on a radio, so the L17 Lab is their first run on hardware.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-key-point">
+<div class="wrap docutils container">
+<p class="rubric">Key Point</p>
+<div class="stage docutils container">
+<div class="present callout docutils container">
+<p>Reverse engineering runs in five steps: find the carrier, identify the modulation, identify the encoding, build an encoder, and transmit. An encoder whose output decodes the same as the recording confirms the first three.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="frame read-only doc-links docutils container" id="frame-downloads">
+<div class="wrap docutils container">
+<p class="rubric">Downloads</p>
+<ul class="simple">
+<li><p><a class="doc-link" href="../../grc/L17-fan-remote.sigmf-data" download>L17-fan-remote.sigmf-data</a> and <a class="doc-link" href="../../grc/L17-fan-remote.sigmf-meta" download>L17-fan-remote.sigmf-meta</a>: the Simulated fan remote, one press of each button, 200 kS/s centered at 350 MHz, 3.9 MB. Keep the two files in the same folder.</p></li>
+<li><p><a class="doc-link" href="../../grc/L17-sigmf-view.grc" download>L17-sigmf-view.grc</a>: a SigMF recording’s spectrum and waterfall, a carrier-offset slider, and the envelope after the shift. Set <code class="docutils literal notranslate"><span class="pre">rec</span></code>, <code class="docutils literal notranslate"><span class="pre">samp_rate</span></code>, and <code class="docutils literal notranslate"><span class="pre">fc</span></code> from the meta file. No hardware needed.</p></li>
+<li><p><a class="doc-link" href="../../grc/L17-chips.grc" download>L17-chips.grc</a>: a SigMF recording’s envelope after the shift, with an envelope gain, a threshold, and the Chip Reader, which prints one line of chips per burst. Set <code class="docutils literal notranslate"><span class="pre">rec</span></code>, <code class="docutils literal notranslate"><span class="pre">samp_rate</span></code>, and <code class="docutils literal notranslate"><span class="pre">fc</span></code> from the meta file. No hardware needed.</p></li>
+<li><p><a class="doc-link" href="../../grc/L17-fan-tx-sim.grc" download>L17-fan-tx-sim.grc</a>: the encoder with a button chooser and a noise slider, recording to <code class="docutils literal notranslate"><span class="pre">my-fan-remote.sigmf-data</span></code>. No hardware needed.</p></li>
+<li><p><a class="doc-link" href="../../grc/L17-encoder.grc" download>L17-encoder.grc</a>: the encoder as a hier block, L17 OOK Encoder. Press Generate once to install it.</p></li>
+<li><p><a class="doc-link" href="../../grc/L17-fan-remote-gen.grc" download>L17-fan-remote-gen.grc</a>: the flowgraph that made the recording. No hardware needed.</p></li>
+<li><p><a class="doc-link" href="../../grc/L17-sigid-a.sigmf-data" download>L17-sigid-a</a>, <a class="doc-link" href="../../grc/L17-sigid-b.sigmf-data" download>-b</a>, and <a class="doc-link" href="../../grc/L17-sigid-c.sigmf-data" download>-c</a> (.sigmf-data), with <a class="doc-link" href="../../grc/L17-sigid-a.sigmf-meta" download>a</a>, <a class="doc-link" href="../../grc/L17-sigid-b.sigmf-meta" download>b</a>, and <a class="doc-link" href="../../grc/L17-sigid-c.sigmf-meta" download>c</a> meta files: three Simulated unknown signals for SigID, 0.8 s each at 100 kS/s, 640 KB each. <a class="doc-link" href="../../grc/L17-sigid-gen.grc" download>L17-sigid-gen.grc</a> made them.</p></li>
+<li><p><a class="doc-link" href="../../grc/L17-explore-pluto.grc" download>L17-explore-pluto.grc</a>: a PlutoSDR Source at 2 MS/s with spectrum, waterfall, and envelope displays and a center frequency you change while it runs. Receive only; records nothing.</p></li>
+<li><p><a class="doc-link" href="../../grc/L17-capture.grc" download>L17-capture.grc</a>: a PlutoSDR Source at 1 MS/s with spectrum, waterfall, and envelope displays, recording to <code class="docutils literal notranslate"><span class="pre">capture.sigmf-data</span></code>. Receive only; needs a PlutoSDR. Set <code class="docutils literal notranslate"><span class="pre">fc</span></code> before you run it.</p></li>
+<li><p><a class="doc-link" href="../../grc/L17-fan-tx-pluto.grc" download>L17-fan-tx-pluto.grc</a>: the encoder on a PlutoSDR at 915.04 MHz. Transmit into the cable unless your instructor says otherwise, through a 30 dB attenuator, to a second PlutoSDR.</p></li>
+<li><p>Optional: <a class="doc-link" href="../../grc/L17-capture-rtl.grc" download>L17-capture-rtl.grc</a> is <code class="docutils literal notranslate"><span class="pre">L17-capture.grc</span></code> with a Soapy RTL-SDR Source at 1.024 MS/s, if you own an RTL-SDR. Nothing in the lesson or lab needs it.</p></li>
+<li><p><a class="doc-link" href="https://wiki.gnuradio.org/index.php/Frequency_Shifting" target="_blank" rel="noopener">GNU Radio wiki: Frequency Shifting</a> and <a class="doc-link" href="https://wiki.gnuradio.org/index.php/Hier_Blocks_and_Parameters" target="_blank" rel="noopener">Hier Blocks and Parameters</a>: the tutorials behind Steps 1 and 4.</p></li>
+<li><p><a class="doc-link" href="https://pysdr.org/content/iq_files.html" target="_blank" rel="noopener">PySDR: IQ Files and SigMF</a>: the recording format.</p></li>
+<li><p><a class="doc-link" href="https://livethisdream.github.io/sdr-flex/" target="_blank" rel="noopener">SDR Flex</a>: an optional quick look at a band.</p></li>
+</ul>
+<p>Open a <code class="docutils literal notranslate"><span class="pre">.grc</span></code> file from GRC’s File menu, or run <code class="docutils literal notranslate"><span class="pre">gnuradio-companion</span> <span class="pre">L17-sigmf-view.grc</span></code> from the radioconda prompt, in the folder that holds the recording.</p>
+</div>
+</div>
+<div class="frame read-only docutils container" id="frame-summary">
+<div class="wrap docutils container">
+<p class="rubric">Summary</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head text-left"><p>Step</p></th>
+<th class="head text-left"><p>What we did</p></th>
+<th class="head text-left"><p>The fan remote</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-left"><p>1. Carrier</p></td>
+<td class="text-left"><p>spectrum and waterfall, then shift to 0 Hz</p></td>
+<td class="text-left"><p>350.040 MHz; the steady line is not the remote</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>2. Modulation</p></td>
+<td class="text-left"><p>what the envelope and the waterfall do</p></td>
+<td class="text-left"><p>OOK</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>3. Encoding</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">L17-chips.grc</span></code>: chips, then bits, then fields</p></td>
+<td class="text-left"><p>400 µs chips, 3-chip pulse width, 16 bits: address, command, check</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>Rates</p></td>
+<td class="text-left"><p>chips and bits per second</p></td>
+<td class="text-left"><p>2500 baud, 833 bits/s, 6 frames a press</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>4. Encoder</p></td>
+<td class="text-left"><p>Map, Unpack K Bits, Repeat, Stream Mux, carrier</p></td>
+<td class="text-left"><p>chips match the recording in <code class="docutils literal notranslate"><span class="pre">L17-chips.grc</span></code></p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>5. Transmit</p></td>
+<td class="text-left"><p>PlutoSDR at 915 MHz into a cable with a 30 dB attenuator</p></td>
+<td class="text-left"><p>a second PlutoSDR records it as SigMF</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>Noise</p></td>
+<td class="text-left"><p>watch the chips and the check</p></td>
+<td class="text-left"><p>bad frames fail the check</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="frame read-only doc-links docutils container" id="frame-practice">
+<div class="wrap docutils container">
+<p class="rubric">Practice</p>
+<ul class="simple">
+<li><p><a class="doc-link" href="../../practice/ECE448_L17_Practice_blank.pdf" target="_blank" rel="noopener">Problem set (PDF)</a></p></li>
+<li><p><a class="doc-link doc-key" href="../../practice/ECE448_L17_Practice_SOLUTIONS.pdf" target="_blank" rel="noopener">Solutions (PDF)</a></p></li>
+</ul>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-looking-ahead">
+<div class="wrap docutils container">
+<p class="rubric">Looking Ahead</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<ul class="simple">
+<li><p>The L17 Lab hands you a different remote’s recording and no description.</p></li>
+<li><p>Lessons 18 and 19 decode signals whose formats are published: ADS-B and AIS.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>The L17 Lab is today’s process on a device you have not seen. You get a SigMF recording of a Simulated remote with several buttons, with settings of its own, and you find its carrier, modulation, encoding, and fields, build an encoder for it from an empty canvas, check your encoder against the recording in <code class="docutils literal notranslate"><span class="pre">L17-chips.grc</span></code>, and then send it at 915 MHz through a PlutoSDR and a cable to a second PlutoSDR.</p>
+<p>Lessons 18 and 19 receive aircraft and ship transponders. Their formats are public standards, so there the work is building and running the receiver rather than discovering the format.</p>
+</div>
+</div>
+</div>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./module06/L17-rf-reverse-engineering"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+</main>
+
+<script src="../../_static/shell.js?v=ac36f07766"></script>
+<script src="../../_static/frames.js?v=89e4b02ee3"></script><script src="../../_static/viz-autosize.js?v=4fe0c4e159"></script>
+</body>
+</html>

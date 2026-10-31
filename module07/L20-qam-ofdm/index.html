@@ -1,0 +1,727 @@
+<!doctype html>
+<html lang="en" data-mode="read">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>L20 - QAM and OFDM &mdash; ECE 448 — Software Defined Radios</title>
+<meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+<link rel="icon" href="../../_static/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap"><link rel="stylesheet" href="../../_static/custom.css?v=ec0f297254">
+<link rel="stylesheet" href="../../_static/shell.css?v=78396bd831">
+<link rel="stylesheet" href="../../_static/frames.css?v=fa285d3703">
+<script>window.MathJax = {"tex": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processEscapes": true}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+<script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js"></script>
+</head>
+<body>
+
+<div class="rail"><span id="railfill"></span></div>
+
+<div class="laser" id="laser" aria-hidden="true"></div>
+<div class="spot" id="spot" aria-hidden="true"></div>
+
+<div class="index" id="index" role="dialog" aria-label="Jump to a frame or another lesson">
+  <button class="index-close" id="btnIndexClose" type="button" aria-label="Close">&times;</button>
+  <div class="wrap">
+    <div class="index-cols">
+      <div class="index-here">
+        <h2>This lesson</h2>
+        <ol id="indexlist"></ol>
+      </div>
+      <div class="index-toc">
+        <h2>Course</h2>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Course Information</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../syllabus.html">Syllabus</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../materials.html">Materials</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 1 — Foundations of Detection &amp; Link Budgets</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module01/index.html">Module 1 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module01/L01-course-intro/index.html">L1 — Course Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module01/L02-noise-figure-link-budget/index.html">L2 — Noise Figure and Link Budget</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module01/L03-signal-space/index.html">L3 — Signal Space</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 2 — SDR &amp; GNU Radio Foundations</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module02/index.html">Module 2 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module02/L04-sdr-introduction/index.html">L4 — SDR Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module02/L05-gnu-radio-intro/index.html">L5 — GNU Radio Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module02/L05-lab-first-flowgraphs/index.html">L5 Lab — First Flowgraphs</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 3 — Analog Modulation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module03/index.html">Module 3 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module03/L06-am-simulation/index.html">L6 — AM Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module03/L06-lab-am-simulation/index.html">L6 Lab — AM Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module03/L07-am-fm-receivers/index.html">L7 — AM and FM Receivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module03/L07-lab-am-fm-receivers/index.html">L7 Lab — AM and FM Receivers</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 4 — Digital Modulation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/index.html">Module 4 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/L08-fsk/index.html">L8 — FSK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/L08-lab-fsk/index.html">L8 Lab — FSK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/L09-pam-theory/index.html">L9 — PAM Theory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/L10-ascii-pam/index.html">L10 — ASCII over PAM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/L10-lab-pam-link/index.html">L10 Lab — PAM Link</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 5 — Custom Blocks &amp; Midterm</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module05/index.html">Module 5 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module05/L11-custom-blocks/index.html">L11 — Out-of-Tree Modules and Custom Blocks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module05/L11-lab-custom-block/index.html">L11 Lab — Custom Block</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module05/midterm/index.html">Midterm — Fox Hunt and CTF</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 6 — Waveform Applications &amp; RF Reverse Engineering</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/index.html">Module 6 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L12-cw/index.html">L12 — CW</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L12-lab-cw/index.html">L12 Lab — CW</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L13-dtmf/index.html">L13 — DTMF</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L13-lab-dtmf/index.html">L13 Lab — DTMF</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L14-hd-radio/index.html">L14 — HD Radio</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L14-lab-hd-radio/index.html">L14 Lab — HD Radio</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L15-mpsk/index.html">L15 — mPSK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L15-lab-mpsk/index.html">L15 Lab — mPSK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L16-fhss/index.html">L16 — Frequency Hopping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L16-lab-fhss/index.html">L16 Lab — Frequency Hopping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L17-rf-reverse-engineering/index.html">L17 — RF Reverse Engineering</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L17-lab-rf-reverse-engineering/index.html">L17 Lab — RF Reverse Engineering</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L18-adsb/index.html">L18 — ADS-B</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L19-ais/index.html">L19 — AIS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L18-L19-lab-adsb-ais/index.html">L18–L19 Lab — ADS-B and AIS</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 7 — Final Project</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Module 7 overview</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">L20 — QAM and OFDM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../final-project/index.html">Final Project</a></li>
+</ul>
+
+      </div>
+    </div>
+  </div>
+</div><div class="hud">
+<div class="hud-group">
+  <button id="btnSite" class="site" type="button"
+          aria-expanded="false" aria-controls="sitepop"
+          title="Elsewhere on this site">ECE 448</button>
+</div>
+<div class="pop" id="sitepop" role="group" aria-label="Site" hidden>
+  <a href="https://livethisdream.github.io/">Home</a>
+  <a href="https://livethisdream.github.io/ece343/intro.html">ECE 343</a>
+  <a href="https://livethisdream.github.io/ece444/intro.html">ECE 444</a>
+  <a href="../../intro.html" aria-current="page">ECE 448</a>
+  <a href="https://livethisdream.github.io/projects">Projects</a>
+  <button class="pop-help" type="button" data-help>Help<kbd>?</kbd></button>
+</div>
+
+  <div class="hud-group hud-mid"><button id="btnMode" type="button" aria-expanded="false" aria-controls="modepop"
+            title="How the lesson is laid out (P)">read</button>
+    <button id="btnTools" type="button" aria-expanded="false" aria-controls="toolspop"
+            title="Presenter tools">tools</button>
+  </div>
+
+  <div class="hud-group"><button id="btnIndex" class="counter" type="button" aria-pressed="false"
+            title="Contents (G) · double-tap for the top"><b id="cur">1</b>/<span id="tot">0</span></button>
+  </div><div class="pop" id="modepop" role="group" aria-label="View mode" hidden>
+    <button id="btnPresent" class="choice" type="button" aria-pressed="false">
+      present<span class="pop-note">one frame at a time</span></button>
+    <button id="btnRead" class="choice" type="button" aria-pressed="true">
+      read<span class="pop-note">the whole lesson, continuous</span></button>
+  </div><div class="pop" id="toolspop" role="group" aria-label="Presenter tools" hidden>
+    <button id="btnLaser" type="button" aria-pressed="false">laser<kbd>L</kbd></button>
+    <button id="btnSpot" type="button" aria-pressed="false">spotlight<kbd>S</kbd></button>
+    <button id="btnFull" type="button">fullscreen<kbd>F</kbd></button>
+    <button id="btnHelp" type="button" data-help>help<kbd>?</kbd></button>
+  </div>
+</div>
+<div class="help" id="help" role="dialog" aria-modal="true" aria-labelledby="helpTitle" hidden>
+  <div class="help-card">
+    <button class="help-close" id="btnHelpClose" type="button" aria-label="Close help">&times;</button>
+    <h2 id="helpTitle">Getting around</h2>
+    <p class="help-lead">Everything is in the bar at the bottom of the screen.</p>
+    <dl class="help-list">
+      <dt><span class="help-chip">ECE 448</span></dt>
+      <dd>The other course sites, the home page, and this help.</dd>
+      <dt><span class="help-chip">read</span></dt>
+      <dd><b>Read</b> shows the whole lesson as one page. <b>Present</b> shows one frame at a time, for class.<span class="help-keys"> <kbd>P</kbd> switches.</span></dd>
+      <dt><span class="help-chip">tools</span></dt>
+      <dd>Laser pointer<span class="help-keys"> <kbd>L</kbd></span>, spotlight<span class="help-keys"> <kbd>S</kbd></span>, and fullscreen<span class="help-keys"> <kbd>F</kbd></span>.</dd>
+      <dt><span class="help-chip">3/9</span></dt>
+      <dd>Where you are in the lesson. Tap it for every frame here and every lesson in the course<span class="help-keys"> <kbd>G</kbd></span>. Double-tap to go back to the top.</dd>
+    </dl>
+    <h3 class="help-keys">Presenting</h3>
+    <p class="help-keys"><kbd>&rarr;</kbd> or <kbd>Space</kbd> next frame, <kbd>&larr;</kbd> back, <kbd>D</kbd> this frame&rsquo;s detail, <kbd>Esc</kbd> close a panel.</p>
+    <h3>Printing</h3>
+    <p>Print from present mode for the slides, one frame a page. Print from read mode for the whole lesson.</p>
+    <p class="help-foot"><span class="help-keys">Press <kbd>?</kbd> to open this again.</span><span class="help-touch">Open this again from the ECE 448 menu.</span></p>
+  </div>
+</div>
+
+<div class="help-hint" id="helpHint" hidden>
+  <button id="btnHintOpen" type="button" data-help>New here? How the bar works</button>
+  <button id="btnHintClose" class="help-hint-close" type="button" aria-label="Dismiss">&times;</button>
+</div><main class="deck bd-article" id="deck" tabindex="-1">
+<section class="tex2jax_ignore mathjax_ignore" id="l20-qam-and-ofdm">
+<h1>L20 - QAM and OFDM<a class="headerlink" href="#l20-qam-and-ofdm" title="Permalink to this heading">#</a></h1>
+<div class="frame title-frame docutils container" id="frame-1">
+<div class="wrap docutils container">
+<div class="course-mark">ECE 448 · Spring 2027</div>
+<h1 class="frame-title">QAM and OFDM</h1>
+<div class="title-rule"></div>
+<p>QAM puts more bits on each symbol, OFDM spreads the symbols across many subcarriers, Wi-Fi and LTE use both, and HD Radio uses OFDM.</p>
+<p>Lesson 20 · Module 7: Final Project · Dr. Neil Rogers</p>
+</div>
+</div>
+<div class="frame read-only docutils container" id="frame-slides">
+<div class="wrap docutils container">
+<p class="rubric">Slides</p>
+<div class="slides admonition">
+<p class="admonition-title">Slides</p>
+<p><a href="../../slides/L20-qam-ofdm.html" target="_blank" rel="noopener">html slides</a>
+<a href="../../slides/L20-qam-ofdm.html?print-pdf" target="_blank" rel="noopener">pdf slides</a>
+<a href="../../slides/L20-qam-ofdm.md" target="_blank" rel="noopener">raw markdown slides</a></p>
+</div>
+</div>
+</div>
+<div class="frame docutils container" id="frame-learning-objectives">
+<div class="wrap docutils container">
+<p class="rubric">Learning Objectives</p>
+<ol class="lo-list" style="--module: '7'">
+  <li>I can describe QAM and OFDM and identify use cases for each.</li>
+</ol>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-text-over-ofdm">
+<div class="wrap docutils container">
+<p class="rubric">Text over OFDM</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<p><img src="../../viz/img/L20-ofdm-clean.png"
+     alt="L20-ofdm-link.grc, labeled Simulated channel, running on a clean channel: sliders for Taps 1 to 4 at 1, echo delay 8 samples, echo level 0, and noise amplitude 0.02; the received spectrum is a flat-topped block from about minus 41 to plus 41 kHz with steep edges; the subcarrier points before the equalizer lie on rings; after the equalizer they form a clean 4 by 4 grid; the labels read USAFA ECE 448: text over OFDM and 1987 correct of 1987 received in 8 s"
+     style="max-width: 820px; width: 100%; display: block; margin: 0 auto;"></p>
+</div>
+<div class="present docutils container">
+<ul class="simple">
+<li><p>Run <code class="docutils literal notranslate"><span class="pre">L20-ofdm-link.grc</span></code>.</p></li>
+<li><p>The spectrum is a flat block with steep edges.</p></li>
+<li><p>After the equalizer, the points form a 4 by 4 grid: 16-QAM.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>The figure is today’s second flowgraph, <code class="docutils literal notranslate"><span class="pre">L20-ofdm-link.grc</span></code>, running. It sends a line of text as packets, and each packet travels as <strong>OFDM</strong>: 48 narrow subcarriers side by side, the idea Lesson 14 found beside an HD Radio station. Each subcarrier carries <strong>16-QAM</strong>, a constellation of 16 points on a grid, so every symbol on every subcarrier carries 4 bits. The spectrum is the flat block of all 52 subcarriers, 48 for data and 4 pilots, the left constellation shows the subcarrier points as the receiver’s FFT delivers them, and the right one shows them after the receiver’s <strong>equalizer</strong> has corrected each subcarrier. The left points lie on rings because the receiver starts its FFT a few samples early, inside the guard, which turns each subcarrier by its own angle; the equalizer measures that turn and removes it.</p>
+<p>Today we build both halves. We start with QAM on a single carrier, following GNU Radio’s constellation objects and <strong>Constellation Modulator</strong> block and PySDR’s Digital Modulation chapter, and we watch noise act on QPSK, 16-QAM, and 64-QAM. Then we follow the OFDM transmitter and receiver that ship with GNU Radio as the examples <code class="docutils literal notranslate"><span class="pre">tx_ofdm.grc</span></code> and <code class="docutils literal notranslate"><span class="pre">rx_ofdm.grc</span></code>, with the blocks of the GNU Radio wiki’s Basic OFDM Tutorial, and we put Lesson 15’s multipath channel and a longer echo in front of them. We finish with which systems use each one and how to recognize it on a live band.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-from-psk-to-qam">
+<div class="wrap docutils container">
+<p class="rubric">From PSK to QAM</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<p><img src="../../viz/img/L20-qam-low.png"
+     alt="L20-qam-noise.grc, labeled Simulated channel, at noise amplitude 0.05: three constellation plots, QPSK with four tight points at plus and minus 0.71, 16-QAM with a 4 by 4 grid of tight points at plus and minus 0.32 and 0.95, and 64-QAM with an 8 by 8 grid of small clusters between about minus 1.1 and plus 1.1; below, one spectrum plot shows all three signals with the same flat top from about minus 5.4 to plus 5.4 kHz"
+     style="max-width: 820px; width: 100%; display: block; margin: 0 auto;"></p>
+</div>
+<div class="present docutils container">
+<ul class="simple">
+<li><p>QAM sets both the amplitude and the phase of each symbol.</p></li>
+<li><p>16 points carry 4 bits, and 64 points carry 6.</p></li>
+<li><p>All three fill the same band.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>Lesson 15’s PSK put every point on one circle, so only the phase carried data. <strong>Quadrature amplitude modulation</strong> (QAM) also uses the amplitude: the points fill a square grid, and each point is one level of <span class="math notranslate nohighlight">\(I\)</span> and one level of <span class="math notranslate nohighlight">\(Q\)</span>. 16-QAM has 4 levels on each axis and 64-QAM has 8, so their symbols carry <span class="math notranslate nohighlight">\(\log_2 16 = 4\)</span> and <span class="math notranslate nohighlight">\(\log_2 64 = 6\)</span> bits. QPSK is the smallest grid, 2 by 2. Lesson 3 drew decision regions for PAM and PSK; on a QAM grid each point’s region is the square around it.</p>
+<p>The figure is <code class="docutils literal notranslate"><span class="pre">L20-qam-noise.grc</span></code> with almost no noise. Each modulation sends 8,000 symbols per second through the same RRC filter as Lesson 15, with <span class="math notranslate nohighlight">\(\alpha = 0.35\)</span>, so the spectrum below shows all three filling the same 10.8 kHz. At the same symbol rate, 16-QAM carries twice the bits of QPSK and 64-QAM three times as many.</p>
+</div>
+</div>
+</div>
+<div class="frame read-only docutils container" id="frame-bits-per-symbol">
+<div class="wrap docutils container">
+<p class="rubric">Bits per Symbol</p>
+<p>At 8,000 symbols per second, each modulation fills the same 10.8 kHz:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head text-left"><p>Modulation</p></th>
+<th class="head text-center"><p>Points</p></th>
+<th class="head text-center"><p>Bits per symbol</p></th>
+<th class="head text-center"><p>Bit rate</p></th>
+<th class="head text-center"><p>Spacing of neighboring points</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-left"><p>QPSK</p></td>
+<td class="text-center"><p>4</p></td>
+<td class="text-center"><p>2</p></td>
+<td class="text-center"><p>16 kb/s</p></td>
+<td class="text-center"><p>1.41</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>16-QAM</p></td>
+<td class="text-center"><p>16</p></td>
+<td class="text-center"><p>4</p></td>
+<td class="text-center"><p>32 kb/s</p></td>
+<td class="text-center"><p>0.63</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>64-QAM</p></td>
+<td class="text-center"><p>64</p></td>
+<td class="text-center"><p>6</p></td>
+<td class="text-center"><p>48 kb/s</p></td>
+<td class="text-center"><p>0.31</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>256-QAM</p></td>
+<td class="text-center"><p>256</p></td>
+<td class="text-center"><p>8</p></td>
+<td class="text-center"><p>64 kb/s</p></td>
+<td class="text-center"><p>0.15</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The spacing column is for constellations scaled to the same average power, which is how GNU Radio’s built-in 16-QAM is scaled and how this flowgraph’s QPSK and 64-QAM objects are set, with Normalization Type set to Power, so all four reach the receiver with the same signal strength. Each step up the table adds 2 bits per symbol and roughly halves the distance between neighboring points. The QPSK and 16-QAM spacings can be read off the figure in the previous frame: QPSK’s points sit at <span class="math notranslate nohighlight">\(\pm 0.71\)</span>, and 16-QAM’s at <span class="math notranslate nohighlight">\(\pm 0.32\)</span> and <span class="math notranslate nohighlight">\(\pm 0.95\)</span>.</p>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-the-qam-flowgraph">
+<div class="wrap docutils container">
+<p class="rubric">The QAM Flowgraph</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<p><img src="../../viz/img/L20-grc-qam.png"
+     alt="L20-qam-noise.grc in GNU Radio Companion: three Constellation Object blocks named qpsk, qam16, and qam64; three identical rows of Random Source, Constellation Modulator, Throttle, Channel Model, Decimating FIR Filter with the RRC taps, Symbol Sync, Multiply Const, and QT GUI Constellation Sink; the three Channel Model outputs also feed one QT GUI Frequency Sink; a QT GUI Range named noise sets every Channel Model's noise voltage"
+     style="max-width: 820px; width: 100%; display: block; margin: 0 auto;"></p>
+</div>
+<div class="present docutils container">
+<ul class="simple">
+<li><p>A <strong>Constellation Object</strong> defines each set of points.</p></li>
+<li><p>The <strong>Constellation Modulator</strong> maps bytes to points and shapes them.</p></li>
+<li><p>One noise slider drives all three channels.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>A <strong>Constellation Object</strong> block holds a constellation as a variable. GNU Radio has 16-QAM built in; the QPSK and 64-QAM objects list their points, <span class="math notranslate nohighlight">\(\pm 1 \pm 1j\)</span> and the 8 by 8 grid of odd numbers from <span class="math notranslate nohighlight">\(-7\)</span> to <span class="math notranslate nohighlight">\(7\)</span>, and scale them to an average power of 1, as the built-in 16-QAM is. The <strong>Constellation Modulator</strong> takes bytes, splits them into groups of bits, maps each group to a point, and shapes the symbols with the RRC filter, 4 samples per symbol here. This is the block Lesson 15’s multipath flowgraph used for QPSK.</p>
+<p>Each row then adds noise in a <strong>Channel Model</strong> and runs the receiver of Lesson 15: the matched filter and Symbol Sync. All three Channel Models take their noise amplitude from the same slider, so every constellation sees the same noise. The flowgraph has no frequency offset, so it needs no carrier recovery.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-noise-on-qam">
+<div class="wrap docutils container">
+<p class="rubric">Noise on QAM</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<p><img src="../../viz/img/L20-qam-high.png"
+     alt="L20-qam-noise.grc, labeled Simulated channel, at noise amplitude 0.3: QPSK shows four round clouds well apart; 16-QAM shows sixteen clouds with gaps still between them and a few stray points; 64-QAM shows the points spread into one square of scattered dots with no gaps; the spectrum shows the same three signals over a floor raised to about minus 50 dB"
+     style="max-width: 820px; width: 100%; display: block; margin: 0 auto;"></p>
+</div>
+<div class="present docutils container">
+<ul class="simple">
+<li><p>Raise the noise amplitude to 0.3.</p></li>
+<li><p>The clouds grow by the same amount in every plot.</p></li>
+<li><p>64-QAM’s points merge first, then 16-QAM’s.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>The figure raises the noise amplitude from 0.05 to 0.3. The noise is the same in all three channels, and it spreads every point into a cloud of the same size. QPSK’s four points sit far apart, and its clouds stay well separated. 16-QAM’s clouds spread toward each other, and a stray point crosses into a neighbor’s region now and then. 64-QAM’s points sit closest together, and its clouds have merged into one square with no gaps, so the receiver picks wrong points constantly.</p>
+<p>Every QAM link faces this tradeoff. More points carry more bits in the same band, but they sit closer together, so they need a cleaner signal. PySDR’s Digital Modulation chapter runs the same comparison with BPSK, QPSK, and 16-QAM.</p>
+</div>
+</div>
+</div>
+<div class="frame viz-frame cut docutils container" id="frame-qam-explorer">
+<div class="wrap docutils container">
+<p class="rubric">QAM Explorer</p>
+<div class="depth docutils container">
+<p>The explorer sends the line <code class="docutils literal notranslate"><span class="pre">USAFA</span> <span class="pre">ECE</span> <span class="pre">448:</span> <span class="pre">QAM</span></code> over and over with the chosen constellation and adds noise to every symbol. Its noise slider matches the Noise amplitude slider of <code class="docutils literal notranslate"><span class="pre">L20-qam-noise.grc</span></code>. Symbols that land in another point’s region are red, and the received text marks every wrong character in red. Start with 16-QAM at 0.1, then raise the noise until the text breaks; switch to 64-QAM and 256-QAM at the same setting, then back to QPSK.</p>
+</div>
+<div class="stage docutils container">
+<div class="present docutils container">
+<iframe src="../../viz/qam-explorer.html"
+        width="100%" height="411"
+        style="border: 1px solid #cddce9; border-radius: 6px;"
+        loading="lazy"
+        title="QAM explorer: QPSK, 16-QAM, 64-QAM, or 256-QAM symbols carrying a line of text through adjustable noise, with the decision regions, the wrong decisions in red, and the received text">
+</iframe>
+</div>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-setting-the-level">
+<div class="wrap docutils container">
+<p class="rubric">Setting the Level</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<p><img src="../../viz/img/L20-qam-gain.png"
+     alt="L20-qam-noise.grc, labeled Simulated channel, at noise amplitude 0.05 with the Receiver gain at 0.6: all three grids have shrunk toward the center; QPSK's points sit at about plus and minus 0.43, 16-QAM's outer points at about plus and minus 0.57, and 64-QAM's grid spans about plus and minus 0.65"
+     style="max-width: 820px; width: 100%; display: block; margin: 0 auto;"></p>
+</div>
+<div class="present docutils container">
+<ul class="simple">
+<li><p>Set the Receiver gain to 0.6.</p></li>
+<li><p>QPSK still decodes by quadrant, but 16-QAM’s outer points now sit where its inner points belong.</p></li>
+<li><p>An <strong>AGC</strong> holds the level.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>A PSK receiver ignores the amplitude, because every point sits on the same circle, but a QAM receiver cannot. The <strong>Receiver gain</strong> slider in <code class="docutils literal notranslate"><span class="pre">L20-qam-noise.grc</span></code> scales the received points, as a receiver with the wrong level would, and the figure sets it to 0.6. QPSK’s points shrink but stay in their quadrants, so a QPSK decoder still reads every one. 16-QAM’s outer points move from <span class="math notranslate nohighlight">\(\pm 0.95\)</span> to about <span class="math notranslate nohighlight">\(\pm 0.57\)</span>, inside the lines at <span class="math notranslate nohighlight">\(\pm 0.63\)</span> that separate outer points from inner ones, so a decoder that expects the full-size grid reads every outer point as an inner one.</p>
+<p>A real QAM receiver therefore runs an <strong>AGC</strong> to hold the average power where the constellation expects it, as the L15 Lab’s PlutoSDR flowgraph did, and its amplifiers have to stay out of compression, which would squeeze the outer points inward. Carrier recovery for QAM uses GNU Radio’s <strong>Constellation Receiver</strong> block in place of the Costas Loop, and a final project that sends QAM over a radio would start there.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-from-one-carrier-to-many">
+<div class="wrap docutils container">
+<p class="rubric">From One Carrier to Many</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<ul class="simple">
+<li><p><strong>OFDM</strong> sends many slow subcarriers side by side instead of one fast carrier.</p></li>
+<li><p>Each subcarrier carries one QPSK or QAM point per OFDM symbol.</p></li>
+<li><p>An inverse FFT builds each symbol, and an FFT separates the subcarriers again.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>Lesson 14 met OFDM in HD Radio’s sidebands. <strong>Orthogonal frequency-division multiplexing</strong> divides a channel among many subcarriers spaced so that each one is zero at the centers of all the others, which lets the receiver separate them with an FFT. Each OFDM symbol is a list of constellation points, one per subcarrier: the <strong>OFDM Carrier Allocator</strong> places the points, an inverse FFT turns the list into time samples, and the <strong>OFDM Cyclic Prefixer</strong> adds the guard. HD Radio puts QPSK on its subcarriers; today’s link puts 16-QAM on them.</p>
+<p>Many slow subcarriers have one large advantage over a single fast carrier. Each OFDM symbol lasts much longer than one symbol of a single carrier with the same total bit rate, so an echo a few samples late smears only a small part of it, and the guard absorbs that part. The next frames show this with Lesson 15’s multipath taps.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-the-ofdm-flowgraph">
+<div class="wrap docutils container">
+<p class="rubric">The OFDM Flowgraph</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<p><img src="../../viz/img/L20-grc-ofdm.png"
+     alt="L20-ofdm-link.grc in GNU Radio Companion: in the top row, a Vector Source of the text, Stream to Tagged Stream, Packet Header Generator, Additive Scrambler, Repack Bits, two Chunks to Symbols, Tagged Stream Mux, OFDM Carrier Allocator, a reverse FFT, and OFDM Cyclic Prefixer; in the middle row, Multiply Const, Tag Gate, Channel Model, Throttle, and a QT GUI Frequency Sink; in the bottom rows, Schmidl and Cox OFDM synch, Frequency Mod, Delay, Multiply, Header/Payload Demux, FFTs, OFDM Channel Estimation, OFDM Frame Equalizers, OFDM Serializers, Constellation Decoders, Packet Header Parser, Repack Bits, Additive Scrambler, the Text Sink, and two constellation sinks"
+     style="max-width: 820px; width: 100%; display: block; margin: 0 auto;"></p>
+</div>
+<div class="present docutils container">
+<ul class="simple">
+<li><p>The transmitter is GNU Radio’s <code class="docutils literal notranslate"><span class="pre">tx_ofdm.grc</span></code> with 16-QAM.</p></li>
+<li><p>The receiver is <code class="docutils literal notranslate"><span class="pre">rx_ofdm.grc</span></code>: synchronize, estimate the channel, equalize, decode.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>The top row is the transmitter of GNU Radio’s <code class="docutils literal notranslate"><span class="pre">tx_ofdm.grc</span></code> example. Each packet gets a header in BPSK and a payload in 16-QAM; the Carrier Allocator places them on 48 data subcarriers with 4 <strong>pilot</strong> subcarriers of known value, and puts two known <strong>preamble</strong> symbols at the start of every packet. The FFT is 64 points and the guard is 16 samples, at 100,000 samples per second, so the subcarriers sit 1,562.5 Hz apart. The middle row is the channel: a Channel Model with Lesson 15’s four tap sliders, an echo, and noise.</p>
+<p>The bottom rows are the receiver of <code class="docutils literal notranslate"><span class="pre">rx_ofdm.grc</span></code>. The <strong>Schmidl &amp; Cox OFDM synch</strong> block finds the start of each packet from the first preamble symbol. The FFT of the second preamble symbol, whose values the receiver knows, gives the channel’s gain and phase on every subcarrier, which is the <strong>channel estimate</strong>. The <strong>OFDM Frame Equalizer</strong> divides each subcarrier by its gain and turns it back by its phase, and the decoders read the header and then the 16-QAM payload.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-the-guard">
+<div class="wrap docutils container">
+<p class="rubric">The Guard</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<p><img src="../../viz/img/L20-guard.svg"
+     alt="Two OFDM symbols, each a 16-sample guard followed by a 64-sample symbol, with an arrow showing that the guard is a copy of the last 16 samples of its symbol; below them the same two symbols arrive again as an echo 8 samples later; dashed lines mark the receiver's 64-sample FFT window over symbol 2 of the direct path, which contains only symbol 2 and its guard on the echo row as well"
+     style="max-width: 760px; width: 100%; display: block; margin: 0 auto;"></p>
+</div>
+<div class="present docutils container">
+<ul class="simple">
+<li><p>The guard is a copy of the end of each symbol.</p></li>
+<li><p>An echo shorter than the guard spills only into the next guard.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>The <strong>guard interval</strong>, also called the <strong>cyclic prefix</strong>, is a copy of the last 16 samples of each symbol placed in front of it. The figure shows why it is there. An echo arrives 8 samples after the direct signal, so the end of its symbol 1 overlaps the start of the direct path’s guard for symbol 2. The receiver’s FFT window skips the guard (in this receiver, about 9 of its 16 samples; see two frames ahead), so it sees only symbol 2 from both paths: the direct one, and the echo’s copy, which is the same symbol turned and scaled. On each subcarrier that sum is one point with a new gain and phase, which the equalizer removes.</p>
+<p>An echo later than the guard reaches past it into the FFT window, and part of symbol 1 lands in symbol 2’s FFT, where the equalizer cannot remove it. In the link flowgraph the guard lasts 16 samples, or 160 µs, and Lesson 14’s explorer showed the same effect with HD Radio’s guard.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-lesson-15-s-taps-on-ofdm">
+<div class="wrap docutils container">
+<p class="rubric">Lesson 15’s Taps on OFDM</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<p><img src="../../viz/img/L20-ofdm-taps.png"
+     alt="L20-ofdm-link.grc, labeled Simulated channel, with Taps 1 to 4 at 0.25, 0.5, 0.6, and 0.6 and noise amplitude 0.02: the spectrum tilts, from about minus 42 dB at the lower edge to minus 30 dB at the upper edge; the points before the equalizer are a shrunken jumble; after the equalizer they form a 4 by 4 grid of small clusters, larger at the outer points; the text arrives, 1861 correct of 1862 in 7 s"
+     style="max-width: 820px; width: 100%; display: block; margin: 0 auto;"></p>
+</div>
+<div class="present docutils container">
+<ul class="simple">
+<li><p>Set the taps to Lesson 15’s 0.25, 0.5, 0.6, and 0.6.</p></li>
+<li><p>The spectrum tilts, but the equalizer restores the grid and the text arrives.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>The four tap sliders use the expression of <code class="docutils literal notranslate"><span class="pre">L15-psk-multipath.grc</span></code>: each sets the channel’s gain at one frequency. At this flowgraph’s 100,000 samples per second those frequencies move outward, so Tap 1 now sets the gain near the lower edge, at <span class="math notranslate nohighlight">\(-40\)</span> kHz, and Taps 2, 3, and 4 sit at <span class="math notranslate nohighlight">\(-20\)</span>, 0, and <span class="math notranslate nohighlight">\(+20\)</span> kHz, all inside the OFDM block. At Lesson 15’s settings the spectrum tilts, weak at the lower edge and strong at the upper one. Before the equalizer the subcarrier points are a jumble, because every subcarrier has a different gain and phase. After it, they form the 16-QAM grid again, and the text arrives.</p>
+<p>Lesson 15 needed an adaptive equalizer, a filter that learned the inverse of the channel, to undo the same tap settings on a single QPSK carrier. OFDM needs only one complex number per subcarrier, measured from the preamble. The clusters for the weakest subcarriers come out a little larger, because the equalizer amplifies their noise along with their signal; with the noise amplitude at 0.05 the weak edge corrupts about half the lines.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-an-echo-inside-the-guard">
+<div class="wrap docutils container">
+<p class="rubric">An Echo Inside the Guard</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<p><img src="../../viz/img/L20-ofdm-echo-in.png"
+     alt="L20-ofdm-link.grc, labeled Simulated channel, with the taps at 1, an echo 8 samples late at level 0.5, and noise amplitude 0.02: the spectrum has deep ripples, about six across the signal's band and eight across the 100 kHz window; the points before the equalizer lie on many separate arcs; after the equalizer they form a clean 4 by 4 grid; the text arrives, 1982 correct of 1982"
+     style="max-width: 820px; width: 100%; display: block; margin: 0 auto;"></p>
+</div>
+<div class="present docutils container">
+<ul class="simple">
+<li><p>Set the echo level to 0.5 at 8 samples.</p></li>
+<li><p>The spectrum ripples, and the text still arrives.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>The <strong>Echo delay</strong> and <strong>Echo level</strong> sliders add a second copy of the signal, delayed and weaker, like a reflection from a building. An echo 8 samples late at half the amplitude makes the spectrum ripple: the two copies add at some frequencies and partly cancel at others, eight times across the 100 kHz window. Each subcarrier lands at its own place on that ripple, so before the equalizer the points fall on many separate arcs.</p>
+<p>The echo ends inside the 16-sample guard, so each subcarrier sees only a fixed change in gain and phase. The channel estimate measures it, the equalizer removes it, and every line arrives. A single-carrier link carrying the same bit rate in the same band would see each symbol smeared across its neighbors, as Lesson 15’s clusters were.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-an-echo-past-the-guard">
+<div class="wrap docutils container">
+<p class="rubric">An Echo Past the Guard</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<p><img src="../../viz/img/L20-ofdm-echo-out.png"
+     alt="L20-ofdm-link.grc, labeled Simulated channel, with an echo 20 samples late at level 0.5 and noise amplitude 0.02: the spectrum ripples more finely; the points before the equalizer are scattered; after the equalizer they are scattered clouds with no clear grid; the received line is garbled and 0 of 1861 lines are correct"
+     style="max-width: 820px; width: 100%; display: block; margin: 0 auto;"></p>
+</div>
+<div class="present docutils container">
+<ul class="simple">
+<li><p>Move the echo to 20 samples, longer than the 16-sample guard.</p></li>
+<li><p>The grid scatters and no line arrives intact.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>At 20 samples the echo is longer than the guard, and the end of each symbol’s echo reaches into the next symbol’s FFT window. That leakage acts like noise that the equalizer cannot remove, and the grid falls apart even though the noise amplitude has not changed.</p>
+<p>The text breaks before the echo reaches the full 16 samples. The receiver starts its FFT window about 7 samples before the end of the guard, as a margin for its own timing error, which leaves about 9 samples of the guard for echoes. Step the echo delay up one sample at a time from 8 and watch where the lines start to fail. A real system chooses its guard to be longer than the echoes it expects, and the next frame lists some of those choices.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-systems-that-use-each-one">
+<div class="wrap docutils container">
+<p class="rubric">Systems That Use Each One</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head text-left"><p>System</p></th>
+<th class="head text-left"><p>On each subcarrier</p></th>
+<th class="head text-left"><p>Guard</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-left"><p>Wi-Fi</p></td>
+<td class="text-left"><p>BPSK up to 4096-QAM</p></td>
+<td class="text-left"><p>0.4 to 3.2 µs</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>LTE downlink</p></td>
+<td class="text-left"><p>QPSK up to 256-QAM</p></td>
+<td class="text-left"><p>4.7 µs</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>DVB-T TV</p></td>
+<td class="text-left"><p>QPSK up to 64-QAM</p></td>
+<td class="text-left"><p>up to 224 µs</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>HD Radio</p></td>
+<td class="text-left"><p>QPSK</p></td>
+<td class="text-left"><p>0.15 ms</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>OFDM serves wireless systems that meet echoes: Wi-Fi indoors, LTE and 5G across a city, and digital TV and HD Radio across a whole region, where a guard of hundreds of microseconds covers reflections from kilometers away. A 20 MHz 802.11a or 802.11g Wi-Fi channel uses exactly the subcarrier layout of today’s flowgraph, 48 data and 4 pilot subcarriers in a 64-point FFT, at 20 million samples per second, so its subcarriers are 312.5 kHz apart. LTE uses 15 kHz, and 5G NR uses 15 kHz or a wider multiple of it. DVB-T is Europe’s digital TV; the newer US standard, ATSC 3.0 or NextGen TV, is OFDM too.</p>
+<p>Single-carrier QAM serves channels with few echoes, such as cable TV and cable modems on coaxial cable, which carry 64-QAM and 256-QAM in 6 MHz channels (DOCSIS 3.1 moved cable modems to OFDM as well), and point-to-point microwave links between towers. Coaxial cable keeps the signal off the air, so an SDR antenna cannot receive it.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-choosing-a-scheme">
+<div class="wrap docutils container">
+<p class="rubric">Choosing a Scheme</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<p><img src="../../viz/img/L20-ofdm-noise.png"
+     alt="L20-ofdm-link.grc, labeled Simulated channel, with the taps at 1, no echo, and noise amplitude 0.15: the spectrum floor has risen; after the equalizer the 16-QAM clusters have spread into clouds that touch; the received line has wrong characters and 324 of 1981 lines are correct"
+     style="max-width: 820px; width: 100%; display: block; margin: 0 auto;"></p>
+</div>
+<div class="present docutils container">
+<ul class="simple">
+<li><p>Echoes call for OFDM; a clean cable or a tower-to-tower link can use one carrier.</p></li>
+<li><p>Noise sets how many points each subcarrier can carry.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>The two choices answer different questions. OFDM or a single carrier depends on the channel’s echoes. The constellation depends on the noise: in the figure the noise amplitude is 0.15, the 16-QAM clouds touch, and most lines arrive with errors, where QPSK on the same subcarriers would still deliver them.</p>
+<p>Wi-Fi and LTE make the second choice continuously. A receiver close to the access point or tower, with a clean signal, gets 64-QAM or more on every subcarrier; as it moves away and the signal weakens, the link steps down to 16-QAM, then QPSK, and adds more error-correcting code. PySDR’s Channel Coding chapter calls these combinations <strong>modulation and coding schemes</strong>. HD Radio, which must reach car radios at the edge of a station’s coverage, stays with QPSK.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-on-the-sdr">
+<div class="wrap docutils container">
+<p class="rubric">On the SDR</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<ul class="simple">
+<li><p>Wi-Fi: short bursts at 2.4 GHz, mostly flat-topped and about 17 MHz wide.</p></li>
+<li><p>LTE: a flat, steady band about 9 MHz wide near 740 MHz.</p></li>
+<li><p>HD Radio: two flat shelves beside an FM station.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>These signals are on the air around you, and the PlutoSDR shows their spectrum. We look only at the spectrum; we do not decode anyone’s traffic. <code class="docutils literal notranslate"><span class="pre">L20-band-pluto.grc</span></code> is a <strong>PlutoSDR Source</strong> with a frequency sink and a waterfall, a <strong>Center frequency</strong> control you change while it runs, and a <strong>Sample rate</strong> choice of 2 MS/s or 20 MS/s. It opens at 2 MS/s and 100.1 MHz. The course Plutos run from 70 MHz to 6 GHz, so all three signals are in range.</p>
+<p>A Pluto streams about 4 MS/s continuously over USB 2.0, and a Wi-Fi channel is 20 MHz wide. At 20 MS/s the Pluto still fills each buffer of 131,072 samples without a break, 6.5 ms of signal, but the laptop cannot take the buffers as fast as they come, so samples are lost between them. The spectrum needs only a short unbroken stretch, so the displays still show the channel’s shape; they skip some of what happens between buffers.</p>
+<ol class="arabic simple">
+<li><p>At 2 MS/s, find an FM station near 100 MHz that carries HD Radio, and set the center frequency about 400 kHz to one side of it, so the Pluto’s own mark at 0 Hz stays off the station and both of Lesson 14’s flat shelves. If the whole spectrum rises and spreads, lower the RX gain.</p></li>
+<li><p>Choose 20 MS/s and tune to 2.437 GHz, Wi-Fi channel 6, and watch the waterfall. Short bursts come and go. Those carrying data are OFDM: a flat top with steep edges about 17 MHz wide, often with a small dip at the center, where the subcarrier at 0 Hz is left empty. The Pluto marks its own 0 Hz too, so tune 2 MHz higher: the dip that moves with the channel is Wi-Fi’s. Some access points still send beacons in the older 802.11b format, which look rounded instead.</p></li>
+<li><p>Still at 20 MS/s, tune between 729 and 756 MHz, where US carriers run LTE downlinks; which frequencies are in use varies by area. A 10 MHz LTE carrier shows as a flat top about 9 MHz wide with steep edges, and unlike Wi-Fi’s bursts it stays on.</p></li>
+<li><p>At 2 MS/s, find the same LTE carrier. The window shows only a flat slice of it, so step the center frequency 2 MHz at a time to find both edges.</p></li>
+</ol>
+<p>As in every lesson, receiving is unrestricted and transmitting is not; nothing in this lesson transmits.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-key-point">
+<div class="wrap docutils container">
+<p class="rubric">Key Point</p>
+<div class="stage docutils container">
+<div class="present callout docutils container">
+<p>More QAM points carry more bits but need a cleaner signal. OFDM splits a channel into slow subcarriers with a guard, so an echo shorter than the guard becomes one gain and phase per subcarrier.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="frame read-only doc-links docutils container" id="frame-downloads">
+<div class="wrap docutils container">
+<p class="rubric">Downloads</p>
+<ul class="simple">
+<li><p><a class="doc-link" href="../../grc/L20-qam-noise.grc" download>L20-qam-noise.grc</a>: random symbols in QPSK, 16-QAM, and 64-QAM through three Channel Models that share one noise slider, with the three constellations and their spectra. No hardware needed.</p></li>
+<li><p><a class="doc-link" href="../../grc/L20-band-pluto.grc" download>L20-band-pluto.grc</a>: a PlutoSDR Source with spectrum and waterfall, a center frequency you change while it runs, and 2 MS/s or 20 MS/s. Receive only; needs a PlutoSDR.</p></li>
+<li><p><a class="doc-link" href="../../grc/L20-ofdm-link.grc" download>L20-ofdm-link.grc</a>: a line of text over OFDM with 16-QAM subcarriers, through Lesson 15’s four multipath taps, an echo, and noise, with the spectrum, the subcarrier points before and after the equalizer, and the received text. No hardware needed.</p></li>
+</ul>
+<p>Open a <code class="docutils literal notranslate"><span class="pre">.grc</span></code> file from GRC’s File menu, or run <code class="docutils literal notranslate"><span class="pre">gnuradio-companion</span> <span class="pre">L20-ofdm-link.grc</span></code> from the radioconda prompt. To send QPSK on the subcarriers instead of 16-QAM, double-click the variable <code class="docutils literal notranslate"><span class="pre">payload_mod</span></code>, change it to <code class="docutils literal notranslate"><span class="pre">digital.constellation_qpsk()</span></code>, and run the flowgraph again. The Text Sink is an Embedded Python Block saved inside the <code class="docutils literal notranslate"><span class="pre">.grc</span></code> file.</p>
+<p><strong>What this lesson follows.</strong> L20 has no 2025 slides, so the GNU Radio examples and wiki lead, then PySDR:</p>
+<ul class="simple">
+<li><p>GNU Radio’s OFDM examples <code class="docutils literal notranslate"><span class="pre">tx_ofdm.grc</span></code>, <code class="docutils literal notranslate"><span class="pre">rx_ofdm.grc</span></code>, and <code class="docutils literal notranslate"><span class="pre">ofdm_loopback.grc</span></code>, which ship with GNU Radio in <code class="docutils literal notranslate"><span class="pre">share/gnuradio/examples/digital/ofdm</span></code>. <code class="docutils literal notranslate"><span class="pre">L20-ofdm-link.grc</span></code> is <code class="docutils literal notranslate"><span class="pre">tx_ofdm.grc</span></code> and <code class="docutils literal notranslate"><span class="pre">rx_ofdm.grc</span></code> joined, with a text source, a 16-QAM payload, and the Channel Model of <code class="docutils literal notranslate"><span class="pre">L15-psk-multipath.grc</span></code>. It also differs from them in four smaller ways: it drops the CRC blocks, so a damaged line arrives with wrong characters instead of not at all; it scrambles each packet’s bits, as the OFDM Transmitter block does with Scramble Bits set to True, so the repeated text does not put the same point on the same subcarrier every time; its payload equalizer is the static one, which outputs the equalized points instead of its decisions, so the right-hand plot shows the noise; and it runs at 100,000 samples per second.</p></li>
+<li><p><a href="https://wiki.gnuradio.org/index.php/Basic_OFDM_Tutorial" target="_blank" rel="noopener">GNU Radio wiki, Basic OFDM Tutorial</a>: the OFDM Carrier Allocator, FFT, and OFDM Cyclic Prefixer.</p></li>
+<li><p><a href="https://wiki.gnuradio.org/index.php/Constellation_Modulator" target="_blank" rel="noopener">GNU Radio wiki, Constellation Modulator</a> and <a href="https://wiki.gnuradio.org/index.php/Constellation_Object" target="_blank" rel="noopener">Constellation Object</a>: the blocks of <code class="docutils literal notranslate"><span class="pre">L20-qam-noise.grc</span></code>.</p></li>
+<li><p><a href="https://pysdr.org/content/digital_modulation.html" target="_blank" rel="noopener">PySDR, Digital Modulation</a> for QAM, <a href="https://pysdr.org/content/multipath_fading.html" target="_blank" rel="noopener">PySDR, Multipath Fading</a>, whose OFDM section is a one-paragraph overview, and <a href="https://pysdr.org/content/channel_coding.html" target="_blank" rel="noopener">PySDR, Channel Coding</a> for modulation and coding schemes.</p></li>
+<li><p><a href="https://wiki.gnuradio.org/index.php/PlutoSDR_Source" target="_blank" rel="noopener">GNU Radio wiki, PlutoSDR Source</a>: the block behind <code class="docutils literal notranslate"><span class="pre">L20-band-pluto.grc</span></code>.</p></li>
+</ul>
+</div>
+</div>
+<div class="frame read-only docutils container" id="frame-summary">
+<div class="wrap docutils container">
+<p class="rubric">Summary</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head text-left"><p>Idea</p></th>
+<th class="head text-left"><p>What it is</p></th>
+<th class="head text-left"><p>In GNU Radio</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-left"><p>QAM</p></td>
+<td class="text-left"><p>points on a grid: amplitude and phase</p></td>
+<td class="text-left"><p>Constellation Object, Constellation Modulator</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>Bits per symbol</p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(\log_2\)</span> of the number of points</p></td>
+<td class="text-left"><p>16-QAM 4, 64-QAM 6, 256-QAM 8</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>Noise</p></td>
+<td class="text-left"><p>the same clouds; closer points merge first</p></td>
+<td class="text-left"><p>one noise slider on three Channel Models</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>QAM receiver</p></td>
+<td class="text-left"><p>needs the level right and the carrier recovered</p></td>
+<td class="text-left"><p>AGC, Constellation Receiver</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>OFDM</p></td>
+<td class="text-left"><p>many slow subcarriers, one point each per symbol</p></td>
+<td class="text-left"><p>Carrier Allocator, FFT, Cyclic Prefixer</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>Guard</p></td>
+<td class="text-left"><p>a copy of each symbol’s end</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">cp_len</span></code> = 16 of <code class="docutils literal notranslate"><span class="pre">fft_len</span></code> = 64</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>Equalizer</p></td>
+<td class="text-left"><p>one gain and phase per subcarrier, from the preamble</p></td>
+<td class="text-left"><p>OFDM Channel Estimation, Frame Equalizer</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>Echo inside the guard</p></td>
+<td class="text-left"><p>a ripple the equalizer removes</p></td>
+<td class="text-left"><p>the text arrives</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>Echo past the guard</p></td>
+<td class="text-left"><p>leakage between symbols</p></td>
+<td class="text-left"><p>the grid scatters</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>Use cases</p></td>
+<td class="text-left"><p>OFDM: Wi-Fi, LTE, 5G, DVB-T, ATSC 3.0, HD Radio; single carrier: cable, microwave links</p></td>
+<td class="text-left"><p></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="frame read-only doc-links docutils container" id="frame-practice">
+<div class="wrap docutils container">
+<p class="rubric">Practice</p>
+<ul class="simple">
+<li><p><a class="doc-link" href="../../practice/ECE448_L20_Practice_blank.pdf" target="_blank" rel="noopener">Problem set (PDF)</a></p></li>
+<li><p><a class="doc-link doc-key" href="../../practice/ECE448_L20_Practice_SOLUTIONS.pdf" target="_blank" rel="noopener">Solutions (PDF)</a></p></li>
+</ul>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-looking-ahead">
+<div class="wrap docutils container">
+<p class="rubric">Looking Ahead</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<ul class="simple">
+<li><p>The final project starts now: pick a signal, write success criteria, and build it.</p></li>
+<li><p>Today’s two flowgraphs are starting points for a QAM or OFDM project.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>L20 is the last lesson of the course. The rest of Module 7 is the final project, in which you choose a signal to build, receive, or decode, write the success criteria we will grade it against, and demonstrate it working. Every lesson’s flowgraphs are starting points, and today’s two are a direct route into a project on a modern waveform: send a file over <code class="docutils literal notranslate"><span class="pre">L20-ofdm-link.grc</span></code> through a PlutoSDR and a cable with an inline 30 dB attenuator and an AGC, add a 64-QAM payload by copying the <code class="docutils literal notranslate"><span class="pre">qam64</span></code> Constellation Object from <code class="docutils literal notranslate"><span class="pre">L20-qam-noise.grc</span></code> into <code class="docutils literal notranslate"><span class="pre">payload_mod</span></code>, or measure the spectrum of the Wi-Fi and LTE bands around the Academy.</p>
+</div>
+</div>
+</div>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./module07/L20-qam-ofdm"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+</main>
+
+<script src="../../_static/shell.js?v=ac36f07766"></script>
+<script src="../../_static/frames.js?v=89e4b02ee3"></script><script src="../../_static/viz-autosize.js?v=4fe0c4e159"></script>
+</body>
+</html>

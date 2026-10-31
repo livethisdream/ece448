@@ -1,0 +1,586 @@
+<!doctype html>
+<html lang="en" data-mode="read">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>L3 - Signal Space &mdash; ECE 448 — Software Defined Radios</title>
+<meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+<link rel="icon" href="../../_static/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap"><link rel="stylesheet" href="../../_static/custom.css?v=ec0f297254">
+<link rel="stylesheet" href="../../_static/shell.css?v=78396bd831">
+<link rel="stylesheet" href="../../_static/frames.css?v=fa285d3703">
+<script>window.MathJax = {"tex": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processEscapes": true}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+<script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js"></script>
+</head>
+<body>
+
+<div class="rail"><span id="railfill"></span></div>
+
+<div class="laser" id="laser" aria-hidden="true"></div>
+<div class="spot" id="spot" aria-hidden="true"></div>
+
+<div class="index" id="index" role="dialog" aria-label="Jump to a frame or another lesson">
+  <button class="index-close" id="btnIndexClose" type="button" aria-label="Close">&times;</button>
+  <div class="wrap">
+    <div class="index-cols">
+      <div class="index-here">
+        <h2>This lesson</h2>
+        <ol id="indexlist"></ol>
+      </div>
+      <div class="index-toc">
+        <h2>Course</h2>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Course Information</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../syllabus.html">Syllabus</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../materials.html">Materials</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 1 — Foundations of Detection &amp; Link Budgets</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Module 1 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L01-course-intro/index.html">L1 — Course Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L02-noise-figure-link-budget/index.html">L2 — Noise Figure and Link Budget</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">L3 — Signal Space</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 2 — SDR &amp; GNU Radio Foundations</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module02/index.html">Module 2 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module02/L04-sdr-introduction/index.html">L4 — SDR Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module02/L05-gnu-radio-intro/index.html">L5 — GNU Radio Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module02/L05-lab-first-flowgraphs/index.html">L5 Lab — First Flowgraphs</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 3 — Analog Modulation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module03/index.html">Module 3 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module03/L06-am-simulation/index.html">L6 — AM Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module03/L06-lab-am-simulation/index.html">L6 Lab — AM Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module03/L07-am-fm-receivers/index.html">L7 — AM and FM Receivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module03/L07-lab-am-fm-receivers/index.html">L7 Lab — AM and FM Receivers</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 4 — Digital Modulation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/index.html">Module 4 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/L08-fsk/index.html">L8 — FSK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/L08-lab-fsk/index.html">L8 Lab — FSK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/L09-pam-theory/index.html">L9 — PAM Theory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/L10-ascii-pam/index.html">L10 — ASCII over PAM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/L10-lab-pam-link/index.html">L10 Lab — PAM Link</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 5 — Custom Blocks &amp; Midterm</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module05/index.html">Module 5 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module05/L11-custom-blocks/index.html">L11 — Out-of-Tree Modules and Custom Blocks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module05/L11-lab-custom-block/index.html">L11 Lab — Custom Block</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module05/midterm/index.html">Midterm — Fox Hunt and CTF</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 6 — Waveform Applications &amp; RF Reverse Engineering</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/index.html">Module 6 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L12-cw/index.html">L12 — CW</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L12-lab-cw/index.html">L12 Lab — CW</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L13-dtmf/index.html">L13 — DTMF</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L13-lab-dtmf/index.html">L13 Lab — DTMF</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L14-hd-radio/index.html">L14 — HD Radio</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L14-lab-hd-radio/index.html">L14 Lab — HD Radio</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L15-mpsk/index.html">L15 — mPSK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L15-lab-mpsk/index.html">L15 Lab — mPSK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L16-fhss/index.html">L16 — Frequency Hopping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L16-lab-fhss/index.html">L16 Lab — Frequency Hopping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L17-rf-reverse-engineering/index.html">L17 — RF Reverse Engineering</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L17-lab-rf-reverse-engineering/index.html">L17 Lab — RF Reverse Engineering</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L18-adsb/index.html">L18 — ADS-B</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L19-ais/index.html">L19 — AIS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L18-L19-lab-adsb-ais/index.html">L18–L19 Lab — ADS-B and AIS</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 7 — Final Project</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module07/index.html">Module 7 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module07/L20-qam-ofdm/index.html">L20 — QAM and OFDM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module07/final-project/index.html">Final Project</a></li>
+</ul>
+
+      </div>
+    </div>
+  </div>
+</div><div class="hud">
+<div class="hud-group">
+  <button id="btnSite" class="site" type="button"
+          aria-expanded="false" aria-controls="sitepop"
+          title="Elsewhere on this site">ECE 448</button>
+</div>
+<div class="pop" id="sitepop" role="group" aria-label="Site" hidden>
+  <a href="https://livethisdream.github.io/">Home</a>
+  <a href="https://livethisdream.github.io/ece343/intro.html">ECE 343</a>
+  <a href="https://livethisdream.github.io/ece444/intro.html">ECE 444</a>
+  <a href="../../intro.html" aria-current="page">ECE 448</a>
+  <a href="https://livethisdream.github.io/projects">Projects</a>
+  <button class="pop-help" type="button" data-help>Help<kbd>?</kbd></button>
+</div>
+
+  <div class="hud-group hud-mid"><button id="btnMode" type="button" aria-expanded="false" aria-controls="modepop"
+            title="How the lesson is laid out (P)">read</button>
+    <button id="btnTools" type="button" aria-expanded="false" aria-controls="toolspop"
+            title="Presenter tools">tools</button>
+  </div>
+
+  <div class="hud-group"><button id="btnIndex" class="counter" type="button" aria-pressed="false"
+            title="Contents (G) · double-tap for the top"><b id="cur">1</b>/<span id="tot">0</span></button>
+  </div><div class="pop" id="modepop" role="group" aria-label="View mode" hidden>
+    <button id="btnPresent" class="choice" type="button" aria-pressed="false">
+      present<span class="pop-note">one frame at a time</span></button>
+    <button id="btnRead" class="choice" type="button" aria-pressed="true">
+      read<span class="pop-note">the whole lesson, continuous</span></button>
+  </div><div class="pop" id="toolspop" role="group" aria-label="Presenter tools" hidden>
+    <button id="btnLaser" type="button" aria-pressed="false">laser<kbd>L</kbd></button>
+    <button id="btnSpot" type="button" aria-pressed="false">spotlight<kbd>S</kbd></button>
+    <button id="btnFull" type="button">fullscreen<kbd>F</kbd></button>
+    <button id="btnHelp" type="button" data-help>help<kbd>?</kbd></button>
+  </div>
+</div>
+<div class="help" id="help" role="dialog" aria-modal="true" aria-labelledby="helpTitle" hidden>
+  <div class="help-card">
+    <button class="help-close" id="btnHelpClose" type="button" aria-label="Close help">&times;</button>
+    <h2 id="helpTitle">Getting around</h2>
+    <p class="help-lead">Everything is in the bar at the bottom of the screen.</p>
+    <dl class="help-list">
+      <dt><span class="help-chip">ECE 448</span></dt>
+      <dd>The other course sites, the home page, and this help.</dd>
+      <dt><span class="help-chip">read</span></dt>
+      <dd><b>Read</b> shows the whole lesson as one page. <b>Present</b> shows one frame at a time, for class.<span class="help-keys"> <kbd>P</kbd> switches.</span></dd>
+      <dt><span class="help-chip">tools</span></dt>
+      <dd>Laser pointer<span class="help-keys"> <kbd>L</kbd></span>, spotlight<span class="help-keys"> <kbd>S</kbd></span>, and fullscreen<span class="help-keys"> <kbd>F</kbd></span>.</dd>
+      <dt><span class="help-chip">3/9</span></dt>
+      <dd>Where you are in the lesson. Tap it for every frame here and every lesson in the course<span class="help-keys"> <kbd>G</kbd></span>. Double-tap to go back to the top.</dd>
+    </dl>
+    <h3 class="help-keys">Presenting</h3>
+    <p class="help-keys"><kbd>&rarr;</kbd> or <kbd>Space</kbd> next frame, <kbd>&larr;</kbd> back, <kbd>D</kbd> this frame&rsquo;s detail, <kbd>Esc</kbd> close a panel.</p>
+    <h3>Printing</h3>
+    <p>Print from present mode for the slides, one frame a page. Print from read mode for the whole lesson.</p>
+    <p class="help-foot"><span class="help-keys">Press <kbd>?</kbd> to open this again.</span><span class="help-touch">Open this again from the ECE 448 menu.</span></p>
+  </div>
+</div>
+
+<div class="help-hint" id="helpHint" hidden>
+  <button id="btnHintOpen" type="button" data-help>New here? How the bar works</button>
+  <button id="btnHintClose" class="help-hint-close" type="button" aria-label="Dismiss">&times;</button>
+</div><main class="deck bd-article" id="deck" tabindex="-1">
+<section class="tex2jax_ignore mathjax_ignore" id="l3-signal-space">
+<h1>L3 - Signal Space<a class="headerlink" href="#l3-signal-space" title="Permalink to this heading">#</a></h1>
+<div class="frame title-frame docutils container" id="frame-1">
+<div class="wrap docutils container">
+<div class="course-mark">ECE 448 · Spring 2027</div>
+<h1 class="frame-title">Signal Space</h1>
+<div class="title-rule"></div>
+<p>Every digital modulation is a set of points, and noise decides how often the receiver picks the wrong one.</p>
+<p>Lesson 3 · Module 1: Foundations of Detection &amp; Link Budgets · Dr. Neil Rogers</p>
+</div>
+</div>
+<div class="frame read-only docutils container" id="frame-slides">
+<div class="wrap docutils container">
+<p class="rubric">Slides</p>
+<div class="slides admonition">
+<p class="admonition-title">Slides</p>
+<p><a href="../../slides/L03-signal-space.html" target="_blank" rel="noopener">html slides</a>
+<a href="../../slides/L03-signal-space.html?print-pdf" target="_blank" rel="noopener">pdf slides</a>
+<a href="../../slides/L03-signal-space.md" target="_blank" rel="noopener">raw markdown slides</a></p>
+</div>
+</div>
+</div>
+<div class="frame docutils container" id="frame-learning-objectives">
+<div class="wrap docutils container">
+<p class="rubric">Learning Objectives</p>
+<ol class="lo-list" style="--module: '1'; counter-reset: lo 2">
+  <li>I can describe signal-space concepts (basis functions, constellations, decision regions) and apply them to a digital modulation scheme.</li>
+</ol>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-three-families-of-modulation">
+<div class="wrap docutils container">
+<p class="rubric">Three Families of Modulation</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head text-left"><p>Family</p></th>
+<th class="head text-left"><p>What changes per symbol</p></th>
+<th class="head text-left"><p>In this course</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-left"><p>ASK / PAM</p></td>
+<td class="text-left"><p>amplitude</p></td>
+<td class="text-left"><p>Lessons 9 and 10</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>PSK</p></td>
+<td class="text-left"><p>phase</p></td>
+<td class="text-left"><p>Lesson 15</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>FSK</p></td>
+<td class="text-left"><p>frequency</p></td>
+<td class="text-left"><p>Lesson 8</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="present docutils container">
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(M\)</span> choices per symbol carry <span class="math notranslate nohighlight">\(\log_2 M\)</span> bits.</p></li>
+<li><p>“<span class="math notranslate nohighlight">\(M\)</span>-ary” means <span class="math notranslate nohighlight">\(M\)</span> choices: 4-PAM, 8-PSK, 2-FSK.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>A digital transmitter sends one <strong>symbol</strong> at a time, and each symbol is one of a small set of waveforms agreed on in advance. The modulation families differ in what they change from symbol to symbol. <strong>Amplitude-shift keying</strong> (ASK) and <strong>pulse amplitude modulation</strong> (PAM) change the height of the signal. <strong>Phase-shift keying</strong> (PSK) keeps the height and changes the phase of the carrier. <strong>Frequency-shift keying</strong> (FSK) changes the frequency.</p>
+<p>With <span class="math notranslate nohighlight">\(M\)</span> waveforms to choose from, each symbol carries <span class="math notranslate nohighlight">\(\log_2 M\)</span> bits: two choices carry one bit, four carry two, eight carry three. The receiver’s whole job is to decide, for each symbol, which of the <span class="math notranslate nohighlight">\(M\)</span> waveforms was sent. Today we look at that decision the way the receiver does, as a picture, and watch what noise does to it. Each family gets its own flowgraph later in the course.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-part-1-binary-pam">
+<div class="wrap docutils container">
+<p class="rubric">Part 1: Binary PAM</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<p><img src="../../viz/img/L03-binary-pam.svg"
+     alt="A binary PAM waveform for the bits 1 0 1 1 0 0 1 0: one rectangular pulse per bit, at plus A for a 1 and minus A for a 0, with one sample marked at the middle of each pulse. Beside it the samples collapse to two points, minus A and plus A, on a line with the threshold at zero"
+     style="max-width: 820px; width: 100%; display: block; margin: 0 auto;"></p>
+</div>
+<div class="present docutils container">
+<ul class="simple">
+<li><p>A 1 is a pulse at <span class="math notranslate nohighlight">\(+A\)</span>; a 0 is a pulse at <span class="math notranslate nohighlight">\(-A\)</span>.</p></li>
+<li><p>Sample once per pulse and decide by sign: the threshold is 0.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>The simplest digital signal is <strong>binary PAM</strong>. Each bit becomes one pulse, <span class="math notranslate nohighlight">\(+A\)</span> for a 1 and <span class="math notranslate nohighlight">\(-A\)</span> for a 0, and the pulses follow one another at the symbol rate. The two waveforms are the same pulse with opposite signs, so they are called <strong>antipodal</strong>.</p>
+<p>The receiver takes one sample in the middle of each pulse. Without noise, every sample is exactly <span class="math notranslate nohighlight">\(+A\)</span> or <span class="math notranslate nohighlight">\(-A\)</span>, and the right-hand panel shows all eight collapsing onto two points on a line. Deciding is then trivial: a sample above zero is a 1 and a sample below zero is a 0. Zero, halfway between the two points, is the <strong>decision threshold</strong>. Lesson 10 builds exactly this receiver, and GNU Radio’s Binary Slicer block is this threshold.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-noise-and-the-threshold">
+<div class="wrap docutils container">
+<p class="rubric">Noise and the Threshold</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<p><img src="../../viz/img/L03-pam-noise.svg"
+     alt="1500 received binary PAM samples, each drawn as a dot at its value. At an SNR of 14 dB the dots form two narrow bands at minus A and plus A and none crosses zero. At 4 dB the bands are wide and meet at zero, and the 21 samples that land on the wrong side are drawn in red"
+     style="max-width: 820px; width: 100%; display: block; margin: 0 auto;"></p>
+</div>
+<div class="present docutils container">
+<ul class="simple">
+<li><p>Noise turns each point into a spread of samples.</p></li>
+<li><p>The receiver decides a sample past 0 wrong.</p></li>
+<li><p>As the SNR falls, the spreads widen and meet.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>A real receiver adds noise to every sample, the noise floor of Lesson 2, so the received value is <span class="math notranslate nohighlight">\(+A\)</span> or <span class="math notranslate nohighlight">\(-A\)</span> plus a random offset. The figure shows 1500 received samples at two SNRs, each drawn as a dot at its value; the up-and-down spread only keeps the dots apart. At 14 dB each point becomes a narrow band, and no sample comes anywhere near zero. At 4 dB the bands spread out until their edges meet at the threshold, and every sample that lands on the wrong side, drawn in red, is a wrong bit.</p>
+<p>We will see this picture again on every display in the course. Nothing about the decision changes as the noise goes up; the threshold stays at zero. The samples just stray farther, and more of them stray across. Two things keep them on the right side: a higher SNR, which narrows the bands, and points that sit farther apart, which moves the threshold farther from each one.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-antipodal-and-orthogonal">
+<div class="wrap docutils container">
+<p class="rubric">Antipodal and Orthogonal</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<p><img src="../../viz/img/L03-antipodal-orthogonal.svg"
+     alt="Two binary signal sets at the same energy and the same 6 dB SNR. The antipodal set has its points on opposite sides of the origin, with the boundary between them on the vertical axis, and few samples land on the wrong side. The orthogonal set has one point on each axis, closer together, with the boundary on the diagonal, and 17 of 600 samples land on the wrong side, against 1 for the antipodal set"
+     style="max-width: 640px; width: 100%; display: block; margin: 0 auto;"></p>
+</div>
+<div class="present docutils container">
+<ul class="simple">
+<li><p>Antipodal: opposite signs, as far apart as the energy allows.</p></li>
+<li><p>Orthogonal: two unrelated waveforms, such as two FSK tones, sit closer together.</p></li>
+<li><p>Same energy and noise, more wrong decisions.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>Binary PAM is not the only way to send one bit. Binary FSK sends one of two tones, and the two tones are <strong>orthogonal</strong>: neither looks anything like the other, so each gets its own axis. Drawn at the same energy, the antipodal points sit on opposite sides of the origin, while the orthogonal points sit one on each axis, closer together, with the boundary on the diagonal between them.</p>
+<p>The figure sends both through the same 6 dB of noise. The clouds are the same size in both panels, but the orthogonal pair has less room between its points and its boundary, so 17 of 600 samples cross against 1 for the antipodal pair. That is the reason PAM and PSK, which can use antipodal points, get more out of the same transmitter power than FSK does. FSK has other strengths, such as a simple receiver that ignores amplitude, and Lesson 8 builds one.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-part-2-two-basis-functions">
+<div class="wrap docutils container">
+<p class="rubric">Part 2: Two Basis Functions</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+s(t) = {} &amp;I\cos(2\pi f_c t) \\
+&amp;- Q\sin(2\pi f_c t)
+\end{aligned}\end{split}\]</div>
+<ul class="simple">
+<li><p>Cosine and sine at the same frequency are orthogonal, so <span class="math notranslate nohighlight">\(I\)</span> and <span class="math notranslate nohighlight">\(Q\)</span> carry two independent numbers.</p></li>
+<li><p>Each symbol is a point <span class="math notranslate nohighlight">\((I, Q)\)</span>; the two waveforms are its <strong>basis functions</strong>.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>On a carrier, a transmitter can change two things per symbol: how much cosine and how much sine it sends. Those two waveforms are orthogonal, in the same sense as the two FSK tones, so the receiver can recover the cosine amount and the sine amount separately. That makes the cosine and the sine a pair of <strong>basis functions</strong>, the axes of a two-dimensional <strong>signal space</strong>, and every symbol a point with coordinates <span class="math notranslate nohighlight">\((I, Q)\)</span>.</p>
+<p>The SDR does that separation in hardware, and Lesson 4 opens it. What arrives in GNU Radio is already the pair for every sample, packed into one complex number, <span class="math notranslate nohighlight">\(I + jQ\)</span>. Plotting one sample per symbol on the I-Q plane gives the picture this lesson is named for.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-constellation-diagrams">
+<div class="wrap docutils container">
+<p class="rubric">Constellation Diagrams</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<p><img src="../../viz/img/L03-constellations.svg"
+     alt="Four constellations at the same average symbol energy: BPSK, which is 2-PAM, with two points on the I axis; 4-PAM with four points on the I axis; QPSK with four points on a circle, one per quadrant; and 8-PSK with eight points on the circle"
+     style="max-width: 820px; width: 100%; display: block; margin: 0 auto;"></p>
+</div>
+<div class="present docutils container">
+<ul class="simple">
+<li><p>PAM puts its points on a line; PSK puts them on a circle.</p></li>
+<li><p>At the same energy, more points sit closer together.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>A <strong>constellation diagram</strong> plots the points a modulation uses. <strong>2-PAM</strong> is the binary PAM of Part 1, two points on the I axis; on a carrier the same two points are called <strong>BPSK</strong>, since flipping the sign is a 180° phase shift. <strong>4-PAM</strong> puts four points on that line and carries two bits per symbol. <strong><span class="math notranslate nohighlight">\(M\)</span>-PSK</strong> spreads <span class="math notranslate nohighlight">\(M\)</span> points around a circle: <strong>QPSK</strong> has four, one in each quadrant, and <strong>8-PSK</strong> has eight.</p>
+<p>The figure draws all four at the same average energy, which is the same transmitter power, marked by the dashed circle. More points in the same power means the points sit closer together. QPSK and 4-PAM both carry two bits, but QPSK uses both axes and keeps its points farther apart, which is why radios use QPSK rather than 4-PAM on a carrier. 4-PAM still has its place: Lesson 9 shapes it as a baseband signal, where only one axis exists.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-noise-and-decision-regions">
+<div class="wrap docutils container">
+<p class="rubric">Noise and Decision Regions</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<p><img src="../../viz/img/L03-noise-clouds.svg"
+     alt="QPSK received through noise at three SNRs. At 20 dB the four clouds are tight and no symbol crosses a boundary; at 10 dB the clouds widen and a few land in the wrong quadrant; at 4 dB the clouds overlap and many land in the wrong quadrant"
+     style="max-width: 760px; width: 100%; display: block; margin: 0 auto;"></p>
+</div>
+<div class="present docutils container">
+<ul class="simple">
+<li><p>The receiver picks the nearest point.</p></li>
+<li><p>The samples nearest each point form its <strong>decision region</strong>.</p></li>
+<li><p>For QPSK the regions are the four quadrants.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>The receiver decides each symbol the way it did for binary PAM: it picks the nearest point. Every sample closer to one point than to any other falls in that point’s <strong>decision region</strong>, and the boundaries sit halfway between neighbors. For QPSK the regions are the four quadrants, so the receiver needs only the signs of <span class="math notranslate nohighlight">\(I\)</span> and <span class="math notranslate nohighlight">\(Q\)</span>. Binary PAM’s threshold at zero is the same idea on a line.</p>
+<p>The figure sends 600 QPSK symbols at three SNRs. Noise adds a random offset to both <span class="math notranslate nohighlight">\(I\)</span> and <span class="math notranslate nohighlight">\(Q\)</span>, so each point arrives as a round cloud. At 20 dB the clouds are tight and every symbol lands in its own quadrant. At 10 dB a few stray across. At 4 dB the clouds overlap and the red samples, the ones in the wrong region, are everywhere. This is what the GNU Radio constellation sink shows, starting with the RDS receiver in Lesson 7.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-try-it-in-gnu-radio">
+<div class="wrap docutils container">
+<p class="rubric">Try It in GNU Radio</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<p><img src="../../viz/img/L03-grc-snr20-snr6.png"
+     alt="The L3 noise flowgraph running in GNU Radio Companion, twice. With the SNR slider at 20 dB the constellation sink shows four tight QPSK dots, one per quadrant; at 6 dB the four clouds are wide and spread across the axes"
+     style="max-width: 640px; width: 100%; display: block; margin: 0 auto;"></p>
+</div>
+<div class="present docutils container">
+<ol class="arabic simple">
+<li><p>Open <code class="docutils literal notranslate"><span class="pre">L03-noise-constellation.grc</span></code> and run it.</p></li>
+<li><p>Drag the SNR from 20 dB down to 6 dB.</p></li>
+<li><p>Add a phase offset and watch the clouds rotate.</p></li>
+</ol>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>This is the same demonstration as the figures, and it needs no SDR: an instructor demo today, and one to repeat after the Lesson 5 install. The flowgraph is adapted from the GNU Radio wiki’s <em>QPSK Mod and Demod</em> tutorial (its first half, without pulse shaping). A <strong>Random Source</strong> picks symbols 0 to 3, <strong>Chunks to Symbols</strong> maps each one to a QPSK point through a Gray-coded table, and a <strong>Channel Model</strong> adds noise; its noise voltage is set from the SNR slider. A <strong>QT GUI Constellation Sink</strong> plots the result. A Multiply Const block between them rotates every point by the phase offset.</p>
+<p>Start at 20 dB, where the four points are tight dots, and drag the slider down. Somewhere below 10 dB the clouds start to reach the axes, which are QPSK’s decision boundaries, and at 6 dB, the right-hand panel, they run into each other. Then put the SNR back at 20 dB and raise the phase offset toward 45°. Open Chunks to Symbols and read its symbol table: that list of four complex numbers is the constellation, in Gray order.</p>
+</div>
+</div>
+</div>
+<div class="frame viz-frame cut docutils container" id="frame-constellation-explorer">
+<div class="wrap docutils container">
+<p class="rubric">Constellation Explorer</p>
+<div class="depth docutils container">
+<p>The widget transmits random symbols, adds noise at the chosen SNR, and decides each one by the nearest point. The shaded tiles are the decision regions, and a symbol that lands in the wrong one turns red; the readouts count them. Start on QPSK at 12 dB, then switch to 8-PSK at the same SNR: the points sit closer together, the clouds reach the boundaries, and the red count climbs. Raise the SNR until 8-PSK is as clean as QPSK was, then step up to 16-PSK and do it again: each step up the ladder needs more SNR. Then try 4-PAM against QPSK at the same SNR. Last, return to QPSK and add a phase offset: the clouds rotate toward the boundaries, and past <span class="math notranslate nohighlight">\(45^\circ\)</span> every symbol would land in the wrong region even with no noise at all, which is why the receiver of Lesson 15 corrects the phase before it decides.</p>
+</div>
+<div class="stage docutils container">
+<div class="present docutils container">
+<iframe src="../../viz/constellation-explorer.html"
+        width="100%" height="411"
+        style="border: 1px solid #cddce9; border-radius: 6px;"
+        loading="lazy"
+        title="Constellation explorer: random symbols for BPSK, QPSK, 8-PSK, 16-PSK, or 4-PAM through noise at a chosen SNR and phase offset, with the decision regions shaded and the symbols that land in the wrong region in red">
+</iframe>
+</div>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-part-3-gray-coding">
+<div class="wrap docutils container">
+<p class="rubric">Part 3: Gray Coding</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<p><img src="../../viz/img/L03-gray-8psk.svg"
+     alt="8-PSK with Gray-coded labels: going around the circle, 000, 001, 011, 010, 110, 111, 101, 100, each differing from its neighbors in one bit"
+     style="max-width: 340px; width: 100%; display: block; margin: 0 auto;"></p>
+</div>
+<div class="present docutils container">
+<ul class="simple">
+<li><p>Each label differs from its neighbors by one bit.</p></li>
+<li><p>A slip to a neighbor then costs one bit, not three.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>Which bits go on which point is a design choice, and it matters. When noise pushes a sample into the wrong region, it is almost always a neighbor’s region, so the labels should make that slip corrupt as few bits as possible. <strong>Gray coding</strong> labels the points so that each one differs from its neighbors in exactly one bit.</p>
+<p>Try it before looking at the figure: label the eight points of 8-PSK, starting from 000 at 0°, so that every pair of neighbors, including the last and the first, differs in one bit. With the natural binary order instead, 011 and 100 sit next to each other, and a slip between them corrupts all three bits. Every modulator we build in GNU Radio uses a Gray code, set in the table of its Chunks to Symbols or Constellation Object block.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-reading-a-constellation-in-gnu-radio">
+<div class="wrap docutils container">
+<p class="rubric">Reading a Constellation in GNU Radio</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<p><img src="../../viz/img/L03-impairments.svg"
+     alt="Four QPSK constellations with one problem each: noise spreads each point into a round cloud; a 25 degree phase offset rotates all four clouds; a frequency offset spins the points into a ring; a timing offset of 0.3 symbol smears each point into a square spread"
+     style="max-width: 900px; width: 100%; display: block; margin: 0 auto;"></p>
+</div>
+<div class="present docutils container">
+<ul class="simple">
+<li><p>Each receiver problem has its own shape on the constellation.</p></li>
+<li><p>From Lesson 7 on, the constellation sink is the first place we look.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>GNU Radio’s constellation sink plots received samples exactly as in this lesson, and it is the first place to look when a receiver fails, because each problem leaves its own shape. <strong>Noise</strong> spreads each point into a round cloud, and the cloud’s size tells us how good the SNR is. A <strong>phase offset</strong> between the transmitter and receiver oscillators rotates the whole constellation. A <strong>frequency offset</strong> makes that rotation continuous, so the points smear into a ring. A <strong>timing offset</strong>, sampling each symbol off its peak, mixes in neighboring symbols and smears each point into a spread that noise does not explain.</p>
+<p>Lesson 9 recovers symbol timing for PAM, and Lesson 15 recovers carrier phase and frequency for PSK. Each fix shows up on the constellation sink as these shapes collapsing back into tight clouds, and that is how we will check every receiver we build.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-key-point">
+<div class="wrap docutils container">
+<p class="rubric">Key Point</p>
+<div class="stage docutils container">
+<div class="present callout docutils container">
+<p>A modulation is a set of points. Noise turns each point into a cloud, and a sample in a neighbor’s region is a wrong decision. Points farther apart, or a higher SNR, keep the clouds in their own regions.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="frame read-only doc-links docutils container" id="frame-sources-and-downloads">
+<div class="wrap docutils container">
+<p class="rubric">Sources and Downloads</p>
+<p>This lesson follows Dr. Rogers’s 2025 slides, <a href="../../legacy/L03-signal-space.pdf" target="_blank" rel="noopener">Signal Space</a>, for its topics and order. The hands-on steps follow these tutorials:</p>
+<ul class="simple">
+<li><p>GNU Radio wiki, <a href="https://wiki.gnuradio.org/index.php/QPSK_Mod_and_Demod" target="_blank" rel="noopener">QPSK Mod and Demod</a>: the Try It flowgraph is adapted from its first half, without pulse shaping.</p></li>
+<li><p>PySDR, <a href="https://pysdr.org/content/digital_modulation.html" target="_blank" rel="noopener">Digital Modulation</a>: ASK, PSK, and FSK, constellations, and Gray coding.</p></li>
+</ul>
+<p>Downloads:</p>
+<ul class="simple">
+<li><p><a class="doc-link" href="../../grc/L03-noise-constellation.grc" download>L03-noise-constellation.grc</a>: random QPSK symbols through noise onto a constellation sink, with SNR and phase-offset sliders. No hardware needed.</p></li>
+</ul>
+</div>
+</div>
+<div class="frame read-only docutils container" id="frame-summary">
+<div class="wrap docutils container">
+<p class="rubric">Summary</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head text-left"><p>Idea</p></th>
+<th class="head text-left"><p>What it is</p></th>
+<th class="head text-left"><p>What to remember</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-left"><p>PAM, PSK, FSK</p></td>
+<td class="text-left"><p>change amplitude, phase, or frequency</p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(M\)</span> choices carry <span class="math notranslate nohighlight">\(\log_2 M\)</span> bits</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>Binary PAM</p></td>
+<td class="text-left"><p>pulses at <span class="math notranslate nohighlight">\(+A\)</span> and <span class="math notranslate nohighlight">\(-A\)</span></p></td>
+<td class="text-left"><p>threshold at 0</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>Antipodal vs orthogonal</p></td>
+<td class="text-left"><p>opposite signs vs separate axes</p></td>
+<td class="text-left"><p>antipodal points sit farther apart</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>Basis functions</p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(\cos\)</span> and <span class="math notranslate nohighlight">\(\sin\)</span> at <span class="math notranslate nohighlight">\(f_c\)</span>; axes <span class="math notranslate nohighlight">\(I\)</span> and <span class="math notranslate nohighlight">\(Q\)</span></p></td>
+<td class="text-left"><p>one complex sample per symbol</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>Constellation</p></td>
+<td class="text-left"><p>the <span class="math notranslate nohighlight">\(M\)</span> points a modulation uses</p></td>
+<td class="text-left"><p>more points, closer together</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>Decision region</p></td>
+<td class="text-left"><p>samples nearest each point</p></td>
+<td class="text-left"><p>QPSK: the four quadrants</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>Noise</p></td>
+<td class="text-left"><p>spreads each point into a cloud</p></td>
+<td class="text-left"><p>lower SNR, more samples in the wrong region</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>Gray coding</p></td>
+<td class="text-left"><p>neighbors differ in one bit</p></td>
+<td class="text-left"><p>a slip costs one bit</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="frame read-only doc-links docutils container" id="frame-practice">
+<div class="wrap docutils container">
+<p class="rubric">Practice</p>
+<ul class="simple">
+<li><p><a class="doc-link" href="../../practice/ECE448_L03_Practice_blank.pdf" target="_blank" rel="noopener">Problem set (PDF)</a></p></li>
+<li><p><a class="doc-link doc-key" href="../../practice/ECE448_L03_Practice_SOLUTIONS.pdf" target="_blank" rel="noopener">Solutions (PDF)</a></p></li>
+</ul>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-looking-ahead">
+<div class="wrap docutils container">
+<p class="rubric">Looking Ahead</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<ul class="simple">
+<li><p>Lesson 4 opens the SDR that turns a carrier into <span class="math notranslate nohighlight">\(I + jQ\)</span>.</p></li>
+<li><p>Lesson 7 puts a constellation sink on a real signal.</p></li>
+<li><p>Lessons 9, 10, and 15 build PAM and PSK receivers on these ideas.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>Today we treated the receiver as an ideal box that hands us <span class="math notranslate nohighlight">\((I, Q)\)</span> once per symbol. Lesson 4 opens that box: the mixers that multiply by the cosine and the sine, the filters, and the analog-to-digital converter that produce the complex sample stream. Lesson 5 then puts a real signal into GNU Radio, and Lesson 7’s RDS receiver puts one onto a constellation sink.</p>
+<p>The rest of the course builds on this picture. Lessons 9 and 10 build a PAM link and recover its symbol timing, and Lesson 15 does the same for PSK with carrier recovery. In each one we will turn up the noise and watch the clouds grow, just as we did today. Before the next lesson, be able to sketch 2-PAM, 4-PAM, QPSK, and 8-PSK, mark their decision regions, and label 8-PSK with a Gray code.</p>
+</div>
+</div>
+</div>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./module01/L03-signal-space"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+</main>
+
+<script src="../../_static/shell.js?v=ac36f07766"></script>
+<script src="../../_static/frames.js?v=89e4b02ee3"></script><script src="../../_static/viz-autosize.js?v=4fe0c4e159"></script>
+</body>
+</html>

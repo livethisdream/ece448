@@ -1,0 +1,432 @@
+<!doctype html>
+<html lang="en" data-mode="read">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>L10 Lab — PAM Link &mdash; ECE 448 — Software Defined Radios</title>
+<meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+<link rel="icon" href="../../_static/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap"><link rel="stylesheet" href="../../_static/custom.css?v=ec0f297254">
+<link rel="stylesheet" href="../../_static/shell.css?v=78396bd831">
+<link rel="stylesheet" href="../../_static/frames.css?v=fa285d3703">
+</head>
+<body>
+
+<div class="rail"><span id="railfill"></span></div>
+
+<div class="laser" id="laser" aria-hidden="true"></div>
+<div class="spot" id="spot" aria-hidden="true"></div>
+
+<div class="index" id="index" role="dialog" aria-label="Jump to a frame or another lesson">
+  <button class="index-close" id="btnIndexClose" type="button" aria-label="Close">&times;</button>
+  <div class="wrap">
+    <div class="index-cols">
+      <div class="index-here">
+        <h2>This lesson</h2>
+        <ol id="indexlist"></ol>
+      </div>
+      <div class="index-toc">
+        <h2>Course</h2>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Course Information</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../syllabus.html">Syllabus</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../materials.html">Materials</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 1 — Foundations of Detection &amp; Link Budgets</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module01/index.html">Module 1 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module01/L01-course-intro/index.html">L1 — Course Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module01/L02-noise-figure-link-budget/index.html">L2 — Noise Figure and Link Budget</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module01/L03-signal-space/index.html">L3 — Signal Space</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 2 — SDR &amp; GNU Radio Foundations</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module02/index.html">Module 2 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module02/L04-sdr-introduction/index.html">L4 — SDR Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module02/L05-gnu-radio-intro/index.html">L5 — GNU Radio Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module02/L05-lab-first-flowgraphs/index.html">L5 Lab — First Flowgraphs</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 3 — Analog Modulation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module03/index.html">Module 3 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module03/L06-am-simulation/index.html">L6 — AM Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module03/L06-lab-am-simulation/index.html">L6 Lab — AM Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module03/L07-am-fm-receivers/index.html">L7 — AM and FM Receivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module03/L07-lab-am-fm-receivers/index.html">L7 Lab — AM and FM Receivers</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 4 — Digital Modulation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Module 4 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L08-fsk/index.html">L8 — FSK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L08-lab-fsk/index.html">L8 Lab — FSK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L09-pam-theory/index.html">L9 — PAM Theory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L10-ascii-pam/index.html">L10 — ASCII over PAM</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">L10 Lab — PAM Link</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 5 — Custom Blocks &amp; Midterm</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module05/index.html">Module 5 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module05/L11-custom-blocks/index.html">L11 — Out-of-Tree Modules and Custom Blocks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module05/L11-lab-custom-block/index.html">L11 Lab — Custom Block</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module05/midterm/index.html">Midterm — Fox Hunt and CTF</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 6 — Waveform Applications &amp; RF Reverse Engineering</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/index.html">Module 6 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L12-cw/index.html">L12 — CW</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L12-lab-cw/index.html">L12 Lab — CW</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L13-dtmf/index.html">L13 — DTMF</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L13-lab-dtmf/index.html">L13 Lab — DTMF</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L14-hd-radio/index.html">L14 — HD Radio</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L14-lab-hd-radio/index.html">L14 Lab — HD Radio</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L15-mpsk/index.html">L15 — mPSK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L15-lab-mpsk/index.html">L15 Lab — mPSK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L16-fhss/index.html">L16 — Frequency Hopping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L16-lab-fhss/index.html">L16 Lab — Frequency Hopping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L17-rf-reverse-engineering/index.html">L17 — RF Reverse Engineering</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L17-lab-rf-reverse-engineering/index.html">L17 Lab — RF Reverse Engineering</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L18-adsb/index.html">L18 — ADS-B</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L19-ais/index.html">L19 — AIS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L18-L19-lab-adsb-ais/index.html">L18–L19 Lab — ADS-B and AIS</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 7 — Final Project</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module07/index.html">Module 7 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module07/L20-qam-ofdm/index.html">L20 — QAM and OFDM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module07/final-project/index.html">Final Project</a></li>
+</ul>
+
+      </div>
+    </div>
+  </div>
+</div><div class="hud">
+<div class="hud-group">
+  <button id="btnSite" class="site" type="button"
+          aria-expanded="false" aria-controls="sitepop"
+          title="Elsewhere on this site">ECE 448</button>
+</div>
+<div class="pop" id="sitepop" role="group" aria-label="Site" hidden>
+  <a href="https://livethisdream.github.io/">Home</a>
+  <a href="https://livethisdream.github.io/ece343/intro.html">ECE 343</a>
+  <a href="https://livethisdream.github.io/ece444/intro.html">ECE 444</a>
+  <a href="../../intro.html" aria-current="page">ECE 448</a>
+  <a href="https://livethisdream.github.io/projects">Projects</a>
+  <button class="pop-help" type="button" data-help>Help<kbd>?</kbd></button>
+</div>
+
+  <div class="hud-group hud-mid"><button id="btnMode" type="button" aria-expanded="false" aria-controls="modepop"
+            title="How the lesson is laid out (P)">read</button>
+    <button id="btnTools" type="button" aria-expanded="false" aria-controls="toolspop"
+            title="Presenter tools">tools</button>
+  </div>
+
+  <div class="hud-group"><button id="btnIndex" class="counter" type="button" aria-pressed="false"
+            title="Contents (G) · double-tap for the top"><b id="cur">1</b>/<span id="tot">0</span></button>
+  </div><div class="pop" id="modepop" role="group" aria-label="View mode" hidden>
+    <button id="btnPresent" class="choice" type="button" aria-pressed="false">
+      present<span class="pop-note">one frame at a time</span></button>
+    <button id="btnRead" class="choice" type="button" aria-pressed="true">
+      read<span class="pop-note">the whole lesson, continuous</span></button>
+  </div><div class="pop" id="toolspop" role="group" aria-label="Presenter tools" hidden>
+    <button id="btnLaser" type="button" aria-pressed="false">laser<kbd>L</kbd></button>
+    <button id="btnSpot" type="button" aria-pressed="false">spotlight<kbd>S</kbd></button>
+    <button id="btnFull" type="button">fullscreen<kbd>F</kbd></button>
+    <button id="btnHelp" type="button" data-help>help<kbd>?</kbd></button>
+  </div>
+</div>
+<div class="help" id="help" role="dialog" aria-modal="true" aria-labelledby="helpTitle" hidden>
+  <div class="help-card">
+    <button class="help-close" id="btnHelpClose" type="button" aria-label="Close help">&times;</button>
+    <h2 id="helpTitle">Getting around</h2>
+    <p class="help-lead">Everything is in the bar at the bottom of the screen.</p>
+    <dl class="help-list">
+      <dt><span class="help-chip">ECE 448</span></dt>
+      <dd>The other course sites, the home page, and this help.</dd>
+      <dt><span class="help-chip">read</span></dt>
+      <dd><b>Read</b> shows the whole lesson as one page. <b>Present</b> shows one frame at a time, for class.<span class="help-keys"> <kbd>P</kbd> switches.</span></dd>
+      <dt><span class="help-chip">tools</span></dt>
+      <dd>Laser pointer<span class="help-keys"> <kbd>L</kbd></span>, spotlight<span class="help-keys"> <kbd>S</kbd></span>, and fullscreen<span class="help-keys"> <kbd>F</kbd></span>.</dd>
+      <dt><span class="help-chip">3/9</span></dt>
+      <dd>Where you are in the lesson. Tap it for every frame here and every lesson in the course<span class="help-keys"> <kbd>G</kbd></span>. Double-tap to go back to the top.</dd>
+    </dl>
+    <h3 class="help-keys">Presenting</h3>
+    <p class="help-keys"><kbd>&rarr;</kbd> or <kbd>Space</kbd> next frame, <kbd>&larr;</kbd> back, <kbd>D</kbd> this frame&rsquo;s detail, <kbd>Esc</kbd> close a panel.</p>
+    <h3>Printing</h3>
+    <p>Print from present mode for the slides, one frame a page. Print from read mode for the whole lesson.</p>
+    <p class="help-foot"><span class="help-keys">Press <kbd>?</kbd> to open this again.</span><span class="help-touch">Open this again from the ECE 448 menu.</span></p>
+  </div>
+</div>
+
+<div class="help-hint" id="helpHint" hidden>
+  <button id="btnHintOpen" type="button" data-help>New here? How the bar works</button>
+  <button id="btnHintClose" class="help-hint-close" type="button" aria-label="Dismiss">&times;</button>
+</div><main class="deck bd-article" id="deck" tabindex="-1">
+<section class="tex2jax_ignore mathjax_ignore" id="l10-lab-pam-link">
+<h1>L10 Lab — PAM Link<a class="headerlink" href="#l10-lab-pam-link" title="Permalink to this heading">#</a></h1>
+<div class="frame title-frame docutils container" id="frame-1">
+<div class="wrap docutils container">
+<div class="course-mark">ECE 448 · Spring 2027</div>
+<h1 class="frame-title">PAM Link</h1>
+<div class="title-rule"></div>
+<p>Build the packet transmitter, watch noise break the text and the matched filter repair it, and send your own line through a PlutoSDR.</p>
+<p>L10 Lab · Module 4: Digital Modulation · Dr. Neil Rogers</p>
+</div>
+</div>
+<div class="frame docutils container" id="frame-learning-objectives">
+<div class="wrap docutils container">
+<p class="rubric">Learning Objectives</p>
+<ol class="lo-list" style="--module: '4'; counter-reset: lo 3">
+  <li>I can implement a PAM link that transmits and receives ASCII text end-to-end.</li>
+</ol>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-from-lesson-to-bench">
+<div class="wrap docutils container">
+<p class="rubric">From Lesson to Bench</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<ul class="simple">
+<li><p><strong>Pre-Lab:</strong> run the link and work out one packet.</p></li>
+<li><p><strong>Bench:</strong> find the bytes by hand, build the transmitter, turn up the noise and the clock error, then use a PlutoSDR.</p></li>
+<li><p><strong>Writeup:</strong> explain what you saw, in words.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>Lesson 10 sent a line of text over the PAM link of Lesson 9. Today you first line up the bytes by hand, with no packets, to see the problem the access code solves. Then you build the packet transmitter yourself, turn up the noise until the simulated link breaks, switch the matched filter off and on, and then run the same link on a PlutoSDR. The lab packet has three parts, and you turn it in once, complete, before Lesson 11. <strong>Part 1, the Pre-Lab</strong>, is on your own before the period: run <code class="docutils literal notranslate"><span class="pre">L10-pam-link.grc</span></code> once and work out the bits and time in one packet and the length field of a line of your own. <strong>Part 2</strong> is what you observe in class. <strong>Part 3, the Writeup</strong>, explains it in words.</p>
+<p>Questions 1 to 6 run on your laptop and transmit nothing. Question 7 transmits, into a cable only, as the PlutoSDR frame below describes.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-part-1-before-the-period">
+<div class="wrap docutils container">
+<p class="rubric">Part 1: Before the Period</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">L10-pam-link.grc</span></code> runs and shows the received line.</p></li>
+<li><p>Work out one packet’s bits and time.</p></li>
+<li><p>Write your own line’s length field and first byte.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>Do the Pre-Lab before you arrive. Question 1 checks that the link flowgraph opens and runs on your laptop: if GRC reports an error, the L5 lesson page lists the install checks, and EI before the lab is the place to fix it.</p>
+<p>Question 2 is the packet arithmetic from the lesson: the bits and time in one packet of the default line and how many packets 30 s holds, and the length field and first character of a line of your own choosing. You will see both on the time sink of the transmitter you build in Part 2.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-pre-lab-check">
+<div class="wrap docutils container">
+<p class="rubric">Pre-Lab Check</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head text-left"><p>Check</p></th>
+<th class="head text-left"><p>Expected</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-left"><p>One packet</p></td>
+<td class="text-left"><p>344 bits, 86 ms</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>Packets in 30 s</p></td>
+<td class="text-left"><p>about 349</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>Length field for 31 bytes</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">0000000000011111</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>These follow from Lesson 10. The packet size is exact: 64 bits of access code, 32 of header, and 8 per byte of the line. The bench is where you find out how much noise the link takes, by turning the noise up and watching.</p>
+</div>
+</div>
+</div>
+<div class="frame read-only docutils container" id="frame-part-2-bytes-without-packets">
+<div class="wrap docutils container">
+<p class="rubric">Part 2: Bytes Without Packets</p>
+<ol class="arabic simple">
+<li><p>Open and run <code class="docutils literal notranslate"><span class="pre">L10-pam-raw.grc</span></code>. It is the L10 link with no access code and no header: the transmitter sends the line’s bytes back to back, and the receiver groups the bits into bytes from whichever bit it starts listening on. Each run starts at a random bit.</p></li>
+<li><p>Read the Received bytes label. A byte that is not a printable ASCII character shows as a dot, and a newline as a bar.</p></li>
+<li><p>Step the Bit offset from 0 up, one at a time, waiting about 2 s at each, until the text reads. Record that offset for Question 3(a).</p></li>
+<li><p>Stop the flowgraph and run it again. Find the offset again, and record it. Repeat for a third run.</p></li>
+<li><p>Now open and run <code class="docutils literal notranslate"><span class="pre">L10-pam-link.grc</span></code>, the version with packets. Stop and start it three times, and record for Question 3(b) how long the first line takes to appear each time and whether you had to adjust anything.</p></li>
+</ol>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-the-access-code-lines-up-the-bytes">
+<div class="wrap docutils container">
+<p class="rubric">The Access Code Lines Up the Bytes</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<p><img src="../../viz/img/L10-raw-offset.png"
+     alt="The L10 raw-bits flowgraph running twice: at a bit offset of 0 the Received bytes label shows dots and stray symbols; at a bit offset of 3 it reads ver PAM., a bar for the newline, then USAFA ECE 448: ASCII over PAM."
+     style="max-width: 820px; width: 100%; display: block; margin: 0 auto;"></p>
+</div>
+<div class="present docutils container">
+<ul class="simple">
+<li><p>Without packets, one offset in eight reads, and it changes every run.</p></li>
+<li><p>The access-code search finds the right offset by itself.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>The figure shows one run of <code class="docutils literal notranslate"><span class="pre">L10-pam-raw.grc</span></code>. At an offset of 0 the receiver groups the bits one to seven bits away from the true byte boundary, and almost nothing it prints is a character. At an offset of 3 the same bits read as the line of text. The right offset depends on the bit at which the receiver started listening, so it changes from run to run, and a person has to find it again each time. The receiver in the 2025 reading, <a class="doc-link" href="../../legacy/L14-ascii-pam.pdf" target="_blank" rel="noopener">Mathys (2016), Motivating Undergraduate Communication Theory Using GNU Radio</a>, used this kind of hand-set delay.</p>
+<p>The access code removes that step. Correlate Access Code - Tag Stream compares every 64-bit window of the received bits with the code, so it finds the first bit of each packet wherever the receiver started, and Repack Bits starts each byte there. That is why <code class="docutils literal notranslate"><span class="pre">L10-pam-link.grc</span></code> shows text within about a second every time it starts.</p>
+</div>
+</div>
+</div>
+<div class="frame read-only docutils container" id="frame-part-2-build-the-transmitter">
+<div class="wrap docutils container">
+<p class="rubric">Part 2: Build the Transmitter</p>
+<ol class="arabic simple">
+<li><p>Start GRC and choose File, New, QT GUI. Do not open <code class="docutils literal notranslate"><span class="pre">L10-pam-tx.grc</span></code>; build it yourself.</p></li>
+<li><p>Set <code class="docutils literal notranslate"><span class="pre">samp_rate</span></code> to 32000. Add Variables <code class="docutils literal notranslate"><span class="pre">sps</span></code> = 8, <code class="docutils literal notranslate"><span class="pre">alpha</span></code> = 0.35, <code class="docutils literal notranslate"><span class="pre">msg</span></code> = your line from Question 2(b) in quotes, <code class="docutils literal notranslate"><span class="pre">hdr</span></code> = <code class="docutils literal notranslate"><span class="pre">digital.header_format_default(digital.packet_utils.default_access_code,</span> <span class="pre">0)</span></code>, and <code class="docutils literal notranslate"><span class="pre">tx_taps</span></code> = <code class="docutils literal notranslate"><span class="pre">firdes.root_raised_cosine(sps,</span> <span class="pre">samp_rate,</span> <span class="pre">samp_rate/sps,</span> <span class="pre">alpha,</span> <span class="pre">11*sps)</span></code>.</p></li>
+<li><p>Add a <strong>Vector Source</strong>: type byte, vector <code class="docutils literal notranslate"><span class="pre">list(msg.encode())</span> <span class="pre">+</span> <span class="pre">[10]</span></code>, repeat Yes. Then <strong>Stream to Tagged Stream</strong>: type byte, packet length <code class="docutils literal notranslate"><span class="pre">len(msg)</span> <span class="pre">+</span> <span class="pre">1</span></code>, length tag key <code class="docutils literal notranslate"><span class="pre">&quot;packet_len&quot;</span></code>.</p></li>
+<li><p>Add a <strong>Protocol Formatter</strong> with format object <code class="docutils literal notranslate"><span class="pre">hdr</span></code> and length tag name <code class="docutils literal notranslate"><span class="pre">&quot;packet_len&quot;</span></code>, and a <strong>Tagged Stream Mux</strong> with 2 inputs and the same tag name. Connect Stream to Tagged Stream to the formatter and to the mux’s second input, and the formatter to the mux’s first input.</p></li>
+<li><p>Add <strong>Unpack K Bits</strong> with K = 8, then <strong>Chunks to Symbols</strong>: input byte, output float, symbol table <code class="docutils literal notranslate"><span class="pre">[-1,</span> <span class="pre">1]</span></code>.</p></li>
+<li><p>Add a <strong>Throttle</strong> (float, sample rate <code class="docutils literal notranslate"><span class="pre">samp_rate/sps</span></code>) and an <strong>Interpolating FIR Filter</strong> (float in and out, interpolation <code class="docutils literal notranslate"><span class="pre">sps</span></code>, taps <code class="docutils literal notranslate"><span class="pre">tx_taps</span></code>).</p></li>
+<li><p>Add a <strong>QT GUI Time Sink</strong> on the Throttle’s output: type float, 112 points, sample rate <code class="docutils literal notranslate"><span class="pre">samp_rate/sps</span></code>, trigger mode Tag, trigger tag key <code class="docutils literal notranslate"><span class="pre">packet_len</span></code>. Add a <strong>QT GUI Frequency Sink</strong> (float, bandwidth <code class="docutils literal notranslate"><span class="pre">samp_rate</span></code>) on the filter’s output. Every arrow must be black.</p></li>
+<li><p>Run it. Screenshot the canvas for Question 4(a) and the time sink for Question 4(b), and read the spectrum’s edges for Question 4(c).</p></li>
+</ol>
+</div>
+</div>
+<div class="frame read-only docutils container" id="frame-part-2-noise-matched-filter-and-clock-error">
+<div class="wrap docutils container">
+<p class="rubric">Part 2: Noise, Matched Filter, and Clock Error</p>
+<p><img src="../../viz/img/L10-grc-link.png"
+     alt="The whole L10 link flowgraph in GNU Radio Companion: the variables, sliders, and matched-filter chooser at the top, the packet transmitter from Vector Source to Chunks to Symbols, then Throttle, the RRC filter, the Fractional Resampler and Noise Source of the channel, and the receiver from the matched filter through Symbol Sync, Binary Slicer, Correlate Access Code - Tag Stream, and Repack Bits to the Text Sink"
+     style="max-width: 820px; width: 100%; display: block; margin: 0 auto 12px;"></p>
+<ol class="arabic simple">
+<li><p>Open and run <code class="docutils literal notranslate"><span class="pre">L10-pam-link.grc</span></code>. The Lines label counts the lines received since a slider or the switch last moved.</p></li>
+<li><p>Note the eye and the Symbol Sync output at the default noise, 0.3. Then, with the clock error at 500 ppm and the matched filter on, set the noise amplitude to 0.5 and raise it by 0.1 at a time. At each step, wait about 20 s and watch the Lines label, the eye, and the Symbol Sync output. Record for Question 5(a) the setting where lines start to break and the setting where no line arrives intact, and describe the displays for Question 5(b).</p></li>
+<li><p>Near 1.1, wait for a line with a wrong character in the Received label and screenshot it for Question 5(c).</p></li>
+<li><p>Set the noise to 0.5. Switch the matched filter off, wait 20 s, and record the Lines label and the eye for Question 5(d). Switch it back on and record them again.</p></li>
+<li><p>Set the noise back to 0.3. Set the clock error to 0, then raise it to 10,000, 20,000, 30,000, and 40,000 ppm in that order, without stopping the flowgraph. At each, wait about 20 s and record the Lines label and the eye’s appearance for Question 6(a). Screenshot 10,000 ppm for Question 6(b).</p></li>
+<li><p>Stop the flowgraph, run it again so the loop locks at the default 500 ppm, and then type 40,000 into the clock-error box in one jump. Record the Lines label after 20 s in the last column of Question 6(a).</p></li>
+</ol>
+</div>
+</div>
+<div class="frame read-only docutils container" id="frame-if-no-text-arrives">
+<div class="wrap docutils container">
+<p class="rubric">If No Text Arrives</p>
+<div class="tip admonition">
+<p class="admonition-title">If the Received label stays at “(waiting for a packet)”</p>
+<p>Close the flowgraph and run it again with the sliders at their defaults, a noise amplitude of 0.3 and a clock error of 500 ppm, where every line should arrive within about a second. In your own transmitter, check that the Stream to Tagged Stream packet length is <code class="docutils literal notranslate"><span class="pre">len(msg)</span> <span class="pre">+</span> <span class="pre">1</span></code>, so that it counts the newline, and that all three tag names are <code class="docutils literal notranslate"><span class="pre">&quot;packet_len&quot;</span></code>, with the quotes. If you changed the message, keep it on one line.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-part-2-the-link-on-a-plutosdr">
+<div class="wrap docutils container">
+<p class="rubric">Part 2: The Link on a PlutoSDR</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<p><img src="../../viz/img/L10-grc-pluto.png"
+     alt="The L10 PlutoSDR flowgraph in GNU Radio Companion: the packet transmitter and RRC filter feed Float To Complex, a Multiply Const of 0.5, a Rational Resampler up by 32, and a PlutoSDR Sink at 915 MHz; a PlutoSDR Source feeds a Rational Resampler down by 32, an AGC, the matched filter, Symbol Sync, a Costas Loop, Complex To Real, a polarity Multiply Const, the Binary Slicer, the access-code search, Repack Bits, and the Text Sink, with a frequency sink and a constellation sink"
+     style="max-width: 820px; width: 100%; display: block; margin: 0 auto;"></p>
+</div>
+<div class="present docutils container">
+<ul class="simple">
+<li><p>We cable one Pluto’s TX port to its RX port through a 30 dB attenuator, at 915 MHz.</p></li>
+<li><p>The cable goes on before the flowgraph runs, and we never connect an antenna.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p><code class="docutils literal notranslate"><span class="pre">L10-pam-pluto.grc</span></code> is the Lesson 10 link with the simulated channel replaced by a PlutoSDR. The transmit half raises the 32 kHz baseband stream to 1.024 MS/s and sends it from the Pluto’s TX port at 915 MHz; the receive half takes it from the RX port, lowers it to 32 kHz, and runs the same matched filter, Symbol Sync, and access-code search. An <strong>AGC</strong> sets the received level, and a <strong>Costas Loop</strong>, which Lesson 15 explains, locks to the carrier’s phase.</p>
+<p>In class we transmit only into a cable, into a shielded enclosure, or at very low power in an ISM band, and only when the lesson says to. This question transmits only into the cable between the Pluto’s own TX and RX ports, through an inline 30 dB SMA attenuator. The TX attenuation slider opens at 60 dB and cannot go below 30 dB. Never set TX attenuation below 30 dB or change the slider’s range; the RX input is rated to only a few dBm, and the transmitter can put out more than that.</p>
+</div>
+</div>
+</div>
+<div class="frame read-only docutils container" id="frame-plutosdr-steps">
+<div class="wrap docutils container">
+<p class="rubric">PlutoSDR Steps</p>
+<ol class="arabic simple">
+<li><p>With the Pluto unplugged, connect its TX port to its RX port with a short SMA cable and an inline 30 dB SMA attenuator. Do not connect an antenna, and do not connect the cable without the attenuator.</p></li>
+<li><p>Plug the Pluto into USB and run <code class="docutils literal notranslate"><span class="pre">iio_info</span> <span class="pre">-s</span></code> at the radioconda prompt; it should list a PlutoSDR context. The flowgraph uses the Pluto’s default address, <code class="docutils literal notranslate"><span class="pre">ip:192.168.2.1</span></code>.</p></li>
+<li><p>Open and run <code class="docutils literal notranslate"><span class="pre">L10-pam-pluto.grc</span></code>. In simulation, the constellation shows two clusters on the horizontal axis within a few seconds, one on each side of zero. Never set TX attenuation below 30 dB or change the slider’s range.</p></li>
+<li><p>If no line arrives within 5 s, switch Polarity. If neither setting works, raise the TX attenuation by 10 dB and try both again. Screenshot the window once lines arrive, for Question 7(a).</p></li>
+<li><p>Stop and start the flowgraph three times, and record each time which polarity delivers lines, for Question 7(b).</p></li>
+<li><p>Stop it, put your line from Question 2(b) in <code class="docutils literal notranslate"><span class="pre">msg</span></code>, and run it again for Question 7(c). Stop the flowgraph and unplug the Pluto before you disconnect the cable.</p></li>
+</ol>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-part-3-after-the-lab">
+<div class="wrap docutils container">
+<p class="rubric">Part 3: After the Lab</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<ul class="simple">
+<li><p>Explain why the text goes from all to none so quickly.</p></li>
+<li><p>Explain what the matched filter did.</p></li>
+<li><p>Compare the clock-error limit with a real crystal, and explain the polarity.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>The Writeup is four questions, answered in words. The first asks why your link went from every line to none over a small change in the noise, and what that means for a real radio. The second asks why switching off the matched filter broke the text. The third compares the clock error your link tolerated with the error between two real crystals, and asks what would happen without Symbol Sync. The fourth asks why the polarity that works on the Pluto changes from run to run, and what change to the receiver would make the switch unnecessary.</p>
+</div>
+</div>
+</div>
+<div class="frame read-only doc-links docutils container" id="frame-lab-packet">
+<div class="wrap docutils container">
+<p class="rubric">Lab Packet</p>
+<ul class="simple">
+<li><p><a class="doc-link" href="../../labs/ECE448_Lab_L10_PAMLink_blank.pdf" target="_blank" rel="noopener">L10 Lab packet (PDF)</a></p></li>
+<li><p><a class="doc-link" href="../../grc/L10-pam-raw.grc" download>L10-pam-raw.grc</a>: the link with no packets and a bit-offset slider. No hardware needed.</p></li>
+<li><p><a class="doc-link" href="../../grc/L10-pam-tx.grc" download>L10-pam-tx.grc</a> and <a class="doc-link" href="../../grc/L10-pam-link.grc" download>L10-pam-link.grc</a></p></li>
+<li><p><a class="doc-link" href="../../grc/L10-pam-pluto.grc" download>L10-pam-pluto.grc</a>: the link on one PlutoSDR, transmitting at 915 MHz into a cable from its TX port to its RX port. Needs a PlutoSDR.</p></li>
+</ul>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-looking-ahead">
+<div class="wrap docutils container">
+<p class="rubric">Looking Ahead</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<ul class="simple">
+<li><p>Lesson 11 writes and packages custom blocks.</p></li>
+<li><p>Lesson 15 explains the Costas Loop that locked to the Pluto’s carrier.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>Keep your transmitter flowgraph and your tables. Lesson 11 starts Module 5 with out-of-tree modules and custom blocks, including Python blocks like the Text Sink that displayed every line today. Lesson 15, on mPSK, explains carrier recovery, the job the Costas Loop did on the Pluto, and why a phase-modulated signal can lock upside down.</p>
+</div>
+</div>
+</div>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./module04/L10-lab-pam-link"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+</main>
+
+<script src="../../_static/shell.js?v=ac36f07766"></script>
+<script src="../../_static/frames.js?v=89e4b02ee3"></script><script src="../../_static/viz-autosize.js?v=4fe0c4e159"></script>
+</body>
+</html>

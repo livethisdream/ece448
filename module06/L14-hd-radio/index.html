@@ -1,0 +1,642 @@
+<!doctype html>
+<html lang="en" data-mode="read">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>L14 - HD Radio &mdash; ECE 448 — Software Defined Radios</title>
+<meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+<link rel="icon" href="../../_static/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap"><link rel="stylesheet" href="../../_static/custom.css?v=ec0f297254">
+<link rel="stylesheet" href="../../_static/shell.css?v=78396bd831">
+<link rel="stylesheet" href="../../_static/frames.css?v=fa285d3703">
+<script>window.MathJax = {"tex": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processEscapes": true}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+<script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js"></script>
+</head>
+<body>
+
+<div class="rail"><span id="railfill"></span></div>
+
+<div class="laser" id="laser" aria-hidden="true"></div>
+<div class="spot" id="spot" aria-hidden="true"></div>
+
+<div class="index" id="index" role="dialog" aria-label="Jump to a frame or another lesson">
+  <button class="index-close" id="btnIndexClose" type="button" aria-label="Close">&times;</button>
+  <div class="wrap">
+    <div class="index-cols">
+      <div class="index-here">
+        <h2>This lesson</h2>
+        <ol id="indexlist"></ol>
+      </div>
+      <div class="index-toc">
+        <h2>Course</h2>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Course Information</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../syllabus.html">Syllabus</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../materials.html">Materials</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 1 — Foundations of Detection &amp; Link Budgets</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module01/index.html">Module 1 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module01/L01-course-intro/index.html">L1 — Course Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module01/L02-noise-figure-link-budget/index.html">L2 — Noise Figure and Link Budget</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module01/L03-signal-space/index.html">L3 — Signal Space</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 2 — SDR &amp; GNU Radio Foundations</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module02/index.html">Module 2 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module02/L04-sdr-introduction/index.html">L4 — SDR Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module02/L05-gnu-radio-intro/index.html">L5 — GNU Radio Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module02/L05-lab-first-flowgraphs/index.html">L5 Lab — First Flowgraphs</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 3 — Analog Modulation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module03/index.html">Module 3 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module03/L06-am-simulation/index.html">L6 — AM Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module03/L06-lab-am-simulation/index.html">L6 Lab — AM Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module03/L07-am-fm-receivers/index.html">L7 — AM and FM Receivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module03/L07-lab-am-fm-receivers/index.html">L7 Lab — AM and FM Receivers</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 4 — Digital Modulation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/index.html">Module 4 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/L08-fsk/index.html">L8 — FSK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/L08-lab-fsk/index.html">L8 Lab — FSK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/L09-pam-theory/index.html">L9 — PAM Theory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/L10-ascii-pam/index.html">L10 — ASCII over PAM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/L10-lab-pam-link/index.html">L10 Lab — PAM Link</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 5 — Custom Blocks &amp; Midterm</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module05/index.html">Module 5 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module05/L11-custom-blocks/index.html">L11 — Out-of-Tree Modules and Custom Blocks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module05/L11-lab-custom-block/index.html">L11 Lab — Custom Block</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module05/midterm/index.html">Midterm — Fox Hunt and CTF</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 6 — Waveform Applications &amp; RF Reverse Engineering</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Module 6 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L12-cw/index.html">L12 — CW</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L12-lab-cw/index.html">L12 Lab — CW</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L13-dtmf/index.html">L13 — DTMF</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L13-lab-dtmf/index.html">L13 Lab — DTMF</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">L14 — HD Radio</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L14-lab-hd-radio/index.html">L14 Lab — HD Radio</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L15-mpsk/index.html">L15 — mPSK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L15-lab-mpsk/index.html">L15 Lab — mPSK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L16-fhss/index.html">L16 — Frequency Hopping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L16-lab-fhss/index.html">L16 Lab — Frequency Hopping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L17-rf-reverse-engineering/index.html">L17 — RF Reverse Engineering</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L17-lab-rf-reverse-engineering/index.html">L17 Lab — RF Reverse Engineering</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L18-adsb/index.html">L18 — ADS-B</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L19-ais/index.html">L19 — AIS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L18-L19-lab-adsb-ais/index.html">L18–L19 Lab — ADS-B and AIS</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 7 — Final Project</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module07/index.html">Module 7 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module07/L20-qam-ofdm/index.html">L20 — QAM and OFDM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module07/final-project/index.html">Final Project</a></li>
+</ul>
+
+      </div>
+    </div>
+  </div>
+</div><div class="hud">
+<div class="hud-group">
+  <button id="btnSite" class="site" type="button"
+          aria-expanded="false" aria-controls="sitepop"
+          title="Elsewhere on this site">ECE 448</button>
+</div>
+<div class="pop" id="sitepop" role="group" aria-label="Site" hidden>
+  <a href="https://livethisdream.github.io/">Home</a>
+  <a href="https://livethisdream.github.io/ece343/intro.html">ECE 343</a>
+  <a href="https://livethisdream.github.io/ece444/intro.html">ECE 444</a>
+  <a href="../../intro.html" aria-current="page">ECE 448</a>
+  <a href="https://livethisdream.github.io/projects">Projects</a>
+  <button class="pop-help" type="button" data-help>Help<kbd>?</kbd></button>
+</div>
+
+  <div class="hud-group hud-mid"><button id="btnMode" type="button" aria-expanded="false" aria-controls="modepop"
+            title="How the lesson is laid out (P)">read</button>
+    <button id="btnTools" type="button" aria-expanded="false" aria-controls="toolspop"
+            title="Presenter tools">tools</button>
+  </div>
+
+  <div class="hud-group"><button id="btnIndex" class="counter" type="button" aria-pressed="false"
+            title="Contents (G) · double-tap for the top"><b id="cur">1</b>/<span id="tot">0</span></button>
+  </div><div class="pop" id="modepop" role="group" aria-label="View mode" hidden>
+    <button id="btnPresent" class="choice" type="button" aria-pressed="false">
+      present<span class="pop-note">one frame at a time</span></button>
+    <button id="btnRead" class="choice" type="button" aria-pressed="true">
+      read<span class="pop-note">the whole lesson, continuous</span></button>
+  </div><div class="pop" id="toolspop" role="group" aria-label="Presenter tools" hidden>
+    <button id="btnLaser" type="button" aria-pressed="false">laser<kbd>L</kbd></button>
+    <button id="btnSpot" type="button" aria-pressed="false">spotlight<kbd>S</kbd></button>
+    <button id="btnFull" type="button">fullscreen<kbd>F</kbd></button>
+    <button id="btnHelp" type="button" data-help>help<kbd>?</kbd></button>
+  </div>
+</div>
+<div class="help" id="help" role="dialog" aria-modal="true" aria-labelledby="helpTitle" hidden>
+  <div class="help-card">
+    <button class="help-close" id="btnHelpClose" type="button" aria-label="Close help">&times;</button>
+    <h2 id="helpTitle">Getting around</h2>
+    <p class="help-lead">Everything is in the bar at the bottom of the screen.</p>
+    <dl class="help-list">
+      <dt><span class="help-chip">ECE 448</span></dt>
+      <dd>The other course sites, the home page, and this help.</dd>
+      <dt><span class="help-chip">read</span></dt>
+      <dd><b>Read</b> shows the whole lesson as one page. <b>Present</b> shows one frame at a time, for class.<span class="help-keys"> <kbd>P</kbd> switches.</span></dd>
+      <dt><span class="help-chip">tools</span></dt>
+      <dd>Laser pointer<span class="help-keys"> <kbd>L</kbd></span>, spotlight<span class="help-keys"> <kbd>S</kbd></span>, and fullscreen<span class="help-keys"> <kbd>F</kbd></span>.</dd>
+      <dt><span class="help-chip">3/9</span></dt>
+      <dd>Where you are in the lesson. Tap it for every frame here and every lesson in the course<span class="help-keys"> <kbd>G</kbd></span>. Double-tap to go back to the top.</dd>
+    </dl>
+    <h3 class="help-keys">Presenting</h3>
+    <p class="help-keys"><kbd>&rarr;</kbd> or <kbd>Space</kbd> next frame, <kbd>&larr;</kbd> back, <kbd>D</kbd> this frame&rsquo;s detail, <kbd>Esc</kbd> close a panel.</p>
+    <h3>Printing</h3>
+    <p>Print from present mode for the slides, one frame a page. Print from read mode for the whole lesson.</p>
+    <p class="help-foot"><span class="help-keys">Press <kbd>?</kbd> to open this again.</span><span class="help-touch">Open this again from the ECE 448 menu.</span></p>
+  </div>
+</div>
+
+<div class="help-hint" id="helpHint" hidden>
+  <button id="btnHintOpen" type="button" data-help>New here? How the bar works</button>
+  <button id="btnHintClose" class="help-hint-close" type="button" aria-label="Dismiss">&times;</button>
+</div><main class="deck bd-article" id="deck" tabindex="-1">
+<section class="tex2jax_ignore mathjax_ignore" id="l14-hd-radio">
+<h1>L14 - HD Radio<a class="headerlink" href="#l14-hd-radio" title="Permalink to this heading">#</a></h1>
+<div class="frame title-frame docutils container" id="frame-1">
+<div class="wrap docutils container">
+<div class="course-mark">ECE 448 · Spring 2027</div>
+<h1 class="frame-title">HD Radio</h1>
+<div class="title-rule"></div>
+<p>We find the digital sidebands beside an FM station on the PlutoSDR, measure them, and decode them with nrsc5.</p>
+<p>Lesson 14 · Module 6: Waveform Applications &amp; RF Reverse Engineering · Dr. Neil Rogers</p>
+</div>
+</div>
+<div class="frame read-only docutils container" id="frame-slides">
+<div class="wrap docutils container">
+<p class="rubric">Slides</p>
+<div class="slides admonition">
+<p class="admonition-title">Slides</p>
+<p><a href="../../slides/L14-hd-radio.html" target="_blank" rel="noopener">html slides</a>
+<a href="../../slides/L14-hd-radio.html?print-pdf" target="_blank" rel="noopener">pdf slides</a>
+<a href="../../slides/L14-hd-radio.md" target="_blank" rel="noopener">raw markdown slides</a></p>
+</div>
+</div>
+</div>
+<div class="frame docutils container" id="frame-learning-objectives">
+<div class="wrap docutils container">
+<p class="rubric">Learning Objectives</p>
+<ol class="lo-list" style="--module: '6'; counter-reset: lo 2">
+  <li>I can describe how HD Radio works and demodulate an HD Radio signal.</li>
+</ol>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-find-the-shelves-on-the-air">
+<div class="wrap docutils container">
+<p class="rubric">Find the Shelves on the Air</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<p><img src="../../viz/img/L14-hd-scan.png"
+     alt="The spectrum and waterfall of L14-hd-find.grc, labeled Simulated: L14 test file, centered on 100.3 MHz: the spectrum shows a rounded station at 100.3 MHz with a flat shelf on each side and a second rounded station at 99.9 MHz with none; on the waterfall the shelves are two straight orange bands of constant width beside the host"
+     style="max-width: 820px; width: 100%; display: block; margin: 0 auto;"></p>
+</div>
+<div class="present docutils container">
+<ul class="simple">
+<li><p>Run <code class="docutils literal notranslate"><span class="pre">L14-hd-find.grc</span></code> on the PlutoSDR, centered on a strong FM station.</p></li>
+<li><p>Look for flat bands on either side, and zoom in on one.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>We start on the air, with the PlutoSDR and the lesson’s finder flowgraph:</p>
+<ol class="arabic simple">
+<li><p>Open <code class="docutils literal notranslate"><span class="pre">L14-hd-find.grc</span></code>. Select the File Source and the six blocks after it, through Float To Complex, and press D; then select the PlutoSDR Source and press E.</p></li>
+<li><p>Run it and type a strong local station’s frequency into Center; the station list at hdradio.com shows which local stations carry HD Radio.</p></li>
+<li><p>Watch the waterfall. The station is a rounded band whose width changes with the audio, and a station with HD Radio also shows two flat bands of constant width on either side of it, which an ordinary FM radio ignores.</p></li>
+<li><p>Drag a box across one of those bands on the spectrum to zoom in on it, and right-click to zoom back out.</p></li>
+</ol>
+<p>Those bands are <strong>HD Radio</strong>, a digital broadcast that carries the station’s program, and often extra programs, on the same channel. The course Plutos run in extended-frequency mode, 70 MHz to 6 GHz, so the FM band is in range.</p>
+<p>The figure is the finder playing the lesson’s test file rather than an antenna, so it carries a “Simulated” label: the station at 100.3 MHz has the two bands, and the one at 99.9 MHz has none. The rest of the lesson builds that test signal in GNU Radio, explains the finder, and measures the bands, and <strong>nrsc5</strong> decodes a recording of a real station.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-hd-radio-modes">
+<div class="wrap docutils container">
+<p class="rubric">HD Radio Modes</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<p><img src="../../viz/img/L14-hybrid.svg"
+     alt="The hybrid HD Radio layout: the analog FM host at the channel center, and an OFDM sideband of ten partitions on each side, from 129.4 to 198.4 kHz, marked as subcarriers 356 to 546, each 69 kHz wide"
+     style="max-width: 760px; width: 100%; display: block; margin: 0 auto;"></p>
+</div>
+<div class="present docutils container">
+<ul class="simple">
+<li><p><strong>Hybrid:</strong> the analog FM host plus a digital sideband on each side.</p></li>
+<li><p><strong>Extended hybrid</strong> narrows the analog room and widens the sidebands inward.</p></li>
+<li><p><strong>All digital</strong> drops the analog host.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>HD Radio carries a station’s program digitally alongside, or in place of, the analog signal. A <strong>hybrid</strong> station, the layout in the figure, keeps the analog FM signal Lesson 7 received in the center, about 130 kHz wide on each side, where every FM radio still plays it, and puts the digital signal in two <strong>sidebands</strong>, one on each side, from 129.4 to 198.4 kHz from the channel center. An <strong>extended hybrid</strong> station limits its analog signal to about 100 kHz each side and adds digital carriers on the inside edge of each sideband, and an <strong>all-digital</strong> station drops the analog signal entirely. The standard that defines all three is <strong>NRSC-5</strong>.</p>
+<p>The digital signal carries the main program, called HD1, and a station can add HD2, HD3, and more programs that have no analog version.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-what-is-in-the-spectrum">
+<div class="wrap docutils container">
+<p class="rubric">What Is in the Spectrum</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head text-left"><p>Part</p></th>
+<th class="head text-left"><p>Where</p></th>
+<th class="head text-left"><p>Modulation</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-left"><p>Analog host</p></td>
+<td class="text-left"><p>within about ±130 kHz</p></td>
+<td class="text-left"><p>FM</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>Inside the host</p></td>
+<td class="text-left"><p>0 to 57 kHz after demodulation</p></td>
+<td class="text-left"><p>audio, pilot, stereo DSB-SC, RBDS BPSK</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>Digital sidebands</p></td>
+<td class="text-left"><p>±129.4 to ±198.4 kHz</p></td>
+<td class="text-left"><p>OFDM, QPSK on each subcarrier</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>Each part of an HD Radio station’s spectrum uses a different modulation. The host is analog FM, and Lesson 7’s demodulator turned it into the <strong>multiplex</strong>: mono audio up to 15 kHz, the 19 kHz stereo pilot, the stereo difference signal as DSB-SC around 38 kHz, and <strong>RBDS</strong>, the US name for RDS, as differentially encoded BPSK at 1187.5 bits per second on 57 kHz, carrying the station name, the time, and text. To see it on the same station, open Lesson 7’s <code class="docutils literal notranslate"><span class="pre">L07-rds-rx.grc</span></code>, run it on its recording, and the panel fills with the station’s name; Lesson 7 shows how to switch it to the radio for a live station. PySDR’s RDS chapter, which the slides list as an activity, decodes the same signal step by step in Python.</p>
+</div>
+<div class="depth docutils container">
+<p><img src="../../viz/img/L07-fm-multiplex.svg"
+     alt="The FM broadcast baseband from 0 to 60 kHz: L plus R mono audio from 0 to 15 kHz, a pilot line at 19 kHz, the L minus R stereo signal as two sidebands from 23 to 53 kHz around a missing carrier at 38 kHz, and RDS at 57 kHz"
+     style="max-width: 760px; width: 100%; display: block; margin: 0 auto;"></p>
+<p>The multiplex from Lesson 7, which the analog host carries. The HD Radio sidebands are not in it: they sit outside the host on the radio-frequency spectrum, and an FM demodulator never sees them.</p>
+</div>
+<div class="depth depth-cut docutils container">
+<p>The digital sidebands sit outside the host, and each one is <strong>OFDM</strong>, a block of many narrow carriers, each carrying QPSK. The next frames describe that block, and the rest of the lesson finds it, measures it, and decodes it.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-the-digital-sidebands">
+<div class="wrap docutils container">
+<p class="rubric">The Digital Sidebands</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<ul class="simple">
+<li><p>Each sideband is many narrow <strong>subcarriers</strong>, 363.4 Hz apart: one FFT bin at <code class="docutils literal notranslate"><span class="pre">fft_len</span></code> 4096.</p></li>
+<li><p>They come in <strong>partitions</strong> of 18 data subcarriers and 1 reference.</p></li>
+<li><p>The sidebands are much weaker than the host.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>Each sideband is not one carrier but 191 narrow ones, called <strong>subcarriers</strong>, spaced 363.4 Hz apart. NRSC-5 numbers them from the channel center, so subcarrier <span class="math notranslate nohighlight">\(k\)</span> sits at <span class="math notranslate nohighlight">\(k \times 363.4\)</span> Hz; the upper sideband runs from subcarrier 356, at 129.4 kHz, to 546, at 198.4 kHz, and the lower sideband is its mirror image. We use those numbers as block settings: the sideband meter later in the lesson takes its band from Variables named <code class="docutils literal notranslate"><span class="pre">inner</span></code> and <code class="docutils literal notranslate"><span class="pre">outer</span></code>.</p>
+<p>The subcarriers come in <strong>frequency partitions</strong> of 19: 18 carry data, and one <strong>reference subcarrier</strong>, at 356, 375, 394, and every 19th after that up to 546, carries known symbols that the receiver uses to find the timing, frequency, and phase. An extended hybrid station adds partitions inside subcarrier 356. The sidebands are much weaker than the host, so that they do not disturb analog radios or the neighboring stations; the meters in this lesson read each sideband’s power relative to the host, in <strong>dBc</strong>.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-the-ofdm-concept">
+<div class="wrap docutils container">
+<p class="rubric">The OFDM Concept</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<ul class="simple">
+<li><p><strong>OFDM</strong> sends data on many closely spaced subcarriers at once.</p></li>
+<li><p>Their spectra overlap, but each one is zero at its neighbors’ centers.</p></li>
+<li><p>An FFT separates them again at the receiver.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p><strong>Orthogonal frequency-division multiplexing</strong> (OFDM) divides a wide channel among many slow subcarriers instead of one fast carrier. The subcarriers are spaced so closely that their spectra overlap, but each one passes through zero at the center of every other one. That property is <strong>orthogonality</strong>, the O in OFDM, and it lets the receiver separate them with an FFT. The explorer two frames ahead shows it.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-ofdm-in-gnu-radio">
+<div class="wrap docutils container">
+<p class="rubric">OFDM in GNU Radio</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<ul class="simple">
+<li><p>Each subcarrier carries one I/Q point per symbol: BPSK, QPSK, or QAM.</p></li>
+<li><p>An inverse FFT of <code class="docutils literal notranslate"><span class="pre">fft_len</span></code> points builds a whole symbol at once.</p></li>
+<li><p>A <strong>guard interval</strong> of <code class="docutils literal notranslate"><span class="pre">cp_len</span></code> samples goes in front of each symbol.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>Each subcarrier carries one constellation point per OFDM symbol, so a symbol is a list of I/Q points, one per subcarrier: QPSK points on HD Radio’s data subcarriers. GNU Radio’s <strong>OFDM Carrier Allocator</strong> places the points on the subcarriers we list, a reverse <strong>FFT</strong> turns the whole list into one symbol of time samples, and the <strong>OFDM Cyclic Prefixer</strong> copies the end of each symbol in front of it as a <strong>guard interval</strong>, which separates each symbol from the one before it. These are the blocks of the GNU Radio wiki’s Basic OFDM Tutorial, which the slides point to.</p>
+<p>For HD Radio at 1,488,375 samples per second, <code class="docutils literal notranslate"><span class="pre">fft_len</span></code> = 4096 makes each FFT bin exactly one 363.4 Hz subcarrier, and <code class="docutils literal notranslate"><span class="pre">cp_len</span></code> = 224 samples is NRSC-5’s guard. Symbols follow one another over time, each 4096 + 224 samples long. The receiver runs the same steps backward: drop the guard, take a forward FFT, and read each subcarrier’s point.</p>
+</div>
+</div>
+</div>
+<div class="frame viz-frame cut docutils container" id="frame-ofdm-explorer">
+<div class="wrap docutils container">
+<p class="rubric">OFDM Explorer</p>
+<div class="depth docutils container">
+<p>Each OFDM symbol is a set of tones that last one FFT length, and the spectrum of a tone that lasts that long is a sinc shape whose nulls fall exactly one subcarrier spacing apart. With the subcarriers at that spacing, every subcarrier’s spectrum crosses zero at the center of every other one, which is the orthogonality of the previous frames.</p>
+<p>The left panel shows the spectra of five neighboring subcarriers with the HD Radio spacing; the red dots on the dashed line are what the four neighbors add at the center subcarrier’s frequency. At spacing 1.00 every red dot sits on zero. Move the spacing away from 1.00 and the dots leave zero, and the readout shows the neighbors leaking in. The right panel shows two symbols with their guards, an echo of them, and the receiver’s FFT window. Drag the echo delay past the guard and the end of symbol 1’s echo enters symbol 2’s window, shown in red.</p>
+</div>
+<div class="stage docutils container">
+<div class="present docutils container">
+<iframe src="../../viz/ofdm-explorer.html"
+        width="100%" height="405"
+        style="border: 1px solid #cddce9; border-radius: 6px;"
+        loading="lazy"
+        title="OFDM explorer: the spectra of five subcarriers against their spacing, and an echo against the guard interval">
+</iframe>
+</div>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-the-test-signal">
+<div class="wrap docutils container">
+<p class="rubric">The Test Signal</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<p><img src="../../viz/img/L14-grc-test-tx.png"
+     alt="GNU Radio Companion with L14-hd-test-tx.grc open: for each sideband, a Random Uniform Source, Chunks to Symbols for QPSK, Stream to Tagged Stream, OFDM Carrier Allocator, a reverse FFT, an OFDM Cyclic Prefixer, and a level; an FM host from filtered noise and a 19 kHz pilot; an analog-only neighbor shifted to minus 400 kHz; a Noise Source; an Add, Head, and a conversion to unsigned bytes into a File Sink"
+     style="max-width: 820px; width: 100%; display: block; margin: 0 auto;"></p>
+</div>
+<div class="present docutils container">
+<ul class="simple">
+<li><p>Each sideband is random QPSK on 191 subcarriers, built with an inverse FFT.</p></li>
+<li><p>It writes 4 s as unsigned bytes, nrsc5’s default format: 11.9 MB.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p><code class="docutils literal notranslate"><span class="pre">L14-hd-test-tx.grc</span></code> recreates a hybrid station with the OFDM blocks of the previous frames. For each sideband, random QPSK points fill subcarriers 356 to 546 in the <strong>OFDM Carrier Allocator</strong>, a reverse <strong>FFT</strong> of 4096 points turns them into one symbol, and the <strong>OFDM Cyclic Prefixer</strong> adds the 224-sample guard. A Multiply Const sets each sideband’s level, here <span class="math notranslate nohighlight">\(-23\)</span> dBc. The FM host is filtered noise and a 19 kHz pilot, frequency modulated with the broadcast 75 kHz deviation setting, and an analog-only station sits 400 kHz below.</p>
+<p>The sidebands carry random symbols, not NRSC-5 data, so nrsc5 cannot decode this file; it is a test signal for finding and measuring the sidebands. It writes <code class="docutils literal notranslate"><span class="pre">L14-hd-test.cu8</span></code>, unsigned 8-bit I and Q at 1,488,375 samples per second, nrsc5’s default input format. Nothing in it transmits: its last block is a File Sink.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-the-sideband-finder">
+<div class="wrap docutils container">
+<p class="rubric">The Sideband Finder</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<p><img src="../../viz/img/L14-grc-find.png"
+     alt="GNU Radio Companion with L14-hd-find.grc open: a File Source of bytes, a Throttle, UChar To Float, Add Const minus 127.5, Multiply Const 1/128, Deinterleave, and Float To Complex, and a disabled PlutoSDR Source, both feeding a frequency sink, a waterfall sink, and three Frequency Xlating FFT Filters for the host and the two sidebands, each followed by Complex to Mag squared, a Moving Average, Keep 1 in N, and Log10, with three Subtract blocks feeding a number sink; a disabled Rational Resampler and SigMF Sink hang off the PlutoSDR Source"
+     style="max-width: 820px; width: 100%; display: block; margin: 0 auto;"></p>
+</div>
+<div class="present docutils container">
+<ul class="simple">
+<li><p>Five blocks turn unsigned bytes into complex samples.</p></li>
+<li><p>A spectrum, a waterfall, and three band-power meters show the sidebands.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p><code class="docutils literal notranslate"><span class="pre">L14-hd-find.grc</span></code> plays the test file, any unsigned 8-bit recording made at 1,488,375 samples per second, or the PlutoSDR live. Such a file stores each sample as two unsigned bytes from 0 to 255, so the first five blocks subtract 127.5, scale by 1/128, and pair the bytes into complex samples. The PlutoSDR Source delivers complex samples directly, so it skips those blocks. To switch to the radio, select the File Source and the six blocks after it, through Float To Complex, press D to disable all seven, and enable the PlutoSDR Source; GRC will not run with both paths enabled.</p>
+<p>The <strong>QT GUI Frequency Sink</strong> and <strong>Waterfall Sink</strong> use an FFT of 4096 points, so each bin is one subcarrier wide. The three meters measure the power in a band, which the next frames use.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-finding-the-sidebands">
+<div class="wrap docutils container">
+<p class="rubric">Finding the Sidebands</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<p><img src="../../viz/img/L14-hd-find.png"
+     alt="The L14 sideband finder window labeled Simulated: L14 test file: controls for Center, Pluto RX gain, and Inner subcarrier at 356; the number sink reads minus 23.04 dBc for the upper sideband, minus 23.06 dBc for the lower, and 0.02 dB for upper minus lower; the frequency sink shows the host at 100.3 MHz peaking near minus 33 dB, flat shelves near minus 58 dB on both sides, a floor near minus 80 dB, and the analog neighbor at 99.9 MHz; the waterfall shows the shelves as two straight bands of constant width beside the host"
+     style="max-width: 760px; width: 100%; display: block; margin: 0 auto;"></p>
+</div>
+<div class="present docutils container">
+<ul class="simple">
+<li><p>The shelves have flat tops and sharp edges, unlike FM.</p></li>
+<li><p>On the waterfall they are straight bands that never change width.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>On the frequency sink, the shelves begin 129.4 kHz from the station, at 100.1706 and 100.4294 MHz, and end at 100.1016 and 100.4984 MHz. Their tops are flat because every subcarrier carries the same power, and their edges are sharp because the subcarriers stop at 356 and 546. The FM host is rounded, and on the waterfall its width changes with the audio, while the shelves stay the same width all the time. That difference is how we recognize HD Radio on a live band: look for two straight, flat bands about 130 to 200 kHz either side of a station.</p>
+<p>The shelves sit about 25 dB under the top of the host on the display, but the meters, not the display heights, give the power ratio between the bands.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-measuring-sideband-power">
+<div class="wrap docutils container">
+<p class="rubric">Measuring Sideband Power</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<p><img src="../../viz/img/L14-hd-meters.png"
+     alt="The controls and number sink of the L14 sideband finder, labeled Simulated: L14 test file: Center 100.3, Pluto RX gain 30, Inner subcarrier 356; Upper sideband minus 23.04 dBc, Lower sideband minus 23.06 dBc, and Upper minus lower 0.02 dB, each with a bar on a scale from minus 40 to 0"
+     style="max-width: 640px; width: 100%; display: block; margin: 0 auto;"></p>
+</div>
+<div class="present docutils container">
+<ul class="simple">
+<li><p>Each meter shifts a band to 0 Hz, filters it, and averages <span class="math notranslate nohighlight">\(\vert x\vert^2\)</span> for 0.2 s.</p></li>
+<li><p>A sideband meter minus the host meter is dBc; a third reading compares the sides.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>A band-power meter is four blocks we have used before. A <strong>Frequency Xlating FFT Filter</strong> moves the band’s center to 0 Hz and keeps only the band, <span class="math notranslate nohighlight">\(\pm 100\)</span> kHz for the host and <span class="math notranslate nohighlight">\(\pm 34.7\)</span> kHz around <span class="math notranslate nohighlight">\(\pm 163.9\)</span> kHz for each sideband, and decimates by 6. <strong>Complex to Mag^2</strong> gives each sample’s power, a <strong>Moving Average</strong> over 0.2 s averages it, <strong>Keep 1 in N</strong> slows the result to 50 readings a second, and <strong>Log10</strong> with a factor of 10 converts each reading to dB. Subtracting the host’s meter from a sideband’s meter gives that sideband in dBc, and a third Subtract shows the upper sideband minus the lower.</p>
+<p>On the test file the meters read <span class="math notranslate nohighlight">\(-23.04\)</span> and <span class="math notranslate nohighlight">\(-23.06\)</span> dBc, the level the test transmitter sets, and the sides differ by 0.02 dB. The same flowgraph on the real station recorded in the nrsc5 project’s sample file reads about <span class="math notranslate nohighlight">\(-24.3\)</span> and <span class="math notranslate nohighlight">\(-23.8\)</span> dBc, close to the test file. On a live station the two meters need not agree, and the lab compares them. The <strong>Inner subcarrier</strong> slider steps the meters’ inner edge down one partition at a time, from 356 to 280, so the same meters work on an extended hybrid station: slide it down until the readings stop rising.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-what-noise-does">
+<div class="wrap docutils container">
+<p class="rubric">What Noise Does</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<p><img src="../../viz/img/L14-hd-noise.png"
+     alt="The L14 sideband finder labeled Simulated: test file, noise_amp 0.15: the floor has risen from about minus 80 to minus 66 dB, the shelves stand only about 8 dB above it, and the meters read minus 22.24 and minus 22.27 dBc instead of minus 23"
+     style="max-width: 760px; width: 100%; display: block; margin: 0 auto;"></p>
+</div>
+<div class="present docutils container">
+<ul class="simple">
+<li><p>Raise <code class="docutils literal notranslate"><span class="pre">noise_amp</span></code> in the test transmitter and run the finder again.</p></li>
+<li><p>The floor rises, the shelves sink toward it, and the meters read high.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>To watch noise at work, open <code class="docutils literal notranslate"><span class="pre">L14-hd-test-tx.grc</span></code>, change the Variable <code class="docutils literal notranslate"><span class="pre">noise_amp</span></code> from 0.03 to 0.15, run it to write a new test file, and run the finder on it. The figure is that run. The floor rises by about 14 dB, the host still stands far above it, and the shelves, which are much weaker, now stand only a few dB above the floor. The meters read about 0.8 dB higher than before, because each one measures all the power in its band and the noise in the band adds to the sideband’s. On a live station the same thing happens as the signal weakens, so a meter reading is trustworthy only while the shelves stand well above the floor.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-decoding-with-nrsc5">
+<div class="wrap docutils container">
+<p class="rubric">Decoding with nrsc5</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">nrsc5</span> <span class="o">--</span><span class="n">iq</span><span class="o">-</span><span class="nb">input</span><span class="o">-</span><span class="nb">format</span> <span class="n">cf32</span> <span class="o">-</span><span class="n">r</span> <span class="n">hd</span><span class="o">.</span><span class="n">sigmf</span><span class="o">-</span><span class="n">data</span> <span class="mi">0</span>  <span class="c1"># play HD1</span>
+<span class="n">nrsc5</span> <span class="o">--</span><span class="n">iq</span><span class="o">-</span><span class="nb">input</span><span class="o">-</span><span class="nb">format</span> <span class="n">cf32</span> <span class="o">-</span><span class="n">r</span> <span class="n">hd</span><span class="o">.</span><span class="n">sigmf</span><span class="o">-</span><span class="n">data</span> <span class="mi">1</span>  <span class="c1"># play HD2</span>
+</pre></div>
+</div>
+</div>
+<div class="present docutils container">
+<ul class="simple">
+<li><p>Optional: nrsc5 decodes a PlutoSDR recording of the station.</p></li>
+<li><p>The finder records it as SigMF at half rate, the rate nrsc5 reads.</p></li>
+<li><p>Program 0 is HD1; 1 to 3 are HD2 to HD4.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>Finding and measuring the sidebands needs only the spectrum. Decoding them needs the rest of NRSC-5: the receiver locks onto the reference subcarriers, reads each subcarrier’s QPSK point, corrects errors, and decompresses the audio. GNU Radio has no HD Radio receiver module, so the open-source <strong>nrsc5</strong> project is the decoder, and this step is optional. It plays the chosen program and prints the station’s name, the song title and artist, and measures of signal quality as they arrive.</p>
+<p>nrsc5 has no PlutoSDR driver, but it reads recordings, and its README lists complex float at 744,188 samples per second, half our rate, as one input format. The finder writes exactly that: enable its Rational Resampler, which halves the rate, and its <strong>SigMF Sink</strong> along with the PlutoSDR Source, run about 10 s on the station, and stop. GRC draws the SigMF Sink with an orange border, its mark for a block it lists as deprecated; it still runs in GNU Radio 3.10. It writes <code class="docutils literal notranslate"><span class="pre">hd.sigmf-data</span></code>, about 60 MB, and <code class="docutils literal notranslate"><span class="pre">hd.sigmf-meta</span></code>, which records the rate and the center frequency at the start. Then run the commands above.</p>
+<p>nrsc5 is a C program, not part of radioconda: build it from source on Linux, install it with the project’s Homebrew formula on macOS, or use the project’s MSYS2 build on Windows, and use a recent version, because <code class="docutils literal notranslate"><span class="pre">--iq-input-format</span></code> is newer than some packages. We have not run it in this course yet. With an optional RTL-SDR, <code class="docutils literal notranslate"><span class="pre">nrsc5</span> <span class="pre">100.3</span> <span class="pre">0</span></code> tunes a station live. The related project gr-nrsc5 is an HD Radio transmitter for GNU Radio, not a receiver, and this course does not transmit on the FM band; gr-rds, from Lesson 7, still decodes the RBDS inside the host.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-key-point">
+<div class="wrap docutils container">
+<p class="rubric">Key Point</p>
+<div class="stage docutils container">
+<div class="present callout docutils container">
+<p>HD Radio adds two OFDM sidebands, 129.4 to 198.4 kHz from the station’s center and much weaker than the analog host. They appear as flat shelves on a spectrum, band-power meters measure them, and nrsc5 decodes them.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-on-the-sdr">
+<div class="wrap docutils container">
+<p class="rubric">On the SDR</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<ul class="simple">
+<li><p>Run the PlutoSDR at 1,488,375 samples per second, centered on the station.</p></li>
+<li><p>Look for flat shelves 129 to 198 kHz either side of each station.</p></li>
+<li><p>Receiving is unrestricted, and the finder has no transmit block.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>To look for HD Radio live, disable the File Source and the six blocks after it in <code class="docutils literal notranslate"><span class="pre">L14-hd-find.grc</span></code>, enable the PlutoSDR Source, and type the station’s frequency into Center. About 1.5 MS/s streams continuously over the Pluto’s USB 2.0 link. Centering on the station puts the Pluto’s DC correction on the host, where it does not touch the sidebands or the meters.</p>
+<p>The finder sets the Pluto’s gain by hand, from the Pluto RX gain slider, rather than with its automatic gain, so a reading at a given gain means the same thing every time. Start near 30 dB, and lower it if the floor rises or copies of strong stations appear, because the sidebands are far weaker than the host and an overloaded receiver buries them. Not every station carries HD Radio, so check the station list at hdradio.com, and then type its frequency into the finder.</p>
+<p>A weak station reads high, as the noise frame showed. As in Lesson 7, receiving is unrestricted and transmitting is not; nothing in this lesson transmits.</p>
+</div>
+</div>
+</div>
+<div class="frame read-only doc-links docutils container" id="frame-downloads">
+<div class="wrap docutils container">
+<p class="rubric">Downloads</p>
+<ul class="simple">
+<li><p><a class="doc-link" href="../../grc/L14-hd-test-tx.grc" download>L14-hd-test-tx.grc</a>: writes <code class="docutils literal notranslate"><span class="pre">L14-hd-test.cu8</span></code>, 4 s (11.9 MB) of a simulated hybrid station at 100.3 MHz, with an analog-only neighbor 400 kHz below. Run it once; it stops on its own.</p></li>
+<li><p><a class="doc-link" href="../../grc/L14-hd-find.grc" download>L14-hd-find.grc</a>: the spectrum, waterfall, and sideband power meters, playing the test file, an unsigned 8-bit recording at 1,488,375 samples per second, or the PlutoSDR live, and recording the Pluto as SigMF for nrsc5.</p></li>
+</ul>
+<p>Put both flowgraphs in one folder and run the test transmitter first; GRC runs a flowgraph from its own folder, so the finder finds the test file there.</p>
+<p><strong>What this lesson follows.</strong> The topics and their order come from the slides. The hands-on steps follow the pages those slides link and the documentation of the tools:</p>
+<ul class="simple">
+<li><p><a class="doc-link" href="../../legacy/L24-hd-radio.pdf" target="_blank" rel="noopener">HD Radio slides (PDF)</a></p></li>
+<li><p><a href="https://wiki.gnuradio.org/index.php/Basic_OFDM_Tutorial" target="_blank" rel="noopener">GNU Radio wiki, Basic OFDM Tutorial</a>: the OFDM Carrier Allocator, FFT, and OFDM Cyclic Prefixer of the test transmitter. The other blocks are in the <a href="https://wiki.gnuradio.org/index.php/Tutorials" target="_blank" rel="noopener">GNU Radio tutorials</a>, and each block’s wiki page has the same name as the block.</p></li>
+<li><p><a href="https://github.com/theori-io/nrsc5" target="_blank" rel="noopener">nrsc5 and its README</a>, the optional decoder, with build instructions for Linux, macOS, and Windows and its input formats, and <a href="https://github.com/markjfine/nrsc5-dui" target="_blank" rel="noopener">NRSC5-DUI</a>, the graphical front end the slides list.</p></li>
+<li><p><a href="https://pysdr.org/content/rds.html" target="_blank" rel="noopener">PySDR, RDS</a>, the slides’ activity for decoding RBDS in Python, and <a href="https://github.com/bastibl/gr-rds" target="_blank" rel="noopener">gr-rds</a>, the RDS blocks of Lesson 7.</p></li>
+<li><p><a href="https://hdradio.com/stations/" target="_blank" rel="noopener">hdradio.com station list</a>, to find local HD Radio stations.</p></li>
+<li><p><a class="doc-link" href="../../legacy/refs/nrsc-1011s_hd-radio.pdf" target="_blank" rel="noopener">NRSC-5 Layer 1 FM specification, SY_IDD_1011s (PDF)</a>: Section 3.5 and Table 5-1 give the spacing and subcarriers.</p></li>
+<li><p>For more practice, the slides point to the GRCon 2023 CTF challenge “Not Really Superior Clatter-V”, built on an HD Radio signal.</p></li>
+</ul>
+</div>
+</div>
+<div class="frame read-only docutils container" id="frame-summary">
+<div class="wrap docutils container">
+<p class="rubric">Summary</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head text-left"><p>Part</p></th>
+<th class="head text-left"><p>What to know</p></th>
+<th class="head text-left"><p>In GNU Radio</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-left"><p>Modes</p></td>
+<td class="text-left"><p>hybrid, extended hybrid, all digital</p></td>
+<td class="text-left"><p>the shelves on the finder’s waterfall</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>Host</p></td>
+<td class="text-left"><p>analog FM, about ±130 kHz, with mono, pilot, stereo, RBDS</p></td>
+<td class="text-left"><p>Lesson 7’s receiver and gr-rds</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>Sidebands</p></td>
+<td class="text-left"><p>±129.4 to ±198.4 kHz, subcarriers 356 to 546</p></td>
+<td class="text-left"><p>the meter’s <code class="docutils literal notranslate"><span class="pre">inner</span></code> and <code class="docutils literal notranslate"><span class="pre">outer</span></code></p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>Subcarriers</p></td>
+<td class="text-left"><p>363.4 Hz apart, partitions of 18 data and 1 reference</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">fft_len</span></code> = 4096 at 1,488,375 S/s</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>Guard</p></td>
+<td class="text-left"><p>a copy of each symbol’s end</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">cp_len</span></code> = 224</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>Decoder</p></td>
+<td class="text-left"><p>nrsc5 (optional), on a Pluto SigMF recording at 744,188 S/s</p></td>
+<td class="text-left"><p>program 0 is HD1</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="frame read-only doc-links docutils container" id="frame-practice">
+<div class="wrap docutils container">
+<p class="rubric">Practice</p>
+<ul class="simple">
+<li><p><a class="doc-link" href="../../practice/ECE448_L14_Practice_blank.pdf" target="_blank" rel="noopener">Problem set (PDF)</a></p></li>
+<li><p><a class="doc-link doc-key" href="../../practice/ECE448_L14_Practice_SOLUTIONS.pdf" target="_blank" rel="noopener">Solutions (PDF)</a></p></li>
+</ul>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-looking-ahead">
+<div class="wrap docutils container">
+<p class="rubric">Looking Ahead</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<ul class="simple">
+<li><p>The L14 Lab builds a sideband meter, identifies a station’s mode, and measures a live station.</p></li>
+<li><p>Lesson 15 recovers the carrier and timing of an mPSK signal.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>Today we found the HD Radio sidebands beside an FM station, measured their power with meters built from familiar blocks, and built an OFDM signal from GNU Radio’s own blocks. The L14 Lab is the bench version: build the sideband meter yourself, use it on a capture whose configuration you do not know, and measure a live station on the PlutoSDR, with an optional nrsc5 decode.</p>
+<p>Lesson 15 turns to receiver work that nrsc5 performed for us today. Every QPSK subcarrier here needed its phase and timing recovered before the receiver could read its symbols, and Lesson 15 builds that recovery for a single mPSK carrier in GNU Radio.</p>
+</div>
+</div>
+</div>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./module06/L14-hd-radio"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+</main>
+
+<script src="../../_static/shell.js?v=ac36f07766"></script>
+<script src="../../_static/frames.js?v=89e4b02ee3"></script><script src="../../_static/viz-autosize.js?v=4fe0c4e159"></script>
+</body>
+</html>

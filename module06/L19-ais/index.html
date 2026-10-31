@@ -1,0 +1,656 @@
+<!doctype html>
+<html lang="en" data-mode="read">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>L19 - AIS &mdash; ECE 448 — Software Defined Radios</title>
+<meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+<link rel="icon" href="../../_static/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap"><link rel="stylesheet" href="../../_static/custom.css?v=ec0f297254">
+<link rel="stylesheet" href="../../_static/shell.css?v=78396bd831">
+<link rel="stylesheet" href="../../_static/frames.css?v=fa285d3703">
+</head>
+<body>
+
+<div class="rail"><span id="railfill"></span></div>
+
+<div class="laser" id="laser" aria-hidden="true"></div>
+<div class="spot" id="spot" aria-hidden="true"></div>
+
+<div class="index" id="index" role="dialog" aria-label="Jump to a frame or another lesson">
+  <button class="index-close" id="btnIndexClose" type="button" aria-label="Close">&times;</button>
+  <div class="wrap">
+    <div class="index-cols">
+      <div class="index-here">
+        <h2>This lesson</h2>
+        <ol id="indexlist"></ol>
+      </div>
+      <div class="index-toc">
+        <h2>Course</h2>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Course Information</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../syllabus.html">Syllabus</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../materials.html">Materials</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 1 — Foundations of Detection &amp; Link Budgets</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module01/index.html">Module 1 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module01/L01-course-intro/index.html">L1 — Course Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module01/L02-noise-figure-link-budget/index.html">L2 — Noise Figure and Link Budget</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module01/L03-signal-space/index.html">L3 — Signal Space</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 2 — SDR &amp; GNU Radio Foundations</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module02/index.html">Module 2 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module02/L04-sdr-introduction/index.html">L4 — SDR Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module02/L05-gnu-radio-intro/index.html">L5 — GNU Radio Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module02/L05-lab-first-flowgraphs/index.html">L5 Lab — First Flowgraphs</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 3 — Analog Modulation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module03/index.html">Module 3 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module03/L06-am-simulation/index.html">L6 — AM Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module03/L06-lab-am-simulation/index.html">L6 Lab — AM Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module03/L07-am-fm-receivers/index.html">L7 — AM and FM Receivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module03/L07-lab-am-fm-receivers/index.html">L7 Lab — AM and FM Receivers</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 4 — Digital Modulation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/index.html">Module 4 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/L08-fsk/index.html">L8 — FSK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/L08-lab-fsk/index.html">L8 Lab — FSK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/L09-pam-theory/index.html">L9 — PAM Theory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/L10-ascii-pam/index.html">L10 — ASCII over PAM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/L10-lab-pam-link/index.html">L10 Lab — PAM Link</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 5 — Custom Blocks &amp; Midterm</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module05/index.html">Module 5 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module05/L11-custom-blocks/index.html">L11 — Out-of-Tree Modules and Custom Blocks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module05/L11-lab-custom-block/index.html">L11 Lab — Custom Block</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module05/midterm/index.html">Midterm — Fox Hunt and CTF</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 6 — Waveform Applications &amp; RF Reverse Engineering</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Module 6 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L12-cw/index.html">L12 — CW</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L12-lab-cw/index.html">L12 Lab — CW</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L13-dtmf/index.html">L13 — DTMF</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L13-lab-dtmf/index.html">L13 Lab — DTMF</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L14-hd-radio/index.html">L14 — HD Radio</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L14-lab-hd-radio/index.html">L14 Lab — HD Radio</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L15-mpsk/index.html">L15 — mPSK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L15-lab-mpsk/index.html">L15 Lab — mPSK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L16-fhss/index.html">L16 — Frequency Hopping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L16-lab-fhss/index.html">L16 Lab — Frequency Hopping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L17-rf-reverse-engineering/index.html">L17 — RF Reverse Engineering</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L17-lab-rf-reverse-engineering/index.html">L17 Lab — RF Reverse Engineering</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L18-adsb/index.html">L18 — ADS-B</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">L19 — AIS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L18-L19-lab-adsb-ais/index.html">L18–L19 Lab — ADS-B and AIS</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 7 — Final Project</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module07/index.html">Module 7 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module07/L20-qam-ofdm/index.html">L20 — QAM and OFDM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module07/final-project/index.html">Final Project</a></li>
+</ul>
+
+      </div>
+    </div>
+  </div>
+</div><div class="hud">
+<div class="hud-group">
+  <button id="btnSite" class="site" type="button"
+          aria-expanded="false" aria-controls="sitepop"
+          title="Elsewhere on this site">ECE 448</button>
+</div>
+<div class="pop" id="sitepop" role="group" aria-label="Site" hidden>
+  <a href="https://livethisdream.github.io/">Home</a>
+  <a href="https://livethisdream.github.io/ece343/intro.html">ECE 343</a>
+  <a href="https://livethisdream.github.io/ece444/intro.html">ECE 444</a>
+  <a href="../../intro.html" aria-current="page">ECE 448</a>
+  <a href="https://livethisdream.github.io/projects">Projects</a>
+  <button class="pop-help" type="button" data-help>Help<kbd>?</kbd></button>
+</div>
+
+  <div class="hud-group hud-mid"><button id="btnMode" type="button" aria-expanded="false" aria-controls="modepop"
+            title="How the lesson is laid out (P)">read</button>
+    <button id="btnTools" type="button" aria-expanded="false" aria-controls="toolspop"
+            title="Presenter tools">tools</button>
+  </div>
+
+  <div class="hud-group"><button id="btnIndex" class="counter" type="button" aria-pressed="false"
+            title="Contents (G) · double-tap for the top"><b id="cur">1</b>/<span id="tot">0</span></button>
+  </div><div class="pop" id="modepop" role="group" aria-label="View mode" hidden>
+    <button id="btnPresent" class="choice" type="button" aria-pressed="false">
+      present<span class="pop-note">one frame at a time</span></button>
+    <button id="btnRead" class="choice" type="button" aria-pressed="true">
+      read<span class="pop-note">the whole lesson, continuous</span></button>
+  </div><div class="pop" id="toolspop" role="group" aria-label="Presenter tools" hidden>
+    <button id="btnLaser" type="button" aria-pressed="false">laser<kbd>L</kbd></button>
+    <button id="btnSpot" type="button" aria-pressed="false">spotlight<kbd>S</kbd></button>
+    <button id="btnFull" type="button">fullscreen<kbd>F</kbd></button>
+    <button id="btnHelp" type="button" data-help>help<kbd>?</kbd></button>
+  </div>
+</div>
+<div class="help" id="help" role="dialog" aria-modal="true" aria-labelledby="helpTitle" hidden>
+  <div class="help-card">
+    <button class="help-close" id="btnHelpClose" type="button" aria-label="Close help">&times;</button>
+    <h2 id="helpTitle">Getting around</h2>
+    <p class="help-lead">Everything is in the bar at the bottom of the screen.</p>
+    <dl class="help-list">
+      <dt><span class="help-chip">ECE 448</span></dt>
+      <dd>The other course sites, the home page, and this help.</dd>
+      <dt><span class="help-chip">read</span></dt>
+      <dd><b>Read</b> shows the whole lesson as one page. <b>Present</b> shows one frame at a time, for class.<span class="help-keys"> <kbd>P</kbd> switches.</span></dd>
+      <dt><span class="help-chip">tools</span></dt>
+      <dd>Laser pointer<span class="help-keys"> <kbd>L</kbd></span>, spotlight<span class="help-keys"> <kbd>S</kbd></span>, and fullscreen<span class="help-keys"> <kbd>F</kbd></span>.</dd>
+      <dt><span class="help-chip">3/9</span></dt>
+      <dd>Where you are in the lesson. Tap it for every frame here and every lesson in the course<span class="help-keys"> <kbd>G</kbd></span>. Double-tap to go back to the top.</dd>
+    </dl>
+    <h3 class="help-keys">Presenting</h3>
+    <p class="help-keys"><kbd>&rarr;</kbd> or <kbd>Space</kbd> next frame, <kbd>&larr;</kbd> back, <kbd>D</kbd> this frame&rsquo;s detail, <kbd>Esc</kbd> close a panel.</p>
+    <h3>Printing</h3>
+    <p>Print from present mode for the slides, one frame a page. Print from read mode for the whole lesson.</p>
+    <p class="help-foot"><span class="help-keys">Press <kbd>?</kbd> to open this again.</span><span class="help-touch">Open this again from the ECE 448 menu.</span></p>
+  </div>
+</div>
+
+<div class="help-hint" id="helpHint" hidden>
+  <button id="btnHintOpen" type="button" data-help>New here? How the bar works</button>
+  <button id="btnHintClose" class="help-hint-close" type="button" aria-label="Dismiss">&times;</button>
+</div><main class="deck bd-article" id="deck" tabindex="-1">
+<section class="tex2jax_ignore mathjax_ignore" id="l19-ais">
+<h1>L19 - AIS<a class="headerlink" href="#l19-ais" title="Permalink to this heading">#</a></h1>
+<div class="frame title-frame docutils container" id="frame-1">
+<div class="wrap docutils container">
+<div class="course-mark">ECE 448 · Spring 2027</div>
+<h1 class="frame-title">AIS</h1>
+<div class="title-rule"></div>
+<p>We build a simulated AIS transmitter with GMSK, then receive both channels and decode each ship’s identity and position.</p>
+<p>Lesson 19 · Module 6: Waveform Applications &amp; RF Reverse Engineering · Dr. Neil Rogers</p>
+</div>
+</div>
+<div class="frame read-only docutils container" id="frame-slides">
+<div class="wrap docutils container">
+<p class="rubric">Slides</p>
+<div class="slides admonition">
+<p class="admonition-title">Slides</p>
+<p><a href="../../slides/L19-ais.html" target="_blank" rel="noopener">html slides</a>
+<a href="../../slides/L19-ais.html?print-pdf" target="_blank" rel="noopener">pdf slides</a>
+<a href="../../slides/L19-ais.md" target="_blank" rel="noopener">raw markdown slides</a></p>
+</div>
+</div>
+</div>
+<div class="frame docutils container" id="frame-learning-objectives">
+<div class="wrap docutils container">
+<p class="rubric">Learning Objectives</p>
+<ol class="lo-list" style="--module: '6'; counter-reset: lo 7">
+  <li>I can receive and decode AIS messages from marine vessels.</li>
+</ol>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-ships-in-the-harbor">
+<div class="wrap docutils container">
+<p class="rubric">Ships in the Harbor</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<p><img src="../../viz/img/L19-ais-rx.png"
+     alt="L19-ais-rx.grc running on the simulated recording, labeled SIMULATED: the Frames label reads 128 passed CRC, 0 failed; a waterfall shows short bursts on two channels, at 161.975 and 162.025 MHz; a triggered plot shows the FM demodulator output of one burst swinging between plus and minus 1; the Ships label lists four ships, RAMPART, ECE TRAINER, FALCON SPIRIT, and CAPE TERCEL, with their MMSI numbers, positions near Norfolk, Virginia, speeds, and courses"
+     style="max-width: 760px; width: 100%; display: block; margin: 0 auto;"></p>
+</div>
+<div class="present docutils container">
+<ul class="simple">
+<li><p>Run <code class="docutils literal notranslate"><span class="pre">L19-ais-rx.grc</span></code> on <code class="docutils literal notranslate"><span class="pre">L19-ais-sim.sigmf-data</span></code>.</p></li>
+<li><p>Bursts alternate between two channels; the table fills with ships.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>Ships do on VHF what aircraft did on 1090 MHz in Lesson 18: they announce who they are and where they are, several times a minute, to anyone listening. The figure is today’s receiver, <code class="docutils literal notranslate"><span class="pre">L19-ais-rx.grc</span></code>, playing a simulated recording of four ships off Norfolk, Virginia. Each mark on the waterfall is one burst, on one of two channels 50 kHz apart. The plot on the right is one burst after the FM demodulator, and the table lists each ship by its number, its name, and where it is.</p>
+<p>There are no AIS-equipped ships near USAFA, so this lesson works from recordings: one we make ourselves with a simulated transmitter, and any real one you bring back from a coast. The same transmitter can also go out from a PlutoSDR at 915 MHz into a cable through the 30 dB attenuator, never on the AIS channels, so a Pluto receives it live. The topics follow the 2025 slides: what AIS is, its message, its modulation, the NMEA sentences decoders print, and the tools, with the slides’ CRC placed where the decoder checks it.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-the-automatic-identification-system">
+<div class="wrap docutils container">
+<p class="rubric">The Automatic Identification System</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<ul class="simple">
+<li><p>Two VHF channels: <strong>161.975</strong> and <strong>162.025 MHz</strong>.</p></li>
+<li><p><strong>9600 b/s</strong>, <strong>GMSK</strong>, with <strong>NRZI</strong> coding.</p></li>
+<li><p>Time is cut into <strong>slots</strong> of 26.67 ms: 2,250 a minute on each channel.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>The <strong>Automatic Identification System</strong> (AIS) lets ships identify themselves to each other and to shore stations, which use it to track traffic and avoid collisions. Every large ship carries a Class A transponder, and many small craft carry a lower-power Class B. A moving Class A ship reports its position every 2 to 10 s and its name and voyage every 6 minutes.</p>
+<p>AIS uses two marine VHF channels, called A at 161.975 MHz and B at 162.025 MHz, and ships alternate between them. Each channel’s minute is divided into 2,250 <strong>slots</strong> of 26.67 ms, exactly 256 bits at 9600 b/s, and each transmission fills one slot or a few. Ships choose free slots themselves and announce which ones they will use next, so nearby ships do not collide; that scheme is called <strong>SOTDMA</strong>, Self-Organizing Time Division Multiple Access.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-find-it-on-the-air">
+<div class="wrap docutils container">
+<p class="rubric">Find It on the Air</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<ul class="simple">
+<li><p>In <code class="docutils literal notranslate"><span class="pre">L19-ais-rx.grc</span></code>, enable the PlutoSDR Source, Low Pass Filter, and AGC, with <code class="docutils literal notranslate"><span class="pre">fc</span></code> at 162e6.</p></li>
+<li><p>Look for short bursts at −25 and +25 kHz. Near USAFA, expect none.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>On a coast, the first look uses today’s receiver with the PlutoSDR in place of the recording. The course Plutos run from 70 MHz to 6 GHz, so 162 MHz is in range:</p>
+<ol class="arabic simple">
+<li><p>Open <code class="docutils literal notranslate"><span class="pre">L19-ais-rx.grc</span></code>, select the SigMF Source and the Throttle, and press D to disable both. Select the gray PlutoSDR Source, Low Pass Filter, and AGC and press E to enable them. The <strong>AGC</strong> scales the bursts to a power near 1 whatever their strength, so the squelch keeps its meaning; start the squelch near −10 dB. The Pluto’s URI is <code class="docutils literal notranslate"><span class="pre">ip:192.168.2.1</span></code>, and its center frequency is the variable <code class="docutils literal notranslate"><span class="pre">fc</span></code>, 162e6, halfway between the channels.</p></li>
+<li><p>Run it, and raise the Pluto RX gain slider until the bursts stand well above the waterfall’s floor.</p></li>
+<li><p>Watch the waterfall for short bursts, each a little shorter than one 26.67 ms slot, at −25 kHz (channel A) and +25 kHz (channel B). In a busy harbor several arrive every second, and the Ships label fills.</p></li>
+</ol>
+<p>In Colorado the waterfall stays empty at 162 MHz, which is why we use recordings, and why On the SDR sends our own ships at 915 MHz.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-the-burst">
+<div class="wrap docutils container">
+<p class="rubric">The Burst</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<p><img src="../../viz/img/L19-burst.svg"
+     alt="One AIS position report in its 256-bit slot, not to scale: an 8-bit ramp, a 24-bit training sequence 0101, an 8-bit start flag 0x7E, the 168-bit message, a 16-bit CRC, an 8-bit end flag 0x7E, and a 24-bit buffer; one slot is 256 bits at 9600 b/s, 26.67 ms"
+     style="max-width: 760px; width: 100%; display: block; margin: 0 auto;"></p>
+</div>
+<div class="present docutils container">
+<ul class="simple">
+<li><p><strong>Training</strong> bits let the receiver lock its timing.</p></li>
+<li><p><strong>Flags</strong>, 01111110, mark where the message starts and ends.</p></li>
+<li><p>The <strong>CRC</strong> tells the receiver whether the message arrived intact.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>Each transmission is one <strong>burst</strong>, laid out as in the slides. The transmitter ramps up for 8 bits, then sends 24 <strong>training</strong> bits, alternating 0 and 1, which give the receiver’s timing loop something regular to lock to. An 8-bit <strong>flag</strong>, 01111110 or 0x7E, marks the start of the data. The 168-bit <strong>message</strong> follows, then a 16-bit <strong>CRC</strong> computed from it, and a second flag marks the end. The last 24 bits are a <strong>buffer</strong> for stuffed bits and for the time the signal takes to travel up to about 200 nautical miles.</p>
+<p>This framing is <strong>HDLC</strong>, a standard data-link format, and it is why the decoder searches for flags. A longer message, such as the 424-bit name and voyage report, fills two slots instead of one.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-bit-stuffing-and-nrzi">
+<div class="wrap docutils container">
+<p class="rubric">Bit Stuffing and NRZI</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<ul class="simple">
+<li><p><strong>Bit stuffing:</strong> after five 1s in a row, the transmitter inserts a 0.</p></li>
+<li><p><strong>NRZI:</strong> a 0 changes the level and a 1 keeps it.</p></li>
+<li><p>The receiver undoes both: no flag inside the data, no polarity to know.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>Two coding steps sit between the bits and the radio. The first is <strong>bit stuffing</strong>. A flag has six 1s in a row, so the data must never have six; whenever the message and CRC hold five 1s in a row, the transmitter inserts a 0 after them, and the receiver removes any 0 that follows five 1s. That makes a burst a few bits longer than 256 minus its buffer, which is one reason for the buffer.</p>
+<p>The second is <strong>NRZI</strong>, Non-Return-to-Zero Inverted: a 0 changes the transmitted level and a 1 keeps it. The receiver only asks whether the level changed, so it does not need to know which level is which. The training bits, alternating 0 and 1, become a level that changes every other bit, and long runs of 1s become steady levels, which is why bit stuffing also keeps the level changing often enough for the receiver to track its timing.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-gmsk">
+<div class="wrap docutils container">
+<p class="rubric">GMSK</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<ul class="simple">
+<li><p><strong>GMSK</strong> is FSK: the frequency moves up for one level, down for the other.</p></li>
+<li><p>A <strong>Gaussian filter</strong> rounds the levels first, so the spectrum stays narrow.</p></li>
+<li><p>The envelope is constant, so the amplifier can run at full power.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>The levels go on the air as <strong>Gaussian Minimum Shift Keying</strong> (GMSK), a type of FSK, as the slides say. The frequency moves 2.4 kHz up for one level and 2.4 kHz down for the other, the smallest shift for which the receiver can still separate the two tones at 9600 b/s; that is what “minimum shift” means. Before the frequency modulator, a <strong>Gaussian filter</strong> rounds each step from one level to the other, which keeps the signal’s power inside its 25 kHz channel instead of spreading it into the neighbors.</p>
+<p>The filter’s sharpness is set by its <strong>BT</strong>, the product of its bandwidth and one bit’s duration. AIS uses BT = 0.4. A smaller BT gives a narrower spectrum but smears each bit into its neighbors; the explorer shows the smearing. GMSK, like FM, has a <strong>constant envelope</strong>: only the frequency changes, so the transmitter’s amplifier can run at full power without distorting it. GSM phones use GMSK for the same reason.</p>
+</div>
+</div>
+</div>
+<div class="frame viz-frame cut docutils container" id="frame-ais-bit-explorer">
+<div class="wrap docutils container">
+<p class="rubric">AIS Bit Explorer</p>
+<div class="depth docutils container">
+<p>The explorer follows one short stretch of a burst through the transmitter of <code class="docutils literal notranslate"><span class="pre">L19-ais-tx.grc</span></code>: the bits with any stuffed 0 shaded amber, the NRZI level, and the frequency after the Gaussian filter, with the unfiltered level dashed. The bottom rows are a receiver: the frequency it demodulates with noise added, a sample at the center of each bit, and the bits it decides after undoing NRZI. Choose “Five 1s” to watch a stuffed 0 appear, start at BT 0.4, where single bits already fall short of ±2.4 kHz, lower it and watch them shrink further, and then raise the noise until a sample lands on the wrong side and a bit turns red.</p>
+</div>
+<div class="stage docutils container">
+<div class="present docutils container">
+<iframe src="../../viz/ais-bits.html"
+        width="100%" height="528"
+        style="border: 1px solid #cddce9; border-radius: 6px;"
+        loading="lazy"
+        title="AIS bit explorer: bit stuffing, NRZI, and the Gaussian-filtered GMSK frequency for a stretch of an AIS burst, and the bits a receiver decides as noise rises">
+</iframe>
+</div>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-the-simulated-transmitter">
+<div class="wrap docutils container">
+<p class="rubric">The Simulated Transmitter</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<p><img src="../../viz/img/L19-grc-tx.png"
+     alt="GNU Radio Companion with L19-ais-tx.grc open: the AIS Frames embedded block with four outputs; for each channel an Interpolating FIR Filter with Gaussian taps, a Frequency Mod, a Repeat and Float To Complex for the on-off gate, and a Signal Source at minus or plus 25 kHz, multiplied together; an Add with a Noise Source; a Throttle, a Head, and a SigMF Sink, with a QT GUI Waterfall Sink"
+     style="max-width: 820px; width: 100%; display: block; margin: 0 auto;"></p>
+</div>
+<div class="present docutils container">
+<ul class="simple">
+<li><p><strong>AIS Frames</strong> builds each burst and its NRZI levels.</p></li>
+<li><p>An Interpolating FIR Filter applies the Gaussian; <strong>Frequency Mod</strong> makes GMSK.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p><code class="docutils literal notranslate"><span class="pre">L19-ais-tx.grc</span></code> follows the GMSK test plots on the 2025 slides: levels, a Gaussian filter, and FM. The <strong>AIS Frames</strong> block is an Embedded Python Block that does the framing of the last frames for four ships: message, CRC, stuffing, flags, and NRZI. It outputs, for each channel, the level of every bit and a gate that is 1 during a burst. An <strong>Interpolating FIR Filter</strong> holds each level for 10 samples and applies the Gaussian filter, with taps built from <code class="docutils literal notranslate"><span class="pre">firdes.gaussian</span></code> at BT 0.4, and <strong>Frequency Mod</strong> turns the result into ±2.4 kHz. The gate switches the carrier on and off, and a Signal Source moves each channel to −25 or +25 kHz.</p>
+<p>A Noise Source adds noise, and a <strong>SigMF Sink</strong> writes 4 s at 96 kS/s, centered on 162 MHz, to <code class="docutils literal notranslate"><span class="pre">L19-ais-sim.sigmf-data</span></code>, labeled Simulated in its <code class="docutils literal notranslate"><span class="pre">.sigmf-meta</span></code>. The ships report much more often than real ones, so a few seconds hold every message type. Nothing transmits. <code class="docutils literal notranslate"><span class="pre">L19-ais-tx-pluto.grc</span></code> sends the same ships from a PlutoSDR at 915 MHz into a cable through the 30 dB attenuator instead, never on 161.975 or 162.025 MHz; On the SDR uses it.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-the-receiver">
+<div class="wrap docutils container">
+<p class="rubric">The Receiver</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<p><img src="../../viz/img/L19-grc-rx.png"
+     alt="GNU Radio Companion with L19-ais-rx.grc open: a SigMF Source and Throttle, a disabled PlutoSDR Source, Low Pass Filter, and AGC, and an Add with a Noise Source; a waterfall; then for each channel a Frequency Xlating FIR Filter at minus or plus 25 kHz with decimation 2, a Power Squelch, a Quadrature Demod, a Symbol Sync with a zero-crossing detector at 5 samples per symbol, and a Binary Slicer, both into the AIS Decoder embedded block; a QT GUI Time Sink shows both demodulator outputs"
+     style="max-width: 820px; width: 100%; display: block; margin: 0 auto;"></p>
+</div>
+<div class="present docutils container">
+<ul class="simple">
+<li><p>For each channel: shift to 0 Hz, squelch, FM-demodulate.</p></li>
+<li><p><strong>Symbol Sync</strong> picks one sample per bit; the <strong>Binary Slicer</strong> decides it.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>The SigMF Source plays the recording at 96 kS/s. For a radio, a PlutoSDR Source at 576 kS/s, a Low Pass Filter that decimates by 6, and an AGC replace the SigMF Source and the Throttle. We keep the Pluto above about 521 kS/s, the lowest rate its AD9364 chip runs at on its own. Each channel then gets its own chain. A <strong>Frequency Xlating FIR Filter</strong> moves the channel to 0 Hz, keeps ±7 kHz, and decimates by 2, to 48 kS/s, which is 5 samples per bit. A <strong>Power Squelch</strong> passes the signal only while its power is above the <strong>Squelch</strong> slider and outputs zeros between bursts, so the timing loop does not chase noise. <strong>Quadrature Demod</strong> is the FM demodulator of Lesson 7; its gain is set so that ±2.4 kHz comes out as ±1. <strong>Symbol Sync</strong>, from Lesson 9, picks one sample per bit; here it uses the zero-crossing detector, which locks within the 24 training bits. The <strong>Binary Slicer</strong> turns each sample into a 1 or a 0, and the <strong>AIS Decoder</strong> reads both channels’ bits.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-what-the-demodulator-shows">
+<div class="wrap docutils container">
+<p class="rubric">What the Demodulator Shows</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<p><img src="../../viz/img/L19-ais-burst.png"
+     alt="The FM demodulator output of channel A over 10 ms, labeled SIMULATED: after the trigger the trace swings between plus and minus 1 every two bits for about 2.5 ms, the training; it then stays high for about 0.7 ms, the flag; and then the data begins, with runs of different lengths"
+     style="max-width: 520px; width: 100%; display: block; margin: 0 auto;"></p>
+</div>
+<div class="present docutils container">
+<ul class="simple">
+<li><p>The training is a steady square wave: the level changes every other bit.</p></li>
+<li><p>The flag is the one long flat run: six 1s, no change.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>The time sink triggers when channel A’s demodulator output crosses 0.5 and shows 10 ms, starting 1 ms before the trigger. The first 2.5 ms are the 24 training bits: under NRZI, alternating 0s and 1s change the level every other bit, so the trace is a regular square wave with a period of four bits. Then the trace holds high for seven bits, about 0.7 ms: that is the flag, whose six 1s keep the level and whose 0s change it at each end. The data begins after it, with runs whose lengths follow the bits.</p>
+<p>The edges are rounded and the single-bit swings fall short of ±1: that is the Gaussian filter at BT 0.4, seen from the receiver.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-decoding-step-by-step">
+<div class="wrap docutils container">
+<p class="rubric">Decoding Step by Step</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<ol class="arabic simple">
+<li><p>Undo NRZI. 2. Find the flags. 3. Remove the stuffed 0s.</p></li>
+<li><p>Check the CRC. 5. Reverse each byte’s bits and read the fields.</p></li>
+</ol>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>The <strong>AIS Decoder</strong> is an Embedded Python Block, and it runs the transmitter’s steps backward on each channel’s bits. It undoes NRZI by asking whether each bit’s level matches the one before, watches for the flag 01111110, and collects the bits up to the next flag. It removes every 0 that follows five 1s, then checks the 16-bit <strong>CRC</strong>; a frame that fails is counted and dropped. HDLC sends each byte least significant bit first, so the decoder reverses each byte to recover the message, then prints it and updates the table.</p>
+<p>The slides show Python’s <code class="docutils literal notranslate"><span class="pre">crc</span></code> library with a CRC-8 example; AIS uses a 16-bit CRC, the X.25 form that HDLC uses, which the decoder computes in a few lines. The <strong>Frames</strong> label counts frames that passed and failed the CRC.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-nmea-sentences-and-fields">
+<div class="wrap docutils container">
+<p class="rubric">NMEA Sentences and Fields</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<p><code class="docutils literal notranslate"><span class="pre">!AIVDM,1,1,,A,14eG;o&#64;034o8sd&lt;L9i:a;WF&gt;062D,0*7D</span></code></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head text-left"><p>Field</p></th>
+<th class="head text-center"><p>Bits</p></th>
+<th class="head text-left"><p>Meaning</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-left"><p>Message ID</p></td>
+<td class="text-center"><p>6</p></td>
+<td class="text-left"><p>1, 2, 3: position; 5: name and voyage</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>MMSI</p></td>
+<td class="text-center"><p>30</p></td>
+<td class="text-left"><p>the ship’s 9-digit number</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>Position</p></td>
+<td class="text-center"><p>55</p></td>
+<td class="text-left"><p>longitude, latitude in 1/10,000 minute</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>Decoders hand their results to chart plotters in <strong>NMEA 0183</strong> sentences, the format in the slides. <code class="docutils literal notranslate"><span class="pre">!AIVDM</span></code> marks an AIS message received from another ship; then come the number of sentences in this message and this sentence’s number, a sequence number for messages that need more than one sentence, the channel, the message itself, the number of fill bits, and after the <code class="docutils literal notranslate"><span class="pre">*</span></code> a two-digit checksum: the XOR of every character between the <code class="docutils literal notranslate"><span class="pre">!</span></code> and the <code class="docutils literal notranslate"><span class="pre">*</span></code>, not the CRC the 2025 slide names. The message is packed 6 bits to a character, so the slides’ 28 characters carry a 168-bit position report. Our decoder prints every message this way, and you can paste a sentence into <code class="docutils literal notranslate"><span class="pre">pyais</span></code> or an online decoder to check it.</p>
+<p>Inside, the first 6 bits are the <strong>message ID</strong>, the next 2 a repeat indicator, and the next 30 the <strong>MMSI</strong>, the ship’s Maritime Mobile Service Identity; its first three digits say which country registered it, such as 338 and 366 to 369 for the US; the ITU’s table of Maritime Identification Digits lists them all. A position report goes on to the navigation status, speed, longitude, latitude, course, and heading. Our decoder reads message IDs 1, 2, 3, 5, 18, and 24, which cover the positions and names of both classes.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-what-noise-does">
+<div class="wrap docutils container">
+<p class="rubric">What Noise Does</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<p><img src="../../viz/img/L19-ais-noise.png"
+     alt="L19-ais-rx.grc labeled SIMULATED with the added noise at 0.2 and the squelch at minus 25 dB: the Frames label reads 18 passed CRC, 17 failed; the waterfall's floor is brighter but the bursts still show; the time plot shows both channels' outputs swinging wildly between the limits, where the squelch has opened on noise; one ship's name is missing from the table"
+     style="max-width: 760px; width: 100%; display: block; margin: 0 auto;"></p>
+</div>
+<div class="present docutils container">
+<ul class="simple">
+<li><p>Raise <strong>Added noise</strong>: frames start to fail the CRC.</p></li>
+<li><p>Past the squelch, noise opens it and the timing loop wanders: raise <strong>Squelch</strong>.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>The figure raises the added noise to 0.2. The bursts still show on the waterfall, but the demodulated trace of each burst blurs, some bits land on the wrong side of the slicer, and frames start failing the CRC. Both traces in the time plot now swing wildly: the noise alone is above the −25 dB squelch, so the squelch stays open, and Symbol Sync chases noise between bursts and starts each burst out of step.</p>
+<p>Raise the <strong>Squelch</strong> slider until the noise between bursts stays out and the traces go quiet between bursts, and frames come back; raise it too far and the weak ships disappear. A real receiver sets this threshold from the noise it measures.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-ready-made-decoders">
+<div class="wrap docutils container">
+<p class="rubric">Ready-Made Decoders</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<ul class="simple">
+<li><p>radioconda has no AIS module, so our decoder is an Embedded Python Block.</p></li>
+<li><p><strong>gr-ais</strong> is a GNU Radio module; <strong>gr-satellites</strong> decodes AIS from space.</p></li>
+<li><p><strong>pyais</strong> decodes and builds NMEA sentences in Python.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>The slides list gr-ais, gr-satellites, SDR Angel, and SCEPTRE. <strong>gr-ais</strong>, by Nick Foster, is an out-of-tree GNU Radio module with an AIS receiver; a fork has a branch for GNU Radio 3.10, but radioconda does not ship it, so our flowgraph uses the AIS Decoder above. <strong>gr-satellites</strong> decodes AIS among its many satellite telemetry formats, since satellites in low orbit receive AIS over the open ocean. Optional: outside GNU Radio, SDRangel, the commercial SCEPTRE, and, on a coast, AIS-catcher or rtl_ais with an RTL-SDR decode AIS.</p>
+<p>The slides’ first activity builds an NMEA sentence with <strong>pyais</strong>, which also decodes them: <code class="docutils literal notranslate"><span class="pre">pyais.decode(sentence)</span></code> returns every field. Their second activity, a SigMF recording from the Noir CTF challenge, is replaced here by the lesson’s own recording.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-key-point">
+<div class="wrap docutils container">
+<p class="rubric">Key Point</p>
+<div class="stage docutils container">
+<div class="present callout docutils container">
+<p>AIS sends HDLC frames at 9600 b/s on two VHF channels with GMSK. The receiver shifts each channel to 0 Hz, FM-demodulates it, recovers the timing, undoes NRZI, finds the flags, removes stuffed 0s, and checks the CRC.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-on-the-sdr">
+<div class="wrap docutils container">
+<p class="rubric">On the SDR</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<ul class="simple">
+<li><p>Your own ships go out at 915 MHz, into a cable.</p></li>
+<li><p>For a recording, match <code class="docutils literal notranslate"><span class="pre">samp_rate</span></code>, <code class="docutils literal notranslate"><span class="pre">decim</span></code>, and the offsets.</p></li>
+<li><p>Never transmit on the AIS channels.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p><strong>Your own ships.</strong> <code class="docutils literal notranslate"><span class="pre">L19-ais-tx-pluto.grc</span></code> sends the four ships from a PlutoSDR at 915 MHz, with channel A at −25 kHz and channel B at +25 kHz, as they sit around 162 MHz. A Rational Resampler raises its 96 kS/s to the Pluto’s 576 kS/s. It goes into a cable from the Pluto’s TX port through the 30 dB attenuator to a Pluto’s RX port, its own or a second Pluto’s. Or, if your instructor says so, it goes over the air at 915 MHz at low power. In <code class="docutils literal notranslate"><span class="pre">L19-ais-rx.grc</span></code>, enable the PlutoSDR Source, Low Pass Filter, and AGC as in Find It on the Air, set <code class="docutils literal notranslate"><span class="pre">fc</span></code> to 915e6, run both, and set the squelch near −10 dB; raise it if the traces swing wildly between bursts. With two Plutos on one laptop, give each flowgraph its Pluto’s <code class="docutils literal notranslate"><span class="pre">usb:</span></code> URI. On one Pluto, the transmitter and receiver share one sample-rate clock, so both run at 576 kS/s; start the transmitter first, and expect a brief glitch when the receiver starts. Never set TX attenuation below 30 dB or change the slider’s range.</p>
+<p><strong>A real recording.</strong> Open its <code class="docutils literal notranslate"><span class="pre">.sigmf-meta</span></code> and read the sample rate and center frequency. Type the file name into the SigMF Source, set <code class="docutils literal notranslate"><span class="pre">samp_rate</span></code> to the recording’s rate, and choose <code class="docutils literal notranslate"><span class="pre">decim</span></code> so that the rate after decimation is about 48 kS/s; <code class="docutils literal notranslate"><span class="pre">sps</span></code> follows. Set <code class="docutils literal notranslate"><span class="pre">chan_a</span></code> and <code class="docutils literal notranslate"><span class="pre">chan_b</span></code> to 161.975 and 162.025 MHz minus the center frequency. Then lower the squelch until bursts decode, raise it until the noise stays out, and pick a setting between. On a coast, a SigMF Sink after the PlutoSDR Source makes such a recording.</p>
+<p>Receiving AIS is legal; transmitting on the AIS channels is not, because ships depend on them to avoid each other. The slides’ last activity, sending AIS data to someone, goes out at 915 MHz or into a file, never on 161.975 or 162.025 MHz.</p>
+</div>
+</div>
+</div>
+<div class="frame read-only doc-links docutils container" id="frame-downloads">
+<div class="wrap docutils container">
+<p class="rubric">Downloads</p>
+<ul class="simple">
+<li><p><a class="doc-link" href="../../grc/L19-ais-tx.grc" download>L19-ais-tx.grc</a>: the simulated AIS transmitter. Writes <code class="docutils literal notranslate"><span class="pre">L19-ais-sim.sigmf-data</span></code> and <code class="docutils literal notranslate"><span class="pre">.sigmf-meta</span></code>, 4 s (3 MB) of four ships on both channels at 96 kS/s, then stops. No hardware needed.</p></li>
+<li><p><a class="doc-link" href="../../grc/L19-ais-sim.sigmf-data" download>L19-ais-sim.sigmf-data</a> and <a class="doc-link" href="../../grc/L19-ais-sim.sigmf-meta" download>L19-ais-sim.sigmf-meta</a>: the same recording, ready to download, labeled Simulated.</p></li>
+<li><p><a class="doc-link" href="../../grc/L19-ais-tx-pluto.grc" download>L19-ais-tx-pluto.grc</a>: the same transmitter, sent from a PlutoSDR at 915 MHz into a cable through the 30 dB attenuator, or, if your instructor says so, over the air at 915 MHz at low power. Runs until you stop it. Needs a PlutoSDR.</p></li>
+<li><p><a class="doc-link" href="../../grc/L19-ais-rx.grc" download>L19-ais-rx.grc</a>: the two-channel receiver, with the waterfall, the demodulator plot, the AIS Decoder, the Added noise and Squelch sliders, and a disabled PlutoSDR Source, Low Pass Filter, and AGC for a radio.</p></li>
+</ul>
+<p>Put the receiver and the recording in one folder; GRC runs a flowgraph from its own folder. Each <code class="docutils literal notranslate"><span class="pre">.sigmf-data</span></code> file is complex float samples (cf32), as its <code class="docutils literal notranslate"><span class="pre">.sigmf-meta</span></code> says, so the SigMF Source’s type is complex float. The two decoders’ Embedded Python Blocks are saved inside the <code class="docutils literal notranslate"><span class="pre">.grc</span></code> files.</p>
+<p><strong>What this lesson follows.</strong> The topics and their order come from the slides. The hands-on steps follow the documentation of the blocks and tools:</p>
+<ul class="simple">
+<li><p><a class="doc-link" href="../../legacy/L36-ais.pdf" target="_blank" rel="noopener">AIS slides (PDF)</a></p></li>
+<li><p><a href="https://wiki.gnuradio.org/index.php/Embedded_Python_Block" target="_blank" rel="noopener">GNU Radio wiki, Embedded Python Block</a>, and the wiki pages of Frequency Xlating FIR Filter, Quadrature Demod, Symbol Sync, and Binary Slicer. Lesson 8 used the same FM demodulation for FSK, and Lesson 9 introduced Symbol Sync.</p></li>
+<li><p><a href="https://pysdr.org/content/digital_modulation.html" target="_blank" rel="noopener">PySDR, Digital Modulation</a>: FSK and its relatives, including GMSK.</p></li>
+<li><p><a href="https://github.com/bistromath/gr-ais" target="_blank" rel="noopener">gr-ais</a>, <a href="https://github.com/daniestevez/gr-satellites" target="_blank" rel="noopener">gr-satellites</a>, and <a href="https://github.com/M0r13n/pyais" target="_blank" rel="noopener">pyais</a>.</p></li>
+<li><p><a href="https://gpsd.gitlab.io/gpsd/AIVDM.html" target="_blank" rel="noopener">AIVDM/AIVDO protocol decoding</a>, by Eric Raymond: every message type, field by field.</p></li>
+</ul>
+</div>
+</div>
+<div class="frame read-only docutils container" id="frame-summary">
+<div class="wrap docutils container">
+<p class="rubric">Summary</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head text-left"><p>Idea</p></th>
+<th class="head text-left"><p>What to know</p></th>
+<th class="head text-left"><p>In GNU Radio</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-left"><p>AIS</p></td>
+<td class="text-left"><p>ships report identity and position on VHF</p></td>
+<td class="text-left"><p>two chains, one per channel</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>Channels</p></td>
+<td class="text-left"><p>A at 161.975 MHz, B at 162.025 MHz</p></td>
+<td class="text-left"><p>Frequency Xlating FIR Filter at ±25 kHz</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>Slots</p></td>
+<td class="text-left"><p>26.67 ms, 256 bits at 9600 b/s</p></td>
+<td class="text-left"><p>bursts on the waterfall</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>Burst</p></td>
+<td class="text-left"><p>ramp, training, flag, message, CRC, flag</p></td>
+<td class="text-left"><p>training and flag: the first 3 ms after the trigger</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>Coding</p></td>
+<td class="text-left"><p>bit stuffing, NRZI</p></td>
+<td class="text-left"><p>the AIS Decoder</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>GMSK</p></td>
+<td class="text-left"><p>FSK at ±2.4 kHz through a Gaussian filter, BT 0.4</p></td>
+<td class="text-left"><p>Interpolating FIR Filter and Frequency Mod</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>Receiver</p></td>
+<td class="text-left"><p>squelch, FM demodulator, Symbol Sync, slicer</p></td>
+<td class="text-left"><p>Quadrature Demod, Symbol Sync</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>Radio</p></td>
+<td class="text-left"><p>PlutoSDR at 576 kS/s, decimated by 6</p></td>
+<td class="text-left"><p>PlutoSDR Source, Low Pass Filter</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>Your own ships</p></td>
+<td class="text-left"><p>sent at 915 MHz, never on the AIS channels</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">L19-ais-tx-pluto.grc</span></code></p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>NMEA</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">!AIVDM</span></code>, 6 bits a character</p></td>
+<td class="text-left"><p>the decoder’s printout, pyais</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>Noise</p></td>
+<td class="text-left"><p>frames fail the CRC; the squelch opens</p></td>
+<td class="text-left"><p>the Added noise and Squelch sliders</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="frame read-only doc-links docutils container" id="frame-practice">
+<div class="wrap docutils container">
+<p class="rubric">Practice</p>
+<ul class="simple">
+<li><p><a class="doc-link" href="../../practice/ECE448_L19_Practice_blank.pdf" target="_blank" rel="noopener">Problem set (PDF)</a></p></li>
+<li><p><a class="doc-link doc-key" href="../../practice/ECE448_L19_Practice_SOLUTIONS.pdf" target="_blank" rel="noopener">Solutions (PDF)</a></p></li>
+</ul>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-looking-ahead">
+<div class="wrap docutils container">
+<p class="rubric">Looking Ahead</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<ul class="simple">
+<li><p>The L18–L19 Lab decodes live aircraft and a recording of ships.</p></li>
+<li><p>Lesson 20 turns to QAM and OFDM.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>The L18–L19 Lab is the bench version of both lessons. You build an ADS-B front end yourself and decode the aircraft overhead, then build an AIS receiver from an empty canvas and decode a recording of ships whose sample rate and center frequency differ from today’s, so the settings are yours to work out.</p>
+<p>Lesson 20 closes the course’s signals with QAM and OFDM, which carry more bits per symbol than anything we have decoded so far.</p>
+</div>
+</div>
+</div>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./module06/L19-ais"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+</main>
+
+<script src="../../_static/shell.js?v=ac36f07766"></script>
+<script src="../../_static/frames.js?v=89e4b02ee3"></script><script src="../../_static/viz-autosize.js?v=4fe0c4e159"></script>
+</body>
+</html>
