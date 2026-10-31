@@ -39,7 +39,7 @@ Lesson 19 · Module 6: Waveform Applications & RF Reverse Engineering · Dr. Nei
 ::::{frame} Ships in the Harbor
 :::{present}
 <img src="../../viz/img/L19-ais-rx.png"
-     alt="L19-ais-rx.grc running on the simulated recording, labeled SIMULATED: the Frames label reads 120 passed CRC, 0 failed; a waterfall shows short bursts on two channels, at 161.975 and 162.025 MHz; a triggered plot shows the FM demodulator output of one burst swinging between plus and minus 1; the Ships label lists four ships, RAMPART, ECE TRAINER, FALCON SPIRIT, and CAPE TERCEL, with their MMSI numbers, positions near Norfolk, Virginia, speeds, and courses"
+     alt="L19-ais-rx.grc running on the simulated recording, labeled SIMULATED: the Frames label reads 128 passed CRC, 0 failed; a waterfall shows short bursts on two channels, at 161.975 and 162.025 MHz; a triggered plot shows the FM demodulator output of one burst swinging between plus and minus 1; the Ships label lists four ships, RAMPART, ECE TRAINER, FALCON SPIRIT, and CAPE TERCEL, with their MMSI numbers, positions near Norfolk, Virginia, speeds, and courses"
      style="max-width: 760px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
@@ -49,7 +49,7 @@ Lesson 19 · Module 6: Waveform Applications & RF Reverse Engineering · Dr. Nei
 
 Ships do on VHF what aircraft did on 1090 MHz in Lesson 18: they announce who they are and where they are, several times a minute, to anyone listening. The figure is today's receiver, `L19-ais-rx.grc`, playing a simulated recording of four ships off Norfolk, Virginia. Each mark on the waterfall is one burst, on one of two channels 50 kHz apart. The plot on the right is one burst after the FM demodulator, and the table lists each ship by its number, its name, and where it is.
 
-There are essentially no ships near USAFA, so this lesson works from recordings: one we make ourselves with a simulated transmitter, and any real one you bring back from a coast. The topics follow the 2025 slides: what AIS is, its message, its modulation, the NMEA sentences decoders print, and the tools, with the slides' CRC placed where the decoder checks it.
+There are no AIS-equipped ships near USAFA, so this lesson works from recordings: one we make ourselves with a simulated transmitter, and any real one you bring back from a coast. The same transmitter can also go out from a PlutoSDR at 915 MHz into a cable through the 30 dB attenuator, never on the AIS channels, so a Pluto receives it live. The topics follow the 2025 slides: what AIS is, its message, its modulation, the NMEA sentences decoders print, and the tools, with the slides' CRC placed where the decoder checks it.
 ::::
 
 ::::{frame} The Automatic Identification System
@@ -66,18 +66,17 @@ AIS uses two marine VHF channels, called A at 161.975 MHz and B at 162.025 MHz, 
 
 ::::{frame} Find It on the Air
 :::{present}
-- Tune SDR Flex, or GQRX, to 162.000 MHz at 250 kS/s or more.
+- In `L19-ais-rx.grc`, enable the PlutoSDR Source, Low Pass Filter, and AGC, with `fc` at 162e6.
 - Look for short bursts at −25 and +25 kHz. Near USAFA, expect none.
 :::
 
-On a coast, the first look is the same as for ADS-B, in **SDR Flex** or in **GQRX** if SDR Flex is not set up. SDR Flex's README lists no AIS decoder, so in either program the steps end at the waterfall:
+On a coast, the first look uses today's receiver with the PlutoSDR in place of the recording. The course Plutos run from 70 MHz to 6 GHz, so 162 MHz is in range:
 
-1. Set the input to the RTL-SDR and the sample rate to 250 kS/s or more, so both channels fit.
-2. Tune to 162.000 MHz, halfway between the channels.
-3. Watch the waterfall for short bursts, each a little shorter than one 26.67 ms slot, at −25 kHz (channel A) and +25 kHz (channel B). In a busy harbor several arrive every second.
-4. Select one burst and play it with the narrow FM demodulator to hear the buzz of 9600 b/s data.
+1. Open `L19-ais-rx.grc`, select the SigMF Source and the Throttle, and press D to disable both. Select the gray PlutoSDR Source, Low Pass Filter, and AGC and press E to enable them. The **AGC** scales the bursts to a power near 1 whatever their strength, so the squelch keeps its meaning; start the squelch near −10 dB. The Pluto's URI is `ip:192.168.2.1`, and its center frequency is the variable `fc`, 162e6, halfway between the channels.
+2. Run it, and raise the Pluto RX gain slider until the bursts stand well above the waterfall's floor.
+3. Watch the waterfall for short bursts, each a little shorter than one 26.67 ms slot, at −25 kHz (channel A) and +25 kHz (channel B). In a busy harbor several arrive every second, and the Ships label fills.
 
-In Colorado the waterfall stays empty at 162 MHz, which is why we use recordings. SDR Flex's full version opens your own recordings from a captures folder, as its README describes, along with the drag that selects a signal and the FM demodulator; GQRX opens a recording through its I/Q file input.
+In Colorado the waterfall stays empty at 162 MHz, which is why we use recordings, and why On the SDR sends our own ships at 915 MHz.
 ::::
 
 ::::{frame} The Burst
@@ -151,13 +150,13 @@ The explorer follows one short stretch of a burst through the transmitter of `L1
 
 `L19-ais-tx.grc` follows the GMSK test plots on the 2025 slides: levels, a Gaussian filter, and FM. The **AIS Frames** block is an Embedded Python Block that does the framing of the last frames for four ships: message, CRC, stuffing, flags, and NRZI. It outputs, for each channel, the level of every bit and a gate that is 1 during a burst. An **Interpolating FIR Filter** holds each level for 10 samples and applies the Gaussian filter, with taps built from `firdes.gaussian` at BT 0.4, and **Frequency Mod** turns the result into ±2.4 kHz. The gate switches the carrier on and off, and a Signal Source moves each channel to −25 or +25 kHz.
 
-A Noise Source adds noise, and a **SigMF Sink** writes 4 s at 96 kS/s, centered on 162 MHz, to `L19-ais-sim.sigmf-data`, labeled Simulated in its `.sigmf-meta`. The ships report much more often than real ones, so a few seconds hold every message type. Nothing transmits.
+A Noise Source adds noise, and a **SigMF Sink** writes 4 s at 96 kS/s, centered on 162 MHz, to `L19-ais-sim.sigmf-data`, labeled Simulated in its `.sigmf-meta`. The ships report much more often than real ones, so a few seconds hold every message type. Nothing transmits. `L19-ais-tx-pluto.grc` sends the same ships from a PlutoSDR at 915 MHz into a cable through the 30 dB attenuator instead, never on 161.975 or 162.025 MHz; On the SDR uses it.
 ::::
 
 ::::{frame} The Receiver
 :::{present}
 <img src="../../viz/img/L19-grc-rx.png"
-     alt="GNU Radio Companion with L19-ais-rx.grc open: a SigMF Source, Throttle, and an Add with a Noise Source; a waterfall; then for each channel a Frequency Xlating FIR Filter at minus or plus 25 kHz with decimation 2, a Power Squelch, a Quadrature Demod, a Symbol Sync with a zero-crossing detector at 5 samples per symbol, and a Binary Slicer, both into the AIS Decoder embedded block; a QT GUI Time Sink shows both demodulator outputs"
+     alt="GNU Radio Companion with L19-ais-rx.grc open: a SigMF Source and Throttle, a disabled PlutoSDR Source, Low Pass Filter, and AGC, and an Add with a Noise Source; a waterfall; then for each channel a Frequency Xlating FIR Filter at minus or plus 25 kHz with decimation 2, a Power Squelch, a Quadrature Demod, a Symbol Sync with a zero-crossing detector at 5 samples per symbol, and a Binary Slicer, both into the AIS Decoder embedded block; a QT GUI Time Sink shows both demodulator outputs"
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
@@ -165,7 +164,7 @@ A Noise Source adds noise, and a **SigMF Sink** writes 4 s at 96 kS/s, centered 
 - **Symbol Sync** picks one sample per bit; the **Binary Slicer** decides it.
 :::
 
-Each channel gets its own chain. A **Frequency Xlating FIR Filter** moves the channel to 0 Hz, keeps ±7 kHz, and decimates by 2, to 48 kS/s, which is 5 samples per bit. A **Power Squelch** passes the signal only while its power is above the **Squelch** slider and outputs zeros between bursts, so the timing loop does not chase noise. **Quadrature Demod** is the FM demodulator of Lesson 7; its gain is set so that ±2.4 kHz comes out as ±1. **Symbol Sync**, from Lesson 9, picks one sample per bit; here it uses the zero-crossing detector, which locks within the 24 training bits. The **Binary Slicer** turns each sample into a 1 or a 0, and the **AIS Decoder** reads both channels' bits.
+The SigMF Source plays the recording at 96 kS/s. For a radio, a PlutoSDR Source at 576 kS/s, a Low Pass Filter that decimates by 6, and an AGC replace the SigMF Source and the Throttle. We keep the Pluto above about 521 kS/s, the lowest rate its AD9364 chip runs at on its own. Each channel then gets its own chain. A **Frequency Xlating FIR Filter** moves the channel to 0 Hz, keeps ±7 kHz, and decimates by 2, to 48 kS/s, which is 5 samples per bit. A **Power Squelch** passes the signal only while its power is above the **Squelch** slider and outputs zeros between bursts, so the timing loop does not chase noise. **Quadrature Demod** is the FM demodulator of Lesson 7; its gain is set so that ±2.4 kHz comes out as ±1. **Symbol Sync**, from Lesson 9, picks one sample per bit; here it uses the zero-crossing detector, which locks within the 24 training bits. The **Binary Slicer** turns each sample into a 1 or a 0, and the **AIS Decoder** reads both channels' bits.
 ::::
 
 ::::{frame} What the Demodulator Shows
@@ -214,7 +213,7 @@ Inside, the first 6 bits are the **message ID**, the next 2 a repeat indicator, 
 ::::{frame} What Noise Does
 :::{present}
 <img src="../../viz/img/L19-ais-noise.png"
-     alt="L19-ais-rx.grc labeled SIMULATED with the added noise at 0.2 and the squelch at minus 25 dB: the Frames label reads 22 passed CRC, 9 failed; the waterfall's floor is brighter but the bursts still show; the time plot shows channel A's burst blurred by noise and channel B's output swinging wildly between the limits, where the squelch has opened on noise; one ship's name is missing from the table"
+     alt="L19-ais-rx.grc labeled SIMULATED with the added noise at 0.2 and the squelch at minus 25 dB: the Frames label reads 18 passed CRC, 17 failed; the waterfall's floor is brighter but the bursts still show; the time plot shows both channels' outputs swinging wildly between the limits, where the squelch has opened on noise; one ship's name is missing from the table"
      style="max-width: 760px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
@@ -222,21 +221,21 @@ Inside, the first 6 bits are the **message ID**, the next 2 a repeat indicator, 
 - Past the squelch, noise opens it and the timing loop wanders: raise **Squelch**.
 :::
 
-The figure raises the added noise to 0.2. The bursts still show on the waterfall, but the demodulated trace of each burst blurs, some bits land on the wrong side of the slicer, and frames start failing the CRC. Channel B's trace in the time plot now swings wildly: the noise alone is above the −25 dB squelch, so the squelch stays open, and Symbol Sync chases noise between bursts and starts each burst out of step.
+The figure raises the added noise to 0.2. The bursts still show on the waterfall, but the demodulated trace of each burst blurs, some bits land on the wrong side of the slicer, and frames start failing the CRC. Both traces in the time plot now swing wildly: the noise alone is above the −25 dB squelch, so the squelch stays open, and Symbol Sync chases noise between bursts and starts each burst out of step.
 
-Raise the **Squelch** slider until the noise between bursts stays out and the channel B trace goes quiet, and frames come back; raise it too far and the weak ships disappear. A real receiver sets this threshold from the noise it measures.
+Raise the **Squelch** slider until the noise between bursts stays out and the traces go quiet between bursts, and frames come back; raise it too far and the weak ships disappear. A real receiver sets this threshold from the noise it measures.
 ::::
 
 ::::{frame} Ready-Made Decoders
 :::{present}
-- **AIS-catcher** and **rtl_ais** decode both channels from an RTL-SDR.
+- radioconda has no AIS module, so our decoder is an Embedded Python Block.
 - **gr-ais** is a GNU Radio module; **gr-satellites** decodes AIS from space.
 - **pyais** decodes and builds NMEA sentences in Python.
 :::
 
-The slides list gr-ais, gr-satellites, SDR Angel, and SCEPTRE. **gr-ais**, by Nick Foster, is an out-of-tree GNU Radio module with an AIS receiver; a fork has a branch for GNU Radio 3.10, but we have not built it in this course, so our flowgraph uses the AIS Decoder above. **gr-satellites** decodes AIS among its many satellite telemetry formats, since satellites in low orbit receive AIS over the open ocean. **SDRangel** has an AIS demodulator, and **SCEPTRE** is a commercial signal analysis tool.
+The slides list gr-ais, gr-satellites, SDR Angel, and SCEPTRE. **gr-ais**, by Nick Foster, is an out-of-tree GNU Radio module with an AIS receiver; a fork has a branch for GNU Radio 3.10, but radioconda does not ship it, so our flowgraph uses the AIS Decoder above. **gr-satellites** decodes AIS among its many satellite telemetry formats, since satellites in low orbit receive AIS over the open ocean. Optional: outside GNU Radio, SDRangel, the commercial SCEPTRE, and, on a coast, AIS-catcher or rtl_ais with an RTL-SDR decode AIS.
 
-For a coast, **AIS-catcher** and **rtl_ais** are command-line decoders that tune an RTL-SDR to both channels and print NMEA sentences. The slides' first activity builds an NMEA sentence with **pyais**, which also decodes them: `pyais.decode(sentence)` returns every field. Their second activity, a SigMF recording from the Noir CTF challenge, is replaced here by the lesson's own recording.
+The slides' first activity builds an NMEA sentence with **pyais**, which also decodes them: `pyais.decode(sentence)` returns every field. Their second activity, a SigMF recording from the Noir CTF challenge, is replaced here by the lesson's own recording.
 ::::
 
 ::::{frame} Key Point
@@ -248,14 +247,16 @@ AIS sends HDLC frames at 9600 b/s on two VHF channels with GMSK. The receiver sh
 
 ::::{frame} On the SDR
 :::{present}
-- On a coast, record 162 MHz at 250 kS/s or more as SigMF.
-- Set `samp_rate`, `decim`, and the channel offsets to match.
-- Receive only: AIS channels are for ships' safety.
+- Your own ships go out at 915 MHz, into a cable.
+- For a recording, match `samp_rate`, `decim`, and the offsets.
+- Never transmit on the AIS channels.
 :::
 
-To decode a real recording, open its `.sigmf-meta` and read the sample rate and center frequency. Type the file name into the SigMF Source, set `samp_rate` to the recording's rate, and choose `decim` so that the rate after decimation is about 48 kS/s; `sps` follows. Set `chan_a` and `chan_b` to 161.975 and 162.025 MHz minus the center frequency. Then lower the squelch until bursts decode, raise it until the noise stays out, and pick a setting between.
+**Your own ships.** `L19-ais-tx-pluto.grc` sends the four ships from a PlutoSDR at 915 MHz, with channel A at −25 kHz and channel B at +25 kHz, as they sit around 162 MHz. A Rational Resampler raises its 96 kS/s to the Pluto's 576 kS/s. It goes into a cable from the Pluto's TX port through the 30 dB attenuator to a Pluto's RX port, its own or a second Pluto's. Or, if your instructor says so, it goes over the air at 915 MHz at low power. In `L19-ais-rx.grc`, enable the PlutoSDR Source, Low Pass Filter, and AGC as in Find It on the Air, set `fc` to 915e6, run both, and set the squelch near −10 dB; raise it if the traces swing wildly between bursts. With two Plutos on one laptop, give each flowgraph its Pluto's `usb:` URI. On one Pluto, the transmitter and receiver share one sample-rate clock, so both run at 576 kS/s; start the transmitter first, and expect a brief glitch when the receiver starts. Never set TX attenuation below 30 dB or change the slider's range.
 
-Receiving AIS is legal; transmitting on the AIS channels is not, because ships depend on them to avoid each other. The slides' last activity, sending AIS data to someone, stays inside GNU Radio: our transmitter writes a file and never connects to a radio.
+**A real recording.** Open its `.sigmf-meta` and read the sample rate and center frequency. Type the file name into the SigMF Source, set `samp_rate` to the recording's rate, and choose `decim` so that the rate after decimation is about 48 kS/s; `sps` follows. Set `chan_a` and `chan_b` to 161.975 and 162.025 MHz minus the center frequency. Then lower the squelch until bursts decode, raise it until the noise stays out, and pick a setting between. On a coast, a SigMF Sink after the PlutoSDR Source makes such a recording.
+
+Receiving AIS is legal; transmitting on the AIS channels is not, because ships depend on them to avoid each other. The slides' last activity, sending AIS data to someone, goes out at 915 MHz or into a file, never on 161.975 or 162.025 MHz.
 ::::
 
 ::::{frame} Downloads
@@ -263,7 +264,8 @@ Receiving AIS is legal; transmitting on the AIS channels is not, because ships d
 
 - <a class="doc-link" href="../../grc/L19-ais-tx.grc" download>L19-ais-tx.grc</a>: the simulated AIS transmitter. Writes `L19-ais-sim.sigmf-data` and `.sigmf-meta`, 4 s (3 MB) of four ships on both channels at 96 kS/s, then stops. No hardware needed.
 - <a class="doc-link" href="../../grc/L19-ais-sim.sigmf-data" download>L19-ais-sim.sigmf-data</a> and <a class="doc-link" href="../../grc/L19-ais-sim.sigmf-meta" download>L19-ais-sim.sigmf-meta</a>: the same recording, ready to download, labeled Simulated.
-- <a class="doc-link" href="../../grc/L19-ais-rx.grc" download>L19-ais-rx.grc</a>: the two-channel receiver, with the waterfall, the demodulator plot, the AIS Decoder, and the Added noise and Squelch sliders.
+- <a class="doc-link" href="../../grc/L19-ais-tx-pluto.grc" download>L19-ais-tx-pluto.grc</a>: the same transmitter, sent from a PlutoSDR at 915 MHz into a cable through the 30 dB attenuator, or, if your instructor says so, over the air at 915 MHz at low power. Runs until you stop it. Needs a PlutoSDR.
+- <a class="doc-link" href="../../grc/L19-ais-rx.grc" download>L19-ais-rx.grc</a>: the two-channel receiver, with the waterfall, the demodulator plot, the AIS Decoder, the Added noise and Squelch sliders, and a disabled PlutoSDR Source, Low Pass Filter, and AGC for a radio.
 
 Put the receiver and the recording in one folder; GRC runs a flowgraph from its own folder. Each `.sigmf-data` file is complex float samples (cf32), as its `.sigmf-meta` says, so the SigMF Source's type is complex float. The two decoders' Embedded Python Blocks are saved inside the `.grc` files.
 
@@ -272,8 +274,7 @@ Put the receiver and the recording in one folder; GRC runs a flowgraph from its 
 - <a class="doc-link" href="../../legacy/L36-ais.pdf" target="_blank" rel="noopener">AIS slides (PDF)</a>
 - <a href="https://wiki.gnuradio.org/index.php/Embedded_Python_Block" target="_blank" rel="noopener">GNU Radio wiki, Embedded Python Block</a>, and the wiki pages of Frequency Xlating FIR Filter, Quadrature Demod, Symbol Sync, and Binary Slicer. Lesson 8 used the same FM demodulation for FSK, and Lesson 9 introduced Symbol Sync.
 - <a href="https://pysdr.org/content/digital_modulation.html" target="_blank" rel="noopener">PySDR, Digital Modulation</a>: FSK and its relatives, including GMSK.
-- <a href="https://github.com/livethisdream/sdr-flex" target="_blank" rel="noopener">SDR Flex and its README</a>, and GQRX as the fallback.
-- <a href="https://github.com/jvde-github/AIS-catcher" target="_blank" rel="noopener">AIS-catcher</a>, <a href="https://github.com/dgiardini/rtl-ais" target="_blank" rel="noopener">rtl_ais</a>, <a href="https://github.com/bistromath/gr-ais" target="_blank" rel="noopener">gr-ais</a>, <a href="https://github.com/daniestevez/gr-satellites" target="_blank" rel="noopener">gr-satellites</a>, and <a href="https://github.com/M0r13n/pyais" target="_blank" rel="noopener">pyais</a>.
+- <a href="https://github.com/bistromath/gr-ais" target="_blank" rel="noopener">gr-ais</a>, <a href="https://github.com/daniestevez/gr-satellites" target="_blank" rel="noopener">gr-satellites</a>, and <a href="https://github.com/M0r13n/pyais" target="_blank" rel="noopener">pyais</a>.
 - <a href="https://gpsd.gitlab.io/gpsd/AIVDM.html" target="_blank" rel="noopener">AIVDM/AIVDO protocol decoding</a>, by Eric Raymond: every message type, field by field.
 ::::
 
@@ -289,6 +290,8 @@ Put the receiver and the recording in one folder; GRC runs a flowgraph from its 
 | Coding | bit stuffing, NRZI | the AIS Decoder |
 | GMSK | FSK at ±2.4 kHz through a Gaussian filter, BT 0.4 | Interpolating FIR Filter and Frequency Mod |
 | Receiver | squelch, FM demodulator, Symbol Sync, slicer | Quadrature Demod, Symbol Sync |
+| Radio | PlutoSDR at 576 kS/s, decimated by 6 | PlutoSDR Source, Low Pass Filter |
+| Your own ships | sent at 915 MHz, never on the AIS channels | `L19-ais-tx-pluto.grc` |
 | NMEA | `!AIVDM`, 6 bits a character | the decoder's printout, pyais |
 | Noise | frames fail the CRC; the squelch opens | the Added noise and Squelch sliders |
 ::::

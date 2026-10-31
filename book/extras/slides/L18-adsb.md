@@ -29,7 +29,7 @@ Spring 2027 · Dr. Neil Rogers
 Today we generate, receive, and decode aircraft ADS-B messages.
 
 Note:
-Open L18-adsb-tx.grc and L18-adsb-rx.grc in GRC before class, and run the generator once so the recording exists. If the room has a window, an RTL-SDR on the sill hears real aircraft for the On the SDR slide.
+Open L18-adsb-tx.grc and L18-adsb-rx.grc in GRC before class, and run the generator once so the recording exists. If the room has a window, a PlutoSDR on the sill hears real aircraft for the Find It on the Air and On the SDR slides. For the 915 MHz demo, cable a Pluto's TX port to an RX port through the 30 dB attenuator.
 
 ---
 
@@ -39,8 +39,8 @@ Open L18-adsb-tx.grc and L18-adsb-rx.grc in GRC before class, and run the genera
 2. The physical layer: pulse-position modulation
 3. The ADS-B Out generator, and our PPM block
 4. The message: DF, ICAO, ME, parity
-5. The receiver and the Mode S Decoder
-6. Noise, tools, and live aircraft
+5. The receiver: gr-adsb's Framer, Demod, and Decoder
+6. Noise, the modules, and live aircraft
 
 Note:
 These follow the 2025 slides in order. The reference for every message detail is Sun's The 1090 Megahertz Riddle, in the slides' references.
@@ -49,12 +49,12 @@ These follow the 2025 slides in order. The reference for every message detail is
 
 ## Aircraft Overhead
 
-<img src="./img/18-adsb/L18-adsb-rx.png" alt="L18-adsb-rx.grc on the simulated recording: pulses, one triggered message, and a table of four aircraft near USAFA" style="max-height:440px; display:block; margin:0 auto;">
+<img src="./img/18-adsb/L18-adsb-rx.png" alt="L18-adsb-rx.grc on the simulated recording: pulse power, one triggered message, and gr-adsb's table of four aircraft near USAFA" style="max-height:440px; display:block; margin:0 auto;">
 
 Each spike is one 120 µs message; the table fills with aircraft.
 
 Note:
-Run the receiver live. Point at the left plot: each spike is a message. The right plot freezes one on its first pulse. The table at the bottom is what the decoder has read so far. The recording is simulated, and the figure says so.
+Run the receiver live. Point at the left plot: each spike is a message. The right plot freezes one on its first pulse. The table at the bottom is what gr-adsb has decoded so far. The recording is simulated, and the figure says so.
 
 ---
 
@@ -71,13 +71,13 @@ Automatic: no one asks. Dependent: the position comes from the aircraft's GPS. B
 
 ## Find It on the Air
 
-1. RTL-SDR at 2.4 MS/s, gain near 40 dB
-2. Tune to 1090 MHz
-3. Look for short dots scattered in time
-4. In SDR Flex, attach dump1090
+1. In L18-adsb-rx.grc, disable the SigMF Source and Throttle
+2. Enable the PlutoSDR Source and AGC: `fc` = 1090e6, 2 MS/s
+3. Pluto at a window; watch for spikes in time
+4. Aircraft fill the table as gr-adsb decodes them
 
 Note:
-SDR Flex's full version (Docker or server) has the live radio and the dump1090 decoder; the browser version has neither. Its README says the radio drivers have not been tried with a real radio yet, so GQRX is the tested path for the first look. GQRX has no ADS-B decoder: the dots are as far as GQRX goes.
+Same flowgraph as the rest of the lesson. The URI is ip:192.168.2.1. The AGC brings the strongest recent pulses near a power of 1, so the threshold keeps its meaning. A position appears only after gr-adsb has an even and an odd position message from the aircraft. If nothing shows in a few minutes, raise the RX gain and try another window.
 
 ---
 
@@ -108,7 +108,7 @@ Start with the first 16 bits: each bit's pulse sits in one half. Raise the noise
 PPM chips, then a carrier, then noise, as on the 2025 slides.
 
 Note:
-The ADS-B Out block is an Embedded Python Block like Lesson 11's. It writes 0.5 s to L18-adsb-sim.sigmf-data and .sigmf-meta, labeled Simulated. The aircraft send ten or more times as often as real ones, so the half second holds about 75 messages. Nothing transmits: the last block is a file sink.
+The ADS-B Out block is an Embedded Python Block like Lesson 11's. It writes 0.5 s to L18-adsb-sim.sigmf-data and .sigmf-meta, labeled Simulated. The aircraft send ten or more times as often as real ones, so the half second holds about 75 messages. Nothing transmits: the last block is a file sink. L18-adsb-tx-pluto.grc sends the same aircraft from a Pluto at 915 MHz into a cable through the 30 dB attenuator, never at 1090.
 
 ---
 
@@ -136,7 +136,7 @@ Double-click the block and choose Open in Editor. Around these lines it builds 8
 | format | capability | address | message | parity |
 
 Note:
-The slides' example 8D4840D6202CC371C32CE0576098 is from Sun's book: 8D is DF 17 and CA 5, the address is 4840D6, and the ME field is the callsign KLM1023. The parity bits come from the first 88 bits with a fixed 25-bit generator; the decoder repeats the calculation and drops any message that disagrees.
+The slides' example 8D4840D6202CC371C32CE0576098 is from Sun's book: 8D is DF 17 and CA 5, the address is 4840D6, and the ME field is the callsign KLM1023. The parity bits come from the first 88 bits with a fixed 25-bit generator; gr-adsb's Decoder repeats the calculation and drops any message that disagrees.
 
 ---
 
@@ -149,51 +149,50 @@ The slides' example 8D4840D6202CC371C32CE0576098 is from Sun's book: 8D is DF 17
 | 19 | velocity |
 
 Note:
-The callsign is eight 6-bit characters; the altitude is in 25 ft steps. Position uses Compact Position Reporting: even and odd messages with two zone sizes. A receiver pairs them or uses a reference position within 180 nautical miles. Our decoder uses USAFA as its reference.
+The callsign is eight 6-bit characters; the altitude is in 25 ft steps. Position uses Compact Position Reporting: even and odd messages with two zone sizes. A receiver pairs them or uses a reference position within 180 nautical miles. gr-adsb pairs an even and an odd message received within 30 s, so it needs no reference, and a position appears a moment after the callsign.
 
 ---
 
 ## The Receiver
 
-<img src="./img/18-adsb/L18-grc-rx.png" alt="L18-adsb-rx.grc in GRC: SigMF Source, Throttle, a disabled RTL-SDR Source, noise, Complex to Mag, two time sinks, and the Mode S Decoder" style="max-height:330px; display:block; margin:0 auto;">
+<img src="./img/18-adsb/L18-grc-rx.png" alt="L18-adsb-rx.grc in GRC: SigMF Source, Throttle, a disabled PlutoSDR Source and AGC, noise, Complex to Mag^2, two time sinks, and gr-adsb's Framer, Demod, and Decoder" style="max-height:330px; display:block; margin:0 auto;">
 
-**Complex to Mag** gives the pulse train; a triggered **Time Sink** freezes one message.
+**Complex to Mag^2** gives pulse power; gr-adsb's three blocks decode it.
 
 Note:
-PPM needs only the magnitude, not the phase. The left time sink runs freely over 20 ms. The right one triggers at 0.3 and shows 60 us from just before the first pulse. For live signals, the RTL-SDR Source replaces the SigMF Source and Throttle.
+PPM needs only the power, not the phase; gr-adsb's examples use Complex to Mag^2. The left time sink runs freely over 20 ms. The right one triggers at 0.3 and shows 60 us from just before the first pulse. For live signals, the PlutoSDR Source and an AGC replace the SigMF Source and Throttle. radioconda ships gr-adsb as gnuradio-adsb; its blocks are under ADS-B in the block list.
 
 ---
 
 ## Decoding Step by Step
 
-1. Find four preamble pulses with quiet between them.
-2. Compare each pair of chips: the larger half is the pulse.
-3. Check the parity, then print and tabulate.
+1. The **Framer** finds four preamble pulses with quiet between them.
+2. The **Demod** compares each pair of chips; the larger half is the pulse.
+3. The **Decoder** checks the parity, then reads the fields.
 
 Note:
-The Mode S Decoder is an Embedded Python Block. It prints each message to the GRC console in hex with what it says, and the Messages label counts passes and failures; both start over when a slider moves.
+The Framer's Detection Threshold is the Framer threshold slider. Error Correction is None, so a message that fails parity is dropped. Print Level Verbose prints every field in the GRC console; Brief needs a terminal window. The Aircraft Table block decodes nothing: it shows what the Decoder sends it, and counts bursts found and messages decoded into an identity, a position, or a velocity. The console's Heading is measured from east; the table shows a compass track.
 
 ---
 
 ## What Noise Does
 
-<img src="./img/18-adsb/L18-adsb-noise.png" alt="The receiver with added noise 0.15: the floor rises, only the strongest aircraft remain in the table" style="max-height:420px; display:block; margin:0 auto;">
+<img src="./img/18-adsb/L18-adsb-noise.png" alt="The receiver with added noise 0.15: the floor rises, only the two strongest aircraft remain in the table" style="max-height:420px; display:block; margin:0 auto;">
 
-Raise **Added noise**: the weak aircraft drop out first.
+Raise **Added noise**: the weak aircraft drop out first. Then raise the **Framer threshold**.
 
 Note:
-At 0.15 the floor rises until only the two strongest aircraft stand clear. The others still send, but noise beats a pulse in some chip pair of almost every message, so the parity fails. Distance does the same thing to real aircraft. The trigger starts firing on noise.
+At 0.15 the floor rises until only the two strongest aircraft stand clear. The others still send, but noise beats a pulse in some chip pair of almost every message, so the parity fails. The Framer's threshold of 0.01 is now under the noise, so even the strong two decode less often; at 0.1 they decode about twenty times as often, and the weak two stay gone. Distance does the same thing to real aircraft.
 
 ---
 
-## Ready-Made Decoders
+## Two GNU Radio Modules
 
-- **dump1090**: RTL-SDR at 2.4 MS/s, live table and maps
-- **SDRangel**: ADS-B demodulator with a map
-- **gr-adsb**: GNU Radio blocks; a 3.10 branch, not built here
+- **gr-adsb** has the Framer, Demod, and Decoder, and radioconda ships it.
+- **gr-air-modes** is the other Mode S module, with `modes_rx`.
 
 Note:
-dump1090 --interactive prints a table like ours; it is packaged as dump1090-mutability or dump1090-fa. We ran dump1090-mutability on our recording, resampled to 2.4 MS/s, and it listed the same four aircraft with the same callsigns, altitudes, and positions.
+gr-adsb is Matt Hostetter's module. On the recording it lists the four aircraft exactly as the generator's AIRCRAFT list has them. gr-air-modes is Nick Foster's. Optional: dump1090 and SDRangel, the slides' other tools, decode ADS-B outside GNU Radio.
 
 ---
 
@@ -202,18 +201,19 @@ dump1090 --interactive prints a table like ours; it is packaged as dump1090-muta
 <div class="callout">ADS-B sends 112-bit messages on 1090 MHz as pulses: each bit is one 0.5 µs pulse in the first or second half of its microsecond. The receiver finds the preamble, compares chip pairs, and keeps messages whose parity checks.</div>
 
 Note:
-The decoder needs only the magnitude of the signal.
+The receiver needs only the power of the signal, not its phase.
 
 ---
 
 ## On the SDR
 
-- Disable the SigMF Source and Throttle; enable the RTL-SDR Source.
-- Antenna at a window, gain near 40 dB.
-- Receive only: never transmit on 1090 MHz.
+<img src="./img/18-adsb/L18-grc-tx-pluto.png" alt="L18-adsb-tx-pluto.grc in GRC: the ADS-B Out block on a 75 kHz carrier, scaled by 0.5, into a PlutoSDR Sink at 915 MHz with TX attenuation from a 30 to 89 dB slider, default 60" style="max-height:300px; display:block; margin:0 auto;">
+
+- For live aircraft, set `fc` to 1090e6 and RX gain near 50 dB, and only receive.
+- Your own aircraft go out from L18-adsb-tx-pluto.grc at 915 MHz; the receiver tunes to 915e6.
 
 Note:
-A quarter wave at 1090 MHz is about 6.9 cm, so the RTL-SDR's antenna works. Live pulses are weaker; lower the trigger level if the right plot never fires. 1090 MHz carries replies that air traffic control and collision avoidance depend on, and nothing in a message proves who sent it; the Magazu AFIT thesis studies false targets. Our generator only writes a file.
+Set the Framer threshold above the floor on the 20 ms plot and below the spikes. The 915 MHz link goes from the Pluto's TX port through the 30 dB attenuator to an RX port, or over the air at 915 MHz at low power if the instructor says so; TX attenuation never below 30 dB. Two Plutos on one laptop use usb: URIs; on one Pluto, start the transmitter first, since TX and RX share one sample-rate clock. Never transmit on 1090 MHz: it carries replies that ATC and collision avoidance depend on, and nothing in a message proves who sent it; the Magazu AFIT thesis studies false targets.
 
 ---
 
@@ -223,4 +223,4 @@ A quarter wave at 1090 MHz is about 6.9 cm, so the RTL-SDR's antenna works. Live
 - L18–L19 Lab: live aircraft and a recording of ships
 
 Note:
-In the lab, cadets build the ADS-B front end themselves and compare the aircraft they decode with a public flight tracker.
+In the lab, cadets build the ADS-B receiver on the Pluto themselves with gr-adsb and compare the aircraft they decode with a public flight tracker.

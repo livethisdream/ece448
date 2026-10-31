@@ -6,10 +6,12 @@ options:
     cmake_opt: ''
     comment: ''
     copyright: ''
-    description: 'L18: receive ADS-B at 1090 MHz from L18-adsb-sim.sigmf-data or an
-      RTL-SDR at 2 MS/s, show the pulses, and decode each message with the Mode S
-      Decoder, an Embedded Python Block. To go live, disable the SigMF Source and
-      the Throttle and enable the RTL-SDR Source. Receive only.'
+    description: 'L18: receive ADS-B from L18-adsb-sim.sigmf-data or a PlutoSDR at
+      2 MS/s, show the pulses, and decode each message with gr-adsb''s Framer, Demod,
+      and Decoder. The Aircraft Table block only displays what the Decoder sends it.
+      To go live, disable the SigMF Source and the Throttle and enable the PlutoSDR
+      Source and its AGC: fc 1090e6 for real aircraft, or 915e6 for L18-adsb-tx-pluto.grc
+      through the cable. Receive only.'
     gen_cmake: 'On'
     gen_linking: dynamic
     generate_options: qt_gui
@@ -36,6 +38,18 @@ options:
     state: enabled
 
 blocks:
+- name: fc
+  id: variable
+  parameters:
+    comment: ''
+    value: 1090e6
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [200, 88]
+    rotation: 0
+    state: enabled
 - name: noise
   id: variable_qtgui_range
   parameters:
@@ -57,19 +71,19 @@ blocks:
     coordinate: [440, 8]
     rotation: 0
     state: enabled
-- name: rf_gain
+- name: rx_gain
   id: variable_qtgui_range
   parameters:
     comment: ''
     gui_hint: 0,0,1,1
-    label: RF gain (dB)
+    label: Pluto RX gain (dB)
     min_len: '200'
     orient: QtCore.Qt.Horizontal
     rangeType: float
     start: '0'
-    step: '0.1'
-    stop: '49.6'
-    value: '40'
+    step: '1'
+    stop: '70'
+    value: '50'
     widget: counter_slider
   states:
     bus_sink: false
@@ -93,17 +107,17 @@ blocks:
 - name: stats
   id: variable_function_probe
   parameters:
-    block_id: epy_block_0
+    block_id: table_0
     comment: ''
     function_args: ''
     function_name: stats
     poll_rate: '2'
-    value: '''0 passed parity, 0 failed'''
+    value: '''0 bursts found, 0 decoded'''
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [584, 8]
+    coordinate: [744, 8]
     rotation: 0
     state: enabled
 - name: stats_label
@@ -119,13 +133,13 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [904, 8]
+    coordinate: [1064, 8]
     rotation: 0
     state: enabled
 - name: table
   id: variable_function_probe
   parameters:
-    block_id: epy_block_0
+    block_id: table_0
     comment: ''
     function_args: ''
     function_name: table
@@ -135,7 +149,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [744, 8]
+    coordinate: [904, 8]
     rotation: 0
     state: enabled
 - name: table_label
@@ -151,9 +165,103 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1072, 8]
+    coordinate: [1240, 8]
     rotation: 0
     state: enabled
+- name: threshold
+  id: variable_qtgui_range
+  parameters:
+    comment: ''
+    gui_hint: 3,0,1,2
+    label: Framer threshold (power)
+    min_len: '200'
+    orient: QtCore.Qt.Horizontal
+    rangeType: float
+    start: '0.0001'
+    step: '0.0001'
+    stop: '0.2'
+    value: '0.01'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [584, 8]
+    rotation: 0
+    state: enabled
+- name: adsb_decoder_0
+  id: adsb_decoder
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    error_corr: '"None"'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    msg_filter: '"Extended Squitter Only"'
+    print_level: '"Verbose"'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [976, 392]
+    rotation: 0
+    state: enabled
+- name: adsb_demod_0
+  id: adsb_demod
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    fs: samp_rate
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [760, 480]
+    rotation: 0
+    state: enabled
+- name: adsb_framer_0
+  id: adsb_framer
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    fs: samp_rate
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    threshold: threshold
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [560, 480]
+    rotation: 0
+    state: enabled
+- name: agc_0
+  id: analog_agc3_xx
+  parameters:
+    affinity: ''
+    alias: ''
+    attack_rate: '1.0'
+    comment: ''
+    decay_rate: 1e-6
+    gain: '1.0'
+    iir_update_decim: '1'
+    max_gain: 1e9
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    reference: '1.0'
+    type: complex
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [216, 480]
+    rotation: 0
+    state: disabled
 - name: analog_noise_source_x_0
   id: analog_noise_source_x
   parameters:
@@ -191,8 +299,8 @@ blocks:
     coordinate: [440, 232]
     rotation: 0
     state: enabled
-- name: blocks_complex_to_mag_0
-  id: blocks_complex_to_mag
+- name: blocks_complex_to_mag_squared_0
+  id: blocks_complex_to_mag_squared
   parameters:
     affinity: ''
     alias: ''
@@ -205,6 +313,23 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [560, 248]
+    rotation: 0
+    state: enabled
+- name: blocks_null_sink_0
+  id: blocks_null_sink
+  parameters:
+    affinity: ''
+    alias: ''
+    bus_structure_sink: '[[0,],]'
+    comment: ''
+    num_inputs: '1'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [976, 600]
     rotation: 0
     state: enabled
 - name: blocks_sigmf_source_minimal_0
@@ -248,94 +373,37 @@ blocks:
     coordinate: [232, 184]
     rotation: 0
     state: enabled
-- name: epy_block_0
-  id: epy_block
+- name: iio_pluto_source_0
+  id: iio_pluto_source
   parameters:
-    _source_code: "\"\"\"Mode S Decoder: finds ADS-B messages in the magnitude of\
-      \ a 2 MS/s stream.\n\n1. Find a preamble: pulses at chips 0, 2, 7, and 9, quiet\
-      \ between them.\n2. Read 112 bits: each bit is a pair of chips, and the larger\
-      \ one says\n   which half held the pulse (pulse first is a 1).\n3. Check the\
-      \ 24 parity bits. A message that fails is counted and dropped.\n4. Print the\
-      \ message in hex and what it says, and update the aircraft table.\n\nPositions\
-      \ use the one-frame (local) decode, which is correct within about\n180 nautical\
-      \ miles of the reference position, here USAFA. Function Probes\nread stats()\
-      \ and table() for the QT GUI Labels.\"\"\"\n\nimport math\n\nimport numpy as\
-      \ np\nfrom gnuradio import gr\n\nCHARS = '#ABCDEFGHIJKLMNOPQRSTUVWXYZ##### ###############0123456789######'\n\
-      HIGH = [0, 2, 7, 9]\nQUIET = [1, 3, 4, 5, 6, 8, 10, 11, 12, 13, 14, 15]\nN =\
-      \ 16 + 224\n\n\ndef val(b):\n    v = 0\n    for x in b:\n        v = (v << 1)\
-      \ | int(x)\n    return v\n\n\ndef remainder(b):\n    \"\"\"Zero for a message\
-      \ whose parity bits are right (generator 0x1FFF409).\"\"\"\n    reg = 0\n  \
-      \  for x in b:\n        reg = (reg << 1) | int(x)\n        if reg & 0x1000000:\n\
-      \            reg ^= 0x1FFF409\n    return reg\n\n\ndef nl(lat):\n    if abs(lat)\
-      \ >= 87:\n        return 1\n    a = 1 - math.cos(math.pi / 30)\n    return int(2\
-      \ * math.pi / math.acos(1 - a / math.cos(math.radians(lat)) ** 2))\n\n\nclass\
-      \ blk(gr.sync_block):\n    def __init__(self, samp_rate=2e6, ref_lat=38.99,\
-      \ ref_lon=-104.86, settings=None):\n        gr.sync_block.__init__(self, name='Mode\
-      \ S Decoder', in_sig=[np.float32], out_sig=None)\n        self.set_history(N)\n\
-      \        self.fs = samp_rate\n        self.ref = (ref_lat, ref_lon)\n      \
-      \  self.settings = settings\n\n    @property\n    def settings(self):\n    \
-      \    return self._settings\n\n    @settings.setter\n    def settings(self, value):\n\
-      \        # GRC sets this when a slider it names moves: the counts and the\n\
-      \        # table start over.\n        self._settings = value\n        self.planes\
-      \ = {}\n        self.good = 0\n        self.bad = 0\n\n    def work(self, input_items,\
-      \ output_items):\n        x = input_items[0]\n        n = len(x) - N + 1\n \
-      \       if n <= 0:\n            return 0\n        floor = np.median(x) + 1e-6\n\
-      \        hi = np.min([x[k:k + n] for k in HIGH], axis=0)\n        lo = np.mean([x[k:k\
-      \ + n] for k in QUIET], axis=0)\n        cand = np.flatnonzero((hi > 3 * floor)\
-      \ & (hi > 2.5 * lo))\n        skip = -1\n        for i in cand:\n          \
-      \  if i < skip:\n                continue\n            c = x[i + 16:i + N]\n\
-      \            b = c[0::2] > c[1::2]\n            df = val(b[:5])\n          \
-      \  if df not in (17, 18):\n                continue\n            if remainder(b):\n\
-      \                self.bad += 1\n                continue\n            self.good\
-      \ += 1\n            skip = i + N\n            self.report(b, (self.nitems_read(0)\
-      \ + i) / self.fs)\n        return n\n\n    def report(self, b, t):\n       \
-      \ icao = f'{val(b[8:32]):06X}'\n        me = b[32:88]\n        tc = val(me[:5])\n\
-      \        p = self.planes.setdefault(icao, {})\n        what = f'type code {tc}'\n\
-      \        if 1 <= tc <= 4:\n            p['call'] = ''.join(CHARS[val(me[8 +\
-      \ 6 * k:14 + 6 * k])] for k in range(8)).strip(' #')\n            what = f'callsign\
-      \ {p[\"call\"]}'\n        elif 9 <= tc <= 18:\n            a = me[8:20]\n  \
-      \          p['alt'] = val(np.r_[a[:7], a[8:]]) * 25 - 1000 if a[7] else None\n\
-      \            odd = int(me[21])\n            yz, xz = val(me[22:39]) / 2 ** 17,\
-      \ val(me[39:56]) / 2 ** 17\n            dlat = 360 / (59 if odd else 60)\n \
-      \           lat = dlat * (math.floor(self.ref[0] / dlat)\n                 \
-      \         + math.floor(0.5 + (self.ref[0] % dlat) / dlat - yz) + yz)\n     \
-      \       dlon = 360 / max(nl(lat) - odd, 1)\n            lon = dlon * (math.floor(self.ref[1]\
-      \ / dlon)\n                          + math.floor(0.5 + (self.ref[1] % dlon)\
-      \ / dlon - xz) + xz)\n            p['pos'] = (lat, lon)\n            what =\
-      \ f'altitude {p[\"alt\"]} ft, position {lat:.4f}, {lon:.4f}'\n        elif tc\
-      \ == 19 and val(me[5:8]) in (1, 2):\n            ve = (val(me[14:24]) - 1) *\
-      \ (-1 if me[13] else 1)\n            vn = (val(me[25:35]) - 1) * (-1 if me[24]\
-      \ else 1)\n            p['spd'] = round(math.hypot(ve, vn))\n            p['trk']\
-      \ = round(math.degrees(math.atan2(ve, vn)) % 360)\n            p['vr'] = (val(me[37:46])\
-      \ - 1) * 64 * (-1 if me[36] else 1)\n            what = f'{p[\"spd\"]} kt, track\
-      \ {p[\"trk\"]} deg, {p[\"vr\"]:+d} ft/min'\n        p['t'] = t\n        print(f'{t:8.4f}\
-      \ s  {val(b):028X}  ICAO {icao}  {what}', flush=True)\n\n    def stats(self):\n\
-      \        return f'{self.good} passed parity, {self.bad} failed'\n\n    def table(self):\n\
-      \        rows = []\n        for icao, p in sorted(self.planes.items()):\n  \
-      \          pos = p.get('pos')\n            rows.append(f'{icao}  {p.get(\"call\"\
-      , \"?\")}:  {p.get(\"alt\", \"?\")} ft,  '\n                        f'{p.get(\"\
-      spd\", \"?\")} kt,  track {p.get(\"trk\", \"?\")},  '\n                    \
-      \    + (f'{pos[0]:.3f}, {pos[1]:.3f}' if pos else 'position ?'))\n        return\
-      \ '\\n'.join(rows) or '(no aircraft yet)'\n"
     affinity: ''
     alias: ''
+    bandwidth: int(samp_rate)
+    bbdc: 'True'
+    buffer_size: '32768'
     comment: ''
+    filter: ''
+    filter_source: '''Auto'''
+    fpass: '0'
+    frequency: int(fc)
+    fstop: '0'
+    gain1: '''manual'''
+    len_tag_key: packet_len
+    manual_gain1: rx_gain
     maxoutbuf: '0'
     minoutbuf: '0'
-    ref_lat: '38.99'
-    ref_lon: '-104.86'
-    samp_rate: samp_rate
-    settings: (noise,)
+    quadrature: 'True'
+    rfdc: 'True'
+    samplerate: int(samp_rate)
+    type: fc32
+    uri: '"ip:192.168.2.1"'
   states:
-    _io_cache: ('Mode S Decoder', 'blk', [('samp_rate', '2000000.0'), ('ref_lat',
-      '38.99'), ('ref_lon', '-104.86'), ('settings', 'None')], [('0', 'float', 1)],
-      [], '', ['settings'])
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [784, 392]
+    coordinate: [16, 384]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: qtgui_time_sink_x_0
   id: qtgui_time_sink_x
   parameters:
@@ -422,8 +490,8 @@ blocks:
     width7: '1'
     width8: '1'
     width9: '1'
-    ylabel: '"Magnitude"'
-    ymax: '1.2'
+    ylabel: Power
+    ymax: '1'
     ymin: '0'
     yunit: '""'
   states:
@@ -519,8 +587,8 @@ blocks:
     width7: '1'
     width8: '1'
     width9: '1'
-    ylabel: '"Magnitude"'
-    ymax: '1.2'
+    ylabel: Power
+    ymax: '1'
     ymin: '0'
     yunit: '""'
   states:
@@ -530,40 +598,74 @@ blocks:
     coordinate: [784, 256]
     rotation: 0
     state: enabled
-- name: soapy_rtlsdr_source_0
-  id: soapy_rtlsdr_source
+- name: table_0
+  id: epy_block
   parameters:
+    _source_code: "\"\"\"Aircraft Table: shows what gr-adsb's ADS-B Decoder has decoded.\n\
+      \nThis block decodes nothing. gr-adsb's Demod sends every burst it finds to\
+      \ the\n\"found\" port, and its Decoder sends every message it decodes into an\n\
+      identity, a position, or a velocity, with everything it knows about that\naircraft\
+      \ so far, to the \"decoded\" port. This\nblock counts both and keeps one row\
+      \ per aircraft. Function Probes read\nstats() and table() for the QT GUI Labels;\
+      \ both start over when a slider in\n`settings` moves.\"\"\"\n\nimport math\n\
+      \nimport numpy as np\nimport pmt\nfrom gnuradio import gr\n\n\ndef num(v, fmt):\n\
+      \    try:\n        v = float(v)\n    except (TypeError, ValueError):\n     \
+      \   return ''\n    return '' if math.isnan(v) else fmt.format(v)\n\n\nclass\
+      \ blk(gr.basic_block):\n    def __init__(self, settings=None):\n        gr.basic_block.__init__(self,\
+      \ name='Aircraft Table', in_sig=None, out_sig=None)\n        self.message_port_register_in(pmt.intern('found'))\n\
+      \        self.message_port_register_in(pmt.intern('decoded'))\n        self.set_msg_handler(pmt.intern('found'),\
+      \ self.on_found)\n        self.set_msg_handler(pmt.intern('decoded'), self.on_decoded)\n\
+      \        self._settings = settings\n        self.reset()\n\n    def reset(self):\n\
+      \        self.n_found = 0\n        self.n_decoded = 0\n        self.planes =\
+      \ {}\n\n    @property\n    def settings(self):\n        return self._settings\n\
+      \n    @settings.setter\n    def settings(self, value):\n        if value !=\
+      \ self._settings:\n            self.reset()\n        self._settings = value\n\
+      \n    def on_found(self, msg):\n        self.n_found += 1\n\n    def on_decoded(self,\
+      \ msg):\n        self.n_decoded += 1\n        d = pmt.to_python(pmt.car(msg))\n\
+      \        self.planes[d.get('icao', '?')] = d\n\n    def stats(self):\n     \
+      \   return f'{self.n_found} bursts found, {self.n_decoded} decoded'\n\n    def\
+      \ table(self):\n        rows = []\n        for icao, d in sorted(self.planes.items()):\n\
+      \            cs = (d.get('callsign') or '').strip()\n            alt = d.get('altitude')\n\
+      \            alt = '' if alt == -1 else num(alt, '{:.0f} ft')   # -1: a format\
+      \ gr-adsb cannot read\n            spd = num(d.get('speed'), '{:.0f} kt')\n\
+      \            # gr-adsb's heading is a math angle, 0 east and 90 north;\n   \
+      \         # a track is a compass angle, 0 north and 90 east\n            hdg\
+      \ = d.get('heading')\n            trk = num(None if hdg is None else (90 - float(hdg))\
+      \ % 360, 'track {:.0f}')\n            lat, lon = num(d.get('latitude'), '{:.3f}'),\
+      \ num(d.get('longitude'), '{:.3f}')\n            pos = f'{lat}, {lon}' if lat\
+      \ and lon else ''\n            rows.append(f'{icao.upper()}  {cs}:  ' + ', \
+      \ '.join(x for x in (alt, spd, trk, pos) if x))\n        return '\\n'.join(rows)\n"
     affinity: ''
-    agc: 'False'
     alias: ''
-    bias: 'False'
-    bufflen: '16384'
-    center_freq: 1090e6
     comment: ''
-    dev_args: ''''''
-    freq_correction: '0'
-    gain: rf_gain
     maxoutbuf: '0'
     minoutbuf: '0'
-    samp_rate: samp_rate
-    type: fc32
+    settings: (noise, threshold)
   states:
+    _io_cache: ('Aircraft Table', 'blk', [('settings', 'None')], [('decoded', 'message',
+      1), ('found', 'message', 1)], [], '', ['settings'])
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [16, 280]
+    coordinate: [1232, 488]
     rotation: 0
-    state: disabled
+    state: enabled
 
 connections:
+- [adsb_decoder_0, decoded, table_0, decoded]
+- [adsb_demod_0, '0', blocks_null_sink_0, '0']
+- [adsb_demod_0, demodulated, adsb_decoder_0, demodulated]
+- [adsb_demod_0, demodulated, table_0, found]
+- [adsb_framer_0, '0', adsb_demod_0, '0']
+- [agc_0, '0', blocks_add_xx_0, '0']
 - [analog_noise_source_x_0, '0', blocks_add_xx_0, '1']
-- [blocks_add_xx_0, '0', blocks_complex_to_mag_0, '0']
-- [blocks_complex_to_mag_0, '0', epy_block_0, '0']
-- [blocks_complex_to_mag_0, '0', qtgui_time_sink_x_0, '0']
-- [blocks_complex_to_mag_0, '0', qtgui_time_sink_x_1, '0']
+- [blocks_add_xx_0, '0', blocks_complex_to_mag_squared_0, '0']
+- [blocks_complex_to_mag_squared_0, '0', adsb_framer_0, '0']
+- [blocks_complex_to_mag_squared_0, '0', qtgui_time_sink_x_0, '0']
+- [blocks_complex_to_mag_squared_0, '0', qtgui_time_sink_x_1, '0']
 - [blocks_sigmf_source_minimal_0, '0', blocks_throttle2_0, '0']
 - [blocks_throttle2_0, '0', blocks_add_xx_0, '0']
-- [soapy_rtlsdr_source_0, '0', blocks_add_xx_0, '0']
+- [iio_pluto_source_0, '0', agc_0, '0']
 
 metadata:
   file_format: 1
