@@ -11,6 +11,10 @@
   L04-mixer-shift   : a single real mixer moves the band around the LO down
                       to 0 Hz, and folds the station 1.4 MHz below the LO onto
                       the one 1.4 MHz above it.
+  L04-architectures : three receiver chains, one above the other:
+                      superheterodyne, zero-IF (the PlutoSDR), and direct RF
+                      sampling, each with its one trade-off. The ADC sits
+                      closer to the antenna in each row.
 
 The GNU Radio screenshots (L04-grc-adc.png, L04-adc-*.png) are not generated
 here: they are taken from book/extras/grc/L04-adc-bits.grc running under Xvfb
@@ -172,7 +176,61 @@ def mixer_shift():
     write("L04-mixer-shift", fig)
 
 
+def _mixer(ax, x, y, lo):
+    ax.add_patch(Circle((x, y), 0.24, fc="white", ec=NAVY, lw=1.4))
+    ax.text(x, y, "×", ha="center", va="center", fontsize=14, color=NAVY)
+    _box(ax, x, y + 0.66, 1.0, 0.36, lo, color=AMBER, fill="#fbf3e4")
+    _arrow(ax, (x, y + 0.48), (x, y + 0.25), color=AMBER)
+
+
+def architectures():
+    # Each row: (title, blocks, trade-off). A block is (kind, label); kinds
+    # are "box", "mix" (a mixer with its LO label), "adc", and "host".
+    rows = [
+        ("Superheterodyne", [("box", "pre-\nselector"), ("box", "LNA"), ("mix", "LO1"), ("box", "IF\nfilter"),
+                             ("box", "IF\namp"), ("mix", "LO2, I/Q"), ("box", "LPF"), ("adc", "ADC"), ("host", "host")],
+         "two mixers and more parts; the filter ahead of the first mixer must reject the image"),
+        ("Zero-IF: the PlutoSDR", [("box", "filter"), ("box", "LNA"), ("mix", "LO, I/Q"), ("box", "LPF"),
+                                   ("adc", "ADC"), ("host", "host")],
+         "few parts; a DC spike at 0 Hz and I/Q imbalance"),
+        ("Direct RF sampling", [("box", "anti-alias\nfilter"), ("box", "LNA"), ("adc", "very\nfast ADC"), ("host", "host")],
+         "no analog mixer; a very fast ADC, and a filter that keeps out everything above half the sample rate"),
+    ]
+    step, rh, bw = 1.45, 2.2, 1.25
+    fig, ax = plt.subplots(figsize=(10.4, 6.6))
+    ax.set_xlim(0, 13.6)
+    ax.set_ylim(0, rh * len(rows) + 0.1)
+    ax.axis("off")
+    for r, (title, blocks, trade) in enumerate(rows):
+        y = rh * (len(rows) - 1 - r) + 0.95
+        ax.text(0.05, y + 1.05, title, ha="left", va="center", color=NAVY, fontsize=12, fontweight="bold")
+        # antenna
+        ax.plot([0.3, 0.3], [y, y + 0.5], color=INK, lw=1.4)
+        ax.plot([0.12, 0.3, 0.48], [y + 0.65, y + 0.5, y + 0.65], color=INK, lw=1.4)
+        x_prev = 0.3
+        for k, (kind, lab) in enumerate(blocks):
+            x = 1.1 + k * step
+            left = x - (0.24 if kind == "mix" else bw / 2)
+            _arrow(ax, (x_prev, y), (left, y))
+            if kind == "mix":
+                _mixer(ax, x, y, lab)
+                x_prev = x + 0.24
+            elif kind == "adc":
+                _box(ax, x, y, bw, 0.62, lab, color=RED, fill="#fbeeee")
+                x_prev = x + bw / 2
+            elif kind == "host":
+                _box(ax, x, y, bw, 0.62, "GNU\nRadio", color=NAVY, fill="#e3edf6")
+                x_prev = x + bw / 2
+            else:
+                _box(ax, x, y, bw, 0.62, lab)
+                x_prev = x + bw / 2
+        ax.text(0.05, y - 0.62, "trade-off: " + trade, ha="left", va="center", color=GRAY, fontsize=10.5,
+                style="italic")
+    write("L04-architectures", fig)
+
+
 if __name__ == "__main__":
     tuning_ranges()
     sdr_chain()
     mixer_shift()
+    architectures()

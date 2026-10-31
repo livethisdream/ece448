@@ -94,6 +94,26 @@ to 433.0 MHz, and a key fob transmits at 433.92 MHz.
 		\ansbox[1.2in]{432.08 MHz}
 	\end{minipage}
 
+	\begin{minipage}[t]{0.58\linewidth}
+		\part A classic FM superheterodyne mixes every station to an IF of 10.7 MHz,
+		with its first LO 10.7 MHz above the station. Tuned to 94.5 MHz, find the LO
+		frequency and the image, the other station that also lands on 10.7 MHz. Then
+		explain why the preselector must remove the image before the first mixer.
+		\begin{solution}[1.6in]
+		\eq{ f_{LO} &= 94.5 + 10.7 = 105.2\ \text{MHz} \\ f_{image} &= 105.2 + 10.7 = 115.9\ \text{MHz} }
+		After the mixer, the image sits at 10.7 MHz on top of the wanted station, and
+		no filter after the mixer can separate them. The preselector removes it while
+		it is still at 115.9 MHz, far from the wanted 94.5 MHz.
+		\end{solution}
+	\end{minipage}\hfill%
+	\begin{minipage}[t]{0.37\linewidth}
+		\raggedleft \vspace{12pt}
+		LO: \ansbox[1.2in]{105.2 MHz}
+
+		\vspace{4pt}
+		image: \ansbox[1.2in]{115.9 MHz}
+	\end{minipage}
+
 \end{parts}
 
 \newpage
