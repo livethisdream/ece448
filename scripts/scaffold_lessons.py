@@ -45,7 +45,8 @@ INSTRUCTORS = "Dr. Neil Rogers"
 
 # ---- Learning objectives (Neil, 2026-10-17) --------------------------------
 # The seven-module list from the 2026 site syllabus. Edited: 3.3 (adds RDS),
-# 5.3-5.4 (the midterm is a fox hunt and a CTF), 6.4 (adds carrier and timing
+# 5.3-5.4 (the midterm is a fox hunt and a CTF; 5.3 reworded for the PlutoSDR
+# and the cadet's own antenna, Neil, 2026-11-01), 6.4 (adds carrier and timing
 # recovery). Change one here, in book/syllabus.md, and in every lesson that
 # quotes it, together.
 LO_TEXT = {
@@ -66,7 +67,7 @@ LO_TEXT = {
     "4.4": "I can implement a PAM link that transmits and receives ASCII text end-to-end.",
     "5.1": "I can create a GNU Radio out-of-tree (OOT) module and add a custom Python block to it.",
     "5.2": "I can implement a custom signal-processing block from scratch and integrate it into a GNU Radio flowgraph.",
-    "5.3": "I can find a hidden transmitter in a direction-finding fox hunt using an SDR and a directional antenna.",
+    "5.3": "I can find a hidden transmitter in a fox hunt using a PlutoSDR, an antenna, and GNU Radio.",
     "5.4": "I can solve capture-the-flag challenges that require finding, capturing, demodulating, and decoding unknown signals with GNU Radio.",
     "6.1": "I can transmit and receive CW (Morse) using GNU Radio and decode a received CW stream.",
     "6.2": "I can decode DTMF tones from a captured audio signal.",
@@ -204,7 +205,7 @@ LABS = [
 # ---- Calendar events with pages of their own --------------------------------
 # (module, after lesson slug, slug, toc title, [lo_ids], [deck keys], synopsis)
 EXTRA_PAGES = [
-    (5, "L11-lab-custom-block", "midterm", "Midterm — Fox Hunt and CTF", ["5.3", "5.4"], [], "A direction-finding fox hunt for a hidden transmitter, and a capture-the-flag."),
+    (5, "L11-lab-custom-block", "midterm", "Midterm — Fox Hunt and CTF", ["5.3", "5.4"], [], "A fox hunt for a hidden transmitter at 915 MHz, and a capture-the-flag of recorded signals."),
     (7, "L20-qam-ofdm", "final-project", "Final Project", ["7.2", "7.3", "7.4"], ["fp"], "A self-defined SDR project: proposal, background research, design, prototype, then a report and live demonstration."),
 ]
 

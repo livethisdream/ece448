@@ -17,7 +17,7 @@ work through alongside the in-class flowgraphs.
 
 - **GNU Radio** with **GNU Radio Companion (GRC)**: install instructions are posted with L5.
 - **PlutoSDR / ADALM-PLUTO**: full-duplex Tx/Rx SDR, issued to every cadet, set to extended-frequency mode (70 MHz–6 GHz).
-- **Directional antennas** (Yagi and log-periodic): for the midterm fox hunt.
+- **Antennas**: the antennas that come with the PlutoSDR, or your own, for the midterm fox hunt.
 
 ## Lab packets
 
