@@ -13,7 +13,7 @@ frame_view: true
 
 <div class="title-rule"></div>
 
-Find a hidden transmitter at 915 MHz with your own PlutoSDR, then find, demodulate, and decode eight recorded signals to their flags.
+Find a hidden transmitter at 915 MHz with your own PlutoSDR, then find, identify, and decode recorded signals to their flags.
 
 Module 5: Custom Blocks & Midterm · Dr. Neil Rogers
 ::::
@@ -29,11 +29,11 @@ Module 5: Custom Blocks & Midterm · Dr. Neil Rogers
 ::::{frame} Two Parts, One Submission
 :::{present}
 - **Fox hunt:** find a hidden transmitter with your Pluto and the receiver below.
-- **CTF:** decode eight recordings of unknown signals to their flags.
+- **CTF:** decode recordings of unknown signals to their flags.
 - Individual and take home. Turn in one PDF.
 :::
 
-The midterm uses what you have built since Lesson 4. The fox hunt is a receive problem on the air: a hidden transmitter, a readout of its strength, and your feet. The capture-the-flag is the receive problem in a recording: eight unknown signals, each built from a modulation in this course. Both parts are **individual** and **take home**. Work alone, keep your flowgraphs, and turn in one PDF on Gradescope by the date your instructor announces, with the evidence each part asks for below.
+The midterm uses what you have built since Lesson 4. The fox hunt is a receive problem on the air: a hidden transmitter, a readout of its strength, and your feet. The capture-the-flag is the receive problem in a recording: unknown signals your instructor releases as recordings. Both parts are **individual** and **take home**. Work alone, keep your flowgraphs, and turn in one PDF on Gradescope by the date your instructor announces, with the evidence each part asks for below.
 ::::
 
 ::::{frame} The Fox
@@ -121,12 +121,12 @@ Lesson 4 showed what happens when a signal is bigger than the ADC's range: the s
 
 ::::{frame} Capture the Flag
 :::{present}
-- Eight SigMF recordings of unknown signals.
-- Each decodes to a flag of the form ECE448{...}.
-- Some carry only the text inside the braces; you add the braces.
+- A set of SigMF recordings of unknown signals, released by your instructor.
+- Find, identify, demodulate, and decode each one in GNU Radio.
+- Each recovered flag is worth points.
 :::
 
-The second part is eight recordings, each a SigMF pair like the L7 Lab's test files: the samples in `.sigmf-data`, and the datatype, sample rate, and center frequency in `.sigmf-meta`. Each recording holds one signal at a sample rate, offset, and noise level of its own. Some are modulations you have built (AM, FM, FSK, PAM). Others are signals Module 6 covers in depth, such as Morse, keypad tones, remotes, PSK, and hopping, and for those the lesson pages on this site are yours to read ahead. Decode it to its **flag**, a line of text of the form `ECE448{...}`. Morse, speech, and keypad tones cannot send a brace, so a signal like that carries only the text inside them; turn it in as `ECE448{TEXT}`.
+The second part is a set of recordings of unknown signals, which your instructor releases with the midterm. Each is a SigMF pair like the L7 Lab's test files: the samples in `.sigmf-data`, and the datatype, sample rate, and center frequency in `.sigmf-meta`. For each recording, find the signal, identify it, demodulate and decode it in GNU Radio, and recover its **flag**, a line of text. Each flag is worth points, and a flag counts only with its writeup. Some signals may be ones Module 6 covers in depth; the lesson pages on this site are yours to read ahead.
 ::::
 
 ::::{frame} Find, Demodulate, Decode
@@ -139,23 +139,17 @@ The second part is eight recordings, each a SigMF pair like the L7 Lab's test fi
 Work each recording from the outside in. Read the `.sigmf-meta` first: the datatype tells you how to open it, and the sample rate sets every display. Play it through a **SigMF Source (Minimal)** and **Throttle** into a frequency sink, a waterfall, and a time sink, and find the signal. Ask what changes: the amplitude, the frequency, or the phase, and how fast. Then move the signal to 0 Hz with a **Frequency Xlating FIR Filter**, decimate to a rate the receiver you need expects, and build or reuse that receiver from the lesson that fits.
 ::::
 
-::::{frame} The Challenges
+::::{frame} Identifying a Signal
 :class: read-only
 
-All eight are simulated in software, not captured from an antenna; each meta file says so. The center frequency is part of the story, not a place to transmit.
+Ask these of every recording, in order, and write the answers down; they become your writeup.
 
-| # | Recording | Datatype | Sample rate | Center | Points | Hint |
-| :-: | :-- | :-- | --: | --: | --: | :-- |
-| 1 | `MT-ctf-1` | cf32_le | 32 kS/s | 144.05 MHz | 100 | Listen to the rhythm. |
-| 2 | `MT-ctf-2` | ci16_le | 50 kS/s | 146.52 MHz | 100 | Read the datatype before you open it. |
-| 3 | `MT-ctf-3` | cf32_le | 48 kS/s | 915 MHz | 150 | Twelve keys, two tones each. |
-| 4 | `MT-ctf-4` | cf32_le | 250 kS/s | 433.92 MHz | 200 | A long pulse and a short pulse. A character is eight bits, most significant first. |
-| 5 | `MT-ctf-5` | cf32_le | 96 kS/s | 915 MHz | 200 | The packets are framed the way the L8 and L10 links frame them. |
-| 6 | `MT-ctf-6` | cf32_le | 64 kS/s | 915 MHz | 200 | Find the symbol rate first. |
-| 7 | `MT-ctf-7` | cf32_le | 200 kS/s | 915 MHz | 300 | Four points, and every symbol is sent as a change. |
-| 8 | `MT-ctf-8` | cf32_le | 160 kS/s | 915 MHz | 300 | You do not need the whole pattern; each piece knows its place. |
-
-The CTF is worth 1550 points in all. `ci16_le` is interleaved 16-bit I and Q: in the SigMF Source choose complex short, and follow it with **IShort To Complex**, scaled by 1/32768.
+1. **How do I open it?** The `.sigmf-meta` gives the datatype. `cf32_le` is complex float. `ci16_le` is interleaved 16-bit I and Q: in the SigMF Source choose complex short, and follow it with **IShort To Complex**, scaled by 1/32768.
+2. **Where is it?** On the spectrum and waterfall, find its offset from the center frequency, and whether it is on all the time, in bursts, or hopping.
+3. **How wide is it?** Its bandwidth on the spectrum points at its rate: a few hundred hertz for a keyed tone, a few kilohertz for voice, wider for fast data.
+4. **What changes?** Look at the magnitude and the phase or frequency on a time sink after moving it to 0 Hz. On and off is keying; two or more frequencies is FSK; steady magnitude with jumps in phase is PSK, which a constellation sink shows as points; a wandering amplitude is AM or PAM.
+5. **How fast?** The shortest pulse or symbol sets the symbol rate, and the symbol rate sets the samples per symbol your receiver needs.
+6. **What is the message?** Audio you can hear, tones you can name, or bits to pack into bytes. Framed packets need the access code and header your lesson receivers use.
 ::::
 
 ::::{frame} CTF: What to Turn In
@@ -163,7 +157,7 @@ The CTF is worth 1550 points in all. `ci16_le` is interleaved 16-bit I and Q: in
 
 For each challenge you solve:
 
-- **The flag**, exactly as `ECE448{...}`.
+- **The flag**, exactly as you recovered it.
 - **A screenshot of your flowgraph** in GRC, with the display or text output that shows the flag.
 - **How you identified the signal**, in a few sentences: what the waterfall, spectrum, or time sink showed, which modulation that pointed to, and the settings you chose (offset, decimation, symbol rate, and the like).
 
@@ -179,7 +173,7 @@ A flag without its writeup does not count. Partial work on an unsolved challenge
 | :-- | :-- | --: |
 | Fox hunt | Found the fox: its location, with a photo | 20% |
 | | Evidence: the far and near screenshots and the bearing log | 20% |
-| CTF | Points for each flag, out of 1550, counted only with its writeup | 50% |
+| CTF | Points for each flag, counted only with its writeup | 50% |
 | | Quality of the writeups: identification and flowgraph | 10% |
 ::::
 
@@ -187,15 +181,7 @@ A flag without its writeup does not count. Partial work on an unsolved challenge
 :class: read-only doc-links
 
 - <a class="doc-link" href="../../grc/MT-foxhunt.grc" download>MT-foxhunt.grc</a>: the fox-hunt receiver. It needs a PlutoSDR in extended-frequency mode, so it was compiled under GNU Radio 3.10 but not run here on a radio.
-- The eight CTF recordings, each a `.sigmf-data` and `.sigmf-meta` pair, about 15 MB in all. GRC 3.10 marks the SigMF Source (Minimal) block as deprecated and warns when the flowgraph loads; the warning is harmless.
-  - <a class="doc-link" href="../../grc/MT-ctf-1.sigmf-data" download>MT-ctf-1.sigmf-data</a> and <a class="doc-link" href="../../grc/MT-ctf-1.sigmf-meta" download>.sigmf-meta</a>, 3.1 MB
-  - <a class="doc-link" href="../../grc/MT-ctf-2.sigmf-data" download>MT-ctf-2.sigmf-data</a> and <a class="doc-link" href="../../grc/MT-ctf-2.sigmf-meta" download>.sigmf-meta</a>, 3.7 MB
-  - <a class="doc-link" href="../../grc/MT-ctf-3.sigmf-data" download>MT-ctf-3.sigmf-data</a> and <a class="doc-link" href="../../grc/MT-ctf-3.sigmf-meta" download>.sigmf-meta</a>, 2.5 MB
-  - <a class="doc-link" href="../../grc/MT-ctf-4.sigmf-data" download>MT-ctf-4.sigmf-data</a> and <a class="doc-link" href="../../grc/MT-ctf-4.sigmf-meta" download>.sigmf-meta</a>, 1.6 MB
-  - <a class="doc-link" href="../../grc/MT-ctf-5.sigmf-data" download>MT-ctf-5.sigmf-data</a> and <a class="doc-link" href="../../grc/MT-ctf-5.sigmf-meta" download>.sigmf-meta</a>, 1.1 MB
-  - <a class="doc-link" href="../../grc/MT-ctf-6.sigmf-data" download>MT-ctf-6.sigmf-data</a> and <a class="doc-link" href="../../grc/MT-ctf-6.sigmf-meta" download>.sigmf-meta</a>, 0.5 MB
-  - <a class="doc-link" href="../../grc/MT-ctf-7.sigmf-data" download>MT-ctf-7.sigmf-data</a> and <a class="doc-link" href="../../grc/MT-ctf-7.sigmf-meta" download>.sigmf-meta</a>, 0.4 MB
-  - <a class="doc-link" href="../../grc/MT-ctf-8.sigmf-data" download>MT-ctf-8.sigmf-data</a> and <a class="doc-link" href="../../grc/MT-ctf-8.sigmf-meta" download>.sigmf-meta</a>, 2.6 MB
+- The CTF recordings are released by your instructor when the midterm opens. GRC 3.10 marks the SigMF Source (Minimal) block as deprecated and warns when the flowgraph loads; the warning is harmless.
 - The L7 Lab page shows how to play a `.sigmf-data` file through a File Source; the SigMF Source (Minimal) does the same and reads the sample rate for you.
 ::::
 
@@ -205,5 +191,5 @@ A flag without its writeup does not count. Partial work on an unsolved challenge
 - Keep your midterm flowgraphs; they are a start on Module 6.
 :::
 
-Module 6 starts with Lesson 12, CW, and works through the signals you meet on the air, from keypad tones to aircraft. Several of them are CTF signals taken further, so keep every flowgraph you build for the midterm.
+Module 6 starts with Lesson 12, CW, and works through the signals you meet on the air, from keypad tones to aircraft. Keep every flowgraph you build for the midterm; several will help there.
 ::::

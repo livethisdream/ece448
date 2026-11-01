@@ -167,17 +167,21 @@ budgets, checks) still apply. Where 444 would put a derivation on screen,
 
 - **Midterm (Neil, 2026-11-01).** Individual and take home, one PDF.
   - **Fox hunt:** the fox sends at 915 MHz over the air at low power. It
-    might be a PlutoSDR or one of the LoRa radios from GRCon26, so the page
+    might be a PlutoSDR or one of Neil's LoRa radios, so the page
     says "a PlutoSDR or a LoRa radio", names no model, and gives no LoRa
     setting beyond 915 MHz. Cadets hunt with their own PlutoSDR and their
     own antennas or the Pluto's; no directional antenna is issued.
     `MT-foxhunt.grc` is the receiver (spectrum, waterfall, channel power in
     dBFS, ADC level). Objective 5.3 now reads "using a PlutoSDR, an antenna,
     and GNU Radio".
-  - **CTF:** eight simulated SigMF recordings (`MT-ctf-1` to `-8`), each
-    decoding to a flag `ECE448{...}`. The flags, the generator, and the
-    solutions are private, in `ECE448-faculty/midterm/`; the public
-    recordings carry no flag as ASCII.
+  - **CTF:** a set of SigMF recordings of unknown signals, released by the
+    instructor; cadets find, identify, demodulate, and decode each to a flag
+    worth points, with a writeup per flag. **The challenge set is not yet
+    fixed** ("loosely defined at this moment"); the public page lists no
+    signals, points, or recordings. A practice set (generator, flags,
+    solutions) is private, in `ECE448-faculty`.
+  - **Rubric:** fox hunt 40%, CTF 60%, flag points counted only with a
+    writeup.
 
 ## Lesson list (approved by Neil, 2026-10-17)
 
