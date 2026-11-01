@@ -108,7 +108,7 @@ mastery-based portion of the grade.
 | :-: | :- |
 | 5.1 | I can create a GNU Radio out-of-tree (OOT) module and add a custom Python block to it. |
 | 5.2 | I can implement a custom signal-processing block from scratch and integrate it into a GNU Radio flowgraph. |
-| 5.3 | I can find a hidden transmitter in a direction-finding fox hunt using an SDR and a directional antenna. |
+| 5.3 | I can find a hidden transmitter in a fox hunt using a PlutoSDR, an antenna, and GNU Radio. |
 | 5.4 | I can solve capture-the-flag challenges that require finding, capturing, demodulating, and decoding unknown signals with GNU Radio. |
 
 ### Module 6 — Waveform Applications & RF Reverse Engineering
@@ -174,9 +174,9 @@ Each lab is **one packet, one submission**, hung off the lesson it follows:
 ### Midterm
 
 The midterm follows Lesson 11 and has two parts: a **fox hunt**, finding a
-hidden transmitter with an SDR and a directional antenna, and a
-**capture-the-flag**, a set of challenges that require finding, capturing,
-demodulating, and decoding unknown signals. It is an individual effort.
+hidden transmitter at 915 MHz with your own PlutoSDR, an antenna, and
+GNU Radio, and a **capture-the-flag**, a set of recordings of unknown signals
+to find, demodulate, and decode. It is an individual, take-home effort.
 
 ### Final project
 
@@ -406,4 +406,4 @@ See the [materials page](materials.md).
 
 - **GNU Radio** with GNU Radio Companion (GRC)
 - **PlutoSDR / ADALM-PLUTO** — full-duplex SDR, issued to every cadet, in extended-frequency mode (70 MHz–6 GHz)
-- **Directional antennas** — for the midterm fox hunt
+- **Antennas** — the PlutoSDR's own antennas, or your own, for the midterm fox hunt

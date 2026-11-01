@@ -28,7 +28,7 @@ Out-of-tree modules and custom Python blocks, then the midterm: a fox hunt for a
 <ol class="lo-list" style="--module: '5'">
   <li>I can create a GNU Radio out-of-tree (OOT) module and add a custom Python block to it.</li>
   <li>I can implement a custom signal-processing block from scratch and integrate it into a GNU Radio flowgraph.</li>
-  <li>I can find a hidden transmitter in a direction-finding fox hunt using an SDR and a directional antenna.</li>
+  <li>I can find a hidden transmitter in a fox hunt using a PlutoSDR, an antenna, and GNU Radio.</li>
   <li>I can solve capture-the-flag challenges that require finding, capturing, demodulating, and decoding unknown signals with GNU Radio.</li>
 </ol>
 ::::
@@ -49,7 +49,7 @@ Out-of-tree modules and custom Python blocks, then the midterm: a fox hunt for a
   <a class="mt-card mt-lesson" href="midterm/index.html">
     <span class="mt-kind">Midterm</span>
     <h4>Fox Hunt and CTF</h4>
-    <p>A direction-finding fox hunt for a hidden transmitter, and a capture-the-flag. Objectives 5.3, 5.4.</p>
+    <p>A fox hunt for a hidden transmitter at 915 MHz, and a capture-the-flag of recorded signals. Objectives 5.3, 5.4.</p>
   </a>
 </div>
 ::::
