@@ -221,7 +221,7 @@ Same job as ADS-B, different physical layer.
 - Never transmit on the AIS channels: they are for ships' safety.
 
 Note:
-The 915 MHz link goes from the Pluto's TX port through the 30 dB attenuator to an RX port, or over the air at 915 MHz at low power if the instructor says so; TX attenuation never below 30 dB. Enable the AGC and start the squelch near -10 dB. Two Plutos on one laptop use usb: URIs; on one Pluto, start the transmitter first, since TX and RX share one sample-rate clock. For a recording, read the sample rate and center frequency from the .sigmf-meta file, choose decim for about 48 kS/s, and set the channel offsets to 161.975 and 162.025 MHz minus the center. The slides' last activity, sending AIS to someone, goes out at 915 MHz or into a file.
+The 915 MHz link goes from the Pluto's TX port through the 30 dB attenuator to an RX port, or over the air at 915 MHz at low power if I say so; TX attenuation never below 30 dB. Enable the AGC and start the squelch near -10 dB. Two Plutos on one laptop use usb: URIs; on one Pluto, start the transmitter first, since TX and RX share one sample-rate clock. For a recording, read the sample rate and center frequency from the .sigmf-meta file, choose decim for about 48 kS/s, and set the channel offsets to 161.975 and 162.025 MHz minus the center. The slides' last activity, sending AIS to someone, goes out at 915 MHz or into a file.
 
 ---
 

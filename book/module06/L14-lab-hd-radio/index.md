@@ -104,7 +104,7 @@ The figure shows the lesson's simulated test file; a live station's host is roug
 ::::{frame} Part 2: Decoding with nrsc5 (Optional)
 :class: read-only
 
-This part is optional, and Question 6 does not count toward the grade. nrsc5 is not part of radioconda, and it has no PlutoSDR driver, so it decodes a recording you make in GRC. Use a laptop that has a recent nrsc5 installed, your own or one your instructor provides. These steps follow the nrsc5 project's documentation; we have not yet tested them in this course.
+This part is optional, and Question 6 does not count toward the grade. nrsc5 is not part of radioconda, and it has no PlutoSDR driver, so it decodes a recording you make in GRC. Use a laptop that has a recent nrsc5 installed, your own or one I provide. These steps follow the nrsc5 project's documentation; we have not yet tested them in this course.
 
 1. Open `L14-hd-find.grc` and switch it to the PlutoSDR as the lesson describes, then also enable its Rational Resampler and SigMF Sink. Type your station's frequency in MHz into the finder's Center (MHz) and set the gain you used before you run it, because the SigMF Sink records the center frequency when the flowgraph starts.
 2. Run it for about 10 s and stop it. It writes `hd.sigmf-data`, about 60 MB, at 744,188 samples per second, and `hd.sigmf-meta`.
@@ -135,7 +135,7 @@ The Writeup is three questions. The first compares the live station with the les
 :class: read-only doc-links
 
 - <a class="doc-link" href="../../labs/ECE448_Lab_L14_HDRadio_blank.pdf" target="_blank" rel="noopener">L14 Lab packet (PDF)</a>
-- `L14-lab-capture.cu8`, the lab's simulated capture for Question 4: your instructor posts it here before the lab.
+- `L14-lab-capture.cu8`, the lab's simulated capture for Question 4: I post it here before the lab.
 - The Lesson 14 page has `L14-hd-test-tx.grc`, which writes the lesson's test file, and `L14-hd-find.grc`, to check your meter against after Question 3.
 - nrsc5, for the optional Question 6, is at <a href="https://github.com/theori-io/nrsc5" target="_blank" rel="noopener">github.com/theori-io/nrsc5</a>.
 ::::

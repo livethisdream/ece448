@@ -285,7 +285,7 @@ The clipping distorts the waveform, and the distortion appears as new signals. T
 3. **Gain**: the strongest signal in the window stays below full scale.
 :::
 
-Every capture in this course starts with the same three choices on the PlutoSDR. For broadcast FM, a station about 200 kHz wide near 100 MHz, 2.4 MS/s is enough, and Lesson 5 does exactly that. A 20 MHz Wi-Fi channel at 2.4 GHz is within the tuning range but wider than the 4 MS/s the Pluto streams, so it takes a short burst capture at 20 MS/s or more. A signal the course generates never goes out on a real service's frequency: a flowgraph that transmits a test signal sends it at 915 MHz into a cable through the 30 dB attenuator, or, if your instructor says so, over the air at 915 MHz at low power. The PlutoSDR can receive it at the same time.
+Every capture in this course starts with the same three choices on the PlutoSDR. For broadcast FM, a station about 200 kHz wide near 100 MHz, 2.4 MS/s is enough, and Lesson 5 does exactly that. A 20 MHz Wi-Fi channel at 2.4 GHz is within the tuning range but wider than the 4 MS/s the Pluto streams, so it takes a short burst capture at 20 MS/s or more. A signal the course generates never goes out on a real service's frequency: a flowgraph that transmits a test signal sends it at 915 MHz into a cable through the 30 dB attenuator, or, if I say so, over the air at 915 MHz at low power. The PlutoSDR can receive it at the same time.
 
 The gain comes last, set against the strongest signal in the window, not the one we want. A weak signal next to a strong one is where the PlutoSDR's 12 bits matter, and where an 8-bit radio needs a narrower window or a filter ahead of it to keep the strong signal out. Lesson 5 gives the procedure for setting the gain on a live PlutoSDR.
 ::::
@@ -298,7 +298,7 @@ The gain comes last, set against the strongest signal in the window, not the one
 4. Raise the gain until false stations appear; back off.
 :::
 
-Before building a receiver for a signal, we find it with a flowgraph that only looks. This is an instructor demo with the Lesson 5 flowgraph, which cadets run themselves once GNU Radio is installed. A PlutoSDR Source at 2.4 MS/s feeds a spectrum and a waterfall, with sliders for the center frequency and the gain.
+Before building a receiver for a signal, we find it with a flowgraph that only looks. This is a demo I run with the Lesson 5 flowgraph, which cadets run themselves once GNU Radio is installed. A PlutoSDR Source at 2.4 MS/s feeds a spectrum and a waterfall, with sliders for the center frequency and the gain.
 
 The top plot is the spectrum, 2.4 MHz wide around the center frequency, and the waterfall below it scrolls the same spectrum through time, so a station that stays on the air draws a steady vertical stripe. Each FM station is a stripe about 200 kHz wide. Drag the center frequency slider and the stripes slide across the display. Now raise the gain slider in steps and watch the noise floor and the strongest stations. At first the weak stations rise above the floor; past some setting, new stripes appear where nothing transmits, the clipping of the Too Much Gain frame on a real radio. Back the gain off until they disappear. Lesson 7 adds the demodulator that plays a station, and the same look-first steps find a signal before every lab.
 ::::

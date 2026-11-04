@@ -213,7 +213,7 @@ The receiver needs only the power of the signal, not its phase.
 - Your own aircraft go out from L18-adsb-tx-pluto.grc at 915 MHz; the receiver tunes to 915e6.
 
 Note:
-Set the Framer threshold above the floor on the 20 ms plot and below the spikes. The 915 MHz link goes from the Pluto's TX port through the 30 dB attenuator to an RX port, or over the air at 915 MHz at low power if the instructor says so; TX attenuation never below 30 dB. Two Plutos on one laptop use usb: URIs; on one Pluto, start the transmitter first, since TX and RX share one sample-rate clock. Never transmit on 1090 MHz: it carries replies that ATC and collision avoidance depend on, and nothing in a message proves who sent it; the Magazu AFIT thesis studies false targets.
+Set the Framer threshold above the floor on the 20 ms plot and below the spikes. The 915 MHz link goes from the Pluto's TX port through the 30 dB attenuator to an RX port, or over the air at 915 MHz at low power if I say so; TX attenuation never below 30 dB. Two Plutos on one laptop use usb: URIs; on one Pluto, start the transmitter first, since TX and RX share one sample-rate clock. Never transmit on 1090 MHz: it carries replies that ATC and collision avoidance depend on, and nothing in a message proves who sent it; the Magazu AFIT thesis studies false targets.
 
 ---
 

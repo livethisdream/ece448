@@ -98,6 +98,7 @@ TEXINPUTS=/workspace/latex-tools/tex/latex//: \
 
 | Script | Checks |
 | :-- | :-- |
+| `check_voice.py` | the mechanical half of 444's `VOICE.md` and CLAUDE.md prose rules over every page, deck and practice source: hedge words, third-person "instructor", British spelling, thin spaces, `\,` or `\;` in page math, math in the objectives list, `\|` in table math (FAIL), plus passive and money-word tells (WARN); `L<NN>` for one lesson, `--added-since <ref>`, `-q` for FAIL lines only; `voice_rules.json` demotes a rule to WARN. Runs in CI before the build |
 | `check_separators.py` | every `---` in a deck has a blank line **above and below** — the only form reveal accepts as a slide separator |
 | `check_deck.py` | slide count; every slide fits the 700px stage; no raw `$$` or literal `\_` after MathJax typesets; no missing figures |
 | `check_widget.py` | worst-case height across the real serving widths; zero horizontal overflow at 430/390/320; canvas aspect undistorted; no blank canvas; no console errors |

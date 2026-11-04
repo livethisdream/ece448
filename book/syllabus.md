@@ -238,7 +238,7 @@ do this by creating an inclusive environment and putting in the work *with*
 you. If you work hard and communicate with me, I will do everything in my power
 to make sure you succeed.
 
-Have questions? **Ask** — there is genuinely no such thing as a stupid question.
+Have questions? **Ask** — there is no such thing as a stupid question.
 Have concerns, especially about your learning environment? Let's talk. You face
 many challenges here at USAFA; I am in your corner — so let's go.
 
@@ -276,7 +276,7 @@ Teams, and generative AI tools is not allowed** unless explicitly permitted.
 ### 5. Collaboration
 
 **Collaboration (not copying)** on skill checkpoints and assessments is highly
-encouraged, unless your instructor provides direction otherwise. A good litmus
+encouraged, unless I direct otherwise. A good litmus
 test: you must be able to **explain every step** on your submitted work.
 If you can't, it's copying, not collaboration. All help received on graded work
 must be documented per the documentation policy below.

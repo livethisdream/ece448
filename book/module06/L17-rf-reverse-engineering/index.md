@@ -55,7 +55,7 @@ The two lines of the objective from 2025 set the plan: reverse engineer a simple
 ::::{frame} The Process
 :::{present}
 <img src="../../viz/img/L17-process.svg"
-     alt="Five boxes joined by arrows: Step 1 find the carrier, with a spectrum and waterfall; Step 2 identify the modulation, OOK, FSK, PSK; Step 3 identify the encoding, bits, fields, rates; Step 4 build an encoder, a GNU Radio flowgraph; Step 5 transmit: cadets into a cable, the instructor demo over the air to the fan. Steps 1 to 3 work from a recording, and steps 4 and 5 build it back"
+     alt="Five boxes joined by arrows: Step 1 find the carrier, with a spectrum and waterfall; Step 2 identify the modulation, OOK, FSK, PSK; Step 3 identify the encoding, bits, fields, rates; Step 4 build an encoder, a GNU Radio flowgraph; Step 5 transmit: cadets into a cable, my demo over the air to the fan. Steps 1 to 3 work from a recording, and steps 4 and 5 build it back"
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
@@ -65,7 +65,7 @@ The two lines of the objective from 2025 set the plan: reverse engineer a simple
 
 The process comes from the 2025 slides. First we find the **carrier**, the frequency the transmitter uses. Next we identify the **modulation**, what the transmitter changes to send information. Then we identify the **encoding**: what the commands are, how the bits group into bytes or nibbles, and the bit rate and baud rate. With those three answers we build an **encoder** that produces the same signal, and last we transmit it.
 
-Steps 1 to 3 work entirely from a recording, so they need no radio. Step 5 transmits: a cadet's transmitter goes into a cable with an attenuator, or over the air at 915 MHz at low power only if the instructor says so, and the instructor closes the lesson by operating the real fan over the air. Every step runs in GNU Radio: a capture flowgraph finds the carrier, as in 2025, and `L17-chips.grc` takes the bursts apart.
+Steps 1 to 3 work entirely from a recording, so they need no radio. Step 5 transmits: a cadet's transmitter goes into a cable with an attenuator, or over the air at 915 MHz at low power only if I say so, and I close the lesson by operating the real fan over the air. Every step runs in GNU Radio: a capture flowgraph finds the carrier, as in 2025, and `L17-chips.grc` takes the bursts apart.
 ::::
 
 ::::{frame} The Recording
@@ -338,14 +338,14 @@ That comparison is the test of the reverse engineering. If our encoder makes chi
 :::{present}
 - `L17-fan-tx-pluto.grc` sends the encoder from a PlutoSDR at 915.04 MHz, not 350 MHz.
 - Cadets: a 30 dB attenuator and a cable to a second PlutoSDR.
-- Instructor demo: the real fan, over the air, at very low power.
+- My demo: the real fan, over the air, at very low power.
 :::
 
 The last step puts the encoder on a radio. `L17-fan-tx-pluto.grc` is the simulation flowgraph at 1 MS/s, so `chip_len` is 400 samples, with a **PlutoSDR Sink** tuned to 915 MHz in place of the noise and the waterfall; the 40 kHz tone puts the carrier at 915.04 MHz. A signal the course makes never goes out on the real device's frequency, so the encoder leaves the remote's 350 MHz for 915 MHz. A short SMA cable with an inline 30 dB attenuator carries it to a second PlutoSDR running `L17-capture.grc`, with `fc` at its default of 915e6, which records what arrives at 1 MS/s as a SigMF pair. Open that recording in `L17-chips.grc` with `samp_rate` 1000000, `fc` 915e6, and a chip length of 400. Two Plutos' clocks can disagree by several kilohertz at 915 MHz, so read the bursts' offset off the capture's spectrum and set the carrier offset to it, not to 40 kHz, and raise the Envelope gain until the pulses reach about 1: the chips should match `L17-fan-remote.sigmf-data`.
 
-Cadets transmit into a cable with the 30 dB attenuator, or, if your instructor says so, over the air at 915 MHz at low power, and only when the lesson says to. 915 MHz is in the U.S. 902 to 928 MHz ISM band; the remote's 350 MHz is an FCC Part 15 frequency, not an ISM band. The TX attenuation slider opens at 60 dB and cannot go below 30 dB; connect an antenna to this flowgraph only when your instructor says so.
+Cadets transmit into a cable with the 30 dB attenuator, or, if I say so, over the air at 915 MHz at low power, and only when the lesson says to. 915 MHz is in the U.S. 902 to 928 MHz ISM band; the remote's 350 MHz is an FCC Part 15 frequency, not an ISM band. The TX attenuation slider opens at 60 dB and cannot go below 30 dB; connect an antenna to this flowgraph only when I say so.
 
-The 2025 class ended by operating the fan, and this one does too, as an instructor demo. Dr. Rogers records the classroom's Hunter fan remote, decodes it with the same steps, and sends its Light command from his own encoder flowgraph over the air, a few meters from the fan, at the lowest power that still works it. The fan answers a transmitter it has never seen, which is the point of the lesson: a fixed code has no way to tell the two apart. The cadet Pluto flowgraphs have been compiled but not run on a radio, so the L17 Lab is their first run on hardware.
+The 2025 class ended by operating the fan, and this one does too, as a demo: I record the classroom's Hunter fan remote, decode it with the same steps, and send its Light command from my own encoder flowgraph over the air, a few meters from the fan, at the lowest power that still works it. The fan answers a transmitter it has never seen, which is the point of the lesson: a fixed code has no way to tell the two apart. The cadet Pluto flowgraphs have been compiled but not run on a radio, so the L17 Lab is their first run on hardware.
 ::::
 
 ::::{frame} Key Point
@@ -367,7 +367,7 @@ Reverse engineering runs in five steps: find the carrier, identify the modulatio
 - <a class="doc-link" href="../../grc/L17-sigid-a.sigmf-data" download>L17-sigid-a</a>, <a class="doc-link" href="../../grc/L17-sigid-b.sigmf-data" download>-b</a>, and <a class="doc-link" href="../../grc/L17-sigid-c.sigmf-data" download>-c</a> (.sigmf-data), with <a class="doc-link" href="../../grc/L17-sigid-a.sigmf-meta" download>a</a>, <a class="doc-link" href="../../grc/L17-sigid-b.sigmf-meta" download>b</a>, and <a class="doc-link" href="../../grc/L17-sigid-c.sigmf-meta" download>c</a> meta files: three Simulated unknown signals for SigID, 0.8 s each at 100 kS/s, 640 KB each. <a class="doc-link" href="../../grc/L17-sigid-gen.grc" download>L17-sigid-gen.grc</a> made them.
 - <a class="doc-link" href="../../grc/L17-explore-pluto.grc" download>L17-explore-pluto.grc</a>: a PlutoSDR Source at 2 MS/s with spectrum, waterfall, and envelope displays and a center frequency you change while it runs. Receive only; records nothing.
 - <a class="doc-link" href="../../grc/L17-capture.grc" download>L17-capture.grc</a>: a PlutoSDR Source at 1 MS/s with spectrum, waterfall, and envelope displays, recording to `capture.sigmf-data`. Receive only; needs a PlutoSDR. Set `fc` before you run it.
-- <a class="doc-link" href="../../grc/L17-fan-tx-pluto.grc" download>L17-fan-tx-pluto.grc</a>: the encoder on a PlutoSDR at 915.04 MHz. Transmit into the cable unless your instructor says otherwise, through a 30 dB attenuator, to a second PlutoSDR.
+- <a class="doc-link" href="../../grc/L17-fan-tx-pluto.grc" download>L17-fan-tx-pluto.grc</a>: the encoder on a PlutoSDR at 915.04 MHz. Transmit into the cable unless I say otherwise, through a 30 dB attenuator, to a second PlutoSDR.
 - Optional: <a class="doc-link" href="../../grc/L17-capture-rtl.grc" download>L17-capture-rtl.grc</a> is `L17-capture.grc` with a Soapy RTL-SDR Source at 1.024 MS/s, if you own an RTL-SDR. Nothing in the lesson or lab needs it.
 - <a class="doc-link" href="https://wiki.gnuradio.org/index.php/Frequency_Shifting" target="_blank" rel="noopener">GNU Radio wiki: Frequency Shifting</a> and <a class="doc-link" href="https://wiki.gnuradio.org/index.php/Hier_Blocks_and_Parameters" target="_blank" rel="noopener">Hier Blocks and Parameters</a>: the tutorials behind Steps 1 and 4.
 - <a class="doc-link" href="https://pysdr.org/content/iq_files.html" target="_blank" rel="noopener">PySDR: IQ Files and SigMF</a>: the recording format.
