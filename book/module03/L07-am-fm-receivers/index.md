@@ -108,7 +108,7 @@ Decimating by 10 leaves 240,000 samples per second. That rate holds everything t
 ::::{frame} The Quadrature Demodulator
 :::{present}
 $$\begin{aligned}
-\text{gain} &= \frac{f_s}{2\pi\,\Delta f} \\
+\text{gain} &= \frac{f_s}{2\pi\ \Delta f} \\
 &= \frac{240\ \text{kHz}}{2\pi \cdot 75\ \text{kHz}} = 0.509
 \end{aligned}$$
 :::

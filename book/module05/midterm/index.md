@@ -33,7 +33,7 @@ Module 5: Custom Blocks & Midterm · Dr. Neil Rogers
 - Individual and take home. Turn in one PDF.
 :::
 
-The midterm uses what you have built since Lesson 4. The fox hunt is a receive problem on the air: a hidden transmitter, a readout of its strength, and your feet. The capture-the-flag is the receive problem in a recording: unknown signals your instructor releases as recordings. Both parts are **individual** and **take home**. Work alone, keep your flowgraphs, and turn in one PDF on Gradescope by the date your instructor announces, with the evidence each part asks for below.
+The midterm uses what you have built since Lesson 4. The fox hunt is a receive problem on the air: a hidden transmitter, a readout of its strength, and your feet. The capture-the-flag is the receive problem in a recording: unknown signals I release as recordings. Both parts are **individual** and **take home**. Work alone, keep your flowgraphs, and turn in one PDF on Gradescope by the date I announce, with the evidence each part asks for below.
 ::::
 
 ::::{frame} The Fox
@@ -43,7 +43,7 @@ The midterm uses what you have built since Lesson 4. The fox hunt is a receive p
 - You hunt with your own Pluto and antenna.
 :::
 
-The fox is a small transmitter your instructor hides inside a search area, sending short bursts at 915 MHz at low power. It might be a PlutoSDR or it might be a LoRa radio, and the receiver below finds either one, because it measures power in a channel and does not need to decode anything. You hunt with your own PlutoSDR and your own antennas, or the ones that come with the Pluto. Your instructor announces the search area and the hours the fox is on the air. Nothing you build for the hunt transmits.
+The fox is a small transmitter I hide inside a search area, sending short bursts at 915 MHz at low power. It might be a PlutoSDR or it might be a LoRa radio, and the receiver below finds either one, because it measures power in a channel and does not need to decode anything. You hunt with your own PlutoSDR and your own antennas, or the ones that come with the Pluto. I announce the search area and the hours the fox is on the air. Nothing you build for the hunt transmits.
 ::::
 
 ::::{frame} The Fox-Hunt Receiver
@@ -71,7 +71,7 @@ The fox is a small transmitter your instructor hides inside a search area, sendi
      alt="Simulated spectrogram, time across and offset from 915 MHz up: a burst of ten chirps, each a diagonal stripe that climbs from the bottom edge of its band to the top edge and starts again, centered on 915 MHz; below it a narrowband carrier that switches on and off is a horizontal line at minus 300 kHz"
      style="width:100%;max-width:760px;display:block;margin:0 auto 1rem;">
 
-If the fox is a LoRa radio, each burst is a train of **chirps**: a tone that sweeps across the radio's band from one edge to the other, again and again. The figure is simulated and turned on its side, with time across; GNU Radio's waterfall runs time down the screen. Long chirps draw diagonal stripes. Short ones blur into a block with sharp edges at both sides of the band, which a narrowband signal never makes. If the fox is a Pluto, expect whatever burst your instructor sends. You do not need to decode either one. Set **Channel width** to cover the burst you see.
+If the fox is a LoRa radio, each burst is a train of **chirps**: a tone that sweeps across the radio's band from one edge to the other, again and again. The figure is simulated and turned on its side, with time across; GNU Radio's waterfall runs time down the screen. Long chirps draw diagonal stripes. Short ones blur into a block with sharp edges at both sides of the band, which a narrowband signal never makes. If the fox is a Pluto, expect whatever burst I send. You do not need to decode either one. Set **Channel width** to cover the burst you see.
 ::::
 
 ::::{frame} Hunting With One Antenna
@@ -121,12 +121,12 @@ Lesson 4 showed what happens when a signal is bigger than the ADC's range: the s
 
 ::::{frame} Capture the Flag
 :::{present}
-- A set of SigMF recordings of unknown signals, released by your instructor.
+- A set of SigMF recordings of unknown signals, which I release.
 - Find, identify, demodulate, and decode each one in GNU Radio.
 - Each recovered flag is worth points.
 :::
 
-The second part is a set of recordings of unknown signals, which your instructor releases with the midterm. Each is a SigMF pair like the L7 Lab's test files: the samples in `.sigmf-data`, and the datatype, sample rate, and center frequency in `.sigmf-meta`. For each recording, find the signal, identify it, demodulate and decode it in GNU Radio, and recover its **flag**, a line of text. Each flag is worth points, and a flag counts only with its writeup. Some signals may be ones Module 6 covers in depth; the lesson pages on this site are yours to read ahead.
+The second part is a set of recordings of unknown signals, which I release with the midterm. Each is a SigMF pair like the L7 Lab's test files: the samples in `.sigmf-data`, and the datatype, sample rate, and center frequency in `.sigmf-meta`. For each recording, find the signal, identify it, demodulate and decode it in GNU Radio, and recover its **flag**, a line of text. Each flag is worth points, and a flag counts only with its writeup. Some signals may be ones Module 6 covers in depth; the lesson pages on this site are yours to read ahead.
 ::::
 
 ::::{frame} Find, Demodulate, Decode
@@ -167,7 +167,7 @@ A flag without its writeup does not count. Partial work on an unsolved challenge
 ::::{frame} Rules and Grading
 :class: read-only
 
-**Rules.** Work alone. You may use this course site, your own flowgraphs and notes, the GNU Radio wiki, and PySDR. You may not discuss the fox's location or any challenge with anyone but your instructor until the midterm closes. Generative AI is not allowed (syllabus, Authorized resources). The hunt is receive only: never transmit at any time during the midterm.
+**Rules.** Work alone. You may use this course site, your own flowgraphs and notes, the GNU Radio wiki, and PySDR. You may not discuss the fox's location or any challenge with anyone but me until the midterm closes. Generative AI is not allowed (syllabus, Authorized resources). The hunt is receive only: never transmit at any time during the midterm.
 
 | Part | What earns credit | Weight |
 | :-- | :-- | --: |
@@ -181,7 +181,7 @@ A flag without its writeup does not count. Partial work on an unsolved challenge
 :class: read-only doc-links
 
 - <a class="doc-link" href="../../grc/MT-foxhunt.grc" download>MT-foxhunt.grc</a>: the fox-hunt receiver. It needs a PlutoSDR in extended-frequency mode, so it was compiled under GNU Radio 3.10 but not run here on a radio.
-- The CTF recordings are released by your instructor when the midterm opens. GRC 3.10 marks the SigMF Source (Minimal) block as deprecated and warns when the flowgraph loads; the warning is harmless.
+- I release the CTF recordings when the midterm opens. GRC 3.10 marks the SigMF Source (Minimal) block as deprecated and warns when the flowgraph loads; the warning is harmless.
 - The L7 Lab page shows how to play a `.sigmf-data` file through a File Source; the SigMF Source (Minimal) does the same and reads the sample rate for you.
 ::::
 

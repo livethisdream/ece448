@@ -138,7 +138,7 @@ QPSK at three SNRs. At 20 dB nothing crosses; at 10 dB a few do; at 4 dB the clo
 3. Add a phase offset and watch the clouds rotate.
 
 Note:
-Instructor demo; no SDR needed. Adapted from the GNU Radio wiki's QPSK Mod and Demod tutorial, its first half, without pulse shaping. Random Source, Chunks to Symbols with a Gray-coded QPSK table, and a Channel Model whose noise voltage comes from the SNR slider. Open Chunks to Symbols and show the symbol table: that list is the constellation.
+My demo; no SDR needed. Adapted from the GNU Radio wiki's QPSK Mod and Demod tutorial, its first half, without pulse shaping. Random Source, Chunks to Symbols with a Gray-coded QPSK table, and a Channel Model whose noise voltage comes from the SNR slider. Open Chunks to Symbols and show the symbol table: that list is the constellation.
 
 ---
 

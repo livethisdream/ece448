@@ -29,10 +29,10 @@ Lesson 1 · Software Defined Radios · Dr. Neil Rogers
 
 ::::{frame} Welcome & Introductions
 
-_Instructor and student introductions — background, career interests, prior exposure to RF, DSP, or programming._
+_Introductions, mine and then yours — background, career interests, prior exposure to RF, DSP, or programming._
 ::::
 
-::::{frame} About Your Instructor
+::::{frame} About Me
 
 **Lt Col Neil Rogers, USAF (Ret.)** — BS from TU; MSEE and PhD from AFIT.
 Currently the **Erdle Chair** at USAFA and a **Field Applications Engineer** at **Analog Devices**.

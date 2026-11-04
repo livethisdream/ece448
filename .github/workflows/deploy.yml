@@ -25,6 +25,12 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
+      # The mechanical prose rules (444's VOICE.md and CLAUDE.md), every page:
+      # a FAIL stops the job before the build. scripts/verify/check_voice.py
+      # says which rule; voice_rules.json, if present, demotes a rule to WARN.
+      - name: Voice check
+        run: python scripts/verify/check_voice.py -q
+
       # Build the book
       - name: Build the book
         run: jupyter-book build book/

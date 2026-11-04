@@ -229,7 +229,7 @@ On a real SDR these false signals look exactly like transmissions. Set the gain 
 3. **Gain**: the strongest signal in the window stays below full scale.
 
 Note:
-Broadcast FM: 2.4 MS/s. A 20 MHz Wi-Fi channel: a burst capture at 20 MS/s or more. A test signal the course generates goes out at 915 MHz into a cable through the 30 dB attenuator, or, if the instructor says so, over the air at 915 MHz at low power, never on a real service's frequency; the Pluto can receive it at the same time.
+Broadcast FM: 2.4 MS/s. A 20 MHz Wi-Fi channel: a burst capture at 20 MS/s or more. A test signal the course generates goes out at 915 MHz into a cable through the 30 dB attenuator, or, if I say so, over the air at 915 MHz at low power, never on a real service's frequency; the Pluto can receive it at the same time.
 
 ---
 

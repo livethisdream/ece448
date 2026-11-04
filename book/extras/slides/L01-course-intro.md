@@ -27,7 +27,7 @@ Spring 2027 · Dr. Neil Rogers
 - What this course is going to ask of you
 
 Note:
-Instructor bio; ask each student for name, background, one thing they hope to learn.
+My bio; ask each student for name, background, one thing they hope to learn.
 
 ---
 

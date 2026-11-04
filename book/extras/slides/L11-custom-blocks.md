@@ -253,4 +253,4 @@ The Energy Detector is the first block in gr-ece448; Lesson 12 can reuse it.
 Wiki tutorials: Creating Your First Block · Embedded Python Block · Creating Python OOT with gr-modtool
 
 Note:
-Before the lab, make sure gr_modtool runs at the radioconda prompt, and decide with your instructor whether your laptop takes the module route or the Embedded Python Block route.
+Before the lab, make sure gr_modtool runs at the radioconda prompt, and decide with me whether your laptop takes the module route or the Embedded Python Block route.

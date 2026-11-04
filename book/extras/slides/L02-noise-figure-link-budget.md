@@ -77,7 +77,7 @@ This is the 2003 edition; NTIA posts the current one. Let them look for a minute
 - Receiving is unrestricted; in class we transmit only when the lesson says to.
 
 Note:
-Pull up the NTIA allocation chart on the screen if there is time. Point out that nearly everything is licensed. The ISM bands are where Wi-Fi, Bluetooth, and drones live because nobody needs a license there. Note that the course PlutoSDR, in extended-frequency mode, covers all three common ISM bands. Make the transmit rule explicit: cadets transmit at 915 MHz into a cable through a 30 dB attenuator, or, if the instructor says so, over the air at low power, and only when the lesson says so.
+Pull up the NTIA allocation chart on the screen if there is time. Point out that nearly everything is licensed. The ISM bands are where Wi-Fi, Bluetooth, and drones live because nobody needs a license there. Note that the course PlutoSDR, in extended-frequency mode, covers all three common ISM bands. Make the transmit rule explicit: cadets transmit at 915 MHz into a cable through a 30 dB attenuator, or, if I say so, over the air at low power, and only when the lesson says so.
 
 ---
 
@@ -258,7 +258,7 @@ Demo live from the lesson page. Start on the drone preset, double the distance, 
 3. Sink's FFT Size: 2048 → 4096.
 
 Note:
-Instructor demo, with background from PySDR's Noise and dB chapter; cadets run the same flowgraph from Lesson 5. Keep the PlutoSDR Source's gain mode on Manual so its AGC does not move the levels. The peak minus the floor, both read on the same dB axis, is the SNR. In step 3 the floor drops 3 dB; the wide FM station drops with it, so its displayed SNR stays put. A narrow carrier would stay where it was.
+My demo, with background from PySDR's Noise and dB chapter; cadets run the same flowgraph from Lesson 5. Keep the PlutoSDR Source's gain mode on Manual so its AGC does not move the levels. The peak minus the floor, both read on the same dB axis, is the SNR. In step 3 the floor drops 3 dB; the wide FM station drops with it, so its displayed SNR stays put. A narrow carrier would stay where it was.
 
 ---
 
