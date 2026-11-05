@@ -130,7 +130,7 @@ mastery-based portion of the grade.
 | :-: | :- |
 | 7.1 | I can describe QAM and OFDM and identify use cases for each. |
 | 7.2 | I can define the scope, objectives, and measurable success criteria for a self-directed SDR project. |
-| 7.3 | I can research, design, and implement a wireless communication system using an SDR and GNU Radio. |
+| 7.3 | I can research, design, and implement a wireless communication system using an SDR, preferably with GNU Radio. |
 | 7.4 | I can present my project results in a professional-grade report and live demonstration and defend engineering trade-offs against my own stated success criteria. |
 
 </div>

@@ -183,6 +183,25 @@ budgets, checks) still apply. Where 444 would put a derivation on screen,
   - **Rubric:** fox hunt 40%, CTF 60%, flag points counted only with a
     writeup.
 
+- **Final project (Neil, 2026-11-05).** Individual; every milestone is
+  turned in on Gradescope, and outside help is documented as usual.
+  - **GNU Radio is encouraged, not required.** Any SDR software may carry
+    the radio path; GNU Radio is the course tool and the recommended route,
+    and the PlutoSDR is still the radio. Objective 7.3 now reads "using an
+    SDR, preferably with GNU Radio".
+  - **Levels set the grade.** The proposal defines A, B, and C levels; the
+    final report and live demonstration show which one was reached, and
+    that level sets the final-project grade, on top of the five binary
+    milestone checkpoints. The bands are not yet set (the page carries one
+    "{bands to be set}" placeholder).
+  - **Milestones:** Proposal, Background Research, Design Description,
+    Prototype Update, Final Report and Presentation; dates are "on the
+    course schedule".
+  - **Ideas:** no FPV jammer (the FPV detector stays, receive only); Meteor-M
+    LRPT replaces NOAA APT, whose satellites were retired in 2025; the ADS-B
+    generator transmits at 915 MHz only.
+  - The final project's legacy deck is set to `[]`; the page covers it.
+
 ## Lesson list (approved by Neil, 2026-10-17)
 
 Neil, 2026-10-17: keep the seven-module structure from the old site

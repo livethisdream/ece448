@@ -22,19 +22,20 @@ Module 7: Final Project · Dr. Neil Rogers
 
 <ol class="lo-list" style="--module: '7'; counter-reset: lo 1">
   <li>I can define the scope, objectives, and measurable success criteria for a self-directed SDR project.</li>
-  <li>I can research, design, and implement a wireless communication system using an SDR and GNU Radio.</li>
+  <li>I can research, design, and implement a wireless communication system using an SDR, preferably with GNU Radio.</li>
   <li>I can present my project results in a professional-grade report and live demonstration and defend engineering trade-offs against my own stated success criteria.</li>
 </ol>
 ::::
 
 ::::{frame} Your Project
 :::{present}
-- You choose a project that uses your PlutoSDR, built in GNU Radio.
+- An individual project that you choose, using your PlutoSDR.
+- GNU Radio is the recommended tool.
 - It is 40% of your final grade.
 - Five milestones build toward a final report and a live demonstration on the last lesson day.
 :::
 
-The final project is yours to define. You pick a wireless problem, decide what success looks like, and build it with your PlutoSDR and GNU Radio. The receiver, transmitter, or decoder at the center of the project is a flowgraph you build; other software can help around it, such as a script that plots your results. The project is 40% of your final grade. It ends with a final report and a presentation with a live demonstration on the last lesson day, and at each milestone before that, you write one section of the report.
+The final project is yours to define, and you do it on your own. You pick a wireless problem, decide what success looks like, and build it with your PlutoSDR. GNU Radio is the course's tool and the route I recommend, because every lesson has given you flowgraphs to start from. Other SDR software may carry the radio path if it fits your project better; if you choose it, say which and why in your proposal. The project is 40% of your final grade. It ends with a final report and a presentation with a live demonstration on the last lesson day, and at each milestone before that, you write one section of the report.
 ::::
 
 ::::{frame} Five Milestones
@@ -75,7 +76,7 @@ The proposal answers four questions. First, say what you want to build, and why 
      style="width:100%;max-width:720px;display:block;margin:0.5rem auto 0;">
 :::
 
-Your **success levels** are the criteria your final report measures the project against, so write each one as something a demonstration can show is done or not done. The example is an ADS-B generator. Its C level works entirely in a recording, its B level adds the Pluto through a cable, and its A level adds an over-the-air link at low power, which needs my approval (see Transmitting Safely). For the positions, a short Python script can plot the latitude and longitude gr-adsb decodes. "Decodes my frames" is measurable; "works well" is not. Set the C level at something you are sure to finish and the A level at the most you think you can reach.
+Your **success levels** are the criteria that set your final-project grade (see Grading), so write each one as something a demonstration can show is done or not done. The example is an ADS-B generator. Its C level works entirely in a recording, its B level adds the Pluto through a cable, and its A level adds an over-the-air link at low power, which needs my approval (see Transmitting Safely). For the positions, a short Python script can plot the latitude and longitude gr-adsb decodes. "Decodes my frames" is measurable; "works well" is not. Set the C level at something you are sure to finish and the A level at the most you think you can reach.
 ::::
 
 ::::{frame} Background Research
@@ -98,7 +99,7 @@ Find the prior work your project builds on: papers, GNU Radio wiki pages and out
 - Your next steps.
 :::
 
-The design description turns the proposal into a plan. Draw the system as subsystems, such as source, channel, demodulator, and decoder, and name the GNU Radio blocks, out-of-tree modules, and hardware each one uses. Describe the **use cases**: who would use the system, and for what. List the questions you cannot answer yet and the places you expect to get stuck, so we can talk about them early. Then say how you will test each success level: the recording, flowgraph display, or measurement that shows it is met.
+The design description turns the proposal into a plan. Draw the system as subsystems, such as source, channel, demodulator, and decoder, and name the GNU Radio blocks, other software, and hardware each one uses. Describe the **use cases**: who would use the system, and for what. List the questions you cannot answer yet and the places you expect to get stuck, so we can talk about them early. Then say how you will test each success level: the recording, flowgraph display, or measurement that shows it is met.
 ::::
 
 ::::{frame} Prototype Update
@@ -113,7 +114,7 @@ The design description turns the proposal into a plan. Draw the system as subsys
      style="width:100%;max-width:420px;display:block;margin:0.5rem auto 0;">
 :::
 
-The prototype update reports what works so far. Show the flowgraphs you have built and the results they give, with screenshots or SigMF recordings, and say which success levels you have met. The screenshot is the kind of evidence that settles a level: the Lesson 18 receiver running on a recording, with the count of messages found and decoded and the aircraft it decoded, all in one window. If the design changed, say what changed and why. Close with your plan to finish.
+The prototype update reports what works so far. Show the flowgraphs or code you have built and the results they give, with screenshots or SigMF recordings, and say which success levels you have met. The screenshot is the kind of evidence that settles a level: the Lesson 18 receiver running on a recording, with the count of messages found and decoded and the aircraft it decoded, all in one window. If the design changed, say what changed and why. Close with your plan to finish.
 ::::
 
 ::::{frame} Final Report and Presentation
@@ -131,10 +132,10 @@ The final report brings the four earlier milestones together. Say what you accom
 :::{present}
 - Grade yourself against your own A, B, and C levels.
 - For each design choice, say what you gave up and why.
-- A missed A level still meets 7.4 if you explain with evidence what limited it.
+- For any level you missed, show with evidence what limited it.
 :::
 
-Objective 7.4 asks you to **defend your trade-offs**. Every design gives something up: a lower sample rate lets the Pluto stream without dropping samples but narrows the band you see, and a cable makes a link reliable but does not test the over-the-air channel. For each choice, state what you chose, what you gave up, and how the result compares with the level you set. A missed A level, with a clear account of what limited it, still meets the objective.
+Objective 7.4 asks you to **defend your trade-offs**. Every design gives something up: a lower sample rate lets the Pluto stream without dropping samples but narrows the band you see, and a cable makes a link reliable but does not test the over-the-air channel. For each choice, state what you chose, what you gave up, and how the result compares with the level you set. For any level you missed, show with evidence what limited it.
 ::::
 
 ::::{frame} Transmitting Safely
@@ -175,17 +176,19 @@ These ideas come from past projects and from what the course has built. Each one
 ::::{frame} Grading
 :class: read-only
 
-Each milestone is a checkpoint, assessed on the course's binary scale (syllabus, Grading): **1** when it meets the objective it serves, and **0** when it does not yet. You may revise a checkpoint after my feedback under course policy, unless I see no evident effort in it.
+**The level you reach sets your grade.** Your proposal defines your A, B, and C levels, and your final report and live demonstration show which level you reached. That level sets your final-project grade: {bands to be set}.
+
+The five milestones are also checkpoints, each assessed on the course's binary scale (syllabus, Grading): **1** when it meets the objective it serves, and **0** when it does not yet. You may revise a checkpoint after my feedback under course policy, unless I see no evident effort in it.
 
 | Milestone | Objective | Meets the objective when |
 | :-- | :-- | :-- |
 | Proposal | 7.2 | the scope is reasonable and every success level can be shown done or not done |
 | Background Research | 7.3 | you summarize at least four relevant sources and tie each to a building block |
 | Design Description | 7.3 | the subsystems, blocks, use cases, open questions, and test plan are all stated |
-| Prototype Update | 7.3 | working flowgraphs and results are shown against the levels |
-| Final Report and Presentation | 7.4 | the demonstration works, and the report defends the result against your own levels |
+| Prototype Update | 7.3 | you show working flowgraphs or code and their results against the levels |
+| Final Report and Presentation | 7.4 | the demonstration shows the level you reached, and the report defends the result against your own levels |
 
-You may collaborate, and you must document it (syllabus, Collaboration and Documentation).
+The project is individual. Document any outside help as usual (syllabus, Documentation).
 ::::
 
 ::::{frame} What to Turn In
@@ -197,17 +200,6 @@ You may collaborate, and you must document it (syllabus, Collaboration and Docum
 - **Code:** your flowgraphs and scripts in a GitHub repository, linked from the report.
 - **Evidence:** screenshots and, where the project records or receives signals, the SigMF recordings (`.sigmf-data` and `.sigmf-meta`) the results come from.
 - **Presentation:** five minutes on the last lesson day, with a live demonstration on your Pluto.
-::::
-
-::::{frame} Legacy Slides and References
-:class: read-only doc-links
-
-- <a class="doc-link" href="../../legacy/L16-final-project-intro.pdf" target="_blank" rel="noopener">Final Project Introduction, slides (PDF)</a>
-
-:::{depth}
-These are the slides this topic was last taught from, posted as they were.
-This page now covers the same ground.
-:::
 ::::
 
 ::::{frame} Getting Started

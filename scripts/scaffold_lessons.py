@@ -79,7 +79,7 @@ LO_TEXT = {
     "6.8": "I can receive and decode AIS messages from marine vessels.",
     "7.1": "I can describe QAM and OFDM and identify use cases for each.",
     "7.2": "I can define the scope, objectives, and measurable success criteria for a self-directed SDR project.",
-    "7.3": "I can research, design, and implement a wireless communication system using an SDR and GNU Radio.",
+    "7.3": "I can research, design, and implement a wireless communication system using an SDR, preferably with GNU Radio.",
     "7.4": "I can present my project results in a professional-grade report and live demonstration and defend engineering trade-offs against my own stated success criteria.",
 }
 
@@ -206,7 +206,7 @@ LABS = [
 # (module, after lesson slug, slug, toc title, [lo_ids], [deck keys], synopsis)
 EXTRA_PAGES = [
     (5, "L11-lab-custom-block", "midterm", "Midterm — Fox Hunt and CTF", ["5.3", "5.4"], [], "A fox hunt for a hidden transmitter at 915 MHz, and a capture-the-flag of recorded signals."),
-    (7, "L20-qam-ofdm", "final-project", "Final Project", ["7.2", "7.3", "7.4"], ["fp"], "A self-defined SDR project: proposal, background research, design, prototype, then a report and live demonstration."),
+    (7, "L20-qam-ofdm", "final-project", "Final Project", ["7.2", "7.3", "7.4"], [], "A self-defined SDR project: proposal, background research, design, prototype, then a report and live demonstration."),
 ]
 
 
