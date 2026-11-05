@@ -192,8 +192,8 @@ budgets, checks) still apply. Where 444 would put a derivation on screen,
   - **Levels set the grade.** The proposal defines A, B, and C levels; the
     final report and live demonstration show which one was reached, and
     that level sets the final-project grade, on top of the five binary
-    milestone checkpoints. The bands are not yet set (the page carries one
-    "{bands to be set}" placeholder).
+    milestone checkpoints. The grade for each level is TBD; the page says
+    Neil gives it in class.
   - **Milestones:** Proposal, Background Research, Design Description,
     Prototype Update, Final Report and Presentation; dates are "on the
     course schedule".

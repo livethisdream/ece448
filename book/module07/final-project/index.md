@@ -176,7 +176,7 @@ These ideas come from past projects and from what the course has built. Each one
 ::::{frame} Grading
 :class: read-only
 
-**The level you reach sets your grade.** Your proposal defines your A, B, and C levels, and your final report and live demonstration show which level you reached. That level sets your final-project grade: {bands to be set}.
+**The level you reach sets your grade.** Your proposal defines your A, B, and C levels, and your final report and live demonstration show which level you reached. That level sets your final-project grade; I'll give the grade for each level in class.
 
 The five milestones are also checkpoints, each assessed on the course's binary scale (syllabus, Grading): **1** when it meets the objective it serves, and **0** when it does not yet. You may revise a checkpoint after my feedback under course policy, unless I see no evident effort in it.
 
