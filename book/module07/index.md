@@ -28,7 +28,7 @@ QAM and OFDM, then the self-defined final project: proposal, research, prototype
 <ol class="lo-list" style="--module: '7'">
   <li>I can describe QAM and OFDM and identify use cases for each.</li>
   <li>I can define the scope, objectives, and measurable success criteria for a self-directed SDR project.</li>
-  <li>I can research, design, and implement a wireless communication system using an SDR and GNU Radio.</li>
+  <li>I can research, design, and implement a wireless communication system using an SDR, preferably with GNU Radio.</li>
   <li>I can present my project results in a professional-grade report and live demonstration and defend engineering trade-offs against my own stated success criteria.</li>
 </ol>
 ::::

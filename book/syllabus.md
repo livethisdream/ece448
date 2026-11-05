@@ -130,7 +130,7 @@ mastery-based portion of the grade.
 | :-: | :- |
 | 7.1 | I can describe QAM and OFDM and identify use cases for each. |
 | 7.2 | I can define the scope, objectives, and measurable success criteria for a self-directed SDR project. |
-| 7.3 | I can research, design, and implement a wireless communication system using an SDR and GNU Radio. |
+| 7.3 | I can research, design, and implement a wireless communication system using an SDR, preferably with GNU Radio. |
 | 7.4 | I can present my project results in a professional-grade report and live demonstration and defend engineering trade-offs against my own stated success criteria. |
 
 </div>
@@ -182,8 +182,10 @@ to find, demodulate, and decode. It is an individual, take-home effort.
 
 The final project is intentionally open-ended. You choose the wireless
 application, **write your own success criteria** for A-, B-, and C-level
-outcomes, and defend the result. Each checkpoint below develops a section of
-your final report and is graded 1 / 0, with revisions under course policy:
+outcomes, and defend the result. The level you reach against your proposal
+sets your final-project grade, and the milestones below are 1 / 0 checkpoints.
+Each checkpoint develops a section of your final report, with revisions under
+course policy:
 
 1. **Project proposal**: what you want to build, why it is meaningful and
    feasible, and your success criteria.
@@ -191,7 +193,7 @@ your final report and is graded 1 / 0, with revisions under course policy:
    project builds on them.
 3. **Design description**: your initial design, its critical components, use
    cases, and test plan.
-4. **Prototype description**: build and test results, and your plan to
+4. **Prototype Update**: build and test results, and your plan to
    finish.
 5. **Final report and presentation**: an IEEE-quality report (typically 7-10
    pages) and a five-minute presentation and live demonstration. Code goes in
