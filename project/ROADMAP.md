@@ -90,6 +90,15 @@ the material. A lesson is a guided walkthrough, not a chapter.
   - Where GNU Radio has a module for a signal, the lesson uses it:
     gr-adsb (`gnuradio-adsb`, shipped in radioconda) for ADS-B, with
     gr-air-modes named as the other module.
+  - **HD Radio is gr-hdradio** (Neil, 2026-11-06): the course's own
+    module, `livethisdream/gr-hdradio`, Python blocks over libnrsc5 (HD
+    Radio Receiver, HD Radio Decoder, HD File Sink). Pick any sample rate
+    and any programs; the files a station sends come out as PDUs.
+    nrsc5 is not on conda-forge, so radioconda does not ship it;
+    `scripts/install_nrsc5.sh` in gr-hdradio builds it from a pinned
+    master commit, because only master takes complex float input
+    (v3.2.0 has no `--iq-input-format cf32`). The session hook builds
+    both here.
   - **Every cadet is issued a PlutoSDR**, and every lesson and lab is
     written for it. Other radios are not banned, but no lesson names,
     requires, or is written around one (no HackRF, no ADALM-PHASER); an

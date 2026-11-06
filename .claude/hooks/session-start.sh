@@ -130,6 +130,40 @@ else
   rm -rf "$ADSB_SRC"
 fi
 
+# --- HD Radio (L14): nrsc5 and gr-hdradio -----------------------------------
+# Neil, 2026-11-06: HD Radio is received with the course's own gr-hdradio,
+# Python blocks over libnrsc5. nrsc5 is not on conda-forge, so neither
+# radioconda nor Ubuntu has it; gr-hdradio's scripts/install_nrsc5.sh builds
+# it from the pinned master commit gr-hdradio was tested against (only master
+# takes complex float input, which the blocks and L14's
+# `nrsc5 --iq-input-format cf32` both need). Both land under /usr, where
+# check_grc.py's grcc finds the blocks and the decoder finds libnrsc5. The
+# build needs github.com (nrsc5 fetches its own FAAD2) and nothing else.
+GR_HDRADIO_REV=main
+if [ -f /usr/share/gnuradio/grc/blocks/hdradio_hd_receiver.block.yml ] \
+   && command -v nrsc5 >/dev/null 2>&1; then
+  log "nrsc5 and gr-hdradio present, skipping build"
+else
+  log "building nrsc5 and gr-hdradio ${GR_HDRADIO_REV:0:7}"
+  export DEBIAN_FRONTEND=noninteractive
+  $SUDO apt-get install -y -qq --no-install-recommends cmake build-essential \
+    git autoconf automake libtool patch pkg-config libfftw3-dev libao-dev \
+    librtlsdr-dev xz-utils >/dev/null || log "nrsc5 build deps install failed"
+  HD_SRC="$(mktemp -d)"
+  if git clone -q https://github.com/livethisdream/gr-hdradio.git "$HD_SRC" \
+     && git -C "$HD_SRC" checkout -q "$GR_HDRADIO_REV" \
+     && $SUDO "$HD_SRC/scripts/install_nrsc5.sh" --prefix /usr >/dev/null \
+     && cmake -S "$HD_SRC" -B "$HD_SRC/build" -DCMAKE_INSTALL_PREFIX=/usr \
+          -DPYTHON_EXECUTABLE=/usr/bin/python3.12 \
+          -DGR_PYTHON_DIR=/usr/lib/python3/dist-packages >/dev/null \
+     && $SUDO cmake --install "$HD_SRC/build" >/dev/null; then
+    log "nrsc5 $(nrsc5 -v 2>&1 | head -1) and gr-hdradio installed"
+  else
+    log "nrsc5 or gr-hdradio build failed"
+  fi
+  rm -rf "$HD_SRC"
+fi
+
 # --- where the house macros live --------------------------------------------
 # myPackages_gr / myShortcuts / exam_config live in the PRIVATE livethisdream/
 # latex-tools repo, which is not vendored here and cannot be cloned by a hook.
