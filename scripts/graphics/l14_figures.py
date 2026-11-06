@@ -16,7 +16,7 @@ test file, and reduces them to a palette so they stay small. Make the raw
 shots first, in one folder:
 
     grcc -o DIR book/extras/grc/L14-hd-test-tx.grc book/extras/grc/L14-hd-find.grc
-    (cd DIR && python3.12 L14_hd_test_tx.py)               # writes L14-hd-test.cu8
+    (cd DIR && python3.12 L14_hd_test_tx.py)               # writes L14-hd-test.sigmf-data and .sigmf-meta
     (cd DIR && xvfb-run python3.12 scripts/grc/grc_shot.py --size 1060x1000 L14_hd_find.py find.png 12)
     # find_noise.png: the same, on a test file written with noise_amp = 0.15
     scripts/grc/grc_canvas.sh book/extras/grc/L14-hd-find.grc DIR/canvas_find.png 1800x1100
@@ -126,7 +126,7 @@ def shots(raw: Path):
     save(stamp(noisy, (1020, 412), "Simulated: test file, noise_amp 0.15"), "L14-hd-noise", colors=12)
     save(stamp(find.crop((0, 362, 1060, 1000)), (1020, 50)), "L14-hd-scan", colors=16)
     save(Image.open(raw / "canvas_find.png").crop((0, 68, 1700, 1100)), "L14-grc-find", colors=64)
-    save(Image.open(raw / "canvas_tx.png").crop((0, 68, 1760, 940)), "L14-grc-test-tx", colors=64)
+    save(Image.open(raw / "canvas_tx.png").crop((0, 68, 1790, 940)), "L14-grc-test-tx", colors=64)
 
 
 if __name__ == "__main__":

@@ -57,12 +57,12 @@ The width rule is Carson's rule, a rule of thumb; we use it only to set the chan
 
 ## The Receiver Flowgraph
 
-<img src="./img/07-am-fm-receivers/L07-grc-wbfm-rx.png" alt="L07-wbfm-rx.grc: File Source or PlutoSDR, Frequency Xlating FIR Filter, Quadrature Demod, Decimating FIR Filter, FM Deemphasis, Audio Sink" style="max-height:380px; display:block; margin:0 auto;">
+<img src="./img/07-am-fm-receivers/L07-grc-wbfm-rx.png" alt="L07-wbfm-rx.grc: SigMF Source or PlutoSDR, Frequency Xlating FIR Filter, Quadrature Demod, Decimating FIR Filter, FM Deemphasis, Audio Sink" style="max-height:380px; display:block; margin:0 auto;">
 
 A channel filter, a demodulator, an audio filter, and de-emphasis feed the speaker.
 
 Note:
-We disabled the PlutoSDR Source (2.4 MS/s, manual gain); switching to live means disabling the File Source and enabling the SDR. The flowgraph needs no Throttle, because the Audio Sink paces the File Source, as in Lesson 6.
+We disabled the PlutoSDR Source (2.4 MS/s, manual gain); switching to live means disabling the SigMF Source and enabling the SDR. The SigMF Source is a File Source on the .sigmf-data file, its Output Type set from the meta's datatype (cf32_le). The flowgraph needs no Throttle, because the Audio Sink paces the source, as in Lesson 6.
 
 ---
 
@@ -127,7 +127,7 @@ The transmitter boosts the treble; the receiver cuts it back, and the noise with
 <img src="./img/07-am-fm-receivers/L07-wbfm-rx.png" alt="Simulated: the WBFM receiver window, received band, multiplex, and audio with lines at 1 and 2.5 kHz" style="max-height:420px; display:block; margin:0 auto;">
 
 Note:
-Play the audio. The audio sink shows exactly the two message tones. Type 99.5 into Station and a different test tone plays. Then show how to point the File Source at fm_capture.cfile and type its center frequency.
+Play the audio. The audio sink shows exactly the two message tones. Type 99.5 into Station and a different test tone plays. Then show how to point the SigMF Source at fm_capture.sigmf-data and type the center frequency from fm_capture.sigmf-meta.
 
 ---
 

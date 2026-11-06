@@ -27,7 +27,7 @@ Spring 2027 · Dr. Neil Rogers
 - Today we find a digital signal that sits beside an FM station.
 
 Note:
-Before class, run L14-hd-test-tx.grc once so L14-hd-test.cu8 sits next to L14-hd-find.grc. If the room has a PlutoSDR and an antenna, switch the finder to its PlutoSDR Source and find a local HD station on the waterfall ahead of time.
+Before class, run L14-hd-test-tx.grc once so L14-hd-test.sigmf-data and its .sigmf-meta sit next to L14-hd-find.grc. If the room has a PlutoSDR and an antenna, switch the finder to its PlutoSDR Source and find a local HD station on the waterfall ahead of time.
 
 ---
 
@@ -128,12 +128,12 @@ Start at HD Radio: the red dots sit on zero. Move the spacing off 1.00 and the n
 
 ## The Test Signal
 
-<img src="./img/14-hd-radio/L14-grc-test-tx.png" alt="L14-hd-test-tx.grc: two OFDM chains of Random Uniform Source, Chunks to Symbols, Stream to Tagged Stream, OFDM Carrier Allocator, reverse FFT, and OFDM Cyclic Prefixer; an FM host and neighbor; noise; and a File Sink of unsigned bytes" style="max-height:400px; display:block; margin:0 auto;">
+<img src="./img/14-hd-radio/L14-grc-test-tx.png" alt="L14-hd-test-tx.grc: two OFDM chains of Random Uniform Source, Chunks to Symbols, Stream to Tagged Stream, OFDM Carrier Allocator, reverse FFT, and OFDM Cyclic Prefixer; an FM host and neighbor; noise; a File Sink of unsigned bytes; and a Python Snippet that writes the SigMF meta file" style="max-height:400px; display:block; margin:0 auto;">
 
 Each side carries random QPSK on subcarriers 356 to 546, written as unsigned bytes.
 
 Note:
-The FFT has 4096 points at 1,488,375 samples per second, so each bin is one subcarrier, and the guard is 224 samples. The symbols are random, not NRSC-5 data, so nrsc5 cannot decode this file. The 4 s file is 11.9 MB, in nrsc5's default format. Nothing transmits.
+The FFT has 4096 points at 1,488,375 samples per second, so each bin is one subcarrier, and the guard is 224 samples. The symbols are random, not NRSC-5 data, so nrsc5 cannot decode this file. The 4 s file is 11.9 MB, in nrsc5's default format, cu8. The File Sink writes L14-hd-test.sigmf-data, and the write_meta Python Snippet writes the .sigmf-meta, because GNU Radio's SigMF Sink takes no cu8. Nothing transmits.
 
 ---
 

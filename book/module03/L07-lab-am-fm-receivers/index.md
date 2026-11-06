@@ -35,7 +35,7 @@ L7 Lab · Module 3: Analog Modulation · Dr. Neil Rogers
 
 Lesson 7 ran every receiver on simulated test files. Today you build the WBFM receiver yourself, then run the receivers on your own L5 capture and on the air. The lab packet has three parts, and you turn it in once, complete, before Lesson 8. **Part 1, the Pre-Lab**, is on your own before the period: the receiver settings for an example capture and your own, the rates and gain of the receiver you build, and a local ATIS. **Part 2** is your own measurements and observations in class. **Part 3, the Writeup**, explains them.
 
-Bring your PlutoSDR, its antenna, your `fm_capture.cfile` from the L5 Lab, and headphones.
+Bring your PlutoSDR, its antenna, your `fm_capture.sigmf-data` and `fm_capture.sigmf-meta` from the L5 Lab, and headphones.
 ::::
 
 ::::{frame} Part 1: Before the Period
@@ -47,7 +47,7 @@ Bring your PlutoSDR, its antenna, your `fm_capture.cfile` from the L5 Lab, and h
 
 Do the Pre-Lab before you arrive. Question 1 asks for the shift for two captures, the rates and Quadrature Demod gain of the receiver you build at the bench, which decimates differently from the lesson's, and the AM receiver's settings for a local ATIS.
 
-The setup also takes a few minutes, and some of it needs a network connection, which the lab room may not have. Put the six flowgraphs from the Lesson 7 page in one folder with `fm_capture.cfile`. Open `L07-rds-rx.grc` first and check that GRC reports no missing blocks: gr-rds comes with radioconda; if GRC reports the RDS blocks missing, run `mamba install gnuradio-rds` from the radioconda prompt. Then run `L07-fm-test-tx.grc`, which also uses an RDS block, and `L07-am-test-tx.grc` once each; they record the two test files as SigMF, 76.8 MB of samples each, into that folder and stop on their own. For Question 1(c), the FAA Chart Supplement and every sectional chart list an airport's ATIS frequency.
+The setup also takes a few minutes, and some of it needs a network connection, which the lab room may not have. Put the six flowgraphs from the Lesson 7 page in one folder with `fm_capture.sigmf-data` and `fm_capture.sigmf-meta`. Open `L07-rds-rx.grc` first and check that GRC reports no missing blocks: gr-rds comes with radioconda; if GRC reports the RDS blocks missing, run `mamba install gnuradio-rds` from the radioconda prompt. Then run `L07-fm-test-tx.grc`, which also uses an RDS block, and `L07-am-test-tx.grc` once each; they record the two test files as SigMF, 76.8 MB of samples each, into that folder and stop on their own. For Question 1(c), the FAA Chart Supplement and every sectional chart list an airport's ATIS frequency.
 ::::
 
 ::::{frame} Part 2: Build the WBFM Receiver
@@ -67,8 +67,8 @@ The setup also takes a few minutes, and some of it needs a network connection, w
 ::::{frame} Part 2: Your Capture
 :class: read-only
 
-1. Stop your receiver. Set the File Source's file to `fm_capture.cfile`.
-2. Run it, type the center frequency you recorded at into SDR center, and set Station to the station you centered.
+1. Stop your receiver. Set the File Source's file to `fm_capture.sigmf-data`; the data file holds the same raw complex floats as the test file.
+2. Run it, type the center frequency from `fm_capture.sigmf-meta` into SDR center, in megahertz, and set Station to the station you centered.
 3. Add a float QT GUI Frequency Sink on the Quadrature Demod output at `samp_rate/5`. Screenshot the demodulated multiplex and mark its parts for Question 3(a). Describe the audio for Question 3(b).
 ::::
 
@@ -76,7 +76,7 @@ The setup also takes a few minutes, and some of it needs a network connection, w
 :class: read-only
 
 1. Connect the antenna to the PlutoSDR's RX port. Run `L05-fm-spectrum.grc`, find a strong station between 88 and 108 MHz, and stop it; only one flowgraph can stream from the Pluto at a time.
-2. Open `L07-wbfm-rx.grc`. Disable the File Source, enable the PlutoSDR Source, and run it with SDR center about 300 kHz below the station and Station set to it. Listen, and record the frequency, the call sign the station announces (or the FCC lists for it), and whether the 19 kHz pilot shows on the multiplex sink, for Question 4(a). Stop it.
+2. Open `L07-wbfm-rx.grc`. Disable the SigMF Source, enable the PlutoSDR Source, and run it with SDR center about 300 kHz below the station and Station set to it. Listen, and record the frequency, the call sign the station announces (or the FCC lists for it), and whether the 19 kHz pilot shows on the multiplex sink, for Question 4(a). Stop it.
 3. Open `L07-rds-rx.grc`. Right-click the File Source and choose Disable; right-click the PlutoSDR Source and choose Enable.
 4. Run it. Type an SDR center about 300 kHz below the station you found, set Station to its frequency, and set RF gain from your L5 gain table.
 5. Wait for the station name and compare it with the call sign. Fill in the rest of the table for Question 4(b); the panel shows the PI code under "Program Type" and the program type under "PI".

@@ -101,7 +101,8 @@ $f_s = 32$ kHz.
 
 \newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\question \textbf{Recording and reading IQ.} A File Sink records complex samples.
+\question \textbf{Recording and reading IQ.} A SigMF Sink records complex samples
+as 32-bit floats to a \texttt{.sigmf-data} file.
 \begin{parts}
 
 	\begin{minipage}[t]{0.58\linewidth}
@@ -115,21 +116,25 @@ $f_s = 32$ kHz.
 		\ansbox[1.3in]{96 MB}
 	\end{minipage}
 
-	\part You play the capture back through a File Source into a QT GUI Sink, with
+	\part You play the capture back through a SigMF Source into a QT GUI Sink, with
 	no other blocks. The flowgraph uses a whole processor core and the display
 	races. What block is missing, and what do you set it to?
 		\begin{solution}[0.9in]
-		A Throttle, set to the capture's sample rate, 2.4 MS/s. A File Source has no
+		A Throttle, set to the capture's sample rate, 2.4 MS/s. A SigMF Source has no
 		hardware to pace it, so without a throttle it reads samples as fast as the
 		laptop can.
 		\end{solution}
 
-	\part A teammate sends only the file \texttt{capture.cfile}. Name the two numbers
-	you need before the file is useful, and explain why.
-		\begin{solution}[0.9in]
+	\part A teammate sends only the file \texttt{capture.cfile}, a raw File Sink
+	recording. Name the two numbers you need before the file is useful, explain why,
+	and name the file that should have come with it.
+		\begin{solution}[1.1in]
 		The sample rate and the center frequency. The file holds raw $I$ and $Q$ values
 		with no header: without the sample rate the time and frequency axes have no
 		scale, and without the center frequency the frequency axis has no reference.
+		A SigMF recording carries both: \texttt{capture.sigmf-meta}, beside the
+		samples in \texttt{capture.sigmf-data}, names the datatype, sample rate, and
+		center frequency, which is why every recording in this course is SigMF.
 		\end{solution}
 
 \end{parts}

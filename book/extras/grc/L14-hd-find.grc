@@ -7,11 +7,11 @@ options:
     comment: ''
     copyright: ''
     description: 'L14: the spectrum, waterfall, and sideband power of an FM station
-      with HD Radio, from L14-hd-test.cu8, any unsigned 8-bit recording at 1,488,375
-      samples per second, or a PlutoSDR live. To go live, disable the File Source
-      and the six blocks after it and enable the PlutoSDR Source. The disabled Rational
-      Resampler and SigMF Sink record the Pluto at half rate, 744,187.5 samples per
-      second, as hd.sigmf-data for nrsc5. Receive only.'
+      with HD Radio, from L14-hd-test.sigmf-data, any unsigned 8-bit (cu8) recording
+      at 1,488,375 samples per second, or a PlutoSDR live. To go live, disable the
+      File Source and the six blocks after it and enable the PlutoSDR Source. The
+      disabled Rational Resampler and SigMF Sink record the Pluto at half rate, 744,187.5
+      samples per second, as hd.sigmf-data for nrsc5. Receive only.'
     gen_cmake: 'On'
     gen_linking: dynamic
     generate_options: qt_gui
@@ -133,12 +133,12 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '''L14-hd-test.cu8'''
+    value: '''L14-hd-test.sigmf-data'''
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1392, 8]
+    coordinate: [592, 160]
     rotation: 0
     state: enabled
 - name: outer

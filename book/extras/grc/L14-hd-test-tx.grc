@@ -6,10 +6,12 @@ options:
     cmake_opt: ''
     comment: ''
     copyright: ''
-    description: 'L14: writes L14-hd-test.cu8, 4 s of a simulated hybrid HD Radio
-      station: an FM host, two OFDM sidebands at levels set by upper_dbc and lower_dbc,
-      an analog-only neighbor, and noise, as unsigned 8-bit IQ at 1,488,375 samples
-      per second, the default input format of nrsc5. Simulated: the sidebands carry
+    description: 'L14: writes L14-hd-test.sigmf-data and .sigmf-meta, 4 s of a simulated
+      hybrid HD Radio station: an FM host, two OFDM sidebands at levels set by upper_dbc
+      and lower_dbc, an analog-only neighbor, and noise, as unsigned 8-bit IQ (SigMF
+      datatype cu8) at 1,488,375 samples per second, the default input format of nrsc5.
+      GNU Radio''s SigMF Sink takes no cu8, so a File Sink writes the samples and
+      the write_meta snippet writes the .sigmf-meta. Simulated: the sidebands carry
       random QPSK, not NRSC-5 data. Nothing transmits.'
     gen_cmake: 'On'
     gen_linking: dynamic
@@ -71,6 +73,18 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [976, 8]
+    rotation: 0
+    state: enabled
+- name: fc
+  id: variable
+  parameters:
+    comment: ''
+    value: 100.3e6
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1216, 8]
     rotation: 0
     state: enabled
 - name: fft_len
@@ -155,6 +169,18 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [1096, 8]
+    rotation: 0
+    state: enabled
+- name: rec_name
+  id: variable
+  parameters:
+    comment: ''
+    value: '''L14-hd-test'''
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1336, 8]
     rotation: 0
     state: enabled
 - name: samp_rate
@@ -242,7 +268,7 @@ blocks:
     alias: ''
     append: 'False'
     comment: ''
-    file: '''L14-hd-test.cu8'''
+    file: rec_name + '.sigmf-data'
     type: byte
     unbuffered: 'False'
     vlen: '1'
@@ -903,6 +929,26 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [300, 160]
+    rotation: 0
+    state: enabled
+- name: write_meta
+  id: snippet
+  parameters:
+    alias: ''
+    code: "import json\nmeta = {'global': {'core:datatype': 'cu8', 'core:sample_rate':\
+      \ float(self.samp_rate),\n    'core:version': '1.0.0', 'core:hw': 'Simulated:\
+      \ L14-hd-test-tx.grc',\n    'core:description': 'Simulated hybrid HD Radio station'},\n\
+      \    'captures': [{'core:sample_start': 0, 'core:frequency': float(self.fc)}],\n\
+      \    'annotations': []}\nwith open(self.rec_name + '.sigmf-meta', 'w') as f:\n\
+      \    json.dump(meta, f, indent=2)"
+    comment: ''
+    priority: '0'
+    section: main_after_init
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1580, 800]
     rotation: 0
     state: enabled
 
