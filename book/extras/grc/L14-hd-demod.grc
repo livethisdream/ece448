@@ -1,0 +1,958 @@
+options:
+  parameters:
+    author: ECE 448
+    catch_exceptions: 'True'
+    category: '[GRC Hier Blocks]'
+    cmake_opt: ''
+    comment: ''
+    copyright: ''
+    description: 'L14: the steps from HD Radio sidebands to QPSK points, on a recording
+      of a real station: complex float at 744,187.5 samples per second, such as the
+      hd.sigmf-data that L14-hd-find.grc records. A band-pass filter keeps the two
+      sidebands. The cyclic prefix, stacked over 16 symbols, marks where each OFDM
+      symbol starts. An FFT turns each symbol into subcarriers, the reference subcarriers
+      stand out as steady differential BPSK, and they equalize the data subcarriers
+      into QPSK. To go live, disable the File Source and Throttle and enable the PlutoSDR
+      Source and Rational Resampler. Receive only.'
+    gen_cmake: 'On'
+    gen_linking: dynamic
+    generate_options: qt_gui
+    hier_block_src_path: '.:'
+    id: L14_hd_demod
+    max_nouts: '0'
+    output_language: python
+    placement: (0,0)
+    qt_qss_theme: ''
+    realtime_scheduling: ''
+    run: 'True'
+    run_command: '{python} -u {filename}'
+    run_options: prompt
+    sizing_mode: fixed
+    thread_safe_setters: ''
+    title: L14 - Demodulating the HD Radio Sidebands
+    window_size: (1400,820)
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [8, 8]
+    rotation: 0
+    state: enabled
+
+blocks:
+- name: cp_len
+  id: variable
+  parameters:
+    comment: ''
+    value: '112'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [384, 12]
+    rotation: 0
+    state: enabled
+- name: fc_mhz
+  id: variable_qtgui_entry
+  parameters:
+    comment: ''
+    entry_signal: editingFinished
+    gui_hint: 2, 0, 1, 1
+    label: Station (MHz), PlutoSDR
+    type: real
+    value: '100.3'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [640, 12]
+    rotation: 0
+    state: enabled
+- name: fft_len
+  id: variable
+  parameters:
+    comment: ''
+    value: '2048'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [296, 12]
+    rotation: 0
+    state: enabled
+- name: recording
+  id: variable
+  parameters:
+    comment: ''
+    value: '''hd.sigmf-data'''
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [472, 12]
+    rotation: 0
+    state: enabled
+- name: rx_gain
+  id: variable_qtgui_range
+  parameters:
+    comment: ''
+    gui_hint: 2, 1, 1, 1
+    label: Gain (dB), PlutoSDR
+    min_len: '200'
+    orient: QtCore.Qt.Horizontal
+    rangeType: float
+    start: '0'
+    step: '1'
+    stop: '71'
+    value: '40'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [840, 12]
+    rotation: 0
+    state: enabled
+- name: samp_rate
+  id: variable
+  parameters:
+    comment: ''
+    value: '744187.5'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [184, 12]
+    rotation: 0
+    state: enabled
+- name: by_symbol
+  id: blocks_stream_to_vector
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_items: fft_len + cp_len
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1240, 268]
+    rotation: 0
+    state: enabled
+- name: data_plot
+  id: qtgui_const_sink_x
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha1: '1.0'
+    alpha10: '1.0'
+    alpha2: '1.0'
+    alpha3: '1.0'
+    alpha4: '1.0'
+    alpha5: '1.0'
+    alpha6: '1.0'
+    alpha7: '1.0'
+    alpha8: '1.0'
+    alpha9: '1.0'
+    autoscale: 'False'
+    axislabels: 'True'
+    color1: '"blue"'
+    color10: '"dark blue"'
+    color2: '"red"'
+    color3: '"green"'
+    color4: '"black"'
+    color5: '"cyan"'
+    color6: '"magenta"'
+    color7: '"yellow"'
+    color8: '"dark red"'
+    color9: '"dark green"'
+    comment: ''
+    grid: 'False'
+    gui_hint: 1, 1, 1, 1
+    label1: ''
+    label10: ''
+    label2: ''
+    label3: ''
+    label4: ''
+    label5: ''
+    label6: ''
+    label7: ''
+    label8: ''
+    label9: ''
+    legend: 'False'
+    marker1: '0'
+    marker10: '0'
+    marker2: '0'
+    marker3: '0'
+    marker4: '0'
+    marker5: '0'
+    marker6: '0'
+    marker7: '0'
+    marker8: '0'
+    marker9: '0'
+    name: '"Data subcarriers (QPSK)"'
+    nconnections: '1'
+    size: '2048'
+    style1: '0'
+    style10: '0'
+    style2: '0'
+    style3: '0'
+    style4: '0'
+    style5: '0'
+    style6: '0'
+    style7: '0'
+    style8: '0'
+    style9: '0'
+    tr_chan: '0'
+    tr_level: '0.0'
+    tr_mode: qtgui.TRIG_MODE_FREE
+    tr_slope: qtgui.TRIG_SLOPE_POS
+    tr_tag: '""'
+    type: complex
+    update_time: '0.10'
+    width1: '1'
+    width10: '1'
+    width2: '1'
+    width3: '1'
+    width4: '1'
+    width5: '1'
+    width6: '1'
+    width7: '1'
+    width8: '1'
+    width9: '1'
+    xmax: '2'
+    xmin: '-2'
+    ymax: '2'
+    ymin: '-2'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1400, 540]
+    rotation: 0
+    state: enabled
+- name: halve
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    decim: '2'
+    fbw: '0'
+    interp: '1'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    taps: '[]'
+    type: ccc
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [224, 316]
+    rotation: 0
+    state: disabled
+- name: later
+  id: blocks_delay
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    delay: fft_len
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_ports: '1'
+    showports: 'False'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [700, 260]
+    rotation: 0
+    state: enabled
+- name: mag
+  id: blocks_complex_to_mag
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    vlen: fft_len + cp_len
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1420, 268]
+    rotation: 0
+    state: enabled
+- name: pluto
+  id: iio_pluto_source
+  parameters:
+    affinity: ''
+    alias: ''
+    bandwidth: int(2 * samp_rate)
+    bbdc: 'True'
+    buffer_size: '32768'
+    comment: ''
+    filter: ''
+    filter_source: '''Auto'''
+    fpass: '0'
+    frequency: int(fc_mhz * 1e6)
+    fstop: '0'
+    gain1: '''manual'''
+    len_tag_key: packet_len
+    manual_gain1: rx_gain
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    quadrature: 'True'
+    rfdc: 'True'
+    samplerate: int(2 * samp_rate)
+    type: fc32
+    uri: '"ip:192.168.2.1"'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [16, 300]
+    rotation: 0
+    state: disabled
+- name: prefix_match
+  id: blocks_multiply_conjugate_cc
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [880, 264]
+    rotation: 0
+    state: enabled
+- name: prefix_plot
+  id: qtgui_vector_sink_f
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha1: '1.0'
+    alpha10: '1.0'
+    alpha2: '1.0'
+    alpha3: '1.0'
+    alpha4: '1.0'
+    alpha5: '1.0'
+    alpha6: '1.0'
+    alpha7: '1.0'
+    alpha8: '1.0'
+    alpha9: '1.0'
+    autoscale: 'True'
+    average: '1.0'
+    color1: '"blue"'
+    color10: '"dark blue"'
+    color2: '"red"'
+    color3: '"green"'
+    color4: '"black"'
+    color5: '"cyan"'
+    color6: '"magenta"'
+    color7: '"yellow"'
+    color8: '"dark red"'
+    color9: '"dark green"'
+    comment: ''
+    grid: 'False'
+    gui_hint: 0, 1, 1, 1
+    label1: ''
+    label10: ''
+    label2: ''
+    label3: ''
+    label4: ''
+    label5: ''
+    label6: ''
+    label7: ''
+    label8: ''
+    label9: ''
+    legend: 'False'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    name: '"Cyclic prefix match, 16 symbols stacked"'
+    nconnections: '1'
+    ref_level: '0'
+    showports: 'False'
+    update_time: '0.10'
+    vlen: fft_len + cp_len
+    width1: '1'
+    width10: '1'
+    width2: '1'
+    width3: '1'
+    width4: '1'
+    width5: '1'
+    width6: '1'
+    width7: '1'
+    width8: '1'
+    width9: '1'
+    x_axis_label: '"Sample within one symbol"'
+    x_start: '0'
+    x_step: '1'
+    x_units: '""'
+    y_axis_label: '"Match"'
+    y_units: '""'
+    ymax: 1e-4
+    ymin: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1600, 248]
+    rotation: 0
+    state: enabled
+- name: prefix_window
+  id: blocks_moving_average_xx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    length: cp_len
+    max_iter: '4000'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    scale: 1 / cp_len
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1040, 252]
+    rotation: 0
+    state: enabled
+- name: ref_plot
+  id: qtgui_const_sink_x
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha1: '1.0'
+    alpha10: '1.0'
+    alpha2: '1.0'
+    alpha3: '1.0'
+    alpha4: '1.0'
+    alpha5: '1.0'
+    alpha6: '1.0'
+    alpha7: '1.0'
+    alpha8: '1.0'
+    alpha9: '1.0'
+    autoscale: 'False'
+    axislabels: 'True'
+    color1: '"blue"'
+    color10: '"dark blue"'
+    color2: '"red"'
+    color3: '"green"'
+    color4: '"black"'
+    color5: '"cyan"'
+    color6: '"magenta"'
+    color7: '"yellow"'
+    color8: '"dark red"'
+    color9: '"dark green"'
+    comment: ''
+    grid: 'False'
+    gui_hint: 1, 0, 1, 1
+    label1: ''
+    label10: ''
+    label2: ''
+    label3: ''
+    label4: ''
+    label5: ''
+    label6: ''
+    label7: ''
+    label8: ''
+    label9: ''
+    legend: 'False'
+    marker1: '0'
+    marker10: '0'
+    marker2: '0'
+    marker3: '0'
+    marker4: '0'
+    marker5: '0'
+    marker6: '0'
+    marker7: '0'
+    marker8: '0'
+    marker9: '0'
+    name: '"Reference subcarriers (BPSK)"'
+    nconnections: '1'
+    size: '1024'
+    style1: '0'
+    style10: '0'
+    style2: '0'
+    style3: '0'
+    style4: '0'
+    style5: '0'
+    style6: '0'
+    style7: '0'
+    style8: '0'
+    style9: '0'
+    tr_chan: '0'
+    tr_level: '0.0'
+    tr_mode: qtgui.TRIG_MODE_FREE
+    tr_slope: qtgui.TRIG_SLOPE_POS
+    tr_tag: '""'
+    type: complex
+    update_time: '0.10'
+    width1: '1'
+    width10: '1'
+    width2: '1'
+    width3: '1'
+    width4: '1'
+    width5: '1'
+    width6: '1'
+    width7: '1'
+    width8: '1'
+    width9: '1'
+    xmax: '2'
+    xmin: '-2'
+    ymax: '2'
+    ymin: '-2'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1400, 440]
+    rotation: 0
+    state: enabled
+- name: score_plot
+  id: qtgui_vector_sink_f
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha1: '1.0'
+    alpha10: '1.0'
+    alpha2: '1.0'
+    alpha3: '1.0'
+    alpha4: '1.0'
+    alpha5: '1.0'
+    alpha6: '1.0'
+    alpha7: '1.0'
+    alpha8: '1.0'
+    alpha9: '1.0'
+    autoscale: 'False'
+    average: '1.0'
+    color1: '"blue"'
+    color10: '"dark blue"'
+    color2: '"red"'
+    color3: '"green"'
+    color4: '"black"'
+    color5: '"cyan"'
+    color6: '"magenta"'
+    color7: '"yellow"'
+    color8: '"dark red"'
+    color9: '"dark green"'
+    comment: ''
+    grid: 'False'
+    gui_hint: 0, 2, 1, 1
+    label1: ''
+    label10: ''
+    label2: ''
+    label3: ''
+    label4: ''
+    label5: ''
+    label6: ''
+    label7: ''
+    label8: ''
+    label9: ''
+    legend: 'False'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    name: '"Reference subcarriers: steady differential BPSK"'
+    nconnections: '1'
+    ref_level: '0'
+    showports: 'False'
+    update_time: '0.10'
+    vlen: fft_len
+    width1: '1'
+    width10: '1'
+    width2: '1'
+    width3: '1'
+    width4: '1'
+    width5: '1'
+    width6: '1'
+    width7: '1'
+    width8: '1'
+    width9: '1'
+    x_axis_label: '"Subcarrier"'
+    x_start: -fft_len / 2
+    x_step: '1'
+    x_units: '""'
+    y_axis_label: '"Score"'
+    y_units: '""'
+    ymax: '1'
+    ymin: '-0.2'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1400, 344]
+    rotation: 0
+    state: enabled
+- name: sidebands
+  id: fft_filter_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    decim: '1'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    nthreads: '1'
+    samp_delay: '0'
+    taps: firdes.band_pass(1, samp_rate, 125e3, 202e3, 6e3)
+    type: ccf
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [420, 220]
+    rotation: 0
+    state: enabled
+- name: spectrum
+  id: qtgui_freq_sink_x
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha1: '1.0'
+    alpha10: '1.0'
+    alpha2: '1.0'
+    alpha3: '1.0'
+    alpha4: '1.0'
+    alpha5: '1.0'
+    alpha6: '1.0'
+    alpha7: '1.0'
+    alpha8: '1.0'
+    alpha9: '1.0'
+    autoscale: 'False'
+    average: '0.2'
+    axislabels: 'True'
+    bw: samp_rate
+    color1: '"blue"'
+    color10: '"dark blue"'
+    color2: '"red"'
+    color3: '"green"'
+    color4: '"black"'
+    color5: '"cyan"'
+    color6: '"magenta"'
+    color7: '"yellow"'
+    color8: '"dark red"'
+    color9: '"dark green"'
+    comment: ''
+    ctrlpanel: 'False'
+    fc: '0'
+    fftsize: '2048'
+    freqhalf: 'True'
+    grid: 'False'
+    gui_hint: 0, 0, 1, 1
+    label: Relative Gain
+    label1: Recording
+    label10: ''''''
+    label2: Sidebands only
+    label3: ''''''
+    label4: ''''''
+    label5: ''''''
+    label6: ''''''
+    label7: ''''''
+    label8: ''''''
+    label9: ''''''
+    legend: 'True'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    name: '"Recording and sidebands only"'
+    nconnections: '2'
+    norm_window: 'False'
+    showports: 'False'
+    tr_chan: '0'
+    tr_level: '0.0'
+    tr_mode: qtgui.TRIG_MODE_FREE
+    tr_tag: '""'
+    type: complex
+    units: dB
+    update_time: '0.10'
+    width1: '1'
+    width10: '1'
+    width2: '1'
+    width3: '1'
+    width4: '1'
+    width5: '1'
+    width6: '1'
+    width7: '1'
+    width8: '1'
+    width9: '1'
+    wintype: window.WIN_BLACKMAN_hARRIS
+    ymax: '-20'
+    ymin: '-120'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [700, 120]
+    rotation: 0
+    state: enabled
+- name: src
+  id: blocks_file_source
+  parameters:
+    affinity: ''
+    alias: ''
+    begin_tag: pmt.PMT_NIL
+    comment: ''
+    file: recording
+    length: '0'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    offset: '0'
+    repeat: 'True'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [16, 156]
+    rotation: 0
+    state: enabled
+- name: stack
+  id: blocks_moving_average_xx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    length: '16'
+    max_iter: '4000'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    scale: 1 / 16
+    type: complex
+    vlen: fft_len + cp_len
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1240, 340]
+    rotation: 0
+    state: enabled
+- name: subcarriers
+  id: epy_block
+  parameters:
+    _source_code: "\"\"\"\nNRSC-5 Subcarriers: takes one FFT per symbol and pulls\
+      \ out the two kinds of\nsubcarrier in the primary sidebands.\n\nReference subcarriers\
+      \ sit every 19th subcarrier, 356 to 546 on each side.\nThey carry differential\
+      \ BPSK, so multiplying each one by its value one symbol\nearlier gives two points,\
+      \ +1 and -1, whatever the channel did. A subcarrier\nthat keeps doing that is\
+      \ a reference; the score output plots how strongly\neach of the fft_len subcarriers\
+      \ does, and the block finds the references (and any whole-subcarrier\nfrequency\
+      \ offset) from where the score peaks.\n\nBetween each pair of references are\
+      \ 18 data subcarriers, QPSK. The two\nreferences measure what the channel did\
+      \ to their neighborhood, and dividing\neach data subcarrier by that estimate\
+      \ leaves four points.\n\"\"\"\nimport numpy as np\nfrom gnuradio import gr\n\
+      \n\nclass blk(gr.basic_block):\n\n    def __init__(self, fft_len=2048, cp_len=112,\
+      \ search=40):\n        self.N, self.search = int(fft_len), int(search)\n   \
+      \     self.S = self.N + int(cp_len)\n        gr.basic_block.__init__(self, name='NRSC-5\
+      \ Subcarriers',\n                                in_sig=[(np.complex64, self.N)],\n\
+      \                                out_sig=[(np.float32, self.N),\n          \
+      \                               np.complex64, np.complex64])\n        upper\
+      \ = 356 + 19 * np.arange(11)\n        self.refs = np.concatenate([-upper[::-1],\
+      \ upper])\n        # Each data subcarrier, the references on either side, and\
+      \ how far\n        # it sits between them.\n        k, a, w = [], [], []\n \
+      \       for side in (-1, 1):\n            r = np.sort(side * upper)\n      \
+      \      for lo in r[:-1]:\n                for i in range(1, 19):\n         \
+      \           k.append(lo + i); a.append(lo); w.append(i / 19)\n        self.k,\
+      \ self.a, self.w = np.array(k), np.array(a), np.array(w)\n        self.score\
+      \ = np.zeros(self.N, np.float32)\n        self.votes = np.zeros(2 * self.search\
+      \ + 1)\n        self.prev = None\n        self.offset = 0\n        self.out\
+      \ = ([], [], [])\n\n    def forecast(self, noutput_items, ninputs):\n      \
+      \  return [1] * ninputs\n\n    def symbol(self, X):\n        c = self.N // 2\n\
+      \        if self.prev is None:\n            self.prev = X\n            return\n\
+      \        d = X * np.conj(self.prev)\n        # A symbol lasts fft_len + cp_len\
+      \ samples, so an offset of a whole\n        # subcarrier still turns each subcarrier\
+      \ a little from one symbol to\n        # the next. Try each offset with that\
+      \ turn taken out.\n        shifts = np.arange(-self.search, self.search + 1)\n\
+      \        turn = np.exp(-2j * np.pi * shifts * self.S / self.N)\n        dr =\
+      \ d[c + self.refs[None, :] + shifts[:, None]] * turn[:, None]\n        votes\
+      \ = ((np.abs(dr.real) - np.abs(dr.imag)) / (np.abs(dr) + 1e-12)).sum(axis=1)\n\
+      \        self.votes = 0.9 * self.votes + 0.1 * votes\n        self.offset =\
+      \ int(shifts[int(np.argmax(self.votes))])\n        d = d * np.exp(-2j * np.pi\
+      \ * self.offset * self.S / self.N)\n        s = (np.abs(d.real) - np.abs(d.imag))\
+      \ / (np.abs(d) + 1e-12)\n        self.score = 0.95 * self.score + 0.05 * s\n\
+      \        off = c + self.offset\n        self.out[0].append(self.score.copy())\n\
+      \        r = off + self.refs\n        ref = d[r] / (np.abs(X[r]) * np.abs(self.prev[r])\
+      \ + 1e-12)\n        # What frequency error is left turns every reference the\
+      \ same way;\n        # squaring removes the BPSK sign, so the average shows\
+      \ that turn.\n        ref *= np.exp(-0.5j * np.angle(np.sum(ref ** 2)))\n  \
+      \      self.out[1].extend(ref)\n        H2a = X[off + self.a] ** 2\n       \
+      \ H2b = X[off + self.a + 19] ** 2\n        H = np.sqrt((1 - self.w) * H2a +\
+      \ self.w * H2b)\n        self.out[2].extend(X[off + self.k] / (H + 1e-12) *\
+      \ np.exp(1j * np.pi / 4))\n        self.prev = X\n\n    def general_work(self,\
+      \ input_items, output_items):\n        # Decode only while the plots keep up,\
+      \ so nothing piles up here.\n        used = 0\n        for X in input_items[0]:\n\
+      \            if len(self.out[2]) > 4096:\n                break\n          \
+      \  self.symbol(X)\n            used += 1\n        self.consume(0, used)\n  \
+      \      for port in range(3):\n            q = self.out[port]\n            n\
+      \ = min(len(q), len(output_items[port]))\n            for i in range(n):\n \
+      \               output_items[port][i] = q[i]\n            del q[:n]\n      \
+      \      self.produce(port, n)\n        return gr.WORK_CALLED_PRODUCE\n"
+    affinity: ''
+    alias: ''
+    comment: ''
+    cp_len: cp_len
+    fft_len: fft_len
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    search: '40'
+  states:
+    _io_cache: ('NRSC-5 Subcarriers', 'blk', [('fft_len', '2048'), ('cp_len', '112'),
+      ('search', '40')], [('0', 'complex', 2048)], [('0', 'float', 2048), ('1', 'complex',
+      1), ('2', 'complex', 1)], '', ['search'])
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1120, 380]
+    rotation: 0
+    state: enabled
+- name: symbol_fft
+  id: fft_vxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    fft_size: fft_len
+    forward: 'True'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    nthreads: '1'
+    shift: 'True'
+    type: complex
+    window: window.rectangular(fft_len)
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [920, 372]
+    rotation: 0
+    state: enabled
+- name: symbol_sync
+  id: epy_block
+  parameters:
+    _source_code: "\"\"\"\nNRSC-5 Symbol Sync: finds where each OFDM symbol starts\
+      \ and removes the\nradio's fine frequency offset, both from the cyclic prefix,\
+      \ then hands the\nFFT one symbol at a time.\n\nEvery symbol is fft_len samples\
+      \ plus a cyclic prefix of cp_len: the symbol's\nlast cp_len samples, copied\
+      \ to its front. Multiplying the signal by a copy of\nitself fft_len samples\
+      \ later lights up exactly where the copies line up, once\nper symbol, and the\
+      \ angle of that product is the frequency offset. Each\nsymbol is tapered at\
+      \ both ends and its tail folded onto its head before the\nFFT, the way nrsc5\
+      \ does it.\n\nFeed it the sidebands only: the analog FM host is far stronger\
+      \ and has no\ncyclic prefix.\n\"\"\"\nimport numpy as np\nfrom gnuradio import\
+      \ gr\n\n\nclass blk(gr.basic_block):\n\n    def __init__(self, fft_len=2048,\
+      \ cp_len=112, samp_rate=744187.5, symbols=16):\n        self.N, self.CP = int(fft_len),\
+      \ int(cp_len)\n        gr.basic_block.__init__(self, name='NRSC-5 Symbol Sync',\n\
+      \                                in_sig=[np.complex64],\n                  \
+      \              out_sig=[(np.complex64, self.N)])\n        self.fs, self.K =\
+      \ float(samp_rate), int(symbols)\n        self.S = self.N + self.CP\n      \
+      \  j = np.arange(self.S)\n        self.shape = np.where(\n            j < self.CP,\
+      \ np.sin(np.pi / 2 * j / self.CP),\n            np.where(j < self.N, 1.0,\n\
+      \                     np.cos(np.pi / 2 * (j - self.N) / self.CP))).astype(np.float32)\n\
+      \        self.buf = np.zeros(0, np.complex64)\n        self.ready = []     \
+      \    # symbols waiting for room at the output\n        self.phase = 0.0    \
+      \    # running phase of the frequency correction\n        self.freq = 0.0  \
+      \       # latest frequency offset estimate, Hz\n        self.start_index = 0\
+      \    # latest symbol start, in samples\n\n    def forecast(self, noutput_items,\
+      \ ninputs):\n        return [1] * ninputs\n\n    def chunk(self):\n        \"\
+      \"\"Estimate timing and frequency over K symbols, then cut them out.\"\"\"\n\
+      \        N, CP, S, K = self.N, self.CP, self.S, self.K\n        seg = self.buf[:K\
+      \ * S + S]\n        p = seg[:-N] * np.conj(seg[N:])\n        c = np.concatenate([[0],\
+      \ np.cumsum(p)])\n        m = c[CP:CP + K * S] - c[:K * S]           # sum over\
+      \ each cp_len window\n        M = m.reshape(K, S).sum(axis=0)             #\
+      \ stack K symbols\n        idx = int(np.argmax(np.abs(M)))\n        self.start_index\
+      \ = idx\n        self.freq = -np.angle(M[idx]) * self.fs / (2 * np.pi * N)\n\
+      \        w = -2 * np.pi * self.freq / self.fs\n        n = np.arange(S)\n  \
+      \      for i in range(K):\n            start = idx + i * S\n            v =\
+      \ seg[start:start + S] * np.exp(1j * (self.phase + w * (start + n))) * self.shape\n\
+      \            body = v[:N].copy()\n            body[:CP] += v[N:]\n         \
+      \   self.ready.append(body.astype(np.complex64))\n        self.phase = (self.phase\
+      \ + w * K * S) % (2 * np.pi)\n        self.buf = self.buf[K * S:]\n\n    def\
+      \ general_work(self, input_items, output_items):\n        need = self.K * self.S\
+      \ + self.S\n        x = input_items[0]\n        take = min(len(x), max(0, 2\
+      \ * need - len(self.buf)))\n        if take:\n            self.buf = np.concatenate([self.buf,\
+      \ x[:take]])\n            self.consume(0, take)\n        while len(self.buf)\
+      \ >= need and len(self.ready) < 2 * self.K:\n            self.chunk()\n    \
+      \    out = output_items[0]\n        n = min(len(self.ready), len(out))\n   \
+      \     for i in range(n):\n            out[i] = self.ready[i]\n        del self.ready[:n]\n\
+      \        return n\n"
+    affinity: ''
+    alias: ''
+    comment: ''
+    cp_len: cp_len
+    fft_len: fft_len
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samp_rate: samp_rate
+    symbols: '16'
+  states:
+    _io_cache: ('NRSC-5 Symbol Sync', 'blk', [('fft_len', '2048'), ('cp_len', '112'),
+      ('samp_rate', '744187.5'), ('symbols', '16')], [('0', 'complex', 1)], [('0',
+      'complex', 2048)], '', [])
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [700, 380]
+    rotation: 0
+    state: enabled
+- name: throttle
+  id: blocks_throttle2
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    ignoretag: 'True'
+    limit: auto
+    maximum: '0.1'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samples_per_second: samp_rate
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [224, 164]
+    rotation: 0
+    state: enabled
+
+connections:
+- [by_symbol, '0', stack, '0']
+- [halve, '0', sidebands, '0']
+- [halve, '0', spectrum, '0']
+- [later, '0', prefix_match, '0']
+- [mag, '0', prefix_plot, '0']
+- [pluto, '0', halve, '0']
+- [prefix_match, '0', prefix_window, '0']
+- [prefix_window, '0', by_symbol, '0']
+- [sidebands, '0', later, '0']
+- [sidebands, '0', prefix_match, '1']
+- [sidebands, '0', spectrum, '1']
+- [sidebands, '0', symbol_sync, '0']
+- [src, '0', throttle, '0']
+- [stack, '0', mag, '0']
+- [subcarriers, '0', score_plot, '0']
+- [subcarriers, '1', ref_plot, '0']
+- [subcarriers, '2', data_plot, '0']
+- [symbol_fft, '0', subcarriers, '0']
+- [symbol_sync, '0', symbol_fft, '0']
+- [throttle, '0', sidebands, '0']
+- [throttle, '0', spectrum, '0']
+
+metadata:
+  file_format: 1
+  grc_version: 3.10.9.2
