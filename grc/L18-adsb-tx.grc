@@ -1,0 +1,468 @@
+options:
+  parameters:
+    author: ECE 448
+    catch_exceptions: 'True'
+    category: '[GRC Hier Blocks]'
+    cmake_opt: ''
+    comment: ''
+    copyright: ''
+    description: 'L18: a simulated sky of four aircraft sending ADS-B extended squitters,
+      built from pulse-position modulation (PPM) at 2 MS/s. Writes 0.5 s to L18-adsb-sim.sigmf-data
+      and .sigmf-meta, labeled Simulated, then stops. Nothing transmits: the last
+      block is a SigMF file sink. Never transmit this signal on 1090 MHz, which carries
+      ATC and collision-avoidance traffic; L18-adsb-tx-pluto.grc sends it at 915 MHz
+      into a cable instead.'
+    gen_cmake: 'On'
+    gen_linking: dynamic
+    generate_options: qt_gui
+    hier_block_src_path: '.:'
+    id: L18_adsb_tx
+    max_nouts: '0'
+    output_language: python
+    placement: (0,0)
+    qt_qss_theme: ''
+    realtime_scheduling: ''
+    run: 'True'
+    run_command: '{python} -u {filename}'
+    run_options: prompt
+    sizing_mode: fixed
+    thread_safe_setters: ''
+    title: L18 - ADS-B Out Generator
+    window_size: (1060, 520)
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [8, 8]
+    rotation: 0
+    state: enabled
+
+blocks:
+- name: carrier
+  id: variable
+  parameters:
+    comment: ''
+    value: 75e3
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [408, 8]
+    rotation: 0
+    state: enabled
+- name: duration
+  id: variable
+  parameters:
+    comment: ''
+    value: '0.5'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [312, 8]
+    rotation: 0
+    state: enabled
+- name: noise_amp
+  id: variable_qtgui_range
+  parameters:
+    comment: ''
+    gui_hint: 0,0,1,2
+    label: Noise amplitude
+    min_len: '200'
+    orient: QtCore.Qt.Horizontal
+    rangeType: float
+    start: '0'
+    step: '0.01'
+    stop: '0.5'
+    value: '0.05'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [520, 8]
+    rotation: 0
+    state: enabled
+- name: samp_rate
+  id: variable
+  parameters:
+    comment: ''
+    value: 2e6
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [200, 8]
+    rotation: 0
+    state: enabled
+- name: analog_noise_source_x_0
+  id: analog_noise_source_x
+  parameters:
+    affinity: ''
+    alias: ''
+    amp: noise_amp
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    noise_type: analog.GR_GAUSSIAN
+    seed: '448'
+    type: complex
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [560, 288]
+    rotation: 0
+    state: enabled
+- name: analog_sig_source_x_0
+  id: analog_sig_source_x
+  parameters:
+    affinity: ''
+    alias: ''
+    amp: '1'
+    comment: ''
+    freq: carrier
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    offset: '0'
+    phase: '0'
+    samp_rate: samp_rate
+    showports: 'False'
+    type: complex
+    waveform: analog.GR_COS_WAVE
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [360, 256]
+    rotation: 0
+    state: enabled
+- name: blocks_add_xx_0
+  id: blocks_add_xx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_inputs: '2'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [760, 208]
+    rotation: 0
+    state: enabled
+- name: blocks_complex_to_mag_0
+  id: blocks_complex_to_mag
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1080, 344]
+    rotation: 0
+    state: enabled
+- name: blocks_float_to_complex_0
+  id: blocks_float_to_complex
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [384, 176]
+    rotation: 0
+    state: enabled
+- name: blocks_head_0
+  id: blocks_head
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_items: int(duration * samp_rate)
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [216, 176]
+    rotation: 0
+    state: enabled
+- name: blocks_multiply_xx_0
+  id: blocks_multiply_xx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_inputs: '2'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [576, 192]
+    rotation: 0
+    state: enabled
+- name: blocks_sigmf_sink_minimal_0
+  id: blocks_sigmf_sink_minimal
+  parameters:
+    affinity: ''
+    alias: ''
+    author: '''ECE 448'''
+    center_freq: 1090e6
+    comment: ''
+    description: '''Simulated ADS-B: four aircraft from L18-adsb-tx.grc, not a real
+      capture'''
+    filename: '''L18-adsb-sim.sigmf-data'''
+    hw_info: '''L18-adsb-tx.grc'''
+    sample_rate: samp_rate
+    type: complex float (fc32_le)
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1080, 160]
+    rotation: 0
+    state: enabled
+- name: blocks_throttle2_0
+  id: blocks_throttle2
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    ignoretag: 'True'
+    limit: auto
+    maximum: '0.1'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samples_per_second: samp_rate
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [872, 208]
+    rotation: 0
+    state: enabled
+- name: epy_block_0
+  id: epy_block
+  parameters:
+    _source_code: "\"\"\"ADS-B Out: a simulated sky of four aircraft, as Mode S extended\
+      \ squitters.\n\nEach message is 112 bits of pulse-position modulation (PPM)\
+      \ at 1 Mb/s after an\n8 us preamble. At 2 MS/s every bit is two samples, or\
+      \ chips: a 1 is a pulse\nthen quiet (1, 0), and a 0 is quiet then a pulse (0,\
+      \ 1). The output is the\npulse envelope, 0 or the aircraft's amplitude, ready\
+      \ to put on a carrier.\n\nThe aircraft send ten or more times as often as real\
+      \ ones do, so a short\nrecording holds dozens of messages. Edit AIRCRAFT to\
+      \ fly your own.\n\nNever transmit this on 1090 MHz: that frequency carries ATC\
+      \ and\ncollision-avoidance traffic, and transmitting there is illegal. In this\n\
+      course it goes to a SigMF file (L18-adsb-tx.grc) or to a PlutoSDR at\n915 MHz,\
+      \ into a cable through a 30 dB attenuator (L18-adsb-tx-pluto.grc).\"\"\"\n\n\
+      import math\n\nimport numpy as np\nfrom gnuradio import gr\n\nCHARS = '#ABCDEFGHIJKLMNOPQRSTUVWXYZ#####\
+      \ ###############0123456789######'\n\n# ICAO address, callsign, latitude, longitude,\
+      \ altitude (ft), ground speed (kt),\n# track (deg), vertical rate (ft/min),\
+      \ amplitude\nAIRCRAFT = [\n    (0xA00448, 'ECE448', 38.912, -104.512, 9500,\
+      \ 140, 300, 0, 0.9),\n    (0xAE1F21, 'FALCON21', 39.105, -104.702, 14025, 245,\
+      \ 175, -1600, 0.6),\n    (0xA9A1B2, 'N731RG', 38.701, -104.950, 11300, 118,\
+      \ 20, 640, 0.35),\n    (0xA5C3D7, 'SKW3301', 39.402, -104.388, 23875, 386, 228,\
+      \ -1984, 0.2),\n]\n\n\ndef bits(v, n):\n    return [(v >> (n - 1 - i)) & 1 for\
+      \ i in range(n)]\n\n\ndef parity(b):\n    \"\"\"The 24 parity bits of an 88-bit\
+      \ message: generator 0x1FFF409.\"\"\"\n    reg = 0\n    for x in b + [0] * 24:\n\
+      \        reg = (reg << 1) | x\n        if reg & 0x1000000:\n            reg\
+      \ ^= 0x1FFF409\n    return bits(reg, 24)\n\n\ndef nl(lat):\n    if abs(lat)\
+      \ >= 87:\n        return 1\n    a = 1 - math.cos(math.pi / 30)\n    return int(2\
+      \ * math.pi / math.acos(1 - a / math.cos(math.radians(lat)) ** 2))\n\n\ndef\
+      \ ident(cs):\n    me = bits(4, 5) + bits(3, 3)\n    for c in (cs + ' ' * 8)[:8]:\n\
+      \        me += bits(CHARS.index(c), 6)\n    return me\n\n\ndef position(alt,\
+      \ lat, lon, odd):\n    n = bits(int(round((alt + 1000) / 25)), 11)\n    dlat\
+      \ = 360 / (59 if odd else 60)\n    yz = int(2 ** 17 * (lat % dlat) / dlat +\
+      \ 0.5)\n    rlat = dlat * (yz / 2 ** 17 + math.floor(lat / dlat))\n    dlon\
+      \ = 360 / max(nl(rlat) - odd, 1)\n    xz = int(2 ** 17 * (lon % dlon) / dlon\
+      \ + 0.5)\n    return (bits(11, 5) + [0, 0, 0] + n[:7] + [1] + n[7:] + [0, odd]\n\
+      \            + bits(yz % 2 ** 17, 17) + bits(xz % 2 ** 17, 17))\n\n\ndef velocity(gs,\
+      \ trk, vr):\n    ve, vn = gs * math.sin(math.radians(trk)), gs * math.cos(math.radians(trk))\n\
+      \    return (bits(19, 5) + bits(1, 3) + [0, 0, 0, 0, 0]\n            + [int(ve\
+      \ < 0)] + bits(int(round(abs(ve))) + 1, 10)\n            + [int(vn < 0)] + bits(int(round(abs(vn)))\
+      \ + 1, 10)\n            + [1, int(vr < 0)] + bits(int(round(abs(vr) / 64)) +\
+      \ 1, 9) + [0] * 10)\n\n\ndef chips(icao, me):\n    \"\"\"Preamble plus 112 bits\
+      \ of PPM: 16 + 224 chips.\"\"\"\n    b = bits(17, 5) + bits(5, 3) + bits(icao,\
+      \ 24) + me\n    b += parity(b)\n    out = [1, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0,\
+      \ 0, 0, 0, 0, 0]\n    for x in b:\n        out += [1, 0] if x else [0, 1]\n\
+      \    return np.array(out, dtype=np.float32)\n\n\nclass blk(gr.sync_block):\n\
+      \    def __init__(self, samp_rate=2e6, seed=18):\n        gr.sync_block.__init__(self,\
+      \ name='ADS-B Out', in_sig=None, out_sig=[np.float32])\n        self.fs = samp_rate\n\
+      \        self.rng = np.random.default_rng(seed)\n        self.queue = []   \
+      \       # (start sample, chips)\n        self.planned = 0         # samples\
+      \ scheduled so far\n        self.slot = 0\n\n    def plan(self, upto):\n   \
+      \     \"\"\"Schedule messages from every aircraft up to sample `upto`.\"\"\"\
+      \n        while self.planned < upto:\n            t0, t1 = self.planned, self.planned\
+      \ + int(0.05 * self.fs)\n            for k, (icao, cs, lat, lon, alt, gs, trk,\
+      \ vr, amp) in enumerate(AIRCRAFT):\n                t = t0 / self.fs\n     \
+      \           d = gs * t / 3600 / 60          # degrees of latitude flown\n  \
+      \              la = lat + d * math.cos(math.radians(trk))\n                lo\
+      \ = lon + d * math.sin(math.radians(trk)) / math.cos(math.radians(lat))\n  \
+      \              # position every slot, even and odd in turn; velocity every\n\
+      \                # second slot; identification every third\n               \
+      \ msgs = [position(alt + vr * t / 60, la, lo, self.slot % 2)]\n            \
+      \    if (self.slot + k) % 2 == 0:\n                    msgs.append(velocity(gs,\
+      \ trk, vr))\n                if (self.slot + k) % 3 == 0:\n                \
+      \    msgs.append(ident(cs))\n                for me in msgs:\n             \
+      \       start = int(self.rng.integers(t0, t1))\n                    self.queue.append((start,\
+      \ amp * chips(icao, me)))\n            self.planned = t1\n            self.slot\
+      \ += 1\n\n    def work(self, input_items, output_items):\n        out = output_items[0]\n\
+      \        n0 = self.nitems_written(0)\n        self.plan(n0 + len(out) + 1)\n\
+      \        out[:] = 0\n        keep = []\n        for start, c in self.queue:\n\
+      \            a, b = max(start, n0), min(start + len(c), n0 + len(out))\n   \
+      \         if a < b:\n                out[a - n0:b - n0] += c[a - start:b - start]\n\
+      \            if start + len(c) > n0 + len(out):\n                keep.append((start,\
+      \ c))\n        self.queue = keep\n        return len(out)\n"
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samp_rate: samp_rate
+    seed: '18'
+  states:
+    _io_cache: ('ADS-B Out', 'blk', [('samp_rate', '2000000.0'), ('seed', '18')],
+      [], [('0', 'float', 1)], '', [])
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [16, 160]
+    rotation: 0
+    state: enabled
+- name: qtgui_time_sink_x_0
+  id: qtgui_time_sink_x
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha1: '1.0'
+    alpha10: '1.0'
+    alpha2: '1.0'
+    alpha3: '1.0'
+    alpha4: '1.0'
+    alpha5: '1.0'
+    alpha6: '1.0'
+    alpha7: '1.0'
+    alpha8: '1.0'
+    alpha9: '1.0'
+    autoscale: 'False'
+    axislabels: 'True'
+    color1: blue
+    color10: dark blue
+    color2: red
+    color3: green
+    color4: black
+    color5: cyan
+    color6: magenta
+    color7: yellow
+    color8: dark red
+    color9: dark green
+    comment: ''
+    ctrlpanel: 'False'
+    entags: 'False'
+    grid: 'True'
+    gui_hint: 1,0,1,2
+    label1: Signal 1
+    label10: Signal 10
+    label2: Signal 2
+    label3: Signal 3
+    label4: Signal 4
+    label5: Signal 5
+    label6: Signal 6
+    label7: Signal 7
+    label8: Signal 8
+    label9: Signal 9
+    legend: 'False'
+    marker1: '-1'
+    marker10: '-1'
+    marker2: '-1'
+    marker3: '-1'
+    marker4: '-1'
+    marker5: '-1'
+    marker6: '-1'
+    marker7: '-1'
+    marker8: '-1'
+    marker9: '-1'
+    name: '"One message: magnitude"'
+    nconnections: '1'
+    size: '300'
+    srate: samp_rate
+    stemplot: 'False'
+    style1: '1'
+    style10: '1'
+    style2: '1'
+    style3: '1'
+    style4: '1'
+    style5: '1'
+    style6: '1'
+    style7: '1'
+    style8: '1'
+    style9: '1'
+    tr_chan: '0'
+    tr_delay: 5e-6
+    tr_level: '0.3'
+    tr_mode: qtgui.TRIG_MODE_NORM
+    tr_slope: qtgui.TRIG_SLOPE_POS
+    tr_tag: '""'
+    type: float
+    update_time: '0.1'
+    width1: '1'
+    width10: '1'
+    width2: '1'
+    width3: '1'
+    width4: '1'
+    width5: '1'
+    width6: '1'
+    width7: '1'
+    width8: '1'
+    width9: '1'
+    ylabel: '"Magnitude"'
+    ymax: '1.2'
+    ymin: '0'
+    yunit: '""'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1264, 312]
+    rotation: 0
+    state: enabled
+
+connections:
+- [analog_noise_source_x_0, '0', blocks_add_xx_0, '1']
+- [analog_sig_source_x_0, '0', blocks_multiply_xx_0, '1']
+- [blocks_add_xx_0, '0', blocks_throttle2_0, '0']
+- [blocks_complex_to_mag_0, '0', qtgui_time_sink_x_0, '0']
+- [blocks_float_to_complex_0, '0', blocks_multiply_xx_0, '0']
+- [blocks_head_0, '0', blocks_float_to_complex_0, '0']
+- [blocks_multiply_xx_0, '0', blocks_add_xx_0, '0']
+- [blocks_throttle2_0, '0', blocks_complex_to_mag_0, '0']
+- [blocks_throttle2_0, '0', blocks_sigmf_sink_minimal_0, '0']
+- [epy_block_0, '0', blocks_head_0, '0']
+
+metadata:
+  file_format: 1
+  grc_version: 3.10.9.2

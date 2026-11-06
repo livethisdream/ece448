@@ -1,0 +1,311 @@
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="744.487631pt" height="239.856859pt" viewBox="0 0 744.487631 239.856859" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:date>2026-10-29T03:55:33.141277</dc:date>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.11.2, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 239.8 
+L 744.4 239.8 
+L 744.4 0 
+L 0 0 
+L 0 239.8 
+z
+" style="fill: none"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 109.8 66.0 
+L 612.0 66.0 
+L 612.0 4.3 
+L 109.8 4.3 
+L 109.8 66.0 
+z
+" style="fill: none"/>
+   </g>
+   <g id="line2d_1">
+    <path d="M 109.8 66.0 
+L 109.8 4.3 
+" clip-path="url(#pa02f1e0559)" style="fill: none; stroke: #cddce9; stroke-width: 0.8; stroke-linecap: square"/>
+   </g>
+   <g id="line2d_2">
+    <path d="M 201.6 66.0 
+L 201.6 4.3 
+" clip-path="url(#pa02f1e0559)" style="fill: none; stroke: #cddce9; stroke-width: 0.8; stroke-linecap: square"/>
+   </g>
+   <g id="line2d_3">
+    <path d="M 293.5 66.0 
+L 293.5 4.3 
+" clip-path="url(#pa02f1e0559)" style="fill: none; stroke: #cddce9; stroke-width: 0.8; stroke-linecap: square"/>
+   </g>
+   <g id="line2d_4">
+    <path d="M 385.4 66.0 
+L 385.4 4.3 
+" clip-path="url(#pa02f1e0559)" style="fill: none; stroke: #cddce9; stroke-width: 0.8; stroke-linecap: square"/>
+   </g>
+   <g id="line2d_5">
+    <path d="M 477.2 66.0 
+L 477.2 4.3 
+" clip-path="url(#pa02f1e0559)" style="fill: none; stroke: #cddce9; stroke-width: 0.8; stroke-linecap: square"/>
+   </g>
+   <g id="matplotlib.axis_1"/>
+   <g id="matplotlib.axis_2"/>
+   <g id="line2d_6">
+    <path d="M 109.8 59.4 
+L 109.8 26.0 
+L 140.4 26.0 
+L 140.4 26.0 
+L 171.0 26.0 
+L 171.0 59.4 
+L 201.6 59.4 
+L 201.6 26.0 
+L 232.3 26.0 
+L 232.3 59.4 
+L 262.9 59.4 
+L 262.9 59.4 
+L 293.5 59.4 
+L 293.5 26.0 
+L 324.1 26.0 
+L 324.1 26.0 
+L 354.7 26.0 
+L 354.7 59.4 
+L 385.4 59.4 
+L 385.4 26.0 
+L 416.0 26.0 
+L 416.0 26.0 
+L 446.6 26.0 
+L 446.6 59.4 
+L 477.2 59.4 
+" clip-path="url(#pa02f1e0559)" style="fill: none; stroke: #004a85; stroke-width: 1.6; stroke-linecap: square"/>
+   </g>
+   <g id="patch_3">
+    <path d="M 109.8 66.0 
+L 612.0 66.0 
+" style="fill: none; stroke: #5b6573; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="text_1">
+    <text style="font-weight: 700; font-size: 11px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #15202b" x="155.750152" y="15.339503" transform="rotate(-0 155.750152 15.339503)">1</text>
+   </g>
+   <g id="text_2">
+    <text style="font-weight: 700; font-size: 11px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #15202b" x="247.616006" y="15.339503" transform="rotate(-0 247.616006 15.339503)">0</text>
+   </g>
+   <g id="text_3">
+    <text style="font-weight: 700; font-size: 11px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #15202b" x="339.48186" y="15.339503" transform="rotate(-0 339.48186 15.339503)">1</text>
+   </g>
+   <g id="text_4">
+    <text style="font-weight: 700; font-size: 11px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #15202b" x="431.347713" y="15.339503" transform="rotate(-0 431.347713 15.339503)">1</text>
+   </g>
+   <g id="text_5">
+    <text style="font-weight: 700; font-size: 11px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: end; fill: #15202b" x="94.50625" y="43.909527" transform="rotate(-0 94.50625 43.909527)">Pulse width</text>
+   </g>
+   <g id="text_6">
+    <text style="font-size: 9.5px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; fill: #5b6573" transform="translate(618.141616 37.818521)">every bit starts on;</text>
+    <text style="font-size: 9.5px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; fill: #5b6573" transform="translate(618.141616 49.221119)">the pulse length is the bit</text>
+   </g>
+  </g>
+  <g id="axes_2">
+   <g id="patch_4">
+    <path d="M 109.8 143.3 
+L 612.0 143.3 
+L 612.0 81.5 
+L 109.8 81.5 
+L 109.8 143.3 
+z
+" style="fill: none"/>
+   </g>
+   <g id="line2d_7">
+    <path d="M 109.8 143.3 
+L 109.8 81.5 
+" clip-path="url(#peea1affaff)" style="fill: none; stroke: #cddce9; stroke-width: 0.8; stroke-linecap: square"/>
+   </g>
+   <g id="line2d_8">
+    <path d="M 232.3 143.3 
+L 232.3 81.5 
+" clip-path="url(#peea1affaff)" style="fill: none; stroke: #cddce9; stroke-width: 0.8; stroke-linecap: square"/>
+   </g>
+   <g id="line2d_9">
+    <path d="M 293.5 143.3 
+L 293.5 81.5 
+" clip-path="url(#peea1affaff)" style="fill: none; stroke: #cddce9; stroke-width: 0.8; stroke-linecap: square"/>
+   </g>
+   <g id="line2d_10">
+    <path d="M 416.0 143.3 
+L 416.0 81.5 
+" clip-path="url(#peea1affaff)" style="fill: none; stroke: #cddce9; stroke-width: 0.8; stroke-linecap: square"/>
+   </g>
+   <g id="line2d_11">
+    <path d="M 538.5 143.3 
+L 538.5 81.5 
+" clip-path="url(#peea1affaff)" style="fill: none; stroke: #cddce9; stroke-width: 0.8; stroke-linecap: square"/>
+   </g>
+   <g id="matplotlib.axis_3"/>
+   <g id="matplotlib.axis_4"/>
+   <g id="line2d_12">
+    <path d="M 109.8 136.6 
+L 109.8 103.2 
+L 140.4 103.2 
+L 140.4 136.6 
+L 171.0 136.6 
+L 171.0 136.6 
+L 201.6 136.6 
+L 201.6 136.6 
+L 232.3 136.6 
+L 232.3 103.2 
+L 262.9 103.2 
+L 262.9 136.6 
+L 293.5 136.6 
+L 293.5 103.2 
+L 324.1 103.2 
+L 324.1 136.6 
+L 354.7 136.6 
+L 354.7 136.6 
+L 385.4 136.6 
+L 385.4 136.6 
+L 416.0 136.6 
+L 416.0 103.2 
+L 446.6 103.2 
+L 446.6 136.6 
+L 477.2 136.6 
+L 477.2 136.6 
+L 507.9 136.6 
+L 507.9 136.6 
+L 538.5 136.6 
+" clip-path="url(#peea1affaff)" style="fill: none; stroke: #004a85; stroke-width: 1.6; stroke-linecap: square"/>
+   </g>
+   <g id="patch_5">
+    <path d="M 109.8 143.3 
+L 612.0 143.3 
+" style="fill: none; stroke: #5b6573; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="text_7">
+    <text style="font-weight: 700; font-size: 11px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #15202b" x="171.061128" y="92.559503" transform="rotate(-0 171.061128 92.559503)">1</text>
+   </g>
+   <g id="text_8">
+    <text style="font-weight: 700; font-size: 11px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #15202b" x="262.926982" y="92.559503" transform="rotate(-0 262.926982 92.559503)">0</text>
+   </g>
+   <g id="text_9">
+    <text style="font-weight: 700; font-size: 11px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #15202b" x="354.792835" y="92.559503" transform="rotate(-0 354.792835 92.559503)">1</text>
+   </g>
+   <g id="text_10">
+    <text style="font-weight: 700; font-size: 11px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #15202b" x="477.28064" y="92.559503" transform="rotate(-0 477.28064 92.559503)">1</text>
+   </g>
+   <g id="text_11">
+    <text style="font-weight: 700; font-size: 11px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: end; fill: #15202b" x="94.50625" y="121.129527" transform="rotate(-0 94.50625 121.129527)">Pulse distance</text>
+   </g>
+   <g id="text_12">
+    <text style="font-size: 9.5px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; fill: #5b6573" transform="translate(618.141616 115.038521)">pulses are all short;</text>
+    <text style="font-size: 9.5px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; fill: #5b6573" transform="translate(618.141616 126.441119)">the gap length is the bit</text>
+   </g>
+  </g>
+  <g id="axes_3">
+   <g id="patch_6">
+    <path d="M 109.8 220.5 
+L 612.0 220.5 
+L 612.0 158.7 
+L 109.8 158.7 
+L 109.8 220.5 
+z
+" style="fill: none"/>
+   </g>
+   <g id="line2d_13">
+    <path d="M 109.8 220.5 
+L 109.8 158.7 
+" clip-path="url(#p8706b0b8ad)" style="fill: none; stroke: #cddce9; stroke-width: 0.8; stroke-linecap: square"/>
+   </g>
+   <g id="line2d_14">
+    <path d="M 171.0 220.5 
+L 171.0 158.7 
+" clip-path="url(#p8706b0b8ad)" style="fill: none; stroke: #cddce9; stroke-width: 0.8; stroke-linecap: square"/>
+   </g>
+   <g id="line2d_15">
+    <path d="M 232.3 220.5 
+L 232.3 158.7 
+" clip-path="url(#p8706b0b8ad)" style="fill: none; stroke: #cddce9; stroke-width: 0.8; stroke-linecap: square"/>
+   </g>
+   <g id="line2d_16">
+    <path d="M 293.5 220.5 
+L 293.5 158.7 
+" clip-path="url(#p8706b0b8ad)" style="fill: none; stroke: #cddce9; stroke-width: 0.8; stroke-linecap: square"/>
+   </g>
+   <g id="line2d_17">
+    <path d="M 354.7 220.5 
+L 354.7 158.7 
+" clip-path="url(#p8706b0b8ad)" style="fill: none; stroke: #cddce9; stroke-width: 0.8; stroke-linecap: square"/>
+   </g>
+   <g id="matplotlib.axis_5">
+    <g id="text_13">
+     <text style="font-size: 11px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #15202b" x="360.917226" y="232.894281" transform="rotate(-0 360.917226 232.894281)">the bits 1 0 1 1, one chip per grid step</text>
+    </g>
+   </g>
+   <g id="matplotlib.axis_6"/>
+   <g id="line2d_18">
+    <path d="M 109.8 213.8 
+L 109.8 180.4 
+L 140.4 180.4 
+L 140.4 213.8 
+L 171.0 213.8 
+L 171.0 213.8 
+L 201.6 213.8 
+L 201.6 180.4 
+L 232.3 180.4 
+L 232.3 180.4 
+L 262.9 180.4 
+L 262.9 213.8 
+L 293.5 213.8 
+L 293.5 180.4 
+L 324.1 180.4 
+L 324.1 213.8 
+L 354.7 213.8 
+" clip-path="url(#p8706b0b8ad)" style="fill: none; stroke: #004a85; stroke-width: 1.6; stroke-linecap: square"/>
+   </g>
+   <g id="patch_7">
+    <path d="M 109.8 220.5 
+L 612.0 220.5 
+" style="fill: none; stroke: #5b6573; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="text_14">
+    <text style="font-weight: 700; font-size: 11px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #15202b" x="140.439177" y="169.779503" transform="rotate(-0 140.439177 169.779503)">1</text>
+   </g>
+   <g id="text_15">
+    <text style="font-weight: 700; font-size: 11px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #15202b" x="201.683079" y="169.779503" transform="rotate(-0 201.683079 169.779503)">0</text>
+   </g>
+   <g id="text_16">
+    <text style="font-weight: 700; font-size: 11px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #15202b" x="262.926982" y="169.779503" transform="rotate(-0 262.926982 169.779503)">1</text>
+   </g>
+   <g id="text_17">
+    <text style="font-weight: 700; font-size: 11px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #15202b" x="324.170884" y="169.779503" transform="rotate(-0 324.170884 169.779503)">1</text>
+   </g>
+   <g id="text_18">
+    <text style="font-weight: 700; font-size: 11px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: end; fill: #15202b" x="94.50625" y="198.349527" transform="rotate(-0 94.50625 198.349527)">Manchester</text>
+   </g>
+   <g id="text_19">
+    <text style="font-size: 9.5px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; fill: #5b6573" transform="translate(618.141616 192.258521)">every bit has a</text>
+    <text style="font-size: 9.5px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; fill: #5b6573" transform="translate(618.141616 203.661119)">transition in its middle</text>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="pa02f1e0559">
+   <rect x="109.817226" y="4.32" width="502.2" height="61.776"/>
+  </clipPath>
+  <clipPath id="peea1affaff">
+   <rect x="109.817226" y="81.54" width="502.2" height="61.776"/>
+  </clipPath>
+  <clipPath id="p8706b0b8ad">
+   <rect x="109.817226" y="158.76" width="502.2" height="61.776"/>
+  </clipPath>
+ </defs>
+</svg>

@@ -1,0 +1,468 @@
+options:
+  parameters:
+    author: ECE 448
+    catch_exceptions: 'True'
+    category: '[GRC Hier Blocks]'
+    cmake_opt: ''
+    comment: ''
+    copyright: ''
+    description: 'L17: no hardware; transmits nothing. Opens a SigMF recording, shifts
+      the carrier to 0 Hz, and takes the envelope with Complex to Mag; raise the Envelope
+      gain until the pulses reach about 1, as a weak capture needs. The time sink
+      triggers at the threshold, so you can measure the shortest pulse. Add Const
+      subtracts the threshold, Binary Slicer turns the envelope into 0s and 1s, and
+      the Chip Reader keeps the middle sample of each chip from each burst''s first
+      rising edge, as a Keep 1 in N would, and prints one line of chips per burst
+      with the pause after it. Set rec, samp_rate, and fc from the .sigmf-meta file,
+      then the carrier offset, the threshold, and chip_len in samples.'
+    gen_cmake: 'On'
+    gen_linking: dynamic
+    generate_options: qt_gui
+    hier_block_src_path: '.:'
+    id: L17_chips
+    max_nouts: '0'
+    output_language: python
+    placement: (0,0)
+    qt_qss_theme: ''
+    realtime_scheduling: ''
+    run: 'True'
+    run_command: '{python} -u {filename}'
+    run_options: prompt
+    sizing_mode: fixed
+    thread_safe_setters: ''
+    title: L17 - Read the Chips
+    window_size: (1060,640)
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [8, 8]
+    state: enabled
+
+blocks:
+- name: chip_len
+  id: variable_qtgui_range
+  parameters:
+    comment: ''
+    gui_hint: 0,3,1,1
+    label: Chip length (samples)
+    min_len: '300'
+    orient: QtCore.Qt.Horizontal
+    rangeType: int
+    start: '1'
+    step: '1'
+    stop: '5000'
+    value: '80'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1040, 12]
+    state: enabled
+- name: chips_label
+  id: variable_qtgui_label
+  parameters:
+    comment: ''
+    formatter: 'lambda x: '':  '' + x'
+    gui_hint: 2,0,1,4
+    label: Last burst
+    type: string
+    value: chips_text
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1200, 110]
+    rotation: 0
+    state: enabled
+- name: chips_text
+  id: variable_function_probe
+  parameters:
+    block_id: reader
+    comment: ''
+    function_args: ''
+    function_name: last_line
+    poll_rate: '4'
+    value: '''(waiting for a burst)'''
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1200, 12]
+    rotation: 0
+    state: enabled
+- name: fc
+  id: variable
+  parameters:
+    comment: ''
+    value: 350e6
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [470, 12]
+    state: enabled
+- name: gain_db
+  id: variable_qtgui_range
+  parameters:
+    comment: ''
+    gui_hint: 0,1,1,1
+    label: Envelope gain (dB)
+    min_len: '300'
+    orient: QtCore.Qt.Horizontal
+    rangeType: float
+    start: '0'
+    step: '1'
+    stop: '80'
+    value: '0'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [720, 12]
+    state: enabled
+- name: rec
+  id: variable
+  parameters:
+    comment: ''
+    value: '"L17-fan-remote.sigmf-data"'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [200, 12]
+    state: enabled
+- name: samp_rate
+  id: variable
+  parameters:
+    comment: ''
+    value: '200000'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [365, 12]
+    state: enabled
+- name: thresh
+  id: variable_qtgui_range
+  parameters:
+    comment: ''
+    gui_hint: 0,2,1,1
+    label: Threshold
+    min_len: '300'
+    orient: QtCore.Qt.Horizontal
+    rangeType: float
+    start: '0'
+    step: '0.01'
+    stop: '2'
+    value: '0.5'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [880, 12]
+    state: enabled
+- name: tune
+  id: variable_qtgui_range
+  parameters:
+    comment: ''
+    gui_hint: 0,0,1,1
+    label: Carrier offset (Hz)
+    min_len: '300'
+    orient: QtCore.Qt.Horizontal
+    rangeType: float
+    start: -samp_rate/2
+    step: '500'
+    stop: samp_rate/2
+    value: '40000'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [560, 12]
+    state: enabled
+- name: env
+  id: qtgui_time_sink_x
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha1: '1.0'
+    alpha10: '1.0'
+    alpha2: '1.0'
+    alpha3: '1.0'
+    alpha4: '1.0'
+    alpha5: '1.0'
+    alpha6: '1.0'
+    alpha7: '1.0'
+    alpha8: '1.0'
+    alpha9: '1.0'
+    autoscale: 'False'
+    axislabels: 'True'
+    color1: blue
+    color10: dark blue
+    color2: red
+    color3: green
+    color4: black
+    color5: cyan
+    color6: magenta
+    color7: yellow
+    color8: dark red
+    color9: dark green
+    comment: ''
+    ctrlpanel: 'False'
+    entags: 'True'
+    grid: 'True'
+    gui_hint: 1,0,1,4
+    label1: envelope
+    label10: Signal 10
+    label2: Signal 2
+    label3: Signal 3
+    label4: Signal 4
+    label5: Signal 5
+    label6: Signal 6
+    label7: Signal 7
+    label8: Signal 8
+    label9: Signal 9
+    legend: 'False'
+    marker1: '-1'
+    marker10: '-1'
+    marker2: '-1'
+    marker3: '-1'
+    marker4: '-1'
+    marker5: '-1'
+    marker6: '-1'
+    marker7: '-1'
+    marker8: '-1'
+    marker9: '-1'
+    name: '"Envelope after the shift"'
+    nconnections: '1'
+    size: int(0.04*samp_rate)
+    srate: samp_rate
+    stemplot: 'False'
+    style1: '1'
+    style10: '1'
+    style2: '1'
+    style3: '1'
+    style4: '1'
+    style5: '1'
+    style6: '1'
+    style7: '1'
+    style8: '1'
+    style9: '1'
+    tr_chan: '0'
+    tr_delay: '0.002'
+    tr_level: thresh
+    tr_mode: qtgui.TRIG_MODE_NORM
+    tr_slope: qtgui.TRIG_SLOPE_POS
+    tr_tag: '""'
+    type: float
+    update_time: '0.10'
+    width1: '1'
+    width10: '1'
+    width2: '1'
+    width3: '1'
+    width4: '1'
+    width5: '1'
+    width6: '1'
+    width7: '1'
+    width8: '1'
+    width9: '1'
+    ylabel: Amplitude
+    ymax: '1.4'
+    ymin: '0'
+    yunit: '""'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [980, 170]
+    state: enabled
+- name: gain
+  id: blocks_multiply_const_vxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    const: 10**(gain_db/20)
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [780, 252]
+    state: enabled
+- name: mag
+  id: blocks_complex_to_mag
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [600, 260]
+    state: enabled
+- name: reader
+  id: epy_block
+  parameters:
+    _source_code: "\"\"\"Chip Reader: reads the sliced envelope, one 0 or 1 per sample,\
+      \ as one line of\nchips per burst. A burst's first rising edge starts the chip\
+      \ clock, and the\nreader keeps the sample in the middle of each chip, as a Keep\
+      \ 1 in N would.\nAfter 8 off chips the burst has ended: the line is printed,\
+      \ with the pause\nbefore the next burst in samples, and shown in the window.\"\
+      \"\"\nimport numpy as np\nfrom gnuradio import gr\n\n\nclass blk(gr.sync_block):\n\
+      \    def __init__(self, chip_len=80):\n        gr.sync_block.__init__(self,\
+      \ name='Chip Reader', in_sig=[np.uint8], out_sig=None)\n        self.chip_len\
+      \ = max(1, int(chip_len))\n        self.runs = []       # (value, length) of\
+      \ the burst in progress\n        self.active = False\n        self.off = 0 \
+      \        # off samples since the last on sample\n        self.line = None  \
+      \   # the last burst's chips, waiting for its pause\n        self.shown = '(waiting\
+      \ for a burst)'\n\n    def set_chip_len(self, chip_len):\n        self.chip_len\
+      \ = max(1, int(chip_len))\n\n    def last_line(self):\n        return self.shown\n\
+      \n    def work(self, input_items, output_items):\n        x = (input_items[0]\
+      \ > 0).astype(np.uint8)\n        edges = np.flatnonzero(np.diff(x)) + 1\n  \
+      \      for seg in np.split(x, edges):\n            if len(seg) == 0:\n     \
+      \           continue\n            v, n = int(seg[0]), len(seg)\n           \
+      \ if v:\n                if not self.active:\n                    if self.line\
+      \ is not None:\n                        self.shown = '%d chips: %s  pause %d\
+      \ samples' % (len(self.line), self.line, self.off)\n                       \
+      \ print(self.shown, flush=True)\n                    self.active, self.runs\
+      \ = True, []\n                self.runs.append((1, n))\n                self.off\
+      \ = 0\n            else:\n                self.off += n\n                if\
+      \ self.active:\n                    self.runs.append((0, n))\n             \
+      \       if self.off > 8 * self.chip_len:\n                        env = np.repeat([r[0]\
+      \ for r in self.runs], [r[1] for r in self.runs])\n                        chips\
+      \ = ''.join(str(c) for c in env[self.chip_len // 2::self.chip_len])\n      \
+      \                  self.line = chips.rstrip('0')\n                        self.active\
+      \ = False\n        return len(input_items[0])\n"
+    affinity: ''
+    alias: ''
+    chip_len: chip_len
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    _io_cache: ('Chip Reader', 'blk', [('chip_len', '80')], [('0', 'byte', 1)], [],
+      '', ['chip_len'])
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1290, 300]
+    rotation: 0
+    state: enabled
+- name: slicer
+  id: digital_binary_slicer_fb
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1150, 308]
+    rotation: 0
+    state: enabled
+- name: src
+  id: blocks_sigmf_source_minimal
+  parameters:
+    affinity: ''
+    alias: ''
+    begin_tag: pmt.PMT_NIL
+    comment: ''
+    file: rec
+    length: '0'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    repeat: 'True'
+    type: complex float (fc32_le)
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [16, 236]
+    state: enabled
+- name: sub
+  id: blocks_add_const_vxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    const: -thresh
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [980, 300]
+    rotation: 0
+    state: enabled
+- name: thr
+  id: blocks_throttle2
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    ignoretag: 'True'
+    limit: auto
+    maximum: '0.1'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samples_per_second: samp_rate
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [200, 252]
+    state: enabled
+- name: xlate
+  id: freq_xlating_fir_filter_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    center_freq: tune
+    comment: ''
+    decim: '1'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samp_rate: samp_rate
+    taps: firdes.low_pass(1, samp_rate, 10000, 5000)
+    type: ccc
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [370, 236]
+    state: enabled
+
+connections:
+- [gain, '0', env, '0']
+- [gain, '0', sub, '0']
+- [mag, '0', gain, '0']
+- [slicer, '0', reader, '0']
+- [src, '0', thr, '0']
+- [sub, '0', slicer, '0']
+- [thr, '0', xlate, '0']
+- [xlate, '0', mag, '0']
+
+metadata:
+  file_format: 1
+  grc_version: 3.10.9.2

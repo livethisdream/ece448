@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pulse decoder explorer — chips, bits, and fields of the Simulated fan remote</title>
+<style>
+  :root { --navy:#004a85; --mid:#0067b9; --edge:#cddce9; --edge2:#b9d2e5; --bg:#f5f9fc;
+          --ink:#15202b; --ink3:#5b6573;
+          --amber:#8a5a00; --red:#b01e24; --grn:#3f7d34; }
+  html,body { margin:0; padding:0; font-family:'Inter',system-ui,-apple-system,sans-serif; color:var(--ink); background:#fff; }
+  .app { display:flex; flex-direction:column; gap:8px; padding:12px; }
+  canvas { display:block; box-sizing:border-box; width:100%; height:auto; background:#fff; border:1px solid var(--edge); border-radius:6px; }
+  .controls { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px 16px; align-items:center;
+              padding:8px 12px; background:var(--bg); border:1px solid var(--edge); border-radius:6px; }
+  @media (max-width:620px) { .controls { grid-template-columns:1fr; } }
+  .ctl { display:grid; grid-template-columns:auto 1fr; column-gap:8px; row-gap:2px; align-items:center; min-width:0; }
+  .ctl label { font-size:10.5px; text-transform:uppercase; letter-spacing:0.05em; color:var(--ink3); font-weight:700; white-space:nowrap; }
+  .ctl .val { color:var(--navy); font-size:12px; font-weight:600; font-variant-numeric:tabular-nums; text-align:right; white-space:nowrap; }
+  .ctl input[type=range]{ grid-column:1 / span 2; width:100%; margin:0; accent-color:var(--mid); }
+  .seg { display:flex; gap:4px; flex-wrap:wrap; align-items:center; }
+  .seg .lab { font-size:10.5px; text-transform:uppercase; letter-spacing:0.05em; color:var(--ink3); font-weight:700; margin-right:4px; }
+  .seg button, .btn { font:inherit; font-size:11.5px; font-weight:600; color:var(--navy); background:#fff; border:1px solid var(--edge2); border-radius:14px; padding:3px 10px; cursor:pointer; }
+  .seg button.on { background:var(--navy); color:#fff; border-color:var(--navy); }
+  .segs { grid-column:1 / -1; display:flex; justify-content:space-between; gap:8px; flex-wrap:wrap; }
+  .readouts { display:grid; gap:6px; grid-template-columns:repeat(4,minmax(0,1fr)); }
+  @media (max-width:620px) { .readouts { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+  .ro { display:flex; flex-direction:column; align-items:center; gap:2px; padding:5px 4px 6px; min-width:0;
+        border:1px solid var(--edge2); border-radius:6px; background:#eef4fa; }
+  .ro .k { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:var(--ink3); white-space:nowrap; }
+  .ro .v { font-size:14px; font-weight:700; white-space:nowrap; font-variant-numeric:tabular-nums; color:var(--navy); }
+  .ro.bad .v { color:var(--red); }
+</style>
+</head>
+<body>
+<div class="app">
+  <canvas id="env" aria-label="The envelope of one frame of the Simulated fan remote, with the threshold as a dashed line and a grid of chip cells; each cell is marked 1 or 0 where its middle sample sits above or below the threshold"></canvas>
+  <canvas id="bits" aria-label="The chips read from the envelope, grouped three at a time into bits, and the bits grouped into the address, command, and check fields in hex"></canvas>
+  <div class="controls">
+    <div class="segs">
+      <div class="seg" id="btn"><span class="lab">Button</span><button data-v="1" class="on">Light</button><button data-v="2">Fan Off</button><button data-v="3">Low</button><button data-v="4">Medium</button><button data-v="5">High</button></div>
+      <button class="btn" id="again">new noise</button>
+    </div>
+    <div class="ctl"><label for="chip">Chip length</label><span class="val" id="chip-v"></span>
+      <input type="range" id="chip" min="200" max="800" step="10" value="300"></div>
+    <div class="ctl"><label for="thr">Threshold</label><span class="val" id="thr-v"></span>
+      <input type="range" id="thr" min="0.05" max="1.2" step="0.01" value="0.5"></div>
+    <div class="ctl"><label for="sig">Noise amplitude</label><span class="val" id="sig-v"></span>
+      <input type="range" id="sig" min="0" max="0.8" step="0.01" value="0.05"></div>
+  </div>
+  <div class="readouts">
+    <div class="ro"><span class="k">chips read</span><span class="v" id="o-ch">—</span></div>
+    <div class="ro" id="ro-bad"><span class="k">groups not 110 or 100</span><span class="v" id="o-bad">—</span></div>
+    <div class="ro"><span class="k">bit rate</span><span class="v" id="o-br">—</span></div>
+    <div class="ro" id="ro-hex"><span class="k">frame (hex)</span><span class="v" id="o-hex">—</span></div>
+  </div>
+</div>
+
+<script>
+'use strict';
+// The Simulated fan remote of L17-fan-remote-gen.grc: OOK at 200 kS/s, 400 us
+// chips, 3-chip pulse-width bits (0 = on off off, 1 = on on off), a 16-bit
+// frame of address 0xA6, a 4-bit command, and a check nibble that is the
+// command's complement. The envelope here is |carrier + noise| after a 20-sample
+// moving average, as in L17-sigmf-view.grc. The reader samples the middle of
+// each chip cell of the chosen length, as the Chip Reader in L17-chips.grc does,
+// and compares it with the threshold, as its Add Const and Binary Slicer do.
+const FS = 200000, TRUE_CHIP = 80, ADDR = 0xA6, LEAD = 40, SANS = 'Inter, system-ui, -apple-system, sans-serif';
+const C = { navy:'#004a85', amber:'#8a5a00', grn:'#3f7d34', red:'#b01e24', rule:'#cddce9', ink3:'#5b6573', ink:'#15202b' };
+const $ = id => document.getElementById(id);
+let button = 1, seed = 5;
+document.querySelectorAll('#btn button').forEach(b => b.onclick = () => {
+  button = +b.dataset.v; document.querySelectorAll('#btn button').forEach(x => x.classList.toggle('on', x === b)); update(); });
+$('again').onclick = () => { seed++; update(); };
+['chip', 'thr', 'sig'].forEach(id => $(id).oninput = update);
+
+function rng(s0) { let s = s0 >>> 0; return () => { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296; }; }
+function gauss(r) { let u = 0; while (u === 0) u = r(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * r()); }
+
+function frameChips(cmd) {
+  const word = ADDR << 8 | cmd << 4 | (cmd ^ 0xF), out = [];
+  for (let i = 15; i >= 0; i--) out.push(...((word >> i) & 1 ? [1, 1, 0] : [1, 0, 0]));
+  return out;
+}
+
+function simulate() {
+  const sigma = +$('sig').value, chipUs = +$('chip').value, thr = +$('thr').value;
+  const chips = frameChips(button), n = LEAD + chips.length * TRUE_CHIP + 6 * TRUE_CHIP;
+  const r = rng(seed * 7919 + button), s = sigma / Math.SQRT2;
+  const raw = new Float64Array(n), env = new Float64Array(n);
+  for (let i = 0; i < n; i++) {
+    const k = Math.floor((i - LEAD) / TRUE_CHIP), on = i >= LEAD && k < chips.length ? chips[k] : 0;
+    const re = on + s * gauss(r), im = s * gauss(r);
+    raw[i] = Math.hypot(re, im);
+  }
+  let acc = 0;
+  for (let i = 0; i < n; i++) { acc += raw[i] - (i >= 20 ? raw[i - 20] : 0); env[Math.max(0, i - 10)] = acc / Math.min(i + 1, 20); }
+  // the reader starts at the first rising edge it finds, as the Chip Reader does
+  let start = 0; while (start < n - 1 && env[start] < thr) start++;
+  const L = chipUs * 1e-6 * FS, read = [];
+  for (let t = start; t + L / 2 < n - 3 * TRUE_CHIP; t += L) read.push(env[Math.min(n - 1, Math.round(t + L / 2))] > thr ? 1 : 0);
+  while (read.length && read[read.length - 1] === 0) read.pop();
+  if (read.length % 3) read.push(...[0, 0].slice(0, 3 - read.length % 3));   // the last off chip runs into the pause
+  const bits = [];
+  let bad = 0;
+  for (let i = 0; i + 2 < read.length; i += 3) {
+    const g = read.slice(i, i + 3).join('');
+    if (g === '110') bits.push(1); else if (g === '100') bits.push(0); else { bits.push(null); bad++; }
+  }
+  return { env, n, start, L, read, bits, bad, thr, chipUs };
+}
+
+function setup(cv, aspect, narrowH) {
+  const dpr = window.devicePixelRatio || 1, w = Math.max(200, cv.clientWidth || 300);
+  const narrow = window.matchMedia && window.matchMedia('(max-width:620px)').matches;
+  const h = narrow ? narrowH : Math.round(Math.min(w * aspect, 170));
+  cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); cv.style.height = h + 'px';
+  const bh = cv.offsetHeight - cv.clientHeight; if (bh) cv.style.height = (h + bh) + 'px';
+  const ctx = cv.getContext('2d'); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); return { ctx, w, h };
+}
+function txt(ctx, s, x, y, px, col, align, bold) { ctx.fillStyle = col; ctx.font = (bold ? '700 ' : '') + px + 'px ' + SANS;
+  ctx.textAlign = align || 'left'; ctx.textBaseline = 'middle'; ctx.fillText(s, x, y); }
+
+function drawEnv(S) {
+  const { ctx, w, h } = setup($('env'), 0.24, 150);
+  ctx.clearRect(0, 0, w, h);
+  const x0 = 34, x1 = w - 8, y0 = 18, y1 = h - 20;
+  const X = i => x0 + (x1 - x0) * i / S.n, Y = v => y1 - (y1 - y0) * Math.min(v, 1.5) / 1.5;
+  ctx.fillStyle = 'rgba(0,103,185,0.06)';
+  for (let k = 0, t = S.start; k < S.read.length; k++, t += S.L) if (k % 2 === 0) ctx.fillRect(X(t), y0, X(t + S.L) - X(t), y1 - y0);
+  ctx.strokeStyle = C.navy; ctx.lineWidth = 1.2; ctx.beginPath();
+  for (let i = 0; i < S.n; i++) { const xx = X(i), yy = Y(S.env[i]); i ? ctx.lineTo(xx, yy) : ctx.moveTo(xx, yy); }
+  ctx.stroke();
+  ctx.strokeStyle = C.amber; ctx.setLineDash([5, 4]); ctx.lineWidth = 1.4; ctx.beginPath();
+  ctx.moveTo(x0, Y(S.thr)); ctx.lineTo(x1, Y(S.thr)); ctx.stroke(); ctx.setLineDash([]);
+  const fs = Math.max(8, Math.min(11, (X(S.L) - X(0)) * 0.9));
+  for (let k = 0, t = S.start; k < S.read.length; k++, t += S.L)
+    txt(ctx, String(S.read[k]), X(t + S.L / 2), y0 - 8, fs, S.read[k] ? C.navy : C.ink3, 'center', true);
+  txt(ctx, 'on', x0 - 4, Y(1), 10, C.ink3, 'right'); txt(ctx, 'off', x0 - 4, Y(0), 10, C.ink3, 'right');
+  txt(ctx, 'threshold', x1 - 2, Y(S.thr) - 7, 10, C.amber, 'right', true);
+  txt(ctx, 'Simulated', x1 - 2, y1 + 11, 10, C.red, 'right', true);
+  txt(ctx, (S.n / FS * 1000).toFixed(1) + ' ms shown', x0, y1 + 11, 10, C.ink3, 'left');
+}
+
+function drawBits(S) {
+  const { ctx, w, h } = setup($('bits'), 0.11, 90);
+  ctx.clearRect(0, 0, w, h);
+  const nb = Math.max(16, S.bits.length), x0 = 8, cw = (w - 16) / nb;
+  const fields = [[0, 8, 'address', C.navy], [8, 12, 'command', C.amber], [12, 16, 'check', C.grn]];
+  S.bits.forEach((b, i) => {
+    const x = x0 + cw * (i + 0.5);
+    txt(ctx, S.read.slice(3 * i, 3 * i + 3).join(''), x, h * 0.22, Math.min(11, cw * 0.42), C.ink3, 'center');
+    txt(ctx, b === null ? '?' : String(b), x, h * 0.5, Math.min(15, cw * 0.7), b === null ? C.red : C.ink, 'center', true);
+  });
+  if (S.bits.length === 16 && !S.bad) fields.forEach(([a, z, name, col]) => {
+    const v = parseInt(S.bits.slice(a, z).join(''), 2), hex = '0x' + v.toString(16).toUpperCase();
+    ctx.strokeStyle = col; ctx.lineWidth = 1.5; ctx.beginPath();
+    ctx.moveTo(x0 + cw * a + 3, h * 0.68); ctx.lineTo(x0 + cw * z - 3, h * 0.68); ctx.stroke();
+    txt(ctx, name + ' ' + hex, x0 + cw * (a + z) / 2, h * 0.84, 11, col, 'center', true);
+  });
+}
+
+function update() {
+  const S = simulate();
+  $('chip-v').textContent = S.chipUs + ' µs'; $('thr-v').textContent = (+$('thr').value).toFixed(2);
+  $('sig-v').textContent = (+$('sig').value).toFixed(2);
+  drawEnv(S); drawBits(S);
+  $('o-ch').textContent = S.read.length;
+  $('o-bad').textContent = S.bad; $('ro-bad').classList.toggle('bad', S.bad > 0);
+  $('o-br').textContent = Math.round(1e6 / (3 * S.chipUs)) + ' b/s';
+  const ok16 = !S.bad && S.bits.length === 16, word = ok16 ? parseInt(S.bits.join(''), 2) : 0;
+  const checkOk = ok16 && ((word >> 4) & 0xF) === ((word & 0xF) ^ 0xF);
+  $('o-hex').textContent = !ok16 ? '—' : '0x' + word.toString(16).toUpperCase().padStart(4, '0') + (checkOk ? '' : ' check fails');
+  $('ro-hex').classList.toggle('bad', ok16 && !checkOk);
+}
+window.addEventListener('resize', update);
+update();
+</script>
+</body>
+</html>

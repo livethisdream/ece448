@@ -1,0 +1,43 @@
+id: ece448_energy_detector
+label: Energy Detector
+category: '[ECE 448]'
+
+templates:
+  imports: from gnuradio import ece448
+  make: ece448.energy_detector(${decim}, ${threshold_db}, ${hysteresis_db})
+  callbacks:
+  - set_threshold_db(${threshold_db})
+  - set_hysteresis_db(${hysteresis_db})
+
+parameters:
+- id: decim
+  label: Samples Averaged
+  dtype: int
+  default: '32'
+- id: threshold_db
+  label: Threshold (dB)
+  dtype: real
+  default: '-20.0'
+- id: hysteresis_db
+  label: Hysteresis (dB)
+  dtype: real
+  default: '3.0'
+
+inputs:
+- label: in
+  domain: stream
+  dtype: complex
+
+outputs:
+- label: power
+  domain: stream
+  dtype: float
+- label: key
+  domain: stream
+  dtype: float
+
+documentation: |-
+  Averages |x|^2 over each run of Samples Averaged input samples and makes one output per run.
+  The power output is that average in dB. The key output is 1 while a signal is present and 0 while it is not: it turns on above Threshold and off below Threshold minus Hysteresis.
+
+file_format: 1

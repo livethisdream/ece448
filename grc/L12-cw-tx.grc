@@ -1,0 +1,464 @@
+options:
+  parameters:
+    author: ECE 448
+    catch_exceptions: 'True'
+    category: '[GRC Hier Blocks]'
+    cmake_opt: ''
+    comment: ''
+    copyright: ''
+    description: 'L12: a Morse keyer, hard-keyed and with shaped edges, in time and
+      in frequency. No hardware.'
+    gen_cmake: 'On'
+    gen_linking: dynamic
+    generate_options: qt_gui
+    hier_block_src_path: '.:'
+    id: L12_cw_tx
+    max_nouts: '0'
+    output_language: python
+    placement: (0,0)
+    qt_qss_theme: ''
+    realtime_scheduling: ''
+    run: 'True'
+    run_command: '{python} -u {filename}'
+    run_options: prompt
+    sizing_mode: fixed
+    thread_safe_setters: ''
+    title: L12 - CW Keyer
+    window_size: (1060,600)
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [8, 8]
+    rotation: 0
+    state: enabled
+
+blocks:
+- name: msg
+  id: variable
+  parameters:
+    comment: ''
+    value: '''USAFA ECE 448'''
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [320, 8]
+    rotation: 0
+    state: enabled
+- name: rise
+  id: variable_qtgui_range
+  parameters:
+    comment: ''
+    gui_hint: 0,1,1,1
+    label: Edge time, shaped keyer (ms)
+    min_len: '200'
+    orient: QtCore.Qt.Horizontal
+    rangeType: float
+    start: '1'
+    step: '0.5'
+    stop: '10'
+    value: '5'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [680, 8]
+    rotation: 0
+    state: enabled
+- name: samp_rate
+  id: variable
+  parameters:
+    comment: ''
+    value: '8000'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [200, 8]
+    rotation: 0
+    state: enabled
+- name: wpm
+  id: variable_qtgui_range
+  parameters:
+    comment: ''
+    gui_hint: 0,0,1,1
+    label: Speed (WPM)
+    min_len: '200'
+    orient: QtCore.Qt.Horizontal
+    rangeType: float
+    start: '5'
+    step: '1'
+    stop: '40'
+    value: '20'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [480, 8]
+    rotation: 0
+    state: enabled
+- name: blocks_throttle2_0
+  id: blocks_throttle2
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    ignoretag: 'True'
+    limit: auto
+    maximum: '0.1'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samples_per_second: samp_rate
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [260, 240]
+    rotation: 0
+    state: enabled
+- name: blocks_throttle2_1
+  id: blocks_throttle2
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    ignoretag: 'True'
+    limit: auto
+    maximum: '0.1'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samples_per_second: samp_rate
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [260, 410]
+    rotation: 0
+    state: enabled
+- name: epy_block_0
+  id: epy_block
+  parameters:
+    _source_code: "\"\"\"Morse Keyer: repeats msg as Morse code, one float sample\
+      \ per sample\nperiod: 1 while the key is down and 0 while it is up. Each edge\
+      \ rises or\nfalls along a raised cosine over rise_ms; rise_ms = 0 is hard keying.\n\
+      Timing follows the PARIS standard: a dit is one unit of 1.2/wpm seconds,\na\
+      \ dah three, the gap inside a character one, between characters three,\nand\
+      \ between words seven.\"\"\"\n\nimport numpy as np\nfrom gnuradio import gr\n\
+      \nMORSE = {\n    'A': '.-', 'B': '-...', 'C': '-.-.', 'D': '-..', 'E': '.',\
+      \ 'F': '..-.', 'G': '--.', 'H': '....',\n    'I': '..', 'J': '.---', 'K': '-.-',\
+      \ 'L': '.-..', 'M': '--', 'N': '-.', 'O': '---', 'P': '.--.',\n    'Q': '--.-',\
+      \ 'R': '.-.', 'S': '...', 'T': '-', 'U': '..-', 'V': '...-', 'W': '.--', 'X':\
+      \ '-..-',\n    'Y': '-.--', 'Z': '--..', '0': '-----', '1': '.----', '2': '..---',\
+      \ '3': '...--', '4': '....-',\n    '5': '.....', '6': '-....', '7': '--...',\
+      \ '8': '---..', '9': '----.', '.': '.-.-.-', ',': '--..--',\n    '?': '..--..',\
+      \ '/': '-..-.', '=': '-...-', '-': '-....-',\n}\n\n\nclass blk(gr.sync_block):\n\
+      \    def __init__(self, msg='PARIS', wpm=20.0, rise_ms=5.0, samp_rate=8000.0):\n\
+      \        gr.sync_block.__init__(self, name='Morse Keyer', in_sig=None, out_sig=[np.float32])\n\
+      \        self._msg, self._wpm, self._rise_ms, self.samp_rate = msg, wpm, rise_ms,\
+      \ samp_rate\n        self.pos = 0\n        self.build()\n\n    # GRC assigns\
+      \ these when a slider or entry changes; each one rebuilds the\n    # envelope\
+      \ and starts the message again.\n    @property\n    def msg(self): return self._msg\n\
+      \    @msg.setter\n    def msg(self, v): self._msg = v; self.build()\n    @property\n\
+      \    def wpm(self): return self._wpm\n    @wpm.setter\n    def wpm(self, v):\
+      \ self._wpm = v; self.build()\n    @property\n    def rise_ms(self): return\
+      \ self._rise_ms\n    @rise_ms.setter\n    def rise_ms(self, v): self._rise_ms\
+      \ = v; self.build()\n\n    def build(self):\n        units = []            \
+      \                       # one 0 or 1 per unit\n        for word in str(self._msg).upper().split():\n\
+      \            for c in word:\n                for s in MORSE.get(c, ''):\n  \
+      \                  units += [1] * (1 if s == '.' else 3) + [0]\n           \
+      \     units += [0, 0]                      # character gap: 3 units\n      \
+      \      units += [0] * 4                         # word gap: 7 units\n      \
+      \  units = np.array(units or [0], dtype=np.float32)\n        spu = 1.2 / self._wpm\
+      \ * self.samp_rate       # samples per unit\n        n = int(round(len(units)\
+      \ * spu))\n        key = units[np.minimum((np.arange(n) / spu).astype(int),\
+      \ len(units) - 1)]\n        m = int(round(self._rise_ms * 1e-3 * self.samp_rate))\n\
+      \        if m >= 2:\n            # A half-sine pulse sums to a raised-cosine\
+      \ step, so filtering the\n            # hard-keyed waveform with it shapes every\
+      \ edge the same way.\n            h = np.sin(np.pi * (np.arange(m) + 0.5) /\
+      \ m)\n            h /= h.sum()\n            key = np.real(np.fft.ifft(np.fft.fft(key)\
+      \ * np.fft.fft(h, n)))\n            key = np.roll(key, -(m // 2)).astype(np.float32)\n\
+      \        self.env = key\n        self.pos = 0\n\n    def work(self, input_items,\
+      \ output_items):\n        out = output_items[0]\n        n, k = len(out), len(self.env)\n\
+      \        idx = (self.pos + np.arange(n)) % k\n        out[:] = self.env[idx]\n\
+      \        self.pos = (self.pos + n) % k\n        return n\n"
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    msg: msg
+    rise_ms: '0'
+    samp_rate: samp_rate
+    wpm: wpm
+  states:
+    _io_cache: ('Morse Keyer', 'blk', [('msg', "'PARIS'"), ('wpm', '20.0'), ('rise_ms',
+      '5.0'), ('samp_rate', '8000.0')], [], [('0', 'float', 1)], '', ['msg', 'rise_ms',
+      'samp_rate', 'wpm'])
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [8, 230]
+    rotation: 0
+    state: enabled
+- name: epy_block_1
+  id: epy_block
+  parameters:
+    _source_code: "\"\"\"Morse Keyer: repeats msg as Morse code, one float sample\
+      \ per sample\nperiod: 1 while the key is down and 0 while it is up. Each edge\
+      \ rises or\nfalls along a raised cosine over rise_ms; rise_ms = 0 is hard keying.\n\
+      Timing follows the PARIS standard: a dit is one unit of 1.2/wpm seconds,\na\
+      \ dah three, the gap inside a character one, between characters three,\nand\
+      \ between words seven.\"\"\"\n\nimport numpy as np\nfrom gnuradio import gr\n\
+      \nMORSE = {\n    'A': '.-', 'B': '-...', 'C': '-.-.', 'D': '-..', 'E': '.',\
+      \ 'F': '..-.', 'G': '--.', 'H': '....',\n    'I': '..', 'J': '.---', 'K': '-.-',\
+      \ 'L': '.-..', 'M': '--', 'N': '-.', 'O': '---', 'P': '.--.',\n    'Q': '--.-',\
+      \ 'R': '.-.', 'S': '...', 'T': '-', 'U': '..-', 'V': '...-', 'W': '.--', 'X':\
+      \ '-..-',\n    'Y': '-.--', 'Z': '--..', '0': '-----', '1': '.----', '2': '..---',\
+      \ '3': '...--', '4': '....-',\n    '5': '.....', '6': '-....', '7': '--...',\
+      \ '8': '---..', '9': '----.', '.': '.-.-.-', ',': '--..--',\n    '?': '..--..',\
+      \ '/': '-..-.', '=': '-...-', '-': '-....-',\n}\n\n\nclass blk(gr.sync_block):\n\
+      \    def __init__(self, msg='PARIS', wpm=20.0, rise_ms=5.0, samp_rate=8000.0):\n\
+      \        gr.sync_block.__init__(self, name='Morse Keyer', in_sig=None, out_sig=[np.float32])\n\
+      \        self._msg, self._wpm, self._rise_ms, self.samp_rate = msg, wpm, rise_ms,\
+      \ samp_rate\n        self.pos = 0\n        self.build()\n\n    # GRC assigns\
+      \ these when a slider or entry changes; each one rebuilds the\n    # envelope\
+      \ and starts the message again.\n    @property\n    def msg(self): return self._msg\n\
+      \    @msg.setter\n    def msg(self, v): self._msg = v; self.build()\n    @property\n\
+      \    def wpm(self): return self._wpm\n    @wpm.setter\n    def wpm(self, v):\
+      \ self._wpm = v; self.build()\n    @property\n    def rise_ms(self): return\
+      \ self._rise_ms\n    @rise_ms.setter\n    def rise_ms(self, v): self._rise_ms\
+      \ = v; self.build()\n\n    def build(self):\n        units = []            \
+      \                       # one 0 or 1 per unit\n        for word in str(self._msg).upper().split():\n\
+      \            for c in word:\n                for s in MORSE.get(c, ''):\n  \
+      \                  units += [1] * (1 if s == '.' else 3) + [0]\n           \
+      \     units += [0, 0]                      # character gap: 3 units\n      \
+      \      units += [0] * 4                         # word gap: 7 units\n      \
+      \  units = np.array(units or [0], dtype=np.float32)\n        spu = 1.2 / self._wpm\
+      \ * self.samp_rate       # samples per unit\n        n = int(round(len(units)\
+      \ * spu))\n        key = units[np.minimum((np.arange(n) / spu).astype(int),\
+      \ len(units) - 1)]\n        m = int(round(self._rise_ms * 1e-3 * self.samp_rate))\n\
+      \        if m >= 2:\n            # A half-sine pulse sums to a raised-cosine\
+      \ step, so filtering the\n            # hard-keyed waveform with it shapes every\
+      \ edge the same way.\n            h = np.sin(np.pi * (np.arange(m) + 0.5) /\
+      \ m)\n            h /= h.sum()\n            key = np.real(np.fft.ifft(np.fft.fft(key)\
+      \ * np.fft.fft(h, n)))\n            key = np.roll(key, -(m // 2)).astype(np.float32)\n\
+      \        self.env = key\n        self.pos = 0\n\n    def work(self, input_items,\
+      \ output_items):\n        out = output_items[0]\n        n, k = len(out), len(self.env)\n\
+      \        idx = (self.pos + np.arange(n)) % k\n        out[:] = self.env[idx]\n\
+      \        self.pos = (self.pos + n) % k\n        return n\n"
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    msg: msg
+    rise_ms: rise
+    samp_rate: samp_rate
+    wpm: wpm
+  states:
+    _io_cache: ('Morse Keyer', 'blk', [('msg', "'PARIS'"), ('wpm', '20.0'), ('rise_ms',
+      '5.0'), ('samp_rate', '8000.0')], [], [('0', 'float', 1)], '', ['msg', 'rise_ms',
+      'samp_rate', 'wpm'])
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [8, 400]
+    rotation: 0
+    state: enabled
+- name: qtgui_freq_sink_x_0
+  id: qtgui_freq_sink_x
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha1: '1.0'
+    alpha10: '1.0'
+    alpha2: '1.0'
+    alpha3: '1.0'
+    alpha4: '1.0'
+    alpha5: '1.0'
+    alpha6: '1.0'
+    alpha7: '1.0'
+    alpha8: '1.0'
+    alpha9: '1.0'
+    autoscale: 'False'
+    average: '1.0'
+    axislabels: 'True'
+    bw: samp_rate
+    color1: '"blue"'
+    color10: '"dark blue"'
+    color2: '"red"'
+    color3: '"green"'
+    color4: '"black"'
+    color5: '"cyan"'
+    color6: '"magenta"'
+    color7: '"yellow"'
+    color8: '"dark red"'
+    color9: '"dark green"'
+    comment: ''
+    ctrlpanel: 'False'
+    fc: '0'
+    fftsize: '8192'
+    freqhalf: 'True'
+    grid: 'True'
+    gui_hint: 1,1,1,1
+    label: '"Relative Gain"'
+    label1: '"hard"'
+    label10: ''''''
+    label2: '"shaped"'
+    label3: ''''''
+    label4: ''''''
+    label5: ''''''
+    label6: ''''''
+    label7: ''''''
+    label8: ''''''
+    label9: ''''''
+    legend: 'True'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    name: '"Spectrum: hard (blue) and shaped (red)"'
+    nconnections: '2'
+    norm_window: 'False'
+    showports: 'False'
+    tr_chan: '0'
+    tr_level: '0.0'
+    tr_mode: qtgui.TRIG_MODE_FREE
+    tr_tag: '""'
+    type: float
+    units: dB
+    update_time: '0.1'
+    width1: '1'
+    width10: '1'
+    width2: '1'
+    width3: '1'
+    width4: '1'
+    width5: '1'
+    width6: '1'
+    width7: '1'
+    width8: '1'
+    width9: '1'
+    wintype: window.WIN_BLACKMAN_hARRIS
+    ymax: '0'
+    ymin: '-140'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [520, 420]
+    rotation: 0
+    state: enabled
+- name: qtgui_time_sink_x_0
+  id: qtgui_time_sink_x
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha1: '1.0'
+    alpha10: '1.0'
+    alpha2: '1.0'
+    alpha3: '1.0'
+    alpha4: '1.0'
+    alpha5: '1.0'
+    alpha6: '1.0'
+    alpha7: '1.0'
+    alpha8: '1.0'
+    alpha9: '1.0'
+    autoscale: 'False'
+    axislabels: 'True'
+    color1: blue
+    color10: dark blue
+    color2: red
+    color3: green
+    color4: black
+    color5: cyan
+    color6: magenta
+    color7: yellow
+    color8: dark red
+    color9: dark green
+    comment: ''
+    ctrlpanel: 'False'
+    entags: 'True'
+    grid: 'True'
+    gui_hint: 1,0,1,1
+    label1: '"hard"'
+    label10: Signal 10
+    label2: '"shaped"'
+    label3: Signal 3
+    label4: Signal 4
+    label5: Signal 5
+    label6: Signal 6
+    label7: Signal 7
+    label8: Signal 8
+    label9: Signal 9
+    legend: 'True'
+    marker1: '-1'
+    marker10: '-1'
+    marker2: '-1'
+    marker3: '-1'
+    marker4: '-1'
+    marker5: '-1'
+    marker6: '-1'
+    marker7: '-1'
+    marker8: '-1'
+    marker9: '-1'
+    name: '"Key: hard (blue) and shaped (red)"'
+    nconnections: '2'
+    size: '320'
+    srate: samp_rate
+    stemplot: 'False'
+    style1: '1'
+    style10: '1'
+    style2: '1'
+    style3: '1'
+    style4: '1'
+    style5: '1'
+    style6: '1'
+    style7: '1'
+    style8: '1'
+    style9: '1'
+    tr_chan: '1'
+    tr_delay: '0.01'
+    tr_level: '0.5'
+    tr_mode: qtgui.TRIG_MODE_NORM
+    tr_slope: qtgui.TRIG_SLOPE_POS
+    tr_tag: '""'
+    type: float
+    update_time: '0.1'
+    width1: '1'
+    width10: '1'
+    width2: '1'
+    width3: '1'
+    width4: '1'
+    width5: '1'
+    width6: '1'
+    width7: '1'
+    width8: '1'
+    width9: '1'
+    ylabel: '"Key"'
+    ymax: '1.1'
+    ymin: '-0.1'
+    yunit: '""'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [520, 220]
+    rotation: 0
+    state: enabled
+
+connections:
+- [blocks_throttle2_0, '0', qtgui_freq_sink_x_0, '0']
+- [blocks_throttle2_0, '0', qtgui_time_sink_x_0, '0']
+- [blocks_throttle2_1, '0', qtgui_freq_sink_x_0, '1']
+- [blocks_throttle2_1, '0', qtgui_time_sink_x_0, '1']
+- [epy_block_0, '0', blocks_throttle2_0, '0']
+- [epy_block_1, '0', blocks_throttle2_1, '0']
+
+metadata:
+  file_format: 1
+  grc_version: 3.10.9.2

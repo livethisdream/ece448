@@ -1,0 +1,737 @@
+<!doctype html>
+<html lang="en" data-mode="read">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>L16 - Frequency Hopping &mdash; ECE 448 — Software Defined Radios</title>
+<meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+<link rel="icon" href="../../_static/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap"><link rel="stylesheet" href="../../_static/custom.css?v=ec0f297254">
+<link rel="stylesheet" href="../../_static/shell.css?v=78396bd831">
+<link rel="stylesheet" href="../../_static/frames.css?v=fa285d3703">
+<script>window.MathJax = {"tex": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processEscapes": true}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+<script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js"></script>
+</head>
+<body>
+
+<div class="rail"><span id="railfill"></span></div>
+
+<div class="laser" id="laser" aria-hidden="true"></div>
+<div class="spot" id="spot" aria-hidden="true"></div>
+
+<div class="index" id="index" role="dialog" aria-label="Jump to a frame or another lesson">
+  <button class="index-close" id="btnIndexClose" type="button" aria-label="Close">&times;</button>
+  <div class="wrap">
+    <div class="index-cols">
+      <div class="index-here">
+        <h2>This lesson</h2>
+        <ol id="indexlist"></ol>
+      </div>
+      <div class="index-toc">
+        <h2>Course</h2>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Course Information</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../syllabus.html">Syllabus</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../materials.html">Materials</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 1 — Foundations of Detection &amp; Link Budgets</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module01/index.html">Module 1 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module01/L01-course-intro/index.html">L1 — Course Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module01/L02-noise-figure-link-budget/index.html">L2 — Noise Figure and Link Budget</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module01/L03-signal-space/index.html">L3 — Signal Space</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 2 — SDR &amp; GNU Radio Foundations</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module02/index.html">Module 2 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module02/L04-sdr-introduction/index.html">L4 — SDR Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module02/L05-gnu-radio-intro/index.html">L5 — GNU Radio Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module02/L05-lab-first-flowgraphs/index.html">L5 Lab — First Flowgraphs</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 3 — Analog Modulation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module03/index.html">Module 3 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module03/L06-am-simulation/index.html">L6 — AM Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module03/L06-lab-am-simulation/index.html">L6 Lab — AM Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module03/L07-am-fm-receivers/index.html">L7 — AM and FM Receivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module03/L07-lab-am-fm-receivers/index.html">L7 Lab — AM and FM Receivers</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 4 — Digital Modulation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/index.html">Module 4 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/L08-fsk/index.html">L8 — FSK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/L08-lab-fsk/index.html">L8 Lab — FSK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/L09-pam-theory/index.html">L9 — PAM Theory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/L10-ascii-pam/index.html">L10 — ASCII over PAM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/L10-lab-pam-link/index.html">L10 Lab — PAM Link</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 5 — Custom Blocks &amp; Midterm</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module05/index.html">Module 5 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module05/L11-custom-blocks/index.html">L11 — Out-of-Tree Modules and Custom Blocks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module05/L11-lab-custom-block/index.html">L11 Lab — Custom Block</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module05/midterm/index.html">Midterm — Fox Hunt and CTF</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 6 — Waveform Applications &amp; RF Reverse Engineering</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Module 6 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L12-cw/index.html">L12 — CW</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L12-lab-cw/index.html">L12 Lab — CW</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L13-dtmf/index.html">L13 — DTMF</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L13-lab-dtmf/index.html">L13 Lab — DTMF</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L14-hd-radio/index.html">L14 — HD Radio</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L14-lab-hd-radio/index.html">L14 Lab — HD Radio</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L15-mpsk/index.html">L15 — mPSK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L15-lab-mpsk/index.html">L15 Lab — mPSK</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">L16 — Frequency Hopping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L16-lab-fhss/index.html">L16 Lab — Frequency Hopping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L17-rf-reverse-engineering/index.html">L17 — RF Reverse Engineering</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L17-lab-rf-reverse-engineering/index.html">L17 Lab — RF Reverse Engineering</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L18-adsb/index.html">L18 — ADS-B</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L19-ais/index.html">L19 — AIS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L18-L19-lab-adsb-ais/index.html">L18–L19 Lab — ADS-B and AIS</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 7 — Final Project</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module07/index.html">Module 7 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module07/L20-qam-ofdm/index.html">L20 — QAM and OFDM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module07/final-project/index.html">Final Project</a></li>
+</ul>
+
+      </div>
+    </div>
+  </div>
+</div><div class="hud">
+<div class="hud-group">
+  <button id="btnSite" class="site" type="button"
+          aria-expanded="false" aria-controls="sitepop"
+          title="Elsewhere on this site">ECE 448</button>
+</div>
+<div class="pop" id="sitepop" role="group" aria-label="Site" hidden>
+  <a href="https://livethisdream.github.io/">Home</a>
+  <a href="https://livethisdream.github.io/ece343/intro.html">ECE 343</a>
+  <a href="https://livethisdream.github.io/ece444/intro.html">ECE 444</a>
+  <a href="../../intro.html" aria-current="page">ECE 448</a>
+  <a href="https://livethisdream.github.io/projects">Projects</a>
+  <button class="pop-help" type="button" data-help>Help<kbd>?</kbd></button>
+</div>
+
+  <div class="hud-group hud-mid"><button id="btnMode" type="button" aria-expanded="false" aria-controls="modepop"
+            title="How the lesson is laid out (P)">read</button>
+    <button id="btnTools" type="button" aria-expanded="false" aria-controls="toolspop"
+            title="Presenter tools">tools</button>
+  </div>
+
+  <div class="hud-group"><button id="btnIndex" class="counter" type="button" aria-pressed="false"
+            title="Contents (G) · double-tap for the top"><b id="cur">1</b>/<span id="tot">0</span></button>
+  </div><div class="pop" id="modepop" role="group" aria-label="View mode" hidden>
+    <button id="btnPresent" class="choice" type="button" aria-pressed="false">
+      present<span class="pop-note">one frame at a time</span></button>
+    <button id="btnRead" class="choice" type="button" aria-pressed="true">
+      read<span class="pop-note">the whole lesson, continuous</span></button>
+  </div><div class="pop" id="toolspop" role="group" aria-label="Presenter tools" hidden>
+    <button id="btnLaser" type="button" aria-pressed="false">laser<kbd>L</kbd></button>
+    <button id="btnSpot" type="button" aria-pressed="false">spotlight<kbd>S</kbd></button>
+    <button id="btnFull" type="button">fullscreen<kbd>F</kbd></button>
+    <button id="btnHelp" type="button" data-help>help<kbd>?</kbd></button>
+  </div>
+</div>
+<div class="help" id="help" role="dialog" aria-modal="true" aria-labelledby="helpTitle" hidden>
+  <div class="help-card">
+    <button class="help-close" id="btnHelpClose" type="button" aria-label="Close help">&times;</button>
+    <h2 id="helpTitle">Getting around</h2>
+    <p class="help-lead">Everything is in the bar at the bottom of the screen.</p>
+    <dl class="help-list">
+      <dt><span class="help-chip">ECE 448</span></dt>
+      <dd>The other course sites, the home page, and this help.</dd>
+      <dt><span class="help-chip">read</span></dt>
+      <dd><b>Read</b> shows the whole lesson as one page. <b>Present</b> shows one frame at a time, for class.<span class="help-keys"> <kbd>P</kbd> switches.</span></dd>
+      <dt><span class="help-chip">tools</span></dt>
+      <dd>Laser pointer<span class="help-keys"> <kbd>L</kbd></span>, spotlight<span class="help-keys"> <kbd>S</kbd></span>, and fullscreen<span class="help-keys"> <kbd>F</kbd></span>.</dd>
+      <dt><span class="help-chip">3/9</span></dt>
+      <dd>Where you are in the lesson. Tap it for every frame here and every lesson in the course<span class="help-keys"> <kbd>G</kbd></span>. Double-tap to go back to the top.</dd>
+    </dl>
+    <h3 class="help-keys">Presenting</h3>
+    <p class="help-keys"><kbd>&rarr;</kbd> or <kbd>Space</kbd> next frame, <kbd>&larr;</kbd> back, <kbd>D</kbd> this frame&rsquo;s detail, <kbd>Esc</kbd> close a panel.</p>
+    <h3>Printing</h3>
+    <p>Print from present mode for the slides, one frame a page. Print from read mode for the whole lesson.</p>
+    <p class="help-foot"><span class="help-keys">Press <kbd>?</kbd> to open this again.</span><span class="help-touch">Open this again from the ECE 448 menu.</span></p>
+  </div>
+</div>
+
+<div class="help-hint" id="helpHint" hidden>
+  <button id="btnHintOpen" type="button" data-help>New here? How the bar works</button>
+  <button id="btnHintClose" class="help-hint-close" type="button" aria-label="Dismiss">&times;</button>
+</div><main class="deck bd-article" id="deck" tabindex="-1">
+<section class="tex2jax_ignore mathjax_ignore" id="l16-frequency-hopping">
+<h1>L16 - Frequency Hopping<a class="headerlink" href="#l16-frequency-hopping" title="Permalink to this heading">#</a></h1>
+<div class="frame title-frame docutils container" id="frame-1">
+<div class="wrap docutils container">
+<div class="course-mark">ECE 448 · Spring 2027</div>
+<h1 class="frame-title">Frequency Hopping</h1>
+<div class="title-rule"></div>
+<p>An FHSS transmitter and receiver that stay on the same hop sequence.</p>
+<p>Lesson 16 · Module 6: Waveform Applications &amp; RF Reverse Engineering · Dr. Neil Rogers</p>
+</div>
+</div>
+<div class="frame read-only docutils container" id="frame-slides">
+<div class="wrap docutils container">
+<p class="rubric">Slides</p>
+<div class="slides admonition">
+<p class="admonition-title">Slides</p>
+<p><a href="../../slides/L16-fhss.html" target="_blank" rel="noopener">html slides</a>
+<a href="../../slides/L16-fhss.html?print-pdf" target="_blank" rel="noopener">pdf slides</a>
+<a href="../../slides/L16-fhss.md" target="_blank" rel="noopener">raw markdown slides</a></p>
+</div>
+</div>
+</div>
+<div class="frame docutils container" id="frame-learning-objectives">
+<div class="wrap docutils container">
+<p class="rubric">Learning Objectives</p>
+<ol class="lo-list" style="--module: '6'; counter-reset: lo 4">
+  <li>I can implement FHSS transmission and reception, including hop-sequence synchronization.</li>
+</ol>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-a-link-that-hops">
+<div class="wrap docutils container">
+<p class="rubric">A Link That Hops</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<p><img src="../../viz/img/L16-link-jam.png"
+     alt="The L16 link flowgraph running at noise amplitude 1 with a jammer of amplitude 3 on channel 4: the received-band waterfall shows short dashes stepping among eight channels from minus 35 to plus 35 kHz and a solid vertical jammer line at plus 5 kHz; the After Hop Sync waterfall shows the signal held still at 0 Hz and the jammer as short dashes at other frequencies; the labels read Receiver locked, Packets 87 correct of 99 sent in 24 s (88%), and Received USAFA ECE 448"
+     style="max-width: 820px; width: 100%; display: block; margin: 0 auto;"></p>
+</div>
+<div class="present docutils container">
+<ul class="simple">
+<li><p>The transmitter changes channel every 240 ms, in an order only the receiver knows.</p></li>
+<li><p>A jammer parked on one channel stops only one hop in eight.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>Open <code class="docutils literal notranslate"><span class="pre">L16-fhss-link.grc</span></code>, run it, and set the Jammer amplitude slider to 3. The figure is that window. The transmitter is Lesson 8’s FSK modem sending Lesson 8’s packets, one packet per <strong>hop</strong>, on a new channel every hop. On the left waterfall, the band the receiver sees, the signal is a trail of short dashes stepping around eight channels, and the <strong>jammer</strong>, a strong tone parked on one channel, is the solid line at +5 kHz.</p>
+<p>Now look at the right waterfall, the output of the receiver’s <strong>Hop Sync</strong> block. The signal stands still at 0 Hz, and the jammer is the one that hops. Watch the Packets label: about 88% of the packets arrive, because only the hops on the jammer’s channel, 1 in 8, are lost. This is <strong>frequency-hopping spread spectrum</strong> (FHSS).</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-where-frequency-hopping-is-used">
+<div class="wrap docutils container">
+<p class="rubric">Where Frequency Hopping Is Used</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<ul class="simple">
+<li><p><strong>Bluetooth Classic</strong> hops among 79 channels, up to 1600 times a second.</p></li>
+<li><p><strong>SINCGARS</strong>, the Army’s VHF radio, hops among 2320 channels about 100 times a second.</p></li>
+<li><p><strong>ISM-band hoppers</strong> at 915 MHz use at least 50 channels.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>Interference on one channel, from a microwave oven, a Wi-Fi network, or a jammer, takes from a hopping link only the hops that land there, and a listener without the sequence hears only short bursts scattered across the band.</p>
+<p>Bluetooth Classic hops among 79 channels 1 MHz apart at 2.4 GHz, in 625 µs slots, and its <strong>adaptive frequency hopping</strong> (AFH) drops channels that stay busy. SINCGARS, the Army’s VHF-FM radio, hops among up to 2320 channels 25 kHz apart and takes its sequence from a security key and the time of day. Unlicensed hoppers at 915 MHz follow FCC Part 15.247: a pseudo-random sequence that uses every channel equally, at least 50 channels for a narrowband signal, and an average of no more than 0.4 s on any one channel within a 20 s period.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-part-1-the-hopping-transmitter">
+<div class="wrap docutils container">
+<p class="rubric">Part 1: The Hopping Transmitter</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<p><img src="../../viz/img/L16-grc-tx.png"
+     alt="The L16 transmitter flowgraph in GNU Radio Companion: two Vector Sources with Stream to Tagged Stream, a Protocol Formatter, and a four-input Tagged Stream Mux build each hop's packet; Unpack K Bits, Chunks to Symbols, Repeat, and Frequency Mod make Lesson 8's FSK; a Vector Source of hop frequencies, a Repeat of 30,720 samples, and a VCO make the hopping tone; a Multiply combines them, followed by a Throttle, a waterfall, and a time sink of the hop frequency"
+     style="max-width: 820px; width: 100%; display: block; margin: 0 auto;"></p>
+</div>
+<div class="present docutils container">
+<ul class="simple">
+<li><p>The top row is Lesson 8’s FSK transmitter and its packets.</p></li>
+<li><p>A <strong>VCO</strong> driven by the hop sequence is the hop synthesizer.</p></li>
+<li><p><strong>Multiply</strong> moves the FSK signal to each hop’s channel.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>Open <code class="docutils literal notranslate"><span class="pre">L16-fhss-tx.grc</span></code>. The top row is Lesson 8’s FSK transmitter, 1000 baud with a 1 kHz deviation, running at 128 kHz so the hops have room. Its <strong>Tagged Stream Mux</strong> now has four inputs: 2 guard bytes, the access code and header from the <strong>Protocol Formatter</strong>, the line <code class="docutils literal notranslate"><span class="pre">USAFA</span> <span class="pre">ECE</span> <span class="pre">448</span></code>, and 2 more guard bytes.</p>
+<p>The bottom row is the <strong>hop synthesizer</strong>. A <strong>Vector Source</strong> lists the hop frequencies, a <strong>Repeat</strong> holds each one for 30,720 samples, one hop, and a <strong>VCO</strong> with sensitivity <span class="math notranslate nohighlight">\(2\pi\)</span> turns each value into a tone at that many hertz. The <strong>Multiply</strong> moves the FSK signal to that tone’s frequency, which is the frequency shift of the GNU Radio wiki’s Frequency Shifting tutorial, done once per hop.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-one-packet-per-hop">
+<div class="wrap docutils container">
+<p class="rubric">One Packet per Hop</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<p><img src="../../viz/img/L16-hop-frame.svg"
+     alt="One hop of the L16 link to scale: 16 guard bits, a 64-bit access code, a 32-bit header, a 112-bit payload of USAFA ECE 448 and a newline, and 16 more guard bits, 240 bits or 240 ms at 1000 baud"
+     style="max-width: 760px; width: 100%; display: block; margin: 0 auto;"></p>
+</div>
+<div class="present docutils container">
+<ul class="simple">
+<li><p>Each hop carries exactly one packet: 240 bits, 240 ms.</p></li>
+<li><p>Guard bits at each end let the receiver’s timing be off a little.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>The packet and the hop are the same length, so no packet is ever split across two channels; Bluetooth does the same, one packet per slot. The <strong>guard bits</strong> at each end, the pattern 01010101, carry no data. A receiver that changes channel a few milliseconds early or late loses only guard bits, and the Timing Error frame below shows how far that goes.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-the-hop-sequence">
+<div class="wrap docutils container">
+<p class="rubric">The Hop Sequence</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<p><img src="../../viz/img/L16-tx-hops.png"
+     alt="The L16 transmitter running: the Hop key slider reads 448 and the label reads Hop sequence 7 2 0 6 4 1 3 5; the waterfall shows dashes stepping among eight channels from minus 35 to plus 35 kHz; the time sink shows the hop frequency as a staircase over 4 s, holding each of minus 15, minus 35, plus 25, plus 5, minus 25, minus 5, plus 15, and plus 35 kHz for 240 ms, then repeating"
+     style="max-width: 820px; width: 100%; display: block; margin: 0 auto;"></p>
+</div>
+<div class="present docutils container">
+<ul class="simple">
+<li><p>The link uses eight channels, 10 kHz apart, from −35 to +35 kHz.</p></li>
+<li><p>A <strong>key</strong> seeds a pseudo-random order that visits each channel once per cycle.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>Channel <span class="math notranslate nohighlight">\(k\)</span>, for <span class="math notranslate nohighlight">\(k = 0\)</span> to 7, sits at</p>
+<div class="math notranslate nohighlight">
+\[f_k = 10\text{ kHz} \times (k - 3.5),\]</div>
+<p>so channel 0 is at −35 kHz and channel 7 at +35 kHz, far enough apart that the 4 kHz-wide FSK signals do not overlap. Run <code class="docutils literal notranslate"><span class="pre">L16-fhss-tx.grc</span></code> and watch: the waterfall shows the dashes stepping around the band, and the time sink on the right shows the hop frequency as a staircase. The variable <code class="docutils literal notranslate"><span class="pre">seq</span></code>, <code class="docutils literal notranslate"><span class="pre">np.random.default_rng(key).permutation(8)</span></code>, is the <strong>hop sequence</strong>, a shuffled list of the 8 channels set by the <strong>key</strong>. Key 448 gives 7, 2, 0, 6, 4, 1, 3, 5; drag the Hop key slider and the staircase changes order.</p>
+<p>A shuffled list uses each channel exactly once per <strong>cycle</strong> of 8 hops, which meets Part 15’s equal-use rule and, as Part 3 shows, makes sync simple. Real systems use far longer sequences; Bluetooth’s takes about 23 hours to repeat.</p>
+</div>
+</div>
+</div>
+<div class="frame read-only docutils container" id="frame-hop-timing">
+<div class="wrap docutils container">
+<p class="rubric">Hop Timing</p>
+<p>At <span class="math notranslate nohighlight">\(R_s = 1000\)</span> baud, a hop of <span class="math notranslate nohighlight">\(n\)</span> bits lasts</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+T_\text{hop} &amp;= \frac{n}{R_s} \\
+&amp;= \frac{240}{1000\text{ baud}} = 240 \text{ ms},
+\end{aligned}\end{split}\]</div>
+<p>and the 128 kHz flowgraph holds each hop frequency for <span class="math notranslate nohighlight">\(128{,}000 \times 0.240 = 30{,}720\)</span> samples. The hop rate and the time for one cycle of <span class="math notranslate nohighlight">\(N\)</span> channels are</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\text{hop rate} &amp;= \frac{1}{T_\text{hop}} \\
+&amp;= 4.17 \text{ hops/s}, \\
+T_\text{cycle} &amp;= N\,T_\text{hop} \\
+&amp;= 8 \times 240 \text{ ms} = 1.92 \text{ s}.
+\end{aligned}\end{split}\]</div>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head text-left"><p></p></th>
+<th class="head text-center"><p>L16 link</p></th>
+<th class="head text-center"><p>Bluetooth Classic</p></th>
+<th class="head text-center"><p>SINCGARS</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-left"><p>Channels</p></td>
+<td class="text-center"><p>8</p></td>
+<td class="text-center"><p>79</p></td>
+<td class="text-center"><p>up to 2320</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>Spacing</p></td>
+<td class="text-center"><p>10 kHz</p></td>
+<td class="text-center"><p>1 MHz</p></td>
+<td class="text-center"><p>25 kHz</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>Hop rate</p></td>
+<td class="text-center"><p>4.17 hops/s</p></td>
+<td class="text-center"><p>up to 1600 hops/s</p></td>
+<td class="text-center"><p>about 100 hops/s</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>Time on one hop</p></td>
+<td class="text-center"><p>240 ms</p></td>
+<td class="text-center"><p>625 µs</p></td>
+<td class="text-center"><p>about 10 ms</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Our link hops slowly so that the waterfall can show each hop; the blocks and the synchronization problem are the same at any hop rate.</p>
+</div>
+</div>
+<div class="frame viz-frame cut docutils container" id="frame-fhss-explorer">
+<div class="wrap docutils container">
+<p class="rubric">FHSS Explorer</p>
+<div class="depth docutils container">
+<p>Each column is one hop. The filled cell is the transmitter’s channel and the amber box the receiver’s; a navy cell is a delivered hop and a gray one is lost. The red band is the jammer. Start with 8 channels and 1 jammed channel: 1 hop in 8 is lost. Widen the jammer or reduce the channels and watch the delivered fraction fall with the share of hops that land on jammed channels. Set the receiver offset to +1: the box is always one step ahead, and nothing arrives. Then press the acquire button: the receiver waits on the sync channel, in amber on the axis, and locks when the transmitter arrives there. Move the jammer onto the sync channel, and the receiver never locks.</p>
+</div>
+<div class="stage docutils container">
+<div class="present docutils container">
+<iframe src="../../viz/fhss-explorer.html"
+        width="100%" height="485"
+        style="border: 1px solid #cddce9; border-radius: 6px;"
+        loading="lazy"
+        title="FHSS explorer: a hop sequence on a grid of channel against hop, the receiver's channel on each hop, and a jammer, with the delivered fraction as the channels, the jammer, the receiver's offset, and the key change">
+</iframe>
+</div>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-part-2-the-receiver">
+<div class="wrap docutils container">
+<p class="rubric">Part 2: The Receiver</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<p><img src="../../viz/img/L16-grc-link.png"
+     alt="The L16 link flowgraph in GNU Radio Companion: the hopping transmitter of L16-fhss-tx.grc, a Throttle, a Delay for the path delay, and an Add with a Noise Source and a Signal Source jammer; a Virtual Sink and Virtual Source carry the channel to the receiver row: Hop Sync, a decimating Low Pass Filter, Quadrature Demod, Moving Average, Symbol Sync, Binary Slicer, Correlate Access Code - Tag Stream, Repack Bits, and the Text Sink, whose pkt message port connects back to Hop Sync; two waterfall sinks show the band before and after Hop Sync"
+     style="max-width: 820px; width: 100%; display: block; margin: 0 auto;"></p>
+</div>
+<div class="present docutils container">
+<ul class="simple">
+<li><p><strong>Hop Sync</strong> undoes each hop: the signal comes out at 0 Hz.</p></li>
+<li><p>Everything after it is Lesson 8’s FSK receiver.</p></li>
+<li><p>The Text Sink tells Hop Sync each time a packet arrives.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>Open <code class="docutils literal notranslate"><span class="pre">L16-fhss-link.grc</span></code>. The top half is the transmitter you just ran, then a channel: a <strong>Delay</strong> for a path delay the receiver does not know, a <strong>Noise Source</strong>, and the jammer, a <strong>Signal Source</strong> at the center of one channel.</p>
+<p>The receiver starts with <strong>Hop Sync</strong>, an Embedded Python Block. It multiplies the band by a tone at minus the current hop frequency, which <strong>de-hops</strong> it: every hop comes out at 0 Hz. A <strong>Low Pass Filter</strong> keeps ±2 kHz and decimates by 4, which removes the other seven channels, and from the <strong>Quadrature Demod</strong> on, the receiver is Lesson 8’s. The Text Sink sends a message out its <code class="docutils literal notranslate"><span class="pre">pkt</span></code> port each time a packet arrives, and the dashed line back to Hop Sync carries it.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-de-hopping">
+<div class="wrap docutils container">
+<p class="rubric">De-Hopping</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<p><img src="../../viz/img/L16-link-clean.png"
+     alt="The L16 link at noise amplitude 1 with no jammer: the received-band waterfall shows the hopping dashes; the After Hop Sync waterfall shows one steady vertical trace at 0 Hz; the labels read Receiver locked, Packets 81 correct of 81 sent in 20 s (100%), and Received USAFA ECE 448"
+     style="max-width: 820px; width: 100%; display: block; margin: 0 auto;"></p>
+</div>
+<div class="present docutils container">
+<ul class="simple">
+<li><p>Multiplying by the conjugate of the hop tone moves every hop to 0 Hz.</p></li>
+<li><p>With no jammer, every packet arrives.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>Run it with the sliders at their defaults. The Receiver label reads “locked” within a fraction of a second, and the right waterfall shows one steady trace at 0 Hz: the transmitter multiplied by <span class="math notranslate nohighlight">\(e^{j2\pi f_k t}\)</span> on hop <span class="math notranslate nohighlight">\(k\)</span>, Hop Sync multiplies by <span class="math notranslate nohighlight">\(e^{-j2\pi f_k t}\)</span>, and the two cancel. Every packet arrives.</p>
+<p>Now drag the Noise amplitude slider up and watch the Packets label: at 1 every packet arrives, at 2 a few are lost, and at 2.5 about a third are. After the Low Pass Filter the receiver sees what Lesson 8’s receiver saw, so noise affects it the same way. FSK suits a hopper because the Quadrature Demod needs no carrier phase, so a phase jump at a hop boundary does no harm.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-part-3-finding-the-hops">
+<div class="wrap docutils container">
+<p class="rubric">Part 3: Finding the Hops</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<p><img src="../../viz/img/L16-acquire.svg"
+     alt="Fourteen hops on a grid of channel against time: the transmitter's channels step through the sequence; the receiver, drawn as a dashed box, stays on the sync channel, channel 7, for five hops, and when the transmitter arrives on channel 7 for hop 0, the receiver's box follows the transmitter on every hop after that"
+     style="max-width: 760px; width: 100%; display: block; margin: 0 auto;"></p>
+</div>
+<div class="present docutils container">
+<ul class="simple">
+<li><p>The receiver parks on the <strong>sync channel</strong>, the channel of hop 0.</p></li>
+<li><p>When the power there jumps, hop 0 has started: it locks and hops from then on.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>That lock at startup is Hop Sync finding the hops. A receiver with the key still does not know which hop the transmitter is on or when it began, because the path delay is unknown, and on a radio so is the USB latency. We use <strong>sync on a known hop</strong>: Hop Sync parks on the <strong>sync channel</strong>, <code class="docutils literal notranslate"><span class="pre">seq[0]</span></code>, channel 7 for key 448. The sequence visits each channel once per cycle, so the transmitter appears there only on hop 0. When the power on channel 7 jumps to four times its recent average, hop 0 has begun; Hop Sync takes that instant as its hop boundary and hops from then on. It waits at most one cycle, 1.92 s.</p>
+<p>After that, Hop Sync hops on its own count of samples; the packets only stop it from parking again. That leaves two weak points. A jammer on the sync channel keeps a receiver from locking, which the Jammer frames show. And the timing never follows clock drift: harmless on one Pluto, whose transmitter and receiver share a clock, but between two radios a few parts per million apart, the hop boundaries would slowly drift out of the guard time. A start-of-hop marker alone would give timing but not the hop number, and time of day, which SINCGARS uses, needs a shared clock.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-losing-and-regaining-sync">
+<div class="wrap docutils container">
+<p class="rubric">Losing and Regaining Sync</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<p><img src="../../viz/img/L16-link-resync.png"
+     alt="The L16 link 9 s after the path delay slider moved from 100 to 400 ms: the After Hop Sync waterfall shows the steady trace at 0 Hz, then a stretch where the signal appears at scattered frequencies, then the steady trace again; the labels read Receiver locked, Packets 20 correct of 37 sent in 9 s (54%), and Received USAFA ECE 448"
+     style="max-width: 820px; width: 100%; display: block; margin: 0 auto;"></p>
+</div>
+<div class="present docutils container">
+<ul class="simple">
+<li><p>After about 10 hops with no packet, Hop Sync parks again.</p></li>
+<li><p>It locks on the next hop 0; here the receiver lost 17 packets.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>While the link runs, drag the Path delay slider from 100 to 400 ms, as if the buffering between two radios had changed. Watch the right waterfall: the steady trace breaks up into scattered dashes, because the receiver’s hop boundaries are now 300 ms, more than a hop, off. The Receiver label goes back to “searching” after more than 9 hops with no packet, and when hop 0 next reaches the sync channel it locks again and the trace returns. In the figure the Packets label shows 20 of 37 packets since the slider moved: the receiver lost 17 hops, about 4 s.</p>
+<p>The waterfall’s time axis is only approximate, because the GUI scrolls one row per display update; on it, an 8-hop cycle of 1.92 s spans about 1.5 s. Read times from the Packets label instead.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-off-by-one-hop">
+<div class="wrap docutils container">
+<p class="rubric">Off by One Hop</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<p><img src="../../viz/img/L16-link-offset.png"
+     alt="The L16 link with the Receiver hop offset at plus 1: the received-band waterfall shows the normal hopping dashes; the After Hop Sync waterfall shows dashes scattered across the band instead of a steady trace at 0 Hz; the labels read Packets 0 correct of 98 sent in 24 s (0%) and Received waiting for a packet"
+     style="max-width: 820px; width: 100%; display: block; margin: 0 auto;"></p>
+</div>
+<div class="present docutils container">
+<ul class="simple">
+<li><p>One hop ahead, the receiver is never on the transmitter’s channel.</p></li>
+<li><p>Not one packet in 98 arrives.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>Set the Receiver hop offset slider to +1. Hop Sync now tunes to <code class="docutils literal notranslate"><span class="pre">seq[k+1]</span></code> while the transmitter is on <code class="docutils literal notranslate"><span class="pre">seq[k]</span></code>. Watch the right waterfall: the steady trace is gone, and the signal lands at the difference between two channels, a different place every hop, never inside the Low Pass Filter. The Packets label stays at 0, because consecutive entries of a shuffled list are never the same channel. Try −1 and +2: still nothing.</p>
+<p>Hop Sync keeps parking and relocking, but it applies the offset after every lock, so it never recovers. A receiver with the right timing on the wrong hop receives nothing, while a fixed receiver parked on any one channel would still catch 1 packet in 8.</p>
+</div>
+</div>
+</div>
+<div class="frame read-only docutils container" id="frame-timing-error">
+<div class="wrap docutils container">
+<p class="rubric">Timing Error</p>
+<p>The Receiver timing error slider shifts every hop boundary of the receiver by a fixed time after it locks; a positive error means the receiver changes channel late. We measured the link headless, without the Throttle, at noise amplitude 1: three runs of 120 hops at each setting.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head text-center"><p>Timing error</p></th>
+<th class="head text-center"><p>Delivered</p></th>
+<th class="head text-left"><p>What the receiver misses</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-center"><p>−24 ms</p></td>
+<td class="text-center"><p>0%</p></td>
+<td class="text-left"><p>the trailing guard and the whole newline</p></td>
+</tr>
+<tr class="row-odd"><td class="text-center"><p>−20 ms</p></td>
+<td class="text-center"><p>5%</p></td>
+<td class="text-left"><p>the trailing guard and 4 bits of the newline</p></td>
+</tr>
+<tr class="row-even"><td class="text-center"><p>−17 ms</p></td>
+<td class="text-center"><p>45%</p></td>
+<td class="text-left"><p>the trailing guard and the first bit of the newline</p></td>
+</tr>
+<tr class="row-odd"><td class="text-center"><p>−16 to +18 ms</p></td>
+<td class="text-center"><p>100%</p></td>
+<td class="text-left"><p>only guard bits</p></td>
+</tr>
+<tr class="row-even"><td class="text-center"><p>+20 ms</p></td>
+<td class="text-center"><p>68%</p></td>
+<td class="text-left"><p>the leading guard and 4 bits of the access code</p></td>
+</tr>
+<tr class="row-odd"><td class="text-center"><p>+24 ms</p></td>
+<td class="text-center"><p>16%</p></td>
+<td class="text-left"><p>the leading guard and 8 bits of the access code</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The window runs from −16 to +18 ms, about the 16 ms of guard at each end, a little further on the late side because the access-code search accepts up to 2 wrong bits. More guard bits widen the window but leave less of each hop for data.</p>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-part-4-a-narrowband-jammer">
+<div class="wrap docutils container">
+<p class="rubric">Part 4: A Narrowband Jammer</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<p><img src="../../viz/img/L16-link-jam.png"
+     alt="The L16 link with a jammer of amplitude 3 on channel 4: the received band shows the jammer as a solid line at plus 5 kHz among the hopping dashes; after Hop Sync the signal is steady at 0 Hz and the jammer appears as short dashes at other frequencies; the Packets label reads 87 correct of 99 sent in 24 s (88%)"
+     style="max-width: 820px; width: 100%; display: block; margin: 0 auto;"></p>
+</div>
+<div class="present docutils container">
+<ul class="simple">
+<li><p>After de-hopping, the jammer is the signal that hops.</p></li>
+<li><p>It reaches the receiver on 1 hop in 8: 88% of packets arrive.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>Set the Jammer amplitude to 3, three times the signal’s amplitude, on channel 4. Watch the right waterfall: Hop Sync shifts the jammer along with the band, so it lands somewhere new every hop, usually outside the Low Pass Filter. Only on the hop to channel 4 does it land at 0 Hz and capture the Quadrature Demod. Watch the Packets label settle near 88%, 7 hops in 8.</p>
+<p>Now drag the amplitude up to 10. The Packets label hardly moves: once the jammer takes the hops on its own channel, more power takes no more. Then set the amplitude to 0.5, and every packet arrives again.</p>
+</div>
+</div>
+</div>
+<div class="frame read-only docutils container" id="frame-jammer-sweep">
+<div class="wrap docutils container">
+<p class="rubric">Jammer Sweep</p>
+<p>We measured the link headless at noise amplitude 1, with two noise seeds at each setting: 320 hops when hopping over 8 channels, and 160 when the transmitter and receiver stay on one channel with the jammer on it.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head text-center"><p>Jammer amplitude</p></th>
+<th class="head text-center"><p>One fixed channel</p></th>
+<th class="head text-center"><p>Hopping, 8 channels</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-center"><p>0.5</p></td>
+<td class="text-center"><p>100%</p></td>
+<td class="text-center"><p>100%</p></td>
+</tr>
+<tr class="row-odd"><td class="text-center"><p>1</p></td>
+<td class="text-center"><p>0%</p></td>
+<td class="text-center"><p>88%</p></td>
+</tr>
+<tr class="row-even"><td class="text-center"><p>3</p></td>
+<td class="text-center"><p>0%</p></td>
+<td class="text-center"><p>88%</p></td>
+</tr>
+<tr class="row-odd"><td class="text-center"><p>10</p></td>
+<td class="text-center"><p>0%</p></td>
+<td class="text-center"><p>88%</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>A jammer as strong as the signal stops a fixed-channel link completely, while the hopping link still delivers 7 packets in 8. To take every hop, the jammer has to cover all 8 channels with the same strength on each. Spreading one tone’s power over 8 channels did nothing: eight weaker tones, of amplitude 0.354, whose powers add up to one tone of amplitude 1, blocked no packets. Eight tones of amplitude 1 took every hop.</p>
+<p>The sync channel is the weak point. With the jammer on channel 7 from the start, Hop Sync never saw the power jump and never locked. Turned on after the receiver locked, the same jammer took only its 1 hop in 8, but a receiver that later lost lock would park on the jammed channel and never lock again. A real system protects acquisition too; the lab asks how.</p>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-frequency-hopping-on-a-real-radio">
+<div class="wrap docutils container">
+<p class="rubric">Frequency Hopping on a Real Radio</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<ul class="simple">
+<li><p>The L16 Lab sends this link through one PlutoSDR, TX port to RX port, through a 30 dB attenuator.</p></li>
+<li><p>All 8 channels fit in the Pluto’s sample rate, so it never retunes.</p></li>
+<li><p>Nothing in L16 transmits over the air.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>The L16 Lab moves this link onto a PlutoSDR at 915 MHz. The transmit half ends at a PlutoSDR Sink instead of the channel, with a jammer tone added in software before it, and the receive half starts at a PlutoSDR Source, with the same Hop Sync and FSK receiver. As in L10 and L12, a Rational Resampler raises the 128 kHz stream by 8, to 1.024 MS/s, on the way out and lowers it on the way in, and an <strong>AGC</strong> holds the received level steady. The radio adds a delay of its own between the TX and RX ports, which Hop Sync finds the same way it finds the simulated path delay.</p>
+<p>All eight channels lie within ±40 kHz, inside the 1.024 MS/s the Pluto samples, so the hopping happens in software and the Pluto’s own synthesizer never changes frequency. A hopper whose channels span more than its sample rate, such as SINCGARS over 58 MHz, retunes its synthesizer at every hop, and the time the synthesizer takes to settle limits its hop rate.</p>
+<p>In class we transmit only into a cable, into a shielded enclosure, or at very low power in an ISM band, and only when the lesson says to. Nothing in this lesson transmits; the L16 Lab transmits from the Pluto’s TX port through an inline 30 dB attenuator into its own RX port. We have run the PlutoSDR flowgraph only in simulation, with a model of the cable in place of the radio, so the lab is its first run on hardware.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-key-point">
+<div class="wrap docutils container">
+<p class="rubric">Key Point</p>
+<div class="stage docutils container">
+<div class="present callout docutils container">
+<p>A hopper sends each packet on a new channel in a keyed order. A receiver with the key and hop timing de-hops it. A narrowband jammer takes only its own channel’s hops, and a receiver one hop off gets nothing.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="frame read-only doc-links docutils container" id="frame-downloads">
+<div class="wrap docutils container">
+<p class="rubric">Downloads</p>
+<ul class="simple">
+<li><p><a class="doc-link" href="../../grc/L16-fhss-tx.grc" download>L16-fhss-tx.grc</a>: the hopping FSK transmitter, with a slider for the hop key, a waterfall, and the hop frequency over time. No hardware needed.</p></li>
+<li><p><a class="doc-link" href="../../grc/L16-fhss-link.grc" download>L16-fhss-link.grc</a>: the whole link, with sliders for the noise, the jammer, the path delay, and the receiver’s hop offset and timing error, waterfalls before and after Hop Sync, and the received text. No hardware needed.</p></li>
+</ul>
+<p>Open a <code class="docutils literal notranslate"><span class="pre">.grc</span></code> file from GRC’s File menu, or run <code class="docutils literal notranslate"><span class="pre">gnuradio-companion</span> <span class="pre">L16-fhss-link.grc</span></code> from the radioconda prompt. Hop Sync and the Text Sink are Embedded Python Blocks, saved inside the <code class="docutils literal notranslate"><span class="pre">.grc</span></code> file; double-click one and choose Open in Editor to read its code. The number of channels, <code class="docutils literal notranslate"><span class="pre">nch</span></code>, the guard bytes, <code class="docutils literal notranslate"><span class="pre">guard</span></code>, and the receiver’s key, <code class="docutils literal notranslate"><span class="pre">rx_key</span></code>, are variables you can edit on the canvas. The L16 Lab page has the PlutoSDR version of the link.</p>
+<p>The GNU Radio wiki has no frequency-hopping tutorial, so this lesson follows the tutorials whose blocks it uses:</p>
+<ul class="simple">
+<li><p><a href="https://wiki.gnuradio.org/index.php?title=Frequency_Shifting" target="_blank" rel="noopener">Frequency Shifting</a>, for the hop synthesizer and de-hopper: multiply by a complex tone.</p></li>
+<li><p><a href="https://wiki.gnuradio.org/index.php?title=Simulation_example:_FSK" target="_blank" rel="noopener">Simulation example: FSK</a> and <a href="https://wiki.gnuradio.org/index.php/Packet_Communications" target="_blank" rel="noopener">Packet Communications</a>, for Lesson 8’s modem and packets.</p></li>
+<li><p><a href="https://wiki.gnuradio.org/index.php/Embedded_Python_Block" target="_blank" rel="noopener">Embedded Python Block</a>, <a href="https://wiki.gnuradio.org/index.php/Message_Passing" target="_blank" rel="noopener">Message Passing</a>, and <a href="https://wiki.gnuradio.org/index.php/Stream_Tags" target="_blank" rel="noopener">Stream Tags</a>, for Hop Sync, the Text Sink’s <code class="docutils literal notranslate"><span class="pre">pkt</span></code> messages, and the <code class="docutils literal notranslate"><span class="pre">packet_len</span></code> tags.</p></li>
+</ul>
+</div>
+</div>
+<div class="frame read-only docutils container" id="frame-summary">
+<div class="wrap docutils container">
+<p class="rubric">Summary</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head text-left"><p>Idea</p></th>
+<th class="head text-left"><p>What it is</p></th>
+<th class="head text-left"><p>Number to remember</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-left"><p>FHSS</p></td>
+<td class="text-left"><p>each packet on a new channel, in a keyed order</p></td>
+<td class="text-left"><p>8 channels, 10 kHz apart</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>Hop</p></td>
+<td class="text-left"><p>one packet: guard, access code, header, payload, guard</p></td>
+<td class="text-left"><p>240 bits, 240 ms</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>Hop synthesizer</p></td>
+<td class="text-left"><p>Vector Source, Repeat, VCO, Multiply</p></td>
+<td class="text-left"><p>30,720 samples a hop</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>Hop sequence</p></td>
+<td class="text-left"><p>a permutation of the channels, set by the key</p></td>
+<td class="text-left"><p>7 2 0 6 4 1 3 5 for key 448</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>De-hopping</p></td>
+<td class="text-left"><p>multiply by the conjugate hop tone</p></td>
+<td class="text-left"><p>signal back at 0 Hz</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>Sync on a known hop</p></td>
+<td class="text-left"><p>park on <code class="docutils literal notranslate"><span class="pre">seq[0]</span></code>, lock when the power jumps</p></td>
+<td class="text-left"><p>at most one cycle, 1.92 s</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>Sync error</p></td>
+<td class="text-left"><p>off by one hop</p></td>
+<td class="text-left"><p>0 packets</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>Timing error</p></td>
+<td class="text-left"><p>absorbed by the guard bits</p></td>
+<td class="text-left"><p>−16 to +18 ms</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>Narrowband jammer</p></td>
+<td class="text-left"><p>takes the hops on its channel</p></td>
+<td class="text-left"><p>1 hop in 8 lost</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="frame read-only doc-links docutils container" id="frame-practice">
+<div class="wrap docutils container">
+<p class="rubric">Practice</p>
+<ul class="simple">
+<li><p><a class="doc-link" href="../../practice/ECE448_L16_Practice_blank.pdf" target="_blank" rel="noopener">Problem set (PDF)</a></p></li>
+<li><p><a class="doc-link doc-key" href="../../practice/ECE448_L16_Practice_SOLUTIONS.pdf" target="_blank" rel="noopener">Solutions (PDF)</a></p></li>
+</ul>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-looking-ahead">
+<div class="wrap docutils container">
+<p class="rubric">Looking Ahead</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<ul class="simple">
+<li><p>The L16 Lab builds a hopper and a de-hopper, measures jamming and sync, and runs the link on a PlutoSDR.</p></li>
+<li><p>Lesson 17 takes an unknown signal from spectrum to bits.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>The L16 Lab is the hands-on version of this lesson. You build a hop synthesizer and a de-hopper from standard blocks on an empty canvas, measure how many packets get through as the jammer, the number of channels, and the receiver’s timing change, and then send the hopping link through a PlutoSDR and a cable.</p>
+<p>Lesson 17 turns to RF reverse engineering: capturing an unknown signal and working out its modulation, its symbol rate, and its bits. A hopper is one of the harder signals to reverse engineer, because a receiver parked on one channel sees only one hop in <span class="math notranslate nohighlight">\(N\)</span>.</p>
+</div>
+</div>
+</div>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./module06/L16-fhss"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+</main>
+
+<script src="../../_static/shell.js?v=ac36f07766"></script>
+<script src="../../_static/frames.js?v=89e4b02ee3"></script><script src="../../_static/viz-autosize.js?v=4fe0c4e159"></script>
+</body>
+</html>

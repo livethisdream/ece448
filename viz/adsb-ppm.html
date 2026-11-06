@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ADS-B Message Explorer — pulse-position modulation, fields, and parity</title>
+<style>
+  :root { --navy:#004a85; --mid:#0067b9; --edge:#cddce9; --edge2:#b9d2e5; --bg:#f5f9fc;
+          --ink:#15202b; --ink3:#5b6573; --amber:#8a5a00; --red:#b01e24; --grn:#3f7d34; }
+  html,body { margin:0; padding:0; font-family:'Inter',system-ui,-apple-system,sans-serif; color:var(--ink); background:#fff; }
+  .app { display:flex; flex-direction:column; gap:8px; padding:12px; }
+  canvas { display:block; box-sizing:border-box; width:100%; height:auto; background:#fff; border:1px solid var(--edge); border-radius:6px; }
+  .controls { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px 16px; align-items:center;
+              padding:8px 12px; background:var(--bg); border:1px solid var(--edge); border-radius:6px; }
+  @media (max-width:620px) { .controls { grid-template-columns:repeat(2,minmax(0,1fr)); gap:6px 10px; } }
+  .ctl { display:grid; grid-template-columns:auto 1fr; column-gap:8px; row-gap:2px; align-items:center; min-width:0; }
+  .ctl label, .ctl .lab { font-size:10.5px; text-transform:uppercase; letter-spacing:0.05em; color:var(--ink3); font-weight:700; white-space:nowrap; }
+  .ctl .val { color:var(--navy); font-size:12px; font-weight:600; font-variant-numeric:tabular-nums; text-align:right; white-space:nowrap; }
+  .ctl input[type=range]{ grid-column:1 / span 2; width:100%; margin:0; accent-color:var(--mid); }
+  .seg { grid-column:1 / span 2; display:flex; gap:4px; }
+  .seg button { flex:1; font:inherit; font-size:12px; padding:3px 4px; border:1px solid var(--edge2); border-radius:4px; background:#fff; color:var(--ink); cursor:pointer; min-width:0; }
+  .seg button.on { background:var(--navy); border-color:var(--navy); color:#fff; font-weight:600; }
+  .wide { grid-column:1 / -1; }
+  .readouts { display:grid; gap:6px; grid-template-columns:repeat(4,minmax(0,1fr)); }
+  @media (max-width:620px) { .readouts { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+  .ro { display:flex; flex-direction:column; align-items:center; gap:2px; padding:5px 4px 6px; min-width:0;
+        border:1px solid var(--edge2); border-radius:6px; background:#eef4fa; }
+  .ro .k { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:var(--ink3); white-space:nowrap; }
+  .ro .v { font-size:13px; font-weight:700; white-space:nowrap; font-variant-numeric:tabular-nums; color:var(--navy); overflow:hidden; text-overflow:ellipsis; max-width:100%; }
+  .ro .v.bad { color:var(--red); } .ro .v.good { color:var(--grn); }
+</style>
+</head>
+<body>
+<div class="app">
+  <canvas id="pulse" aria-label="The pulse train of one ADS-B message: the preamble and then two chips per bit, with each received bit marked under its pair of chips"></canvas>
+  <canvas id="fields" aria-label="The 112 bits of the message split into its five fields, DF, CA, ICAO, ME, and PI, with each field's value in hex"></canvas>
+  <div class="controls">
+    <div class="ctl wide"><span class="lab">Message</span><span class="val" id="hex"></span>
+      <div class="seg" id="msg"><button data-v="0" class="on">Identification</button><button data-v="1">Position</button><button data-v="2">Velocity</button></div></div>
+    <div class="ctl"><span class="lab">View</span><span class="val" id="view-v"></span>
+      <div class="seg" id="view"><button data-v="0" class="on">first 16 bits</button><button data-v="1">all 112</button></div></div>
+    <div class="ctl"><label for="nz">Noise</label><span class="val" id="nz-v"></span>
+      <input type="range" id="nz" min="0" max="0.8" step="0.02" value="0"></div>
+    <div class="ctl"><span class="lab">Noise</span><span class="val"></span>
+      <div class="seg"><button id="again">new noise</button></div></div>
+  </div>
+  <div class="readouts">
+    <div class="ro"><span class="k">ICAO address</span><span class="v" id="o-icao">—</span></div>
+    <div class="ro"><span class="k">type code</span><span class="v" id="o-tc">—</span></div>
+    <div class="ro"><span class="k">bits wrong</span><span class="v" id="o-err">—</span></div>
+    <div class="ro"><span class="k">parity</span><span class="v" id="o-par">—</span></div>
+  </div>
+</div>
+
+<script>
+'use strict';
+// Three DF17 messages, as in L18-adsb-rx.grc's Mode S Decoder. The
+// identification message is the example from Sun's "The 1090 Megahertz
+// Riddle"; the other two are built by L18-adsb-tx.grc's ADS-B Out block for
+// the aircraft FALCON21. Each bit is two 0.5 us chips at 2 MS/s: pulse then
+// quiet is a 1, quiet then pulse is a 0. The receiver compares the two chips
+// of each bit, and the 24-bit parity (generator 0x1FFF409) checks the rest.
+const MSGS = ['8D4840D6202CC371C32CE0576098', '8DAE1F21584B9211ED3E2A84B7E7', '8DAE1F219900169EB8680056B311'];
+const PRE = [1, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0];
+const SANS = 'Inter, system-ui, -apple-system, sans-serif';
+const C = { navy:'#004a85', mid:'#0067b9', rule:'#cddce9', ink3:'#5b6573', amber:'#8a5a00', red:'#b01e24', grn:'#3f7d34', gray:'#9aa5b1' };
+const CHARS = '#ABCDEFGHIJKLMNOPQRSTUVWXYZ##### ###############0123456789######';
+const FIELDS = [['DF', 0, 5, '#004a85'], ['CA', 5, 8, '#5b6573'], ['ICAO', 8, 32, '#8a5a00'], ['ME', 32, 88, '#3f7d34'], ['PI', 88, 112, '#b01e24']];
+const $ = id => document.getElementById(id);
+let msg = 0, view = 0, seed = 1;
+
+function rng(s) {   // mulberry32, then Box-Muller
+  let a = s >>> 0;
+  const u = () => { a = (a + 0x6D2B79F5) >>> 0; let t = a; t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+  return () => Math.sqrt(-2 * Math.log(u() + 1e-300)) * Math.cos(2 * Math.PI * u());
+}
+const hexBits = h => [...h].flatMap(c => { const v = parseInt(c, 16); return [8, 4, 2, 1].map(m => (v & m) ? 1 : 0); });
+const val = b => b.reduce((v, x) => v * 2 + x, 0);
+function remainder(b) {   // zero when the parity bits are right
+  let reg = 0;
+  for (const x of b) { reg = ((reg << 1) | x) >>> 0; if (reg & 0x1000000) reg ^= 0x1FFF409; }
+  return reg;
+}
+function describe(b) {
+  const tc = val(b.slice(32, 37)), me = b.slice(32, 88);
+  if (tc >= 1 && tc <= 4) return tc + ': callsign ' + Array.from({ length: 8 }, (_, k) => CHARS[val(me.slice(8 + 6 * k, 14 + 6 * k))]).join('').replace(/[# ]+$/, '');
+  if (tc >= 9 && tc <= 18) { const a = me.slice(8, 20); return tc + ': ' + (val([...a.slice(0, 7), ...a.slice(8)]) * 25 - 1000) + ' ft'; }
+  if (tc === 19) return tc + ': velocity';
+  return String(tc);
+}
+
+function setup(cv, h) {
+  const dpr = window.devicePixelRatio || 1, w = Math.max(200, cv.clientWidth || 300);
+  cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); cv.style.height = h + 'px';
+  const bh = cv.offsetHeight - cv.clientHeight; if (bh) cv.style.height = (h + bh) + 'px';
+  const ctx = cv.getContext('2d'); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); return { ctx, w, h };
+}
+function txt(ctx, s, x, y, px, col, align, bold) { ctx.fillStyle = col; ctx.font = (bold ? '700 ' : '') + px + 'px ' + SANS;
+  ctx.textAlign = align || 'left'; ctx.textBaseline = 'middle'; ctx.fillText(s, x, y); }
+
+function update() {
+  const nz = +$('nz').value;
+  $('nz-v').textContent = nz.toFixed(2); $('view-v').textContent = view ? '240 chips' : '48 chips';
+  $('hex').textContent = MSGS[msg];
+  const tx = hexBits(MSGS[msg]);
+  const chips = [...PRE, ...tx.flatMap(x => x ? [1, 0] : [0, 1])];
+  // Each chip is one complex sample; the receiver sees its magnitude.
+  const g = rng(seed * 7919 + msg);
+  const mag = chips.map(c => Math.hypot(c + nz * g() / Math.SQRT2, nz * g() / Math.SQRT2));
+  const rx = tx.map((_, k) => mag[16 + 2 * k] > mag[17 + 2 * k] ? 1 : 0);
+  const wrong = tx.map((x, k) => x !== rx[k]);
+  drawPulse(mag, rx, wrong); drawFields(rx, wrong);
+  $('o-icao').textContent = val(rx.slice(8, 32)).toString(16).toUpperCase().padStart(6, '0');
+  $('o-tc').textContent = describe(rx);
+  const ne = wrong.filter(Boolean).length, e = $('o-err');
+  e.textContent = String(ne); e.className = 'v ' + (ne ? 'bad' : 'good');
+  const ok = remainder(rx) === 0, p = $('o-par');
+  p.textContent = ok ? 'passes' : 'fails: dropped'; p.className = 'v ' + (ok ? 'good' : 'bad');
+}
+
+function drawPulse(mag, rx, wrong) {
+  const narrow = window.matchMedia && window.matchMedia('(max-width:620px)').matches;
+  const { ctx, w, h } = setup($('pulse'), narrow ? 170 : 200);
+  ctx.clearRect(0, 0, w, h);
+  const n = view ? 240 : 48, mL = 34, mR = 8, top = 24, bot = h - 40;
+  const X = i => mL + i / n * (w - mL - mR), Y = v => bot - Math.min(v, 1.8) / 1.8 * (bot - top);
+  ctx.fillStyle = '#eef4fa'; ctx.fillRect(X(0), top, X(16) - X(0), bot - top);
+  txt(ctx, 'preamble, 8 µs', (X(0) + X(16)) / 2, top - 10, 10.5, C.ink3, 'center', true);
+  txt(ctx, 'data: 1 µs a bit, two chips', (X(16) + X(n)) / 2, top - 10, 10.5, C.ink3, 'center', true);
+  ctx.strokeStyle = C.rule; ctx.lineWidth = 1;
+  for (const v of [0, 1]) { ctx.beginPath(); ctx.moveTo(mL, Y(v)); ctx.lineTo(w - mR, Y(v)); ctx.stroke(); txt(ctx, String(v), mL - 6, Y(v), 10, C.ink3, 'right'); }
+  if (!view) for (let k = 0; k <= 16; k++) { ctx.beginPath(); ctx.moveTo(X(16 + 2 * k), top); ctx.lineTo(X(16 + 2 * k), bot); ctx.stroke(); }
+  ctx.fillStyle = C.navy;
+  for (let i = 0; i < n; i++) { const x0 = X(i) + (view ? 0 : 1), x1 = X(i + 1) - (view ? 0 : 1); ctx.fillRect(x0, Y(mag[i]), Math.max(1, x1 - x0), bot - Y(mag[i])); }
+  const nb = (n - 16) / 2;
+  if (!view) {
+    for (let k = 0; k < nb; k++) txt(ctx, String(rx[k]), (X(16 + 2 * k) + X(18 + 2 * k)) / 2, bot + 12, 12, wrong[k] ? C.red : C.navy, 'center', true);
+    txt(ctx, 'bits', X(8), bot + 12, 10.5, C.ink3, 'center', true);
+  } else {
+    for (let k = 0; k < nb; k++) if (wrong[k]) { ctx.fillStyle = C.red; ctx.fillRect(X(16 + 2 * k), bot + 6, X(18 + 2 * k) - X(16 + 2 * k), 8); }
+    txt(ctx, 'wrong bits marked in red', X(16), bot + 10, 10.5, C.ink3, 'left', true);
+  }
+  txt(ctx, 'time: ' + (n / 2) + ' µs shown', w - mR, bot + 28, 10.5, C.ink3, 'right');
+}
+
+function drawFields(rx, wrong) {
+  const narrow = window.matchMedia && window.matchMedia('(max-width:620px)').matches;
+  const { ctx, w, h } = setup($('fields'), narrow ? 74 : 62);
+  ctx.clearRect(0, 0, w, h);
+  const mL = 8, mR = 8, X = k => mL + k / 112 * (w - mL - mR), y0 = 8, y1 = 30;
+  for (const [name, a, b, col] of FIELDS) {
+    ctx.fillStyle = col; ctx.globalAlpha = 0.14; ctx.fillRect(X(a), y0, X(b) - X(a), y1 - y0); ctx.globalAlpha = 1;
+    ctx.strokeStyle = col; ctx.strokeRect(X(a) + 0.5, y0 + 0.5, X(b) - X(a) - 1, y1 - y0 - 1);
+    txt(ctx, name, (X(a) + X(b)) / 2, (y0 + y1) / 2, 11, col, 'center', true);
+    const v = rx.slice(a, b), hx = b - a >= 24 ? val(v.slice(0, Math.min(24, b - a))).toString(16).toUpperCase() + (b - a > 24 ? '…' : '') : String(val(v));
+    if (X(b) - X(a) > 40 || !narrow) txt(ctx, hx, (X(a) + X(b)) / 2, y1 + 12, 10.5, wrong.slice(a, b).some(Boolean) ? C.red : C.ink3, 'center');
+  }
+}
+
+function seg(id, set) { for (const btn of $(id).querySelectorAll('button')) btn.onclick = () => {
+  for (const o of $(id).querySelectorAll('button')) o.classList.toggle('on', o === btn); set(+btn.dataset.v); update(); }; }
+seg('msg', v => { msg = v; }); seg('view', v => { view = v; });
+$('again').onclick = () => { seed++; update(); };
+$('nz').oninput = update;
+window.addEventListener('resize', update);
+update();
+</script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+{
+  "global": {
+    "core:datatype": "cu8",
+    "core:sample_rate": 1488375.0,
+    "core:version": "1.0.0",
+    "core:description": "KUT 90.5, Austin: the sample capture of the nrsc5 project (support/sample.xz), unpacked and renamed L14-kut.sigmf-data",
+    "core:author": "nrsc5 project, github.com/theori-io/nrsc5",
+    "core:license": "https://spdx.org/licenses/GPL-3.0-or-later.html"
+  },
+  "captures": [
+    {
+      "core:sample_start": 0,
+      "core:frequency": 90500000.0
+    }
+  ],
+  "annotations": []
+}

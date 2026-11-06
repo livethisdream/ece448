@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Carrier Recovery Explorer — the Costas Loop on BPSK, QPSK, and 8PSK</title>
+<style>
+  :root { --navy:#004a85; --mid:#0067b9; --edge:#cddce9; --edge2:#b9d2e5; --bg:#f5f9fc;
+          --ink:#15202b; --ink3:#5b6573; --amber:#8a5a00; --red:#b01e24; --grn:#3f7d34; }
+  html,body { margin:0; padding:0; font-family:'Inter',system-ui,-apple-system,sans-serif; color:var(--ink); background:#fff; }
+  .app { display:flex; flex-direction:column; gap:8px; padding:12px; }
+  .plots { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.6fr); gap:10px; }
+  @media (max-width:620px) { .plots { grid-template-columns:1fr; } }
+  canvas { display:block; box-sizing:border-box; width:100%; height:auto; background:#fff; border:1px solid var(--edge); border-radius:6px; }
+  .controls { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px 16px; align-items:center;
+              padding:8px 12px; background:var(--bg); border:1px solid var(--edge); border-radius:6px; }
+  @media (max-width:620px) { .controls { grid-template-columns:repeat(2,minmax(0,1fr)); gap:6px 10px; } }
+  .ctl { display:grid; grid-template-columns:auto 1fr; column-gap:8px; row-gap:2px; align-items:center; min-width:0; }
+  .ctl label, .ctl .lab { font-size:10.5px; text-transform:uppercase; letter-spacing:0.05em; color:var(--ink3); font-weight:700; white-space:nowrap; }
+  .ctl .val { color:var(--navy); font-size:12px; font-weight:600; font-variant-numeric:tabular-nums; text-align:right; white-space:nowrap; }
+  .ctl input[type=range]{ grid-column:1 / span 2; width:100%; margin:0; accent-color:var(--mid); }
+  .seg { grid-column:1 / span 2; display:flex; gap:4px; }
+  .seg button { flex:1; font:inherit; font-size:12px; padding:3px 4px; border:1px solid var(--edge2); border-radius:4px; background:#fff; color:var(--ink); cursor:pointer; }
+  .seg button.on { background:var(--navy); border-color:var(--navy); color:#fff; font-weight:600; }
+  .readouts { display:grid; gap:6px; grid-template-columns:repeat(4,minmax(0,1fr)); }
+  @media (max-width:620px) { .readouts { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+  .ro { display:flex; flex-direction:column; align-items:center; gap:2px; padding:5px 4px 6px; min-width:0;
+        border:1px solid var(--edge2); border-radius:6px; background:#eef4fa; }
+  .ro .k { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:var(--ink3); white-space:nowrap; }
+  .ro .v { font-size:14px; font-weight:700; white-space:nowrap; font-variant-numeric:tabular-nums; color:var(--navy); }
+  .ro .v.bad { color:var(--red); } .ro .v.good { color:var(--grn); }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="plots">
+    <canvas id="iq" aria-label="The Costas Loop's output for the last 600 symbols of the run, with the ideal constellation points as rings"></canvas>
+    <canvas id="fr" aria-label="The Costas Loop's frequency estimate against time over the 10 s run, with the true frequency offset dashed"></canvas>
+  </div>
+  <div class="controls">
+    <div class="ctl"><span class="lab">Constellation</span><span class="val" id="m-v"></span>
+      <div class="seg" id="m"><button data-v="2">BPSK</button><button data-v="4" class="on">QPSK</button><button data-v="8">8PSK</button></div></div>
+    <div class="ctl"><label for="nz">Noise amplitude</label><span class="val" id="nz-v"></span>
+      <input type="range" id="nz" min="0" max="1.5" step="0.05" value="0.5"></div>
+    <div class="ctl"><label for="f">Frequency offset</label><span class="val" id="f-v"></span>
+      <input type="range" id="f" min="0" max="700" step="25" value="100"></div>
+    <div class="ctl"><label for="ph">Channel phase</label><span class="val" id="ph-v"></span>
+      <input type="range" id="ph" min="0" max="345" step="15" value="0"></div>
+    <div class="ctl"><span class="lab">Differential coding</span><span class="val"></span>
+      <div class="seg" id="diff"><button data-v="1" class="on">On</button><button data-v="0">Off</button></div></div>
+    <div class="ctl"><span class="lab">Noise</span><span class="val"></span>
+      <div class="seg"><button id="again">new noise</button></div></div>
+  </div>
+  <div class="readouts">
+    <div class="ro"><span class="k">loop frequency</span><span class="v" id="o-f">—</span></div>
+    <div class="ro"><span class="k">locked within</span><span class="v" id="o-t">—</span></div>
+    <div class="ro"><span class="k">lock rotation</span><span class="v" id="o-rot">—</span></div>
+    <div class="ro"><span class="k">data, last 5 s</span><span class="v" id="o-ber">—</span></div>
+  </div>
+</div>
+
+<script>
+'use strict';
+// The Costas Loop of GNU Radio 3.10 (digital.costas_loop_cc) at one sample
+// per symbol, as in L15-psk-link.grc after Symbol Sync, but with loop bandwidth 0.04,
+// damping 0.707, the order-2, -4, and -8 phase detectors, the error clipped
+// to +-1. Symbols arrive at 4 kbaud with the chosen frequency offset, channel
+// phase, and Gaussian noise; the noise amplitude means what it means in
+// L15-psk-link.grc (8 samples a symbol before the matched filter). The run is
+// 10 s, 40,000 symbols, and
+// the loop starts at zero phase and zero frequency. Timing is ideal here, so
+// the numbers come close to the flowgraph's but do not match it exactly.
+const RS = 4000, N = 40000, BW = 0.04, ZETA = Math.SQRT1_2, SANS = 'Inter, system-ui, -apple-system, sans-serif';
+const C = { navy:'#004a85', gray:'#9aa5b1', rule:'#cddce9', ink3:'#5b6573', amber:'#8a5a00', red:'#b01e24', grn:'#3f7d34' };
+const $ = id => document.getElementById(id);
+let M = 4, diff = 1, seed = 1;
+
+function rng(s) {   // mulberry32, then Box-Muller
+  let a = s >>> 0;
+  const u = () => { a = (a + 0x6D2B79F5) >>> 0; let t = a; t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+  return { u, n: () => Math.sqrt(-2 * Math.log(u() + 1e-300)) * Math.cos(2 * Math.PI * u()) };
+}
+
+function detector(r, i, m) {
+  if (m === 2) return r * i;
+  const sr = r > 0 ? 1 : -1, si = i > 0 ? 1 : -1;
+  if (m === 4) return sr * i - si * r;
+  const K = Math.SQRT2 - 1;
+  return Math.abs(r) >= Math.abs(i) ? sr * i - si * r * K : sr * i * K - si * r;
+}
+
+function simulate(m, noise, f, phDeg, useDiff, s) {
+  const k = Math.log2(m), th0 = m === 2 ? 0 : Math.PI / m, R = rng(s);
+  const gray = [...Array(m).keys()].map(i => i ^ (i >> 1)), ungray = gray.map((_, b) => gray.indexOf(b));
+  const sig = noise / 4;   // per I and Q, after the matched filter
+  const d = 1 + 2 * ZETA * BW + BW * BW, alpha = 4 * ZETA * BW / d, beta = 4 * BW * BW / d;
+  const bits = new Uint8Array(N), freq = new Float32Array(N), outI = new Float32Array(N), outQ = new Float32Array(N), dec = new Uint8Array(N);
+  let prevTx = 0, ph = 0, fr = 0;
+  const w = 2 * Math.PI * f / RS, ph0 = phDeg * Math.PI / 180;
+  for (let n = 0; n < N; n++) {
+    const b = Math.floor(R.u() * m); bits[n] = b;
+    let idx = ungray[b];
+    if (useDiff) { idx = (idx + prevTx) % m; prevTx = idx; }
+    const a = th0 + 2 * Math.PI * idx / m + w * n + ph0;
+    const xr = Math.cos(a) + sig * R.n(), xi = Math.sin(a) + sig * R.n();
+    const c = Math.cos(ph), sn = Math.sin(ph);
+    const yr = xr * c + xi * sn, yi = xi * c - xr * sn;
+    let e = detector(yr, yi, m); e = Math.max(-1, Math.min(1, e));
+    fr += beta * e; ph += fr + alpha * e;
+    ph = ((ph + Math.PI) % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI) - Math.PI;
+    fr = Math.max(-1, Math.min(1, fr));
+    freq[n] = fr * RS / (2 * Math.PI); outI[n] = yr; outQ[n] = yi;
+    let p = Math.round((Math.atan2(yi, yr) - th0) / (2 * Math.PI / m)); dec[n] = ((p % m) + m) % m;
+  }
+  // Receiver: differential decode (optional), then the Gray label.
+  let errs = 0, cnt = 0, prevRx = 0;
+  const start = N - 5 * RS, pop = v => { let c = 0; while (v) { c += v & 1; v >>= 1; } return c; };
+  const rotHist = new Array(m).fill(0);
+  let prevIdx = 0;
+  for (let n = 0; n < N; n++) {
+    let idx = dec[n];
+    let out = idx;
+    if (useDiff) { out = ((idx - prevRx) % m + m) % m; prevRx = idx; }
+    const rb = gray[out];
+    // Transmitted phase index, to measure how far the lock is rotated.
+    let txIdx = ungray[bits[n]];
+    if (useDiff) { txIdx = (txIdx + prevIdx) % m; prevIdx = txIdx; }
+    if (n >= start) { errs += pop(rb ^ bits[n]); cnt += k; rotHist[((dec[n] - txIdx) % m + m) % m]++; }
+  }
+  const rot = rotHist.indexOf(Math.max(...rotHist));
+  const tol = Math.max(0.1 * Math.abs(f), 10);
+  let last = -1; for (let n = 0; n < N; n++) if (Math.abs(freq[n] - f) > tol) last = n;
+  return { freq, outI, outQ, ber: errs / cnt, rot: rot * 360 / m, rotShare: rotHist[rot] / (N - start),
+           lockT: last < N - 2 * RS ? (last + 1) / RS : null, fEnd: freq.slice(N - RS).reduce((a, b) => a + b, 0) / RS, th0 };
+}
+
+function setup(cv, wantH) {
+  const dpr = window.devicePixelRatio || 1, w = Math.max(200, cv.clientWidth || 300), h = Math.round(wantH(w));
+  cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); cv.style.height = h + 'px';
+  const bh = cv.offsetHeight - cv.clientHeight; if (bh) cv.style.height = (h + bh) + 'px';
+  const ctx = cv.getContext('2d'); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); return { ctx, w, h };
+}
+function txt(ctx, s, x, y, px, col, align, bold) { ctx.fillStyle = col; ctx.font = (bold ? '700 ' : '') + px + 'px ' + SANS;
+  ctx.textAlign = align || 'left'; ctx.textBaseline = 'middle'; ctx.fillText(s, x, y); }
+
+function drawIQ(r, m) {
+  const narrow = window.matchMedia && window.matchMedia('(max-width:620px)').matches;
+  const { ctx, w, h } = setup($('iq'), w => Math.min(w, narrow ? 180 : 250));
+  ctx.clearRect(0, 0, w, h);
+  const cx = w / 2, cy = h / 2 + 6, sc = Math.min(w, h - 24) / 2 / 1.7;
+  ctx.strokeStyle = C.rule; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(cx - 1.7 * sc, cy); ctx.lineTo(cx + 1.7 * sc, cy); ctx.moveTo(cx, cy - 1.7 * sc); ctx.lineTo(cx, cy + 1.7 * sc); ctx.stroke();
+  ctx.fillStyle = C.navy;
+  for (let n = N - 600; n < N; n++) ctx.fillRect(cx + r.outI[n] * sc - 1.5, cy - r.outQ[n] * sc - 1.5, 3, 3);
+  ctx.strokeStyle = C.amber; ctx.lineWidth = 2;
+  for (let i = 0; i < m; i++) { const a = r.th0 + 2 * Math.PI * i / m;
+    ctx.beginPath(); ctx.arc(cx + Math.cos(a) * sc, cy - Math.sin(a) * sc, 6, 0, 2 * Math.PI); ctx.stroke(); }
+  txt(ctx, 'after the Costas Loop, last 600 symbols', 8, 10, 10.5, C.ink3, 'left', true);
+  txt(ctx, 'I', cx + 1.7 * sc - 2, cy - 8, 10.5, C.ink3, 'right'); txt(ctx, 'Q', cx + 6, 26, 10.5, C.ink3, 'left');
+}
+
+function drawFreq(r, f) {
+  const narrow = window.matchMedia && window.matchMedia('(max-width:620px)').matches;
+  const { ctx, w, h } = setup($('fr'), w => narrow ? 150 : Math.min(250, Math.max(170, w * 0.45)));
+  ctx.clearRect(0, 0, w, h);
+  const mL = 40, mR = 10, top = 22, bot = h - 22, FMAX = 800, FMIN = -400;
+  const Y = v => top + (FMAX - v) / (FMAX - FMIN) * (bot - top), X = t => mL + t / 10 * (w - mL - mR);
+  ctx.strokeStyle = C.rule; ctx.lineWidth = 1;
+  for (const v of [-400, 0, 400, 800]) { ctx.beginPath(); ctx.moveTo(mL, Y(v)); ctx.lineTo(w - mR, Y(v)); ctx.stroke(); txt(ctx, (v < 0 ? '−' : '') + Math.abs(v), mL - 4, Y(v), 10, C.ink3, 'right'); }
+  for (let t = 0; t <= 8; t += 2) txt(ctx, String(t), X(t), bot + 10, 10, C.ink3, 'center');
+  ctx.strokeStyle = C.amber; ctx.lineWidth = 1.5; ctx.setLineDash([5, 4]);
+  ctx.beginPath(); ctx.moveTo(mL, Y(f)); ctx.lineTo(w - mR, Y(f)); ctx.stroke(); ctx.setLineDash([]);
+  ctx.strokeStyle = C.navy; ctx.lineWidth = 1.6; ctx.beginPath();
+  const step = Math.max(1, Math.floor(N / (2 * (w - mL - mR))));
+  for (let n = 0; n < N; n += step) { const x = X(n / RS), y = Y(Math.max(FMIN, Math.min(FMAX, r.freq[n]))); n ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }
+  ctx.stroke();
+  txt(ctx, 'loop frequency estimate (Hz)', mL, 10, 10.5, C.ink3, 'left', true);
+  txt(ctx, 'offset', w - mR, Y(f) - 9, 10, C.amber, 'right', true);
+  txt(ctx, 'time (s)', X(9), bot + 10, 10, C.ink3, 'center');
+}
+
+function update() {
+  const nz = +$('nz').value, f = +$('f').value, ph = +$('ph').value;
+  $('m-v').textContent = 'M = ' + M; $('nz-v').textContent = nz.toFixed(2); $('f-v').textContent = f + ' Hz'; $('ph-v').textContent = ph + '°';
+  const r = simulate(M, nz, f, ph, diff, seed);
+  drawIQ(r, M); drawFreq(r, f);
+  $('o-f').textContent = r.fEnd.toFixed(0) + ' Hz';
+  const t = $('o-t'); t.textContent = r.lockT === null ? 'not locked' : r.lockT.toFixed(1) + ' s'; t.className = 'v ' + (r.lockT === null ? 'bad' : '');
+  const ro = $('o-rot'); ro.textContent = r.lockT === null ? '—' : (r.rot > 180 ? '−' + (360 - r.rot).toFixed(0) : (r.rot ? '+' : '') + r.rot.toFixed(0)) + '°'; ro.className = 'v';
+  const b = $('o-ber'); const ok = r.ber < 1e-3, bad = r.ber > 0.05;
+  b.textContent = ok ? 'correct' : bad ? 'wrong' : 'some errors'; b.className = 'v ' + (bad ? 'bad' : ok ? 'good' : '');
+}
+
+function seg(id, set) { for (const btn of $(id).querySelectorAll('button')) btn.onclick = () => {
+  for (const o of $(id).querySelectorAll('button')) o.classList.toggle('on', o === btn); set(+btn.dataset.v); update(); }; }
+seg('m', v => { M = v; }); seg('diff', v => { diff = v; });
+$('again').onclick = () => { seed++; update(); };
+for (const id of ['nz', 'f', 'ph']) $(id).oninput = update;
+window.addEventListener('resize', update);
+update();
+</script>
+</body>
+</html>
