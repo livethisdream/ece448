@@ -31,7 +31,7 @@ options:
     sizing_mode: fixed
     thread_safe_setters: ''
     title: L14 - Demodulating the HD Radio Sidebands
-    window_size: (1400,820)
+    window_size: (1400,980)
   states:
     bus_sink: false
     bus_source: false
@@ -162,7 +162,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [240, 380]
+    coordinate: [1250, 212]
     rotation: 0
     state: enabled
 - name: by_symbol
@@ -212,7 +212,7 @@ blocks:
     color9: '"dark green"'
     comment: ''
     grid: 'False'
-    gui_hint: 1, 1, 1, 1
+    gui_hint: 1, 2, 1, 1
     label1: ''
     label10: ''
     label2: ''
@@ -272,7 +272,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1340, 880]
+    coordinate: [1340, 1080]
     rotation: 0
     state: enabled
 - name: file_source
@@ -295,6 +295,69 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [16, 200]
+    rotation: 0
+    state: enabled
+- name: fine_readout
+  id: qtgui_number_sink
+  parameters:
+    affinity: ''
+    alias: ''
+    autoscale: 'False'
+    avg: '0'
+    color1: ("black", "black")
+    color10: ("black", "black")
+    color2: ("black", "black")
+    color3: ("black", "black")
+    color4: ("black", "black")
+    color5: ("black", "black")
+    color6: ("black", "black")
+    color7: ("black", "black")
+    color8: ("black", "black")
+    color9: ("black", "black")
+    comment: ''
+    factor1: '1'
+    factor10: '1'
+    factor2: '1'
+    factor3: '1'
+    factor4: '1'
+    factor5: '1'
+    factor6: '1'
+    factor7: '1'
+    factor8: '1'
+    factor9: '1'
+    graph_type: qtgui.NUM_GRAPH_HORIZ
+    gui_hint: 3, 0, 1, 1
+    label1: '"Hz"'
+    label10: ''
+    label2: ''
+    label3: ''
+    label4: ''
+    label5: ''
+    label6: ''
+    label7: ''
+    label8: ''
+    label9: ''
+    max: '200'
+    min: '-200'
+    name: '"Tuning error within a subcarrier"'
+    nconnections: '1'
+    type: float
+    unit1: '""'
+    unit10: ''
+    unit2: ''
+    unit3: ''
+    unit4: ''
+    unit5: ''
+    unit6: ''
+    unit7: ''
+    unit8: ''
+    unit9: ''
+    update_time: '0.10'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [780, 820]
     rotation: 0
     state: enabled
 - name: later
@@ -349,7 +412,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [16, 700]
+    coordinate: [1250, 60]
     rotation: 0
     state: enabled
 - name: pluto
@@ -491,6 +554,98 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [900, 516]
+    rotation: 0
+    state: enabled
+- name: raw_plot
+  id: qtgui_const_sink_x
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha1: '1.0'
+    alpha10: '1.0'
+    alpha2: '1.0'
+    alpha3: '1.0'
+    alpha4: '1.0'
+    alpha5: '1.0'
+    alpha6: '1.0'
+    alpha7: '1.0'
+    alpha8: '1.0'
+    alpha9: '1.0'
+    autoscale: 'False'
+    axislabels: 'True'
+    color1: '"blue"'
+    color10: '"dark blue"'
+    color2: '"red"'
+    color3: '"green"'
+    color4: '"black"'
+    color5: '"cyan"'
+    color6: '"magenta"'
+    color7: '"yellow"'
+    color8: '"dark red"'
+    color9: '"dark green"'
+    comment: ''
+    grid: 'False'
+    gui_hint: 1, 1, 1, 1
+    label1: ''
+    label10: ''
+    label2: ''
+    label3: ''
+    label4: ''
+    label5: ''
+    label6: ''
+    label7: ''
+    label8: ''
+    label9: ''
+    legend: 'False'
+    marker1: '0'
+    marker10: '0'
+    marker2: '0'
+    marker3: '0'
+    marker4: '0'
+    marker5: '0'
+    marker6: '0'
+    marker7: '0'
+    marker8: '0'
+    marker9: '0'
+    name: '"Data subcarriers before equalization"'
+    nconnections: '1'
+    size: '2048'
+    style1: '0'
+    style10: '0'
+    style2: '0'
+    style3: '0'
+    style4: '0'
+    style5: '0'
+    style6: '0'
+    style7: '0'
+    style8: '0'
+    style9: '0'
+    tr_chan: '0'
+    tr_level: '0.0'
+    tr_mode: qtgui.TRIG_MODE_FREE
+    tr_slope: qtgui.TRIG_SLOPE_POS
+    tr_tag: '""'
+    type: complex
+    update_time: '0.10'
+    width1: '1'
+    width10: '1'
+    width2: '1'
+    width3: '1'
+    width4: '1'
+    width5: '1'
+    width6: '1'
+    width7: '1'
+    width8: '1'
+    width9: '1'
+    xmax: '2'
+    xmin: '-2'
+    ymax: '2'
+    ymin: '-2'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1340, 980]
     rotation: 0
     state: enabled
 - name: recenter
@@ -669,7 +824,7 @@ blocks:
     ref_level: '0'
     showports: 'False'
     update_time: '0.10'
-    vlen: fft_len
+    vlen: '1201'
     width1: '1'
     width10: '1'
     width2: '1'
@@ -681,7 +836,7 @@ blocks:
     width8: '1'
     width9: '1'
     x_axis_label: '"Subcarrier"'
-    x_start: -fft_len / 2
+    x_start: '-600'
     x_step: '1'
     x_units: '""'
     y_axis_label: '"Score"'
@@ -712,7 +867,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [240, 460]
+    coordinate: [1250, 340]
     rotation: 0
     state: enabled
 - name: spectrum
@@ -793,7 +948,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [520, 300]
+    coordinate: [1480, 280]
     rotation: 0
     state: enabled
 - name: split_iq
@@ -850,12 +1005,13 @@ blocks:
       \ to their neighborhood, and dividing\neach data subcarrier by that estimate\
       \ leaves four points.\n\"\"\"\nimport numpy as np\nfrom gnuradio import gr\n\
       \n\nclass blk(gr.basic_block):\n\n    def __init__(self, fft_len=4096, cp_len=224,\
-      \ search=40):\n        self.N, self.search = int(fft_len), int(search)\n   \
-      \     self.S = self.N + int(cp_len)\n        gr.basic_block.__init__(self, name='NRSC-5\
-      \ Subcarriers',\n                                in_sig=[(np.complex64, self.N)],\n\
-      \                                out_sig=[(np.float32, self.N),\n          \
-      \                               np.complex64, np.complex64])\n        upper\
-      \ = 356 + 19 * np.arange(11)\n        self.refs = np.concatenate([-upper[::-1],\
+      \ search=40, span=600):\n        self.N, self.search, self.span = int(fft_len),\
+      \ int(search), int(span)\n        self.S = self.N + int(cp_len)\n        gr.basic_block.__init__(self,\
+      \ name='NRSC-5 Subcarriers',\n                                in_sig=[(np.complex64,\
+      \ self.N)],\n                                out_sig=[(np.float32, 2 * self.span\
+      \ + 1),\n                                         np.complex64, np.complex64,\n\
+      \                                         np.complex64, np.float32])\n     \
+      \   upper = 356 + 19 * np.arange(11)\n        self.refs = np.concatenate([-upper[::-1],\
       \ upper])\n        # Each data subcarrier, the references on either side, and\
       \ how far\n        # it sits between them.\n        k, a, w = [], [], []\n \
       \       for side in (-1, 1):\n            r = np.sort(side * upper)\n      \
@@ -864,34 +1020,36 @@ blocks:
       \ self.a, self.w = np.array(k), np.array(a), np.array(w)\n        self.score\
       \ = np.zeros(self.N, np.float32)\n        self.votes = np.zeros(2 * self.search\
       \ + 1)\n        self.prev = None\n        self.offset = 0\n        self.out\
-      \ = ([], [], [])\n\n    def forecast(self, noutput_items, ninputs):\n      \
-      \  return [1] * ninputs\n\n    def symbol(self, X):\n        c = self.N // 2\n\
-      \        if self.prev is None:\n            self.prev = X\n            return\n\
-      \        d = X * np.conj(self.prev)\n        # A symbol lasts fft_len + cp_len\
-      \ samples, so an offset of a whole\n        # subcarrier still turns each subcarrier\
-      \ a little from one symbol to\n        # the next. Try each offset with that\
-      \ turn taken out.\n        shifts = np.arange(-self.search, self.search + 1)\n\
-      \        turn = np.exp(-2j * np.pi * shifts * self.S / self.N)\n        dr =\
-      \ d[c + self.refs[None, :] + shifts[:, None]] * turn[:, None]\n        votes\
-      \ = ((np.abs(dr.real) - np.abs(dr.imag)) / (np.abs(dr) + 1e-12)).sum(axis=1)\n\
+      \ = ([], [], [], [], [])\n\n    def forecast(self, noutput_items, ninputs):\n\
+      \        return [1] * ninputs\n\n    def symbol(self, X):\n        c = self.N\
+      \ // 2\n        if self.prev is None:\n            self.prev = X\n         \
+      \   return\n        d = X * np.conj(self.prev)\n        # A symbol lasts fft_len\
+      \ + cp_len samples, so an offset of a whole\n        # subcarrier still turns\
+      \ each subcarrier a little from one symbol to\n        # the next. Try each\
+      \ offset with that turn taken out.\n        shifts = np.arange(-self.search,\
+      \ self.search + 1)\n        turn = np.exp(-2j * np.pi * shifts * self.S / self.N)\n\
+      \        dr = d[c + self.refs[None, :] + shifts[:, None]] * turn[:, None]\n\
+      \        votes = ((np.abs(dr.real) - np.abs(dr.imag)) / (np.abs(dr) + 1e-12)).sum(axis=1)\n\
       \        self.votes = 0.9 * self.votes + 0.1 * votes\n        self.offset =\
       \ int(shifts[int(np.argmax(self.votes))])\n        d = d * np.exp(-2j * np.pi\
       \ * self.offset * self.S / self.N)\n        s = (np.abs(d.real) - np.abs(d.imag))\
       \ / (np.abs(d) + 1e-12)\n        self.score = 0.95 * self.score + 0.05 * s\n\
-      \        off = c + self.offset\n        self.out[0].append(self.score.copy())\n\
+      \        off = c + self.offset\n        self.out[0].append(self.score[c - self.span:c\
+      \ + self.span + 1].copy())\n        self.out[4].append(float(self.offset))\n\
       \        r = off + self.refs\n        ref = d[r] / (np.mean(np.abs(X[r]) * np.abs(self.prev[r]))\
       \ + 1e-12)\n        # What frequency error is left turns every reference the\
       \ same way;\n        # squaring removes the BPSK sign, so the average shows\
       \ that turn.\n        ref *= np.exp(-0.5j * np.angle(np.sum(ref ** 2)))\n  \
-      \      self.out[1].extend(ref)\n        H2a = X[off + self.a] ** 2\n       \
-      \ H2b = X[off + self.a + 19] ** 2\n        H = np.sqrt((1 - self.w) * H2a +\
-      \ self.w * H2b)\n        self.out[2].extend(X[off + self.k] / (H + 1e-12) *\
-      \ np.exp(1j * np.pi / 4))\n        self.prev = X\n\n    def general_work(self,\
+      \      self.out[1].extend(ref)\n        raw = X[off + self.k]\n        self.out[3].extend(raw\
+      \ / (np.mean(np.abs(raw)) + 1e-12))\n        H2a = X[off + self.a] ** 2\n  \
+      \      H2b = X[off + self.a + 19] ** 2\n        H = np.sqrt((1 - self.w) * H2a\
+      \ + self.w * H2b)\n        self.out[2].extend(X[off + self.k] / (H + 1e-12)\
+      \ * np.exp(1j * np.pi / 4))\n        self.prev = X\n\n    def general_work(self,\
       \ input_items, output_items):\n        # Decode only while the plots keep up,\
       \ so nothing piles up here.\n        used = 0\n        for X in input_items[0]:\n\
       \            if len(self.out[2]) > 4096:\n                break\n          \
       \  self.symbol(X)\n            used += 1\n        self.consume(0, used)\n  \
-      \      for port in range(3):\n            q = self.out[port]\n            n\
+      \      for port in range(5):\n            q = self.out[port]\n            n\
       \ = min(len(q), len(output_items[port]))\n            for i in range(n):\n \
       \               output_items[port][i] = q[i]\n            del q[:n]\n      \
       \      self.produce(port, n)\n        return gr.WORK_CALLED_PRODUCE\n"
@@ -903,10 +1061,12 @@ blocks:
     maxoutbuf: '0'
     minoutbuf: '0'
     search: '40'
+    span: '600'
   states:
     _io_cache: ('NRSC-5 Subcarriers', 'blk', [('fft_len', '4096'), ('cp_len', '224'),
-      ('search', '40')], [('0', 'complex', 4096)], [('0', 'float', 4096), ('1', 'complex',
-      1), ('2', 'complex', 1)], '', ['search'])
+      ('search', '40'), ('span', '600')], [('0', 'complex', 4096)], [('0', 'float',
+      1201), ('1', 'complex', 1), ('2', 'complex', 1), ('3', 'complex', 1), ('4',
+      'float', 1)], '', ['search', 'span'])
     bus_sink: false
     bus_source: false
     bus_structure: null
@@ -939,28 +1099,31 @@ blocks:
   parameters:
     _source_code: "\"\"\"\nNRSC-5 Symbol Sync: finds where each OFDM symbol starts\
       \ and removes the\nradio's fine frequency offset, both from the cyclic prefix,\
-      \ then hands the\nFFT one symbol at a time.\n\nEvery symbol is fft_len samples\
+      \ then hands the\nFFT one symbol at a time. Its second output is the tuning\
+      \ error it removed,\nin Hz, once per symbol.\n\nEvery symbol is fft_len samples\
       \ plus a cyclic prefix of cp_len: the symbol's\nlast cp_len samples, copied\
       \ to its front. Multiplying the signal by a copy of\nitself fft_len samples\
       \ later lights up exactly where the copies line up, once\nper symbol, and the\
-      \ angle of that product is the frequency offset. Each\nsymbol is tapered at\
-      \ both ends and its tail folded onto its head before the\nFFT, the way nrsc5\
-      \ does it.\n\nFeed it the sidebands only: the analog FM host is far stronger\
-      \ and has no\ncyclic prefix.\n\"\"\"\nimport numpy as np\nfrom gnuradio import\
-      \ gr\n\n\nclass blk(gr.basic_block):\n\n    def __init__(self, fft_len=4096,\
-      \ cp_len=224, samp_rate=1488375, symbols=16):\n        self.N, self.CP = int(fft_len),\
-      \ int(cp_len)\n        gr.basic_block.__init__(self, name='NRSC-5 Symbol Sync',\n\
-      \                                in_sig=[np.complex64],\n                  \
-      \              out_sig=[(np.complex64, self.N)])\n        self.fs, self.K =\
-      \ float(samp_rate), int(symbols)\n        self.S = self.N + self.CP\n      \
-      \  j = np.arange(self.S)\n        self.shape = np.where(\n            j < self.CP,\
-      \ np.sin(np.pi / 2 * j / self.CP),\n            np.where(j < self.N, 1.0,\n\
-      \                     np.cos(np.pi / 2 * (j - self.N) / self.CP))).astype(np.float32)\n\
+      \ angle of that product is the tuning error, to within\nhalf a subcarrier. NRSC-5\
+      \ fades each symbol in and out over cp_len samples,\nso instead of dropping\
+      \ the prefix the block fades it the same way again and\nadds the symbol's last\
+      \ cp_len samples onto its first ones, which rebuilds\none full-strength symbol,\
+      \ the way nrsc5 does it.\n\nFeed it the sidebands only: the analog FM host is\
+      \ far stronger and has no\ncyclic prefix.\n\"\"\"\nimport numpy as np\nfrom\
+      \ gnuradio import gr\n\n\nclass blk(gr.basic_block):\n\n    def __init__(self,\
+      \ fft_len=4096, cp_len=224, samp_rate=1488375, symbols=16):\n        self.N,\
+      \ self.CP = int(fft_len), int(cp_len)\n        gr.basic_block.__init__(self,\
+      \ name='NRSC-5 Symbol Sync',\n                                in_sig=[np.complex64],\n\
+      \                                out_sig=[(np.complex64, self.N), np.float32])\n\
+      \        self.fs, self.K = float(samp_rate), int(symbols)\n        self.S =\
+      \ self.N + self.CP\n        j = np.arange(self.S)\n        self.shape = np.where(\n\
+      \            j < self.CP, np.sin(np.pi / 2 * j / self.CP),\n            np.where(j\
+      \ < self.N, 1.0,\n                     np.cos(np.pi / 2 * (j - self.N) / self.CP))).astype(np.float32)\n\
       \        self.buf = np.zeros(0, np.complex64)\n        self.ready = []     \
-      \    # symbols waiting for room at the output\n        self.phase = 0.0    \
-      \    # running phase of the frequency correction\n        self.freq = 0.0  \
-      \       # latest frequency offset estimate, Hz\n        self.start_index = 0\
-      \    # latest symbol start, in samples\n\n    def forecast(self, noutput_items,\
+      \    # (symbol, tuning error) waiting for room at the output\n        self.phase\
+      \ = 0.0        # running phase of the frequency correction\n        self.freq\
+      \ = 0.0         # latest frequency offset estimate, Hz\n        self.start_index\
+      \ = 0    # latest symbol start, in samples\n\n    def forecast(self, noutput_items,\
       \ ninputs):\n        return [1] * ninputs\n\n    def chunk(self):\n        \"\
       \"\"Estimate timing and frequency over K symbols, then cut them out.\"\"\"\n\
       \        N, CP, S, K = self.N, self.CP, self.S, self.K\n        seg = self.buf[:K\
@@ -973,16 +1136,17 @@ blocks:
       \      for i in range(K):\n            start = idx + i * S\n            v =\
       \ seg[start:start + S] * np.exp(1j * (self.phase + w * (start + n))) * self.shape\n\
       \            body = v[:N].copy()\n            body[:CP] += v[N:]\n         \
-      \   self.ready.append(body.astype(np.complex64))\n        self.phase = (self.phase\
-      \ + w * K * S) % (2 * np.pi)\n        self.buf = self.buf[K * S:]\n\n    def\
-      \ general_work(self, input_items, output_items):\n        need = self.K * self.S\
-      \ + self.S\n        x = input_items[0]\n        take = min(len(x), max(0, 2\
-      \ * need - len(self.buf)))\n        if take:\n            self.buf = np.concatenate([self.buf,\
-      \ x[:take]])\n            self.consume(0, take)\n        while len(self.buf)\
-      \ >= need and len(self.ready) < 2 * self.K:\n            self.chunk()\n    \
-      \    out = output_items[0]\n        n = min(len(self.ready), len(out))\n   \
-      \     for i in range(n):\n            out[i] = self.ready[i]\n        del self.ready[:n]\n\
-      \        return n\n"
+      \   self.ready.append((body.astype(np.complex64), self.freq))\n        self.phase\
+      \ = (self.phase + w * K * S) % (2 * np.pi)\n        self.buf = self.buf[K *\
+      \ S:]\n\n    def general_work(self, input_items, output_items):\n        need\
+      \ = self.K * self.S + self.S\n        x = input_items[0]\n        take = min(len(x),\
+      \ max(0, 2 * need - len(self.buf)))\n        if take:\n            self.buf\
+      \ = np.concatenate([self.buf, x[:take]])\n            self.consume(0, take)\n\
+      \        while len(self.buf) >= need and len(self.ready) < 2 * self.K:\n   \
+      \         self.chunk()\n        n = min(len(self.ready), len(output_items[0]),\
+      \ len(output_items[1]))\n        for i in range(n):\n            output_items[0][i],\
+      \ output_items[1][i] = self.ready[i]\n        del self.ready[:n]\n        return\
+      \ n\n"
     affinity: ''
     alias: ''
     comment: ''
@@ -995,7 +1159,7 @@ blocks:
   states:
     _io_cache: ('NRSC-5 Symbol Sync', 'blk', [('fft_len', '4096'), ('cp_len', '224'),
       ('samp_rate', '1488375'), ('symbols', '16')], [('0', 'complex', 1)], [('0',
-      'complex', 4096)], '', [])
+      'complex', 4096), ('1', 'float', 1)], '', [])
     bus_sink: false
     bus_source: false
     bus_structure: null
@@ -1054,6 +1218,69 @@ blocks:
     coordinate: [392, 228]
     rotation: 0
     state: enabled
+- name: whole_readout
+  id: qtgui_number_sink
+  parameters:
+    affinity: ''
+    alias: ''
+    autoscale: 'False'
+    avg: '0'
+    color1: ("black", "black")
+    color10: ("black", "black")
+    color2: ("black", "black")
+    color3: ("black", "black")
+    color4: ("black", "black")
+    color5: ("black", "black")
+    color6: ("black", "black")
+    color7: ("black", "black")
+    color8: ("black", "black")
+    color9: ("black", "black")
+    comment: ''
+    factor1: '1'
+    factor10: '1'
+    factor2: '1'
+    factor3: '1'
+    factor4: '1'
+    factor5: '1'
+    factor6: '1'
+    factor7: '1'
+    factor8: '1'
+    factor9: '1'
+    graph_type: qtgui.NUM_GRAPH_HORIZ
+    gui_hint: 3, 1, 1, 1
+    label1: '"Subcarriers"'
+    label10: ''
+    label2: ''
+    label3: ''
+    label4: ''
+    label5: ''
+    label6: ''
+    label7: ''
+    label8: ''
+    label9: ''
+    max: '40'
+    min: '-40'
+    name: '"Whole subcarriers off"'
+    nconnections: '1'
+    type: float
+    unit1: '""'
+    unit10: ''
+    unit2: ''
+    unit3: ''
+    unit4: ''
+    unit5: ''
+    unit6: ''
+    unit7: ''
+    unit8: ''
+    unit9: ''
+    update_time: '0.10'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1580, 640]
+    rotation: 0
+    state: enabled
 
 connections:
 - [add_noise, '0', sidebands, '0']
@@ -1078,8 +1305,11 @@ connections:
 - [subcarriers, '0', score_plot, '0']
 - [subcarriers, '1', ref_plot, '0']
 - [subcarriers, '2', data_plot, '0']
+- [subcarriers, '3', raw_plot, '0']
+- [subcarriers, '4', whole_readout, '0']
 - [symbol_fft, '0', subcarriers, '0']
 - [symbol_sync, '0', symbol_fft, '0']
+- [symbol_sync, '1', fine_readout, '0']
 - [throttle, '0', to_float, '0']
 - [to_complex, '0', add_noise, '0']
 - [to_float, '0', recenter, '0']

@@ -86,7 +86,7 @@ Subcarrier k sits at k times 363.4 Hz from the center. The reference subcarriers
 - The cyclic prefix, `cp_len` = 224 samples, goes in front of each symbol.
 
 Note:
-Orthogonality is the O in OFDM, and it lets an FFT separate the subcarriers. The blocks are the OFDM Carrier Allocator, a reverse FFT, and the OFDM Cyclic Prefixer, as in the GNU Radio wiki's Basic OFDM Tutorial, which the slides link. The receiver finds where each symbol starts, drops the prefix, takes a forward FFT, and reads each subcarrier's point: the second half of today.
+Orthogonality is the O in OFDM, and it lets an FFT separate the subcarriers. The blocks are the OFDM Carrier Allocator, an inverse FFT (the FFT block set to Reverse), and the OFDM Cyclic Prefixer, as in the GNU Radio wiki's Basic OFDM Tutorial, which the slides link. The receiver finds where each symbol starts, removes the prefix, takes a forward FFT, and reads each subcarrier's point; the second half of today does this on a real station.
 
 ---
 
@@ -95,21 +95,21 @@ Orthogonality is the O in OFDM, and it lets an FFT separate the subcarriers. The
 <a href="../viz/ofdm-explorer.html" target="_blank" rel="noopener">Open the OFDM explorer</a> (it is also on the lesson page).
 
 - At spacing 1.00 every neighbor crosses zero at the center subcarrier.
-- An echo longer than the guard reaches into the next symbol's FFT window.
+- An echo longer than the cyclic prefix reaches into the next symbol's FFT window.
 
 Note:
-Start at HD Radio: the red dots sit on zero. Move the spacing off 1.00 and the neighbors leak in. Drag the echo past the guard and the red sliver appears inside symbol 2's FFT window.
+Start at HD Radio: the red dots sit on zero. Move the spacing off 1.00 and the neighbors leak in. Drag the echo past the prefix and the red sliver appears inside symbol 2's FFT window.
 
 ---
 
 ## The Test Signal
 
-<img src="./img/14-hd-radio/L14-grc-test-tx.png" alt="L14-hd-test-tx.grc: two OFDM chains of Random Uniform Source, Chunks to Symbols, Stream to Tagged Stream, OFDM Carrier Allocator, reverse FFT, and OFDM Cyclic Prefixer; an FM host and neighbor; noise; a File Sink of unsigned bytes; and a Python Snippet that writes the SigMF meta file" style="max-height:400px; display:block; margin:0 auto;">
+<img src="./img/14-hd-radio/L14-grc-test-tx.png" alt="L14-hd-test-tx.grc: two OFDM chains of Random Uniform Source, Chunks to Symbols, Stream to Tagged Stream, OFDM Carrier Allocator, inverse FFT, and OFDM Cyclic Prefixer; an FM host and neighbor; noise; a File Sink of unsigned bytes; and a Python Snippet that writes the SigMF meta file" style="max-height:400px; display:block; margin:0 auto;">
 
 Each side carries random QPSK on subcarriers 356 to 546, written as unsigned bytes.
 
 Note:
-The FFT has 4096 points at 1,488,375 samples per second, so each bin is one subcarrier, and the guard is 224 samples. The symbols are random, not NRSC-5 data, so nrsc5 cannot decode this file. The 4 s file is 11.9 MB, in nrsc5's default format, cu8. The File Sink writes L14-hd-test.sigmf-data, and the write_meta Python Snippet writes the .sigmf-meta, because GNU Radio's SigMF Sink takes no cu8. Nothing transmits.
+The FFT has 4096 points at 1,488,375 samples per second, so each bin is one subcarrier, and the cyclic prefix is 224 samples. The symbols are random, not NRSC-5 data, so nrsc5 cannot decode this file. The 4 s file is 11.9 MB, in nrsc5's default format, cu8. The File Sink writes L14-hd-test.sigmf-data, and the write_meta Python Snippet writes the .sigmf-meta, because GNU Radio's SigMF Sink takes no cu8. Nothing transmits.
 
 ---
 
@@ -149,25 +149,25 @@ Demo: change noise_amp from 0.03 to 0.15 in L14-hd-test-tx.grc, rerun it, rerun 
 
 ## From Sidebands to Symbols
 
-<img src="./img/14-hd-radio/L14-grc-demod.png" alt="L14-hd-demod.grc: the byte conversion or a PlutoSDR, an Added noise source, a band-pass FFT Filter, the cyclic prefix match, and NRSC-5 Symbol Sync, an FFT, and NRSC-5 Subcarriers into a score plot and two constellations" style="max-height:400px; display:block; margin:0 auto;">
+<img src="./img/14-hd-radio/L14-grc-demod.png" alt="L14-hd-demod.grc: the byte conversion or a PlutoSDR, an Added noise source, a band-pass FFT Filter, the cyclic prefix match, and NRSC-5 Symbol Sync, an FFT, and NRSC-5 Subcarriers into a score plot, three constellations, and two number readouts" style="max-height:400px; display:block; margin:0 auto;">
 
 - A band-pass filter keeps the sidebands; the cyclic prefix marks each symbol.
-- An FFT gives the subcarriers, and the references equalize the data.
+- An FFT gives the subcarriers, and the block equalizes the data against the references.
 
 Note:
-L14-hd-demod.grc runs on nrsc5's sample capture of KUT 90.5, L14-kut.sigmf-data, in the same cu8 format at 1,488,375 S/s as the test file. Two steps are Embedded Python Blocks, Lesson 11's tool: double-click them to show the code.
+L14-hd-demod.grc runs on nrsc5's sample capture of KUT 90.5, L14-kut.sigmf-data, in the same cu8 format at 1,488,375 S/s as the test file. Two steps are Embedded Python Blocks, Lesson 11's tool: double-click them to show the code. Multiply Conjugate, Stream to Vector, and QT GUI Number Sink are new blocks; say what each does as it comes up.
 
 ---
 
 ## Finding Each Symbol
 
-<img src="./img/14-hd-radio/L14-demod-symbols.png" alt="The recording and its band-passed sidebands, and the cyclic prefix match over one 4320-sample symbol with one tall peak" style="max-height:400px; display:block; margin:0 auto;">
+<img src="./img/14-hd-radio/L14-demod-symbols.png" alt="The recording and its band-passed sidebands, the cyclic prefix match over one 4320-sample symbol with one tall peak, and the tuning error readout near 96 Hz" style="max-height:400px; display:block; margin:0 auto;">
 
 - Delay, Multiply Conjugate, and Moving Average compare each sample with the one `fft_len` later.
 - The match peaks once per 4320-sample symbol.
 
 Note:
-The prefix is a copy of the symbol's last 224 samples, 4096 samples earlier, so only there do the products line up and add. Stacking 16 symbols leaves one clear peak. Without the band-pass filter, the host buries the peak. The angle of the match measures the tuning error within half a subcarrier, ±181.7 Hz: about 90 Hz on KUT, against nrsc5's 99 Hz.
+The prefix is a copy of the symbol's last 224 samples, 4096 samples earlier, so only there do the products line up and add; the lesson page has a to-scale drawing in its depth block. Averaging 16 symbols leaves one clear peak. Without the band-pass filter, the host's products are far larger than the peak, and the page shows that run too. The plot shows the size of the match; Symbol Sync reads its angle, the tuning error within half a subcarrier, ±181.7 Hz, and shows it on the readout: about 90 to 100 Hz on KUT. NRSC-5 fades each symbol in and out over 224 samples, so the block fades it again and adds the last 224 samples onto the first 224, instead of dropping the prefix.
 
 ---
 
@@ -175,35 +175,35 @@ The prefix is a copy of the symbol's last 224 samples, 4096 samples earlier, so 
 
 <img src="./img/14-hd-radio/L14-demod-refs.png" alt="A score against subcarrier with 22 spikes at plus and minus 356 to 546, and the reference points in two clusters at plus and minus 1" style="max-height:400px; display:block; margin:0 auto;">
 
-- The block multiplies each subcarrier by its own conjugate one symbol earlier.
+- The block multiplies each subcarrier by its conjugate one symbol earlier.
 - References give $+1$ or $-1$, so 22 spikes mark them.
 
 Note:
-Differential BPSK, as in Lesson 7's RDS: the channel's phase cancels between symbols. Data subcarriers change QPSK point every symbol, so their score stays near zero. Most reference bits repeat, so most points sit at +1. Demo on the Pluto: change Center by 0.0025 MHz; the pattern moves about 7 subcarriers and the block finds it again.
+The references use differential BPSK, as in Lesson 7's RDS, so the channel's phase cancels between symbols. Data subcarriers change QPSK point every symbol, so their score stays near zero. The plot spans subcarriers −600 to 600, so the 11 spikes on each side can be counted: 10 partitions plus a closing reference at 546. The references carry slowly changing control data, so most points sit at +1. Demo on the Pluto: change Center by 0.0025 MHz; the Whole subcarriers off readout moves about 7 and the plots stay the same.
 
 ---
 
 ## Equalizing the Data Subcarriers
 
-<img src="./img/14-hd-radio/L14-demod-qpsk.png" alt="Four tight QPSK clusters" style="max-height:400px; display:block; margin:0 auto;">
+<img src="./img/14-hd-radio/L14-demod-eq.png" alt="Data subcarriers on the KUT capture: before equalization, smeared around a ring; after, four tight round clusters at plus and minus 0.7 in I and Q" style="max-height:400px; display:block; margin:0 auto;">
 
 - The two references around each partition measure the channel there.
 - Dividing each data subcarrier by that measurement leaves QPSK.
 
 Note:
-The block blends the two references' measurements by position across the partition, divides, and rotates 45° to the usual QPSK positions. 360 points per symbol, 180 from each sideband.
+Multipath, echoes off buildings and terrain, turns the phase across the band, which smears the raw points. The receiver knows each reference only up to its sign, so the block squares the two measurements to remove the sign, interpolates between them across the partition, takes the square root, and divides. It rotates the result 45°, because NRSC-5's QPSK points sit at 45° while dividing by a reference on the real axis leaves them on the axes. Each symbol puts 360 points on the plot, 180 from each sideband.
 
 ---
 
 ## Noise on the Constellation
 
-<img src="./img/14-hd-radio/L14-demod-noise.png" alt="With added noise 0.015 the reference spikes are lower and the QPSK clusters have spread until they nearly touch" style="max-height:400px; display:block; margin:0 auto;">
+<img src="./img/14-hd-radio/L14-demod-noise.png" alt="Equalized QPSK at added noise 0, 0.015, and 0.025: tight clusters, wide clouds that nearly touch, then one round cloud" style="max-height:400px; display:block; margin:0 auto;">
 
-- Raise Added noise and every plot loses contrast.
+- Raise Added noise: the reference spikes shrink and the QPSK clusters spread.
 - gr-hdradio still plays the capture at 0.035 and falls silent by 0.05.
 
 Note:
-Demo: drag Added noise up slowly. The clusters run together near 0.025, but the error-correcting code lets the decoder keep playing past that point.
+Demo: drag Added noise up slowly. The clusters run together near 0.025. L14-hd-rx.grc has the same slider; its decoder plays at 0.035 and is silent by 0.05, because the error-correcting code adds extra bits that let it fix the bits the noise turned wrong.
 
 ---
 
@@ -212,16 +212,16 @@ Demo: drag Added noise up slowly. The clusters run together near 0.025, but the 
 <img src="./img/14-hd-radio/L14-grc-rx.png" alt="L14-hd-rx.grc: the byte conversion or a PlutoSDR into HD Radio Receiver, two Selectors and an Audio Sink, a Message Debug, and an HD File Sink" style="max-height:400px; display:block; margin:0 auto;">
 
 - HD Radio Receiver outputs each program's audio, the station and song, and album art.
-- The Program buttons switch between HD1 and HD4.
+- The Program buttons select HD1, HD2, HD3, or HD4.
 
 Note:
-gr-hdradio is the course's out-of-tree module, GNU Radio blocks over nrsc5's decoder library, which undoes the error-correcting code and decompresses the audio. Run L14-hd-rx.grc on the KUT capture: after about 5 s HD1 plays, and the console prints KUT, its slogan, and the program title. The files port saves album art to hd_files; KUT's capture carries none. Install steps are on the lesson page.
+gr-hdradio is an out-of-tree module, the kind Lesson 11 built: GNU Radio blocks that call nrsc5's decoder library, which undoes the error-correcting code and the interleaving and decompresses the audio. The Selector passes one of its inputs to its output. Run L14-hd-rx.grc on the KUT capture: the receiver takes about 5 s to lock, then HD1 plays, and the console prints KUT, its slogan, and the program title. The files port saves album art to hd_files; KUT's capture carries none. Install steps are on the lesson page.
 
 ---
 
 ## Key Point
 
-<div class="callout">HD Radio adds two weak OFDM sidebands, 129.4 to 198.4 kHz from the station's center. The cyclic prefix marks each symbol, the references equalize the QPSK data, and gr-hdradio decodes it into audio.</div>
+<div class="callout">HD Radio adds two OFDM sidebands, about 23 dB below the host, 129.4 to 198.4 kHz from its center. The prefix marks each symbol, the receiver equalizes the QPSK data against the references, and gr-hdradio decodes the audio.</div>
 
 ---
 
@@ -229,17 +229,17 @@ gr-hdradio is the course's out-of-tree module, GNU Radio blocks over nrsc5's dec
 
 - Run the PlutoSDR at 1,488,375 samples per second, centered on the station.
 - Look for shelves 129 to 198 kHz either side, with manual gain near 30 dB.
-- The shelves should stand 10 dB above the floor.
+- The shelves should stand well above the floor, or the meters read high.
 
 Note:
-Centering puts the Pluto's DC correction on the host, away from the meters. Manual gain, not the Pluto's AGC, so a reading at a given gain means the same thing every time. Overload buries the sidebands, so back off the gain if the floor rises. The finder, the demodulator, and the receiver all switch to the Pluto the same way, and nothing transmits.
+Centering puts the Pluto's DC correction on the host, away from the meters. The finder uses manual gain, not the Pluto's AGC, so a reading at a given gain means the same thing every time. In the noise run, shelves 8 dB above the floor read 0.8 dB high. Overload hides the sidebands under the receiver's distortion, so back off the gain if the floor rises. The finder, the demodulator, and the receiver all switch to the Pluto the same way, and nothing transmits.
 
 ---
 
 ## Looking Ahead
 
 - The L14 Lab builds the meter, identifies a station's mode, and measures a live station.
-- Lesson 15 recovers carrier phase and symbol timing for mPSK.
+- Lesson 15 recovers the carrier phase and symbol timing of a single mPSK carrier.
 
 Note:
 Today the cyclic prefix gave each symbol's timing and the references gave each subcarrier's phase. A single mPSK carrier has neither, so Lesson 15 recovers both from the signal itself.
