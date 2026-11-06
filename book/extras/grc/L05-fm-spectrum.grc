@@ -8,7 +8,8 @@ options:
     copyright: ''
     description: 'L5: the broadcast FM band from a PlutoSDR in extended-frequency
       mode (70 MHz to 6 GHz), in the frequency domain and as a waterfall. Enable the
-      File Sink to record IQ.'
+      SigMF Sink to record IQ to fm_capture.sigmf-data and .sigmf-meta; it writes
+      the center frequency when the run starts.'
     gen_cmake: 'On'
     gen_linking: dynamic
     generate_options: qt_gui
@@ -106,24 +107,6 @@ blocks:
     coordinate: [200, 12]
     rotation: 0
     state: enabled
-- name: blocks_file_sink_0
-  id: blocks_file_sink
-  parameters:
-    affinity: ''
-    alias: ''
-    append: 'False'
-    comment: ''
-    file: fm_capture.cfile
-    type: complex
-    unbuffered: 'False'
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [360, 308]
-    rotation: 0
-    state: disabled
 - name: pluto
   id: iio_pluto_source
   parameters:
@@ -184,10 +167,30 @@ blocks:
     coordinate: [360, 180]
     rotation: 0
     state: enabled
+- name: sigmf_sink
+  id: blocks_sigmf_sink_minimal
+  parameters:
+    affinity: ''
+    alias: ''
+    author: ''
+    center_freq: freq
+    comment: ''
+    description: L5 Lab FM band capture
+    filename: fm_capture
+    hw_info: PlutoSDR
+    sample_rate: samp_rate
+    type: complex float (fc32_le)
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [360, 308]
+    rotation: 0
+    state: disabled
 
 connections:
-- [pluto, '0', blocks_file_sink_0, '0']
 - [pluto, '0', qtgui_sink_x_0, '0']
+- [pluto, '0', sigmf_sink, '0']
 
 metadata:
   file_format: 1

@@ -43,7 +43,7 @@ Nothing in this lab transmits. The PlutoSDR only receives, because your meter ha
 - Slide the finder's Inner subcarrier and watch the readings.
 :::
 
-Do the Pre-Lab before you arrive. Put both flowgraphs from the Lesson 14 page in one folder. Question 1 has you open `L14-hd-test-tx.grc`, change the Variable `upper_dbc` from −23 to −18, run it once to write `L14-hd-test.cu8`, and then run `L14-hd-find.grc` and record what its three meters read; if GRC reports an error, the L5 lesson page lists the install checks.
+Do the Pre-Lab before you arrive. Put both flowgraphs from the Lesson 14 page in one folder. Question 1 has you open `L14-hd-test-tx.grc`, change the Variable `upper_dbc` from −23 to −18, run it once to write `L14-hd-test.sigmf-data` and `L14-hd-test.sigmf-meta`, and then run `L14-hd-find.grc` and record what its three meters read; if GRC reports an error, the L5 lesson page lists the install checks.
 
 Question 2 uses the same run: slide the finder's **Inner subcarrier** from 356 down to 280, one step at a time, and record what the meters do at each step. Part 2 uses the same slider on a capture whose configuration you do not know.
 ::::
@@ -63,9 +63,9 @@ Your meter should match the finder's readings on the same file within 0.1 dB; a 
 ::::{frame} Part 2: Build the Meter
 :class: read-only
 
-1. Start GRC and choose File, New, QT GUI, and save the new flowgraph in the folder that holds `L14-hd-test.cu8`. Do not open `L14-hd-find.grc`; build the meter yourself.
+1. Start GRC and choose File, New, QT GUI, and save the new flowgraph in the folder that holds `L14-hd-test.sigmf-data`. Do not open `L14-hd-find.grc`; build the meter yourself.
 2. Set `samp_rate` to 1488375. Add Variables `df` = `1488375 / 4096`, `outer` = `546`, `sb_center` = `(inner + outer) / 2 * df`, `sb_half` = `((outer - inner) / 2 + 0.5) * df`, `decim` = `6`, and `avg_len` = `int(0.2 * samp_rate / decim)`. Add a **QT GUI Entry** with ID `fc`, label Center (Hz), type real, and default value `100.3e6`, a **QT GUI Range** with ID `rx_gain`, label Pluto RX gain (dB), from 0 to 70 in steps of 1, default 30, and a **QT GUI Range** with ID `inner`, label Inner subcarrier, type int, from 280 to 356 in steps of 19, default 356.
-3. Read the file: a **File Source** (type byte, file `'L14-hd-test.cu8'` with the quotes, repeat Yes), a **Throttle** (byte, `2 * samp_rate`), **UChar To Float**, **Add Const** (float, −127.5), **Multiply Const** (float, `1 / 128`), **Deinterleave** (float, 2 streams), and **Float To Complex**.
+3. Read the file: a **File Source** (type byte, file `'L14-hd-test.sigmf-data'` with the quotes, repeat Yes), a **Throttle** (byte, `2 * samp_rate`), **UChar To Float**, **Add Const** (float, −127.5), **Multiply Const** (float, `1 / 128`), **Deinterleave** (float, 2 streams), and **Float To Complex**. The meta file names the datatype `cu8`, which GNU Radio's SigMF Source does not read, so a byte File Source reads the data file.
 4. On the Float To Complex output, add a **QT GUI Frequency Sink**: complex, FFT size 4096, center frequency `fc`, bandwidth `samp_rate`, average Medium, Y axis from −110 to −10.
 5. Add two **Low-pass Filter Taps** variables at `samp_rate`: `host_taps` with cutoff `100e3` and transition `10e3`, and `sb_taps` with cutoff `sb_half` and transition `2e3`.
 6. Add three **Frequency Xlating FFT Filters**, each with decimation `decim` and sample rate `samp_rate`: the host with taps `host_taps` and center 0, the upper sideband with `sb_taps` and center `sb_center`, and the lower sideband with `sb_taps` and center `-sb_center`. Connect Float To Complex to all three.
@@ -77,7 +77,7 @@ Your meter should match the finder's readings on the same file within 0.1 dB; a 
 ::::{frame} Part 2: The Lab Capture
 :class: read-only
 
-1. Stop your meter and change the File Source's file to `'L14-lab-capture.cu8'`. The File Source reads the file only when the flowgraph starts.
+1. Stop your meter and change the File Source's file to `'L14-lab-capture.sigmf-data'`. The File Source reads the file only when the flowgraph starts.
 2. Change the frequency sink's FFT size to 8192 and run it. Drag a box around one edge of a sideband on the frequency sink to zoom in, read the edge's frequency in MHz, and right-click to zoom back out. Do the same for the inner and outer edge of each sideband, for Question 4(a).
 3. Record the meter readings with Inner subcarrier at 356 for Question 4(b).
 4. If the inner edges sit closer to the host than 129.4 kHz, slide Inner subcarrier down one step at a time until the readings stop rising, and record the setting and the readings there.
@@ -135,7 +135,7 @@ The Writeup is three questions. The first compares the live station with the les
 :class: read-only doc-links
 
 - <a class="doc-link" href="../../labs/ECE448_Lab_L14_HDRadio_blank.pdf" target="_blank" rel="noopener">L14 Lab packet (PDF)</a>
-- `L14-lab-capture.cu8`, the lab's simulated capture for Question 4: I post it here before the lab.
+- `L14-lab-capture.sigmf-data` and `L14-lab-capture.sigmf-meta`, the lab's simulated capture for Question 4: I post them here before the lab.
 - The Lesson 14 page has `L14-hd-test-tx.grc`, which writes the lesson's test file, and `L14-hd-find.grc`, to check your meter against after Question 3.
 - nrsc5, for the optional Question 6, is at <a href="https://github.com/theori-io/nrsc5" target="_blank" rel="noopener">github.com/theori-io/nrsc5</a>.
 ::::

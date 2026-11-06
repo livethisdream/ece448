@@ -76,11 +76,12 @@ Question 2 is quick arithmetic from your block settings: where five tones appear
 ::::{frame} Part 2: Record and Plot
 :class: read-only
 
-1. Stop the flowgraph. Right-click the gray File Sink and choose Enable. Set its file name to `fm_capture.cfile` in a folder you can find.
-2. Center the strongest station slightly off the DC spike and set the highest gain in your 4(d) table at which no spurs appeared.
-3. Run the flowgraph for about 3 s and stop it. Record the file size for Question 5(a).
-4. Disable the File Sink again so the next run does not overwrite the capture.
-5. From the radioconda prompt, run `python L05-psd.py fm_capture.cfile --fs 2.4e6 --fc` followed by your center frequency in hertz. Paste the plot for Question 5(b).
+1. Center the strongest station slightly off the DC spike and set the highest gain in your 4(d) table at which no spurs appeared.
+2. Stop the flowgraph. Double-click the `freq` slider and type that center frequency as its Default Value: the SigMF Sink writes the center to the meta file when the run starts, so it must be right before you press Run.
+3. Right-click the gray SigMF Sink and choose Enable. Its file name, `fm_capture`, makes `fm_capture.sigmf-data` and `fm_capture.sigmf-meta` in the flowgraph's folder. GRC outlines the block in orange because GNU Radio 3.10 marks it deprecated; it works.
+4. Run the flowgraph for about 3 s and stop it. Record the size of `fm_capture.sigmf-data` for Question 5(a), and open `fm_capture.sigmf-meta` in a text editor to see the datatype, sample rate, and center frequency it recorded.
+5. Disable the SigMF Sink again so the next run does not overwrite the capture.
+6. From the radioconda prompt, run `python L05-psd.py fm_capture.sigmf-data`. It reads the sample rate and center frequency from the meta file. Paste the plot for Question 5(b).
 ::::
 
 ::::{frame} No Hardware?
@@ -115,5 +116,5 @@ The Writeup is three questions. The first connects your alias table to the sampl
 - Lesson 7 turns today's FM capture into audio and decodes its RDS data.
 :::
 
-Keep your `fm_capture.cfile` and the center frequency you recorded it at. Lesson 7 builds an FM receiver, and the first test of that receiver is the capture you made today, played back through a File Source before you point it at the live band.
+Keep both files, `fm_capture.sigmf-data` and `fm_capture.sigmf-meta`; the meta file remembers the center frequency for you. Lesson 7 builds an FM receiver, and the first test of that receiver is the capture you made today, played back through a SigMF Source before you point it at the live band.
 ::::

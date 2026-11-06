@@ -193,7 +193,7 @@ Out of the box a Pluto tunes 325 MHz to 3.8 GHz, which misses broadcast FM. The 
 ::::{frame} A Real Signal in GRC
 :::{present}
 <img src="../../viz/img/L05-grc-fm.png"
-     alt="GNU Radio Companion with the L5 FM flowgraph open: a PlutoSDR Source at 2.4 MS/s with manual gain, tuned by a center-frequency slider, feeding a QT GUI Sink, with a disabled File Sink below and a DC tracking check box above"
+     alt="GNU Radio Companion with the L5 FM flowgraph open: a PlutoSDR Source at 2.4 MS/s with manual gain, tuned by a center-frequency slider, feeding a QT GUI Sink, with a disabled SigMF Sink below and a DC tracking check box above"
      style="max-width: 690px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
@@ -203,7 +203,7 @@ Out of the box a Pluto tunes 325 MHz to 3.8 GHz, which misses broadcast FM. The 
 
 The second flowgraph replaces the signal source with a PlutoSDR. The **PlutoSDR Source** block has three settings that matter today: the **LO frequency**, the center frequency $f_c$ the radio tunes to; the **sample rate** $f_s$ it digitizes at, 2.4 MS/s, well inside the 4 MS/s its USB link streams; and the **gain**, set to Manual so a slider controls it. Its output is the same complex stream as the tone flowgraph's, so the plots work unchanged. We give the **QT GUI Sink** the center frequency so its axis reads in real frequencies, from $f_c - f_s/2$ to $f_c + f_s/2$. At 2.4 MS/s centered on 100.1 MHz, the display spans 98.9 to 101.3 MHz, enough to see several FM stations at once; drag the center frequency slider through 88 to 108 MHz to find the tallest one.
 
-The File Sink below is disabled, which GRC draws in gray. Enabling it records every sample to a file, which the last part of this lesson reads in Python. There is no throttle here: the PlutoSDR delivers samples at exactly 2.4 MS/s, so the hardware sets the pace. An optional RTL-SDR also works in place of the Pluto, with the Soapy RTLSDR Source at the same 2.4 MS/s.
+The SigMF Sink below is disabled, which GRC draws in gray. Enabling it records every sample to a pair of files, which the last part of this lesson reads in Python. There is no throttle here: the PlutoSDR delivers samples at exactly 2.4 MS/s, so the hardware sets the pace. An optional RTL-SDR also works in place of the Pluto, with the Soapy RTLSDR Source at the same 2.4 MS/s.
 ::::
 
 ::::{frame} Reading the Spectrum and Waterfall
@@ -236,12 +236,12 @@ The PlutoSDR's 12-bit converter gives a wider span from its own noise to full sc
 
 ::::{frame} Recording IQ
 :::{present}
-- A **File Sink** writes raw complex samples, 8 bytes each.
+- A **SigMF Sink** writes raw complex samples, 8 bytes each.
 - 2.4 MS/s fills 19.2 MB every second.
-- Record the sample rate and center frequency with the file.
+- A small meta file beside them holds the sample rate and center frequency.
 :::
 
-Enabling the File Sink writes every complex sample to disk as two 32-bit floats, $I$ then $Q$, with no header. At 2.4 MS/s that is $2.4\times10^6 \times 8 = 19.2$ MB per second, so a 10 s capture is 192 MB. The file holds only the samples, so it is useless without the sample rate and the center frequency used to capture it. Write them in the file name, or use the **SigMF** format, which stores them in a small metadata file beside the samples; several later lessons hand out SigMF captures.
+Enabling the SigMF Sink writes every complex sample to `fm_capture.sigmf-data` as two 32-bit floats, $I$ then $Q$, with no header. At 2.4 MS/s that is $2.4\times10^6 \times 8 = 19.2$ MB per second, so a 10 s capture is 192 MB. Samples alone are useless without the sample rate and the center frequency used to capture them, so the sink also writes `fm_capture.sigmf-meta`, a short text file that names the datatype (`cf32_le`), the sample rate, and the center frequency. That pair is **SigMF**, the course's recording format: every recording you download or make in this course is one. The sink writes the meta file when the flowgraph starts, so set the center frequency before you press Run. GRC outlines the block in orange because GNU Radio 3.10 marks it deprecated; it works.
 
 A recording turns a live signal into data we can replay. A File Source block plays the file back into any flowgraph, with a throttle to pace it, so we can develop a receiver against the same capture repeatedly instead of waiting for a transmitter. Most of the decoders in Module 6 start that way.
 ::::
@@ -254,14 +254,16 @@ power_dbfs = 10*np.log10(np.mean(np.abs(x)**2))
 X = np.fft.fftshift(np.fft.fft(x[:2048]))
 ```
 
-- One line reads a GNU Radio capture into NumPy.
+- One line reads the samples, but nothing in them says $f_s$ or $f_c$.
 :::
 
-Because the File Sink writes plain 32-bit floats, NumPy reads a capture in one line as `complex64`. From there, the average power of the capture, in dB relative to full scale, is the mean of $\vert x\vert^2$, and the spectrum is an FFT with `fftshift` to put 0 Hz in the middle, which is what the frequency sink computes. The downloadable script below averages many FFTs with a window, labels the axis in real frequencies, and plots the result:
+Because the samples are plain 32-bit floats, NumPy reads a raw capture such as `fm.cfile` in one line as `complex64`. From there, the average power of the capture, in dB relative to full scale, is the mean of $\vert x\vert^2$, and the spectrum is an FFT with `fftshift` to put 0 Hz in the middle, which is what the frequency sink computes. The array carries no sample rate and no center frequency, though, so its FFT bins have no frequencies until someone supplies both. That is the meta file's job. The downloadable script below reads them from `fm_capture.sigmf-meta`, averages many FFTs with a window, labels the axis in real frequencies, and plots the result:
 
 ```
-python L05-psd.py fm_capture.cfile --fs 2.4e6 --fc 100.1e6
+python L05-psd.py fm_capture.sigmf-data
 ```
+
+Hand it a raw file with no meta file and it stops and asks for `--fs` and `--fc`.
 
 Its plot should match the frequency sink: the same stations at the same frequencies, with the DC spike at the center.
 ::::
@@ -277,8 +279,8 @@ An SDR hands GNU Radio a stream of complex samples that shows $f_s$ of spectrum 
 :class: read-only doc-links
 
 - <a class="doc-link" href="../../grc/L05-tone.grc" download>L05-tone.grc</a>: a complex tone in time and frequency, with a frequency slider for the aliasing demonstration. No hardware needed.
-- <a class="doc-link" href="../../grc/L05-fm-spectrum.grc" download>L05-fm-spectrum.grc</a>: the FM band from a PlutoSDR as a spectrum and waterfall, with frequency and gain sliders, a DC tracking check box, and a File Sink to enable for recording.
-- <a class="doc-link" href="../../grc/L05-psd.py" download>L05-psd.py</a>: reads a File Sink capture and plots its power spectral density.
+- <a class="doc-link" href="../../grc/L05-fm-spectrum.grc" download>L05-fm-spectrum.grc</a>: the FM band from a PlutoSDR as a spectrum and waterfall, with frequency and gain sliders, a DC tracking check box, and a SigMF Sink to enable for recording.
+- <a class="doc-link" href="../../grc/L05-psd.py" download>L05-psd.py</a>: reads a SigMF recording, takes the sample rate and center frequency from its `.sigmf-meta`, and plots its power spectral density.
 
 Open a `.grc` file from GRC's File menu, or run `gnuradio-companion L05-tone.grc` from the radioconda prompt.
 

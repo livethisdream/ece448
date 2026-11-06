@@ -6,9 +6,10 @@ options:
     cmake_opt: ''
     comment: ''
     copyright: ''
-    description: 'L7: a WBFM receiver. Plays L07-fm-test.sigmf-data; set the file
-      to your fm_capture.cfile and the center to its frequency, or disable the File
-      Source and enable the PlutoSDR Source to receive live.'
+    description: 'L7: a WBFM receiver. Plays L07-fm-test.sigmf-data; set the SigMF
+      Source''s file to your fm_capture.sigmf-data and the center to the frequency
+      in its .sigmf-meta, or disable the SigMF Source and enable the PlutoSDR Source
+      to receive live.'
     gen_cmake: 'On'
     gen_linking: dynamic
     generate_options: qt_gui
@@ -293,28 +294,6 @@ blocks:
     coordinate: [940, 300]
     rotation: 0
     state: enabled
-- name: file_source
-  id: blocks_file_source
-  parameters:
-    affinity: ''
-    alias: ''
-    begin_tag: pmt.PMT_NIL
-    comment: ''
-    file: L07-fm-test.sigmf-data
-    length: '0'
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    offset: '0'
-    repeat: 'True'
-    type: complex
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [16, 240]
-    rotation: 0
-    state: enabled
 - name: fm_demod
   id: analog_quadrature_demod_cf
   parameters:
@@ -537,6 +516,26 @@ blocks:
     coordinate: [300, 120]
     rotation: 0
     state: enabled
+- name: sigmf_source
+  id: blocks_sigmf_source_minimal
+  parameters:
+    affinity: ''
+    alias: ''
+    begin_tag: pmt.PMT_NIL
+    comment: ''
+    file: L07-fm-test.sigmf-data
+    length: '0'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    repeat: 'True'
+    type: complex float (fc32_le)
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [16, 240]
+    rotation: 0
+    state: enabled
 - name: volume
   id: blocks_multiply_const_vxx
   parameters:
@@ -561,12 +560,12 @@ connections:
 - [channel_filter, '0', fm_demod, '0']
 - [deemphasis, '0', audio_spectrum, '0']
 - [deemphasis, '0', volume, '0']
-- [file_source, '0', channel_filter, '0']
-- [file_source, '0', rf_spectrum, '0']
 - [fm_demod, '0', audio_filter, '0']
 - [fm_demod, '0', mpx_spectrum, '0']
 - [pluto, '0', channel_filter, '0']
 - [pluto, '0', rf_spectrum, '0']
+- [sigmf_source, '0', channel_filter, '0']
+- [sigmf_source, '0', rf_spectrum, '0']
 - [volume, '0', audio_sink, '0']
 
 metadata:

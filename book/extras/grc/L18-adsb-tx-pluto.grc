@@ -9,8 +9,8 @@ options:
     description: 'L18: the ADS-B Out generator of L18-adsb-tx.grc, sent from a PlutoSDR
       at 915 MHz, never at 1090 MHz, into a cable through a 30 dB attenuator to a
       PlutoSDR receiver running L18-adsb-rx.grc with fc = 915e6 (or over the air at
-      915 MHz at low power, if your instructor says so). It runs until you stop it.
-      TX attenuation never goes below 30 dB.'
+      915 MHz at low power, if I say so). It runs until you stop it. TX attenuation
+      never goes below 30 dB.'
     gen_cmake: 'On'
     gen_linking: dynamic
     generate_options: qt_gui

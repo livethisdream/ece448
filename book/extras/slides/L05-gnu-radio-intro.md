@@ -160,7 +160,7 @@ Windows: Analog Devices' PlutoSDR USB driver, then ip:192.168.2.1 works. Linux: 
 
 ## A Real Signal in GRC
 
-<img src="./img/05-gnu-radio/L05-grc-fm.png" alt="The L5 FM flowgraph: PlutoSDR Source feeding a QT GUI Sink, with a disabled File Sink" style="max-height:400px; display:block; margin:0 auto;">
+<img src="./img/05-gnu-radio/L05-grc-fm.png" alt="The L5 FM flowgraph: PlutoSDR Source feeding a QT GUI Sink, with a disabled SigMF Sink" style="max-height:400px; display:block; margin:0 auto;">
 
 The display spans $f_c \pm f_s/2$: 2.4 MHz of the FM band at once.
 
@@ -191,12 +191,12 @@ Demo both extremes live: gain at zero hides the weak stations; gain at the top o
 
 ## Recording IQ
 
-- A **File Sink** writes raw complex samples, 8 bytes each.
+- A **SigMF Sink** writes raw complex samples, 8 bytes each.
 - 2.4 MS/s fills 19.2 MB every second.
-- Record the sample rate and center frequency with the file.
+- A small meta file beside them holds the sample rate and center frequency.
 
 Note:
-Enable the File Sink for about one second, then disable it, and show the file size against the 19.2 MB per second on the slide. Mention SigMF, which later lessons use for handed-out captures.
+Set the center frequency first, since the sink writes the meta file when the run starts. Enable the SigMF Sink for about one second, then disable it, and show the .sigmf-data size against the 19.2 MB per second on the slide. Open the .sigmf-meta in a text editor: datatype cf32_le, sample rate, center frequency. Every recording in this course is a SigMF pair. GRC outlines the block in orange because 3.10 marks it deprecated; it works.
 
 ---
 
@@ -208,10 +208,10 @@ power_dbfs = 10*np.log10(np.mean(np.abs(x)**2))
 X = np.fft.fftshift(np.fft.fft(x[:2048]))
 ```
 
-One line reads a GNU Radio capture into NumPy.
+One line reads the samples, but nothing in them says $f_s$ or $f_c$.
 
 Note:
-Run L05-psd.py on the capture just recorded and compare the plot to the frequency sink. They should match.
+The array has no sample rate or center frequency, so its FFT bins have no frequencies. That is what the meta file adds. Run python L05-psd.py fm_capture.sigmf-data, which reads both from the .sigmf-meta, and compare the plot to the frequency sink. They should match.
 
 ---
 

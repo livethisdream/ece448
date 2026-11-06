@@ -104,7 +104,7 @@ the material. A lesson is a guided walkthrough, not a chapter.
     CW, hopping, a simulated remote) is never sent on its real
     frequency: it is recorded as SigMF, or transmitted at 915 MHz, either
     into a cable through the 30 dB attenuator or over the air at low
-    power, as the instructor chooses for that lab. Live
+    power, as Neil chooses for that lab. Live
     reception of real signals on their own frequencies (FM, HD Radio,
     ADS-B aircraft) is unchanged.
 - **SDR Flex is an explore tool** (Neil, 2026-10-21; narrowed 2026-10-29
@@ -161,9 +161,11 @@ budgets, checks) still apply. Where 444 would put a derivation on screen,
   cadet downloads, or one a lab has them make, is a SigMF pair: the samples in
   `<name>.sigmf-data` and the sample rate, center frequency, and datatype in
   `<name>.sigmf-meta`. The data file is raw samples, so a File Source reads it
-  with the type the meta file names. To convert: L14's handed-out `.cu8`
-  captures, and the L5 Lab recording, which the lesson already says to save
-  as SigMF.
+  with the type the meta file names. Converted 2026-11-06: the L5 Lab
+  recording (`fm_capture`, a SigMF Sink, read by L7's SigMF Source) and L14's
+  test file and lab capture. L14's are `cu8`, which GNU Radio 3.10's SigMF
+  blocks do not take, so a File Sink or byte File Source handles the samples
+  and `L14-hd-test-tx.grc`'s `write_meta` snippet writes the meta file.
 
 - **Midterm (Neil, 2026-11-01).** Individual and take home, one PDF.
   - **Fox hunt:** the fox sends at 915 MHz over the air at low power. It
@@ -174,8 +176,8 @@ budgets, checks) still apply. Where 444 would put a derivation on screen,
     `MT-foxhunt.grc` is the receiver (spectrum, waterfall, channel power in
     dBFS, ADC level). Objective 5.3 now reads "using a PlutoSDR, an antenna,
     and GNU Radio".
-  - **CTF:** a set of SigMF recordings of unknown signals, released by the
-    instructor; cadets find, identify, demodulate, and decode each to a flag
+  - **CTF:** a set of SigMF recordings of unknown signals, released by
+    Neil; cadets find, identify, demodulate, and decode each to a flag
     worth points, with a writeup per flag. **The challenge set is not yet
     fixed** ("loosely defined at this moment"); the public page lists no
     signals, points, or recordings. A practice set (generator, flags,
@@ -386,11 +388,11 @@ since they follow this structure. Two changes:
   `L17-chips.grc`, and `L17-explore-pluto.grc` live at 433.72 and
   314.8 MHz; L20's `L20-band-pluto.grc` bursts at 20 MS/s on Wi-Fi
   (2.437 GHz) and LTE (729-756 MHz); live ADS-B on a Pluto with gr-adsb.
-- **L17 over-the-air fan demo** (Neil, 2026-10-29): L17 closes with an
-  instructor demo that operates the classroom's Hunter fan over the air, at
+- **L17 over-the-air fan demo** (Neil, 2026-10-29): L17 closes with a
+  demo by Neil that operates the classroom's Hunter fan over the air, at
   very low power and a few meters away, from Neil's own encoder flowgraph
-  (`ECE448-faculty/L20_Remotes`). Cadets transmit at 915 MHz, by cable or, if the
-  instructor says so, over the air at low power.
+  (`ECE448-faculty/L20_Remotes`). Cadets transmit at 915 MHz, by cable or, if
+  Neil says so, over the air at low power.
 - **Open for Neil:** whether to publish the third-party AIS recording
   ("bebau") from the faculty repo for L19.
 

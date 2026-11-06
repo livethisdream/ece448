@@ -9,10 +9,10 @@ options:
     description: 'L19: the simulated AIS transmitter of L19-ais-tx.grc, sent from
       a PlutoSDR at 915 MHz, never on 161.975 or 162.025 MHz, into a cable through
       a 30 dB attenuator to a PlutoSDR receiver running L19-ais-rx.grc with fc = 915e6
-      (or over the air at 915 MHz at low power, if your instructor says so). The two
-      channels sit at -25 and +25 kHz from 915 MHz, as they do from 162 MHz. A Rational
-      Resampler raises 96 kS/s to the Pluto''s 576 kS/s. It runs until you stop it.
-      TX attenuation never goes below 30 dB.'
+      (or over the air at 915 MHz at low power, if I say so). The two channels sit
+      at -25 and +25 kHz from 915 MHz, as they do from 162 MHz. A Rational Resampler
+      raises 96 kS/s to the Pluto''s 576 kS/s. It runs until you stop it. TX attenuation
+      never goes below 30 dB.'
     gen_cmake: 'On'
     gen_linking: dynamic
     generate_options: qt_gui

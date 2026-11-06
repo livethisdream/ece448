@@ -48,7 +48,7 @@ Lesson 7 · Module 3: Analog Modulation · Dr. Neil Rogers
 - Today we get audio from one of them, and its station name.
 :::
 
-In the L5 Lab you recorded a few seconds of the FM band to `fm_capture.cfile`. The figure is a file of the same kind: 2.4 million complex samples per second around 100.0 MHz, holding a station at 100.3 MHz and a weaker one at 99.5 MHz. It came from a GNU Radio flowgraph rather than an antenna, so the figure carries a "Simulated" label. The station at 100.3 MHz carries a two-tone message, the L6 message of 1 kHz and 2.5 kHz, and its name, "ECE 448", in RDS data.
+In the L5 Lab you recorded a few seconds of the FM band to `fm_capture.sigmf-data`, with its sample rate and center frequency in `fm_capture.sigmf-meta`. The figure is a recording of the same kind: 2.4 million complex samples per second around 100.0 MHz, holding a station at 100.3 MHz and a weaker one at 99.5 MHz. It came from a GNU Radio flowgraph rather than an antenna, so the figure carries a "Simulated" label. The station at 100.3 MHz carries a two-tone message, the L6 message of 1 kHz and 2.5 kHz, and its name, "ECE 448", in RDS data.
 
 By the end of the lesson we will turn that file into audio, read the station's name out of it, and then point the same flowgraph at the live band. We will also build an AM receiver for the aircraft band and compare AM and FM in the same noise.
 
@@ -80,15 +80,15 @@ An FM signal is a little wider than $2\Delta f$, because the frequency swings at
 ::::{frame} The Receiver Flowgraph
 :::{present}
 <img src="../../viz/img/L07-grc-wbfm-rx.png"
-     alt="GNU Radio Companion with L07-wbfm-rx.grc open: a File Source and a disabled PlutoSDR Source feed a Frequency Xlating FIR Filter with decimation 10, then a Quadrature Demod, a Decimating FIR Filter with decimation 5, an FM Deemphasis block, a volume Multiply Const, and an Audio Sink; frequency sinks show the received band, the demodulated multiplex, and the audio"
+     alt="GNU Radio Companion with L07-wbfm-rx.grc open: a SigMF Source and a disabled PlutoSDR Source feed a Frequency Xlating FIR Filter with decimation 10, then a Quadrature Demod, a Decimating FIR Filter with decimation 5, an FM Deemphasis block, a volume Multiply Const, and an Audio Sink; frequency sinks show the received band, the demodulated multiplex, and the audio"
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
-- The source is a File Source or the PlutoSDR.
+- The source is a SigMF Source or the PlutoSDR.
 - A channel filter, a demodulator, an audio filter, and de-emphasis feed the speaker.
 :::
 
-`L07-wbfm-rx.grc` is the whole receiver in six processing blocks. The File Source plays a recording, and the PlutoSDR Source receives live at the same 2.4 MS/s, with manual gain from the RF gain slider; GRC grays it out because we disabled it. Both feed the same channel filter, so switching from a file to the air means disabling one source and enabling the other. Neither path needs a Throttle: the Audio Sink takes exactly 48,000 samples per second, as in Lesson 6, and that paces the File Source too.
+`L07-wbfm-rx.grc` is the whole receiver in six processing blocks. The **SigMF Source** plays a recording, and the PlutoSDR Source receives live at the same 2.4 MS/s, with manual gain from the RF gain slider; GRC grays it out because we disabled it. Both feed the same channel filter, so switching from a file to the air means disabling one source and enabling the other. Neither path needs a Throttle: the Audio Sink takes exactly 48,000 samples per second, as in Lesson 6, and that paces the SigMF Source too. The SigMF Source is a File Source that reads the `.sigmf-data` file; its Output Type matches the datatype in the `.sigmf-meta`, `cf32_le` here, and GRC outlines it in orange because GNU Radio 3.10 marks it deprecated.
 
 The two variables at the top tie the receiver to the radio. `fc_mhz` is the frequency we tune the SDR to, or the center frequency we recorded the file at, and `station_mhz` is the station we want. The next four frames describe the chain one block at a time.
 ::::
@@ -169,7 +169,7 @@ The transmitter boosts the treble of its audio before modulating, a step called 
 
 The figure is the receiver running on the test file. The bottom right sink is the audio after de-emphasis, with the 1 kHz and 2.5 kHz tones of the message and nothing else above the floor, which is the check that the receiver works: the demodulated audio matches what the test transmitter sent. Type 99.5 into Station and the audio changes to the second station's single, different test tone.
 
-To use your own L5 capture, set the File Source's file to `fm_capture.cfile`, type the center frequency you recorded at into SDR center, and set Station to the station you centered. To receive live, disable the File Source, enable the PlutoSDR Source, and run it again. A real station's audio sink will show music or speech rather than two lines.
+To use your own L5 capture, set the SigMF Source's file to `fm_capture.sigmf-data`, type the center frequency from `fm_capture.sigmf-meta` into SDR center, in megahertz, and set Station to the station you centered. To receive live, disable the SigMF Source, enable the PlutoSDR Source, and run it again. A real station's audio sink will show music or speech rather than two lines.
 ::::
 
 ::::{frame} RDS
@@ -300,7 +300,7 @@ FM spreads the message over a wider channel and, while the signal is strong, com
 - Then tune NOAA weather, 162.400–162.550 MHz: faint, and noisy.
 :::
 
-Before decoding anything on the air, find the station and hear it. Run the Lesson 5 flowgraph, `L05-fm-spectrum.grc`, on the PlutoSDR and drag across 88 to 108 MHz; a strong station is a tall stripe about 200 kHz wide on the waterfall. Stop it, since only one flowgraph can stream from the Pluto at a time. Open `L07-wbfm-rx.grc`, disable the File Source, enable the PlutoSDR Source, and run it with Station set to that frequency and SDR center a few hundred kilohertz away; the next frame says why. The station plays.
+Before decoding anything on the air, find the station and hear it. Run the Lesson 5 flowgraph, `L05-fm-spectrum.grc`, on the PlutoSDR and drag across 88 to 108 MHz; a strong station is a tall stripe about 200 kHz wide on the waterfall. Stop it, since only one flowgraph can stream from the Pluto at a time. Open `L07-wbfm-rx.grc`, disable the SigMF Source, enable the PlutoSDR Source, and run it with Station set to that frequency and SDR center a few hundred kilohertz away; the next frame says why. The station plays.
 
 Write down the frequency and the call sign the station gives at the top of the hour, or the one the FCC lists for that frequency in your area. That name is the check that the RDS flowgraph decodes the station correctly.
 

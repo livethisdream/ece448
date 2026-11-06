@@ -154,17 +154,17 @@ The left panel shows the spectra of five neighboring subcarriers with the HD Rad
 ::::{frame} The Test Signal
 :::{present}
 <img src="../../viz/img/L14-grc-test-tx.png"
-     alt="GNU Radio Companion with L14-hd-test-tx.grc open: for each sideband, a Random Uniform Source, Chunks to Symbols for QPSK, Stream to Tagged Stream, OFDM Carrier Allocator, a reverse FFT, an OFDM Cyclic Prefixer, and a level; an FM host from filtered noise and a 19 kHz pilot; an analog-only neighbor shifted to minus 400 kHz; a Noise Source; an Add, Head, and a conversion to unsigned bytes into a File Sink"
+     alt="GNU Radio Companion with L14-hd-test-tx.grc open: for each sideband, a Random Uniform Source, Chunks to Symbols for QPSK, Stream to Tagged Stream, OFDM Carrier Allocator, a reverse FFT, an OFDM Cyclic Prefixer, and a level; an FM host from filtered noise and a 19 kHz pilot; an analog-only neighbor shifted to minus 400 kHz; a Noise Source; an Add, Head, and a conversion to unsigned bytes into a File Sink; and a Python Snippet that writes the SigMF meta file"
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
 - Each sideband is random QPSK on 191 subcarriers, built with an inverse FFT.
-- It writes 4 s as unsigned bytes, nrsc5's default format: 11.9 MB.
+- It writes 4 s as unsigned bytes, nrsc5's default format, as a SigMF pair: 11.9 MB.
 :::
 
 `L14-hd-test-tx.grc` recreates a hybrid station with the OFDM blocks of the previous frames. For each sideband, random QPSK points fill subcarriers 356 to 546 in the **OFDM Carrier Allocator**, a reverse **FFT** of 4096 points turns them into one symbol, and the **OFDM Cyclic Prefixer** adds the 224-sample guard. A Multiply Const sets each sideband's level, here $-23$ dBc. The FM host is filtered noise and a 19 kHz pilot, frequency modulated with the broadcast 75 kHz deviation setting, and an analog-only station sits 400 kHz below.
 
-The sidebands carry random symbols, not NRSC-5 data, so nrsc5 cannot decode this file; it is a test signal for finding and measuring the sidebands. It writes `L14-hd-test.cu8`, unsigned 8-bit I and Q at 1,488,375 samples per second, nrsc5's default input format. Nothing in it transmits: its last block is a File Sink.
+The sidebands carry random symbols, not NRSC-5 data, so nrsc5 cannot decode this file; it is a test signal for finding and measuring the sidebands. It writes the SigMF pair `L14-hd-test.sigmf-data` and `L14-hd-test.sigmf-meta`: unsigned 8-bit I and Q at 1,488,375 samples per second, nrsc5's default input format, which the meta file names as datatype `cu8`, with the center frequency, 100.3 MHz. GNU Radio's SigMF Sink takes no 8-bit samples, so a File Sink writes the data file and a **Python Snippet**, `write_meta`, writes the meta file when the flowgraph starts. nrsc5 reads any file without a `.cs16` or `.cf32` ending as `cu8`, so `nrsc5 -r L14-hd-test.sigmf-data 0` reads the data file as it is, though it finds nothing to decode. Nothing in it transmits: its last block is a File Sink.
 ::::
 
 ::::{frame} The Sideband Finder
@@ -273,8 +273,8 @@ A weak station reads high, as the noise frame showed. As in Lesson 7, receiving 
 ::::{frame} Downloads
 :class: read-only doc-links
 
-- <a class="doc-link" href="../../grc/L14-hd-test-tx.grc" download>L14-hd-test-tx.grc</a>: writes `L14-hd-test.cu8`, 4 s (11.9 MB) of a simulated hybrid station at 100.3 MHz, with an analog-only neighbor 400 kHz below. Run it once; it stops on its own.
-- <a class="doc-link" href="../../grc/L14-hd-find.grc" download>L14-hd-find.grc</a>: the spectrum, waterfall, and sideband power meters, playing the test file, an unsigned 8-bit recording at 1,488,375 samples per second, or the PlutoSDR live, and recording the Pluto as SigMF for nrsc5.
+- <a class="doc-link" href="../../grc/L14-hd-test-tx.grc" download>L14-hd-test-tx.grc</a>: writes `L14-hd-test.sigmf-data` and `.sigmf-meta`, 4 s (11.9 MB) of a simulated hybrid station at 100.3 MHz, with an analog-only neighbor 400 kHz below. Run it once; it stops on its own.
+- <a class="doc-link" href="../../grc/L14-hd-find.grc" download>L14-hd-find.grc</a>: the spectrum, waterfall, and sideband power meters, playing the test file, or any SigMF recording of datatype `cu8` at 1,488,375 samples per second, or the PlutoSDR live, and recording the Pluto as SigMF for nrsc5.
 
 Put both flowgraphs in one folder and run the test transmitter first; GRC runs a flowgraph from its own folder, so the finder finds the test file there.
 

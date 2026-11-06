@@ -138,7 +138,8 @@ use only the PlutoSDR's receive port, and nothing in this lab needs a license. S
 the volume low.
 
 \textbf{Files.} Download the six L7 flowgraphs from the L7 lesson page into one
-folder, with your \texttt{fm\_capture.cfile} from the L5 Lab. Open
+folder, with your \texttt{fm\_capture.sigmf-data} and \texttt{fm\_capture.sigmf-meta}
+from the L5 Lab; the meta file gives your capture's center frequency. Open
 \texttt{L07-rds-rx.grc} first and confirm that GRC shows no missing blocks: gr-rds
 comes with radioconda; if GRC reports the RDS blocks missing, run
 \texttt{mamba install gnuradio-rds} from the radioconda prompt. Then, before the
@@ -165,7 +166,7 @@ period, run \texttt{L07-fm-test-tx.grc}, which also uses an RDS block, and
 	\hline
 	Recording & SDR center (MHz) & Station (MHz) & Shift (kHz) \\\hline
 	Example capture & $101.5$ & $101.1$ & \kv{\keysol{kv1}} \\\hline
-	\texttt{fm\_capture.cfile} & & & \\\hline
+	\texttt{fm\_capture.sigmf-data} & & & \\\hline
 	\end{tabular}
 	\end{center}
 
@@ -242,7 +243,8 @@ open \texttt{L07-wbfm-rx.grc}: build the receiver yourself.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \question \textbf{Your L5 capture.} In your receiver from Question 2, set the File
-Source to \texttt{fm\_capture.cfile}, SDR center to the frequency you recorded it at,
+Source to \texttt{fm\_capture.sigmf-data}, SDR center to the center frequency in
+\texttt{fm\_capture.sigmf-meta},
 and Station to the station you centered. Add a float QT GUI Frequency Sink on the
 Quadrature Demod output, with bandwidth \texttt{samp\_rate/5}.
 
@@ -266,7 +268,7 @@ then decode its RDS data.
 \begin{parts}
 
 	\part Run \texttt{L05-fm-spectrum.grc}, find a strong station between 88 and
-	108~MHz, and stop it. Then run \texttt{L07-wbfm-rx.grc} with the File Source
+	108~MHz, and stop it. Then run \texttt{L07-wbfm-rx.grc} with the SigMF Source
 	disabled and the PlutoSDR Source enabled, SDR center about 300~kHz below the
 	station, and Station set to it. Record the frequency, the call sign the station
 	announces (or the FCC lists for it), and whether the 19~kHz stereo pilot shows on

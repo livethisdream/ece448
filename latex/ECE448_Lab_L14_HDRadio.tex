@@ -138,9 +138,12 @@ question asks for one.
 captures came from GNU Radio flowgraphs, not from an antenna.
 
 The flowgraphs are on the L14 lesson page, \texttt{L14-hd-test-tx.grc} and
-\texttt{L14-hd-find.grc}, and the capture \texttt{L14-lab-capture.cu8}, which your instructor posts on
-the L14 Lab page before the lab. Both captures are simulated: unsigned 8-bit I and Q at 1,488,375 samples per second,
-the default format nrsc5 reads. Every number below uses the hybrid values from
+\texttt{L14-hd-find.grc}, and the capture, \texttt{L14-lab-capture.sigmf-data} and its
+\texttt{.sigmf-meta}, which I post on the L14 Lab page before the lab. Both captures are
+simulated SigMF pairs: unsigned 8-bit I and Q at 1,488,375 samples per second, the default
+format nrsc5 reads. Each meta file gives the datatype \texttt{cu8}, a sample rate of 1488375,
+and a center frequency of 100300000. GNU Radio's SigMF Source does not read \texttt{cu8}, so
+a File Source of type byte reads the \texttt{.sigmf-data} file. Every number below uses the hybrid values from
 the lesson: subcarriers 363.4 Hz apart, one FFT bin at \texttt{fft\_len} 4096, sidebands from
 subcarrier 356 to 546 on each side, partitions of 19 subcarriers, and an extended hybrid
 station adding one, two, or four partitions inside subcarrier 356 on each side.
@@ -152,7 +155,7 @@ station adding one, two, or four partitions inside subcarrier 356 on each side.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \question \textbf{Change a setting and read the finder.} Put both L14 flowgraphs in one
 folder. Open \texttt{L14-hd-test-tx.grc}, change the Variable \texttt{upper\_dbc} from $-23$
-to $-18$, and run it once to write \texttt{L14-hd-test.cu8}. Then open and run
+to $-18$, and run it once to write \texttt{L14-hd-test.sigmf-data} and \texttt{.sigmf-meta}. Then open and run
 \texttt{L14-hd-find.grc}.
 
 \begin{parts}
@@ -229,7 +232,7 @@ upper sideband reading at each step.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newpage
 \question \textbf{Identify the lab capture.} Run your meter on
-\texttt{L14-lab-capture.cu8}, as the lab page lists. Treat the center as 100.3 MHz.
+\texttt{L14-lab-capture.sigmf-data}, as the lab page lists. Its meta file gives the center, 100.3 MHz.
 
 \begin{parts}
 
@@ -346,7 +349,7 @@ README; we have not yet tested them in this course.
 	configuration.
 		\begin{solution}[1.5in]\keysol{sol17}\end{solution}
 
-	\part nrsc5 cannot decode \texttt{L14-hd-test.cu8}, although its sidebands have the right
+	\part nrsc5 cannot decode \texttt{L14-hd-test.sigmf-data}, although its sidebands have the right
 	subcarriers, spacing, and guard. Name two things nrsc5 needs from a signal that the test
 	file does not provide.
 		\begin{solution}[1.5in]\keysol{sol18}\end{solution}
