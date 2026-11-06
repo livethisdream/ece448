@@ -25,6 +25,18 @@ shots first, in one folder:
 L14-hd-scan is the spectrum and waterfall half of find.png, the first look at
 the band that opens the lesson.
 
+The demodulation figures come from L14-hd-demod.grc and L14-hd-rx.grc. Their
+recording is nrsc5's sample capture of KUT 90.5 (support/sample.xz in the nrsc5
+repository, unpacked as sample), a real station, so only the runs on the test
+file or with added noise carry a stamp. Take the GUI shots at twice the size:
+
+    grcc -o DIR book/extras/grc/L14-hd-demod.grc     # set iq_file per run
+    QT_SCALE_FACTOR=2 xvfb-run -s "-screen 0 3000x1800x24" python3.12 \
+        scripts/grc/grc_shot.py --size 1400x820 L14_hd_demod.py demod_kut.png 10
+    # demod_noise.png: the same with noise_amp=0.015
+    scripts/grc/grc_canvas.sh book/extras/grc/L14-hd-demod.grc DIR/canvas_demod.png 1880x1060
+    scripts/grc/grc_canvas.sh book/extras/grc/L14-hd-rx.grc DIR/canvas_rx.png 1880x1060
+
     python3 scripts/graphics/l14_figures.py [DIR]
 """
 
@@ -129,7 +141,55 @@ def shots(raw: Path):
     save(Image.open(raw / "canvas_tx.png").crop((0, 68, 1790, 940)), "L14-grc-test-tx", colors=64)
 
 
+def demod_shots(raw: Path):
+    """Panels of L14-hd-demod.grc, from shots at twice the window size."""
+    from PIL import Image, ImageDraw, ImageFont
+
+    f = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 34)
+    box = {"spectrum": (20, 20, 1130, 790), "prefix": (1130, 20, 1950, 790),
+           "score": (1950, 20, 2750, 790), "bpsk": (20, 790, 1120, 1630),
+           "qpsk": (1130, 790, 1950, 1630)}
+
+    def row(shot, panels, label=None):
+        im = Image.open(raw / shot).convert("RGB")
+        parts = [im.crop(box[p]) for p in panels]
+        out = Image.new("RGB", (sum(p.size[0] for p in parts), max(p.size[1] for p in parts)), "white")
+        x = 0
+        for p in parts:
+            out.paste(p, (x, 0))
+            x += p.size[0]
+        if label:  # in a strip of its own, clear of the plot titles
+            framed = Image.new("RGB", (out.size[0], out.size[1] + 64), "white")
+            framed.paste(out, (0, 64))
+            out = framed
+            d = ImageDraw.Draw(out)
+            xy = (out.size[0] - 30, 14)
+            x0, y0, x1, y1 = d.textbbox(xy, label, font=f, anchor="ra")
+            d.rectangle((x0 - 12, y0 - 8, x1 + 12, y1 + 8), fill="#fdf0d5")
+            d.text(xy, label, font=f, fill=AMBER, anchor="ra")
+        return out
+
+    def save(im, name, colors=48):
+        im = im.quantize(colors=colors, method=Image.Quantize.MEDIANCUT, dither=Image.Dither.NONE)
+        for out in SHOTS:
+            out.mkdir(parents=True, exist_ok=True)
+            im.save(out / f"{name}.png", optimize=True)
+        print(f"wrote {name}.png ({(SHOTS[0] / f'{name}.png').stat().st_size // 1024} KB)")
+
+    save(row("demod_kut.png", ["spectrum", "prefix"]), "L14-demod-symbols")
+    save(row("demod_kut.png", ["score", "bpsk"]), "L14-demod-refs")
+    save(row("demod_kut.png", ["qpsk"]), "L14-demod-qpsk")
+    save(row("demod_noise.png", ["score", "qpsk"], "Added noise 0.015"), "L14-demod-noise")
+    for name in ("demod", "rx"):
+        canvas = Image.open(raw / f"canvas_{name}.png").convert("RGB")
+        save(canvas.crop((0, 68, canvas.size[0], canvas.size[1])), f"L14-grc-{name}", colors=64)
+
+
 if __name__ == "__main__":
     hybrid()
     if len(sys.argv) > 1:
-        shots(Path(sys.argv[1]))
+        raw = Path(sys.argv[1])
+        if (raw / "find.png").exists():
+            shots(raw)
+        if (raw / "demod_kut.png").exists():
+            demod_shots(raw)
