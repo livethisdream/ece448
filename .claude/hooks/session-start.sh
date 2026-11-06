@@ -139,8 +139,8 @@ fi
 # `nrsc5 --iq-input-format cf32` both need). Both land under /usr, where
 # check_grc.py's grcc finds the blocks and the decoder finds libnrsc5. The
 # build needs github.com (nrsc5 fetches its own FAAD2) and nothing else.
-# Pinned to gr-hdradio PR #1's head; move it to main's commit once that merges.
-GR_HDRADIO_REV=4dfd1b4d76ba18bfc7dda6c90e4e4d56f23219d7
+# Pinned to gr-hdradio main after PR #1 (squash-merged).
+GR_HDRADIO_REV=be49491ebfe9687abda79060fae77febab70d190
 if [ -f /usr/share/gnuradio/grc/blocks/hdradio_hd_receiver.block.yml ] \
    && command -v nrsc5 >/dev/null 2>&1; then
   log "nrsc5 and gr-hdradio present, skipping build"
