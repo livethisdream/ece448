@@ -32,7 +32,7 @@ L14 Lab · Module 6: Waveform Applications & RF Reverse Engineering · Dr. Neil 
 - **Writeup:** explain what you saw and what it tells you about each station.
 :::
 
-Lesson 14 found the HD Radio sidebands in a simulated test file and measured them with `L14-hd-find.grc`. Today you build the sideband meter yourself from an empty canvas, use it on a second capture whose configuration you do not know, and then point it at a live station with the PlutoSDR. Last, if you have nrsc5, you can decode a recording of the station; that step is optional. The lab packet has three parts, and you turn it in once, complete, before Lesson 15. You do **Part 1, the Pre-Lab**, on your own before the period, record **Part 2**'s measurements in class, and explain them in **Part 3, the Writeup**.
+Lesson 14 found the HD Radio sidebands in a simulated test file and measured them with `L14-hd-find.grc`. Today you build the sideband meter yourself from an empty canvas, use it on a second capture whose configuration you do not know, and then point it at a live station with the PlutoSDR. Last, if your laptop has gr-hdradio, you can decode the station live with Lesson 14's receiver; that step is optional. The lab packet has three parts, and you turn it in once, complete, before Lesson 15. You do **Part 1, the Pre-Lab**, on your own before the period, record **Part 2**'s measurements in class, and explain them in **Part 3, the Writeup**.
 
 Nothing in this lab transmits. The PlutoSDR only receives, because your meter has no transmit block, and both captures came from GNU Radio flowgraphs, not from an antenna.
 ::::
@@ -101,15 +101,15 @@ The figure shows the lesson's simulated test file; a live station's host is roug
 5. Lower the Pluto RX gain slider in steps and watch the shelves and the readings as the floor rises toward them, for Question 5(c).
 ::::
 
-::::{frame} Part 2: Decoding with nrsc5 (Optional)
+::::{frame} Part 2: Decoding with gr-hdradio (Optional)
 :class: read-only
 
-This part is optional, and Question 6 does not count toward the grade. nrsc5 is not part of radioconda, and it has no PlutoSDR driver, so it decodes a recording you make in GRC. Use a laptop that has a recent nrsc5 installed, your own or one I provide. These steps follow the nrsc5 project's documentation; we have not yet tested them in this course.
+This part is optional, and Question 6 does not count toward the grade. It needs gr-hdradio and nrsc5 on your laptop, which Lesson 14's Setting Up gr-hdradio frame installs; if yours does not have them, use one I provide. We have run these steps on recordings but not yet on a live station in this course.
 
-1. Open `L14-hd-find.grc` and switch it to the PlutoSDR as the lesson describes, then also enable its Rational Resampler and SigMF Sink. Type your station's frequency in MHz into the finder's Center (MHz) and set the gain you used before you run it, because the SigMF Sink records the center frequency when the flowgraph starts.
-2. Run it for about 10 s and stop it. It writes `hd.sigmf-data`, about 60 MB, at 744,188 samples per second, and `hd.sigmf-meta`.
-3. Run `nrsc5 --iq-input-format cf32 -r hd.sigmf-data 0`. It takes a few seconds to synchronize. Record the station name, the song title and artist, and any HD2 or HD3 program it reports, for Question 6(a). Try program 1 for HD2.
-4. Record and decode again at lower gains, a few dB at a time, until nrsc5 stops playing audio. Record the lowest gain at which it plays, and how high the shelves stand above the floor in your meter at that gain, for Question 6(b).
+1. Open `L14-hd-rx.grc` from Lesson 14 and switch it to the PlutoSDR as the lesson describes: disable the File Source and the six blocks after it, and enable the PlutoSDR Source.
+2. Type your station's frequency in MHz into Center (MHz), set Pluto RX gain to the gain you used for your meter, and run it. The receiver takes about 5 s to lock, and then HD1 plays.
+3. Record the station name, the title and artist of what is playing, and any HD2 or HD3 program, for Question 6(a). The console prints them as they arrive, and the Program buttons switch between programs.
+4. Lower the Pluto RX gain a few dB at a time until the audio stops, and record the lowest gain at which it still plays. Only one flowgraph can use the Pluto at a time, so stop the receiver, run your meter at that gain, and record how high the shelves stand above the floor, for Question 6(b).
 ::::
 
 ::::{frame} No Shelves?
@@ -137,7 +137,7 @@ The Writeup is three questions. The first compares the live station with the les
 - <a class="doc-link" href="../../labs/ECE448_Lab_L14_HDRadio_blank.pdf" target="_blank" rel="noopener">L14 Lab packet (PDF)</a>
 - `L14-lab-capture.sigmf-data` and `L14-lab-capture.sigmf-meta`, the lab's simulated capture for Question 4: I post them here before the lab.
 - The Lesson 14 page has `L14-hd-test-tx.grc`, which writes the lesson's test file, and `L14-hd-find.grc`, to check your meter against after Question 3.
-- nrsc5, for the optional Question 6, is at <a href="https://github.com/theori-io/nrsc5" target="_blank" rel="noopener">github.com/theori-io/nrsc5</a>.
+- `L14-hd-rx.grc`, for the optional Question 6, is on the Lesson 14 page, and its Setting Up gr-hdradio frame installs gr-hdradio and nrsc5.
 ::::
 
 ::::{frame} Looking Ahead
@@ -146,5 +146,5 @@ The Writeup is three questions. The first compares the live station with the les
 - Lesson 20 returns to OFDM, with QAM on each subcarrier.
 :::
 
-Keep your meter. Lesson 15 builds the carrier and timing recovery that nrsc5 performs on every HD Radio subcarrier, for a single mPSK carrier. Lesson 20 returns to OFDM, with QAM in place of QPSK on each subcarrier.
+Keep your meter. In Lesson 14 the cyclic prefix and the reference subcarriers gave the receiver each symbol's timing and each subcarrier's phase; Lesson 15 recovers both for a single mPSK carrier, which has neither. Lesson 20 returns to OFDM, with QAM in place of QPSK on each subcarrier.
 ::::
