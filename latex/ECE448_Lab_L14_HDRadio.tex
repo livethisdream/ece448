@@ -315,9 +315,9 @@ station with HD Radio, as the lab page lists.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newpage
 \question \textbf{Decode it (optional).} This question is optional and does not count
-toward the grade. Record the same station with \texttt{L14-hd-find.grc} and decode the
-recording with nrsc5, as the lab page lists. These steps are documented usage from the nrsc5
-README; we have not yet tested them in this course.
+toward the grade. Decode the same station live with Lesson 14's \texttt{L14-hd-rx.grc} on the
+PlutoSDR, as the lab page lists. It needs gr-hdradio and nrsc5; we have run it on recordings
+but not yet on a live station in this course.
 
 \begin{parts}
 
@@ -325,9 +325,9 @@ README; we have not yet tested them in this course.
 	programs the station carries.
 		\begin{solution}[1.0in]\keysol{sol13}\end{solution}
 
-	\part Record and decode again at lower gains until the audio stops. What is the lowest
-	gain at which nrsc5 still plays, and how high do the shelves stand above the floor in
-	your meter at that gain?
+	\part Lower the Pluto RX gain until the audio stops. What is the lowest gain at which the
+	receiver still plays, and how high do the shelves stand above the floor in your meter at
+	that gain?
 		\begin{solution}[1.0in]\keysol{sol14}\end{solution}
 
 \end{parts}
@@ -350,7 +350,7 @@ README; we have not yet tested them in this course.
 		\begin{solution}[1.5in]\keysol{sol17}\end{solution}
 
 	\part nrsc5 cannot decode \texttt{L14-hd-test.sigmf-data}, although its sidebands have the right
-	subcarriers, spacing, and guard. Name two things nrsc5 needs from a signal that the test
+	subcarriers, spacing, and cyclic prefix. Name two things nrsc5 needs from a signal that the test
 	file does not provide.
 		\begin{solution}[1.5in]\keysol{sol18}\end{solution}
 
