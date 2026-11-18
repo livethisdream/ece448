@@ -32,7 +32,7 @@ L14 Lab · Module 6: Waveform Applications & RF Reverse Engineering · Dr. Neil 
 - **Writeup:** explain what you saw and what it tells you about each station.
 :::
 
-Lesson 14 found the HD Radio sidebands in a simulated test file and measured them with `L14-hd-find.grc`. Today you build the sideband meter yourself from an empty canvas, use it on a second capture whose configuration you do not know, and then point it at a live station with the PlutoSDR. Last, if you have nrsc5, you can decode a recording of the station; that step is optional. The lab packet has three parts, and you turn it in once, complete, before Lesson 15. You do **Part 1, the Pre-Lab**, on your own before the period, record **Part 2**'s measurements in class, and explain them in **Part 3, the Writeup**.
+Lesson 14 found the HD Radio sidebands in a simulated test file and measured them with `L14-hd-find.grc`. Today you build the sideband meter yourself from an empty canvas, use it on a second capture whose configuration you do not know, and then point it at a live station with the PlutoSDR. Last, if you have gr-hdradio installed, you can play the station live with `L14-hd-rx.grc`; that step is optional. The lab packet has three parts, and you turn it in once, complete, before Lesson 15. You do **Part 1, the Pre-Lab**, on your own before the period, record **Part 2**'s measurements in class, and explain them in **Part 3, the Writeup**.
 
 Nothing in this lab transmits. The PlutoSDR only receives, because your meter has no transmit block, and both captures came from GNU Radio flowgraphs, not from an antenna.
 ::::
@@ -101,15 +101,14 @@ The figure shows the lesson's simulated test file; a live station's host is roug
 5. Lower the Pluto RX gain slider in steps and watch the shelves and the readings as the floor rises toward them, for Question 5(c).
 ::::
 
-::::{frame} Part 2: Decoding with nrsc5 (Optional)
+::::{frame} Part 2: Decoding with gr-hdradio (Optional)
 :class: read-only
 
-This part is optional, and Question 6 does not count toward the grade. nrsc5 is not part of radioconda, and it has no PlutoSDR driver, so it decodes a recording you make in GRC. Use a laptop that has a recent nrsc5 installed, your own or one I provide. These steps follow the nrsc5 project's documentation; we have not yet tested them in this course.
+This part is optional, and Question 6 does not count toward the grade. It uses `L14-hd-rx.grc` from the lesson, which needs gr-hdradio and nrsc5; neither is part of radioconda, so install both first, as the lesson's Setting Up gr-hdradio frame describes. Use your own laptop or one I provide. These steps follow the lesson; we have not yet run them on a live station in this course.
 
-1. Open `L14-hd-find.grc` and switch it to the PlutoSDR as the lesson describes, then also enable its Rational Resampler and SigMF Sink. Type your station's frequency in MHz into the finder's Center (MHz) and set the gain you used before you run it, because the SigMF Sink records the center frequency when the flowgraph starts.
-2. Run it for about 10 s and stop it. It writes `hd.sigmf-data`, about 60 MB, at 744,188 samples per second, and `hd.sigmf-meta`.
-3. Run `nrsc5 --iq-input-format cf32 -r hd.sigmf-data 0`. It takes a few seconds to synchronize. Record the station name, the song title and artist, and any HD2 or HD3 program it reports, for Question 6(a). Try program 1 for HD2.
-4. Record and decode again at lower gains, a few dB at a time, until nrsc5 stops playing audio. Record the lowest gain at which it plays, and how high the shelves stand above the floor in your meter at that gain, for Question 6(b).
+1. Open `L14-hd-rx.grc` and switch it to the PlutoSDR as the lesson describes: disable the File Source and the six blocks after it, enable the PlutoSDR Source, and type your station's frequency in MHz into Center. Set Pluto RX gain near 30 dB.
+2. Run it. The receiver takes a few seconds to synchronize, then plays HD1. Record the station name and the song title and artist that it prints, and which programs (HD1 to HD4) the station carries, from the Program chooser, for Question 6(a).
+3. Lower Pluto RX gain a few dB at a time until the audio stops. Record the lowest gain at which it still plays. Close `L14-hd-rx.grc`, run your meter or `L14-hd-find.grc` on the Pluto at that gain, and record how high the shelves stand above the floor, for Question 6(b).
 ::::
 
 ::::{frame} No Shelves?
@@ -137,7 +136,7 @@ The Writeup is three questions. The first compares the live station with the les
 - <a class="doc-link" href="../../labs/ECE448_Lab_L14_HDRadio_blank.pdf" target="_blank" rel="noopener">L14 Lab packet (PDF)</a>
 - `L14-lab-capture.sigmf-data` and `L14-lab-capture.sigmf-meta`, the lab's simulated capture for Question 4: I post them here before the lab.
 - The Lesson 14 page has `L14-hd-test-tx.grc`, which writes the lesson's test file, and `L14-hd-find.grc`, to check your meter against after Question 3.
-- nrsc5, for the optional Question 6, is at <a href="https://github.com/theori-io/nrsc5" target="_blank" rel="noopener">github.com/theori-io/nrsc5</a>.
+- gr-hdradio, for the optional Question 6, is at <a href="https://github.com/livethisdream/gr-hdradio" target="_blank" rel="noopener">github.com/livethisdream/gr-hdradio</a>; its README covers installing it and nrsc5.
 ::::
 
 ::::{frame} Looking Ahead
