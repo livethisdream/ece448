@@ -279,6 +279,15 @@ budgets, checks) still apply. Where 444 would put a derivation on screen,
       Boxes line up (VOICE.md 34). The macros are not in `latex/` yet; the
       first module session to rework a packet adds them in one shared file.
       444's L21 blank packet is the worked example of the shape.
+    - **Few measured cells: the forest, not the trees** (Neil, 2026-11-21:
+      "we don't have too many 'measure this...' cells in the labs. When they
+      do that, they miss the forest for the trees"). A lab records only the
+      readings its Part 3 prompts and its one or two big ideas need, usually
+      a handful per run, not every value a step shows. A screenshot of the
+      whole picture beats a column of numbers read off it; a step that only
+      gets the cadet to the next one asks for no entry. Before adding a
+      cell, name the Part 3 prompt or the comparison that uses it; if none
+      does, cut it. Fewer cells also mean fewer predictions in Part 1.
     - **No invented people and no invented readings** (VOICE.md 41). The
       data is the cadet's own. A real classmate in the room, as in L5's and
       L7's fallback pairing or L12's hand-keyed message, is not an invented

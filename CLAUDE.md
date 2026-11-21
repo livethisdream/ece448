@@ -89,7 +89,7 @@ Picture (no outcomes), Predict First (a widget that hides its answer until
 the cadet commits), and one beat per procedure block, at most `LAB_BEATS`
 (10), and teaches nothing. The packet is lean: one submission in three parts,
 **Predict, Measure, Analyze**, with predicted beside measured and two or
-three open analysis prompts; no problem invents a person or a reading. Never
+three open analysis prompts, and only the few measured cells those prompts use (Neil, 2026-11-21: too many "measure this" cells and they "miss the forest for the trees"); no problem invents a person or a reading. Never
 "bench" where a cadet reads it. A provided block (gr-adsb, gr-hdradio, any
 out-of-tree or library block) is taught only to what to expect. Details,
 what 448 keeps of its own (the public packet sources and `\keysol`), and the
