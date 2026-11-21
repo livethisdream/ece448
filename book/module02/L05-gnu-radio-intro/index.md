@@ -104,7 +104,7 @@ A flowgraph with real hardware runs at the rate the hardware delivers samples. A
 
 The tone flowgraph runs at `samp_rate` = 32 kHz with `freq` at 1 kHz. The time sink plots the real and imaginary parts, $I$ and $Q$, as two traces: $I$ is a cosine and $Q$ is a sine, a quarter cycle behind it, which is the point $e^{j2\pi ft}$ going around the unit circle of Lesson 3. The 8 ms window holds eight cycles, as it should at 1 kHz.
 
-The frequency sink shows the same signal as a single spike at $+1$ kHz, about 10 dB below the top of the plot because of how the sink scales its FFT. There is no spike at $-1$ kHz. A real cosine would have one at each, but a complex tone is not a cosine: it rotates in one direction, and the sign of its frequency says which. That is why an SDR delivers complex samples: it can tell a signal 100 kHz above its tuned frequency from one 100 kHz below.
+The frequency sink shows the same signal as a single spike at $+1$ kHz. There is no spike at $-1$ kHz. A real cosine would have one at each, but a complex tone is not a cosine: it rotates in one direction, and the sign of its frequency says which. That is why an SDR delivers complex samples: it can tell a signal 100 kHz above its tuned frequency from one 100 kHz below.
 ::::
 
 ::::{frame} Variables and Sliders
@@ -123,11 +123,11 @@ A **QT GUI Range** is a variable with a slider. Add one with ID `freq`, from $-4
 :::{present}
 | Color | Type | Bytes/sample |
 | :-- | :-- | :-: |
-| Blue | complex | 8 |
-| Orange | float | 4 |
-| Green | int | 4 |
-| Yellow | short | 2 |
-| Purple | byte | 1 |
+| <span style="display:inline-block;width:0.9em;height:0.9em;border-radius:2px;vertical-align:-0.1em;background:#0000ff"></span> blue | complex | 8 |
+| <span style="display:inline-block;width:0.9em;height:0.9em;border-radius:2px;vertical-align:-0.1em;background:#f37c00"></span> orange | float | 4 |
+| <span style="display:inline-block;width:0.9em;height:0.9em;border-radius:2px;vertical-align:-0.1em;background:#00a000"></span> green | int | 4 |
+| <span style="display:inline-block;width:0.9em;height:0.9em;border-radius:2px;vertical-align:-0.1em;background:#e6c800"></span> yellow | short | 2 |
+| <span style="display:inline-block;width:0.9em;height:0.9em;border-radius:2px;vertical-align:-0.1em;background:#9b30ff"></span> purple | byte | 1 |
 :::
 :::{present}
 - Mismatched ports draw a red arrow.
@@ -177,6 +177,11 @@ The left panel plots the tone's last eight samples on the unit circle, one new s
 - The course flowgraphs open it at `ip:192.168.2.1`; macOS needs one extra step.
 - Course Plutos tune 70 MHz to 6 GHz, so the FM band is in range.
 :::
+:::{present}
+<img src="../../viz/img/L05-pluto-ports.svg"
+     alt="A line drawing of the PlutoSDR's two ends. SMA end: TX on the left, RX on the right, where the antenna goes. USB end: the data and power port, where the laptop's cable goes, and a power-only port."
+     style="max-width: 560px; width: 100%; display: block; margin: 0 auto;">
+:::
 
 The PlutoSDR has two SMA connectors, TX and RX, and two micro-USB ports: the middle one carries data and power, and the one at the end carries power only. Screw an antenna onto RX, the course's broadband whip if you have one; the two small antennas that ship with the Pluto are cut for the cellular bands and show only the strongest FM stations. Connect the data port to the laptop. The Pluto appears as a small USB network adapter, and every course flowgraph's PlutoSDR Source opens it at the URI `ip:192.168.2.1`. How that works depends on the laptop:
 
@@ -201,7 +206,7 @@ Out of the box a Pluto tunes 325 MHz to 3.8 GHz, which misses broadcast FM. The 
 - The display spans $f_c \pm f_s/2$: 2.4 MHz of the FM band at once.
 :::
 
-The second flowgraph replaces the signal source with a PlutoSDR. The **PlutoSDR Source** block has three settings that matter today: the **LO frequency**, the center frequency $f_c$ the radio tunes to; the **sample rate** $f_s$ it digitizes at, 2.4 MS/s, well inside the 4 MS/s its USB link streams; and the **gain**, set to Manual so a slider controls it. Its output is the same complex stream as the tone flowgraph's, so the plots work unchanged. We give the **QT GUI Sink** the center frequency so its axis reads in real frequencies, from $f_c - f_s/2$ to $f_c + f_s/2$. At 2.4 MS/s centered on 100.1 MHz, the display spans 98.9 to 101.3 MHz, enough to see several FM stations at once; drag the center frequency slider through 88 to 108 MHz to find the tallest one.
+The second flowgraph replaces the signal source with a PlutoSDR. The **PlutoSDR Source** block has three settings that matter today: the **LO frequency**, the center frequency $f_c$ the radio tunes to; the **sample rate** $f_s$ it digitizes at, 2.4 MS/s, well below the few MS/s its USB 2.0 link streams without dropping samples (<a href="https://pysdr.org/content/pluto.html" target="_blank" rel="noopener">PySDR, PlutoSDR</a>); and the **gain**, set to Manual so a slider controls it. Its output is the same complex stream as the tone flowgraph's, so the plots work unchanged. We give the **QT GUI Sink** the center frequency so its axis reads in real frequencies, from $f_c - f_s/2$ to $f_c + f_s/2$. At 2.4 MS/s centered on 100.1 MHz, the display spans 98.9 to 101.3 MHz, enough to see several FM stations at once; drag the center frequency slider through 88 to 108 MHz to find the tallest one.
 
 We disabled the SigMF Sink below, so GRC draws it in gray. Enabling it records every sample to a pair of files, which the last part of this lesson reads in Python. There is no throttle here: the PlutoSDR delivers samples at exactly 2.4 MS/s, so the hardware sets the pace. An optional RTL-SDR also works in place of the Pluto, with the Soapy RTLSDR Source at the same 2.4 MS/s.
 ::::
@@ -228,6 +233,11 @@ The **waterfall** below stacks the spectrum over time, newest at the top, with c
 - Stop before strong stations grow copies elsewhere: that is overload.
 - No single setting shows a strong local station and a weak distant one well.
 :::
+:::{present}
+<img src="../../viz/img/L05-gain-three.svg"
+     alt="Simulated: the FM band around 100.1 MHz at three RF gains. Too little gain: only the strongest stations rise above the converter's own floor. About right: the floor sits a few dB above the converter floor and every station stands clear. Too much gain: the station tops flatten near 0 dBFS, the floor rises and turns uneven, and spurs appear between stations where nothing transmits."
+     style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
+:::
 
 The RF gain sets how loud the signal is when it reaches the analog-to-digital converter, and both extremes hurt. Too little gain leaves weak signals below the converter's own noise, so they never appear. Too much drives strong signals past the top of the converter's range, and the clipping creates false signals, spurs and copies of strong stations at frequencies where nothing transmits. A useful procedure: start low, raise the gain until the noise floor on the display rises by a few dB, which means the antenna's noise now dominates the converter's, and stop there.
 
@@ -240,10 +250,15 @@ The PlutoSDR's 12-bit converter gives a wider span from its own noise to full sc
 - Each second holds $8 f_s$ bytes: 8 MB at 1 MS/s.
 - A small meta file beside them holds the sample rate and center frequency.
 :::
+:::{present}
+<img src="../../viz/img/L05-iq-bytes.svg"
+     alt="The byte layout of fm_capture.sigmf-data: I0, Q0, I1, Q1 and so on, each a 4-byte float, one sample 8 bytes, no header; beside it the fm_capture.sigmf-meta card listing datatype cf32_le, sample_rate, and frequency"
+     style="max-width: 640px; width: 100%; display: block; margin: 0 auto;">
+:::
 
-Enabling the SigMF Sink writes every complex sample to `fm_capture.sigmf-data` as two 32-bit floats, $I$ then $Q$, with no header. A recording therefore fills $8 f_s$ bytes every second: at 1 MS/s that is $10^6 \times 8 = 8$ MB per second, so a 10 s capture is 80 MB. Samples alone are useless without the sample rate and the center frequency used to capture them, so the sink also writes `fm_capture.sigmf-meta`, a short text file that names the datatype (`cf32_le`), the sample rate, and the center frequency. That pair is **SigMF**, the course's recording format: every recording you download or make in this course is one. The sink writes the meta file when the flowgraph starts, so set the center frequency before you press Run. GRC outlines the block in orange because GNU Radio 3.10 marks it deprecated; it works.
+Enabling the SigMF Sink writes every complex sample to `fm_capture.sigmf-data` as two 32-bit floats, $I$ then $Q$, with no header. A recording therefore fills $8 f_s$ bytes every second: at 1 MS/s that is $10^6 \times 8 = 8$ MB per second, so a 10 s capture is 80 MB. Samples alone are useless without the sample rate and the center frequency used to capture them, so the sink also writes `fm_capture.sigmf-meta`, a short text file that names the datatype (`cf32_le`), the sample rate, and the center frequency. That pair is **SigMF**, the course's recording format: every recording you download or make in this course is one. The sink writes the meta file when the flowgraph starts, so set the center frequency before you press Run. GRC outlines the block in orange because GNU Radio 3.10 marks it deprecated, but the block records correctly.
 
-A recording turns a live signal into data we can replay. A File Source block plays the file back into any flowgraph, with a throttle to pace it, so we can develop a receiver against the same capture repeatedly instead of waiting for a transmitter. Most of the decoders in Module 6 start that way.
+A recording turns a live signal into data we can replay. A **SigMF Source** block plays the pair back into any flowgraph, reading the datatype from the meta file, with a throttle to pace it when no audio or hardware block does, so we can develop a receiver against the same capture repeatedly instead of waiting for a transmitter. Most of the decoders in Module 6 start that way.
 ::::
 
 ::::{frame} IQ in Python
@@ -265,7 +280,11 @@ python L05-psd.py fm_capture.sigmf-data
 
 Hand it a raw file with no meta file and it stops and asks for `--fs` and `--fc`.
 
-Its plot should match the frequency sink: the same stations at the same frequencies, with the DC spike at the center.
+Its plot should match the frequency sink: the same stations at the same frequencies, with the DC spike at the center. The figure is the script's plot of a simulated recording, the L7 test band centered on 100.0 MHz: the axis reads in real frequencies only because the meta file supplied $f_s$ and $f_c$.
+
+<img src="../../viz/img/L05-psd-sim.png"
+     alt="Simulated: L05-psd.py's plot of L07-fm-test.sigmf-data, power spectral density against frequency from 98.8 to 101.2 MHz, with a station at 99.5 MHz and a stronger one at 100.3 MHz over a flat floor"
+     style="max-width: 640px; width: 100%; display: block; margin: 0 auto;">
 ::::
 
 ::::{frame} Key Point

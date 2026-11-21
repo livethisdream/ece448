@@ -20,6 +20,8 @@
   .ctl input[type=range] { grid-column:1 / span 2; width:100%; margin:0; accent-color:var(--mid); }
   .ctl.pred input[type=range] { accent-color:var(--amber); }
   .ctl.pred .val { color:var(--amber); }
+  /* Before a guess the slider is faint, so its resting place does not suggest an answer. */
+  .ctl.pred.open input[type=range] { opacity:0.35; }
   .seg { display:flex; gap:4px; justify-content:flex-end; flex-wrap:wrap; }
   .seg button { font:inherit; font-size:11.5px; font-weight:600; color:var(--navy); background:#fff; border:1px solid var(--edge2); border-radius:14px; padding:3px 10px; cursor:pointer; }
   .seg button[aria-pressed="true"] { background:var(--navy); color:#fff; border-color:var(--navy); }
@@ -29,8 +31,7 @@
   .show[aria-pressed="true"] { background:#fff; color:var(--navy); }
   .show:disabled { cursor:not-allowed; background:#e3e8ee; border-color:#c7cfd8; color:#7a8591; }
   .seg button:focus-visible, .show:focus-visible { outline:2px solid var(--navy); outline-offset:2px; }
-  .readouts { display:grid; gap:6px; grid-template-columns:repeat(4,minmax(0,1fr)); }
-  @media (max-width:560px) { .readouts { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+  .readouts { display:grid; gap:6px; grid-template-columns:repeat(3,minmax(0,1fr)); }
   .ro { display:flex; flex-direction:column; align-items:center; gap:2px; padding:5px 4px 6px; min-width:0;
         border:1px solid var(--edge2); border-radius:6px; background:#eef4fa; }
   .ro .k { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:var(--ink3); white-space:nowrap; overflow:hidden; max-width:100%; }
@@ -51,17 +52,16 @@
     </div>
     <div class="ctl"><label for="tone">Tone you set</label><span class="val" id="tone-v"></span>
       <input type="range" id="tone" min="-100" max="100" step="1" value="27"></div>
-    <div class="ctl pred"><label for="pred">My prediction</label><span class="val" id="pred-v"></span>
+    <div class="ctl pred open" id="pred-ctl"><label for="pred">My prediction</label><span class="val" id="pred-v"></span>
       <input type="range" id="pred" min="-20" max="19" step="1" value="0"></div>
     <div class="ctl" style="justify-items:end"><span class="lab"></span>
       <button class="show" id="show" aria-pressed="false" disabled>Show where it appears</button></div>
   </div>
 
   <div class="readouts">
-    <div class="ro"><span class="k">tone set</span><span class="v" id="r-t">?</span></div>
     <div class="ro"><span class="k">sink shows</span><span class="v" id="r-w">?</span></div>
-    <div class="ro p"><span class="k">my prediction</span><span class="v" id="r-p">?</span></div>
-    <div class="ro a"><span class="k">spike appears at</span><span class="v" id="r-a">?</span></div>
+    <div class="ro a"><span class="k">spike at</span><span class="v" id="r-a">?</span></div>
+    <div class="ro p"><span class="k">my guess was</span><span class="v" id="r-o">?</span></div>
   </div>
 </div>
 
@@ -198,10 +198,11 @@ function sync(){
   showBtn.disabled = !state.committed;
   showBtn.setAttribute('aria-pressed', state.shown ? 'true' : 'false');
   showBtn.textContent = state.shown ? 'Hide it' : 'Show where it appears';
-  document.getElementById('r-t').textContent = fmt(state.tone);
-  document.getElementById('r-w').textContent = m + half + ' to +' + half;
-  document.getElementById('r-p').textContent = state.committed ? fmt(state.pred) : '?';
-  document.getElementById('r-a').textContent = state.shown ? fmt(alias(state.tone, state.fs)) : '?';
+  document.getElementById('pred-ctl').classList.toggle('open', !state.committed);
+  document.getElementById('r-w').textContent = m + half + ' to +' + half + ' kHz';
+  const a = alias(state.tone, state.fs), off = Math.abs(state.pred - a);
+  document.getElementById('r-a').textContent = state.shown ? fmt(a) : '?';
+  document.getElementById('r-o').textContent = !state.shown ? '?' : (off === 0 ? 'right on' : 'off by ' + off + ' kHz');
   draw();
 }
 

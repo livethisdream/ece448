@@ -108,4 +108,29 @@
 		\ifkey{\color{keyred}\small #3}\else{\color{gray}\small paste here}\fi
 	\end{minipage}}\par\nopagebreak[4]
 	\vspace{2pt}{\small #2}\par}
+
+% \shotpane{<width>}{<height>}{<label>}{<key>}: one labeled pane of a figure
+% made of several screenshots side by side (e.g. three settings of one
+% control); set the panes in a row with \hfill, then the caption.
+\newcommand{\shotpane}[4]{%
+	\begin{minipage}[t]{#1}\centering
+		\fbox{\begin{minipage}[c][#2][c]{\dimexpr\linewidth-2\fboxsep-2\fboxrule\relax}\centering
+			\ifkey{\color{keyred}\footnotesize #4}\else{\color{gray}\small paste here}\fi
+		\end{minipage}}\\[2pt]{\small #3}
+	\end{minipage}}
+
+% \freqstrip{<half-span>}{<label step>}{<caption>}: a blank frequency axis
+% from -<half-span> to +<half-span> to mark predictions on (kHz). It prints
+% no answer in either copy.
+\newcommand{\freqstrip}[3]{%
+	\begin{center}\setlength{\unitlength}{\dimexpr0.8\linewidth/(2*#1)\relax}%
+	\begin{picture}(\numexpr2*#1\relax,6)(-#1,-4)
+		\put(-#1,0){\line(1,0){\numexpr2*#1\relax}}
+		\multiput(-#1,0)(#2,0){\numexpr2*#1/#2+1\relax}{\line(0,1){1.2}}
+		\count255=-#1\relax
+		\loop\ifnum\count255>#1\else
+			\put(\the\count255,-2.6){\makebox(0,0){\footnotesize\ifnum\count255>0 +\fi\the\count255}}%
+			\advance\count255 by #2\relax
+		\repeat
+	\end{picture}\\[-2pt]{\small #3}\end{center}}
 \makeatother

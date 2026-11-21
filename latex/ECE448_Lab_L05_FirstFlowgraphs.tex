@@ -140,7 +140,10 @@ $+30$ kHz & \predv[a.t30]{\keysol{p1.a.t30}} & \kv[a.t30]{\keysol{a.t30}} & 7 \\
 $-35$ kHz & \predv[a.tm35]{\keysol{p1.a.tm35}} & \kv[a.tm35]{\keysol{a.tm35}} & 7 \\\hline
 \end{tabular}
 \end{center}
+\vspace{-6pt}
+\freqstrip{24}{8}{Part 1: mark where you predict each tone's spike on the frequency sink's axis (kHz).}
 
+\newpage
 \textbf{Table B. The FM band and the recording} (PlutoSDR, 2.4 MS/s)
 
 \begin{center}
@@ -158,13 +161,16 @@ Size of \texttt{fm\_capture.sigmf-data} ($10^6$ bytes) & \predv[b.size]{\keysol{
 \keysol{work}
 \end{solution}
 
-\newpage
-\shotbox{2.5in}{\textbf{Figure 1.} Step 6: your flowgraph on the GRC canvas, and its
+\vspace{4pt}
+\shotbox{3.1in}{\textbf{Figure 1.} Step 6: your flowgraph on the GRC canvas, and its
 running window with the slider at $+30$ kHz.}{\keysol{fig1}}
 
 \vspace{8pt}
-\shotbox{4.4in}{\textbf{Figure 2.} Step 12: the FM display at RF gain 0 dB, at the gain
-in Table B, and at 71 dB, with the same station on screen in all three.}{\keysol{fig2}}
+\noindent\shotpane{0.32\linewidth}{1.9in}{RF gain 0 dB}{\keysol{fig2.low}}\hfill
+\shotpane{0.32\linewidth}{1.9in}{your gain from Table B}{\keysol{fig2.mid}}\hfill
+\shotpane{0.32\linewidth}{1.9in}{RF gain 71 dB}{\keysol{fig2.high}}\par
+\vspace{2pt}{\small\textbf{Figure 2.} Step 12: the FM display at three RF gains, with the same
+station on screen in all three.}\par
 
 \newpage
 \shotbox{2.8in}{\textbf{Figure 3.} Step 17: the plot \texttt{L05-psd.py} makes from
