@@ -347,13 +347,6 @@ The hands-on step, reading SNR off a spectrum display, is a demo I run with the 
 | Margin | received $-$ sensitivity | design for about 10 dB |
 ::::
 
-::::{frame} Practice
-:class: read-only doc-links
-
-- <a class="doc-link" href="../../practice/ECE448_L02_Practice_blank.pdf" target="_blank" rel="noopener">Problem set (PDF)</a>
-- <a class="doc-link doc-key" href="../../practice/ECE448_L02_Practice_SOLUTIONS.pdf" target="_blank" rel="noopener">Solutions (PDF)</a>
-::::
-
 ::::{frame} Looking Ahead
 :::{present}
 - Lesson 3 shows what a digital signal looks like as the SNR falls.

@@ -23,6 +23,15 @@ History
             lab had an exception, so none was merged.
 2026-10-17  L18 allowed 21 (Neil): the phase-sweep widget frame was added on
             top of a lesson already cut to 20.
+2026-11-21  LAB_BEATS = 10 for every ECE 448 lab page (Neil, from ECE 444's
+            lab rules of 2026-11-08 to 11-17): a lab page presents title,
+            objectives, The Big Picture (no outcomes), Predict First, and one
+            beat per procedure block, so four plus up to six blocks. Ten is a
+            ceiling, not a target. 444 lists each lab as it is restructured;
+            448 holds every lab to it at once, so check_density flags any lab
+            page over it. Lab pages are not run through mech_check.sh, so
+            this gates no build.
+            448 lessons are still presented in class and keep BEATS.
 """
 
 # Words a present frame may show (the LO frame is exempt).
@@ -31,6 +40,10 @@ WORDS = 40
 # Beats a lesson may have: shown frames in present mode, title and LO included,
 # read-only frames excluded. One 53-minute period.
 BEATS = 20
+
+# Beats a lab page may present: title, objectives, The Big Picture, Predict
+# First, and one beat per procedure block (up to six). A ceiling, not a target.
+LAB_BEATS = 10
 
 # Lessons allowed a different beat budget, with the reason. A lesson cut under
 # an earlier budget is listed here until it is recut; delete its entry when it
@@ -43,8 +56,16 @@ BEAT_EXCEPTIONS = {
 
 
 def beat_budget(lesson):
-    """The beat budget for a page directory name such as 'L18-beam-steering' or 'L18-lab-beam-steering'."""
-    for prefix, (n, _why) in BEAT_EXCEPTIONS.items():
+    """The beat budget for a page directory name such as 'L05-gnu-radio-intro' or 'L05-lab-first-flowgraphs'.
+
+    A lab page (any name with '-lab-', L18-L19-lab-adsb-ais included) gets
+    LAB_BEATS. None would mean no cap; check_density (copied from ECE 444)
+    accepts it, though no 448 page uses it. The longest matching exception key
+    wins, so "L05-lab" would outrank "L05".
+    """
+    for prefix in sorted(BEAT_EXCEPTIONS, key=len, reverse=True):
         if lesson.startswith(prefix + "-") or lesson == prefix:
-            return n
+            return BEAT_EXCEPTIONS[prefix][0]
+    if "-lab-" in lesson:
+        return LAB_BEATS
     return BEATS

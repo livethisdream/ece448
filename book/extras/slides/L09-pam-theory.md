@@ -86,7 +86,7 @@ Top: a little noise, no errors. Middle: more noise, a few red dots. Bottom: 4-PA
 Neighboring points differ in one bit. Now label the 8-PSK points.
 
 Note:
-PAM's points lie on the real axis; m-PSK's lie on a circle and come back in Lesson 15. Noise usually pushes a sample to a neighbor, so with Gray coding a wrong decision usually costs one bit. Give the class two minutes to Gray-code the blank 8-PSK; the answer is in the practice SOLUTIONS.
+PAM's points lie on the real axis; m-PSK's lie on a circle and come back in Lesson 15. Noise usually pushes a sample to a neighbor, so with Gray coding a wrong decision usually costs one bit. Give the class two minutes to Gray-code the blank 8-PSK, then label it with them.
 
 ---
 

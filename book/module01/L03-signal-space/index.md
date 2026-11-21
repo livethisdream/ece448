@@ -254,13 +254,6 @@ Downloads:
 | Gray coding | neighbors differ in one bit | a slip costs one bit |
 ::::
 
-::::{frame} Practice
-:class: read-only doc-links
-
-- <a class="doc-link" href="../../practice/ECE448_L03_Practice_blank.pdf" target="_blank" rel="noopener">Problem set (PDF)</a>
-- <a class="doc-link doc-key" href="../../practice/ECE448_L03_Practice_SOLUTIONS.pdf" target="_blank" rel="noopener">Solutions (PDF)</a>
-::::
-
 ::::{frame} Looking Ahead
 :::{present}
 - Lesson 4 opens the SDR that turns a carrier into $I + jQ$.

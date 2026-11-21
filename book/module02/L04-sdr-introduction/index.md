@@ -357,13 +357,6 @@ This lesson follows Dr. Rogers's 2025 slides and these pages:
 | Clipping | strongest signal above 0 dBFS | false signals across the band |
 ::::
 
-::::{frame} Practice
-:class: read-only doc-links
-
-- <a class="doc-link" href="../../practice/ECE448_L04_Practice_blank.pdf" target="_blank" rel="noopener">Problem set (PDF)</a>
-- <a class="doc-link doc-key" href="../../practice/ECE448_L04_Practice_SOLUTIONS.pdf" target="_blank" rel="noopener">Solutions (PDF)</a>
-::::
-
 ::::{frame} Looking Ahead
 :::{present}
 - Lesson 5 installs GNU Radio and builds the first flowgraphs.

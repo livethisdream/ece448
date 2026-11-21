@@ -282,7 +282,7 @@ UNDER_CONSTRUCTION = """::::{frame} Under Construction
 :class: read-only
 
 This page is being converted to the new course format. The objectives above
-are current; the notes, slides, and practice problems will follow before the
+are current; the notes, slides, and lab packet will follow before the
 lesson is taught.
 ::::
 """

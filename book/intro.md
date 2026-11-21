@@ -127,14 +127,14 @@ theory only when the flowgraph needs it.
     <p class="d-eyebrow">Per lab</p>
     <h3>Labs</h3>
     <p class="d-weight"><span class="d-w-num">25%</span> of course grade</p>
-    <p class="d-due">One packet per lab: Pre-Lab, Bench, Writeup</p>
+    <p class="d-due">One packet per lab: Predict, Measure, Analyze</p>
     <a class="d-link" href="syllabus.html#labs">How labs work →</a>
   </div>
   <div class="deliverable-card">
     <p class="d-eyebrow">Ongoing</p>
     <h3>Engagement</h3>
     <p class="d-weight"><span class="d-w-num">20%</span> of course grade</p>
-    <p class="d-due">Quizzes, practice problems, EI, and peer review</p>
+    <p class="d-due">Quizzes, EI, peer review, and course improvement</p>
     <a class="d-link" href="syllabus.html#engagement-credits-ec">Ways to earn engagement →</a>
   </div>
   <div class="deliverable-card">

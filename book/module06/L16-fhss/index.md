@@ -343,11 +343,12 @@ The GNU Radio wiki has no frequency-hopping tutorial, so this lesson follows the
 | Narrowband jammer | takes the hops on its channel | 1 hop in 8 lost |
 ::::
 
-::::{frame} Practice
+::::{frame} Preparing for the Lab
 :class: read-only doc-links
 
-- <a class="doc-link" href="../../practice/ECE448_L16_Practice_blank.pdf" target="_blank" rel="noopener">Problem set (PDF)</a>
-- <a class="doc-link doc-key" href="../../practice/ECE448_L16_Practice_SOLUTIONS.pdf" target="_blank" rel="noopener">Solutions (PDF)</a>
+Part 1 of the L16 Lab packet, the Pre-Lab, prepares you for the lab. Do it before the lab period and bring it to class.
+
+- <a class="doc-link" href="../../labs/ECE448_Lab_L16_FHSS_blank.pdf" target="_blank" rel="noopener">L16 Lab packet (PDF)</a>
 ::::
 
 ::::{frame} Looking Ahead
