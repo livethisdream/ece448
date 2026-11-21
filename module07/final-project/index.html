@@ -1,0 +1,534 @@
+<!doctype html>
+<html lang="en" data-mode="read">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Final Project &mdash; ECE 448 — Software Defined Radios</title>
+<meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+<link rel="icon" href="../../_static/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap"><link rel="stylesheet" href="../../_static/custom.css?v=ec0f297254">
+<link rel="stylesheet" href="../../_static/shell.css?v=78396bd831">
+<link rel="stylesheet" href="../../_static/frames.css?v=fa285d3703">
+</head>
+<body>
+
+<div class="rail"><span id="railfill"></span></div>
+
+<div class="laser" id="laser" aria-hidden="true"></div>
+<div class="spot" id="spot" aria-hidden="true"></div>
+
+<div class="index" id="index" role="dialog" aria-label="Jump to a frame or another lesson">
+  <button class="index-close" id="btnIndexClose" type="button" aria-label="Close">&times;</button>
+  <div class="wrap">
+    <div class="index-cols">
+      <div class="index-here">
+        <h2>This lesson</h2>
+        <ol id="indexlist"></ol>
+      </div>
+      <div class="index-toc">
+        <h2>Course</h2>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Course Information</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../syllabus.html">Syllabus</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../materials.html">Materials</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 1 — Foundations of Detection &amp; Link Budgets</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module01/index.html">Module 1 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module01/L01-course-intro/index.html">L1 — Course Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module01/L02-noise-figure-link-budget/index.html">L2 — Noise Figure and Link Budget</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module01/L03-signal-space/index.html">L3 — Signal Space</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 2 — SDR &amp; GNU Radio Foundations</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module02/index.html">Module 2 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module02/L04-sdr-introduction/index.html">L4 — SDR Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module02/L05-gnu-radio-intro/index.html">L5 — GNU Radio Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module02/L05-lab-first-flowgraphs/index.html">L5 Lab — First Flowgraphs</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 3 — Analog Modulation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module03/index.html">Module 3 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module03/L06-am-simulation/index.html">L6 — AM Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module03/L06-lab-am-simulation/index.html">L6 Lab — AM Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module03/L07-am-fm-receivers/index.html">L7 — AM and FM Receivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module03/L07-lab-am-fm-receivers/index.html">L7 Lab — AM and FM Receivers</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 4 — Digital Modulation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/index.html">Module 4 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/L08-fsk/index.html">L8 — FSK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/L08-lab-fsk/index.html">L8 Lab — FSK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/L09-pam-theory/index.html">L9 — PAM Theory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/L10-ascii-pam/index.html">L10 — ASCII over PAM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/L10-lab-pam-link/index.html">L10 Lab — PAM Link</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 5 — Custom Blocks &amp; Midterm</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module05/index.html">Module 5 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module05/L11-custom-blocks/index.html">L11 — Out-of-Tree Modules and Custom Blocks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module05/L11-lab-custom-block/index.html">L11 Lab — Custom Block</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module05/midterm/index.html">Midterm — Fox Hunt and CTF</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 6 — Waveform Applications &amp; RF Reverse Engineering</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/index.html">Module 6 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L12-cw/index.html">L12 — CW</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L12-lab-cw/index.html">L12 Lab — CW</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L13-dtmf/index.html">L13 — DTMF</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L13-lab-dtmf/index.html">L13 Lab — DTMF</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L14-hd-radio/index.html">L14 — HD Radio</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L14-lab-hd-radio/index.html">L14 Lab — HD Radio</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L15-mpsk/index.html">L15 — mPSK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L15-lab-mpsk/index.html">L15 Lab — mPSK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L16-fhss/index.html">L16 — Frequency Hopping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L16-lab-fhss/index.html">L16 Lab — Frequency Hopping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L17-rf-reverse-engineering/index.html">L17 — RF Reverse Engineering</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L17-lab-rf-reverse-engineering/index.html">L17 Lab — RF Reverse Engineering</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L18-adsb/index.html">L18 — ADS-B</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L19-ais/index.html">L19 — AIS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L18-L19-lab-adsb-ais/index.html">L18–L19 Lab — ADS-B and AIS</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 7 — Final Project</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Module 7 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L20-qam-ofdm/index.html">L20 — QAM and OFDM</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Final Project</a></li>
+</ul>
+
+      </div>
+    </div>
+  </div>
+</div><div class="hud">
+<div class="hud-group">
+  <button id="btnSite" class="site" type="button"
+          aria-expanded="false" aria-controls="sitepop"
+          title="Elsewhere on this site">ECE 448</button>
+</div>
+<div class="pop" id="sitepop" role="group" aria-label="Site" hidden>
+  <a href="https://livethisdream.github.io/">Home</a>
+  <a href="https://livethisdream.github.io/ece343/intro.html">ECE 343</a>
+  <a href="https://livethisdream.github.io/ece444/intro.html">ECE 444</a>
+  <a href="../../intro.html" aria-current="page">ECE 448</a>
+  <a href="https://livethisdream.github.io/projects">Projects</a>
+  <button class="pop-help" type="button" data-help>Help<kbd>?</kbd></button>
+</div>
+
+  <div class="hud-group hud-mid"><button id="btnMode" type="button" aria-expanded="false" aria-controls="modepop"
+            title="How the lesson is laid out (P)">read</button>
+    <button id="btnTools" type="button" aria-expanded="false" aria-controls="toolspop"
+            title="Presenter tools">tools</button>
+  </div>
+
+  <div class="hud-group"><button id="btnIndex" class="counter" type="button" aria-pressed="false"
+            title="Contents (G) · double-tap for the top"><b id="cur">1</b>/<span id="tot">0</span></button>
+  </div><div class="pop" id="modepop" role="group" aria-label="View mode" hidden>
+    <button id="btnPresent" class="choice" type="button" aria-pressed="false">
+      present<span class="pop-note">one frame at a time</span></button>
+    <button id="btnRead" class="choice" type="button" aria-pressed="true">
+      read<span class="pop-note">the whole lesson, continuous</span></button>
+  </div><div class="pop" id="toolspop" role="group" aria-label="Presenter tools" hidden>
+    <button id="btnLaser" type="button" aria-pressed="false">laser<kbd>L</kbd></button>
+    <button id="btnSpot" type="button" aria-pressed="false">spotlight<kbd>S</kbd></button>
+    <button id="btnFull" type="button">fullscreen<kbd>F</kbd></button>
+    <button id="btnHelp" type="button" data-help>help<kbd>?</kbd></button>
+  </div>
+</div>
+<div class="help" id="help" role="dialog" aria-modal="true" aria-labelledby="helpTitle" hidden>
+  <div class="help-card">
+    <button class="help-close" id="btnHelpClose" type="button" aria-label="Close help">&times;</button>
+    <h2 id="helpTitle">Getting around</h2>
+    <p class="help-lead">Everything is in the bar at the bottom of the screen.</p>
+    <dl class="help-list">
+      <dt><span class="help-chip">ECE 448</span></dt>
+      <dd>The other course sites, the home page, and this help.</dd>
+      <dt><span class="help-chip">read</span></dt>
+      <dd><b>Read</b> shows the whole lesson as one page. <b>Present</b> shows one frame at a time, for class.<span class="help-keys"> <kbd>P</kbd> switches.</span></dd>
+      <dt><span class="help-chip">tools</span></dt>
+      <dd>Laser pointer<span class="help-keys"> <kbd>L</kbd></span>, spotlight<span class="help-keys"> <kbd>S</kbd></span>, and fullscreen<span class="help-keys"> <kbd>F</kbd></span>.</dd>
+      <dt><span class="help-chip">3/9</span></dt>
+      <dd>Where you are in the lesson. Tap it for every frame here and every lesson in the course<span class="help-keys"> <kbd>G</kbd></span>. Double-tap to go back to the top.</dd>
+    </dl>
+    <h3 class="help-keys">Presenting</h3>
+    <p class="help-keys"><kbd>&rarr;</kbd> or <kbd>Space</kbd> next frame, <kbd>&larr;</kbd> back, <kbd>D</kbd> this frame&rsquo;s detail, <kbd>Esc</kbd> close a panel.</p>
+    <h3>Printing</h3>
+    <p>Print from present mode for the slides, one frame a page. Print from read mode for the whole lesson.</p>
+    <p class="help-foot"><span class="help-keys">Press <kbd>?</kbd> to open this again.</span><span class="help-touch">Open this again from the ECE 448 menu.</span></p>
+  </div>
+</div>
+
+<div class="help-hint" id="helpHint" hidden>
+  <button id="btnHintOpen" type="button" data-help>New here? How the bar works</button>
+  <button id="btnHintClose" class="help-hint-close" type="button" aria-label="Dismiss">&times;</button>
+</div><main class="deck bd-article" id="deck" tabindex="-1">
+<section class="tex2jax_ignore mathjax_ignore" id="final-project">
+<h1>Final Project<a class="headerlink" href="#final-project" title="Permalink to this heading">#</a></h1>
+<div class="frame title-frame docutils container" id="frame-1">
+<div class="wrap docutils container">
+<div class="course-mark">ECE 448 · Spring 2027</div>
+<h1 class="frame-title">Final Project</h1>
+<div class="title-rule"></div>
+<p>A self-defined SDR project: proposal, background research, design, prototype, then a report and live demonstration.</p>
+<p>Module 7: Final Project · Dr. Neil Rogers</p>
+</div>
+</div>
+<div class="frame docutils container" id="frame-learning-objectives">
+<div class="wrap docutils container">
+<p class="rubric">Learning Objectives</p>
+<ol class="lo-list" style="--module: '7'; counter-reset: lo 1">
+  <li>I can define the scope, objectives, and measurable success criteria for a self-directed SDR project.</li>
+  <li>I can research, design, and implement a wireless communication system using an SDR, preferably with GNU Radio.</li>
+  <li>I can present my project results in a professional-grade report and live demonstration and defend engineering trade-offs against my own stated success criteria.</li>
+</ol>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-your-project">
+<div class="wrap docutils container">
+<p class="rubric">Your Project</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<ul class="simple">
+<li><p>An individual project that you choose, using your PlutoSDR.</p></li>
+<li><p>GNU Radio is the recommended tool.</p></li>
+<li><p>It is 40% of your final grade.</p></li>
+<li><p>Five milestones build toward a final report and a live demonstration on the last lesson day.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>The final project is yours to define, and you do it on your own. You pick a wireless problem, decide what success looks like, and build it with your PlutoSDR. GNU Radio is the course’s tool and the route I recommend, because every lesson has given you flowgraphs to start from. Other SDR software may carry the radio path if it fits your project better; if you choose it, say which and why in your proposal. The project is 40% of your final grade. It ends with a final report and a presentation with a live demonstration on the last lesson day, and at each milestone before that, you write one section of the report.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-five-milestones">
+<div class="wrap docutils container">
+<p class="rubric">Five Milestones</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head text-left"><p>Milestone</p></th>
+<th class="head text-left"><p>Objective</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-left"><p>1. Proposal</p></td>
+<td class="text-left"><p>7.2</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>2. Background Research</p></td>
+<td class="text-left"><p>7.3</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>3. Design Description</p></td>
+<td class="text-left"><p>7.3</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>4. Prototype Update</p></td>
+<td class="text-left"><p>7.3</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>5. Final Report and Presentation</p></td>
+<td class="text-left"><p>7.4</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>The milestones come in this order, each due on the date the course schedule gives. The proposal sets your scope and success criteria (objective 7.2). In the next three, you research, design, and build the system (7.3). The final report and presentation show what you built and defend it against the criteria you wrote in the proposal (7.4). Each milestone feeds the next, so I return feedback on one before the next is due.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-proposal">
+<div class="wrap docutils container">
+<p class="rubric">Proposal</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<ul class="simple">
+<li><p>What do you want to do, and why is it interesting and reasonable?</p></li>
+<li><p>A short review of what others have done.</p></li>
+<li><p>Your end goal, and your A-, B-, and C-level outcomes.</p></li>
+<li><p>Your next steps.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>The proposal answers four questions. First, say what you want to build, and why it is interesting and reasonable to finish in one semester with one Pluto. Second, give a short first look at what others have done, enough to show that the idea is feasible. Third, state your end goal as A-, B-, and C-level outcomes. Fourth, name the first things you will build or read.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-success-levels">
+<div class="wrap docutils container">
+<p class="rubric">Success Levels</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head text-left"><p>Level</p></th>
+<th class="head text-left"><p>ADS-B generator, for example</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-left"><p>C</p></td>
+<td class="text-left"><p>gr-adsb decodes my frames from a SigMF recording.</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>B</p></td>
+<td class="text-left"><p>It decodes them sent at 915 MHz by cable.</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>A</p></td>
+<td class="text-left"><p>It decodes them over the air at low power, with positions plotted.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><img src="../../viz/img/FP-levels.svg"
+     alt="Three rows, one per success level, each ending at gr-adsb. C: the ADS-B generator writes a SigMF recording that gr-adsb reads. B: the generator drives the Pluto's TX port, through a 30 dB pad and a cable into the Pluto's RX port, then gr-adsb. A: the same, with a dashed over-the-air link at low power in place of the cable. B and A run at 915 MHz."
+     style="width:100%;max-width:720px;display:block;margin:0.5rem auto 0;"></p>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>Your <strong>success levels</strong> are the criteria that set your final-project grade (see Grading), so write each one as something a demonstration can show is done or not done. The example is an ADS-B generator. Its C level works entirely in a recording, its B level adds the Pluto through a cable, and its A level adds an over-the-air link at low power, which needs my approval (see Transmitting Safely). For the positions, a short Python script can plot the latitude and longitude gr-adsb decodes. “Decodes my frames” is measurable; “works well” is not. Set the C level at something you are sure to finish and the A level at the most you think you can reach.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-background-research">
+<div class="wrap docutils container">
+<p class="rubric">Background Research</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<ul class="simple">
+<li><p>At least four high-quality, relevant papers, blogs, or references.</p></li>
+<li><p>What each one did, and how it relates to your project.</p></li>
+<li><p>What you will use from each as a building block.</p></li>
+<li><p>Your next steps.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>Find the prior work your project builds on: papers, GNU Radio wiki pages and out-of-tree modules, PySDR chapters, and well-documented blog projects. For each source, summarize what its authors did, explain how it relates to your project, and name what you will use from it, such as a block, a parameter, a frame format, or a test method. Close with your next steps.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-design-description">
+<div class="wrap docutils container">
+<p class="rubric">Design Description</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<ul class="simple">
+<li><p>What you will build: the subsystems and the blocks in each.</p></li>
+<li><p>The use cases it serves.</p></li>
+<li><p>Your unanswered questions and expected sticking points.</p></li>
+<li><p>How you will test and verify each level.</p></li>
+<li><p>Your next steps.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>The design description turns the proposal into a plan. Draw the system as subsystems, such as source, channel, demodulator, and decoder, and name the GNU Radio blocks, other software, and hardware each one uses. Describe the <strong>use cases</strong>: who would use the system, and for what. List the questions you cannot answer yet and the places you expect to get stuck, so we can talk about them early. Then say how you will test each success level: the recording, flowgraph display, or measurement that shows it is met.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-prototype-update">
+<div class="wrap docutils container">
+<p class="rubric">Prototype Update</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<ul class="simple">
+<li><p>Where your design, test, and build stand.</p></li>
+<li><p>How you are doing against your proposal’s levels.</p></li>
+<li><p>What changed in the design, and why.</p></li>
+<li><p>Your next steps.</p></li>
+</ul>
+<p><img src="../../viz/img/L18-adsb-rx.png"
+     alt="L18-adsb-rx.grc running on a simulated recording, labeled SIMULATED: the Messages label reads 1381 bursts found, 1265 decoded; a power plot shows short spikes above a flat floor; the Aircraft label lists four aircraft with altitude, speed, track, and position"
+     style="width:100%;max-width:420px;display:block;margin:0.5rem auto 0;"></p>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>The prototype update reports what works so far. Show the flowgraphs or code you have built and the results they give, with screenshots or SigMF recordings, and say which success levels you have met. The screenshot is the kind of evidence that settles a level: the Lesson 18 receiver running on a recording, with the count of messages found and decoded and the aircraft it decoded, all in one window. If the design changed, say what changed and why. Close with your plan to finish.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-final-report-and-presentation">
+<div class="wrap docutils container">
+<p class="rubric">Final Report and Presentation</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<ul class="simple">
+<li><p>What you accomplished, and what you did not.</p></li>
+<li><p>Confirmation that it works: the demonstration and its evidence.</p></li>
+<li><p>Lessons learned and future work.</p></li>
+<li><p>An IEEE-quality report and a five-minute presentation with a live demonstration.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>The final report brings the four earlier milestones together. Say what you accomplished and what you did not, measured against your own success levels. Confirm the functionality with evidence: the live demonstration, screenshots, and the recordings and flowgraphs that produced them. Close with the lessons you learned and the work you would do next. The report is IEEE quality, typically 7 to 10 pages. The presentation is five minutes and includes the live demonstration.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-defending-your-trade-offs">
+<div class="wrap docutils container">
+<p class="rubric">Defending Your Trade-Offs</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<ul class="simple">
+<li><p>Grade yourself against your own A, B, and C levels.</p></li>
+<li><p>For each design choice, say what you gave up and why.</p></li>
+<li><p>For any level you missed, show with evidence what limited it.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>Objective 7.4 asks you to <strong>defend your trade-offs</strong>. Every design gives something up: a lower sample rate lets the Pluto stream without dropping samples but narrows the band you see, and a cable makes a link reliable but does not test the over-the-air channel. For each choice, state what you chose, what you gave up, and how the result compares with the level you set. For any level you missed, show with evidence what limited it.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-transmitting-safely">
+<div class="wrap docutils container">
+<p class="rubric">Transmitting Safely</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<ul class="simple">
+<li><p>Receive anything in the Pluto’s range: 70 MHz to 6 GHz.</p></li>
+<li><p>Transmit only at 915 MHz, by cable through a 30 dB attenuator or over the air at low power.</p></li>
+<li><p>Never transmit on a real service’s frequency.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>Your Pluto can receive any real signal in its range, on its own frequency. Any signal your project generates, whatever it imitates, you transmit only at 915 MHz, either into a cable through the 30 dB attenuator, as in the L16 Lab, or over the air at low power where I approve it for your project. Never transmit on the frequency of a real service such as aircraft, ships, satellites, or a commercial broadcast band.</p>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-project-ideas">
+<div class="wrap docutils container">
+<p class="rubric">Project Ideas</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<ul class="simple">
+<li><p>FPV drone video detector</p></li>
+<li><p>Reverse engineering a radio device you own</p></li>
+<li><p>ADS-B generator at 915 MHz</p></li>
+<li><p>Frequency-hopping link</p></li>
+<li><p>Doppler radar at 915 MHz</p></li>
+<li><p>Weather satellite images from Meteor-M</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>These ideas come from past projects and from what the course has built. Each one is a starting point; your proposal sets its scope. Ideas of your own are welcome.</p>
+</div>
+</div>
+</div>
+<div class="frame read-only docutils container" id="frame-about-the-ideas">
+<div class="wrap docutils container">
+<p class="rubric">About the Ideas</p>
+<ul class="simple">
+<li><p><strong>FPV drone video detector.</strong> Find and identify the analog video a hobby drone sends near 5.8 GHz. Plan to detect and identify it, not to show the picture: the video is wider than the band the Pluto streams. You only receive for this project. I have a starting point for this one; ask me.</p></li>
+<li><p><strong>Reverse engineering a radio device.</strong> Capture a remote, sensor, or other device you own, and decode its protocol as in Lesson 17. You receive the device on its own frequency; a message you regenerate goes out at 915 MHz.</p></li>
+<li><p><strong>ADS-B generator.</strong> Build ADS-B frames in GNU Radio, send them at 915 MHz, and decode them with gr-adsb, as in the success levels above. Never transmit at 1090 MHz.</p></li>
+<li><p><strong>Frequency-hopping link.</strong> Extend the Lesson 16 link at 915 MHz: more channels, faster hops, or a receiver that finds the hop pattern.</p></li>
+<li><p><strong>Doppler radar.</strong> Send a steady tone at 915 MHz at low power and measure the Doppler shift of a person walking or a fan turning. The shift is small: under 10 Hz for a person walking, and tens of hertz for a fan blade. Set the tone about 100 kHz away from the receiver’s center, so the echo lands away from the Pluto’s DC spike (Lesson 5).</p></li>
+<li><p><strong>Weather satellite images.</strong> Receive the Meteor-M N2-4 LRPT signal near 137.9 MHz, demodulate its QPSK as in Lesson 15, and build an antenna for it. Demodulation gives you symbols, not a picture: the image needs a second stage of error-correction decoding (Viterbi and Reed-Solomon), framing, and image decompression. SatDump decodes LRPT and is a good check on your result, but not your project’s decoder. NOAA retired the NOAA-15, -18, and -19 satellites, whose APT signal older guides use, in 2025 (NOAA OSPO, POES status page). Check recent Meteor-M passes on SatNOGS (db.satnogs.org) before you commit.</p></li>
+<li><p><strong>More ideas.</strong> The RTL-SDR Blog (rtl-sdr.com) posts SDR projects every week. Many use an RTL-SDR, so check that the frequency and bandwidth fit your Pluto.</p></li>
+</ul>
+</div>
+</div>
+<div class="frame read-only docutils container" id="frame-grading">
+<div class="wrap docutils container">
+<p class="rubric">Grading</p>
+<p><strong>The level you reach sets your grade.</strong> Your proposal defines your A, B, and C levels, and your final report and live demonstration show which level you reached. That level sets your final-project grade; I’ll give the grade for each level in class.</p>
+<p>The five milestones are also checkpoints, each assessed on the course’s binary scale (syllabus, Grading): <strong>1</strong> when it meets the objective it serves, and <strong>0</strong> when it does not yet. You may revise a checkpoint after my feedback under course policy, unless I see no evident effort in it.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head text-left"><p>Milestone</p></th>
+<th class="head text-left"><p>Objective</p></th>
+<th class="head text-left"><p>Meets the objective when</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-left"><p>Proposal</p></td>
+<td class="text-left"><p>7.2</p></td>
+<td class="text-left"><p>the scope is reasonable and every success level can be shown done or not done</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>Background Research</p></td>
+<td class="text-left"><p>7.3</p></td>
+<td class="text-left"><p>you summarize at least four relevant sources and tie each to a building block</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>Design Description</p></td>
+<td class="text-left"><p>7.3</p></td>
+<td class="text-left"><p>the subsystems, blocks, use cases, open questions, and test plan are all stated</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>Prototype Update</p></td>
+<td class="text-left"><p>7.3</p></td>
+<td class="text-left"><p>you show working flowgraphs or code and their results against the levels</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>Final Report and Presentation</p></td>
+<td class="text-left"><p>7.4</p></td>
+<td class="text-left"><p>the demonstration shows the level you reached, and the report defends the result against your own levels</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The project is individual. Document any outside help as usual (syllabus, Documentation).</p>
+</div>
+</div>
+<div class="frame read-only docutils container" id="frame-what-to-turn-in">
+<div class="wrap docutils container">
+<p class="rubric">What to Turn In</p>
+<ul class="simple">
+<li><p><strong>Milestones 1 to 4:</strong> each one as a section of your report, submitted on Gradescope by the date on the course schedule.</p></li>
+<li><p><strong>Final report:</strong> the full report on Gradescope, IEEE quality, typically 7 to 10 pages.</p></li>
+<li><p><strong>Documentation:</strong> every milestone and the final report carry a documentation statement (syllabus, Documentation).</p></li>
+<li><p><strong>Code:</strong> your flowgraphs and scripts in a GitHub repository, linked from the report.</p></li>
+<li><p><strong>Evidence:</strong> screenshots and, where the project records or receives signals, the SigMF recordings (<code class="docutils literal notranslate"><span class="pre">.sigmf-data</span></code> and <code class="docutils literal notranslate"><span class="pre">.sigmf-meta</span></code>) the results come from.</p></li>
+<li><p><strong>Presentation:</strong> five minutes on the last lesson day, with a live demonstration on your Pluto.</p></li>
+</ul>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-getting-started">
+<div class="wrap docutils container">
+<p class="rubric">Getting Started</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<ul class="simple">
+<li><p>Pick two or three ideas and check each against your Pluto’s range and bandwidth.</p></li>
+<li><p>Bring them to Extra Instruction (EI) before the proposal is due.</p></li>
+<li><p>Keep every flowgraph from the course; most projects start from one.</p></li>
+</ul>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>Start by picking two or three ideas and checking each one against what your Pluto can do: its frequency range, the bandwidth it streams, and the 915 MHz rule for anything you send. Bring the ones you like to Extra Instruction (EI) with me, and we will settle on a scope that fits one semester before the proposal is due. Most projects start from a lesson’s flowgraph, so keep every one you have built.</p>
+</div>
+</div>
+</div>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./module07/final-project"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+</main>
+
+<script src="../../_static/shell.js?v=ac36f07766"></script>
+<script src="../../_static/frames.js?v=89e4b02ee3"></script><script src="../../_static/viz-autosize.js?v=4fe0c4e159"></script>
+</body>
+</html>

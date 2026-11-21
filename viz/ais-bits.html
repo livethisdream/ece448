@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AIS Bit Explorer — bit stuffing, NRZI, and GMSK</title>
+<style>
+  :root { --navy:#004a85; --mid:#0067b9; --edge:#cddce9; --edge2:#b9d2e5; --bg:#f5f9fc;
+          --ink:#15202b; --ink3:#5b6573; --amber:#8a5a00; --red:#b01e24; --grn:#3f7d34; }
+  html,body { margin:0; padding:0; font-family:'Inter',system-ui,-apple-system,sans-serif; color:var(--ink); background:#fff; }
+  .app { display:flex; flex-direction:column; gap:8px; padding:12px; }
+  canvas { display:block; box-sizing:border-box; width:100%; height:auto; background:#fff; border:1px solid var(--edge); border-radius:6px; }
+  .controls { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px 16px; align-items:center;
+              padding:8px 12px; background:var(--bg); border:1px solid var(--edge); border-radius:6px; }
+  @media (max-width:620px) { .controls { grid-template-columns:repeat(2,minmax(0,1fr)); gap:6px 10px; } }
+  .ctl { display:grid; grid-template-columns:auto 1fr; column-gap:8px; row-gap:2px; align-items:center; min-width:0; }
+  .ctl label, .ctl .lab { font-size:10.5px; text-transform:uppercase; letter-spacing:0.05em; color:var(--ink3); font-weight:700; white-space:nowrap; }
+  .ctl .val { color:var(--navy); font-size:12px; font-weight:600; font-variant-numeric:tabular-nums; text-align:right; white-space:nowrap; }
+  .ctl input[type=range]{ grid-column:1 / span 2; width:100%; margin:0; accent-color:var(--mid); }
+  .seg { grid-column:1 / span 2; display:flex; gap:4px; }
+  .seg button { flex:1; font:inherit; font-size:12px; padding:3px 4px; border:1px solid var(--edge2); border-radius:4px; background:#fff; color:var(--ink); cursor:pointer; min-width:0; }
+  .seg button.on { background:var(--navy); border-color:var(--navy); color:#fff; font-weight:600; }
+  .wide { grid-column:1 / -1; }
+  .readouts { display:grid; gap:6px; grid-template-columns:repeat(4,minmax(0,1fr)); }
+  @media (max-width:620px) { .readouts { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+  .ro { display:flex; flex-direction:column; align-items:center; gap:2px; padding:5px 4px 6px; min-width:0;
+        border:1px solid var(--edge2); border-radius:6px; background:#eef4fa; }
+  .ro .k { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:var(--ink3); white-space:nowrap; }
+  .ro .v { font-size:14px; font-weight:700; white-space:nowrap; font-variant-numeric:tabular-nums; color:var(--navy); }
+  .ro .v.bad { color:var(--red); } .ro .v.good { color:var(--grn); }
+</style>
+</head>
+<body>
+<div class="app">
+  <canvas id="cv" aria-label="Four rows for the same stretch of an AIS burst: the bits with stuffed bits marked, the NRZI level, the GMSK frequency after the Gaussian filter, and the received frequency with noise and the bits the receiver decides"></canvas>
+  <div class="controls">
+    <div class="ctl wide"><span class="lab">Stretch of the burst</span><span class="val" id="pick-v"></span>
+      <div class="seg" id="pick"><button data-v="0" class="on">Training + flag</button><button data-v="1">Five 1s</button><button data-v="2">Message bits</button></div></div>
+    <div class="ctl"><label for="bt">Gaussian BT</label><span class="val" id="bt-v"></span>
+      <input type="range" id="bt" min="0.2" max="1.2" step="0.05" value="0.4"></div>
+    <div class="ctl"><label for="nz">Noise</label><span class="val" id="nz-v"></span>
+      <input type="range" id="nz" min="0" max="1.2" step="0.05" value="0"></div>
+    <div class="ctl"><span class="lab">Noise</span><span class="val"></span>
+      <div class="seg"><button id="again">new noise</button></div></div>
+  </div>
+  <div class="readouts">
+    <div class="ro"><span class="k">bits shown</span><span class="v" id="o-n">—</span></div>
+    <div class="ro"><span class="k">stuffed 0s</span><span class="v" id="o-st">—</span></div>
+    <div class="ro"><span class="k">level changes</span><span class="v" id="o-ch">—</span></div>
+    <div class="ro"><span class="k">bits wrong</span><span class="v" id="o-err">—</span></div>
+  </div>
+</div>
+
+<script>
+'use strict';
+// The transmit chain of L19-ais-tx.grc on a short stretch of one burst:
+// bit stuffing (a 0 after five 1s), NRZI (a 0 changes the level, a 1 keeps
+// it), and GMSK (the levels through a Gaussian filter of the chosen BT, then
+// FM with 2.4 kHz deviation, drawn here as frequency in units of 2.4 kHz).
+// The receiver row adds noise to the frequency the FM demodulator sees,
+// samples each bit at its center, slices it, and undoes NRZI. AIS uses
+// BT = 0.4. The noise is on the demodulated frequency, not on the RF.
+const SPS = 16, SANS = 'Inter, system-ui, -apple-system, sans-serif';
+const C = { navy:'#004a85', mid:'#0067b9', rule:'#cddce9', ink3:'#5b6573', amber:'#8a5a00', red:'#b01e24', grn:'#3f7d34', gray:'#9aa5b1' };
+// Bits before stuffing. The first two are the end of the training sequence
+// and the start flag; the flag is never stuffed.
+const PICKS = [
+  { bits: '0101010101' + '01111110' + '1000110', flag: [10, 18] },
+  { bits: '1001111101111110010', flag: null },
+  { bits: '1000010000011100101100', flag: null },
+];
+const $ = id => document.getElementById(id);
+let pick = 0, seed = 1;
+
+function rng(s) {
+  let a = s >>> 0;
+  const u = () => { a = (a + 0x6D2B79F5) >>> 0; let t = a; t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+  return () => Math.sqrt(-2 * Math.log(u() + 1e-300)) * Math.cos(2 * Math.PI * u());
+}
+
+function stuff(p) {   // returns [{b, stuffed}]
+  const out = []; let run = 0;
+  [...p.bits].forEach((c, i) => {
+    const b = +c, inFlag = p.flag && i >= p.flag[0] && i < p.flag[1];
+    out.push({ b, stuffed: false, flag: inFlag });
+    if (inFlag) { run = 0; return; }
+    run = b ? run + 1 : 0;
+    if (run === 5) { out.push({ b: 0, stuffed: true, flag: false }); run = 0; }
+  });
+  return out;
+}
+
+function gauss(bt) {   // Gaussian filter for a pulse of SPS samples per bit, unit DC gain
+  const t = [], a = Math.PI * bt * Math.sqrt(2 / Math.log(2));
+  for (let k = -2 * SPS; k <= 2 * SPS; k++) t.push(Math.exp(-((a * k / SPS) ** 2)));
+  const s = t.reduce((x, y) => x + y, 0); return t.map(v => v / s);
+}
+
+function setup(cv, h) {
+  const dpr = window.devicePixelRatio || 1, w = Math.max(200, cv.clientWidth || 300);
+  cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); cv.style.height = h + 'px';
+  const bh = cv.offsetHeight - cv.clientHeight; if (bh) cv.style.height = (h + bh) + 'px';
+  const ctx = cv.getContext('2d'); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); return { ctx, w, h };
+}
+function txt(ctx, s, x, y, px, col, align, bold) { ctx.fillStyle = col; ctx.font = (bold ? '700 ' : '') + px + 'px ' + SANS;
+  ctx.textAlign = align || 'left'; ctx.textBaseline = 'middle'; ctx.fillText(s, x, y); }
+
+function update() {
+  const bt = +$('bt').value, nz = +$('nz').value;
+  $('bt-v').textContent = bt.toFixed(2) + (Math.abs(bt - 0.4) < 1e-6 ? ' (AIS)' : ''); $('nz-v').textContent = nz.toFixed(2);
+  $('pick-v').textContent = '';
+  const s = stuff(PICKS[pick]), n = s.length;
+  // NRZI, starting from level +1 before the first bit
+  let lv = 1; const lev = s.map(x => (x.b === 0 ? (lv = -lv) : lv));
+  // GMSK frequency: levels held for SPS samples, then the Gaussian filter
+  const up = lev.flatMap(v => Array(SPS).fill(v)), g = gauss(bt), H = (g.length - 1) / 2;
+  const fr = up.map((_, i) => { let acc = 0; for (let k = 0; k < g.length; k++) { const j = i + k - H; acc += g[k] * up[Math.max(0, Math.min(up.length - 1, j))]; } return acc; });
+  const R = rng(seed * 104729 + pick), rxf = fr.map(v => v + nz * 0.6 * R());
+  // receiver: sample each bit at its center, slice, undo NRZI
+  const dec = lev.map((_, k) => rxf[k * SPS + SPS / 2] > 0 ? 1 : -1);
+  let prev = 1; const rb = dec.map(v => { const b = v === prev ? 1 : 0; prev = v; return b; });
+  const wrong = s.map((x, k) => x.b !== rb[k]);
+  draw(s, lev, fr, rxf, dec, rb, wrong);
+  $('o-n').textContent = String(n);
+  $('o-st').textContent = String(s.filter(x => x.stuffed).length);
+  $('o-ch').textContent = String(lev.filter((v, k) => v !== (k ? lev[k - 1] : 1)).length);
+  const ne = wrong.filter(Boolean).length, e = $('o-err'); e.textContent = String(ne); e.className = 'v ' + (ne ? 'bad' : 'good');
+}
+
+function draw(s, lev, fr, rxf, dec, rb, wrong) {
+  const narrow = window.matchMedia && window.matchMedia('(max-width:620px)').matches;
+  const { ctx, w, h } = setup($("cv"), narrow ? 320 : 330);
+  ctx.clearRect(0, 0, w, h);
+  const n = s.length, mL = narrow ? 64 : 92, mR = 8, X = i => mL + i / n * (w - mL - mR), bw = (w - mL - mR) / n;
+  const fs = Math.max(9, Math.min(13, bw * 0.55));
+  const rows = [['bits sent', 10, 34], ['NRZI level', 50, 104], ['GMSK frequency', 120, 194], ['received', 210, h - 30]];
+  for (const [name, y0, y1] of rows) txt(ctx, name, 6, (y0 + y1) / 2, 10.5, C.ink3, 'left', true);
+  // row 1: bits, stuffed bits amber, flag boxed
+  s.forEach((x, k) => {
+    if (x.stuffed) { ctx.fillStyle = '#f6ead2'; ctx.fillRect(X(k), 12, bw, 22); }
+    if (x.flag) { ctx.fillStyle = '#e6eff8'; ctx.fillRect(X(k), 12, bw, 22); }
+    txt(ctx, String(x.b), X(k) + bw / 2, 23, fs, x.stuffed ? C.amber : C.navy, 'center', true);
+  });
+  ctx.strokeStyle = C.rule; ctx.lineWidth = 1;
+  for (let k = 0; k <= n; k++) { ctx.beginPath(); ctx.moveTo(X(k), 50); ctx.lineTo(X(k), h - 30); ctx.stroke(); }
+  // row 2: NRZI level
+  const Y2 = v => 77 - v * 22;
+  ctx.strokeStyle = C.navy; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(X(0), Y2(1));
+  lev.forEach((v, k) => { ctx.lineTo(X(k), Y2(v)); ctx.lineTo(X(k + 1), Y2(v)); }); ctx.stroke();
+  // row 3: GMSK frequency, with the unfiltered level dashed
+  const Y3 = v => 157 - v * 30;
+  ctx.strokeStyle = C.gray; ctx.lineWidth = 1; ctx.setLineDash([4, 3]); ctx.beginPath();
+  lev.forEach((v, k) => { k ? ctx.lineTo(X(k), Y3(v)) : ctx.moveTo(X(0), Y3(v)); ctx.lineTo(X(k + 1), Y3(v)); }); ctx.stroke(); ctx.setLineDash([]);
+  ctx.strokeStyle = C.mid; ctx.lineWidth = 2; ctx.beginPath();
+  fr.forEach((v, i) => { const x = X(i / SPS); i ? ctx.lineTo(x, Y3(v)) : ctx.moveTo(x, Y3(v)); }); ctx.stroke();
+  txt(ctx, '+2.4 kHz', X(n) - 2, Y3(1) - 8, 9.5, C.ink3, 'right'); txt(ctx, '−2.4 kHz', X(n) - 2, Y3(-1) + 9, 9.5, C.ink3, 'right');
+  // row 4: received frequency, sample points, decided bits
+  const Y4 = v => 238 - Math.max(-1.8, Math.min(1.8, v)) * 22;
+  ctx.strokeStyle = C.rule; ctx.beginPath(); ctx.moveTo(X(0), Y4(0)); ctx.lineTo(X(n), Y4(0)); ctx.stroke();
+  ctx.strokeStyle = C.mid; ctx.lineWidth = 1.2; ctx.beginPath();
+  rxf.forEach((v, i) => { const x = X(i / SPS); i ? ctx.lineTo(x, Y4(v)) : ctx.moveTo(x, Y4(v)); }); ctx.stroke();
+  dec.forEach((v, k) => { const i = k * SPS + SPS / 2; ctx.fillStyle = wrong[k] ? C.red : C.navy;
+    ctx.beginPath(); ctx.arc(X(i / SPS), Y4(rxf[i]), 3.2, 0, 2 * Math.PI); ctx.fill(); });
+  rb.forEach((b, k) => txt(ctx, String(b), X(k) + bw / 2, h - 16, fs, wrong[k] ? C.red : C.navy, 'center', true));
+  txt(ctx, 'decided', 6, h - 16, 10.5, C.ink3, 'left', true);
+}
+
+function seg(id, set) { for (const btn of $(id).querySelectorAll('button')) btn.onclick = () => {
+  for (const o of $(id).querySelectorAll('button')) o.classList.toggle('on', o === btn); set(+btn.dataset.v); update(); }; }
+seg('pick', v => { pick = v; });
+$('again').onclick = () => { seed++; update(); };
+for (const id of ['bt', 'nz']) $(id).oninput = update;
+window.addEventListener('resize', update);
+update();
+</script>
+</body>
+</html>

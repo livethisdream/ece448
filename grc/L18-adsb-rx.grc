@@ -1,0 +1,672 @@
+options:
+  parameters:
+    author: ECE 448
+    catch_exceptions: 'True'
+    category: '[GRC Hier Blocks]'
+    cmake_opt: ''
+    comment: ''
+    copyright: ''
+    description: 'L18: receive ADS-B from L18-adsb-sim.sigmf-data or a PlutoSDR at
+      2 MS/s, show the pulses, and decode each message with gr-adsb''s Framer, Demod,
+      and Decoder. The Aircraft Table block only displays what the Decoder sends it.
+      To go live, disable the SigMF Source and the Throttle and enable the PlutoSDR
+      Source and its AGC: fc 1090e6 for real aircraft, or 915e6 for L18-adsb-tx-pluto.grc
+      through the cable. Receive only.'
+    gen_cmake: 'On'
+    gen_linking: dynamic
+    generate_options: qt_gui
+    hier_block_src_path: '.:'
+    id: L18_adsb_rx
+    max_nouts: '0'
+    output_language: python
+    placement: (0,0)
+    qt_qss_theme: ''
+    realtime_scheduling: ''
+    run: 'True'
+    run_command: '{python} -u {filename}'
+    run_options: prompt
+    sizing_mode: fixed
+    thread_safe_setters: ''
+    title: L18 - ADS-B Receiver
+    window_size: (1060, 760)
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [8, 8]
+    rotation: 0
+    state: enabled
+
+blocks:
+- name: fc
+  id: variable
+  parameters:
+    comment: ''
+    value: 1090e6
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [200, 88]
+    rotation: 0
+    state: enabled
+- name: noise
+  id: variable_qtgui_range
+  parameters:
+    comment: ''
+    gui_hint: 0,1,1,1
+    label: Added noise
+    min_len: '200'
+    orient: QtCore.Qt.Horizontal
+    rangeType: float
+    start: '0'
+    step: '0.01'
+    stop: '0.5'
+    value: '0'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [440, 8]
+    rotation: 0
+    state: enabled
+- name: rx_gain
+  id: variable_qtgui_range
+  parameters:
+    comment: ''
+    gui_hint: 0,0,1,1
+    label: Pluto RX gain (dB)
+    min_len: '200'
+    orient: QtCore.Qt.Horizontal
+    rangeType: float
+    start: '0'
+    step: '1'
+    stop: '70'
+    value: '50'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [296, 8]
+    rotation: 0
+    state: enabled
+- name: samp_rate
+  id: variable
+  parameters:
+    comment: ''
+    value: 2e6
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [200, 8]
+    rotation: 0
+    state: enabled
+- name: stats
+  id: variable_function_probe
+  parameters:
+    block_id: table_0
+    comment: ''
+    function_args: ''
+    function_name: stats
+    poll_rate: '2'
+    value: '''0 bursts found, 0 decoded'''
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [744, 8]
+    rotation: 0
+    state: enabled
+- name: stats_label
+  id: variable_qtgui_label
+  parameters:
+    comment: ''
+    formatter: None
+    gui_hint: 1,0,1,2
+    label: Messages
+    type: string
+    value: stats
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1064, 8]
+    rotation: 0
+    state: enabled
+- name: table
+  id: variable_function_probe
+  parameters:
+    block_id: table_0
+    comment: ''
+    function_args: ''
+    function_name: table
+    poll_rate: '2'
+    value: ''''''
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [904, 8]
+    rotation: 0
+    state: enabled
+- name: table_label
+  id: variable_qtgui_label
+  parameters:
+    comment: ''
+    formatter: None
+    gui_hint: 4,0,1,2
+    label: Aircraft
+    type: string
+    value: table
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1240, 8]
+    rotation: 0
+    state: enabled
+- name: threshold
+  id: variable_qtgui_range
+  parameters:
+    comment: ''
+    gui_hint: 3,0,1,2
+    label: Framer threshold (power)
+    min_len: '200'
+    orient: QtCore.Qt.Horizontal
+    rangeType: float
+    start: '0.0001'
+    step: '0.0001'
+    stop: '0.2'
+    value: '0.01'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [584, 8]
+    rotation: 0
+    state: enabled
+- name: adsb_decoder_0
+  id: adsb_decoder
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    error_corr: '"None"'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    msg_filter: '"Extended Squitter Only"'
+    print_level: '"Verbose"'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [976, 392]
+    rotation: 0
+    state: enabled
+- name: adsb_demod_0
+  id: adsb_demod
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    fs: samp_rate
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [760, 480]
+    rotation: 0
+    state: enabled
+- name: adsb_framer_0
+  id: adsb_framer
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    fs: samp_rate
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    threshold: threshold
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [560, 480]
+    rotation: 0
+    state: enabled
+- name: agc_0
+  id: analog_agc3_xx
+  parameters:
+    affinity: ''
+    alias: ''
+    attack_rate: '1.0'
+    comment: ''
+    decay_rate: 1e-6
+    gain: '1.0'
+    iir_update_decim: '1'
+    max_gain: 1e9
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    reference: '1.0'
+    type: complex
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [216, 480]
+    rotation: 0
+    state: disabled
+- name: analog_noise_source_x_0
+  id: analog_noise_source_x
+  parameters:
+    affinity: ''
+    alias: ''
+    amp: noise
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    noise_type: analog.GR_GAUSSIAN
+    seed: '0'
+    type: complex
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [232, 312]
+    rotation: 0
+    state: enabled
+- name: blocks_add_xx_0
+  id: blocks_add_xx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_inputs: '2'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [440, 232]
+    rotation: 0
+    state: enabled
+- name: blocks_complex_to_mag_squared_0
+  id: blocks_complex_to_mag_squared
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [560, 248]
+    rotation: 0
+    state: enabled
+- name: blocks_null_sink_0
+  id: blocks_null_sink
+  parameters:
+    affinity: ''
+    alias: ''
+    bus_structure_sink: '[[0,],]'
+    comment: ''
+    num_inputs: '1'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [976, 600]
+    rotation: 0
+    state: enabled
+- name: blocks_sigmf_source_minimal_0
+  id: blocks_sigmf_source_minimal
+  parameters:
+    affinity: ''
+    alias: ''
+    begin_tag: pmt.PMT_NIL
+    comment: ''
+    file: '''L18-adsb-sim.sigmf-data'''
+    length: '0'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    repeat: 'True'
+    type: complex float (fc32_le)
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [16, 168]
+    rotation: 0
+    state: enabled
+- name: blocks_throttle2_0
+  id: blocks_throttle2
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    ignoretag: 'True'
+    limit: auto
+    maximum: '0.1'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samples_per_second: samp_rate
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [232, 184]
+    rotation: 0
+    state: enabled
+- name: iio_pluto_source_0
+  id: iio_pluto_source
+  parameters:
+    affinity: ''
+    alias: ''
+    bandwidth: int(samp_rate)
+    bbdc: 'True'
+    buffer_size: '32768'
+    comment: ''
+    filter: ''
+    filter_source: '''Auto'''
+    fpass: '0'
+    frequency: int(fc)
+    fstop: '0'
+    gain1: '''manual'''
+    len_tag_key: packet_len
+    manual_gain1: rx_gain
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    quadrature: 'True'
+    rfdc: 'True'
+    samplerate: int(samp_rate)
+    type: fc32
+    uri: '"ip:192.168.2.1"'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [16, 384]
+    rotation: 0
+    state: disabled
+- name: qtgui_time_sink_x_0
+  id: qtgui_time_sink_x
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha1: '1.0'
+    alpha10: '1.0'
+    alpha2: '1.0'
+    alpha3: '1.0'
+    alpha4: '1.0'
+    alpha5: '1.0'
+    alpha6: '1.0'
+    alpha7: '1.0'
+    alpha8: '1.0'
+    alpha9: '1.0'
+    autoscale: 'False'
+    axislabels: 'True'
+    color1: blue
+    color10: dark blue
+    color2: red
+    color3: green
+    color4: black
+    color5: cyan
+    color6: magenta
+    color7: yellow
+    color8: dark red
+    color9: dark green
+    comment: ''
+    ctrlpanel: 'False'
+    entags: 'False'
+    grid: 'True'
+    gui_hint: 2,0,1,1
+    label1: Signal 1
+    label10: Signal 10
+    label2: Signal 2
+    label3: Signal 3
+    label4: Signal 4
+    label5: Signal 5
+    label6: Signal 6
+    label7: Signal 7
+    label8: Signal 8
+    label9: Signal 9
+    legend: 'False'
+    marker1: '-1'
+    marker10: '-1'
+    marker2: '-1'
+    marker3: '-1'
+    marker4: '-1'
+    marker5: '-1'
+    marker6: '-1'
+    marker7: '-1'
+    marker8: '-1'
+    marker9: '-1'
+    name: '"20 ms of pulses"'
+    nconnections: '1'
+    size: '40000'
+    srate: samp_rate
+    stemplot: 'False'
+    style1: '1'
+    style10: '1'
+    style2: '1'
+    style3: '1'
+    style4: '1'
+    style5: '1'
+    style6: '1'
+    style7: '1'
+    style8: '1'
+    style9: '1'
+    tr_chan: '0'
+    tr_delay: '0'
+    tr_level: '0.0'
+    tr_mode: qtgui.TRIG_MODE_FREE
+    tr_slope: qtgui.TRIG_SLOPE_POS
+    tr_tag: '""'
+    type: float
+    update_time: '0.2'
+    width1: '1'
+    width10: '1'
+    width2: '1'
+    width3: '1'
+    width4: '1'
+    width5: '1'
+    width6: '1'
+    width7: '1'
+    width8: '1'
+    width9: '1'
+    ylabel: Power
+    ymax: '1'
+    ymin: '0'
+    yunit: '""'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [784, 136]
+    rotation: 0
+    state: enabled
+- name: qtgui_time_sink_x_1
+  id: qtgui_time_sink_x
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha1: '1.0'
+    alpha10: '1.0'
+    alpha2: '1.0'
+    alpha3: '1.0'
+    alpha4: '1.0'
+    alpha5: '1.0'
+    alpha6: '1.0'
+    alpha7: '1.0'
+    alpha8: '1.0'
+    alpha9: '1.0'
+    autoscale: 'False'
+    axislabels: 'True'
+    color1: blue
+    color10: dark blue
+    color2: red
+    color3: green
+    color4: black
+    color5: cyan
+    color6: magenta
+    color7: yellow
+    color8: dark red
+    color9: dark green
+    comment: ''
+    ctrlpanel: 'False'
+    entags: 'False'
+    grid: 'True'
+    gui_hint: 2,1,1,1
+    label1: Signal 1
+    label10: Signal 10
+    label2: Signal 2
+    label3: Signal 3
+    label4: Signal 4
+    label5: Signal 5
+    label6: Signal 6
+    label7: Signal 7
+    label8: Signal 8
+    label9: Signal 9
+    legend: 'False'
+    marker1: '-1'
+    marker10: '-1'
+    marker2: '-1'
+    marker3: '-1'
+    marker4: '-1'
+    marker5: '-1'
+    marker6: '-1'
+    marker7: '-1'
+    marker8: '-1'
+    marker9: '-1'
+    name: '"One message: preamble and first bits"'
+    nconnections: '1'
+    size: '120'
+    srate: samp_rate
+    stemplot: 'False'
+    style1: '1'
+    style10: '1'
+    style2: '1'
+    style3: '1'
+    style4: '1'
+    style5: '1'
+    style6: '1'
+    style7: '1'
+    style8: '1'
+    style9: '1'
+    tr_chan: '0'
+    tr_delay: 5e-6
+    tr_level: '0.3'
+    tr_mode: qtgui.TRIG_MODE_NORM
+    tr_slope: qtgui.TRIG_SLOPE_POS
+    tr_tag: '""'
+    type: float
+    update_time: '0.1'
+    width1: '1'
+    width10: '1'
+    width2: '1'
+    width3: '1'
+    width4: '1'
+    width5: '1'
+    width6: '1'
+    width7: '1'
+    width8: '1'
+    width9: '1'
+    ylabel: Power
+    ymax: '1'
+    ymin: '0'
+    yunit: '""'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [784, 256]
+    rotation: 0
+    state: enabled
+- name: table_0
+  id: epy_block
+  parameters:
+    _source_code: "\"\"\"Aircraft Table: shows what gr-adsb's ADS-B Decoder has decoded.\n\
+      \nThis block decodes nothing. gr-adsb's Demod sends every burst it finds to\
+      \ the\n\"found\" port, and its Decoder sends every message it decodes into an\n\
+      identity, a position, or a velocity, with everything it knows about that\naircraft\
+      \ so far, to the \"decoded\" port. This\nblock counts both and keeps one row\
+      \ per aircraft. Function Probes read\nstats() and table() for the QT GUI Labels;\
+      \ both start over when a slider in\n`settings` moves.\"\"\"\n\nimport math\n\
+      \nimport numpy as np\nimport pmt\nfrom gnuradio import gr\n\n\ndef num(v, fmt):\n\
+      \    try:\n        v = float(v)\n    except (TypeError, ValueError):\n     \
+      \   return ''\n    return '' if math.isnan(v) else fmt.format(v)\n\n\nclass\
+      \ blk(gr.basic_block):\n    def __init__(self, settings=None):\n        gr.basic_block.__init__(self,\
+      \ name='Aircraft Table', in_sig=None, out_sig=None)\n        self.message_port_register_in(pmt.intern('found'))\n\
+      \        self.message_port_register_in(pmt.intern('decoded'))\n        self.set_msg_handler(pmt.intern('found'),\
+      \ self.on_found)\n        self.set_msg_handler(pmt.intern('decoded'), self.on_decoded)\n\
+      \        self._settings = settings\n        self.reset()\n\n    def reset(self):\n\
+      \        self.n_found = 0\n        self.n_decoded = 0\n        self.planes =\
+      \ {}\n\n    @property\n    def settings(self):\n        return self._settings\n\
+      \n    @settings.setter\n    def settings(self, value):\n        if value !=\
+      \ self._settings:\n            self.reset()\n        self._settings = value\n\
+      \n    def on_found(self, msg):\n        self.n_found += 1\n\n    def on_decoded(self,\
+      \ msg):\n        self.n_decoded += 1\n        d = pmt.to_python(pmt.car(msg))\n\
+      \        self.planes[d.get('icao', '?')] = d\n\n    def stats(self):\n     \
+      \   return f'{self.n_found} bursts found, {self.n_decoded} decoded'\n\n    def\
+      \ table(self):\n        rows = []\n        for icao, d in sorted(self.planes.items()):\n\
+      \            cs = (d.get('callsign') or '').strip()\n            alt = d.get('altitude')\n\
+      \            alt = '' if alt == -1 else num(alt, '{:.0f} ft')   # -1: a format\
+      \ gr-adsb cannot read\n            spd = num(d.get('speed'), '{:.0f} kt')\n\
+      \            # gr-adsb's heading is a math angle, 0 east and 90 north;\n   \
+      \         # a track is a compass angle, 0 north and 90 east\n            hdg\
+      \ = d.get('heading')\n            trk = num(None if hdg is None else (90 - float(hdg))\
+      \ % 360, 'track {:.0f}')\n            lat, lon = num(d.get('latitude'), '{:.3f}'),\
+      \ num(d.get('longitude'), '{:.3f}')\n            pos = f'{lat}, {lon}' if lat\
+      \ and lon else ''\n            rows.append(f'{icao.upper()}  {cs}:  ' + ', \
+      \ '.join(x for x in (alt, spd, trk, pos) if x))\n        return '\\n'.join(rows)\n"
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    settings: (noise, threshold)
+  states:
+    _io_cache: ('Aircraft Table', 'blk', [('settings', 'None')], [('decoded', 'message',
+      1), ('found', 'message', 1)], [], '', ['settings'])
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1232, 488]
+    rotation: 0
+    state: enabled
+
+connections:
+- [adsb_decoder_0, decoded, table_0, decoded]
+- [adsb_demod_0, '0', blocks_null_sink_0, '0']
+- [adsb_demod_0, demodulated, adsb_decoder_0, demodulated]
+- [adsb_demod_0, demodulated, table_0, found]
+- [adsb_framer_0, '0', adsb_demod_0, '0']
+- [agc_0, '0', blocks_add_xx_0, '0']
+- [analog_noise_source_x_0, '0', blocks_add_xx_0, '1']
+- [blocks_add_xx_0, '0', blocks_complex_to_mag_squared_0, '0']
+- [blocks_complex_to_mag_squared_0, '0', adsb_framer_0, '0']
+- [blocks_complex_to_mag_squared_0, '0', qtgui_time_sink_x_0, '0']
+- [blocks_complex_to_mag_squared_0, '0', qtgui_time_sink_x_1, '0']
+- [blocks_sigmf_source_minimal_0, '0', blocks_throttle2_0, '0']
+- [blocks_throttle2_0, '0', blocks_add_xx_0, '0']
+- [iio_pluto_source_0, '0', agc_0, '0']
+
+metadata:
+  file_format: 1
+  grc_version: 3.10.9.2

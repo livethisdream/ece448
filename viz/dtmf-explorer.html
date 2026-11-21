@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DTMF explorer — Goertzel bins, block length, noise, twist, and frequency error</title>
+<style>
+  :root { --navy:#004a85; --mid:#0067b9; --edge:#cddce9; --edge2:#b9d2e5; --bg:#f5f9fc;
+          --ink:#15202b; --ink3:#5b6573;
+          --amber:#8a5a00; --red:#b01e24; --grn:#3f7d34; }
+  html,body { margin:0; padding:0; font-family:'Inter',system-ui,-apple-system,sans-serif; color:var(--ink); background:#fff; }
+  .app { display:flex; flex-direction:column; gap:8px; padding:12px; }
+  .plots { display:grid; grid-template-columns:minmax(0,1.25fr) minmax(0,1fr); gap:10px; }
+  @media (max-width:620px) { .plots { grid-template-columns:1fr; } }
+  canvas { display:block; box-sizing:border-box; width:100%; height:auto; background:#fff; border:1px solid var(--edge); border-radius:6px; }
+  .controls { display:grid; grid-template-columns:auto minmax(0,1fr) minmax(0,1fr); gap:8px 16px; align-items:center;
+              padding:8px 12px; background:var(--bg); border:1px solid var(--edge); border-radius:6px; }
+  @media (max-width:620px) { .controls { grid-template-columns:auto minmax(0,1fr); } }
+  .pad { grid-row:span 2; display:grid; grid-template-columns:repeat(4, 30px); gap:3px; }
+  .pad button { font:inherit; font-size:13px; font-weight:700; color:var(--navy); background:#fff; border:1px solid var(--edge2);
+                border-radius:5px; height:26px; padding:0; cursor:pointer; }
+  .pad button.on { background:var(--navy); color:#fff; border-color:var(--navy); }
+  .ctl { display:grid; grid-template-columns:auto 1fr; column-gap:8px; row-gap:2px; align-items:center; min-width:0; }
+  .ctl label { font-size:10.5px; text-transform:uppercase; letter-spacing:0.05em; color:var(--ink3); font-weight:700; white-space:nowrap; }
+  .ctl .val { color:var(--navy); font-size:12px; font-weight:600; font-variant-numeric:tabular-nums; text-align:right; white-space:nowrap; }
+  .ctl input[type=range]{ grid-column:1 / span 2; width:100%; margin:0; accent-color:var(--mid); }
+  .readouts { display:grid; gap:6px; grid-template-columns:repeat(4,minmax(0,1fr)); }
+  @media (max-width:430px) { .readouts { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+  .ro { display:flex; flex-direction:column; align-items:center; gap:2px; padding:5px 4px 6px; min-width:0;
+        border:1px solid var(--edge2); border-radius:6px; background:#eef4fa; }
+  .ro .k { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:var(--ink3); white-space:nowrap; }
+  .ro .v { font-size:14px; font-weight:700; white-space:nowrap; font-variant-numeric:tabular-nums; color:var(--navy); }
+  .ro.bad .v { color:var(--red); }
+  .ro button { font:inherit; font-size:12px; font-weight:600; color:var(--navy); background:#fff; border:1px solid var(--edge2); border-radius:14px; padding:2px 10px; cursor:pointer; }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="plots">
+    <canvas id="resp" aria-label="Frequency response of the eight Goertzel bins for the chosen block length, with the two transmitted tones marked"></canvas>
+    <canvas id="bars" aria-label="Share of one block's energy found in each of the eight Goertzel bins"></canvas>
+  </div>
+  <div class="controls">
+    <div class="pad" id="pad"></div>
+    <div class="ctl"><label for="n">Block length N</label><span class="val" id="n-v"></span>
+      <input type="range" id="n" min="40" max="410" step="5" value="205"></div>
+    <div class="ctl"><label for="snr">SNR</label><span class="val" id="snr-v"></span>
+      <input type="range" id="snr" min="-6" max="30" step="1" value="20"></div>
+    <div class="ctl"><label for="tw">Twist</label><span class="val" id="tw-v"></span>
+      <input type="range" id="tw" min="-14" max="10" step="1" value="0"></div>
+    <div class="ctl"><label for="off">Frequency error</label><span class="val" id="off-v"></span>
+      <input type="range" id="off" min="-4" max="4" step="0.1" value="0"></div>
+  </div>
+  <div class="readouts">
+    <div class="ro" id="ro-d"><span class="k">decision</span><span class="v" id="o-d">—</span></div>
+    <div class="ro"><span class="k">two-bin share</span><span class="v" id="o-s">—</span></div>
+    <div class="ro"><span class="k">twist measured</span><span class="v" id="o-t">—</span></div>
+    <div class="ro"><button id="again" type="button">new noise</button></div>
+  </div>
+</div>
+
+<script>
+'use strict';
+// One block of the L13 decoder: N samples at 8 kHz, a Goertzel bin at each of
+// the eight DTMF frequencies (k = f N / fs, not rounded), and the same three
+// tests as the DTMF Decoder block in L13-dtmf-link.grc: the strongest row and
+// column bins hold at least 35% of the block's energy, each is 6 dB above the
+// rest of its group, and the column tone is within +6 / -10 dB of the row tone.
+// The flowgraph also needs three blocks in a row to agree; this shows one.
+const FS = 8000, ROWS = [697, 770, 852, 941], COLS = [1209, 1336, 1477, 1633], KEYS = ['123A', '456B', '789C', '*0#D'];
+const SANS = 'Inter, system-ui, -apple-system, sans-serif';
+const C = { navy:'#004a85', mid:'#0067b9', red:'#b01e24', amber:'#8a5a00', grn:'#3f7d34', rule:'#cddce9', ink:'#15202b', ink3:'#5b6573', band:'#eef4fa' };
+const LINE = ['#004a85', '#b01e24', '#3f7d34', '#15202b'];
+const nEl = document.getElementById('n'), snrEl = document.getElementById('snr'), twEl = document.getElementById('tw'), offEl = document.getElementById('off');
+let key = 5, seed = 13;
+const pad = document.getElementById('pad');
+KEYS.join('').split('').forEach((d, i) => { const b = document.createElement('button'); b.textContent = d; b.type = 'button';
+  b.onclick = () => { key = i; update(); }; pad.appendChild(b); });
+[nEl, snrEl, twEl, offEl].forEach(e => e.oninput = update);
+document.getElementById('again').onclick = () => { seed++; update(); };
+
+function rng(s){ let a = s >>> 0; return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a);
+  t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+function gauss(r){ const u = Math.max(r(), 1e-12), v = r(); return Math.sqrt(-2*Math.log(u)) * Math.cos(2*Math.PI*v); }
+
+function block(N, snr, tw, off) {
+  const r = rng(seed), lo = 0.3, hi = lo * Math.pow(10, tw/20), s = 1 + off/100;
+  const fr = ROWS[key >> 2] * s, fc = COLS[key & 3] * s, p1 = 2*Math.PI*r(), p2 = 2*Math.PI*r();
+  const sigma = Math.sqrt((lo*lo + hi*hi) / 2 / Math.pow(10, snr/10)), x = new Float64Array(N);
+  for (let n = 0; n < N; n++) x[n] = lo*Math.sin(2*Math.PI*fr*n/FS + p1) + hi*Math.sin(2*Math.PI*fc*n/FS + p2) + sigma*gauss(r);
+  let E = 0; for (let n = 0; n < N; n++) E += x[n]*x[n];
+  const share = ROWS.concat(COLS).map(f => { const c = 2*Math.cos(2*Math.PI*f/FS); let q1 = 0, q2 = 0;
+    for (let n = 0; n < N; n++) { const q0 = c*q1 - q2 + x[n]; q2 = q1; q1 = q0; }
+    return (q1*q1 + q2*q2 - c*q1*q2) * 2 / (N*E); });
+  return { share, fr, fc };
+}
+
+function decide(p) {
+  const lo = p.slice(0, 4), hi = p.slice(4), r = lo.indexOf(Math.max(...lo)), c = hi.indexOf(Math.max(...hi));
+  const lo2 = [...lo].sort((a, b) => b - a)[1], hi2 = [...hi].sort((a, b) => b - a)[1];
+  const out = { r, c, two: lo[r] + hi[c], twist: 10*Math.log10(hi[c] / lo[r]), digit: null, why: '' };
+  if (out.two < 0.35) out.why = 'too little energy';
+  else if (lo2*4 > lo[r] || hi2*4 > hi[c]) out.why = 'no clear winner';
+  else if (out.twist > 6 || out.twist < -10) out.why = 'twist';
+  else out.digit = KEYS[r][c];
+  return out;
+}
+
+function setup(cv, aspect, narrowH){
+  const dpr = window.devicePixelRatio || 1, w = Math.max(200, cv.clientWidth || 300);
+  const narrow = window.matchMedia && window.matchMedia('(max-width:620px)').matches;
+  const h = narrow ? narrowH : Math.round(Math.min(w * aspect, 250));
+  cv.width = Math.round(w*dpr); cv.height = Math.round(h*dpr); cv.style.height = h + 'px';
+  const bh = cv.offsetHeight - cv.clientHeight; if (bh) cv.style.height = (h + bh) + 'px';
+  const ctx = cv.getContext('2d'); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); return { ctx, w, h };
+}
+function txt(ctx, s, x, y, px, col, align, bold){ ctx.fillStyle = col; ctx.font = (bold?'700 ':'') + px + 'px ' + SANS;
+  ctx.textAlign = align || 'left'; ctx.textBaseline = 'middle'; ctx.fillText(s, x, y); }
+
+function drawResp(N, b) {
+  const cv = document.getElementById('resp'), { ctx, w, h } = setup(cv, 0.52, 160);
+  ctx.clearRect(0, 0, w, h);
+  const mL = 30, mR = 8, top = 20, y0 = h - 26, f0 = 600, f1 = 1700, lo = -40, hi = 0;
+  const X = f => mL + (f - f0) / (f1 - f0) * (w - mL - mR), Y = d => top + (hi - Math.max(lo, Math.min(hi, d))) / (hi - lo) * (y0 - top);
+  ctx.strokeStyle = C.rule; ctx.lineWidth = 1;
+  for (let d = lo; d <= hi; d += 20) { ctx.beginPath(); ctx.moveTo(mL, Y(d)); ctx.lineTo(w - mR, Y(d)); ctx.stroke(); txt(ctx, String(d).replace('-', '−'), mL - 4, Y(d), 10, C.ink3, 'right'); }
+  for (let f = 800; f <= 1600; f += 400) txt(ctx, f + (f === 1600 ? ' Hz' : ''), X(f), y0 + 12, 10.5, C.ink3, 'center');
+  ROWS.concat(COLS).forEach((fk, i) => {
+    // the main lobe, between the first nulls at fk +/- fs/N, bold; the sidelobes faint
+    for (const main of [false, true]) {
+      ctx.strokeStyle = LINE[i % 4]; ctx.globalAlpha = main ? 1 : 0.3; ctx.lineWidth = main ? 1.8 : 1; ctx.beginPath();
+      let pen = false;
+      for (let px = 0; px <= w - mL - mR; px++) { const f = f0 + px / (w - mL - mR) * (f1 - f0), d = Math.PI * (f - fk) / FS;
+        if (main && Math.abs(f - fk) > FS / N) { pen = false; continue; }
+        const g = Math.abs(d) < 1e-9 ? 1 : Math.abs(Math.sin(N*d) / (N*Math.sin(d))), y = Y(20*Math.log10(Math.max(g, 1e-4)));
+        if (!pen) { ctx.moveTo(mL + px, y); pen = true; } else ctx.lineTo(mL + px, y); }
+      ctx.stroke(); }
+    ctx.globalAlpha = 1; });
+  for (const f of [b.fr, b.fc]) { ctx.strokeStyle = C.amber; ctx.lineWidth = 2; ctx.setLineDash([4, 3]);
+    ctx.beginPath(); ctx.moveTo(X(f), top); ctx.lineTo(X(f), y0); ctx.stroke(); ctx.setLineDash([]); }
+  txt(ctx, 'bin response, dB', 6, top - 10, 10, C.ink3);
+  txt(ctx, 'tones sent', w - mR, top - 10, 10, C.amber, 'right', true);
+}
+
+function drawBars(p, d) {
+  const cv = document.getElementById('bars'), { ctx, w, h } = setup(cv, 0.65, 160);
+  ctx.clearRect(0, 0, w, h);
+  const mL = 30, mR = 8, top = 20, y0 = h - 26, X = i => mL + (i + 0.5) / 8 * (w - mL - mR), bw = (w - mL - mR) / 8 * 0.6;
+  const Y = v => top + (1 - Math.max(0, Math.min(1, v))) * (y0 - top);
+  ctx.strokeStyle = C.rule; ctx.lineWidth = 1;
+  for (const v of [0, 0.5, 1]) { ctx.beginPath(); ctx.moveTo(mL, Y(v)); ctx.lineTo(w - mR, Y(v)); ctx.stroke(); txt(ctx, String(v), mL - 4, Y(v), 10, C.ink3, 'right'); }
+  ctx.beginPath(); ctx.moveTo(X(3.5), top); ctx.lineTo(X(3.5), y0); ctx.stroke();
+  p.forEach((v, i) => { const win = i === d.r || i === d.c + 4;
+    ctx.fillStyle = win ? (d.digit ? C.navy : C.red) : '#b9c3cf'; ctx.fillRect(X(i) - bw/2, Y(v), bw, y0 - Y(v));
+    txt(ctx, String(ROWS.concat(COLS)[i]), X(i), y0 + 12, 9.5, C.ink3, 'center'); });
+  txt(ctx, 'share of block energy', 6, top - 10, 10, C.ink3);
+  txt(ctx, 'rows', X(1.5), top + 8, 10, C.ink3, 'center', true); txt(ctx, 'columns', X(5.5), top + 8, 10, C.ink3, 'center', true);
+}
+
+function update() {
+  const N = +nEl.value, snr = +snrEl.value, tw = +twEl.value, off = +offEl.value;
+  pad.querySelectorAll('button').forEach((b, i) => b.classList.toggle('on', i === key));
+  document.getElementById('n-v').textContent = N;
+  document.getElementById('snr-v').textContent = snr + ' dB';
+  document.getElementById('tw-v').textContent = (tw > 0 ? '+' : '') + tw + ' dB';
+  document.getElementById('off-v').textContent = (off > 0 ? '+' : '') + off.toFixed(1) + '%';
+  const b = block(N, snr, tw, off), d = decide(b.share);
+  document.getElementById('o-d').textContent = d.digit ? d.digit : 'none: ' + d.why;
+  document.getElementById('ro-d').className = 'ro' + (d.digit === KEYS[key >> 2][key & 3] ? '' : ' bad');
+  document.getElementById('o-s').textContent = d.two.toFixed(2);
+  document.getElementById('o-t').textContent = (d.twist > 0 ? '+' : '') + d.twist.toFixed(1) + ' dB';
+  drawResp(N, b); drawBars(b.share, d);
+}
+
+window.addEventListener('resize', update);
+update();
+</script>
+</body>
+</html>
