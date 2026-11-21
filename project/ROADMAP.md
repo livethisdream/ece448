@@ -1,6 +1,6 @@
 # ECE 448 roadmap
 
-Last updated 2026-10-17. Read with ECE 444's `project/ROADMAP.md`, whose
+Last updated 2026-11-21. Read with ECE 444's `project/ROADMAP.md`, whose
 working rules apply here.
 
 ## Course philosophy (Neil, 2026-10-17)
@@ -13,8 +13,8 @@ This is the line the landing page, syllabus, and Lesson 1 use.
 
 Every lesson exists to get a real signal built, received, or decoded in
 GNU Radio. Theory earns a place only when the application needs it, and only
-as much as the application needs. Write lesson pages, slides, practice sets,
-and lab packets with these rules in mind:
+as much as the application needs. Write lesson pages, slides, and lab
+packets with these rules in mind:
 
 - **Start with the signal, not the math.** Open with what the cadet will
   build or decode and why it matters. Bring in theory when the flowgraph
@@ -46,14 +46,14 @@ written before this date.
   error-rate curves against theory. The one noise number the course uses is
   SNR as the SDR display shows it (Lesson 2), and only where a slider or a
   display needs it.
-- **Labs observe; they do not predict from formulas.** A Pre-Lab may ask
-  for a block setting (a sample rate, a decimation, a filter cutoff) or a
-  quick arithmetic step a flowgraph needs. It does not ask cadets to predict
-  error rates, SNR tables, or loop limits. Bench parts turn a slider and
-  record what they see; Writeup questions ask what changed and why, in
-  words.
-- **Practice sets** follow the same rule: block parameters, reading a
-  display, choosing a setting, and explaining what a change does.
+- **Labs observe; they do not predict from formulas.** Part 1, Predict, may
+  ask for a block setting (a sample rate, a decimation, a filter cutoff), a
+  quick arithmetic step a flowgraph needs, or what a display will show. It
+  does not ask cadets to predict error rates, SNR tables, or loop limits.
+  Part 2, Measure, turns a slider and records what the cadet sees; Part 3,
+  Analyze, asks open questions about what changed and why, in words. (Part
+  names from 2026-11-21; see "Labs follow 444's lab rules" under Settled.)
+- **No practice sets** (Neil, 2026-11-21). The lab packet is the homework.
 - **Deckless lessons** (L5, L8, L11, L12, L15, L16 and later ones without a
   2025 deck) follow the GNU Radio tutorials and PySDR for scope, and stay at
   the level of the lessons that do have decks.
@@ -146,7 +146,8 @@ budgets, checks) still apply. Where 444 would put a derivation on screen,
 - **Seven modules approved** (lesson list below).
 - **The midterm is a fox hunt plus a CTF.**
 - **Drop the 2025 "Theory Project"** (nobody remembers what it covered).
-  L2–L3 get ordinary practice sets, like every other lesson.
+  L2–L3 got ordinary practice sets, like every other lesson then; practice
+  sets were retired on 2026-11-21.
 
 - **mPSK is its own lesson** (L15, about two periods), using the GNU Radio
   tutorial in `ECE448-faculty/L19_MPSK`. It wasn't on the 2025 schedule.
@@ -159,8 +160,9 @@ budgets, checks) still apply. Where 444 would put a derivation on screen,
   project days, and the midterm are calendar entries, not numbered lessons.
 - **The 2025 per-signal projects become ECE 444-style lab packets.** Each
   packet is a child page `LNN-lab-<slug>` titled "LNN Lab — <Topic>". It has
-  three parts (Pre-Lab, Bench, Writeup) and one submission, which is one
-  Gradescope assignment.
+  three parts and one submission, which is one Gradescope assignment. The
+  parts were Pre-Lab, Bench, and Writeup; from 2026-11-21 they are Predict,
+  Measure, and Analyze (below).
 - **Grades use the 2025 weights**: Final Project 40%, Projects (labs) 25%,
   Engagement 20%, Midterm 15%.
 - **Objectives** are the two-level "I can…" list (module.N). Neil reviews
@@ -212,6 +214,115 @@ budgets, checks) still apply. Where 444 would put a derivation on screen,
     LRPT replaces NOAA APT, whose satellites were retired in 2025; the ADS-B
     generator transmits at 915 MHz only.
   - The final project's legacy deck is set to `[]`; the page covers it.
+
+- **Labs follow 444's lab rules; no practice sets (Neil, 2026-11-21).** ECE
+  444 settled its lab rules between 2026-11-08 and 11-17 (its CLAUDE.md,
+  ROADMAP §4 "Lessons are topics" through "The lean shape", COURSE_SPEC §M5,
+  VOICE.md 27-43, and the write-lesson skill). They apply here as adapted
+  below; VOICE.md 27-43 and `.claude/skills/write-lesson/SKILL.md` carry
+  them. Neil, on practice sets: "I don't really need practice sets. The labs
+  are the main thing."
+  - **A lesson prepares for its lab.** It works every method Part 1 needs,
+    with a worked example on the page or a one-line recap linking the lesson
+    that worked it, and it never prints a value that equals an answer-key
+    value. Its worked examples, figures, and widget defaults use settings the
+    lab does not use. This merges 444's rule with 448's of 2026-10-21 ("No
+    public page prints a lab answer"). A 448 lesson is still presented in
+    class within `BEATS` (20), unlike a 444 Module 3 lesson, which is a
+    reading page.
+  - **Preparing for the Lab.** A lesson with a lab ends its content with a
+    read-only "Preparing for the Lab" frame that points to Part 1 of its
+    lab's packet; until a module session reworks that lab, it points to the
+    current packet's Pre-Lab. A reworked lesson's frame maps each Part 1
+    item to the step that checks it, as 444's L21 does. A lesson without a
+    lab has no such frame and no Practice frame.
+  - **The lab page has cadets predict first.** It presents, in order: the
+    title; the objectives; **The Big Picture**, which lists what is measured
+    by what is set or switched, with step ranges and no outcomes, expected
+    traces, or predicted numbers; **Predict First**, a widget that hides its
+    answer until the cadet commits and asks, and hides it again on any
+    change; then **one beat per procedure block**, three or four bullets of
+    what the cadet does, with the numbered steps and entry boxes in the
+    frame's read-mode text. Equipment and setup folds into the first block.
+    `LAB_BEATS` in `scripts/verify/budgets.py` is 10, as a ceiling, not a
+    target ("Visuals are always better"). Read-only after the procedure:
+    **No Hardware?** (448's version: the SigMF recording or the simulated
+    flowgraph a cadet uses without a working PlutoSDR or signal), **Your
+    Part 2 Entries**, **Lab Packet**, **For Part 3** (only what the analysis
+    asks for), and a one-line **Looking Ahead**. No step states a value Part
+    1 predicts; it says to compare with the prediction. **No teaching on the
+    lab page**: a frame that explains goes in the lesson, or goes. Every
+    entry box's label reads `Step N: what it is (unit)`.
+  - **One packet, one submission, one Gradescope assignment**, in three
+    parts that replace Pre-Lab, Bench, and Writeup. "Bench" never appears
+    where a cadet reads it (VOICE.md 28).
+    - *Part 1, Predict*: individual, before the period. The Predicted cell of
+      every quantity Part 2 measures, with the work shown for one row of each
+      table. It gives only what a cadet cannot be expected to know, states no
+      result, and lists no steps. Every Part 1 item sets up a prediction, a
+      setting, or a step that Part 2 uses; anything else comes out.
+    - *Part 2, Measure*: in class, on the cadet's own PlutoSDR. The Measured
+      cells of the same tables, and no prose questions.
+    - *Part 3, Analyze*: after the lab. Two or three open prompts about what
+      this lab measured. None names the finding, its direction, or its cause,
+      and none would fit another lab unchanged (VOICE.md 43). The first page
+      says an answer is graded on a claim, the evidence, the reasoning, and
+      the uncertainty; the key lists what a strong answer notices, not one
+      model paragraph.
+    - **The lean shape**: about four pages. Predicted sits beside measured:
+      each table appears once, with a Predicted and a Measured column per
+      quantity, or a Predicted row directly above the Measured row where
+      pairs do not fit. A predicted cell is shaded with a gray box drawn
+      inside the cell, never `\cellcolor` (which covers the rules, so a run
+      of predicted cells reads as one gray block on screen), and is named
+      `p1.<the Part 2 field name>`; a cell with no prediction shows a dash.
+      Boxes line up (VOICE.md 34). The macros are not in `latex/` yet; the
+      first module session to rework a packet adds them in one shared file.
+      444's L21 blank packet is the worked example of the shape.
+    - **No invented people and no invented readings** (VOICE.md 41). The
+      data is the cadet's own. A real classmate in the room, as in L5's and
+      L7's fallback pairing or L12's hand-keyed message, is not an invented
+      person, but no problem hands the cadet someone else's readings.
+  - **A provided block is taught to the depth of what to expect** (444,
+    Neil, 2026-11-17: "enough to know what to expect, but not enough to be
+    able to implement the algorithms on their own"). For gr-adsb,
+    gr-hdradio, gr-rds, and any other out-of-tree or library block a lab
+    hands the cadet: its purpose, its place in the chain, a before-and-after
+    picture, and what each control does, with only the relations Part 1
+    uses, and no walk through its source. L11 is the exception by subject:
+    there the cadet writes the block.
+  - **Answers stay as 448 has them.** Packet `.tex` sources are public in
+    `latex/`, and their answers come from
+    `ECE448-faculty/lab-keys/src/*_solutions.tex` through `\keysol`
+    (CLAUDE.md, "Public repo"). 444 differs: its packet sources live in its
+    faculty repo, because each holds its solutions inline. Do not move 448's.
+  - **448's own rules still hold**: the PlutoSDR only; 915 MHz, by cable
+    through the 30 dB attenuator or at low power over the air, for anything
+    the course transmits; SigMF; the three flowgraph steps (normalize,
+    compile, run); an applications course, with no Eb/N0, BER, or
+    probability-of-error math; first person; never MATLAB.
+  - **Practice sets are retired.** No lesson links one. L5-L8 and L10-L19
+    carry the Preparing for the Lab frame (L18 and L19 both point to the
+    L18–L19 Lab, whose Pre-Lab covers both). L2, L3, L4, L9, and L20 lost
+    their Practice frame, and L1 never had one. The practice sources in
+    `latex/` and the PDFs in `book/extras/practice/` stay in the repo,
+    unlinked, as in 444. `mech_check.sh` no longer builds or checks a
+    practice set; its gate 7 now checks that a lesson with a lab links its
+    committed packet from a Preparing for the Lab frame, and that no lesson
+    links a practice PDF. The syllabus no longer counts practice problems
+    toward engagement.
+  - **Labs still to rework**, one module session each, in this order. Each
+    one: the lab page to the predict-first shape with a Predict First
+    widget, the packet to the lean shape with Predict / Measure / Analyze,
+    the lesson's Preparing for the Lab frame pointed at Part 1, every
+    "bench" out of the lab page, the packet, and the lesson, and the
+    lesson's worked examples checked against Part 1.
+    - Module 2: L5 Lab.
+    - Module 3: L6 Lab, L7 Lab.
+    - Module 4: L8 Lab, L10 Lab.
+    - Module 5: L11 Lab.
+    - Module 6: L12 Lab, L13 Lab, L14 Lab, L15 Lab, L16 Lab, L17 Lab, and
+      the L18–L19 Lab.
 
 ## Lesson list (approved by Neil, 2026-10-17)
 
@@ -416,7 +527,6 @@ is the Integrator, as in ECE 444 (`project/ROADMAP.md` sections 1-3 there).
 | :-- | :-- |
 | the lesson page and its lab page | `book/moduleMM/LNN-*/index.md` |
 | its deck | `book/extras/slides/LNN-*.md` and the generated `.html` |
-| its practice set | `latex/ECE448_Practice_LNN.tex` and its PDFs in `book/extras/practice/` |
 | its lab packet | `latex/ECE448_Lab_LNN_*.tex` and the blank PDF in `book/extras/labs/`; the KEY to `ECE448-faculty/lab-keys/` |
 | its figures | `book/extras/{viz/img,slides/fig,slides/img/NN-*}/LNN-*` and `scripts/graphics/lNN_figures.py` |
 | its flowgraphs and scripts | `book/extras/grc/LNN-*` |
@@ -430,8 +540,8 @@ thread lists what it needs under "For the Integrator" in its PR body.
 
 1. A frame page within 20 beats and 40 words a frame, opening from the
    signal and closing with an application frame on the SDR or in GNU Radio.
-2. The deck, the practice set (one `Learning Objective M.N:` line per
-   objective served), and, where the lesson has a lab, the packet.
+2. The deck and, where the lesson has a lab, the packet. No practice set
+   (retired 2026-11-21).
 3. Every flowgraph normalized, compiled, and, if it needs no hardware, run
    for its screenshots (CLAUDE.md, "Flowgraphs").
 4. `mech_check.sh NN <slug>` with 0 failures, which includes the phone-math

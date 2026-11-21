@@ -28,8 +28,8 @@ and tutorials, then PySDR.org.
 ## 1. Before you write a word
 
 - Read `VOICE.md` in full, every time. It grows, and the newest rules (25,
-  first person; 26, every sentence earns its place) are the ones most often
-  missed.
+  first person; 26, every sentence earns its place; 27-43, lab pages, a
+  lesson's story, and packets) are the ones most often missed.
 - Read the earlier lessons this one builds on and note their notation and
   their flowgraphs with `grep -n`. A link to an earlier lesson names it.
 - Plan the figures and widgets with the outline, not after it. Candidates,
@@ -66,7 +66,14 @@ Every sentence, as you write it:
   write it, not afterwards. Past sweeps found 0.01λ that should have been
   0.15λ, and 20 dB that should have been 23.
 - **Agrees with the rest of the lesson.** One value per quantity, everywhere
-  it appears.
+  it appears; a change of unit or reference (dBFS to dB relative to a peak)
+  says what and why (VOICE.md 40).
+- **Serves the story.** The opening frame states the lesson's one story as a
+  plain outline, taken from what the cadet will see in GNU Radio; no slogan,
+  no teaser, no "cannot" without its reason, and no build-up for an effect
+  smaller than the spread on the cadet's own plot (VOICE.md 36-38). Radio
+  words for radio things: tune, the noise floor, the constellation spreads
+  (VOICE.md 39).
 
 Every frame:
 
@@ -81,6 +88,100 @@ Every frame:
 - No math in the raw-HTML objectives list, `\vert` not `|` in table math,
   `\ ` not `\,` or `\;`, no thin spaces (CLAUDE.md gotchas).
 
+Every lesson and lab pair has one shape (ECE 444's lab rules, brought here
+on 2026-11-21; `project/ROADMAP.md`, "Labs follow 444's lab rules", has the
+details). A 448 lesson is still presented in class within the lesson beat
+budget; the lab follows it.
+
+- **The lesson** teaches everything the lab tests and how to read what the
+  cadet will see. A lesson with a lab ends its content with a read-only
+  **Preparing for the Lab** frame that points to Part 1 of the packet and,
+  once the lab is reworked, maps each Part 1 item to the step that checks
+  it. A lesson without a lab has no such frame. No lesson has a practice set
+  (Neil, 2026-11-21).
+- **Every Part 1 method is worked on the lesson page, and no Part 1 answer
+  is.** Go down Part 1 item by item: each needs a worked example of its
+  method, or a one-line recap linking the lesson that worked it. Worked
+  examples, figures, and widget defaults use settings the lab does not use
+  (another sample rate, tone, center frequency, or recording). No page
+  prints a value that equals an answer-key value.
+- **A provided block is taught to what to expect** (444, Neil, 2026-11-17).
+  For gr-adsb, gr-hdradio, gr-rds, and any out-of-tree or library block the
+  lab hands the cadet: its purpose, its place in the chain, a
+  before-and-after picture (the signal into it and what comes out), and
+  what each control does. No walk through its source. L11, where the cadet
+  writes the block, is the exception by subject.
+- **The lab page has cadets predict first.** Keep it as short as it can be,
+  and prefer a figure or a widget to bullets ("Visuals are always better");
+  `LAB_BEATS` (10) is a ceiling. It presents: title; objectives; **The Big
+  Picture**, listing what is measured by what is set or switched, with step
+  ranges and no outcomes, expected traces, or predicted numbers; **Predict
+  First**, a widget that hides its answer until the cadet commits and asks,
+  and hides it again on any change (444's `af-element-predict.html` is the
+  model); then **one beat per procedure block**, each presenting three or
+  four bullets of what the cadet does, with its steps and entry boxes in the
+  frame's read-mode text. Equipment and setup fold into the first block. No
+  step states a value Part 1 predicts; it says to compare with the
+  prediction. Read-only after the procedure: **No Hardware?** (the SigMF
+  recording or the simulated flowgraph a cadet uses without a working
+  PlutoSDR or signal), **Your Part 2 Entries**, **Lab Packet**, **For Part
+  3** (only what the analysis asks for), and a one-line **Looking Ahead**.
+  No teaching on the lab page: a frame that explains goes in the lesson, or
+  goes.
+- **The packet's** Part 1 produces exactly the predictions Part 2 compares
+  against, and Part 3 matches For Part 3.
+
+Every lab page (VOICE.md 27-35):
+
+- Steps run 1 to N straight through, a few frames of them, and the opening
+  frame names the parts so the structure stays in sight. No A1, A2.
+- A note about a step goes in that step's frame: the command, why, and
+  what to do if it looks wrong. No later paragraph that says "Step 5 is".
+- Say nothing the cadet already knows: no "per" headings, no second list of
+  the PlutoSDR and its cables, nothing an earlier lab already taught (the
+  Pluto URI, extended-frequency mode, adding a block in GRC).
+- Never "bench". A control goes by the label on the running window ("the
+  Noise Voltage slider"), not its variable ID; a block by the name GRC shows.
+- No dry-run anecdotes unless the cadet needs the number.
+- Entry boxes at each step that takes a reading, and a Your Part 2 Entries
+  frame; packet boxes 1.5 in, right-justified in the 0.42 answer column or
+  in one row along the bottom of the part.
+- Every entry box's label has one format, `Step N: what it is (unit)`
+  (Neil, 2026-11-15, in 444: "the labels in the fillable fields vary in
+  label format"). The case goes in the description, not after a comma
+  ("Step 8: Mark tone level (dBFS)", not "Step 8, Mark: tone level"); every
+  reading names its unit; a GNU Radio control or readout keeps the label
+  the running window shows.
+- Bold for control names, defined terms and step leads only; italics almost
+  never.
+- The PlutoSDR is the radio; anything the course transmits goes out at
+  915 MHz, by cable through the 30 dB attenuator or at low power over the
+  air; recordings are SigMF; every flowgraph is normalized, compiled, and,
+  without hardware, run (CLAUDE.md, "Flowgraphs").
+
+Every lab packet and assessment (VOICE.md 41-43):
+
+- No invented people and no invented readings: never "a classmate", "a lab
+  partner", "a colleague" or "a customer" handing over data or an opinion. A
+  packet's data is the cadet's own.
+- "What it doesn't explain", never "what X cannot show you" or "cannot tell
+  you".
+- A packet is **Predict, Measure, Analyze**, one submission, one Gradescope
+  assignment, about four pages. Part 1 is the Predicted cell of every
+  quantity Part 2 measures; it gives only what a cadet cannot know, states
+  no result, and lists no steps. Part 2 is the Measured cells, no prose.
+  Part 3 is two or three open prompts about what this lab measured, graded
+  on claim, evidence, reasoning, and uncertainty: none names the finding,
+  its direction, or its cause, and none would fit another lab unchanged.
+- Predicted sits beside measured: each table appears once, with a Predicted
+  and a Measured column per quantity, or a Predicted row above the Measured
+  row where pairs do not fit. Predicted cells are shaded with a gray box
+  inside the cell, never `\cellcolor`; a cell with no prediction shows a
+  dash; a predicted cell is named `p1.<the Part 2 field name>`.
+- Answers come from `ECE448-faculty/lab-keys/src` through `\keysol`; the
+  `.tex` stays public in `latex/`, and no noise math (Eb/N0, BER, error
+  probability) appears in any part.
+
 Figures and widgets as you go: generators in `scripts/graphics/` through
 `apply_font_stack()`, widgets from an existing widget in `book/extras/viz/` as
 the template and inside `check_widget.py`'s budgets; the illustration
@@ -93,7 +194,7 @@ python3 scripts/verify/check_voice.py L<NN>        # 0 FAIL; read every WARN
 python3 scripts/verify/check_density.py L<NN>      # beats and words
 jupyter-book build book/ --all                     # 0 warnings
 python3 scripts/verify/check_frames.py L<NN>       # every frame fits
-TEXINPUTS=/workspace/latex-tools/tex/latex//: scripts/verify/mech_check.sh <NN> <slug>
+scripts/verify/mech_check.sh <NN> <slug>
 python3 scripts/verify/check_math.py                # no display equation scrolls at 320-390
 python3 scripts/verify/check_grc.py                 # every flowgraph compiles
 ```
@@ -105,8 +206,8 @@ rewrite.
 ## 4. One review, three lenses, in parallel
 
 Start three `reviewer` subagents in one message, so they run at once. Give
-each the page(s), the practice source if there is one, the earlier lessons the
-page links to, and exactly one lens:
+each the page(s), the lab packet source if there is one, the earlier lessons
+the page links to, and exactly one lens:
 
 | Prefix | Lens | Give it |
 | :-- | :-- | :-- |

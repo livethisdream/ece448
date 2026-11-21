@@ -275,7 +275,6 @@ If they remember one formula, it is minus 174 plus ten log B plus NF.
 
 - Lesson 3: what a digital signal looks like as the SNR falls
 - Lesson 4: inside the SDR, where the noise figure and bandwidth are set
-- Practice set: decibels, path loss, the noise floor, where the LNA goes, a GPS link budget, and reading SNR on a display
 
 Note:
-Before next time they should be able to compute a path loss and a noise floor to within a dB. The GPS question on the practice set is the 2025 homework, and it deserves the most time.
+Before next time they should be able to compute a path loss and a noise floor to within a dB.

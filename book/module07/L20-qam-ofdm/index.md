@@ -337,13 +337,6 @@ Open a `.grc` file from GRC's File menu, or run `gnuradio-companion L20-ofdm-lin
 | Use cases | OFDM: Wi-Fi, LTE, 5G, DVB-T, ATSC 3.0, HD Radio; single carrier: cable, microwave links | |
 ::::
 
-::::{frame} Practice
-:class: read-only doc-links
-
-- <a class="doc-link" href="../../practice/ECE448_L20_Practice_blank.pdf" target="_blank" rel="noopener">Problem set (PDF)</a>
-- <a class="doc-link doc-key" href="../../practice/ECE448_L20_Practice_SOLUTIONS.pdf" target="_blank" rel="noopener">Solutions (PDF)</a>
-::::
-
 ::::{frame} Looking Ahead
 :::{present}
 - The final project starts now: pick a signal, write success criteria, and build it.

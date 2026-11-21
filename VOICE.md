@@ -1,7 +1,7 @@
 # ECE 448 — voice guide
 
 The course's prose voice, captured from Neil's own review corrections. Read
-this before writing any lesson page, deck, practice set, or assessment.
+this before writing any lesson page, lab page, lab packet, deck, or assessment.
 `COURSE_SPEC.md` §9 states the rules; this file is the calibration set — the
 actual before-and-after pairs, so the target is concrete rather than abstract.
 
@@ -440,6 +440,257 @@ that thing directly. Build anecdotes, history, and a count with no cause behind
 it are the usual offenders; a measurement from the kit stays when the lesson
 uses the number.
 
+## Lab pages (Neil, 2026-11-07, on the L20 Lab)
+
+A lab page is a procedure a cadet follows with a kit in hand. Neil's notes on
+the L20 Lab cleanup, in his words where quoted, set how every lab reads.
+
+Rules 27-43 came from ECE 444's labs and were brought here on 2026-11-21. The
+before-and-after pairs stay in 444's words, because they are Neil's (the
+Phaser kit, the HB100, the array factor); a line headed "In 448" follows any
+rule whose subject differs here. In 448 the kit is the cadet's PlutoSDR and
+GNU Radio.
+
+### 27. Say nothing the cadet already knows
+
+> **Before:** a "Per bench" heading over a list of the kit, the source, and
+> the cables, under an Equipment frame that already said "your Phaser kit".
+>
+> **After:** the Equipment frame's "your Phaser kit", and nothing more.
+
+"Of course it's per bench." The kit is the same in every lab; naming it once
+is enough. A heading that states the obvious and a list that repeats the one
+above it both come out.
+
+In 448: the PlutoSDR, its antennas, the 30 dB attenuator and the SMA cable are the same in every lab that uses them. The opening procedure frame names what this lab needs once; no lab lists the laptop or radioconda again.
+
+### 28. Never "bench"
+
+"Bench is something you sit on." Where it matters who does a step, it is
+"each student" or "each team"; usually it does not matter, and the sentence
+needs neither. "Bench time" is "lab time" or "in class".
+
+In 448: "Bench" is out of every page a cadet sees, the packet parts included: Part 2 is **Measure**, not Bench.
+
+### 29. Call a control what a person would call it
+
+> **Before:** press **2 Array Factor**.
+>
+> **After:** choose the Array Factor preset.
+
+The number in a GUI's button label is the GUI's, not part of the name.
+
+In 448: a GNU Radio control goes by the label on the running window ("the Noise Voltage slider"), not by its variable ID (`noise_amp`). A block goes by the name GRC shows on the canvas ("the PlutoSDR Source").
+
+### 30. A note about a step lives in that step
+
+> **Before:** after the steps, "Step 5 is the L17 Lab's level reference, not
+> a fixed gain. The preset does not set Rx Gain (dB) ..."
+>
+> **After:** that sentence inside Step 5's own frame.
+
+"If you have something to say about step 5, say it in step 5. Don't make me
+go back and read step 5 again to remember what it was."
+
+### 31. Don't teach an earlier lab again
+
+> **Before:** "The HB100 is a free-running DRO and drifts across 10.1 to
+> 10.7 GHz with temperature. The GUI hunts for the tone, ..."
+>
+> **After:** nothing; the L17 Lab covered it.
+
+"We've already talked about the HB100." Each lab assumes the labs before it,
+and links to one only where the cadet needs to look something up.
+
+In 448: after the L5 Lab, no lab explains the Pluto URI, extended-frequency mode, or how to add a block in GRC again. It links L5 where a cadet needs to look something up.
+
+### 32. A note: the command, why, and what to do if it is wrong
+
+> **After (his wording):** Calibrate the array. An uncalibrated array has
+> amplitude and phase errors spread across the row, which fills the nulls and
+> raises the sidelobes on its own, and you would then be measuring the
+> calibration rather than the array factor. If the broadside sweep does not
+> look right, fix that first.
+
+The command first, then the mechanism and what it would do to the
+measurement, then the check and the fix. Nothing about how it went in a dry
+run unless the cadet needs that number.
+
+In 448: for example, "Run the flowgraph with the attenuator in line. Without it the Pluto's TX overdrives its own RX, and the constellation smears for a reason that has nothing to do with noise. If the Time Sink clips at ±1, lower the TX gain."
+
+### 33. Steps run 1 to N, and the structure stays in sight
+
+> **Before:** Steps 1–6, then A1–A6, with A5 and A6 broken out on their own.
+>
+> **After:** Steps 1–12 straight through, in three frames, and the Equipment
+> frame names the three parts up front.
+
+"Write the steps, say something about it if you need to, but keep it
+simple. Keep the structure of the lab in front of them always. Changing
+numbers and going back and forth to describe every nuance gets so
+confusing."
+
+### 34. Packet boxes line up
+
+Every answer box in a lab packet is either right-justified in one vertically
+aligned column or set in one row along the bottom of its part. "I want a
+consistent look and feel. Not random boxes everywhere." Every packet uses the
+same numbers: boxes 1.5 in wide (`\boxw`), and a worked part in a 0.55
+column with its boxes in a 0.42 column (`anscol`). A row that does not fit
+at that width goes into the column instead of wrapping.
+
+In 448: no packet has these macros yet. The first module session to rework a packet defines `\boxw`, `anscol`, and the gray predicted-cell boxes (`\predv`, `\predh`, `\predl`) to these numbers in one shared file under `latex/`, and the later packets load it.
+
+### 35. Bold and italics, rarely
+
+Neil, 2026-11-07: "don't randomly sprinkle bold and italics. Use it in rare
+instances." Bold marks a control's name, a term where it is defined, the lead
+of a numbered step, and little else (rule 14: never a claim). Italics are
+rarer still. A list's labels, a sentence's emphasis, and an expected result
+are plain text.
+
+## A lesson's story (Neil, 2026-11-07, on L21)
+
+### 36. One story, said plainly at the start
+
+> **Before:** The array factor is not the antenna pattern.
+>
+> **After:** L18 steered the beam and measured the array factor. This lesson
+> measures the pattern two ways, a beam sweep and an azimuth sweep, and shows
+> where they agree and where they differ.
+
+Neil: "This is not using plain language. What you really mean is 'there's
+more to the story than what you measured in L18 - this is the rest of the
+story.' Layout the outline of the lesson and call it good. Speaking of which,
+what is the story of the lesson, it isn't clear." Every lesson has one story,
+and the opening frame says it as an outline in ordinary words, not as a
+slogan the cadet has to decode. Find the story in what the cadet will see on
+the kit; for a lab lesson, start from the original lab's intent (on L21, that
+the Rectangular plot is the kit building its pattern from a sweep).
+
+In 448: find the story in what the cadet will see in GNU Radio and on the PlutoSDR. For a lab lesson, start from the 2025 project's intent.
+
+### 37. No promised payoffs, and no "cannot" without its reason
+
+> **Before:** It shows a lobe the array factor says cannot exist.
+>
+> **After:** At 30° the outer first sidelobe reads about 2 dB lower on the
+> azimuth sweep, because only the azimuth sweep moves the source across each
+> patch's pattern.
+
+Neil: "the intro tries to tease the reader with language that hints at or
+promises payoffs later. It also uses language like 'the array factor says
+cannot exist'. But it doesn't say why." Rule 23 holds in the prose as well
+as on the slides: no "as we will see", no build-up toward a reveal. A
+sentence that says something cannot happen, or must, carries the reason in
+the same sentence.
+
+### 38. Size a claim to what the cadet can see
+
+> **Before:** A frame titled "A Real Patch Is Steeper", whose point is 0.3 dB
+> more scan loss than the cosine model.
+>
+> **After:** No frame. 0.3 dB is inside the spread of any reading on this kit.
+
+Neil: "That's a laughable difference - on this antenna, with all the other
+factors, you'd never know the difference." And on the rewrite: "we don't want
+to argue about fractions of a dB and derivations, we want to build intuition
+about what we can actually see." An effect smaller than the spread of the
+cadet's own readings gets no frame and no build-up. Say it once in depth if
+the lesson needs it, or cut it. The emphasis a page gives an effect matches
+the size of that effect on the kit.
+
+In 448: the size of an effect is what the cadet sees on a QT GUI plot or hears in the audio. An effect inside the spread of a PlutoSDR reading, or smaller than the noise on the trace, gets no frame.
+
+### 39. Antenna language, not everyday images
+
+> **Before:** The nulls sit on the floor. Walk the source around the kit.
+>
+> **After:** The nulls drop to the noise floor. Sweep the source in azimuth.
+
+Neil: "a null can only drop to the floor. But the language of 'sitting on
+the floor' isn't antenna language." And: "we're not walking anything ... We
+are sweeping around the azimuth." Name the motion and the result the way an
+antenna engineer would: an azimuth sweep, a beam sweep, a null, the noise
+floor. "Walk" is for the radar labs, where a person walks downrange (rule 6:
+the right word for the place).
+
+In 448 the rule reads **radio language, not everyday images**: the signal drops into the noise floor, we tune to a station, the constellation spreads. Name the motion and the result the way a radio engineer would.
+
+### 40. Say why the reference changed, and which number is right
+
+> **Before:** The first sidelobe reads −13 dBc.
+>
+> **After:** Subtract the main-lobe peak from every reading, so 0 dB is the
+> peak. A reading in dB below the peak is in **dBc**, and it lets two traces
+> taken at different gains share one axis.
+
+Neil: "why switch from dBfs to dBc? Not sure they're going to understand what
+that means or why you do it without being explicit about it." A change of
+unit or reference is a step the cadet takes, so the page says what it is and
+why, where it happens. The same note asked of two values for one null, "What's
+the difference between the -27dBc and -23dBc? Which one is correct? Does it
+matter?": when two numbers for one quantity appear, the page gives one, or
+says which applies where and whether the difference matters.
+
+## Problems and lab packets (Neil, 2026-11-11)
+
+In 448: dBFS is the PlutoSDR's own scale and the SNR the display shows is the one noise number the course uses (ROADMAP, "Sources and noise"). A page that changes reference says so, where it happens.
+
+### 41. No invented people, and no invented readings
+
+> **Before:** A classmate places the HB100 at +30.0° on the arc with Phase
+> Control at zero. The trace peaks at an Est. Angle of 28.5° ...
+>
+> **After:** No such problem. The cadet analyzes the sweep they took.
+
+Neil: "I don't want to ever read a problem like that again. In any class, on
+any assignment." A problem never invents a person (a classmate, a lab partner,
+a colleague, a customer) and hands the cadet that person's readings or
+opinion. In a lab packet the data is the cadet's own. In a practice set or an
+assessment, state the situation and the givens directly: "An HB100 sits at
++30° ...", not "A classmate places an HB100 ...". This holds in every course,
+not only this one.
+
+In 448: no problem gives the cadet someone else's capture to analyze. A recording the course hands out is a signal to decode, and the decoding is the cadet's own work.
+
+### 42. "Doesn't explain", not "cannot show you"
+
+> **Before:** ... and why your 30° Peak Gain cannot show that difference.
+>
+> **After:** ... and what your 30° Peak Gain doesn't explain.
+
+Neil: "I don't like the language like 'what the gain cannot show you'. Say
+'what it doesn't explain'." A measurement that leaves a question open
+"doesn't explain" it. "What X cannot show you" and "what X cannot tell you"
+are the teaser of rule 37 in another form: they promise a hidden thing. Frame
+titles too ("What One Port Doesn't Explain").
+
+### 43. An analysis prompt does not name its answer, and belongs to its lab
+
+> **Before:** Explain why the angle and width agree but only the physical run
+> loses peak level.
+>
+> **After:** Compare your beam sweep and your azimuth sweep at 30°. State
+> what agrees and what does not, give the cause you think is most likely, and
+> say what measurement would test it.
+
+Neil: "These are seniors, so they should have less structure and apply more
+critical thinking. I like the 'predict this, measure it, analyze it' method,
+but I don't want the analysis questions to be too leading." A prompt that
+names the finding, its direction, or its cause has done the analysis. The
+cadet decides what agrees, what does not, and why, from their own numbers and
+their own error budget. The opposite failure is as bad (Neil: "I don't want
+to go from overly specific to overly generic"): a prompt that would fit any
+lab unchanged is boilerplate. Each prompt names what this lab measured and
+leaves the conclusion to the cadet. Use the plain verb: "compare your
+measurement at 30° with your measurement at broadside", not "set your pass
+beside ..." (Neil: "What does 'set your pass' mean?"). The same holds for Part 1: a prediction
+stem gives the quantity to predict and the givens a cadet cannot know, never
+the result ("the first sidelobes sit near ±21.5°") and never the steps.
+
+In 448: the four things an analysis answer is graded on are a claim, the evidence, the reasoning, and the uncertainty; the packet's first page says so.
+
 ## What he does *not* want changed
 
 His voice is direct, and that is deliberate. Do not soften it into hedged
@@ -463,4 +714,14 @@ rewrite each one with its agent named. Then read every sentence and ask
 whether it has a subject and a verb. Then ask whether any sentence is a joke,
 a wink, or a judgment about the reader. Rewrite anything that is. Grep for
 `instructor` and rewrite it in the first person (25). Then ask of each
-sentence what a cadet does differently because of it (26).
+sentence what a cadet does differently because of it (26). On a lab page,
+grep for `bench` and for a variable ID or numbered label where the control's
+name belongs, and check that every note sits in its own step and the steps
+run 1 to N (27-33). Then read the opening frame and say the lesson's story in
+one sentence; if you cannot, neither can a cadet (36). Find every "cannot" and
+"must" and check that its reason is beside it (37), and every small effect and
+ask whether a cadet could see it on a QT GUI plot (38). In a problem or a
+packet, grep for `classmate`, `lab partner`, `colleague` and `customer` (41)
+and for `cannot show` and `cannot tell` (42), and read each analysis prompt
+asking whether it already states what the cadet should conclude, or would fit
+any lab unchanged (43).

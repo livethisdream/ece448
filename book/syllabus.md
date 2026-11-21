@@ -165,11 +165,16 @@ learn it late than not at all.
 
 ### Labs
 
-Each lab is **one packet, one submission**, hung off the lesson it follows:
+Each lab is **one packet, one submission**, and one Gradescope assignment,
+hung off the lesson it follows. That lesson works every method the
+predictions need.
 
-- **Part 1, Pre-Lab**: individual, before the period.
-- **Part 2, Bench**: in class, on the hardware.
-- **Part 3, Writeup**: after the lab, in report format.
+- **Part 1, Predict**: individual, before the period. You predict what Part 2
+  will measure.
+- **Part 2, Measure**: in class, on your own PlutoSDR, beside each prediction.
+- **Part 3, Analyze**: after the lab, two or three open questions about your
+  own data, graded on your claim, your evidence, your reasoning, and your
+  uncertainty.
 
 ### Midterm
 
@@ -204,8 +209,6 @@ course policy:
 Engagement is earned in several ways:
 
 - **Weekly quizzes** on Gradescope, 1 EC each. Revisions are allowed.
-- **Practice problems.** Graded for a genuine, documented attempt, not for
-  correctness.
 - **Extra Instruction (EI).** 1 EC for each session you schedule and attend.
 - **Peer review.** 1 EC for reviewing or revising a classmate's report.
 - **Course improvement.** Spotted a bug in a lab packet, an unclear slide, or
@@ -316,7 +319,7 @@ Documentation policy.
 ### 9. Submission standards
 
 - All homework must be submitted electronically.
-- Skill checkpoints and lab writeups should be submitted in **report format**
+- Skill checkpoints should be submitted in **report format**
   with appropriate sections (Introduction, Background, Implementation,
   Results, Discussion). Tailor sections as needed, but include enough detail
   to demonstrate mastery.
@@ -327,7 +330,7 @@ Documentation policy.
 ## Course schedule
 
 Lessons are topics, not class periods: a lesson takes as many periods as it
-needs, and its lab follows on the bench. Dates will follow the Spring 2027
+needs, and its lab follows in class. Dates will follow the Spring 2027
 academic calendar.
 
 ### Module 1 — Foundations of Detection & Link Budgets

@@ -351,11 +351,12 @@ Put every file in one folder; GRC runs a flowgraph from its own folder, so the r
 | AM vs. FM | same power, same noise | | output SNR meters | FM cleaner until the noise breaks it up |
 ::::
 
-::::{frame} Practice
+::::{frame} Preparing for the Lab
 :class: read-only doc-links
 
-- <a class="doc-link" href="../../practice/ECE448_L07_Practice_blank.pdf" target="_blank" rel="noopener">Problem set (PDF)</a>
-- <a class="doc-link doc-key" href="../../practice/ECE448_L07_Practice_SOLUTIONS.pdf" target="_blank" rel="noopener">Solutions (PDF)</a>
+Part 1 of the L7 Lab packet, the Pre-Lab, prepares you for the lab. Do it before the lab period and bring it to class.
+
+- <a class="doc-link" href="../../labs/ECE448_Lab_L07_AMFMReceivers_blank.pdf" target="_blank" rel="noopener">L7 Lab packet (PDF)</a>
 ::::
 
 ::::{frame} Looking Ahead

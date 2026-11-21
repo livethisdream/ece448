@@ -399,11 +399,12 @@ Put the flowgraphs and the KUT pair in one folder and run the test transmitter f
 | Decoder | audio, station, song, and album art | gr-hdradio's HD Radio Receiver and HD File Sink |
 ::::
 
-::::{frame} Practice
+::::{frame} Preparing for the Lab
 :class: read-only doc-links
 
-- <a class="doc-link" href="../../practice/ECE448_L14_Practice_blank.pdf" target="_blank" rel="noopener">Problem set (PDF)</a>
-- <a class="doc-link doc-key" href="../../practice/ECE448_L14_Practice_SOLUTIONS.pdf" target="_blank" rel="noopener">Solutions (PDF)</a>
+Part 1 of the L14 Lab packet, the Pre-Lab, prepares you for the lab. Do it before the lab period and bring it to class.
+
+- <a class="doc-link" href="../../labs/ECE448_Lab_L14_HDRadio_blank.pdf" target="_blank" rel="noopener">L14 Lab packet (PDF)</a>
 ::::
 
 ::::{frame} Looking Ahead

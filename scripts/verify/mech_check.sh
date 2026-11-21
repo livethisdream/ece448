@@ -5,17 +5,21 @@
 #   e.g. scripts/verify/mech_check.sh 07 simple-resonant-antennas
 #
 # Lessons only. A lab child page (LNN-lab-<slug>, 2026-10-13) is a procedure
-# page with no deck or practice gate of its own, as the L04 lab never had one;
+# page with no deck gate of its own, as the L04 lab never had one;
 # check_density.py and check_frames.py still measure it.
 #
 # Everything here is scripted because it is decidable: files present, LaTeX
-# compiles, every problem has a solution, decks and widgets render. Substance
+# compiles, decks and widgets render. Substance
 # -- physics, derivations, difficulty -- is not checked here and never should
 # be; that is the orchestrator's job (REVIEW.md section B).
 #
-# Requires the vendored render harness (cd scripts/verify && npm install) and,
-# for the practice build, the private latex-tools macros:
-#   TEXINPUTS=/workspace/latex-tools/tex/latex//:
+# Requires the vendored render harness (cd scripts/verify && npm install).
+#
+# No lesson has a practice set (Neil, 2026-11-21: "I don't really need
+# practice sets. The labs are the main thing"). A lesson with a lab carries a
+# read-only "Preparing for the Lab" frame that links its lab packet (gate 7);
+# a lesson without one links nothing in its place. The practice sources and
+# PDFs stay in the repo, unlinked, and are not checked here.
 #
 # This gate is per-lesson. Two sweeps are site-wide and belong at the END of a
 # batch, not here -- run them once when the batch is done:
@@ -33,7 +37,7 @@ HERE="$(cd "$(dirname "$0")" && pwd)"
 REPO="$(cd "$HERE/../.." && pwd)"
 LNN="L${NN}-${SLUG}"
 
-# A lab page has no deck, practice set, or required widget, so the lesson gate
+# A lab page has no deck or required widget, so the lesson gate
 # below would report those as failures. Say so instead of failing.
 case "$SLUG" in
   lab-*)
@@ -41,8 +45,6 @@ case "$SLUG" in
     echo "  scripts/verify/check_density.py L$NN and scripts/verify/check_frames.py L$NN" >&2
     exit 2 ;;
 esac
-: "${TEXINPUTS:=}"
-export TEXINPUTS
 
 fails=0
 ok(){ echo "  PASS  $1"; }
@@ -65,11 +67,6 @@ MOD="$(basename "$(dirname "$(dirname "$page")")" | sed 's/^module0*//')"
   && ok "lesson page non-stub (module $MOD)" || bad "lesson page missing/stub"
 [ -s "$REPO/book/extras/slides/$LNN.md" ] && ok "deck md" || bad "deck md missing"
 [ -s "$REPO/book/extras/slides/$LNN.html" ] && ok "deck html" || bad "deck html missing"
-tex="$REPO/latex/ECE448_Practice_L$NN.tex"
-[ -s "$tex" ] && ok "practice tex" || bad "practice tex missing"
-b="$REPO/book/extras/practice/ECE448_L${NN}_Practice_blank.pdf"
-s="$REPO/book/extras/practice/ECE448_L${NN}_Practice_SOLUTIONS.pdf"
-[ -s "$b" ] && [ -s "$s" ] && ok "practice PDFs present" || bad "practice PDFs missing"
 
 widgets="$(grep -oE 'viz/[a-z0-9-]+\.html' "$page" 2>/dev/null | sed 's|viz/||' | sort -u)"
 for w in $widgets; do
@@ -78,36 +75,6 @@ for w in $widgets; do
 done
 [ -n "$widgets" ] && ok "page references $(echo "$widgets" | wc -w) widget(s)" \
   || bad "page references no interactive graphic"
-
-# 2. practice compiles clean
-if ( cd "$REPO" && bash latex/build_practice.sh "$NN" >"/tmp/mc_build_$NN.log" 2>&1 ); then
-  ok "pdflatex builds"
-else
-  bad "pdflatex build failed (see /tmp/mc_build_$NN.log)"
-fi
-for L in "$REPO/latex/ECE448_L${NN}_Practice_SOLUTIONS.log" \
-         "$REPO/latex/ECE448_L${NN}_Practice_blank.log"; do
-  [ -f "$L" ] || continue
-  over=$(grep -c "^Overfull" "$L")
-  big=$(grep "^Overfull" "$L" | grep -oE '\(([0-9.]+)pt' | tr -d '(pt' | awk '$1>10' | wc -l)
-  [ "$big" -eq 0 ] && ok "$(basename "$L"): no overfull >10pt (total: $over)" \
-    || bad "$(basename "$L"): $big overfull boxes >10pt"
-  grep -q "^!" "$L" && bad "$(basename "$L"): LaTeX errors" || true
-done
-
-# every \part has a solution. Strip LaTeX comments first: L02's header comment
-# explains the macro ("Blank copy: \begin{solution}[h] reserves h of work
-# space") and a raw grep counted that sentence as a 23rd solution, failing a
-# set whose 22 parts all had one.
-uncommented=$(sed 's/\(^\|[^\\]\)%.*/\1/' "$tex" 2>/dev/null)
-np=$(printf '%s\n' "$uncommented" | grep -c '\\part\b')
-ns=$(printf '%s\n' "$uncommented" | grep -c '\\begin{solution}')
-[ "$np" -gt 0 ] && [ "$np" -eq "$ns" ] && ok "parts=$np solutions=$ns" \
-  || bad "parts=$np vs solutions=$ns"
-pb=$(pdfinfo "$b" 2>/dev/null | awk '/^Pages/{print $2}')
-ps=$(pdfinfo "$s" 2>/dev/null | awk '/^Pages/{print $2}')
-[ -n "$ps" ] && [ "$ps" -ge "$pb" ] && ok "pages: blank=$pb solutions=$ps" \
-  || bad "pagecount odd: blank=$pb sol=$ps"
 
 # 3a. deck separators -- must run before the render check, because a dead
 # separator merges two slides and then shows up as a bogus "slide too tall"
@@ -176,7 +143,7 @@ for w in $widgets; do
 done
 
 # 5. greps for the gotchas that ship silently
-files="$page $REPO/book/extras/slides/$LNN.md $tex"
+files="$page $REPO/book/extras/slides/$LNN.md"
 grep -lP '\x{2009}' $files 2>/dev/null | grep -q . \
   && bad "U+2009 thin space found" || ok "no thin spaces"
 grep -nE '\\[,;]' "$REPO/book/extras/slides/$LNN.md" 2>/dev/null \
@@ -189,8 +156,6 @@ else
 fi
 grep -q 'class="lo-list"' "$page" && grep -q -- "--module: '$MOD'" "$page" \
   && ok "LO markup, course objective, module $MOD" || bad "LO markup wrong for module $MOD"
-grep -q "Learning Objective $MOD\." "$tex" && ok "practice LO banner" \
-  || bad "practice LO banner missing (expected 'Learning Objective $MOD.x')"
 
 # 6. voice self-check (VOICE.md) -- self-praise words, never in course prose
 if grep -nEi '\b(honest|genuinely|rigorous|no hand-waving|is the price)\b' \
@@ -202,19 +167,34 @@ else
   ok "VOICE.md: no self-vouching wording"
 fi
 
-# 7. practice links only once the PDFs exist
-# A lab pair whose practice problems folded into a lab packet (COURSE_SPEC M5,
-# piloted on L18/L19) links the packet's blank PDF as a doc-link instead. Only
-# that exact form counts, and only when the PDF it names is committed.
+# 7. the lab packet link. A lesson with a lab (a sibling LNN-lab-* page, or
+# a shared one such as L18-L19-lab-*) links that lab's blank packet from its
+# read-only "Preparing for the Lab" frame, and the PDF must be committed. A
+# lesson without a lab links nothing in its place. No lesson links a practice
+# set any more (Neil, 2026-11-21).
+lab=""
+for d in "$REPO"/book/module*/L*-lab-*/; do
+  [ -d "$d" ] || continue
+  pre="$(basename "$d")"; pre="${pre%%-lab-*}"
+  case "-$pre-" in *"-L$NN-"*) lab="$(basename "$d")" ;; esac
+done
 packet="$(grep -oE 'class="doc-link" href="\.\./\.\./labs/ECE448_Lab_[A-Za-z0-9_]+_blank\.pdf"' "$page" \
   | head -1 | sed -E 's|.*labs/||; s|"$||')"
-if grep -q "Practice_blank.pdf" "$page"; then
-  [ -s "$b" ] && ok "practice linked and built" || bad "practice linked but PDFs missing"
-elif [ -n "$packet" ]; then
-  [ -s "$REPO/book/extras/labs/$packet" ] && ok "lab packet linked in place of practice ($packet)" \
-    || bad "lab packet $packet linked but not built"
+if grep -qE 'Practice_(blank|SOLUTIONS)\.pdf' "$page"; then
+  bad "lesson page still links a practice set (retired 2026-11-21)"
+fi
+if [ -n "$lab" ]; then
+  if [ -z "$packet" ]; then
+    bad "lesson has a lab ($lab) but links no lab packet"
+  elif [ -s "$REPO/book/extras/labs/$packet" ]; then
+    grep -q '{frame} Preparing for the Lab' "$page" \
+      && ok "Preparing for the Lab links $packet" \
+      || bad "lab packet linked, but no 'Preparing for the Lab' frame"
+  else
+    bad "lab packet $packet linked but not built"
+  fi
 else
-  bad "lesson page missing Practice links"
+  ok "no lab, so no lab packet to link"
 fi
 
 echo "== ${LNN}: $fails failure(s) =="

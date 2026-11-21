@@ -311,11 +311,12 @@ Tutorials this lesson follows:
 | Decoder | marks: 2 units; spaces: 2 and 5 units | ignores changes under 0.3 unit |
 ::::
 
-::::{frame} Practice
+::::{frame} Preparing for the Lab
 :class: read-only doc-links
 
-- <a class="doc-link" href="../../practice/ECE448_L12_Practice_blank.pdf" target="_blank" rel="noopener">Problem set (PDF)</a>
-- <a class="doc-link doc-key" href="../../practice/ECE448_L12_Practice_SOLUTIONS.pdf" target="_blank" rel="noopener">Solutions (PDF)</a>
+Part 1 of the L12 Lab packet, the Pre-Lab, prepares you for the lab. Do it before the lab period and bring it to class.
+
+- <a class="doc-link" href="../../labs/ECE448_Lab_L12_CW_blank.pdf" target="_blank" rel="noopener">L12 Lab packet (PDF)</a>
 ::::
 
 ::::{frame} Looking Ahead

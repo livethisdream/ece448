@@ -103,7 +103,7 @@ The bottom strip is 4-PAM at the same transmit power and the same little noise a
 
 A **constellation diagram** plots each symbol as a point on the I/Q plane, the view GNU Radio's constellation sink gives. PAM changes only the height of a real pulse, so all its points sit on the real axis: two for 2-PAM, four for 4-PAM. **m-PSK**, the subject of Lesson 15, keeps the height fixed and moves the points around a circle instead, so it uses both axes. The figure ends with 8-PSK, eight points at 45° spacing, unlabeled.
 
-The labels show which bits each point carries. In a **Gray code**, each point differs from its neighbors in exactly one bit, so 4-PAM goes 00, 01, 11, 10 rather than counting 00, 01, 10, 11. Noise almost always pushes a sample to a neighboring point, not across the constellation, so with Gray coding a wrong decision usually costs one bit rather than two. Label the 8-PSK points with a Gray code before the next frame: each point must differ from both its neighbors in one bit, all the way around. The practice set checks your answer.
+The labels show which bits each point carries. In a **Gray code**, each point differs from its neighbors in exactly one bit, so 4-PAM goes 00, 01, 11, 10 rather than counting 00, 01, 10, 11. Noise almost always pushes a sample to a neighboring point, not across the constellation, so with Gray coding a wrong decision usually costs one bit rather than two. Label the 8-PSK points with a Gray code before the next frame: each point must differ from both its neighbors in one bit, all the way around.
 ::::
 
 ::::{frame} Part 2: Why Not Rectangular Pulses?
@@ -352,13 +352,6 @@ This lesson follows Dr. Rogers's 2025 PAM slides, <a class="doc-link" href="../.
 | Eye diagram | waveform overlaid two symbols at a time | sample at the widest opening |
 | Matched filter | the transmit pulse, at the receiver | opens the eye that noise closed |
 | Symbol Sync | timing error detector, loop, interpolator | Gardner, loop bandwidth 0.045 |
-::::
-
-::::{frame} Practice
-:class: read-only doc-links
-
-- <a class="doc-link" href="../../practice/ECE448_L09_Practice_blank.pdf" target="_blank" rel="noopener">Problem set (PDF)</a>
-- <a class="doc-link doc-key" href="../../practice/ECE448_L09_Practice_SOLUTIONS.pdf" target="_blank" rel="noopener">Solutions (PDF)</a>
 ::::
 
 ::::{frame} Looking Ahead

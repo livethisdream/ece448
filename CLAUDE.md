@@ -43,7 +43,7 @@ work.
 | `book/extras/legacy/*.pdf` | the legacy Beamer slides, served at `/legacy/`; `refs/` holds third-party references |
 | `book/extras/grc/` | flowgraphs (`.grc`) and scripts a cadet downloads, served at `/grc/` |
 | `book/extras/labs/*_blank.pdf` | lab packets, student copy only; answers come from `ECE448-faculty/lab-keys/src` through `\keysol`, and the KEY goes to `ECE448-faculty/lab-keys/` |
-| `latex/` | practice-set and lab-packet sources and build scripts (444's harness) |
+| `latex/` | lab-packet sources and build scripts (444's harness); the retired practice sources stay, unlinked |
 | `scripts/grc/` | normalize a `.grc`, run one headless for screenshots, screenshot GRC itself |
 | `figures/` | course figure library for LaTeX (`\graphicspath{{./figures/}}`) |
 | `scripts/scaffold_lessons.py` | the manifest: lessons, labs, objectives, legacy decks |
@@ -76,6 +76,25 @@ and checks. L1-L20 are converted. Keep the legacy slide links until the new
 material covers the same ground, then set the lesson's decks to `[]` in the
 manifest. GNU Radio flowgraphs (`.grc`) and example code a cadet runs go with
 the lesson; solutions stay in `ECE448-faculty`.
+
+## Labs
+
+**Labs follow ECE 444's lab rules, and there are no practice sets** (Neil,
+2026-11-21: "I don't really need practice sets. The labs are the main
+thing"). A lesson works every method its lab's Part 1 needs, at settings the
+lab does not use, and ends with a read-only "Preparing for the Lab" frame
+that points to Part 1 of the packet; a lesson without a lab has neither that
+frame nor a Practice frame. The lab page presents title, objectives, The Big
+Picture (no outcomes), Predict First (a widget that hides its answer until
+the cadet commits), and one beat per procedure block, at most `LAB_BEATS`
+(10), and teaches nothing. The packet is lean: one submission in three parts,
+**Predict, Measure, Analyze**, with predicted beside measured and two or
+three open analysis prompts; no problem invents a person or a reading. Never
+"bench" where a cadet reads it. A provided block (gr-adsb, gr-hdradio, any
+out-of-tree or library block) is taught only to what to expect. Details,
+what 448 keeps of its own (the public packet sources and `\keysol`), and the
+labs still to rework are in `project/ROADMAP.md`, "Labs follow 444's lab
+rules"; the wording rules are VOICE.md 27-43.
 
 ## Build and verify
 
@@ -132,9 +151,9 @@ scripts through it, not through whatever `python3` is first on `PATH`.
 
 This repo is **public**. Assessments, the midterm and its keys, grades, and lab
 KEY PDFs live in the private `livethisdream/ECE448-faculty` (lab keys under
-`lab-keys/`), never here. Practice-set and lab-packet LaTeX sources are here,
-as in ECE 444, and practice SOLUTIONS PDFs are published; a lab's KEY PDF is
-built locally and never committed. `.gitignore` blocks the usual names, but
+`lab-keys/`), never here. Lab-packet LaTeX sources are here (444 keeps its
+own private), and the retired practice sets' SOLUTIONS PDFs stay published,
+unlinked; a lab's KEY PDF is built locally and never committed. `.gitignore` blocks the usual names, but
 check every PDF before adding it.
 
 American spelling everywhere. No thin spaces. "GNU Radio", two words. Never

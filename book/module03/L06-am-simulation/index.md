@@ -321,11 +321,12 @@ The deck's opening sampling and data-type demos are in Lesson 5.
 | SSB | $\mathrm{Re}\{z(t)\,e^{\pm j2\pi f_c t}\}$ | one sideband, $W$ | product detector at $f_c$ | $\Delta f$ shifts the audio |
 ::::
 
-::::{frame} Practice
+::::{frame} Preparing for the Lab
 :class: read-only doc-links
 
-- <a class="doc-link" href="../../practice/ECE448_L06_Practice_blank.pdf" target="_blank" rel="noopener">Problem set (PDF)</a>
-- <a class="doc-link doc-key" href="../../practice/ECE448_L06_Practice_SOLUTIONS.pdf" target="_blank" rel="noopener">Solutions (PDF)</a>
+Part 1 of the L6 Lab packet, the Pre-Lab, prepares you for the lab. Do it before the lab period and bring it to class.
+
+- <a class="doc-link" href="../../labs/ECE448_Lab_L06_AMSimulation_blank.pdf" target="_blank" rel="noopener">L6 Lab packet (PDF)</a>
 ::::
 
 ::::{frame} Looking Ahead

@@ -293,11 +293,12 @@ This lesson follows:
 | Access code | marks the start of each packet | 64 bits, 2 errors allowed |
 ::::
 
-::::{frame} Practice
+::::{frame} Preparing for the Lab
 :class: read-only doc-links
 
-- <a class="doc-link" href="../../practice/ECE448_L08_Practice_blank.pdf" target="_blank" rel="noopener">Problem set (PDF)</a>
-- <a class="doc-link doc-key" href="../../practice/ECE448_L08_Practice_SOLUTIONS.pdf" target="_blank" rel="noopener">Solutions (PDF)</a>
+Part 1 of the L8 Lab packet, the Pre-Lab, prepares you for the lab. Do it before the lab period and bring it to class.
+
+- <a class="doc-link" href="../../labs/ECE448_Lab_L08_FSK_blank.pdf" target="_blank" rel="noopener">L8 Lab packet (PDF)</a>
 ::::
 
 ::::{frame} Looking Ahead

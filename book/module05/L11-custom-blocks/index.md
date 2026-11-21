@@ -337,11 +337,12 @@ Tutorials this lesson follows, on the GNU Radio wiki:
 | Windows | CMake needs Visual Studio 2022 Build Tools | fallbacks: WSL2 Ubuntu, then an Embedded Python Block |
 ::::
 
-::::{frame} Practice
+::::{frame} Preparing for the Lab
 :class: read-only doc-links
 
-- <a class="doc-link" href="../../practice/ECE448_L11_Practice_blank.pdf" target="_blank" rel="noopener">Problem set (PDF)</a>
-- <a class="doc-link doc-key" href="../../practice/ECE448_L11_Practice_SOLUTIONS.pdf" target="_blank" rel="noopener">Solutions (PDF)</a>
+Part 1 of the L11 Lab packet, the Pre-Lab, prepares you for the lab. Do it before the lab period and bring it to class.
+
+- <a class="doc-link" href="../../labs/ECE448_Lab_L11_CustomBlock_blank.pdf" target="_blank" rel="noopener">L11 Lab packet (PDF)</a>
 ::::
 
 ::::{frame} Looking Ahead
