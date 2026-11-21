@@ -13,7 +13,7 @@ frame_view: true
 
 <div class="title-rule"></div>
 
-Build a flowgraph from an empty canvas, measure aliasing, then find FM stations on the PlutoSDR and record the band in GNU Radio.
+Build a tone flowgraph from an empty canvas, then receive, record, and plot the FM band on the PlutoSDR.
 
 L5 Lab · Module 2: SDR & GNU Radio Foundations · Dr. Neil Rogers
 ::::
@@ -26,62 +26,99 @@ L5 Lab · Module 2: SDR & GNU Radio Foundations · Dr. Neil Rogers
 </ol>
 ::::
 
-::::{frame} From Lesson to Bench
+::::{frame} The Big Picture
 :::{present}
-- **Pre-Lab:** install radioconda and work out the numbers your settings fix.
-- **Bench:** build the tone flowgraph yourself, then receive and record the FM band on the PlutoSDR in GNU Radio.
-- **Writeup:** compare, and explain the differences.
+| Steps | Set or switched | Read |
+| :-- | :-- | :-- |
+| 1 to 7 | tone: $+20$, $+30$, $-35$ kHz | spike position |
+| 8 to 12 | center 96.5 MHz; gain 0 to 71 dB | band; three views |
+| 13 to 17 | SigMF Sink, about 3 s | file size; plot |
 :::
 
-Lesson 5 showed both flowgraphs running. Today you build one from an empty canvas and run the other against real signals. The lab packet has three parts, and you turn it in once, complete, before Lesson 6. **Part 1, the Pre-Lab**, is on your own before the period: install radioconda, confirm it sees your PlutoSDR, and work out where the tones will appear, the band the display shows, and the file size. **Part 2** is your own measurements and observations in class. **Part 3, the Writeup**, explains what you saw.
-
-Nothing in this lab transmits. The FM flowgraph uses only the PlutoSDR's receiver, and the tone flowgraph never leaves your laptop.
+Steps 1 to 7 run your own tone flowgraph at a 48 kHz sample rate; Steps 8 to 17 run `L05-fm-spectrum.grc` on the PlutoSDR. Each reading goes beside your Part 1 prediction in Tables A and B of the packet, and the screenshots go in Figures 1 to 3. Nothing in this lab transmits.
 ::::
 
-::::{frame} Part 1: Before the Period
-:::{present}
-- `gnuradio-config-info --version` reports 3.10.
-- `iio_info -s` finds your PlutoSDR, and the `iio_attr` check shows 70 MHz to 6 GHz.
-- `L05-tone.grc` runs and shows one spike at $+1$ kHz.
+::::{frame} Predict First
+:class: viz-frame
+
+:::{depth}
+Choose a sample rate and set a tone. Before you press **Show where it appears**, mark on the frequency sink where you think the spike will be, by clicking it or with the My Prediction slider. Changing the sample rate, the tone, or your mark hides the answer again, so each guess comes first. The widget offers 32, 40, and 64 kHz, not the 48 kHz of today's flowgraph, so its answers are not your Part 1 answers.
 :::
 
-Do the Pre-Lab before you arrive; the bench time assumes a working install. The three checks on the slide are the packet's Question 1. The flowgraphs open the Pluto at `ip:192.168.2.1`. On Windows that needs Analog Devices' PlutoSDR USB driver; on Linux it works as is; on macOS, switch the Pluto to NCM mode once or type the `usb:` URI from `iio_info -s` into the PlutoSDR Source, as the lesson page's Connect frame shows. If any check fails, the L5 lesson page lists the fixes: the most common one on Windows is Analog Devices' PlutoSDR USB driver, and a Pluto that fails the `iio_attr` check needs switching to extended-frequency mode. Bring the problem to EI before the lab rather than to the lab itself.
-
-Question 2 is quick arithmetic from your block settings: where five tones appear at a 48 kHz sample rate, the band the FM display shows at a given center frequency, and the size of a 3 s recording. Part 2 checks the tones and the file size on the screen. The tone results are exact, because a computed tone has no noise or hardware in the way; if a measurement disagrees with your arithmetic, check `samp_rate` first.
+:::{present}
+<iframe src="../../viz/alias-predict.html"
+        width="100%" height="506"
+        style="border: 1px solid #cddce9; border-radius: 6px;"
+        loading="lazy"
+        title="Choose a sample rate and a tone, mark where the spike will appear on the frequency sink, then show it">
+</iframe>
+:::
 ::::
 
-::::{frame} Part 2: Build the Tone Flowgraph
-:class: read-only
+::::{frame} Build the Tone Flowgraph
+:::{present}
+- Start from an empty QT GUI canvas, not `L05-tone.grc`.
+- Set `samp_rate` to 48000; add a slider, source, throttle, and two sinks.
+- Run it; screenshot the canvas and the window at $+30$ kHz.
+- Read where each tone appears.
+:::
 
-1. Start GRC and choose File, New, QT GUI. Do not open `L05-tone.grc`; build it yourself.
-2. Set the `samp_rate` variable to 48000.
-3. Add a **QT GUI Range** with ID `freq`, from $-72000$ to $72000$ in steps of 250, default 1000.
-4. Add a **Signal Source**: type complex, sample rate `samp_rate`, waveform cosine, frequency `freq`.
-5. Add a **Throttle** (complex, `samp_rate`), a **QT GUI Time Sink** (complex), and a **QT GUI Frequency Sink** (complex, bandwidth `samp_rate`).
-6. Connect source to throttle and throttle to both sinks. Every arrow must be black; a red arrow is a type mismatch.
-7. Run it. Screenshot the canvas for Question 3(a).
-8. Set the slider to 5, 20, 30, 40, and $-35$ kHz in turn and record where the spike appears for Question 3(b).
+This part needs only your laptop.
+
+1. **Start GRC.** Choose File, New, QT GUI. Do not open `L05-tone.grc`; Figure 1 shows the flowgraph you build. If GRC does not open, go back to the lesson's "Verify the Install" frame.
+2. **Set the sample rate.** Double-click the `samp_rate` variable and set it to 48000.
+3. **Add the slider.** Add a **QT GUI Range** with ID `freq`, from $-72000$ to $72000$ in steps of 250, default 1000.
+4. **Add the source.** Add a **Signal Source**: type complex, sample rate `samp_rate`, waveform Cosine, frequency `freq`.
+5. **Add the rest and connect.** Add a **Throttle** (complex, `samp_rate`), a **QT GUI Time Sink** (complex), and a **QT GUI Frequency Sink** (complex, bandwidth `samp_rate`). Connect the source to the throttle and the throttle to both sinks. Every connection must be black; a red one is a type mismatch, so check that each block's type is complex.
+6. **Run it.** Set the slider to 30 kHz. Take one screenshot that shows your canvas and the running window side by side, and paste it as Figure 1.
+7. **Read the tones.** Set the slider to each tone in Table A, read where the spike appears on the frequency sink, and compare with your Part 1 prediction. A computed tone has no noise or hardware in the way, so if a reading disagrees with your prediction, check `samp_rate` and the Signal Source's frequency first.
+
+   <div class="rec" data-lab="L05">
+   <label>Step 7: spike frequency for the +20 kHz tone (kHz) <input data-field="a.t20"></label>
+   <label>Step 7: spike frequency for the +30 kHz tone (kHz) <input data-field="a.t30"></label>
+   <label>Step 7: spike frequency for the −35 kHz tone (kHz) <input data-field="a.tm35"></label>
+   </div>
 ::::
 
-::::{frame} Part 2: The FM Band
-:class: read-only
+::::{frame} The FM Band and the Gain
+:::{present}
+- Put the whip on **RX** and run `L05-fm-spectrum.grc`.
+- Center on 96.5 MHz and read the band on screen.
+- Find the strongest station, off the DC spike.
+- Step the RF gain from 0 to 71 dB; screenshot three views.
+:::
 
-1. Screw the course's broadband whip onto the PlutoSDR's RX port and plug the Pluto into your laptop.
-2. Open and run `L05-fm-spectrum.grc`. Drag the center frequency slowly from 88 to 108 MHz and record the tallest station's frequency for Question 4(a).
-3. Center the display on that station, then drag across 88 to 108 MHz again. Record the three strongest stations' frequencies and peak levels, and how wide each looks next to the others, for Question 4(b).
-4. Uncheck DC tracking. Center a station exactly on the spike in the middle of the display, then tune 300 kHz away. Note what moves, then check DC tracking again and note what changes, for Question 4(c).
-5. With the strongest station on screen, set the gain to 0, 20, 40, 60, and 71 dB. At each, record the noise floor away from any station, and whether new signals appear between stations, for Question 4(d).
+8. **Connect the PlutoSDR.** Screw the course's broadband whip onto the RX port and plug the Pluto's middle USB port into your laptop. Open and run `L05-fm-spectrum.grc`. The PlutoSDR Source opens the radio at `ip:192.168.2.1`; if you have not switched your Pluto to NCM mode on a Mac, type the `usb:` URI from `iio_info -s` into the PlutoSDR Source instead, as the lesson's "Connect the PlutoSDR" frame shows.
+9. **Read the band.** Set the **Center frequency (Hz)** slider to 96.5 MHz, hover the cursor at the left and right ends of the plot to read the lowest and highest frequencies it shows, and compare with your Part 1 prediction.
+
+   <div class="rec" data-lab="L05">
+   <label>Step 9: lowest to highest frequency on the display at 96.5 MHz (MHz) <input data-field="b.band"></label>
+   </div>
+10. **Find the strongest station.** Drag the center frequency slowly from 88 to 108 MHz and stop on the tallest station. Uncheck **DC tracking** and find the spike at the center of the display: it is the receiver's own DC offset, not a station. Check the box again, then tune so that the station sits a little to one side of center, because DC tracking can subtract part of a signal centered at 0 Hz.
+11. **Step the gain.** With the station on screen, set the **RF gain (dB)** slider to 0, 20, 40, 60, and 71 dB in turn, and watch the noise floor, the station, and the space between stations at each.
+12. **Screenshot three views.** Choose the gain you would use to receive weak stations in this room. Take a screenshot of the display at 0 dB, at your gain, and at 71 dB, with the same station on screen in all three, and paste them as Figure 2.
+
+    <div class="rec" data-lab="L05">
+    <label>Step 12: RF gain you chose for weak stations (dB) <input data-field="b.gain"></label>
+    </div>
 ::::
 
-::::{frame} Part 2: Record and Plot
-:class: read-only
+::::{frame} Record and Plot
+:::{present}
+- Type the center and your gain in as the sliders' defaults.
+- Enable the SigMF Sink, run about 3 s, and compare the file size.
+- Plot the file with `L05-psd.py`.
+:::
 
-1. Center the strongest station slightly off the DC spike and set the highest gain in your 4(d) table at which no spurs appeared.
-2. Stop the flowgraph. Double-click the `freq` slider and type that center frequency as its Default Value: the SigMF Sink writes the center to the meta file when the run starts, so it must be right before you press Run.
-3. Right-click the gray SigMF Sink and choose Enable. Its file name, `fm_capture`, makes `fm_capture.sigmf-data` and `fm_capture.sigmf-meta` in the flowgraph's folder. GRC outlines the block in orange because GNU Radio 3.10 marks it deprecated; it works.
-4. Run the flowgraph for about 3 s and stop it. Record the size of `fm_capture.sigmf-data` for Question 5(a), and open `fm_capture.sigmf-meta` in a text editor to see the datatype, sample rate, and center frequency it recorded.
-5. Disable the SigMF Sink again so the next run does not overwrite the capture.
-6. From the radioconda prompt, run `python L05-psd.py fm_capture.sigmf-data`. It reads the sample rate and center frequency from the meta file. Paste the plot for Question 5(b).
+13. **Set the defaults.** Stop the flowgraph. Double-click the **Center frequency (Hz)** slider block and type the center frequency of your Figure 2 views as its Default Value, then do the same for the **RF gain (dB)** slider with your gain from Step 12. The SigMF Sink writes the center frequency to the meta file when the run starts, so it has to be right before you press Run.
+14. **Enable the SigMF Sink.** Right-click the gray SigMF Sink and choose Enable. Its file name, `fm_capture`, makes `fm_capture.sigmf-data` and `fm_capture.sigmf-meta` in the flowgraph's folder. GRC outlines the block in orange because GNU Radio 3.10 marks it deprecated, but the block records correctly.
+15. **Record.** Run the flowgraph for about 3 s and stop it. Read the size of `fm_capture.sigmf-data` in bytes from its file properties, divide by $10^6$ to get MB, and compare with your Part 1 prediction. A file browser's own "MB" may be $2^{20}$ bytes, about 5% larger, so use the byte count. Open `fm_capture.sigmf-meta` in a text editor and check that its center frequency is the one you set.
+
+    <div class="rec" data-lab="L05">
+    <label>Step 15: size of fm_capture.sigmf-data (MB) <input data-field="b.size"></label>
+    </div>
+16. **Disable the sink.** Right-click the SigMF Sink and choose Disable, so the next run does not overwrite the capture.
+17. **Plot it.** From the radioconda prompt, in the flowgraph's folder, run `python L05-psd.py fm_capture.sigmf-data`. It reads the sample rate and center frequency from the meta file. Paste the plot as Figure 3.
 ::::
 
 ::::{frame} No Hardware?
@@ -89,32 +126,45 @@ Question 2 is quick arithmetic from your block settings: where five tones appear
 
 :::{admonition} If your PlutoSDR is missing or will not open
 :class: tip
-Do Question 3 on your laptop as written; it needs no hardware. For Questions 4 and 5, pair with a classmate whose PlutoSDR works, take turns at their laptop, and record your own numbers and your own capture. Say in the packet whose hardware you used. Bring the failed Pluto to EI so it is working before the L7 Lab.
+Steps 1 to 7 need no radio. For Steps 8 to 17, work at the laptop of a classmate whose PlutoSDR works, taking turns, and take your own readings, your own screenshots, and your own capture; note whose PlutoSDR you used on the packet's Documentation line. Bring the failed Pluto to EI so it works before the L7 Lab.
 :::
 ::::
 
-::::{frame} Part 3: After the Lab
-:::{present}
-- Explain why two of your tones give identical samples at 48 kHz.
-- Describe, in words, what raising the gain did to the floor and the stations.
-- Choose and justify a gain for weak stations.
-:::
+::::{frame} Your Part 2 Entries
+:class: read-only
 
-The Writeup is three questions. The first connects your alias table to the sampling wheel of Lesson 5: adding $f_s$ to a tone's frequency adds a whole turn to every sample. The second asks what you watched happen as the gain went up: when the floor moved, when the stations stood out more, and when false signals appeared. The third asks you to defend a gain setting from your own gain table.
+This frame collects every box you filled in on this page. Your entries stay in this browser only, saved as you type. **Download my packet** writes them into the Measured cells of the blank packet and saves the PDF. The download locks every field, the Predicted cells included, so type your predictions into your own copy of the packet first, then use **Fill my own copy** and choose that file: the page keeps your predictions and adds your measurements beside them. Paste Figures 1 to 3 and write Part 3 in your copy, or on the printout, and upload one PDF to Gradescope. **Export entries** saves a small backup file you can **Import** on another laptop.
+
+<div class="rec-summary" data-lab="L05" data-pdf="../../labs/ECE448_Lab_L05_FirstFlowgraphs_blank.pdf" data-file="ECE448_L05_Lab"></div>
 ::::
 
 ::::{frame} Lab Packet
 :class: read-only doc-links
 
+The L5 Lab packet is one submission, turned in complete before Lesson 6:
+
+1. Part 1, Predict (individual, before the lab period): the shaded Predicted cells of Tables A and B, with your work for one row of each attached.
+2. Part 2, Measure (in class, on your own laptop and PlutoSDR): the white Measured cells of the same tables, and Figures 1 to 3.
+3. Part 3, Analyze (individual, after the lab): three prompts, each answered from your own tables and figures.
+
 - <a class="doc-link" href="../../labs/ECE448_Lab_L05_FirstFlowgraphs_blank.pdf" target="_blank" rel="noopener">L5 Lab packet (PDF)</a>
-- <a class="doc-link" href="../../grc/L05-tone.grc" download>L05-tone.grc</a>, <a class="doc-link" href="../../grc/L05-fm-spectrum.grc" download>L05-fm-spectrum.grc</a>, and <a class="doc-link" href="../../grc/L05-psd.py" download>L05-psd.py</a>
+- <a class="doc-link" href="../../grc/L05-fm-spectrum.grc" download>L05-fm-spectrum.grc</a> and <a class="doc-link" href="../../grc/L05-psd.py" download>L05-psd.py</a>
+::::
+
+::::{frame} For Part 3
+:class: read-only
+
+Do Part 3 after class, with your tables and figures beside you. It asks about three comparisons:
+
+1. Table A and Figure 1: your predicted and measured tone positions at 48 kHz.
+2. Figure 2: the three gain views, and the gain you chose.
+3. Your recording against the live display: the file size against your prediction, and Figure 3 against Figure 2.
+
+I grade each answer on a claim, the evidence from your own tables and figures, the reasoning that connects them, and the uncertainty in your readings.
 ::::
 
 ::::{frame} Looking Ahead
-:::{present}
-- Lesson 6 adds the first processing blocks: AM modulation and demodulation.
-- Lesson 7 turns today's FM capture into audio and decodes its RDS data.
-:::
+:class: read-only
 
-Keep both files, `fm_capture.sigmf-data` and `fm_capture.sigmf-meta`; the meta file remembers the center frequency for you. Lesson 7 builds an FM receiver, and the first test of that receiver is the capture you made today, played back through a SigMF Source before you point it at the live band.
+Keep both capture files: Lesson 7's FM receiver plays `fm_capture.sigmf-data` back through a SigMF Source before it receives the live band.
 ::::
