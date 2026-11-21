@@ -173,6 +173,12 @@ Every lab packet and assessment (VOICE.md 41-43):
   Part 3 is two or three open prompts about what this lab measured, graded
   on claim, evidence, reasoning, and uncertainty: none names the finding,
   its direction, or its cause, and none would fit another lab unchanged.
+- **Few measured cells** (Neil, 2026-11-21: too many "measure this" cells
+  and cadets "miss the forest for the trees"). Record only what a Part 3
+  prompt or a predicted-versus-measured comparison uses, usually a handful
+  per run; prefer one screenshot of the whole picture to a column of numbers
+  read off it; a step that only leads to the next asks for no entry. Name
+  the prompt or comparison each cell serves, or cut the cell.
 - Predicted sits beside measured: each table appears once, with a Predicted
   and a Measured column per quantity, or a Predicted row above the Measured
   row where pairs do not fit. Predicted cells are shaded with a gray box
