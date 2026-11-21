@@ -1,0 +1,111 @@
+%% ece448_labpacket.tex -- shared macros for every ECE 448 lab packet.
+%%
+%% A packet \input's this after exam_config and before \begin{document}, with
+%% \ifkey already set (\newif\ifkey, then \keytrue or \keyfalse). The L5 Lab,
+%% ECE448_Lab_L05_FirstFlowgraphs.tex, is the worked example; the other labs
+%% load this file as each is reworked (ROADMAP, "Labs follow 444's lab rules").
+%%
+%% The shape (VOICE.md 34, COURSE_SPEC "Lab packet structure" in ECE 444):
+%%   * Predict, Measure, Analyze, one submission, about four pages.
+%%   * Predicted sits beside measured: each table appears once, with a
+%%     Predicted and a Measured column per quantity, or a Predicted row above
+%%     the Measured row where pairs do not fit.
+%%   * A predicted cell is shaded with a gray box drawn INSIDE the cell, never
+%%     \cellcolor: \cellcolor covers the table rules, so a run of predicted
+%%     cells reads as one gray block on screen. It is named p1.<the Part 2
+%%     field name>. A cell with no prediction shows a dash (\nopred).
+%%   * Answer boxes are \boxw (1.5 in) wide, right-justified in one 0.42
+%%     column (anscol) beside a 0.55 worked column, or in one row along the
+%%     bottom of the part.
+%%
+%% Fields. In the blank copy every predicted and measured cell is also an
+%% AcroForm text field of the cell's name, so a cadet can type into the PDF,
+%% and the lab page's entry boxes (records.js) write into the Measured fields
+%% by the same names (scripts/verify/check_records.py checks the names). The
+%% KEY prints the expected value in red instead. Wrap the fields in ONE
+%% \begin{Form} ... \end{Form} (hyperref) around the packet body.
+%%
+%% Answers. No answer is in a public file. Every expected value is
+%% \keysol{<id>}, defined in the private ECE448-faculty repo at
+%% lab-keys/src/<packet>_solutions.tex with \defkeysol{<id>}{<text>}, and
+%% loaded by \loadkeysols{<packet>} (a KEY build without the file stops).
+
+\RequirePackage{array}
+\RequirePackage{xcolor}
+
+% ---- answers from the private repo --------------------------------------
+\long\def\defkeysol#1#2{\expandafter\long\expandafter\def\csname keysol@#1\endcsname{#2}}
+\def\keysol#1{\ifcsname keysol@#1\endcsname\csname keysol@#1\endcsname\fi}
+\newcommand{\loadkeysols}[1]{%
+	\ifkey
+		\IfFileExists{#1_solutions.tex}%
+			{\input{#1_solutions}}%
+			{\errmessage{KEY build needs #1_solutions.tex from ECE448-faculty/lab-keys/src (set KEYDIR)}}%
+	\fi}
+
+% ---- sizes and colors ----------------------------------------------------
+\newlength{\boxw}      \setlength{\boxw}{1.5in}    % every answer box
+\newlength{\cellh}     \setlength{\cellh}{0.30in}  % a table cell's writable height
+\newlength{\predinset} \setlength{\predinset}{2.5pt} % gap between the gray box and the rules
+\definecolor{predgray}{gray}{0.86}
+\definecolor{keyred}{rgb}{0.80,0.0,0.0}
+
+% Fixed-width centered column for fillable cells.
+\newcolumntype{K}[1]{>{\centering\arraybackslash}p{#1}}
+
+% The 0.55 worked column and the 0.42 answer column (VOICE.md 34).
+\newenvironment{workcol}{\begin{minipage}[t]{0.55\linewidth}}{\end{minipage}}
+\newenvironment{anscol}{\begin{minipage}[t]{0.42\linewidth}\raggedleft}{\end{minipage}}
+
+% ---- the field itself ----------------------------------------------------
+% \lp@field{<name>}{<width>}{<height>}: a borderless, transparent text field
+% in the blank copy; nothing in the KEY.
+\makeatletter
+\newcommand{\lp@field}[3]{%
+	\ifkey\else
+		\TextField[name={#1}, width=#2, height=#3, borderwidth=0,
+			bordercolor={}, backgroundcolor={}, charsize=9pt, align=1]{}%
+	\fi}
+% \lp@cell{<width>}{<height>}{<name>}{<key text>}{<shade:0|1>}
+\newcommand{\lp@cell}[5]{%
+	\begingroup\setlength{\fboxsep}{0pt}%
+	\ifnum#5=1\colorbox{predgray}{\fi
+	\begin{minipage}[c][#2][c]{#1}\centering
+		\ifkey{\color{keyred}\small #4}\else\lp@field{#3}{#1}{#2}\fi
+	\end{minipage}%
+	\ifnum#5=1}\fi
+	\endgroup}
+
+% ---- predicted cells (shaded) ---------------------------------------------
+% \predv[<Part 2 field>]{<key>}  in a table cell: the gray box fills the
+%                                 cell's width less \predinset on each side.
+% \predh[<Part 2 field>]{<key>}  a \boxw box for an answer column or a row of
+%                                 boxes along the bottom of a part.
+% \predl[<Part 2 field>]{<width>}{<key>}  a long predicted box of any width,
+%                                 for an entry that does not fit \boxw.
+% Each is named p1.<field>, so the Predicted cell of a.t20 is p1.a.t20.
+\newcommand{\predv}[2][]{%
+	\rule[-0.5\cellh]{0pt}{\dimexpr\cellh+2\predinset\relax}%
+	\lp@cell{\dimexpr\linewidth-2\predinset\relax}{\cellh}{p1.#1}{#2}{1}}
+\newcommand{\predh}[2][]{\lp@cell{\boxw}{\cellh}{p1.#1}{#2}{1}}
+\newcommand{\predl}[3][]{\lp@cell{#2}{\cellh}{p1.#1}{#3}{1}}
+
+% ---- measured cells (white) ------------------------------------------------
+% \kv[<field>]{<key>}   in a table cell; \kvh[<field>]{<key>}, a \boxw box.
+\newcommand{\kv}[2][]{%
+	\rule[-0.5\cellh]{0pt}{\dimexpr\cellh+2\predinset\relax}%
+	\lp@cell{\dimexpr\linewidth-2\predinset\relax}{\cellh}{#1}{#2}{0}}
+\newcommand{\kvh}[2][]{\fbox{\lp@cell{\boxw}{\cellh}{#1}{#2}{0}}}
+
+% A cell with no prediction.
+\newcommand{\nopred}{--}
+
+% ---- a screenshot box -------------------------------------------------------
+% \shotbox{<height>}{<caption>}{<key>}: a framed region the full text width to
+% paste a screenshot into, captioned below. The KEY prints what it should show.
+\newcommand{\shotbox}[3]{%
+	\par\noindent\fbox{\begin{minipage}[c][#1][c]{\dimexpr\linewidth-2\fboxsep-2\fboxrule\relax}\centering
+		\ifkey{\color{keyred}\small #3}\else{\color{gray}\small paste here}\fi
+	\end{minipage}}\par\nopagebreak[4]
+	\vspace{2pt}{\small #2}\par}
+\makeatother
