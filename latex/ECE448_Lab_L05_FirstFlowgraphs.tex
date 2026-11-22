@@ -46,60 +46,42 @@
 %% exam class customization
 \input{exam_config}
 \input{ece448_fonts}   % Barlow body text (needs lualatex)
-\printselectedfalse      % full worked solutions in the key, not answers-only
+\input{ece448_labpacket} % \predv, \kv, \boxw, anscol, \shotbox, \keysol
+\printselectedfalse
 \CorrectChoiceEmphasis{\color{red}}
 \SolutionEmphasis{\color{red}}
 \renewcommand\questionlabel{\textbf{\thequestion.}}
 \renewcommand{\thepartno}{\alph{partno}}
 \renewcommand{\partlabel}{(\thepartno)}
 
-% Fillable table cell: blank in the student copy, the expected value in red on
-% the KEY. Fixed-width centered columns keep the blank cells writable.
-\newcolumntype{K}[1]{>{\centering\arraybackslash}p{#1}}
-\newcommand{\kv}[1]{\ifkey{\color{red}#1}\fi\rule[-0.10in]{0pt}{0.34in}}
-
-% Answers are not in this public file. Every solution, \kv value, and \ansbox
-% value is \keysol{<id>}, defined in the private ECE448-faculty repo at
-% lab-keys/src/ECE448_Lab_L05_FirstFlowgraphs_solutions.tex; build_lab.sh puts that
-% folder on TEXINPUTS (KEYDIR) for the KEY. A KEY build without it stops.
-\long\def\defkeysol#1#2{\expandafter\long\expandafter\def\csname keysol@#1\endcsname{#2}}
-\def\keysol#1{\ifcsname keysol@#1\endcsname\csname keysol@#1\endcsname\fi}
-\ifkey
-	\IfFileExists{ECE448_Lab_L05_FirstFlowgraphs_solutions.tex}%
-		{\input{ECE448_Lab_L05_FirstFlowgraphs_solutions}}%
-		{\errmessage{KEY build needs ECE448_Lab_L05_FirstFlowgraphs_solutions.tex from ECE448-faculty/lab-keys/src (set KEYDIR)}}
-\fi
+% Answers are not in this public file. Every expected value is \keysol{<id>},
+% defined in the private ECE448-faculty repo at
+% lab-keys/src/ECE448_Lab_L05_FirstFlowgraphs_solutions.tex; build_lab.sh puts
+% that folder on TEXINPUTS (KEYDIR) for the KEY. A KEY build without it stops.
+\loadkeysols{ECE448_Lab_L05_FirstFlowgraphs}
 
 % print the answers if this is the key
 \ifkey
-	\printanswers % if this IS the key
+	\printanswers
 \else
-	\noprintanswers  %if this is NOT the key
+	\noprintanswers
 \fi
 
-% print the header and footer
-% need to print key on top if this is the key
 \ifkey
 	\firstpageheader{}{\color{red}{ KEY}}{}
 	\runningheader{\thisclass\hspace{1pt} -- \thisterm }{L\labLesson\ Lab\hspace{1pt}\color{red}{ KEY}}{\thepage\hspace{1pt} of\hspace{1pt} \numpages}
-	\firstpagefooter{}{}{}
-	\runningfooter{}{}{}
 \else
 	\firstpageheader{}{}{}
 	\runningheader{\thisclass \hspace{1pt} -- \thisterm }{L\labLesson\ Lab\hspace{1pt}}{\thepage\hspace{1pt} of\hspace{1pt} \numpages}
-	\firstpagefooter{}{}{}
-	\runningfooter{}{}{}
 \fi
-
+\firstpagefooter{}{}{}
+\runningfooter{}{}{}
 \runningheadrule
 
 
 \begin{document}
-\pagestyle{headandfoot}   % exam class
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% title block
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\pagestyle{headandfoot}
+\begin{Form}
 
 \begin{center}
 USAF ACADEMY \\
@@ -121,245 +103,110 @@ Companion (GRC) to build, inspect, and run a basic flowgraph.
 \\[2pt]\textbf{Learning Objective 2.4: } I can capture a real RF signal using an SDR
 and interpret its time- and frequency-domain representations.}
 
-\vspace{2pt}
+This packet is the whole L\labLesson\ Lab, one submission turned in complete
+before Lesson 6. \textbf{Part 1, Predict} (individual, before the lab period):
+the shaded Predicted cells of Tables A and B, with your work for one row of each
+attached. \textbf{Part 2, Measure} (your own laptop and PlutoSDR, in class): the
+white Measured cells and Figures 1 to 3. \textbf{Part 3, Analyze} (individual,
+after the lab): three prompts, answered from your own tables and figures.
 
-This packet is the L\labLesson\ Lab, in three parts, and you turn it in once, complete,
-before Lesson 6. Do \textbf{Part 1} on your own before the lab period: install
-GNU Radio and work out the numbers your block settings fix. \textbf{Part 2} is
-your own measurements and observations, with your own laptop and PlutoSDR,
-recorded in class. Do \textbf{Part 3} on your own after the lab: explain what you
-saw.
+\textbf{Grading.} I grade the packet against Objectives 2.3 and 2.4 on the
+course's 1 / 0 scale, and you may revise it under course policy. I grade each Part 3 answer on
+a claim, the evidence from your own tables and figures, the reasoning that
+connects them, and the uncertainty in your readings.
 
-\textbf{Grading.} One submission, graded against Objectives 2.3 and 2.4 on the
-course's 1 / 0 scale, with revision allowed under course policy. Paste screenshots
-where a question asks for one.
+\textbf{Before the lab period.} Install radioconda and run the three checks in the L5
+lesson page's ``Verify the Install'' frame: Step 1 needs GRC to open, and Step 8
+needs the PlutoSDR in extended-frequency mode, which the \texttt{iio\_attr} check confirms. If a check fails, bring the
+laptop or the PlutoSDR to EI before the lab period. Nothing in this lab
+transmits.
 
-\textbf{Receive only.} Nothing in this lab transmits. The FM flowgraph uses only
-the PlutoSDR's receiver, and the tone flowgraph never leaves your laptop.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\fullwidth{\large\textbf{Parts 1 and 2: Predict and Measure}}
 
-The flowgraphs and the Python script are on the L5 lesson page:
-\texttt{L05-tone.grc}, \texttt{L05-fm-spectrum.grc}, and \texttt{L05-psd.py}.
+You build the tone flowgraph with \texttt{samp\_rate} = 48000, a complex Signal
+Source, and a QT GUI Frequency Sink. The FM flowgraph samples at 2.4 MS/s. The
+recording runs for about 3 s. Predict before the lab period; measure in class.
+
+\textbf{Table A. Where the tone appears} (tone flowgraph, $f_s$ = 48 kHz)
+
+\begin{center}
+\renewcommand{\arraystretch}{1.1}
+\begin{tabular}{| l | K{\boxw} | K{\boxw} | l |}
+\hline
+Tone set on the slider & Predicted (kHz) & Measured (kHz) & Step \\\hline
+$+20$ kHz & \predv[a.t20]{\keysol{p1.a.t20}} & \kv[a.t20]{\keysol{a.t20}} & 7 \\\hline
+$+30$ kHz & \predv[a.t30]{\keysol{p1.a.t30}} & \kv[a.t30]{\keysol{a.t30}} & 7 \\\hline
+$-35$ kHz & \predv[a.tm35]{\keysol{p1.a.tm35}} & \kv[a.tm35]{\keysol{a.tm35}} & 7 \\\hline
+\end{tabular}
+\end{center}
+\vspace{-6pt}
+\freqstrip{24}{8}{Part 1: mark where you predict each tone's spike on the frequency sink's axis (kHz).}
+
+\newpage
+\textbf{Table B. The FM band and the recording} (PlutoSDR, 2.4 MS/s)
+
+\begin{center}
+\renewcommand{\arraystretch}{1.1}
+\begin{tabular}{| p{2.45in} | K{\boxw} | K{\boxw} | l |}
+\hline
+Quantity & Predicted & Measured & Step \\\hline
+Lowest to highest frequency at 96.5 MHz (MHz) & \predv[b.band]{\keysol{p1.b.band}} & \kv[b.band]{\keysol{b.band}} & 9 \\\hline
+RF gain you chose for weak stations (dB) & \nopred & \kv[b.gain]{\keysol{b.gain}} & 12 \\\hline
+Size of \texttt{fm\_capture.sigmf-data} ($10^6$ bytes) & \predv[b.size]{\keysol{p1.b.size}} & \kv[b.size]{\keysol{b.size}} & 15 \\\hline
+\end{tabular}
+\end{center}
+
+\begin{solution}[0in]
+\keysol{work}
+\end{solution}
+
+\vspace{4pt}
+\shotbox{3.1in}{\textbf{Figure 1.} Step 6: your flowgraph on the GRC canvas, and its
+running window with the slider at $+30$ kHz.}{\keysol{fig1}}
+
+\vspace{8pt}
+\noindent\shotpane{0.32\linewidth}{1.9in}{RF gain 0 dB}{\keysol{fig2.low}}\hfill
+\shotpane{0.32\linewidth}{1.9in}{your gain from Table B}{\keysol{fig2.mid}}\hfill
+\shotpane{0.32\linewidth}{1.9in}{RF gain 71 dB}{\keysol{fig2.high}}\par
+\vspace{2pt}{\small\textbf{Figure 2.} Step 12: the FM display at three RF gains, with the same
+station on screen in all three.}\par
+
+\newpage
+\shotbox{2.8in}{\textbf{Figure 3.} Step 17: the plot \texttt{L05-psd.py} makes from
+\texttt{fm\_capture.sigmf-data}.}{\keysol{fig3}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\vspace{6pt}
+\fullwidth{\large\textbf{Part 3: Analyze} \normalsize(individual, after the lab)}
+
+Answer each prompt from your own tables and figures. Give a claim, the evidence,
+your reasoning, and the uncertainty in your readings.
 
 \begin{questions}
 
-\fullwidth{\large\textbf{Part 1: Pre-Lab} \normalsize(individual, before the lab period)}
+\question Compare your predicted and measured values in Table A, with Figure 1.
+State the rule that decides where a tone set on the slider appears on the
+frequency sink at 48 kHz, show whether each of your three tones agrees with it, and
+name one tone you did not set that would test it.
+	\begin{solution}[1.4in]\keysol{an1}\end{solution}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\question \textbf{Install and verify.} Install radioconda as the L5 lesson page
-describes, plug in your PlutoSDR, and run the commands below from the radioconda
-prompt.
+\question Compare the three views in Figure 2. Describe what changed from 0 dB
+to 71 dB, and defend the gain you chose in Table B for receiving weak stations
+in this room from what the three views show.
+	\begin{solution}[1.45in]\keysol{an2}\end{solution}
 
-\begin{parts}
-
-	\begin{minipage}[t]{0.58\linewidth}
-		\part Run \texttt{gnuradio-config-info --version} and record the version.
-		\begin{solution}[0.5in]\keysol{sol1}\end{solution}
-	\end{minipage}\hfill%
-	\begin{minipage}[t]{0.37\linewidth}
-		\raggedleft \vspace{12pt}
-		version = \ansbox[1.3in]{\keysol{ans1}}
-	\end{minipage}
-
-	\begin{minipage}[t]{0.58\linewidth}
-		\part Run \texttt{iio\_info -s} and record the device it reports. Then
-		run the lesson page's \texttt{iio\_attr} check, which must show 70 MHz to 6 GHz.
-		\begin{solution}[0.5in]\keysol{sol2}\end{solution}
-	\end{minipage}\hfill%
-	\begin{minipage}[t]{0.37\linewidth}
-		\raggedleft \vspace{12pt}
-		device = \ansbox[1.3in]{\keysol{ans2}}
-	\end{minipage}
-
-	\part Open \texttt{L05-tone.grc} in GRC, run it, and paste a screenshot of the
-	running flowgraph's window.
-		\begin{solution}[1.6in]\keysol{sol3}\end{solution}
-
-\end{parts}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\newpage
-\question \textbf{Numbers from your settings.} Quick arithmetic from the block settings; you will check each on the screen at the bench.
-
-\begin{parts}
-
-	\part The tone flowgraph you build at the bench samples at $f_s = 48$ kHz. Work out where the frequency
-	sink shows each tone.
-
-	\begin{center}
-	\renewcommand{\arraystretch}{1.25}
-	\begin{tabular}{| l | K{0.68in} | K{0.68in} | K{0.68in} | K{0.68in} | K{0.68in} |}
-	\hline
-	Tone (kHz) & $5$ & $20$ & $30$ & $40$ & $-35$ \\\hline
-	Expected (kHz) & \kv{\keysol{kv1}} & \kv{\keysol{kv2}} & \kv{\keysol{kv3}} & \kv{\keysol{kv4}} & \kv{\keysol{kv5}} \\\hline
-	\end{tabular}
-	\end{center}
-
-		\begin{solution}[0.6in]\keysol{sol4}\end{solution}
-
-	\begin{minipage}[t]{0.58\linewidth}
-		\part The FM flowgraph samples at 2.4 MS/s. Centered on 96.5 MHz, find the
-		band the display shows.
-		\begin{solution}[0.7in]\keysol{sol5}\end{solution}
-	\end{minipage}\hfill%
-	\begin{minipage}[t]{0.37\linewidth}
-		\raggedleft \vspace{12pt}
-		band = \ansbox[1.5in]{\keysol{ans3}}
-	\end{minipage}
-
-	\begin{minipage}[t]{0.58\linewidth}
-		\part Find the size of a 3 s recording at 2.4 MS/s.
-		\begin{solution}[0.7in]\keysol{sol6}\end{solution}
-	\end{minipage}\hfill%
-	\begin{minipage}[t]{0.37\linewidth}
-		\raggedleft \vspace{12pt}
-		\ansbox[1.3in]{\keysol{ans4}}
-	\end{minipage}
-
-\end{parts}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\newpage
-\fullwidth{\large\textbf{Part 2: Measurements} \normalsize(your own laptop and PlutoSDR, in class)}
-
-\question \textbf{Build the tone flowgraph.} Start GRC with an empty canvas. Do not
-open \texttt{L05-tone.grc}: build it yourself from the Options block, a
-\texttt{samp\_rate} variable of 48000, a QT GUI Range named \texttt{freq} from
-$-72000$ to $72000$, a complex Signal Source, a Throttle, a QT GUI Time Sink, and
-a QT GUI Frequency Sink.
-
-\begin{parts}
-
-	\part Paste a screenshot of your flowgraph on the GRC canvas. Every connection
-	must be black, not red.
-		\begin{solution}[1.6in]\keysol{sol7}\end{solution}
-
-	\part Set each tone with the slider and record where the spike appears.
-
-	\begin{center}
-	\renewcommand{\arraystretch}{1.25}
-	\begin{tabular}{| l | K{0.68in} | K{0.68in} | K{0.68in} | K{0.68in} | K{0.68in} |}
-	\hline
-	Tone (kHz) & $5$ & $20$ & $30$ & $40$ & $-35$ \\\hline
-	Measured (kHz) & \kv{\keysol{kv6}} & \kv{\keysol{kv7}} & \kv{\keysol{kv8}} & \kv{\keysol{kv9}} & \kv{\keysol{kv10}} \\\hline
-	\end{tabular}
-	\end{center}
-
-		\begin{solution}[0.4in]\keysol{sol8}\end{solution}
-
-\end{parts}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\newpage
-\question \textbf{The FM band.} Connect the antenna to the PlutoSDR's RX port and
-look at the band in GNU Radio.
-
-\begin{parts}
-
-	\begin{minipage}[t]{0.58\linewidth}
-		\part Run \texttt{L05-fm-spectrum.grc}. Drag the center frequency slowly
-		from 88 to 108 MHz and record the frequency of the tallest station you
-		see.
-		\begin{solution}[0.6in]\keysol{sol9}\end{solution}
-	\end{minipage}\hfill%
-	\begin{minipage}[t]{0.37\linewidth}
-		\raggedleft \vspace{12pt}
-		station = \ansbox[1.3in]{\keysol{ans5}}
-	\end{minipage}
-
-	\part Center the display on the station from part (a). Then tune across 88 to
-	108 MHz and record the three strongest stations: the
-	frequency, the peak level on the display, and how wide each looks next to
-	the others (narrow, medium, wide).
-
-	\begin{center}
-	\renewcommand{\arraystretch}{1.25}
-	\begin{tabular}{| l | K{1.3in} | K{1.3in} | K{1.3in} |}
-	\hline
-	& Frequency (MHz) & Peak (dB) & Looks \\\hline
-	Station 1 & \kv{\keysol{kv11}} & \kv{\keysol{kv12}} & \kv{\keysol{kv13}} \\\hline
-	Station 2 & & & \\\hline
-	Station 3 & & & \\\hline
-	\end{tabular}
-	\end{center}
-
-		\begin{solution}[0.5in]\keysol{sol10}\end{solution}
-
-	\part Uncheck DC tracking and find the DC spike. Tune so that a station sits on
-	it, then tune 300 kHz away. Describe what moves and what does not, and what
-	changes at the center when you check DC tracking again.
-		\begin{solution}[0.9in]\keysol{sol11}\end{solution}
-
-	\part With the strongest station on screen, set the gain to each value and
-	record the noise floor away from any station. Mark the first setting where
-	extra signals appear between stations.
-
-	\begin{center}
-	\renewcommand{\arraystretch}{1.25}
-	\begin{tabular}{| l | K{0.7in} | K{0.7in} | K{0.7in} | K{0.7in} | K{0.7in} |}
-	\hline
-	Gain (dB) & $0$ & $20$ & $40$ & $60$ & $71$ \\\hline
-	Floor (dB) & & & & & \\\hline
-	Spurs? & & & & & \\\hline
-	\end{tabular}
-	\end{center}
-
-		\begin{solution}[0.5in]\keysol{sol12}\end{solution}
-
-\end{parts}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\newpage
-\question \textbf{Record and plot.} Center the strongest station slightly off the
-DC spike and set the highest gain in your 4(d) table at which no spurs appeared.
-Stop the flowgraph and type that center frequency into the \texttt{freq} slider's
-Default Value: the SigMF Sink writes it to \texttt{fm\_capture.sigmf-meta} when the run starts.
-
-\begin{parts}
-
-	\begin{minipage}[t]{0.58\linewidth}
-		\part Enable the SigMF Sink, run the flowgraph for about 3 s, stop it, and record
-		the size of \texttt{fm\_capture.sigmf-data}.
-		\begin{solution}[0.6in]\keysol{sol13}\end{solution}
-	\end{minipage}\hfill%
-	\begin{minipage}[t]{0.37\linewidth}
-		\raggedleft \vspace{12pt}
-		size = \ansbox[1.3in]{\keysol{ans6}}
-	\end{minipage}
-
-	\part Run the plotting script, which reads the sample rate and center frequency
-	from \texttt{fm\_capture.sigmf-meta}, and paste the plot:
-	\\[2pt]\texttt{python L05-psd.py fm\_capture.sigmf-data}
-		\begin{solution}[1.8in]\keysol{sol14}\end{solution}
-
-\end{parts}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\newpage
-\fullwidth{\large\textbf{Part 3: Writeup} \normalsize(individual, after the lab)}
-
-\question \textbf{Analysis.}
-
-\begin{parts}
-
-	\part Compare your measured aliases in Question 3(b) with your answers in
-	Question 2(a). Choose one tone from your table that moved, and explain why it and the
-	frequency where it appeared produce the same samples at 48 kHz.
-		\begin{solution}[1.2in]\keysol{sol15}\end{solution}
-
-	\part Using your table in Question 4(d), describe in words what happened as you
-	raised the gain from 0 to 71 dB: to the noise floor, to how far the strongest
-	station stood above it, and to the space between stations.
-		\begin{solution}[1.5in]\keysol{sol16}\end{solution}
-
-	\part State the gain you would use to receive weak stations in this room, and
-	justify it from your table in Question 4(d).
-		\begin{solution}[1.0in]\keysol{sol17}\end{solution}
-
-\end{parts}
+\question Compare your recording with what you saw live: the file size in
+Table B against your prediction, and Figure 3 against the view in Figure 2 at
+the gain you chose. State what agrees and what does not, give the most likely
+cause of each difference, and say how large a difference you would still call
+agreement.
+	\begin{solution}[1.45in]\keysol{an3}\end{solution}
 
 \end{questions}
 
-\vspace{1.0em}
+\vspace{0.6em}
 \noindent\textbf{Documentation:} \rule[-2pt]{0.6\linewidth}{0.4pt}
 
+\end{Form}
 \end{document}

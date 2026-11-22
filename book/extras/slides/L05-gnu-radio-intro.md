@@ -192,11 +192,11 @@ Demo both extremes live: gain at zero hides the weak stations; gain at the top o
 ## Recording IQ
 
 - A **SigMF Sink** writes raw complex samples, 8 bytes each.
-- 2.4 MS/s fills 19.2 MB every second.
+- Each second holds $8 f_s$ bytes: 8 MB at 1 MS/s.
 - A small meta file beside them holds the sample rate and center frequency.
 
 Note:
-Set the center frequency first, since the sink writes the meta file when the run starts. Enable the SigMF Sink for about one second, then disable it, and show the .sigmf-data size against the 19.2 MB per second on the slide. Open the .sigmf-meta in a text editor: datatype cf32_le, sample rate, center frequency. Every recording in this course is a SigMF pair. GRC outlines the block in orange because 3.10 marks it deprecated; it works.
+Set the center frequency first, since the sink writes the meta file when the run starts. Enable the SigMF Sink for about one second, then disable it, and show the .sigmf-data size against 8 bytes per sample at the flowgraph's rate. Open the .sigmf-meta in a text editor: datatype cf32_le, sample rate, center frequency. Every recording in this course is a SigMF pair. GRC outlines the block in orange because 3.10 marks it deprecated; it works.
 
 ---
 
