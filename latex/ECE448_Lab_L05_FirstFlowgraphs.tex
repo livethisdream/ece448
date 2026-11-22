@@ -84,7 +84,7 @@
 \begin{Form}
 
 \begin{center}
-USAF ACADEMY \\
+% USAF ACADEMY \\
 DEPARTMENT OF ELECTRICAL AND COMPUTER ENGINEERING \\
 LESSON \labLesson\ LAB - First Flowgraphs \\
 \textbf{Lab Packet} \\
@@ -103,30 +103,23 @@ Companion (GRC) to build, inspect, and run a basic flowgraph.
 \\[2pt]\textbf{Learning Objective 2.4: } I can capture a real RF signal using an SDR
 and interpret its time- and frequency-domain representations.}
 
-This packet is the whole L\labLesson\ Lab, one submission turned in complete
-before Lesson 6. \textbf{Part 1, Predict} (individual, before the lab period):
-the shaded Predicted cells of Tables A and B, with your work for one row of each
-attached. \textbf{Part 2, Measure} (your own laptop and PlutoSDR, in class): the
-white Measured cells and Figures 1 to 3. \textbf{Part 3, Analyze} (individual,
-after the lab): three prompts, answered from your own tables and figures.
+\textbf{Instructions:} Submit this packet as one complete submission by the date indicated on Gradescope. This is an individual assignment, but you may collaborate, with appropriate documentation. 
 
-\textbf{Grading.} I grade the packet against Objectives 2.3 and 2.4 on the
-course's 1 / 0 scale, and you may revise it under course policy. I grade each Part 3 answer on
-a claim, the evidence from your own tables and figures, the reasoning that
-connects them, and the uncertainty in your readings.
+\textbf{Part 1: Predict}
+the values indicated in Tables A and B, attaching your work for one row. 
 
-\textbf{Before the lab period.} Install radioconda and run the three checks in the L5
-lesson page's ``Verify the Install'' frame: Step 1 needs GRC to open, and Step 8
-needs the PlutoSDR in extended-frequency mode, which the \texttt{iio\_attr} check confirms. If a check fails, bring the
-laptop or the PlutoSDR to EI before the lab period. Nothing in this lab
-transmits.
+\textbf{Part 2: Measure} the indicated quantities. 
+
+\textbf{Part 3: Analyze} the results according to the prompts in this section.
+
+\textbf{Grading:} I grade the packet against Objectives 2.3 and 2.4 on the course's 1 / 0 scale, and you may revise it under course policy. I grade each Part 3 answer subjectively, according to the quality of your engineering analysis.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \fullwidth{\large\textbf{Parts 1 and 2: Predict and Measure}}
 
-You build the tone flowgraph with \texttt{samp\_rate} = 48000, a complex Signal
+Build the single tone flowgraph to  with \texttt{samp\_rate} = 48000, a complex Signal
 Source, and a QT GUI Frequency Sink. The FM flowgraph samples at 2.4 MS/s. The
-recording runs for about 3 s. Predict before the lab period; measure in class.
+recording runs for about 3 s. Predict before the lab period; measure in class. NR NOTE: THIS NEEDS REVISION 
 
 \textbf{Table A. Where the tone appears} (tone flowgraph, $f_s$ = 48 kHz)
 
