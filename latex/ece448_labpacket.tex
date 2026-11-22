@@ -133,4 +133,18 @@
 			\advance\count255 by #2\relax
 		\repeat
 	\end{picture}\\[-2pt]{\small #3}\end{center}}
+
+%% The procedure at a glance (Neil, 2026-11-22: "That way you can read the lab
+%% packet and still have an idea of what the flow is"). A framed box on page 1
+%% that lists the lab page's procedure blocks, one line each, with their step
+%% ranges. It is the flow, not the steps: the lab page holds the full procedure.
+%%   \begin{procbox}
+%%     \procstep{1--7}{Build the tone flowgraph ...}
+%%   \end{procbox}
+\newenvironment{procbox}{%
+	\par\smallskip\noindent\begin{lrbox}{0}\begin{minipage}{\dimexpr\linewidth-2\fboxsep-2\fboxrule\relax}%
+	\textbf{The procedure at a glance} \hfill {\small (full steps on the lab page)}\par\smallskip
+	\begin{tabular}{@{}p{0.11\linewidth}p{0.85\linewidth}@{}}}%
+	{\end{tabular}\end{minipage}\end{lrbox}\fbox{\usebox{0}}\par\smallskip}
+\newcommand{\procstep}[2]{\textbf{Steps #1} & #2 \\[1pt]}
 \makeatother

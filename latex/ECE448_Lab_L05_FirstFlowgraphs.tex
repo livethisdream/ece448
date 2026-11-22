@@ -114,6 +114,15 @@ the values indicated in Tables A and B, attaching your work for one row.
 
 \textbf{Grading:} I grade the packet against Objectives 2.3 and 2.4 on the course's 1 / 0 scale, and you may revise it under course policy. I grade each Part 3 answer subjectively, according to the quality of your engineering analysis.
 
+\begin{procbox}
+\procstep{1--7}{\textbf{Build the tone flowgraph} in GRC at a 48 kHz sample rate, with a slider-set
+complex tone, and read where each Table A tone lands on the frequency sink.}
+\procstep{8--12}{\textbf{Receive the FM band} on the PlutoSDR with \texttt{L05-fm-spectrum.grc}: read the
+band shown at 96.5 MHz, step the RF gain, and choose the gain for weak stations.}
+\procstep{13--17}{\textbf{Record and plot}: record about 3 s to \texttt{fm\_capture.sigmf-data}, read its
+size, and plot it with \texttt{L05-psd.py}.}
+\end{procbox}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \fullwidth{\large\textbf{Parts 1 and 2: Predict and Measure}}
 
