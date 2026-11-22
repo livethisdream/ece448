@@ -287,6 +287,11 @@ budgets, checks) still apply. Where 444 would put a derivation on screen,
       received, or measured, and with which flowgraph. It is the flow, not the
       steps, and states no value Part 1 predicts; the lab page keeps the full
       procedure. The L5 packet is the worked example.
+    - **The documentation statement closes the packet** (Neil, 2026-11-22):
+      `\docstatement` (`latex/ece448_labpacket.tex`) puts a framed
+      Documentation box with a fillable field at the bottom of the last page,
+      per the Dean's documentation policy ("Documentation: None" if no help).
+      It is the packet's last line, after Part 3.
     - **Few measured cells: the forest, not the trees** (Neil, 2026-11-21:
       "we don't have too many 'measure this...' cells in the labs. When they
       do that, they miss the forest for the trees"). A lab records only the
