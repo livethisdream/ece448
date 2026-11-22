@@ -32,11 +32,24 @@ SUDO=""
 log() { printf '[session-start] %s\n' "$*"; }
 
 # --- Python: the book toolchain (same as .github/workflows/deploy.yml) -------
-if python3 -c 'import jupyter_book' 2>/dev/null; then
-  log "jupyter-book present, skipping pip install"
+# The book builds only on Python 3.10-3.12 (3.13 dropped imghdr, which Sphinx's
+# epub builder imports), and the container's default python3 may be 3.13. So
+# the book gets its own venv on /usr/bin/python3.12, the same interpreter the
+# GNU Radio bindings use, and the venv's bin goes first on PATH below. The
+# render checks in scripts/verify need playwright in that venv and their npm
+# packages (vendored reveal.js and MathJax).
+VENV=/opt/ece448-venv
+if [ -x "$VENV/bin/jupyter-book" ] && "$VENV/bin/python" -c 'import playwright' 2>/dev/null; then
+  log "book venv present, skipping pip install"
 else
-  log "installing Python deps from requirements.txt"
-  pip install --quiet --disable-pip-version-check -r "$CLAUDE_PROJECT_DIR/requirements.txt"
+  log "building the book venv on python3.12"
+  $SUDO /usr/bin/python3.12 -m venv "$VENV"
+  $SUDO "$VENV/bin/pip" install --quiet --disable-pip-version-check \
+    -r "$CLAUDE_PROJECT_DIR/requirements.txt" playwright pypdf
+fi
+if [ ! -d "$CLAUDE_PROJECT_DIR/scripts/verify/node_modules" ]; then
+  log "installing the render harness (npm)"
+  (cd "$CLAUDE_PROJECT_DIR/scripts/verify" && npm install --silent) || log "npm install failed"
 fi
 
 # --- LaTeX: the practice/assessment toolchain -------------------------------
@@ -189,7 +202,8 @@ if [ -n "${CLAUDE_ENV_FILE:-}" ]; then
     TT_PATH="$TT_PATH$r/tex/latex//:"
   done
   echo "export TEXINPUTS=$TT_PATH" >> "$CLAUDE_ENV_FILE"
-  log "TEXINPUTS exported: $TT_PATH"
+  echo "export PATH=$VENV/bin:\$PATH" >> "$CLAUDE_ENV_FILE"
+  log "TEXINPUTS exported: $TT_PATH; $VENV/bin first on PATH"
 fi
 
-log "ready: jupyter-book $(python3 -c 'import jupyter_book;print(jupyter_book.__version__)' 2>/dev/null || echo '?'), $(pdflatex --version 2>/dev/null | head -1 || echo 'no pdflatex')"
+log "ready: jupyter-book $("$VENV/bin/python" -c 'import jupyter_book;print(jupyter_book.__version__)' 2>/dev/null || echo '?'), $(pdflatex --version 2>/dev/null | head -1 || echo 'no pdflatex')"
