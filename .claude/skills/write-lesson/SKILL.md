@@ -173,6 +173,11 @@ Every lab packet and assessment (VOICE.md 41-43):
   Part 3 is two or three open prompts about what this lab measured, graded
   on claim, evidence, reasoning, and uncertainty: none names the finding,
   its direction, or its cause, and none would fit another lab unchanged.
+- **The procedure at a glance** (Neil, 2026-11-22): page 1 of the packet has a
+  `procbox` listing each procedure block in one line with its step range, so
+  the packet reads on its own as the lab's flow; no Part 1 value in it.
+- **The documentation statement** (Neil, 2026-11-22): end the packet with
+  `\docstatement`, which sits at the bottom of the last page.
 - **Few measured cells** (Neil, 2026-11-21: too many "measure this" cells
   and cadets "miss the forest for the trees"). Record only what a Part 3
   prompt or a predicted-versus-measured comparison uses, usually a handful

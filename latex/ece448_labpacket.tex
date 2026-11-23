@@ -133,4 +133,34 @@
 			\advance\count255 by #2\relax
 		\repeat
 	\end{picture}\\[-2pt]{\small #3}\end{center}}
+
+%% The procedure at a glance (Neil, 2026-11-22: "That way you can read the lab
+%% packet and still have an idea of what the flow is"). A framed box on page 1
+%% that lists the lab page's procedure blocks, one line each, with their step
+%% ranges. It is the flow, not the steps: the lab page holds the full procedure.
+%%   \begin{procbox}
+%%     \procstep{1--7}{Build the tone flowgraph ...}
+%%   \end{procbox}
+\newenvironment{procbox}{%
+	\par\smallskip\noindent\begin{lrbox}{0}\begin{minipage}{\dimexpr\linewidth-2\fboxsep-2\fboxrule\relax}%
+	\textbf{The procedure at a glance} \hfill {\small (full steps on the lab page)}\par\smallskip
+	\begin{tabular}{@{}p{0.11\linewidth}p{0.85\linewidth}@{}}}%
+	{\end{tabular}\end{minipage}\end{lrbox}\fbox{\usebox{0}}\par\smallskip}
+\newcommand{\procstep}[2]{\textbf{Steps #1} & #2 \\[1pt]}
+
+%% The documentation statement (Neil, 2026-11-22): the last thing in every
+%% packet, at the bottom of its last page, per the Dean's documentation policy
+%% (course-policies.tex in latex-tools). A fillable field in the blank copy.
+%% Put \docstatement after the last question, before \end{Form}.
+\newcommand{\docstatement}{%
+	\par\vfill\noindent
+	\fbox{\begin{minipage}{\dimexpr\linewidth-2\fboxsep-2\fboxrule\relax}
+	\textbf{Documentation:} {\small List every source of help on this packet: people,
+	websites, generative AI, with what each helped with. If you had none, write
+	``Documentation: None.'' A packet without this statement is incomplete.}\par
+	\smallskip
+	\ifkey{\color{keyred}\small (The cadet's own statement.)}\par\vspace{0.5in}%
+	\else\TextField[name={doc}, multiline=true, width=\linewidth, height=0.65in,
+		borderwidth=0, bordercolor={}, backgroundcolor={}, charsize=9pt]{}\fi
+	\end{minipage}}\par}
 \makeatother

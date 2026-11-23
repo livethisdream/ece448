@@ -114,6 +114,15 @@ the values indicated in Tables A and B, attaching your work for one row.
 
 \textbf{Grading:} I grade the packet against Objectives 2.3 and 2.4 on the course's 1 / 0 scale, and you may revise it under course policy. I grade each Part 3 answer subjectively, according to the quality of your engineering analysis.
 
+\begin{procbox}
+\procstep{1--7}{\textbf{Build the tone flowgraph} in GRC at a 48 kHz sample rate, with a slider-set
+complex tone, and read where each Table A tone lands on the frequency sink.}
+\procstep{8--12}{\textbf{Receive the FM band} on the PlutoSDR with \texttt{L05-fm-spectrum.grc}: read the
+band shown at 96.5 MHz, step the RF gain, and choose the gain for weak stations.}
+\procstep{13--17}{\textbf{Record and plot}: record about 3 s to \texttt{fm\_capture.sigmf-data}, read its
+size, and plot it with \texttt{L05-psd.py}.}
+\end{procbox}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \fullwidth{\large\textbf{Parts 1 and 2: Predict and Measure}}
 
@@ -182,24 +191,24 @@ your reasoning, and the uncertainty in your readings.
 State the rule that decides where a tone set on the slider appears on the
 frequency sink at 48 kHz, show whether each of your three tones agrees with it, and
 name one tone you did not set that would test it.
-	\begin{solution}[1.4in]\keysol{an1}\end{solution}
+	\begin{solution}[1.8in]\keysol{an1}\end{solution}
 
 \question Compare the three views in Figure 2. Describe what changed from 0 dB
 to 71 dB, and defend the gain you chose in Table B for receiving weak stations
 in this room from what the three views show.
-	\begin{solution}[1.45in]\keysol{an2}\end{solution}
+	\begin{solution}[1.6in]\keysol{an2}\end{solution}
 
+\newpage
 \question Compare your recording with what you saw live: the file size in
 Table B against your prediction, and Figure 3 against the view in Figure 2 at
 the gain you chose. State what agrees and what does not, give the most likely
 cause of each difference, and say how large a difference you would still call
 agreement.
-	\begin{solution}[1.45in]\keysol{an3}\end{solution}
+	\begin{solution}[3.0in]\keysol{an3}\end{solution}
 
 \end{questions}
 
-\vspace{0.6em}
-\noindent\textbf{Documentation:} \rule[-2pt]{0.6\linewidth}{0.4pt}
+\docstatement
 
 \end{Form}
 \end{document}
