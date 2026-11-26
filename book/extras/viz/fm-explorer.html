@@ -140,7 +140,16 @@ function drawCum(s) {
   txt(ctx, 'power inside a band this wide', w - mR, y0 + 27, 10.5, C.ink3, 'right');
 }
 
+// The L7 Lab predicts Carson's width for a 1 kHz tone at 5 and 50 kHz of
+// deviation, so the explorer steps past those two settings rather than
+// print a Part 1 answer.
+const LAB = [5, 50];
+function avoidLab() {
+  if (+fmEl.value === 1 && LAB.includes(+devEl.value)) devEl.value = (+devEl.value + 0.1).toFixed(1);
+}
+
 function update() {
+  avoidLab();
   const s = compute();
   document.getElementById('dev-v').textContent = s.dev.toFixed(1) + ' kHz';
   document.getElementById('fm-v').textContent = s.fm.toFixed(1) + ' kHz';

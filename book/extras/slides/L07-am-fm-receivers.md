@@ -226,7 +226,7 @@ Demo live on the PlutoSDR: find a tall stripe in L05-fm-spectrum.grc, stop it (o
 ## On the SDR
 
 - Tune a few hundred kHz off the station, away from 0 Hz.
-- Set RF gain from your L5 gain table.
+- Set RF gain to the gain you chose in the L5 Lab.
 - Receiving is unrestricted; these flowgraphs only receive.
 
 Note:

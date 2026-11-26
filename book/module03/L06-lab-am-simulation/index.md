@@ -149,7 +149,7 @@ Bring headphones: thirty laptops playing tones at once make the room hard to wor
     <div class="rec" data-lab="L06">
     <label>Step 18: frequencies of the LSB lines (kHz) <input data-field="a.lsb"></label>
     </div>
-19. **Turn the tuning error.** Starting from 0, move the **Receiver tuning error (Hz)** slider one 10 Hz step at a time in each direction, listening after each step. Record the largest error, of either sign, at which you hear no change in pitch from the original. This is the point where you first notice a shift, not the point where the tones stop sounding like the message.
+19. **Turn the tuning error.** Starting from 0, move the **Receiver tuning error (Hz)** slider one 10 Hz step at a time in each direction, listening after each step. Record the largest error, of either sign, at which the pitch still sounds the same as at 0 Hz; the next step out is the first one where you hear a shift. This is a pitch change, not the point where the tones stop sounding like the message.
 
     <div class="rec" data-lab="L06">
     <label>Step 19: largest tuning error with no pitch change you can hear (Hz) <input data-field="b.df"></label>

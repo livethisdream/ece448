@@ -65,14 +65,14 @@ Choose a deviation and a tone. Before you press **Show the spectrum**, mark how 
      style="max-width: 560px; width: 100%; display: block; margin: 0 auto;">
 :::
 
-1. **Gather the files.** Put the six flowgraphs from the Lesson 7 page in one folder with your `fm_capture.sigmf-data` and `fm_capture.sigmf-meta` from the L5 Lab. Run `L07-fm-test-tx.grc` and `L07-am-test-tx.grc` there once each before the period; each writes 76.8 MB of samples and stops on its own, and the room's network may not let you download during class. Open `L07-rds-rx.grc` and check that GRC reports no missing blocks; if it reports the RDS blocks missing, run `mamba install gnuradio-rds` from the radioconda prompt.
+1. **Gather the files.** Put the six flowgraphs from the Lesson 7 page and `L05-fm-spectrum.grc` from the L5 Lab in one folder with your `fm_capture.sigmf-data` and `fm_capture.sigmf-meta` from the L5 Lab. Run `L07-fm-test-tx.grc` and `L07-am-test-tx.grc` there once each before the period; each writes 76.8 MB of samples and stops on its own, and the room's network may not let you download during class. Open `L07-rds-rx.grc` and check that GRC reports no missing blocks; if it reports the RDS blocks missing, run `mamba install gnuradio-rds` from the radioconda prompt.
 2. **Start GRC.** Choose File, New, QT GUI, and save the flowgraph in that folder. Set `samp_rate` to 2.4e6. Add a QT GUI Entry `fc_mhz` labeled "SDR center (MHz)", default 100.0, a QT GUI Entry `station_mhz` labeled "Station (MHz)", default 100.3, and a QT GUI Range `vol` from 0 to 1.
 3. **Add the source.** Add a File Source of type complex on `L07-fm-test.sigmf-data`, with Repeat set to Yes.
 4. **Add the channel filter.** Add a Low-pass Filter Taps variable `chan_taps`: cutoff 105e3, transition 30e3, sample rate `samp_rate`. Use it in a Frequency Xlating FIR Filter with decimation 5, center frequency `(station_mhz - fc_mhz) * 1e6`, and sample rate `samp_rate`.
 5. **Add the demodulator.** Add a Quadrature Demod with the gain from your Part 1 Table A. Put a float QT GUI Frequency Sink titled "Demodulated multiplex" on its output, with bandwidth `samp_rate/5`.
 6. **Add the audio filter.** Add a float Decimating FIR Filter with decimation 10 and taps `firdes.low_pass(1, samp_rate/5, 15e3, 3e3)`.
 7. **Finish.** Add FM Deemphasis at 48 kHz with a 75 μs time constant, a Multiply Const of `vol`, an Audio Sink at 48 kHz, and a float QT GUI Frequency Sink on the de-emphasis output with bandwidth 48e3. Do not add a Throttle: the sound card paces the flowgraph.
-8. **Run it.** Run it with the volume low and check that the audio sink shows the test station's two tones and nothing else above the floor. Take one screenshot that shows your canvas and the running window side by side, and paste it as Figure 1. If the audio is distorted or the tones sit far below the top of the sink, check the Quadrature Demod gain first.
+8. **Run it.** Run it with the volume low and check that the frequency sink on the de-emphasis output shows the test station's two tones and nothing else above the noise floor. Take one screenshot that shows your canvas and the running window side by side, and paste it as Figure 1. If the audio is distorted or the tones sit far below the top of the sink, check the Quadrature Demod gain first.
 ::::
 
 ::::{frame} Play Your Capture
@@ -133,7 +133,7 @@ Choose a deviation and a tone. Before you press **Show the spectrum**, mark how 
     <div class="rec" data-lab="L07">
     <label>Step 21: FM signal width at 5 kHz deviation (kHz) <input data-field="b.w5"></label>
     </div>
-22. **Find the clicks at 5 kHz.** Choose FM under **Listen to**. Lower the Input SNR 1 dB at a time, listening after each step, and record the value at which you first hear clicks. If you hear none by 10 dB, keep going.
+22. **Find the clicks at 5 kHz.** Choose FM under **Listen to**. Lower the Input SNR 1 dB at a time, listening after each step, and record the value at which you first hear clicks.
 
     <div class="rec" data-lab="L07">
     <label>Step 22: Input SNR at which clicks begin, 5 kHz deviation (dB) <input data-field="b.click5"></label>
@@ -182,7 +182,7 @@ The L7 Lab packet is one submission, turned in complete before Lesson 8:
 3. Part 3, Analyze (individual, after the lab): three prompts, each answered from your own tables and figures.
 
 - <a class="doc-link" href="../../labs/ECE448_Lab_L07_AMFMReceivers_blank.pdf" target="_blank" rel="noopener">L7 Lab packet (PDF)</a>
-- <a class="doc-link" href="../../grc/L07-rds-rx.grc" download>L07-rds-rx.grc</a>, <a class="doc-link" href="../../grc/L07-am-rx.grc" download>L07-am-rx.grc</a>, and <a class="doc-link" href="../../grc/L07-am-vs-fm.grc" download>L07-am-vs-fm.grc</a>
+- <a class="doc-link" href="../../grc/L07-rds-rx.grc" download>L07-rds-rx.grc</a>, <a class="doc-link" href="../../grc/L07-am-rx.grc" download>L07-am-rx.grc</a>, <a class="doc-link" href="../../grc/L07-am-vs-fm.grc" download>L07-am-vs-fm.grc</a>, and <a class="doc-link" href="../../grc/L05-fm-spectrum.grc" download>L05-fm-spectrum.grc</a>
 - <a class="doc-link" href="../../grc/L07-fm-test-tx.grc" download>L07-fm-test-tx.grc</a> and <a class="doc-link" href="../../grc/L07-am-test-tx.grc" download>L07-am-test-tx.grc</a>, which write the test files
 ::::
 

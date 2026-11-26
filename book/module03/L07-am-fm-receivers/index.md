@@ -310,11 +310,11 @@ The same receiver also plays narrowband FM, badly, which shows what its settings
 ::::{frame} On the SDR
 :::{present}
 - Tune the SDR a few hundred kHz off the station, away from 0 Hz.
-- Set RF gain from your L5 gain table.
+- Set RF gain to the gain you chose in the L5 Lab.
 - Receiving is unrestricted; these flowgraphs only receive.
 :::
 
-On the air, the receivers need three settings from Lesson 5. Tune the SDR a few hundred kilohertz away from the station, so the center of the band stays out of the channel filter, and type the station's real frequency into Station. The center is where the PlutoSDR's DC tracking acts and where any offset it leaves behind sits, so a shift under about 100 kHz puts both inside the channel, where they show up as distortion or hum. Set the RF gain slider to the highest gain in your L5 Lab gain table at which no new signals appeared between stations. For ATIS, look up the airport's frequency in the FAA Chart Supplement or on a sectional chart, and expect a weaker signal than broadcast FM, because aircraft band stations are lower in power and need line of sight. The Pluto's own frequency can be off by a few kilohertz there; if the ATIS sounds muffled, nudge Station by 1 to 3 kHz.
+On the air, the receivers need three settings from Lesson 5. Tune the SDR a few hundred kilohertz away from the station, so the center of the band stays out of the channel filter, and type the station's real frequency into Station. The center is where the PlutoSDR's DC tracking acts and where any offset it leaves behind sits, so a shift under about 100 kHz puts both inside the channel, where they show up as distortion or hum. Set the RF gain slider to the gain you chose for weak stations in Step 12 of the L5 Lab. For ATIS, look up the airport's frequency in the FAA Chart Supplement or on a sectional chart, and expect a weaker signal than broadcast FM, because aircraft band stations are lower in power and need line of sight. The Pluto's own frequency can be off by a few kilohertz there; if the ATIS sounds muffled, nudge Station by 1 to 3 kHz.
 
 RDS needs a stronger signal than the audio does, because its 57 kHz subcarrier sits where the multiplex noise is highest. If the station name never appears, raise the gain or choose a stronger station before changing the flowgraph. As Lesson 2 said, receiving is unrestricted and transmitting is not; every flowgraph here uses only the PlutoSDR's receive port, and nothing in this lesson transmits.
 ::::
