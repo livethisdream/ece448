@@ -83,7 +83,7 @@ def shoot(name: str, grc: Path, tmp: Path):
         raise SystemExit(f"GRC did not render {grc.name}")
     im = Image.open(raw).convert("RGB").crop((0, 70, W, H))      # drop the menu and toolbar
     bb = ImageOps.invert(im.convert("L")).point(lambda v: 255 if v > 12 else 0).getbbox()
-    im = im.crop((max(0, bb[0] - 10), max(0, bb[1] - 10), min(im.width, bb[2] + 10), min(im.height, bb[3] + 10)))
+    im = im.crop((max(0, bb[0] - 10), max(0, bb[1] - 10), min(im.width, bb[2] + 50), min(im.height, bb[3] + 10)))
     im.save(IMG / f"{name}.png")
     print(f"wrote {name}.png {im.size}")
 

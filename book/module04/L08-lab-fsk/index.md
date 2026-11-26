@@ -13,7 +13,7 @@ frame_view: true
 
 <div class="title-rule"></div>
 
-Build an FSK transmitter, then find how much frequency offset the link takes at two deviations.
+Build an FSK transmitter, then find the largest frequency offset the link tolerates at two deviations.
 
 L8 Lab · Module 4: Digital Modulation · Dr. Neil Rogers
 ::::
@@ -39,7 +39,7 @@ Steps 1 to 7 build the FSK transmitter from an empty canvas and run it at 2 kHz 
 :class: viz-frame
 
 :::{depth}
-Choose a deviation and a frequency offset. The dashed blue lines are the eye's two levels with no offset. Before you press **Show the eye**, set the My Prediction slider to where you think the lower level will sit. Changing either setting or your guess hides the answer again, so each guess comes first. The widget's settings are not the lab's, so nothing here is a reading you record.
+Choose a deviation and a frequency offset. The dashed blue lines are the eye's two levels with no offset. Before you press **Show the eye**, set the My Prediction slider to where you think the lower level will sit. Changing either setting or your guess hides the answer again, so each guess comes first. The widget shifts the eye by the offset and leaves out the receive filter, and its settings are not the lab's, so nothing here is a reading you record.
 :::
 
 :::{present}
@@ -69,8 +69,8 @@ Choose a deviation and a frequency offset. The dashed blue lines are the eye's t
 3. **Add the source.** Add a Vector Source of type byte with vector `list(msg.encode()) + [10]` and Repeat set to Yes.
 4. **Turn bytes into symbols.** Add Unpack K Bits with K = 8, then Chunks to Symbols with input byte, output float, and symbol table `[-1, 1]`.
 5. **Add the modulator.** Add a float Repeat with interpolation `sps`, then a Frequency Mod with the sensitivity from your Part 1 Table A.
-6. **Add the display.** Add a complex Throttle at `samp_rate` and a complex QT GUI Frequency Sink with bandwidth `samp_rate`, and connect the chain. Every arrow must be black.
-7. **Run it.** The spectrum should show one peak each side of zero, each `dev` from the center. If the peaks sit somewhere else, check the sensitivity you typed first. Take one screenshot that shows your canvas and the running window side by side, and paste it as Figure 1.
+6. **Add the display.** Add a complex Throttle at `samp_rate` and a complex QT GUI Frequency Sink with bandwidth `samp_rate`, and connect the chain. Every arrow must be black: a red arrow joins two ports of different types, so match that block's type to its neighbor's.
+7. **Run it.** The spectrum should show one peak each side of zero, each 2 kHz from the center. If the peaks sit somewhere else, check the sensitivity you typed first. Take one screenshot that shows your canvas and the running window side by side, and paste it as Figure 1.
 ::::
 
 ::::{frame} Frequency Offset at Two Deviations
@@ -85,19 +85,19 @@ Choose a deviation and a frequency offset. The dashed blue lines are the eye's t
      style="max-width: 620px; width: 100%; display: block; margin: 0 auto;">
 :::
 
-8. **Run the link.** Open and run `L08-fsk-link.grc`. Leave **Noise voltage** at 0.5 for the whole lab. The Lines label counts the lines received since a slider last moved, and one line takes about 0.4 s, so 20 s is about 50 lines.
+8. **Run the link.** Open and run `L08-fsk-link.grc`. Leave **Noise voltage** at 0.5 for the whole lab. The Lines label counts the lines received since a slider last moved.
 9. **Read the eye at 600 Hz.** Set **Frequency offset (Hz)** to 600 and read the level the lower traces of the eye settle at between crossings. Compare it with your Part 1 prediction, and paste a screenshot of the window as the left pane of Figure 2.
 
     <div class="rec" data-lab="L08">
-    <label>Step 9: Lower eye level at a 600 Hz offset (normalized) <input data-field="b.low600"></label>
+    <label>Step 9: Lower eye level, 1 kHz deviation, 600 Hz offset (normalized) <input data-field="b.low600"></label>
     </div>
-10. **Find the limit at 1 kHz.** Raise **Frequency offset (Hz)** 50 Hz at a time, waiting about 20 s at each step. The link has failed once the correct count falls behind the received count or the received count stops growing. Record the largest offset at which every line arrived correct, and paste a screenshot at the first offset that failed as the right pane of Figure 2.
+10. **Find the limit at 1 kHz.** Raise **Frequency offset (Hz)** 50 Hz at a time, waiting about 20 s at each setting; one line takes about 0.4 s, so 20 s is about 50 lines. The link has failed once the correct count falls behind the received count or the received count stops growing. Record the largest offset at which every line arrived correct, and paste a screenshot at the first offset that failed as the right pane of Figure 2.
 
     <div class="rec" data-lab="L08">
     <label>Step 10: Largest offset with every line correct, 1 kHz deviation (Hz) <input data-field="b.lim1k"></label>
     </div>
-11. **Widen the deviation.** Stop the flowgraph and change the `dev` Variable from 1000 to 2000. The Frequency Mod sensitivity, the Low Pass Filter cutoff, and the Quadrature Demod gain are all written in terms of `dev`, so all three follow it.
-12. **Find the limit at 2 kHz.** Run it, and repeat Step 10's search from an offset of 0. Record the largest offset at which every line arrived correct.
+11. **Widen the deviation.** Stop the flowgraph and change the `dev` Variable from 1000 to 2000. The flowgraph computes the Frequency Mod sensitivity, the Low Pass Filter cutoff, and the Quadrature Demod gain from `dev`, so all three change with it.
+12. **Find the limit at 2 kHz.** Run it, and repeat Step 10's search, starting from your 1 kHz limit. Record the largest offset at which every line arrived correct.
 
     <div class="rec" data-lab="L08">
     <label>Step 12: Largest offset with every line correct, 2 kHz deviation (Hz) <input data-field="b.lim2k"></label>
@@ -112,7 +112,7 @@ Choose a deviation and a frequency offset. The dashed blue lines are the eye's t
 :class: tip
 Every flowgraph here runs on your laptop, and the Channel Model block stands in for the air, so a missing or broken PlutoSDR does not matter today.
 
-If the Received label stays at "(waiting for a packet)", close the flowgraph and run it again at a noise voltage of 0.5 and an offset of 0, where every line arrives within a second or two. If it still shows no text, check that you changed only `dev`: the transmitter and the receiver share `samp_rate`, `sps`, and `dev`, and a change to `sps` alone breaks the receiver's timing.
+If the Received label stays at "(waiting for a packet)", close the flowgraph and run it again at a noise voltage of 0.5 and an offset of 0, where every line arrives within a second or two. If it still shows no text, check that you changed only `dev`; the flowgraph computes every other block's setting from `samp_rate` and `sps`.
 :::
 ::::
 
@@ -142,8 +142,8 @@ The L8 Lab packet is one submission, turned in complete before Lesson 9:
 
 Do Part 3 after class, with your table and figures beside you. It asks about two comparisons:
 
-1. Your two offset limits in Table B, against the eye and the spectrum at each limit in Figures 2 and 3.
-2. Your two limits, against the frequency accuracy of two PlutoSDRs at 915 MHz, and the band each deviation takes in Figures 1 and 2.
+1. Your two offset limits in Table B, against the eye and the spectrum at the first offset that failed, in Figures 2 and 3.
+2. Your two limits, against the frequency accuracy of two PlutoSDRs at 915 MHz, and what changes between the two deviations in Figures 1 and 2.
 
 I grade each answer on a claim, the evidence from your own table and figures, the reasoning that connects them, and the uncertainty in your readings.
 ::::

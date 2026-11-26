@@ -140,7 +140,7 @@ def big_picture():
     transmitter the cadet builds and L10-pam-link.grc side by side, L10-pam-pluto.grc below."""
     img = ROOT / "book/extras/viz/img"
     fig = plt.figure(figsize=(14, 9.6))
-    gs = fig.add_gridspec(2, 2, height_ratios=[1, 1.45])
+    gs = fig.add_gridspec(2, 2, height_ratios=[1.25, 1.45])
     for spec, (name, title) in zip([gs[0, 0], gs[0, 1], gs[1, :]],
                                    [("L10-canvas-tx", "Steps 1-7: build the transmitter"),
                                     ("L10-canvas-link", "Steps 8-10: L10-pam-link.grc, noise and the matched filter"),

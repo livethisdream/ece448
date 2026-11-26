@@ -50,14 +50,9 @@
         <button data-v="1" aria-pressed="true">on</button><button data-v="0" aria-pressed="false">off</button>
       </div>
     </div>
-    <div class="ctl"><span class="lab">Line length</span>
-      <div class="seg" id="len" role="group" aria-label="Line length">
-        <button data-v="short" aria-pressed="true">3 bytes</button><button data-v="long" aria-pressed="false">117 bytes</button>
-      </div>
-    </div>
     <div class="ctl pred open" id="pred-ctl"><label for="pred">My prediction: breaks at</label><span class="val" id="pred-v"></span>
-      <input type="range" id="pred" min="0.1" max="1.4" step="0.05" value="0.75"></div>
-    <div class="ctl" style="justify-items:end"><span class="lab"></span>
+      <input type="range" id="pred" min="0.1" max="1.4" step="0.05" value="1.4"></div>
+    <div class="ctl" style="justify-items:end; grid-column:1 / -1"><span class="lab"></span>
       <button class="show" id="show" aria-pressed="false" disabled>Show the lines</button></div>
   </div>
 
@@ -72,24 +67,23 @@
 'use strict';
 // Lines intact, of every 100 sent, as the noise amplitude rises, for
 // book/extras/grc/L10-pam-link.grc run headless (no GUI, no Throttle) with a
-// fixed number of lines: 400 of the 3-byte line "Hi" and its newline, and 100
-// of a 116-character line and its newline, at a 500 ppm clock error. "Breaks
-// at" is the first setting that loses or damages a line. The L10 Lab uses the
-// 31-byte default line and the cadet's own line, so no reading here is one
-// the lab records.
+// fixed number of lines: 400 of the 3-byte line "Hi" and its newline, at a
+// 500 ppm clock error. "Breaks at" is the first setting that loses or damages
+// a line: 0.75 with the filter on and 0.30 with it off. The L10 Lab sends the
+// 31-byte default line, whose break settings differ from these. (A 117-byte
+// and a 255-byte line were tried and dropped: each broke at a setting equal to
+// the lab's.) The prediction slider rests at 1.4, which is neither answer.
 //
 // Prediction first: the counts stay hidden until the cadet moves the
 // prediction slider and presses Show. Any change hides them again.
 const NOISE = Array.from({length: 27}, (_, i) => +(0.10 + 0.05*i).toFixed(2));
 const DATA = {
   short: { 1: [100,100,100,100,100,100,100,100,100,100,100,100,100,99,98,97,93,90,86,79,70,64,53,43,35,24,19],
-           0: [100,100,100,100,99,95,81,58,40,21,8,3,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0] },
-  long:  { 1: [100,100,100,100,100,100,100,100,100,100,99,97,96,86,74,57,30,14,5,2,0,0,0,0,0,0,0],
-           0: [100,100,100,98,70,22,2,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] }
+           0: [100,100,100,100,99,95,81,58,40,21,8,3,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0] }
 };
 const SANS = 'Inter, system-ui, -apple-system, sans-serif';
 const C = { navy:'#004a85', red:'#b01e24', amber:'#8a5a00', grid:'#e6eef6', axis:'#8a929c', ink:'#15202b', ink3:'#5b6573' };
-const state = { mf: 1, len: 'short', pred: 0.75, committed: false, shown: false };
+const state = { mf: 1, len: 'short', pred: 1.4, committed: false, shown: false };
 const series = () => DATA[state.len][state.mf];
 const breakIdx = () => series().findIndex(v => v < 100);
 const f2 = v => v.toFixed(2);
@@ -152,28 +146,27 @@ function sync(){
   predEl.value = state.pred;
   document.getElementById('pred-v').textContent = state.committed ? f2(state.pred) : '?';
   document.querySelectorAll('#mf button').forEach(b => b.setAttribute('aria-pressed', +b.dataset.v === state.mf ? 'true' : 'false'));
-  document.querySelectorAll('#len button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === state.len ? 'true' : 'false'));
   showBtn.disabled = !state.committed;
   showBtn.setAttribute('aria-pressed', state.shown ? 'true' : 'false');
   showBtn.textContent = state.shown ? 'Hide it' : 'Show the lines';
   document.getElementById('pred-ctl').classList.toggle('open', !state.committed);
   const k = breakIdx(), i = NOISE.findIndex(n => Math.abs(n - state.pred) < 0.001);
   document.getElementById('r-a').textContent = state.shown ? f2(NOISE[k]) : '?';
-  document.getElementById('r-o').textContent = state.committed ? f2(state.pred) : '?';
+  const d = Math.abs(state.pred - NOISE[k]);
+  document.getElementById('r-o').textContent = !state.committed ? '?' : (!state.shown ? f2(state.pred) : (d < 0.001 ? 'right on' : 'off ' + f2(d)));
   document.getElementById('r-i').textContent = state.shown && i >= 0 ? series()[i] + ' of 100' : '?';
   draw();
 }
 
-function reset(){ state.committed = false; state.shown = false; state.pred = 0.75; sync(); }
+function reset(){ state.committed = false; state.shown = false; state.pred = 1.4; sync(); }
 document.querySelectorAll('#mf button').forEach(b => b.addEventListener('click', () => { state.mf = +b.dataset.v; reset(); }));
-document.querySelectorAll('#len button').forEach(b => b.addEventListener('click', () => { state.len = b.dataset.v; reset(); }));
 predEl.addEventListener('input', () => { state.pred = +(+predEl.value).toFixed(2); state.committed = true; state.shown = false; sync(); });
 showBtn.addEventListener('click', () => { if (state.committed){ state.shown = !state.shown; sync(); } });
 canvas.addEventListener('keydown', e => {
   if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
   e.preventDefault();
   const d = e.key === 'ArrowLeft' ? -0.05 : 0.05;
-  state.pred = Math.max(0.1, Math.min(1.4, +((state.committed ? state.pred : 0.75) + d).toFixed(2)));
+  state.pred = Math.max(0.1, Math.min(1.4, +((state.committed ? state.pred : 1.4) + d).toFixed(2)));
   state.committed = true; state.shown = false; sync();
 });
 

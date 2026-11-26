@@ -343,8 +343,8 @@ blocks:
     marker9: '-1'
     name: '"Start of one packet"'
     nconnections: '1'
-    size: 112*sps
-    srate: samp_rate
+    size: '112'
+    srate: samp_rate/sps
     stemplot: 'False'
     style1: '1'
     style10: '1'
@@ -356,7 +356,7 @@ blocks:
     style7: '1'
     style8: '1'
     style9: '1'
-    tr_chan: '1'
+    tr_chan: '0'
     tr_delay: '0'
     tr_level: '0.0'
     tr_mode: qtgui.TRIG_MODE_TAG

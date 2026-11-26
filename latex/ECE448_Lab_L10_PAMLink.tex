@@ -157,8 +157,8 @@ The 8 bits of your line's first character (bits) & \predv[a.char]{\keysol{p1.a.c
 \begin{tabular}{| p{2.9in} | K{\boxw} | K{\boxw} | l |}
 \hline
 Quantity & Predicted & Measured & Step \\\hline
-Where lines start to break, matched filter on (Noise amplitude) & \nopred & \kv[b.mfon]{\keysol{b.mfon}} & 9 \\\hline
-Where lines start to break, matched filter off (Noise amplitude) & \nopred & \kv[b.mfoff]{\keysol{b.mfoff}} & 10 \\\hline
+Noise amplitude at which lines start to break, matched filter on & \nopred & \kv[b.mfon]{\keysol{b.mfon}} & 9 \\\hline
+Noise amplitude at which lines start to break, matched filter off & \nopred & \kv[b.mfoff]{\keysol{b.mfoff}} & 10 \\\hline
 PlutoSDR runs that needed Polarity set to inverted (of 3) & \nopred & \kv[b.inv]{\keysol{b.inv}} & 14 \\\hline
 \end{tabular}
 \end{center}
@@ -199,7 +199,7 @@ how much of that difference you would trust, given how you found each setting.
 
 \newpage
 \question The simulated link has no Polarity switch. From your three PlutoSDR runs in Table B
-and Figure 3, explain what in the radio path decides which setting delivers lines, and propose a
+and Figure 3, explain why the link needs a Polarity switch on the radio and not in simulation, and propose a
 change to the transmitter or the receiver that would make the switch unnecessary, with the run
 that would test it.
 	\begin{solution}[3.0in]\keysol{an2}\end{solution}

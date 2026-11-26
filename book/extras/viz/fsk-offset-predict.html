@@ -47,12 +47,12 @@
   <div class="controls">
     <div class="ctl"><span class="lab">Deviation</span>
       <div class="seg" id="dev" role="group" aria-label="Deviation">
-        <button data-v="750" aria-pressed="false">750 Hz</button><button data-v="1250" aria-pressed="true">1250 Hz</button><button data-v="2500" aria-pressed="false">2500 Hz</button>
+        <button data-v="900" aria-pressed="false">900 Hz</button><button data-v="1250" aria-pressed="true">1250 Hz</button><button data-v="2500" aria-pressed="false">2500 Hz</button>
       </div>
     </div>
     <div class="ctl"><span class="lab">Offset</span>
       <div class="seg" id="off" role="group" aria-label="Frequency offset">
-        <button data-v="300" aria-pressed="false">300 Hz</button><button data-v="500" aria-pressed="true">500 Hz</button><button data-v="900" aria-pressed="false">900 Hz</button>
+        <button data-v="250" aria-pressed="false">250 Hz</button><button data-v="350" aria-pressed="true">350 Hz</button><button data-v="450" aria-pressed="false">450 Hz</button>
       </div>
     </div>
     <div class="ctl pred open" id="pred-ctl"><label for="pred">My prediction: lower level</label><span class="val" id="pred-v"></span>
@@ -73,15 +73,17 @@
 // An FSK link's demodulator output after a one-bit moving average, drawn as an
 // eye over two bits. The Quadrature Demod's gain makes +dev a 1 and -dev a -1,
 // so a frequency offset foff adds foff/dev to both levels: the lower level is
-// -1 + foff/dev. The settings offered (750, 1250, 2500 Hz; 300, 500, 900 Hz)
-// are neither the L8 Lab's (1000 and 2000 Hz; 600 Hz) nor the lesson's worked
-// 400 Hz at 1000 Hz, and no combination gives the lab's lower level.
+// -1 + foff/dev. The model leaves out the receive filter, so the offsets stay
+// at or below half the deviation, where the real link still runs. The settings
+// offered (900, 1250, 2500 Hz; 250, 350, 450 Hz) are neither the L8 Lab's (1000
+// and 2000 Hz; 600 Hz) nor the lesson's worked 400 Hz at 1000 Hz, and no
+// combination gives the lab's lower level (-0.40) or the lesson's (-0.60).
 //
 // Prediction first: the eye stays hidden until the cadet moves the prediction
 // slider and presses Show. Any change hides it again.
 const SANS = 'Inter, system-ui, -apple-system, sans-serif';
 const C = { navy:'#004a85', red:'#b01e24', amber:'#8a5a00', grid:'#e6eef6', axis:'#8a929c', ink:'#15202b', ink3:'#5b6573' };
-const state = { dev: 1250, off: 500, pred: -1, committed: false, shown: false };
+const state = { dev: 1250, off: 350, pred: -1, committed: false, shown: false };
 const lower = () => -1 + state.off/state.dev;
 const m = '−', f2 = v => (v < -0.004 ? m : '') + Math.abs(v).toFixed(2);
 
@@ -103,7 +105,7 @@ function stext(s,x,y,px,color,align,bold){ ctx.fillStyle=color; ctx.font=(bold?'
 
 function resize(){
   const w = canvas.clientWidth, dpr = window.devicePixelRatio || 1;
-  const h = Math.round(Math.max(230, Math.min(w*0.40, 290)));
+  const h = Math.round(Math.max(w < 400 ? 200 : 230, Math.min(w*0.40, 290)));
   canvas.style.height = h + 'px';
   canvas.width = Math.round(w*dpr); canvas.height = Math.round(h*dpr);
   ctx.setTransform(dpr,0,0,dpr,0,0);
@@ -129,6 +131,7 @@ function draw(){
     ctx.strokeStyle = C.grid; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(xv(t), top); ctx.lineTo(xv(t), bot); ctx.stroke();
   });
   stext('bit end', xv(1), bot + 11, fs, C.ink3, 'center');
+  stext('slicer threshold', mL + pw - 4, yv(0) - 8, fs, C.ink3, 'right');
   // The levels with no offset, for reference.
   ctx.strokeStyle = C.navy; ctx.lineWidth = 1.4; ctx.setLineDash([4, 3]);
   [1, -1].forEach(v => { ctx.beginPath(); ctx.moveTo(mL, yv(v)); ctx.lineTo(mL + pw, yv(v)); ctx.stroke(); });

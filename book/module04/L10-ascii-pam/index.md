@@ -227,13 +227,13 @@ Watch the Lines label too. The correct count falls behind the received count, an
 :::
 :::{present}
 - Switch the matched filter on: every line arrives again.
-- Now raise the noise until the text breaks again.
+- Now set the noise to 1.0: the text breaks again.
 - The screenshot shows characters going wrong.
 :::
 
 Switch the matched filter back on at 0.4, and the eye opens, the symbols pull back into two bands at $\pm 1$, and every line arrives. The signal sits in a few kilohertz of the 32 kHz the samples represent, and the filter, matched to the transmitted pulse, keeps that band and throws the rest of the noise away.
 
-Now raise the noise and watch the same three displays. The eye fills in, the bands spread, and characters start to go wrong again: in the screenshot, at 1.0, '4' became '6' and 'P' became a byte that does not print. A line counts only if every bit of its header and payload is right, and a wrong bit in the header or the access code loses the whole line, so once single bits start to go wrong, whole lines go wrong quickly, and soon no line arrives intact. The L10 Lab finds where the text starts to break, with the filter on and off. At the same slider setting, the filter turns a link that loses most lines into one that loses none.
+Now set the noise to 1.0 and watch the same three displays. The eye fills in, the bands spread, and characters start to go wrong again: in the screenshot, at 1.0, '4' became '6' and 'P' became a byte that does not print. A line counts only if every bit of its header and payload is right, and a wrong bit in the header or the access code loses the whole line, so once single bits start to go wrong, whole lines go wrong quickly, and soon no line arrives intact. The L10 Lab finds where the text starts to break, with the filter on and off. At the same slider setting, the filter turns a link that loses most lines into one that loses none.
 ::::
 
 ::::{frame} Clock Error
@@ -289,7 +289,7 @@ Each line goes out as bits in a packet behind an access code. The receiver slice
 
 - <a class="doc-link" href="../../grc/L10-pam-tx.grc" download>L10-pam-tx.grc</a>: a line of text as packets, shown as bits and as the RRC-shaped signal from the first bit of each packet. No hardware needed.
 - <a class="doc-link" href="../../grc/L10-pam-link.grc" download>L10-pam-link.grc</a>: the whole text link, with noise and clock-error sliders, a matched-filter switch, the receive-filter eye, the Symbol Sync output, and the received text. No hardware needed.
-- <a class="doc-link" href="../../grc/L10-pam-raw.grc" download>L10-pam-raw.grc</a>: the link with no access code and no header, and a Bit offset slider. Each run starts listening at a random bit; step the offset until the Received bytes label reads as text, then run it again and find it again. No hardware needed.
+- <a class="doc-link" href="../../grc/L10-pam-raw.grc" download>L10-pam-raw.grc</a>: the link with no access code and no header, and a Bit offset slider. Each run starts listening at a random bit; step the offset until the Received bytes label reads as text, then restart the flowgraph and find the new offset. No hardware needed.
 
 Open a `.grc` file from GRC's File menu, or run `gnuradio-companion L10-pam-link.grc` from the radioconda prompt. The link's Text Sink is an Embedded Python Block, saved inside the `.grc` file. The L10 Lab page has the PlutoSDR version of the link.
 

@@ -233,12 +233,16 @@ The explorer repeats the noise experiment with the receiver's output in view. Th
 :::
 :::{present}
 - An offset shifts both tones, so the demodulator output shifts by $f_\text{off}/\Delta f$.
-- Once the lower level nears zero, the text breaks.
+- Lines break before the lower level reaches zero, and the receive filter sets a second limit.
 :::
 
-No two radios agree exactly on frequency: their crystals are off by a few parts per million, and at 915 MHz 2 ppm is 1.8 kHz. With the noise at 0.3, drag the offset slider to 400 Hz. Both tones move right, and the whole eye moves up by $f_\text{off}/\Delta f$ = 400/1000 = 0.4, so the levels sit near $+1.4$ and $-0.6$, as in the figure. Both levels are still on the correct side of zero, so the text still arrives.
+No two radios agree exactly on frequency, because each one's reference oscillator is off by some parts per million (ppm). A temperature-compensated oscillator holds about 2 ppm, which is 1.8 kHz at 915 MHz, and an inexpensive SDR's reference holds less tightly. With the noise at 0.3, drag the offset slider to 400 Hz. Both tones move right, and the whole eye moves up by
 
-Keep going. As the lower level nears zero, and the filter starts to cut off the upper tone, lines arrive with errors and then stop. Real receivers either use a deviation much larger than the expected offset, as key fobs do, or measure the offset and remove it before the demodulator. The L8 Lab finds how far the offset can go at two deviations.
+$$\frac{f_\text{off}}{\Delta f} = \frac{400}{1000} = 0.4$$
+
+so the levels sit near $+1.4$ and $-0.6$, as in the figure. Both levels are still on the correct side of zero, so the text still arrives.
+
+Raise the offset further and two things close in. The lower level moves toward zero, where the noise on it starts to cross the slicer's threshold, and the upper tone moves toward the edge of the receive filter, whose cutoff is $\Delta f + R_s$. Lines start to arrive with errors before the lower level reaches zero. Real receivers either use a deviation much larger than the expected offset, as key fobs do, or measure the offset and remove it before the demodulator. The L8 Lab finds how far the offset can go at two deviations.
 ::::
 
 ::::{frame} FSK on a Real Radio
@@ -296,7 +300,7 @@ This lesson follows:
 ::::{frame} Preparing for the Lab
 :class: read-only doc-links
 
-Part 1 of the L8 Lab packet is two predictions you work out before the lab period. A step of the lab uses each one:
+Part 1 of the L8 Lab packet is one setting and one prediction you work out before the lab period. A step of the lab uses each one:
 
 | Part 1 entry | Method on this page | Used in |
 | :-- | :-- | :-- |
@@ -309,7 +313,7 @@ Part 1 of the L8 Lab packet is two predictions you work out before the lab perio
 
 ::::{frame} Looking Ahead
 :::{present}
-- The L8 Lab builds the transmitter and finds how much frequency offset the link takes at two deviations.
+- The L8 Lab builds the transmitter and finds the largest frequency offset the link tolerates at two deviations.
 - Lesson 9 sends bits as amplitudes instead of frequencies: PAM.
 :::
 
