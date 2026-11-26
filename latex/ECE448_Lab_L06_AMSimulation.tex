@@ -46,65 +46,44 @@
 %% exam class customization
 \input{exam_config}
 \input{ece448_fonts}   % Barlow body text (needs lualatex)
-\printselectedfalse      % full worked solutions in the key, not answers-only
+\input{ece448_labpacket} % \predv, \kv, \boxw, anscol, \shotbox, \keysol
+\printselectedfalse
 \CorrectChoiceEmphasis{\color{red}}
 \SolutionEmphasis{\color{red}}
 \renewcommand\questionlabel{\textbf{\thequestion.}}
 \renewcommand{\thepartno}{\alph{partno}}
 \renewcommand{\partlabel}{(\thepartno)}
 
-% Fillable table cell: blank in the student copy, the expected value in red on
-% the KEY. Fixed-width centered columns keep the blank cells writable.
-\newcolumntype{K}[1]{>{\centering\arraybackslash}p{#1}}
-\newcommand{\kv}[1]{\ifkey{\color{red}#1}\fi\rule[-0.10in]{0pt}{0.34in}}
-% A shorter cell for a settings table, where the left columns hold text.
-\newcommand{\kvs}[1]{\ifkey{\color{red}#1}\fi\rule[-0.08in]{0pt}{0.26in}}
-
-% Answers are not in this public file. Every solution, \kv value, and \ansbox
-% value is \keysol{<id>}, defined in the private ECE448-faculty repo at
-% lab-keys/src/ECE448_Lab_L06_AMSimulation_solutions.tex; build_lab.sh puts that
-% folder on TEXINPUTS (KEYDIR) for the KEY. A KEY build without it stops.
-\long\def\defkeysol#1#2{\expandafter\long\expandafter\def\csname keysol@#1\endcsname{#2}}
-\def\keysol#1{\ifcsname keysol@#1\endcsname\csname keysol@#1\endcsname\fi}
-\ifkey
-	\IfFileExists{ECE448_Lab_L06_AMSimulation_solutions.tex}%
-		{\input{ECE448_Lab_L06_AMSimulation_solutions}}%
-		{\errmessage{KEY build needs ECE448_Lab_L06_AMSimulation_solutions.tex from ECE448-faculty/lab-keys/src (set KEYDIR)}}
-\fi
+% Answers are not in this public file. Every expected value is \keysol{<id>},
+% defined in the private ECE448-faculty repo at
+% lab-keys/src/ECE448_Lab_L06_AMSimulation_solutions.tex; build_lab.sh puts
+% that folder on TEXINPUTS (KEYDIR) for the KEY. A KEY build without it stops.
+\loadkeysols{ECE448_Lab_L06_AMSimulation}
 
 % print the answers if this is the key
 \ifkey
-	\printanswers % if this IS the key
+	\printanswers
 \else
-	\noprintanswers  %if this is NOT the key
+	\noprintanswers
 \fi
 
-% print the header and footer
-% need to print key on top if this is the key
 \ifkey
 	\firstpageheader{}{\color{red}{ KEY}}{}
 	\runningheader{\thisclass\hspace{1pt} -- \thisterm }{L\labLesson\ Lab\hspace{1pt}\color{red}{ KEY}}{\thepage\hspace{1pt} of\hspace{1pt} \numpages}
-	\firstpagefooter{}{}{}
-	\runningfooter{}{}{}
 \else
 	\firstpageheader{}{}{}
 	\runningheader{\thisclass \hspace{1pt} -- \thisterm }{L\labLesson\ Lab\hspace{1pt}}{\thepage\hspace{1pt} of\hspace{1pt} \numpages}
-	\firstpagefooter{}{}{}
-	\runningfooter{}{}{}
 \fi
-
+\firstpagefooter{}{}{}
+\runningfooter{}{}{}
 \runningheadrule
 
 
 \begin{document}
-\pagestyle{headandfoot}   % exam class
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% title block
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\pagestyle{headandfoot}
+\begin{Form}
 
 \begin{center}
-USAF ACADEMY \\
 DEPARTMENT OF ELECTRICAL AND COMPUTER ENGINEERING \\
 LESSON \labLesson\ LAB - AM Simulation \\
 \textbf{Lab Packet} \\
@@ -118,231 +97,122 @@ LESSON \labLesson\ LAB - AM Simulation \\
 
 \vspace{4pt}
 
-\fullwidth{\textbf{Learning Objective 3.1: } I can describe DSB-AM, DSB-SC, and SSB
-and identify each on a spectrum.
-\\[2pt]\textbf{Learning Objective 3.2: } I can implement an AM modulator and
-demodulator in GNU Radio and verify demodulated audio against the source.}
+\fullwidth{\textbf{Learning Objective 3.1: } I can describe DSB-AM, DSB-SC, and SSB and
+identify each on a spectrum.
+\\[2pt]\textbf{Learning Objective 3.2: } I can implement an AM modulator and demodulator in
+GNU Radio and verify demodulated audio against the source.}
 
-\vspace{2pt}
+\textbf{Instructions:} Submit this packet as one complete submission by the date indicated on
+Gradescope. This is an individual assignment, but you may collaborate, with appropriate
+documentation. Every flowgraph in this lab is a simulation, so you need only your laptop and
+headphones.
 
-This packet is the L\labLesson\ Lab, in three parts, and you turn it in once, complete,
-before Lesson 7. Do \textbf{Part 1} on your own before the lab period: list the
-spectral lines you expect and the block settings you will need. \textbf{Part 2} is
-your own measurements, on your own laptop, recorded in class: turn the sliders and
-record what you see and hear. Do \textbf{Part 3} on your own after the lab: explain
-what changed and why, in words.
+\textbf{Part 1: Predict} the values indicated in Tables A and B before the lab period,
+attaching your work for one row of each.
 
-\textbf{Grading.} One submission, graded against Objectives 3.1 and 3.2 on the
-course's 1 / 0 scale, with revision allowed under course policy. Paste screenshots
-where a question asks for one.
+\textbf{Part 2: Measure} the indicated quantities in class, and paste Figures 1 to 3.
 
-\textbf{No hardware.} Every flowgraph in this lab is a simulation. Nothing transmits,
-and you need only your laptop and its speakers or headphones. Start with the volume
-low.
+\textbf{Part 3: Analyze} the results according to the prompts in this section, after the lab.
 
-The flowgraphs are on the L6 lesson page: \texttt{L06-dsb-am.grc},
-\texttt{L06-dsb-sc.grc}, and \texttt{L06-ssb.grc}. They run the Lesson 6 message on a
-carrier at $f_c = 10$ kHz, sampled at 48 kHz. \textbf{This lab uses its own message}:
-two cosine tones of equal amplitude, at 1.5 kHz and 2.25 kHz, scaled so that their
-sum peaks at exactly 1, on the same 10 kHz carrier. You set it in your own build and
-in each downloaded flowgraph.
+\textbf{Grading:} I grade the packet against Objectives 3.1 and 3.2 on the course's 1 / 0
+scale, and you may revise it under course policy. I grade each Part 3 answer on its claim,
+the evidence from your own tables and figures, the reasoning that connects them, and the
+uncertainty in your readings.
+
+\begin{procbox}
+\procstep{1--9}{\textbf{Build DSB-AM} in GRC from an empty canvas, with the lab's message, an
+envelope detector, and audio out, and read its lines on the frequency sink.}
+\procstep{10--12}{\textbf{Overmodulate}: raise the modulation index until the detector output
+leaves the envelope.}
+\procstep{13--16}{\textbf{Receive DSB-SC} with \texttt{L06-dsb-sc.grc}: read its lines, set the
+receiver's LO phase, and listen to both receivers.}
+\procstep{17--19}{\textbf{Receive SSB} with \texttt{L06-ssb.grc}: read the LSB lines and find the
+largest tuning error you cannot hear.}
+\end{procbox}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\fullwidth{\large\textbf{Parts 1 and 2: Predict and Measure}}
+
+Predict before the lab period and measure in class. Every flowgraph runs at 48 kHz with a
+10 kHz carrier. \textbf{This lab uses its own message}, not the Lesson 6 one: two cosines of
+equal amplitude at 1.5 kHz and 2.25 kHz, scaled so that their sum peaks at exactly 1.
+
+\textbf{Table A. The lines on each spectrum} (kHz)
+
+\begin{center}
+\renewcommand{\arraystretch}{1.1}
+\begin{tabular}{| l | K{2.15in} | K{2.15in} | l |}
+\hline
+Signal & Predicted (kHz) & Measured (kHz) & Step \\\hline
+DSB-AM, your build & \predv[a.am]{\keysol{p1.a.am}} & \kv[a.am]{\keysol{a.am}} & 9 \\\hline
+DSB-SC & \predv[a.sc]{\keysol{p1.a.sc}} & \kv[a.sc]{\keysol{a.sc}} & 14 \\\hline
+LSB & \predv[a.lsb]{\keysol{p1.a.lsb}} & \kv[a.lsb]{\keysol{a.lsb}} & 18 \\\hline
+\end{tabular}
+\end{center}
+
+\newpage
+\textbf{Table B. The receivers}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.1}
+\begin{tabular}{| p{2.5in} | K{\boxw} | K{\boxw} | l |}
+\hline
+Quantity & Predicted & Measured & Step \\\hline
+Modulation index $m$ at which the detector output first leaves the envelope & \predv[b.mover]{\keysol{p1.b.mover}} & \kv[b.mover]{\keysol{b.mover}} & 10 \\\hline
+DSB-SC coherent receiver's peak at an LO phase of $45^\circ$ & \predv[b.lo45]{\keysol{p1.b.lo45}} & \kv[b.lo45]{\keysol{b.lo45}} & 15 \\\hline
+Largest SSB tuning error with no pitch change you can hear (Hz) & \nopred & \kv[b.df]{\keysol{b.df}} & 19 \\\hline
+\end{tabular}
+\end{center}
+
+\begin{solution}[0in]
+\keysol{work}
+\end{solution}
+
+\vspace{4pt}
+\shotbox{3.0in}{\textbf{Figure 1.} Step 9: your DSB-AM flowgraph on the GRC canvas, and its
+running window at $m = 0.5$.}{\keysol{fig1}}
+
+\vspace{8pt}
+\noindent\shotpane{0.48\linewidth}{2.1in}{$m = 1.0$}{\keysol{fig2.low}}\hfill
+\shotpane{0.48\linewidth}{2.1in}{$m = 1.5$}{\keysol{fig2.high}}\par
+\vspace{2pt}{\small\textbf{Figure 2.} Step 11: your time sink comparing the detector output with
+the delayed envelope, at two values of $m$.}\par
+
+\newpage
+\shotbox{2.3in}{\textbf{Figure 3.} Step 15: the DSB-SC time sink with the receiver's LO phase at
+$45^\circ$.}{\keysol{fig3}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\vspace{6pt}
+\fullwidth{\large\textbf{Part 3: Analyze} \normalsize(individual, after the lab)}
+
+Answer each prompt from your own tables and figures. Give a claim, the evidence,
+your reasoning, and the uncertainty in your readings.
 
 \begin{questions}
 
-\fullwidth{\large\textbf{Part 1: Pre-Lab} \normalsize(individual, before the lab period)}
+\question Compare your predicted and measured lines in Table A. State the rule you used to
+predict each row, show where your measurements agree with it, and say how you would tell
+DSB-AM, DSB-SC, and SSB apart on a spectrum you did not build, and which receiver each needs.
+	\begin{solution}[1.9in]\keysol{an1}\end{solution}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\question \textbf{Getting ready.} Work these for the lab's message before you build.
+\question Compare your predicted and measured values of $m$ in Table B with the two views in
+Figure 2, and with what you heard on the Envelope setting in Step 16. Explain what the
+envelope detector does to the message in each case, and how large a gap between prediction
+and measurement you would still call agreement, given the slider's step and how you judged
+the point by eye.
+	\begin{solution}[2.2in]\keysol{an2}\end{solution}
 
-\begin{parts}
-
-	\part List the frequency of every line you expect on the DSB-AM spectrum, and
-	say which one is the carrier.
-
-	\begin{center}
-	\renewcommand{\arraystretch}{1.25}
-	\begin{tabular}{| l | K{0.68in} | K{0.68in} | K{0.68in} | K{0.68in} | K{0.68in} |}
-	\hline
-	Line (kHz) & \kv{\keysol{kv1}} & \kv{\keysol{kv2}} & \kv{\keysol{kv3}} & \kv{\keysol{kv4}} & \kv{\keysol{kv5}} \\\hline
-	\end{tabular}
-	\end{center}
-
-		\begin{solution}[0.6in]\keysol{sol1}\end{solution}
-
-	\part List the lines you expect for DSB-SC, USB, and LSB.
-		\begin{solution}[0.7in]\keysol{sol2}\end{solution}
-
-	\newpage
-	\part Fill in the settings you will type into the two message Signal Sources, in
-	your build and in each downloaded flowgraph.
-
-	\begin{center}
-	\renewcommand{\arraystretch}{1.25}
-	\begin{tabular}{| l | l | K{1.6in} |}
-	\hline
-	Block & Setting & Value \\\hline
-	Message Signal Source 1 & Frequency (Hz) & \kvs{\keysol{kv6}} \\\hline
-	Message Signal Source 1 & Amplitude & \kvs{\keysol{kv7}} \\\hline
-	Message Signal Source 2 & Frequency (Hz) & \kvs{\keysol{kv8}} \\\hline
-	Message Signal Source 2 & Amplitude & \kvs{\keysol{kv9}} \\\hline
-	\end{tabular}
-	\end{center}
-
-		\begin{solution}[0.6in]\keysol{sol3}\end{solution}
-
-\end{parts}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newpage
-\fullwidth{\large\textbf{Part 2: Measurements} \normalsize(your own laptop, in class)}
-
-\question \textbf{Build the DSB-AM flowgraph.} Start GRC with an empty canvas. Do not
-open \texttt{L06-dsb-am.grc}: build the transmitter and the envelope detector
-yourself, with a \texttt{samp\_rate} of 48000, an \texttt{fc} of 10000, the message
-settings from Question 1(c), a QT GUI Range named \texttt{m} from 0 to 1.5, a frequency
-sink, a time sink comparing the detector
-output with the delayed envelope, and an Audio Sink.
-
-\begin{parts}
-
-	\part Paste a screenshot of your flowgraph on the GRC canvas. Every connection
-	must be black, not red.
-		\begin{solution}[1.6in]\keysol{sol4}\end{solution}
-
-	\part Run it and confirm the lines you listed in Question 1(a). Then set $m$ to each
-	value below and read how many dB the 1.5 kHz tone's upper-sideband line sits below the
-	carrier on the frequency sink.
-
-	\begin{center}
-	\renewcommand{\arraystretch}{1.25}
-	\begin{tabular}{| l | K{0.9in} | K{0.9in} | K{0.9in} |}
-	\hline
-	$m$ & $0.25$ & $0.5$ & $1.0$ \\\hline
-	Line below carrier (dB) & \kv{\keysol{kv10}} & \kv{\keysol{kv11}} & \kv{\keysol{kv12}} \\\hline
-	\end{tabular}
-	\end{center}
-
-		\begin{solution}[0.5in]\keysol{sol5}\end{solution}
-
-	\part Paste a screenshot of the time sink that compares the detector output with
-	the delayed envelope at $m = 0.5$, and state whether they match.
-		\begin{solution}[1.4in]\keysol{sol6}\end{solution}
-
-\end{parts}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\newpage
-\question \textbf{Overmodulation.} Keep your DSB-AM flowgraph running with the audio on.
-
-\begin{parts}
-
-	\begin{minipage}[t]{0.58\linewidth}
-		\part Raise $m$ in steps of 0.05 and record the first value at which the detector
-		output visibly departs from the envelope.
-		\begin{solution}[0.7in]\keysol{sol7}\end{solution}
-	\end{minipage}\hfill%
-	\begin{minipage}[t]{0.37\linewidth}
-		\raggedleft \vspace{12pt}
-		$m = $ \ansbox[1.0in]{\keysol{ans1}}
-	\end{minipage}
-
-	\part Paste a screenshot at $m = 1.4$ and describe how the audio changes between
-	$m = 0.5$ and $m = 1.4$.
-		\begin{solution}[1.6in]\keysol{sol8}\end{solution}
-
-\end{parts}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\question \textbf{DSB-SC.} Open \texttt{L06-dsb-sc.grc}, set its two message Signal
-Sources to your Question 1(c) settings, and run it.
-
-\begin{parts}
-
-	\part Confirm the lines you listed in Question 1(b), and state the level of the
-	frequency sink at the carrier frequency.
-		\begin{solution}[0.6in]\keysol{sol9}\end{solution}
-
-	\part With the LO phase at $0^\circ$ the coherent receiver's peak is 1.0. Set the LO
-	phase to each value below, read the peak off the time sink, and listen to the audio
-	at each.
-
-	\begin{center}
-	\renewcommand{\arraystretch}{1.25}
-	\begin{tabular}{| l | K{0.68in} | K{0.68in} | K{0.68in} | K{0.68in} |}
-	\hline
-	LO phase & $30^\circ$ & $45^\circ$ & $60^\circ$ & $75^\circ$ \\\hline
-	Peak output & \kv{\keysol{kv13}} & \kv{\keysol{kv14}} & \kv{\keysol{kv15}} & \kv{\keysol{kv16}} \\\hline
-	\end{tabular}
-	\end{center}
-
-		\begin{solution}[0.4in]\keysol{sol10}\end{solution}
-
-	\part Switch Listen To from Coherent to Envelope, and describe the difference.
-		\begin{solution}[0.9in]\keysol{sol11}\end{solution}
-
-\end{parts}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\newpage
-\question \textbf{SSB.} Open \texttt{L06-ssb.grc}, set its two message Signal Sources
-to your Question 1(c) settings, and run it.
-
-\begin{parts}
-
-	\part For each setting of the Sideband menu, record which lines remain and how far
-	below them the suppressed sideband sits.
-
-	\begin{center}
-	\renewcommand{\arraystretch}{1.25}
-	\begin{tabular}{| l | K{1.6in} | K{1.6in} |}
-	\hline
-	Sideband & Lines (kHz) & Suppression (dB) \\\hline
-	USB & \kv{\keysol{kv17}} & \kv{\keysol{kv18}} \\\hline
-	LSB & \kv{\keysol{kv19}} & \kv{\keysol{kv20}} \\\hline
-	\end{tabular}
-	\end{center}
-
-		\begin{solution}[0.5in]\keysol{sol12}\end{solution}
-
-	\part With LSB selected, set the tuning error to $+120$ Hz. Paste the time sink and
-	describe the audio.
-		\begin{solution}[1.4in]\keysol{sol13}\end{solution}
-
-	\part Find the largest tuning error, either sign, at which you cannot hear any
-	pitch change from the original. This is the threshold of a noticeable shift, not
-	of intelligibility.
-		\begin{solution}[0.5in]\keysol{sol14}\end{solution}
-
-\end{parts}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\newpage
-\fullwidth{\large\textbf{Part 3: Writeup} \normalsize(individual, after the lab)}
-
-\question \textbf{Analysis.}
-
-\begin{parts}
-
-	\part Using your table in Question 2(b), describe what raising $m$ does to the
-	sideband lines and to the carrier line, and explain in words why the carrier does
-	not change.
-		\begin{solution}[1.0in]\keysol{sol15}\end{solution}
-
-	\part Explain in words why an envelope detector recovers DSB-AM but not DSB-SC, and
-	what the coherent receiver has that the envelope detector does not.
-		\begin{solution}[1.3in]\keysol{sol16}\end{solution}
-
-	\part A DSB-SC LO that is off in phase loses volume, while an SSB receiver that is
-	off in frequency changes pitch. Using your measurements, explain which error a
-	voice listener tolerates better, and why SSB receivers have a tuning knob instead
-	of carrier recovery.
-		\begin{solution}[1.3in]\keysol{sol17}\end{solution}
-
-\end{parts}
+\question Compare what an LO phase error did to the DSB-SC receiver (Table B and Figure 3)
+with what a tuning error did to the SSB receiver (Table B and Step 19). Describe what each
+error changed in the output, from your readings and your listening, and say what each result
+means for how an operator tunes that kind of receiver on the air.
+	\begin{solution}[3.0in]\keysol{an3}\end{solution}
 
 \end{questions}
 
-\vspace{1.0em}
-\noindent\textbf{Documentation:} \rule[-2pt]{0.6\linewidth}{0.4pt}
+\docstatement
 
+\end{Form}
 \end{document}

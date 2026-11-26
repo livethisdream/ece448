@@ -240,4 +240,4 @@ The PlutoSDR's DC tracking acts at 0 Hz and can eat into a station tuned right o
 - Lesson 8 sends bits as FSK, which is FM with a two-valued message.
 
 Note:
-The pre-lab asks for the receiver's shift and rates, the demodulator gain, and the ATIS receiver settings. At the bench they turn the noise up on AM and FM and record where the clicks start. The bench starts with building the WBFM receiver from an empty canvas. Extension, from the 2025 course: a dual FM receiver that plays two stations from one capture.
+Part 1 of the packet asks for the demodulator gain at the lab's decimation, an ATIS frequency, and the FM signal's width at two deviations. In class they build the WBFM receiver from an empty canvas, receive on the air, and turn the noise up on AM and FM to find where the clicks start. Extension, from the 2025 course: a dual FM receiver that plays two stations from one capture.

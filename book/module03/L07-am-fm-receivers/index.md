@@ -74,7 +74,7 @@ $$f(t) = f_c + \Delta f\,x(t)$$
 
 where the message $x(t)$ stays between $-1$ and 1, and the **peak deviation** $\Delta f$ is the farthest the carrier ever moves. Broadcast FM sets $\Delta f$ = 75 kHz and carries audio up to $W$ = 15 kHz, which makes it **wideband FM** (WBFM). Two-way radios use narrowband FM, with $\Delta f$ near 2.5 or 5 kHz. The ratio of the deviation to the message frequency $f_m$ is the **modulation index**, $\beta = \Delta f / f_m$; for broadcast FM at its top audio frequency it is 75/15 = 5.
 
-An FM signal is a little wider than $2\Delta f$, because the frequency swings at audio rates. A rule of thumb, **Carson's rule**, puts the width at about $2(\Delta f + W)$, which is the number we need to set the receiver's channel filter. For broadcast audio that is $2(75 + 15)$ = 180 kHz, which fits the 200 kHz spacing of US FM channels, 88.1 to 107.9 MHz. An AM signal carrying the same audio would be 30 kHz wide.
+An FM signal is a little wider than $2\Delta f$, because the frequency swings at audio rates. A rule of thumb, **Carson's rule**, puts the width at about $2(\Delta f + W)$, which is the number we need to set the receiver's channel filter; for a single tone, $W$ is the tone's frequency. For broadcast audio that is $2(75 + 15)$ = 180 kHz, which fits the 200 kHz spacing of US FM channels, 88.1 to 107.9 MHz. An AM signal carrying the same audio would be 30 kHz wide.
 ::::
 
 ::::{frame} The Receiver Flowgraph
@@ -354,9 +354,18 @@ Put every file in one folder; GRC runs a flowgraph from its own folder, so the r
 ::::{frame} Preparing for the Lab
 :class: read-only doc-links
 
-Part 1 of the L7 Lab packet, the Pre-Lab, prepares you for the lab. Do it before the lab period and bring it to class.
+Part 1 of the L7 Lab packet is your predictions and settings, made before the lab period. A step of the lab checks each one:
+
+| Part 1 entry | Method on this page | Checked in |
+| :-- | :-- | :-- |
+| Table A: the Quadrature Demod gain for the lab's decimation | "The Quadrature Demodulator" | Step 5 |
+| Table A: the ATIS frequency of an airport you can receive | "On the SDR" | Step 17 |
+| Table B: the FM signal's width at two deviations | "Wideband FM" | Steps 21 and 23 |
+
+Run `L07-fm-test-tx.grc` and `L07-am-test-tx.grc` once before the period too, as "Two Stations in a Capture" describes: Step 3 plays the FM test file, and the room's network may not let you download during class.
 
 - <a class="doc-link" href="../../labs/ECE448_Lab_L07_AMFMReceivers_blank.pdf" target="_blank" rel="noopener">L7 Lab packet (PDF)</a>
+- <a class="doc-link" href="../L07-lab-am-fm-receivers/index.html">L7 Lab page</a>
 ::::
 
 ::::{frame} Looking Ahead
@@ -365,7 +374,7 @@ Part 1 of the L7 Lab packet, the Pre-Lab, prepares you for the lab. Do it before
 - Lesson 8 sends bits by switching frequency: FSK.
 :::
 
-Today we built a broadcast FM receiver, added an RDS decoder to it, built an AM receiver for the aircraft band, and watched what FM's extra bandwidth does as the noise goes up. The L7 Lab is the bench version: play your own L5 capture through the receiver, receive a live station and its RDS name, receive an ATIS broadcast, and turn the noise up on AM and FM yourself.
+Today we built a broadcast FM receiver, added an RDS decoder to it, built an AM receiver for the aircraft band, and watched what FM's extra bandwidth does as the noise goes up. The L7 Lab is the hands-on version: play your own L5 capture through the receiver, receive a live station and its RDS name, receive an ATIS broadcast, and turn the noise up on AM and FM yourself.
 
 An extension from the 2025 course: build a dual FM receiver, two Frequency Xlating FIR Filters on one capture, that plays two stations at once.
 

@@ -27,6 +27,12 @@ section of ~/.gnuradio/grc.conf), then
 
 and are cropped here with --canvas DIR, where DIR holds grc-dsb-am.png
 and grc-ssb.png.
+
+  L06-big-picture : the L6 Lab's four blocks as one strip, from the figures
+                    above (the lesson's message, not the lab's, so no panel
+                    shows a Part 1 answer). Needs neither Xvfb nor GNU Radio:
+
+    python3 scripts/graphics/l06_figures.py --big-picture
 """
 
 from __future__ import annotations
@@ -139,12 +145,40 @@ def canvases(src: Path):
         save(f"L06-grc-{n}", g.crop((0, 0, min(1280, bb[2] + 8), min(750, bb[3] + 8))))
 
 
+def big_picture():
+    """The lab's four blocks as one strip, built from the lesson's own captures."""
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    img = ROOT / "book/extras/viz/img"
+    panels = [("L06-grc-dsb-am", "Steps 1-9: build DSB-AM"),
+              ("L06-am-overmod", "Steps 10-12: overmodulate"),
+              ("L06-sc-phi0", "Steps 13-16: DSB-SC"),
+              ("L06-ssb-spectra", "Steps 17-19: SSB")]
+    fig, axs = plt.subplots(1, 4, figsize=(15, 3.4))
+    for ax, (name, title) in zip(axs, panels):
+        ax.imshow(plt.imread(img / f"{name}.png")); ax.axis("off")
+    fig.tight_layout(w_pad=3.0, rect=(0, 0, 1, 0.88))
+    for ax, (_, title) in zip(axs, panels):
+        pos = ax.get_position()
+        fig.text((pos.x0 + pos.x1) / 2, 0.95, title, color="#15202b", fontsize=12, fontweight="bold", ha="center", va="center")
+    for a, b in zip(axs[:-1], axs[1:]):
+        x = (a.get_position().x1 + b.get_position().x0) / 2
+        fig.text(x, 0.47, "\u2192", fontsize=22, color="#5b6573", ha="center", va="center")
+    fig.savefig(img / "L06-big-picture.png", dpi=110, bbox_inches="tight")
+    plt.close(fig)
+    print("wrote L06-big-picture.png")
+
+
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
+    ap.add_argument("--big-picture", action="store_true", help="only compose the L6 Lab's Big Picture strip")
     ap.add_argument("--canvas", type=Path, help="directory of grc_canvas.sh captures to crop")
     ap.add_argument("--keep", type=Path, help="also save the uncropped window captures here")
     a = ap.parse_args()
-    if a.canvas:
+    if a.big_picture:
+        big_picture()
+    elif a.canvas:
         canvases(a.canvas)
     else:
         with tempfile.TemporaryDirectory() as t:

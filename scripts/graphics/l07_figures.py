@@ -13,6 +13,10 @@ in book/extras/grc/ running under Xvfb on the test files that L07-fm-test-tx.grc
 and L07-am-test-tx.grc write (see CLAUDE.md, "Flowgraphs"). The ones that stand
 in for a live capture carry a "Simulated" label on the image.
 
+  L07-big-picture  : the L7 Lab's four blocks as one strip, from the lesson's
+                     own screenshots (the lesson's settings and test files, so
+                     no panel shows a Part 1 answer); PNG.
+
     python3 scripts/graphics/l07_figures.py
 """
 
@@ -75,5 +79,28 @@ def fm_multiplex():
     write("L07-fm-multiplex", fig)
 
 
+def big_picture():
+    """The lab's four blocks as one strip. PNG: every panel is a screenshot."""
+    img = ROOT / "book/extras/viz/img"
+    panels = [("L07-grc-wbfm-rx", "Steps 1-8: build the receiver"),
+              ("L07-mpx", "Steps 9-11: your capture"),
+              ("L07-rds-decoded", "Steps 12-19: on the air"),
+              ("L07-amfm-25", "Steps 20-25: AM and FM in noise")]
+    fig, axs = plt.subplots(1, 4, figsize=(15, 3.4))
+    for ax, (name, title) in zip(axs, panels):
+        ax.imshow(plt.imread(img / f"{name}.png")); ax.axis("off")
+    fig.tight_layout(w_pad=3.0, rect=(0, 0, 1, 0.88))
+    for ax, (_, title) in zip(axs, panels):
+        pos = ax.get_position()
+        fig.text((pos.x0 + pos.x1) / 2, 0.95, title, color=INK, fontsize=12, fontweight="bold", ha="center", va="center")
+    for a, b in zip(axs[:-1], axs[1:]):
+        x = (a.get_position().x1 + b.get_position().x0) / 2
+        fig.text(x, 0.47, "\u2192", fontsize=22, color=GRAY, ha="center", va="center")
+    fig.savefig(img / "L07-big-picture.png", dpi=110, bbox_inches="tight")
+    plt.close(fig)
+    print("wrote L07-big-picture.png")
+
+
 if __name__ == "__main__":
     fm_multiplex()
+    big_picture()
