@@ -310,11 +310,11 @@ The same receiver also plays narrowband FM, badly, which shows what its settings
 ::::{frame} On the SDR
 :::{present}
 - Tune the SDR a few hundred kHz off the station, away from 0 Hz.
-- Set RF gain from your L5 gain table.
+- Set RF gain to the gain you chose in the L5 Lab.
 - Receiving is unrestricted; these flowgraphs only receive.
 :::
 
-On the air, the receivers need three settings from Lesson 5. Tune the SDR a few hundred kilohertz away from the station, so the center of the band stays out of the channel filter, and type the station's real frequency into Station. The center is where the PlutoSDR's DC tracking acts and where any offset it leaves behind sits, so a shift under about 100 kHz puts both inside the channel, where they show up as distortion or hum. Set the RF gain slider to the highest gain in your L5 Lab gain table at which no new signals appeared between stations. For ATIS, look up the airport's frequency in the FAA Chart Supplement or on a sectional chart, and expect a weaker signal than broadcast FM, because aircraft band stations are lower in power and need line of sight. The Pluto's own frequency can be off by a few kilohertz there; if the ATIS sounds muffled, nudge Station by 1 to 3 kHz.
+On the air, the receivers need three settings from Lesson 5. Tune the SDR a few hundred kilohertz away from the station, so the center of the band stays out of the channel filter, and type the station's real frequency into Station. The center is where the PlutoSDR's DC tracking acts and where any offset it leaves behind sits, so a shift under about 100 kHz puts both inside the channel, where they show up as distortion or hum. Set the RF gain slider to the gain you chose for weak stations in Step 12 of the L5 Lab. For ATIS, look up the airport's frequency in the FAA Chart Supplement or on a sectional chart, and expect a weaker signal than broadcast FM, because aircraft band stations are lower in power and need line of sight. The Pluto's own frequency can be off by a few kilohertz there; if the ATIS sounds muffled, nudge Station by 1 to 3 kHz.
 
 RDS needs a stronger signal than the audio does, because its 57 kHz subcarrier sits where the multiplex noise is highest. If the station name never appears, raise the gain or choose a stronger station before changing the flowgraph. As Lesson 2 said, receiving is unrestricted and transmitting is not; every flowgraph here uses only the PlutoSDR's receive port, and nothing in this lesson transmits.
 ::::
@@ -354,9 +354,17 @@ Put every file in one folder; GRC runs a flowgraph from its own folder, so the r
 ::::{frame} Preparing for the Lab
 :class: read-only doc-links
 
-Part 1 of the L7 Lab packet, the Pre-Lab, prepares you for the lab. Do it before the lab period and bring it to class.
+Part 1 of the L7 Lab packet is two settings you work out before the lab period. A step of the lab uses each one:
+
+| Part 1 entry | Method on this page | Used in |
+| :-- | :-- | :-- |
+| Table A: the Quadrature Demod gain for the lab's decimation | "The Quadrature Demodulator" | Step 5 |
+| Table A: the ATIS frequency of an airport you can receive | "On the SDR" | Step 17 |
+
+Run `L07-fm-test-tx.grc` and `L07-am-test-tx.grc` once before the period too, as "Two Stations in a Capture" describes: Step 3 plays the FM test file, and the room's network may not let you download during class.
 
 - <a class="doc-link" href="../../labs/ECE448_Lab_L07_AMFMReceivers_blank.pdf" target="_blank" rel="noopener">L7 Lab packet (PDF)</a>
+- <a class="doc-link" href="../L07-lab-am-fm-receivers/index.html">L7 Lab page</a>
 ::::
 
 ::::{frame} Looking Ahead
@@ -365,7 +373,7 @@ Part 1 of the L7 Lab packet, the Pre-Lab, prepares you for the lab. Do it before
 - Lesson 8 sends bits by switching frequency: FSK.
 :::
 
-Today we built a broadcast FM receiver, added an RDS decoder to it, built an AM receiver for the aircraft band, and watched what FM's extra bandwidth does as the noise goes up. The L7 Lab is the bench version: play your own L5 capture through the receiver, receive a live station and its RDS name, receive an ATIS broadcast, and turn the noise up on AM and FM yourself.
+Today we built a broadcast FM receiver, added an RDS decoder to it, built an AM receiver for the aircraft band, and watched what FM's extra bandwidth does as the noise goes up. The L7 Lab is the hands-on version: play your own L5 capture through the receiver, receive a live station and its RDS name, receive an ATIS broadcast, and turn the noise up on AM and FM yourself.
 
 An extension from the 2025 course: build a dual FM receiver, two Frequency Xlating FIR Filters on one capture, that plays two stations at once.
 

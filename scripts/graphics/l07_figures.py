@@ -13,6 +13,11 @@ in book/extras/grc/ running under Xvfb on the test files that L07-fm-test-tx.grc
 and L07-am-test-tx.grc write (see CLAUDE.md, "Flowgraphs"). The ones that stand
 in for a live capture carry a "Simulated" label on the image.
 
+  L07-big-picture, L07-canvas-air : the L7 Lab's four blocks as a 2x2 grid
+                     of the GRC canvases that scripts/graphics/lab_canvas.py
+                     takes of the lab's own flowgraphs (L07-canvas-*), and the
+                     RDS and AM receivers stacked as one step picture; PNG.
+
     python3 scripts/graphics/l07_figures.py
 """
 
@@ -75,5 +80,36 @@ def fm_multiplex():
     write("L07-fm-multiplex", fig)
 
 
+def air_picture():
+    """The RDS receiver above the AM receiver, both on the PlutoSDR: one step picture."""
+    from PIL import Image
+    img = ROOT / "book/extras/viz/img"
+    a, b = (Image.open(img / f"L07-canvas-{n}.png").convert("RGB") for n in ("rds-air", "am-air"))
+    o = Image.new("RGB", (max(a.width, b.width), a.height + b.height + 24), "white")
+    o.paste(a, (0, 0)); o.paste(b, (0, a.height + 24))
+    o.save(img / "L07-canvas-air.png")
+    print("wrote L07-canvas-air.png")
+
+
+def big_picture():
+    """The lab's four blocks as a 2x2 grid of GRC canvases (scripts/graphics/lab_canvas.py)."""
+    air_picture()
+    img = ROOT / "book/extras/viz/img"
+    fig, axs = plt.subplots(2, 2, figsize=(14, 7.4))
+    for ax, (name, title) in zip(axs.flat, [("L07-canvas-wbfm", "Steps 1-8: build the receiver"),
+                                            ("L07-canvas-capture", "Steps 9-11: your capture"),
+                                            ("L07-canvas-rds-air", "Steps 12-19: on the air (RDS shown; ATIS next)"),
+                                            ("L07-canvas-am-vs-fm", "Steps 20-23: AM and FM in noise")]):
+        ax.imshow(plt.imread(img / f"{name}.png")); ax.axis("off")
+        ax.set_title(title, color=INK, fontsize=13, fontweight="bold", loc="left")
+    fig.tight_layout(h_pad=2.0, w_pad=2.5)
+    fig.savefig(img / "L07-big-picture.png", dpi=110, bbox_inches="tight", facecolor="white")
+    plt.close(fig)
+    print("wrote L07-big-picture.png")
+
+
 if __name__ == "__main__":
-    fm_multiplex()
+    import sys
+    if "--big-picture" not in sys.argv:
+        fm_multiplex()
+    big_picture()

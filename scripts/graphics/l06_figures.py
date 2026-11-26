@@ -27,6 +27,13 @@ section of ~/.gnuradio/grc.conf), then
 
 and are cropped here with --canvas DIR, where DIR holds grc-dsb-am.png
 and grc-ssb.png.
+
+  L06-big-picture : the L6 Lab's three blocks as a 2x2 grid of the GRC
+                    canvases that scripts/graphics/lab_canvas.py takes of the
+                    lab's own flowgraphs (L06-canvas-*). Run that first; this
+                    step needs neither Xvfb nor GNU Radio:
+
+    python3 scripts/graphics/l06_figures.py --big-picture
 """
 
 from __future__ import annotations
@@ -139,12 +146,41 @@ def canvases(src: Path):
         save(f"L06-grc-{n}", g.crop((0, 0, min(1280, bb[2] + 8), min(750, bb[3] + 8))))
 
 
+def big_picture():
+    """The lab's three blocks as a 2x2 grid of GRC canvases (scripts/graphics/lab_canvas.py)."""
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    img = ROOT / "book/extras/viz/img"
+    fig, axs = plt.subplots(2, 2, figsize=(14, 7.4))
+    for ax, (name, title) in zip(axs.flat, [("L06-canvas-dsb-am", "Steps 1-10: build DSB-AM"),
+                                            ("L06-canvas-dsb-sc", "Steps 11-14: receive DSB-SC"),
+                                            ("L06-canvas-ssb", "Steps 15-17: receive SSB")]):
+        ax.imshow(plt.imread(img / f"{name}.png")); ax.axis("off")
+        ax.set_title(title, color="#15202b", fontsize=13, fontweight="bold", loc="left")
+    ax = axs[1, 1]; ax.axis("off")
+    ax.set_title("What you record", color="#15202b", fontsize=13, fontweight="bold", loc="left")
+    for i, t in enumerate(["Figure 1: your DSB-AM flowgraph and its window",
+                           "Figure 2: the DSB-AM, DSB-SC, and LSB spectra",
+                           "Figure 3: the DSB-SC time sink at an LO phase error",
+                           "Table B: the coherent output's peak",
+                           "Table B: the largest tuning error you cannot hear"]):
+        ax.text(0.02, 0.85 - 0.15 * i, t, fontsize=12.5, color="#15202b", transform=ax.transAxes, va="center")
+    fig.tight_layout(h_pad=2.0, w_pad=2.5)
+    fig.savefig(img / "L06-big-picture.png", dpi=110, bbox_inches="tight", facecolor="white")
+    plt.close(fig)
+    print("wrote L06-big-picture.png")
+
+
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
+    ap.add_argument("--big-picture", action="store_true", help="only compose the L6 Lab's Big Picture grid")
     ap.add_argument("--canvas", type=Path, help="directory of grc_canvas.sh captures to crop")
     ap.add_argument("--keep", type=Path, help="also save the uncropped window captures here")
     a = ap.parse_args()
-    if a.canvas:
+    if a.big_picture:
+        big_picture()
+    elif a.canvas:
         canvases(a.canvas)
     else:
         with tempfile.TemporaryDirectory() as t:

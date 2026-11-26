@@ -26,91 +26,146 @@ L6 Lab · Module 3: Analog Modulation · Dr. Neil Rogers
 </ol>
 ::::
 
-::::{frame} From Lesson to Bench
+::::{frame} The Big Picture
 :::{present}
-- **Pre-Lab:** list the spectral lines and the message settings for the lab's own message.
-- **Bench:** build DSB-AM yourself, then turn the sliders on DSB-SC and SSB.
-- **Writeup:** explain what changed and why, in words.
+<img src="../../viz/img/L06-big-picture.png"
+     alt="The L6 Lab's three blocks as GNU Radio Companion canvases in a two-by-two grid: the DSB-AM flowgraph you build (Steps 1 to 10), L06-dsb-sc.grc (Steps 11 to 14), and L06-ssb.grc (Steps 15 to 17), each with the lab's message; the fourth panel lists Figures 1 to 3 and the two Table B readings."
+     style="max-width: 900px; width: 100%; display: block; margin: 0 auto;">
 :::
 
-Lesson 6 showed all three flowgraphs running. Today you build the DSB-AM flowgraph from an empty canvas and measure the other two. The lab packet has three parts, and you turn it in once, complete, before Lesson 7. The lab uses its own message, not the Lesson 6 one, so your readings are your own. **Part 1, the Pre-Lab**, is on your own before the period: list the lines of each signal and the message settings you will type in. **Part 2** is your own measurements in class: turn each slider and record what you see and hear. **Part 3, the Writeup**, explains what changed and why.
-
-Every flowgraph in this lab is a simulation, so you need only your laptop. Bring headphones; the receivers play through the Audio Sink, and thirty laptops playing tones at once make the room hard to work in.
+Steps 1 to 10 build DSB-AM from an empty canvas with the lab's own message, read its spectrum, and take a quick look at overmodulation. Steps 11 to 14 run `L06-dsb-sc.grc` with the same message, set the receiver's LO phase, and switch between its two receivers. Steps 15 to 17 run `L06-ssb.grc`, read the LSB spectrum, and step the tuning error. The spectra go in Figure 2 of the packet beside your Table A predictions, the two readings go in Table B, and the screenshots go in Figures 1 to 3. Every flowgraph is a simulation, so you need only your laptop and headphones.
 ::::
 
-::::{frame} Part 1: Before the Period
-:::{present}
-- List the lines of DSB-AM, DSB-SC, USB, and LSB.
-- Fill in the message Signal Source settings.
+::::{frame} Predict First
+:class: viz-frame
+
+:::{depth}
+Choose an LO phase error. Before you press **Show the output**, set the My Prediction slider to the peak you expect from the coherent receiver; in phase, the peak is 1. Changing the phase error or your prediction hides the answer again, so each guess comes first. The widget offers 20°, 60°, and 75°, not the lab's 45°, so its answers are not your Part 1 answer.
 :::
 
-Do the Pre-Lab before you arrive, so the bench time goes to building and watching. Both items on the slide are the packet's Question 1, worked for the lab's message, which the packet describes: the line list is $f_c$ plus and minus each tone, and the settings table is what you will type into the two message Signal Sources, in your build and in each downloaded flowgraph. Bring questions to EI before the lab rather than to the lab itself.
-
-Part 2 is where you turn the sliders: $m$, the LO phase, and the tuning error. Record what you see on the sinks and hear on the audio.
+:::{present}
+<iframe src="../../viz/lo-phase-predict.html"
+        width="100%" height="475"
+        style="border: 1px solid #cddce9; border-radius: 6px;"
+        loading="lazy"
+        title="Choose an LO phase error, predict the coherent receiver's output peak, then show it">
+</iframe>
+:::
 ::::
 
-::::{frame} Part 2: Build DSB-AM
-:class: read-only
+::::{frame} Build DSB-AM
+:::{present}
+- Start from an empty QT GUI canvas, not `L06-dsb-am.grc`.
+- Build the lab's message, the transmitter, and the envelope detector.
+- Screenshot the canvas, the window, and the spectrum.
+- Take a quick look at overmodulation.
+:::
+:::{present}
+<img src="../../viz/img/L06-canvas-dsb-am.png"
+     alt="The DSB-AM flowgraph you build, as GNU Radio Companion shows it with the lab's message: two Signal Sources at 1.5 and 2.25 kHz into an Add, Multiply Const, Add Const, and a Multiply with a carrier Signal Source, then a QT GUI Frequency Sink; a Delay into a QT GUI Time Sink; and the receiver, Abs, Decimating FIR Filter, Multiply Const, DC Blocker, Multiply Const, and Audio Sink"
+     style="max-width: 600px; width: 100%; display: block; margin: 0 auto;">
+:::
 
-1. Start GRC and choose File, New, QT GUI. Do not open `L06-dsb-am.grc`; build it yourself.
-2. Set `samp_rate` to 48000 and add a Variable `fc` of 10000.
-3. Add a **QT GUI Range** with ID `m`, from 0 to 1.5 in steps of 0.05, default 0.5.
-4. Make the message: two float **Signal Sources**, cosine, with the settings from your Question 1(c), into an **Add**.
-5. Build the transmitter: **Multiply Const** `m`, **Add Const** 1, and a **Multiply** with a third Signal Source at `fc`. Send it to a float **QT GUI Frequency Sink**.
-6. Build the receiver: **Abs**, a **Low-pass Filter Taps** variable `lpf_taps` (cutoff 3000, transition 1000) used by a **Decimating FIR Filter**, and **Multiply Const** `numpy.pi/2` with an **Import** block for `import numpy`.
-7. Add a **Delay** of `len(lpf_taps)//2` on the output of the Add Const, and a two-input float **QT GUI Time Sink** comparing it with the receiver's output.
-8. Finish with a **DC Blocker**, a volume Multiply Const, and an **Audio Sink** at 48 kHz. Do not add a Throttle.
-9. Run it with the volume low. Screenshot the canvas and the time sink for Question 2, and record the lower tone's upper sideband line against the carrier at each $m$ in the table.
+1. **Start GRC.** Choose File, New, QT GUI. Do not open `L06-dsb-am.grc`; the picture shows your finished flowgraph.
+2. **Set the variables.** Set `samp_rate` to 48000 and add a Variable `fc` of 10000.
+3. **Add the slider.** Add a QT GUI Range with ID `m` and label "Modulation index m", from 0 to 1.5 in steps of 0.05, default 0.5.
+4. **Make the message.** Add two float Signal Sources, waveform Cosine, one at 1500 Hz and one at 2250 Hz, each with amplitude 0.5, so that their sum peaks at exactly 1. Feed both into an Add.
+5. **Build the transmitter.** Add a Multiply Const of `m`, an Add Const of 1, and a Multiply with a third Signal Source at `fc`. Send the Multiply's output to a float QT GUI Frequency Sink.
+6. **Build the receiver.** Add an Abs, a Low-pass Filter Taps variable `lpf_taps` (cutoff 3000, transition 1000) used by a Decimating FIR Filter, and a Multiply Const of `numpy.pi/2` with an Import block for `import numpy`.
+7. **Add the check.** Add a Delay of `len(lpf_taps)//2` on the output of the Add Const, and a two-input float QT GUI Time Sink comparing it with the receiver's output.
+8. **Add the audio.** Finish with a DC Blocker, a Multiply Const set by a QT GUI Range `vol` from 0 to 1, and an Audio Sink at 48 kHz. Do not add a Throttle: the sound card paces the flowgraph.
+9. **Run it.** Put on headphones and run it with the volume low. On the time sink the detector output should lie on the delayed envelope; if it does not, check the Delay expression and the `numpy.pi/2` Multiply Const first. Take one screenshot that shows your canvas and the running window side by side, and paste it as Figure 1. Paste a screenshot of the frequency sink as the left pane of Figure 2, and compare its lines with your Part 1 prediction; if a line sits somewhere you did not expect, check the two message Signal Sources.
+10. **Look at overmodulation.** Raise the **Modulation index m** slider to 1.5 with the audio on, watch the detector output leave the envelope on the time sink, and listen. Return it to 0.5.
 ::::
 
-::::{frame} Part 2: Overmodulation and DSB-SC
-:class: read-only
+::::{frame} Receive DSB-SC
+:::{present}
+- Run `L06-dsb-sc.grc` with the lab's message.
+- Screenshot its spectrum.
+- Set the LO phase to $45°$ and read the coherent output.
+- Switch between the coherent and envelope receivers.
+:::
+:::{present}
+<img src="../../viz/img/L06-canvas-dsb-sc.png"
+     alt="L06-dsb-sc.grc in GNU Radio Companion with the lab's message: the DSB-SC transmitter, a coherent receiver and an envelope detector into a Selector, the audio chain, and the frequency and time sinks"
+     style="max-width: 600px; width: 100%; display: block; margin: 0 auto;">
+:::
 
-1. With your DSB-AM flowgraph running and the audio on, raise `m` by 0.05 at a time. Record where the detector output first departs from the envelope, and screenshot $m = 1.4$, for Question 3.
-2. Close it, then open `L06-dsb-sc.grc`, set its two message Signal Sources with the settings from your Question 1(c), and run it. Confirm the four lines and the empty carrier frequency for Question 4(a).
-3. Set the LO phase to each value in the packet's table. Read the coherent receiver's peak off the time sink at each, for Question 4(b).
-4. Return the LO phase to 0. Switch Listen To between Coherent and Envelope and describe what you hear for Question 4(c).
+11. **Set the message.** Close your flowgraph. Open `L06-dsb-sc.grc`, set its two message Signal Sources to 1500 Hz and 2250 Hz with amplitude 0.5 each, as in Step 4, and run it.
+12. **Screenshot the spectrum.** Paste a screenshot of the transmitted spectrum as the middle pane of Figure 2, and compare its lines with your Part 1 prediction.
+13. **Set the LO phase.** With the **Receiver LO phase (degrees)** slider at 0, check that the coherent receiver's trace lies on the message; if it does not, recheck the Step 11 amplitudes. Set the slider to 45, read the peak of the coherent trace, compare with your Part 1 prediction, and paste a screenshot of the time sink as Figure 3.
+
+    <div class="rec" data-lab="L06">
+    <label>Step 13: coherent receiver's peak at an LO phase of 45° (unitless) <input data-field="b.lo45"></label>
+    </div>
+14. **Listen to both receivers.** Return the LO phase to 0. Switch **Listen to** between Coherent and Envelope, and listen to each.
 ::::
 
-::::{frame} Part 2: SSB
-:class: read-only
+::::{frame} Receive SSB
+:::{present}
+- Run `L06-ssb.grc` with the lab's message.
+- Select LSB and screenshot its spectrum.
+- Step the tuning error until you hear the pitch change.
+:::
+:::{present}
+<img src="../../viz/img/L06-canvas-ssb.png"
+     alt="L06-ssb.grc in GNU Radio Companion with the lab's message: a Hilbert, a Multiply with a complex carrier, Complex To Real, and a product detector, with the frequency and time sinks and the audio chain"
+     style="max-width: 600px; width: 100%; display: block; margin: 0 auto;">
+:::
 
-1. Open `L06-ssb.grc`, set its two message Signal Sources with the settings from your Question 1(c), and run it. Read the kept and suppressed lines for USB and for LSB off the frequency sink for Question 5(a).
-2. Select LSB and set the tuning error to the value in Question 5(b). Screenshot the time sink and describe the audio for Question 5(b).
-3. Starting from 0, move the tuning error in steps of 10 Hz in each direction until the tones no longer sound like the original. Record the largest error for Question 5(c).
+15. **Set the message.** Close the DSB-SC flowgraph. Open `L06-ssb.grc`, set its two message Signal Sources as in Step 11, and run it.
+16. **Screenshot the LSB spectrum.** Choose LSB on the **Sideband** menu. Paste a screenshot of the transmitted spectrum as the right pane of Figure 2, and compare its lines with your Part 1 prediction.
+17. **Step the tuning error.** Starting from 0, move the **Receiver tuning error (Hz)** slider one 10 Hz step at a time in each direction, listening after each step. Record the largest error, of either sign, at which the pitch still sounds the same as at 0 Hz; the next step out is the first one where you hear a shift.
+
+    <div class="rec" data-lab="L06">
+    <label>Step 17: largest tuning error with no pitch change you can hear (Hz) <input data-field="b.df"></label>
+    </div>
 ::::
 
-::::{frame} No Audio?
+::::{frame} No Hardware?
 :class: read-only
 
 :::{admonition} If the flowgraph stops with an audio error
 :class: tip
-An Audio Sink that cannot open your sound card stops the flowgraph with an error such as `audio_alsa_sink` or `audio_portaudio_sink`. Plug in your headphones and run it again, or set the Audio Sink's Device Name to the device your operating system lists. As a last resort, disable the Audio Sink and add a Throttle at `samp_rate` before the time sinks: every measurement in the packet still works, and only the listening steps need a classmate's laptop. Say in the packet which you did.
+Every flowgraph in this lab is a simulation, so the only hardware it needs is your laptop's sound card. An Audio Sink that cannot open it stops the flowgraph with an error such as `audio_alsa_sink` or `audio_portaudio_sink`. Plug in your headphones and run it again, or set the Audio Sink's Device Name to the device your operating system lists. If neither works, disable the Audio Sink and add a Throttle at `samp_rate` before the sinks: every reading still works. For the listening in Steps 10, 14, and 17, work at the laptop of a classmate whose audio works, taking turns, and note whose laptop you used on the packet's Documentation line.
 :::
 ::::
 
-::::{frame} Part 3: After the Lab
-:::{present}
-- Describe what $m$ does to the sideband lines and the carrier.
-- Explain why an envelope detector recovers DSB-AM but not DSB-SC.
-- Explain why operators tune SSB by ear while DSB-SC needs carrier recovery.
-:::
+::::{frame} Your Part 2 Entries
+:class: read-only
 
-The Writeup is three questions. The first explains your $m$ table: which lines moved and which did not. The second connects the overmodulation and DSB-SC envelope screenshots: in both, the detector sees the absolute value of something that goes negative. The third compares your LO phase table with your tuning-error measurement, which is the reason the two receivers are built differently on the air.
+This frame collects every box you filled in on this page. Your entries stay in this browser only, saved as you type. **Download my packet** writes them into the Measured cells of the blank packet and saves the PDF. The download locks every field, the Predicted cells included, so type your predictions into your own copy of the packet first, then use **Fill my own copy** and choose that file: the page keeps your predictions and adds your measurements beside them. Paste Figures 1 to 3 and write Part 3 in your copy, or on the printout, and upload one PDF to Gradescope. **Export entries** saves a small backup file you can **Import** on another laptop.
+
+<div class="rec-summary" data-lab="L06" data-pdf="../../labs/ECE448_Lab_L06_AMSimulation_blank.pdf" data-file="ECE448_L06_Lab"></div>
 ::::
 
 ::::{frame} Lab Packet
 :class: read-only doc-links
 
+The L6 Lab packet is one submission, turned in complete before Lesson 7:
+
+1. Part 1, Predict (individual, before the lab period): the shaded Predicted cells of Tables A and B, with your work for one row of each attached.
+2. Part 2, Measure (in class, on your own laptop): the white Measured cells of Table B, and Figures 1 to 3.
+3. Part 3, Analyze (individual, after the lab): three prompts, each answered from your own tables and figures.
+
 - <a class="doc-link" href="../../labs/ECE448_Lab_L06_AMSimulation_blank.pdf" target="_blank" rel="noopener">L6 Lab packet (PDF)</a>
-- <a class="doc-link" href="../../grc/L06-dsb-am.grc" download>L06-dsb-am.grc</a>, <a class="doc-link" href="../../grc/L06-dsb-sc.grc" download>L06-dsb-sc.grc</a>, and <a class="doc-link" href="../../grc/L06-ssb.grc" download>L06-ssb.grc</a>
+- <a class="doc-link" href="../../grc/L06-dsb-sc.grc" download>L06-dsb-sc.grc</a> and <a class="doc-link" href="../../grc/L06-ssb.grc" download>L06-ssb.grc</a>
+::::
+
+::::{frame} For Part 3
+:class: read-only
+
+Do Part 3 after class, with your tables and figures beside you. It asks about three comparisons:
+
+1. Table A against Figure 2: your predicted lines and the three spectra.
+2. Table B and Figure 3: the coherent output at an LO phase error, with what you heard on the Envelope setting in Step 14.
+3. The LO phase reading against the tuning error you could not hear in Step 17.
+
+I grade each answer on a claim, the evidence from your own tables and figures, the reasoning that connects them, and the uncertainty in your readings.
 ::::
 
 ::::{frame} Looking Ahead
-:::{present}
-- Lesson 7 replaces the simulated transmitter with a PlutoSDR.
-- The envelope detector becomes one block: Complex to Mag.
-:::
+:class: read-only
 
-Keep your DSB-AM flowgraph. Lesson 7 receives real AM with a PlutoSDR, and its receiver keeps your low-pass filter and DC Blocker but replaces the Abs block with Complex to Mag, because the SDR delivers the signal as complex samples with its carrier already at 0 Hz.
+Keep your DSB-AM flowgraph: Lesson 7's AM receiver starts from it.
 ::::

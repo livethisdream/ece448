@@ -158,11 +158,11 @@ Switch Listen To between Coherent and Envelope. The envelope detector recovers t
 
 ---
 
-## The LO Must Match
+## LO Phase and Frequency
 
 <img src="./img/06-am-simulation/L06-sc-phi90.png" alt="DSB-SC coherent receiver at 90 degrees LO phase: the output is zero" style="max-height:330px; display:block; margin:0 auto;">
 
-A phase error makes the output smaller; at $90°$ it is zero.
+A phase error $\phi$ scales the output by $\cos\phi$: 0.87 at $30°$, zero at $90°$.
 
 Note:
 Drag the LO phase from 0 to 90 with the audio on and let the tones fade out. FM stereo sends a 19 kHz pilot so the receiver can rebuild its 38 kHz LO; that is Lesson 7.
@@ -256,4 +256,4 @@ An SDR delivers the signal at complex baseband with the carrier at 0 Hz, so the 
 - Lesson 7: real AM and FM with a PlutoSDR
 
 Note:
-The pre-lab is block settings and spectrum reading; the bench is where they turn the sliders and record what they see.
+In Part 1 they predict the lab message's lines and the coherent output at an LO phase error; in class they check each one, then step an SSB tuning error by ear.

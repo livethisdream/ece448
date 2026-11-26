@@ -53,7 +53,7 @@ Lesson 6 · Module 3: Analog Modulation · Dr. Neil Rogers
 Open `L06-dsb-am.grc` and run it; no hardware is needed. The figure is its frequency sink. The message is two tones, 1 kHz and 2.5 kHz, on a 10 kHz carrier. The tall line in the middle is the carrier, and each tone makes a pair of lines on either side of it. Today we build this signal and two relatives, receive each one, and check the output against the message.
 ::::
 
-::::{frame} Part 1: DSB-AM
+::::{frame} DSB-AM
 :::{present}
 $$s(t) = A_c\left[1 + m\,x(t)\right]\cos(2\pi f_c t)$$
 :::
@@ -135,12 +135,12 @@ GNU Radio sets the number of taps from the transition width: a narrower transiti
 - The audio distorts, and the spectrum spreads.
 :::
 
-Keeping $m \le 1$ guarantees no overmodulation for any message with $\vert x(t)\vert \le 1$. Past that, the bracket $1 + m\,x(t)$ goes negative at the message's deepest troughs. Our message never quite reaches $-1$, so on the slider the trouble starts a little above $m = 1$. The carrier's amplitude cannot be negative, so the detector sees the dips fold back up, as the right panel's red trace shows at $m = 1.4$, and the output no longer matches the message. This is **overmodulation**.
+Keeping $m \le 1$ guarantees no overmodulation for any message with $\vert x(t)\vert \le 1$. Past that, the bracket $1 + m\,x(t)$ goes negative at the message's deepest troughs. Our message never quite reaches $-1$, so on the slider overmodulation starts a little above $m = 1$. The carrier's amplitude cannot be negative, so the detector sees the dips fold back up, as the right panel's red trace shows at $m = 1.4$, and the output no longer matches the message. This is **overmodulation**.
 
 Drag $m$ slowly from 0.5 to 1.4 with the audio on. Watch for the red trace to split from the envelope, listen for the tones to turn harsh, and watch new lines appear on the frequency sink, spreading into the neighboring channel. That is why AM transmitters keep $m$ below 1.
 ::::
 
-::::{frame} Part 2: DSB-SC
+::::{frame} DSB-SC
 :::{present}
 <img src="../../viz/img/L06-sc-spectrum.png"
      alt="The L6 DSB-SC flowgraph's frequency sink: the four sideband lines at 7.5, 9, 11, and 12.5 kHz and no line at the 10 kHz carrier"
@@ -180,23 +180,23 @@ A **coherent receiver**, also called a product detector, multiplies the received
 The flowgraph builds both receivers side by side. On its time sink, above, the message is blue, the coherent receiver is red on top of it, and the envelope detector is green and does not match. Switch the Listen To menu between Coherent and Envelope and hear the difference.
 ::::
 
-::::{frame} The LO Must Match
+::::{frame} LO Phase and Frequency
 :::{present}
 <img src="../../viz/img/L06-sc-phi90.png"
      alt="The DSB-SC time sink with the receiver's LO phase at 90 degrees: the coherent receiver's output is a flat line at zero"
      style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
-- An LO phase error makes the output smaller.
-- At $90°$ the output is zero.
+- An LO phase error $\phi$ scales the output by $\cos\phi$.
+- At $30°$ it is 0.87; at $90°$ the output is zero.
 :::
 
-The coherent receiver works only if its LO matches the transmitter's carrier in both frequency and phase. Drag the LO phase slider and watch the red trace: a small phase error lowers the volume, and at $90°$ the output vanishes, as the flat red trace shows. A frequency error is worse: the phase drifts continuously and the output fades in and out.
+The coherent receiver works only if its LO matches the transmitter's carrier in both frequency and phase. Drag the LO phase slider and watch the red trace: a phase error $\phi$ multiplies the output by $\cos\phi$, so $30°$ leaves a peak of $\cos 30° = 0.87$ of the in-phase peak, and at $90°$ the output vanishes, as the flat red trace shows. A frequency error is worse: the phase drifts continuously and the output fades in and out.
 
 Here both oscillators come from the same `fc` variable, so they match. A real DSB-SC receiver has no carrier to copy, so the transmitter has to help. FM stereo sends a 19 kHz **pilot tone** so receivers can rebuild the 38 kHz LO for its DSB-SC subcarrier; Lesson 7 shows it in the FM multiplex.
 ::::
 
-::::{frame} Part 3: SSB
+::::{frame} SSB
 :::{present}
 <img src="../../viz/img/L06-ssb-spectra.png"
      alt="Two frequency sinks from L06-ssb.grc: with USB selected, lines at 11 and 12.5 kHz and the lower pair suppressed far below the kept lines; with LSB selected, lines at 9 and 7.5 kHz and the upper pair suppressed"
@@ -324,9 +324,19 @@ The deck's opening sampling and data-type demos are in Lesson 5.
 ::::{frame} Preparing for the Lab
 :class: read-only doc-links
 
-Part 1 of the L6 Lab packet, the Pre-Lab, prepares you for the lab. Do it before the lab period and bring it to class.
+Part 1 of the L6 Lab packet is your predictions, made before the lab period for the lab's own message. A step of the lab checks each one:
+
+| Part 1 prediction | Method on this page | Checked in |
+| :-- | :-- | :-- |
+| Table A: the lines of DSB-AM | "DSB-AM" | Step 9 |
+| Table A: the lines of DSB-SC | "DSB-SC" | Step 12 |
+| Table A: the lines of LSB | "SSB" | Step 16 |
+| Table B: the coherent receiver's peak at an LO phase error | "LO Phase and Frequency" | Step 13 |
+
+Bring headphones: every receiver in the lab plays through the Audio Sink.
 
 - <a class="doc-link" href="../../labs/ECE448_Lab_L06_AMSimulation_blank.pdf" target="_blank" rel="noopener">L6 Lab packet (PDF)</a>
+- <a class="doc-link" href="../L06-lab-am-simulation/index.html">L6 Lab page</a>
 ::::
 
 ::::{frame} Looking Ahead
