@@ -29,7 +29,7 @@ L7 Lab · Module 3: Analog Modulation · Dr. Neil Rogers
 ::::{frame} The Big Picture
 :::{present}
 <img src="../../viz/img/L07-big-picture.png"
-     alt="The L7 Lab's four blocks as block chains in a two-by-two grid. Steps 1 to 8: the receiver you build, File Source, Frequency Xlating FIR, Quadrature Demod, Decimating FIR Filter, FM Deemphasis, Multiply Const, and Audio Sink, with two frequency sinks. Steps 9 to 11: the same receiver on your fm_capture file, with the multiplex sink marked. Steps 12 to 19: the RDS receiver and the AM receiver on the PlutoSDR. Steps 20 to 23: one Signal Source sent as AM and as FM, a Noise Source added to both, and the two receivers into the audio and the SNR meters."
+     alt="The L7 Lab's four blocks as GNU Radio Companion canvases in a two-by-two grid: the receiver you build (Steps 1 to 8), the same receiver on fm_capture.sigmf-data (Steps 9 to 11), L07-rds-rx.grc on the PlutoSDR (Steps 12 to 19), and L07-am-vs-fm.grc (Steps 20 to 23)."
      style="max-width: 900px; width: 100%; display: block; margin: 0 auto;">
 :::
 
@@ -60,8 +60,8 @@ Choose a deviation. The plot runs from a strong signal on the left to a weak one
 - Play the test file; screenshot the canvas and the window.
 :::
 :::{present}
-<img src="../../viz/img/L07-chain-wbfm.png"
-     alt="The receiver you build as a block chain: File Source, Frequency Xlating FIR, Quadrature Demod, Decimating FIR Filter, FM Deemphasis, Multiply Const, and Audio Sink, with a QT GUI Frequency Sink on the Quadrature Demod and another on the FM Deemphasis"
+<img src="../../viz/img/L07-canvas-wbfm.png"
+     alt="The receiver you build, as GNU Radio Companion shows it: File Source on L07-fm-test.sigmf-data, Frequency Xlating FIR Filter with decimation 5, Quadrature Demod with its gain left as qd_gain for your Part 1 value, Decimating FIR Filter with decimation 10, FM Deemphasis, Multiply Const, and Audio Sink, with two QT GUI Frequency Sinks"
      style="max-width: 560px; width: 100%; display: block; margin: 0 auto;">
 :::
 
@@ -82,8 +82,8 @@ Choose a deviation. The plot runs from a strong signal on the left to a weak one
 - Screenshot the demodulated multiplex.
 :::
 :::{present}
-<img src="../../viz/img/L07-chain-capture.png"
-     alt="The same block chain with the File Source set to fm_capture and the QT GUI Frequency Sink on the Quadrature Demod marked"
+<img src="../../viz/img/L07-canvas-capture.png"
+     alt="The same receiver in GNU Radio Companion with the File Source on fm_capture.sigmf-data"
      style="max-width: 520px; width: 100%; display: block; margin: 0 auto;">
 :::
 
@@ -100,8 +100,8 @@ Choose a deviation. The plot runs from a strong signal on the left to a weak one
 - Screenshot both.
 :::
 :::{present}
-<img src="../../viz/img/L07-chain-air.png"
-     alt="Two block chains: the RDS receiver, PlutoSDR Source, Frequency Xlating FIR, and Quadrature Demod into the audio and into a second Frequency Xlating FIR, Rational Resampler, AGC and Symbol Sync, Constellation Receiver, and RDS Decoder; and the AM receiver, PlutoSDR Source, Frequency Xlating FIR, Complex to Mag, Decimating FIR Filter, DC Blocker, AGC, and the audio"
+<img src="../../viz/img/L07-canvas-air.png"
+     alt="L07-rds-rx.grc above L07-am-rx.grc in GNU Radio Companion, each with its File Source disabled and its PlutoSDR Source enabled"
      style="max-width: 560px; width: 100%; display: block; margin: 0 auto;">
 :::
 
@@ -122,8 +122,8 @@ Choose a deviation. The plot runs from a strong signal on the left to a weak one
 - Repeat the click search at 5 kHz.
 :::
 :::{present}
-<img src="../../viz/img/L07-chain-noise.png"
-     alt="L07-am-vs-fm.grc as a block chain: one Signal Source sent as AM, through Add Const and Float To Complex, and as FM, through a Frequency Mod; one Noise Source added to both; the AM receiver, a Decimating FIR Filter and Complex to Mag, and the FM receiver, a FIR Filter and Quadrature Demod; both into the audio filters and a Selector, then the Audio Sink and the SNR meters"
+<img src="../../viz/img/L07-canvas-am-vs-fm.png"
+     alt="L07-am-vs-fm.grc in GNU Radio Companion: one Signal Source sent as AM and as FM, a Noise Source added to both, the two receivers, the SNR meters, and the Audio Sink"
      style="max-width: 600px; width: 100%; display: block; margin: 0 auto;">
 :::
 

@@ -29,7 +29,7 @@ L6 Lab · Module 3: Analog Modulation · Dr. Neil Rogers
 ::::{frame} The Big Picture
 :::{present}
 <img src="../../viz/img/L06-big-picture.png"
-     alt="The L6 Lab's three blocks as block chains in a two-by-two grid. Steps 1 to 10: the DSB-AM flowgraph you build, two Signal Sources into an Add, Multiply Const, Add Const, and a Multiply with a carrier, then Abs, a Decimating FIR Filter, Multiply Const, DC Blocker, volume, and Audio Sink. Steps 11 to 14: the DSB-SC flowgraph, with a coherent receiver and an envelope detector into a Selector. Steps 15 to 17: the SSB flowgraph, a Hilbert, a Multiply with a complex carrier, Complex To Real, and a product detector. The fourth panel lists Figures 1 to 3 and the two Table B readings."
+     alt="The L6 Lab's three blocks as GNU Radio Companion canvases in a two-by-two grid: the DSB-AM flowgraph you build (Steps 1 to 10), L06-dsb-sc.grc (Steps 11 to 14), and L06-ssb.grc (Steps 15 to 17), each with the lab's message; the fourth panel lists Figures 1 to 3 and the two Table B readings."
      style="max-width: 900px; width: 100%; display: block; margin: 0 auto;">
 :::
 
@@ -61,12 +61,12 @@ Choose an LO phase error. Before you press **Show the output**, set the My Predi
 - Take a quick look at overmodulation.
 :::
 :::{present}
-<img src="../../viz/img/L06-chain-dsb-am.png"
-     alt="The DSB-AM flowgraph as a block chain: two Signal Sources into an Add, Multiply Const, Add Const, and a Multiply fed by a third Signal Source, then a QT GUI Frequency Sink; a Delay from the Add Const and the receiver's Multiply Const into a QT GUI Time Sink; and the receiver, Abs, Decimating FIR Filter, Multiply Const, DC Blocker, Multiply Const, and Audio Sink"
+<img src="../../viz/img/L06-canvas-dsb-am.png"
+     alt="The DSB-AM flowgraph you build, as GNU Radio Companion shows it with the lab's message: two Signal Sources at 1.5 and 2.25 kHz into an Add, Multiply Const, Add Const, and a Multiply with a carrier Signal Source, then a QT GUI Frequency Sink; a Delay into a QT GUI Time Sink; and the receiver, Abs, Decimating FIR Filter, Multiply Const, DC Blocker, Multiply Const, and Audio Sink"
      style="max-width: 600px; width: 100%; display: block; margin: 0 auto;">
 :::
 
-1. **Start GRC.** Choose File, New, QT GUI. Do not open `L06-dsb-am.grc`; the picture shows how your blocks connect.
+1. **Start GRC.** Choose File, New, QT GUI. Do not open `L06-dsb-am.grc`; the picture shows your finished flowgraph.
 2. **Set the variables.** Set `samp_rate` to 48000 and add a Variable `fc` of 10000.
 3. **Add the slider.** Add a QT GUI Range with ID `m` and label "Modulation index m", from 0 to 1.5 in steps of 0.05, default 0.5.
 4. **Make the message.** Add two float Signal Sources, waveform Cosine, one at 1500 Hz and one at 2250 Hz, each with amplitude 0.5, so that their sum peaks at exactly 1. Feed both into an Add.
@@ -86,8 +86,8 @@ Choose an LO phase error. Before you press **Show the output**, set the My Predi
 - Switch between the coherent and envelope receivers.
 :::
 :::{present}
-<img src="../../viz/img/L06-chain-dsb-sc.png"
-     alt="The DSB-SC flowgraph as a block chain: two Signal Sources into an Add and a Multiply with a carrier Signal Source, then a QT GUI Frequency Sink; a coherent receiver, a Multiply with a local Signal Source, a Decimating FIR Filter, and a Multiply Const; an envelope detector, Abs, a Decimating FIR Filter, and a Multiply Const; both into a Selector and on to the audio, with the coherent output also on a QT GUI Time Sink"
+<img src="../../viz/img/L06-canvas-dsb-sc.png"
+     alt="L06-dsb-sc.grc in GNU Radio Companion with the lab's message: the DSB-SC transmitter, a coherent receiver and an envelope detector into a Selector, the audio chain, and the frequency and time sinks"
      style="max-width: 600px; width: 100%; display: block; margin: 0 auto;">
 :::
 
@@ -108,8 +108,8 @@ Choose an LO phase error. Before you press **Show the output**, set the My Predi
 - Step the tuning error until you hear the pitch change.
 :::
 :::{present}
-<img src="../../viz/img/L06-chain-ssb.png"
-     alt="The SSB flowgraph as a block chain: two Signal Sources into an Add, a Hilbert, a Multiply with a carrier Signal Source, and Complex To Real, which feeds a QT GUI Frequency Sink and a product detector, a Multiply with a local Signal Source, a Decimating FIR Filter, and a Multiply Const, then the audio and a QT GUI Time Sink"
+<img src="../../viz/img/L06-canvas-ssb.png"
+     alt="L06-ssb.grc in GNU Radio Companion with the lab's message: a Hilbert, a Multiply with a complex carrier, Complex To Real, and a product detector, with the frequency and time sinks and the audio chain"
      style="max-width: 600px; width: 100%; display: block; margin: 0 auto;">
 :::
 
