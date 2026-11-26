@@ -170,7 +170,7 @@ Click the Matched filter switch off, then set the noise to 0.4. The noise across
 Filter on: every line again. Raise the noise until it breaks.
 
 Note:
-Switch the filter back on at 0.4 and every line arrives. Then drag the noise up live and stop when characters go wrong; the lab finds the exact settings. A line needs all of its header and payload bits right, which is why the change from all to none is so quick. Point at the eye and the bands.
+Switch the filter back on at 0.4 and every line arrives. Then drag the noise up live and stop when characters go wrong; the lab finds where it starts, with the filter on and off. A line needs all of its header and payload bits right, which is why the change from all to none is so quick. Point at the eye and the bands.
 
 ---
 
@@ -223,8 +223,8 @@ Every packet link in the rest of the course finds its packets by searching for a
 
 ## Looking Ahead
 
-- L10 Lab: build the transmitter, find where noise breaks the text, then a PlutoSDR
+- L10 Lab: build the transmitter, find where noise breaks the text with the matched filter on and off, then a PlutoSDR
 - Lesson 11: write a custom block like the Text Sink
 
 Note:
-Before the lab, run both L10 flowgraphs and be able to count the bits and the time in a packet.
+Before the lab, choose a line of text and work out its packet length, its length field, and its first character's bits: Part 1 of the packet.

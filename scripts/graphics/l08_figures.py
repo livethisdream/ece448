@@ -5,6 +5,9 @@
                   waterfall: two tones, a 1010 preamble, then data. The tone
                   spacing gives the deviation and the shortest dwell gives the
                   symbol rate. SIMULATED -- labeled so on the figure.
+  L08-big-picture : the L8 Lab's two blocks, the GRC canvases that
+                  scripts/graphics/lab_canvas.py takes of the transmitter the
+                  cadet builds and of L08-fsk-link.grc, stacked; PNG.
 
 The GNU Radio screenshots (L08-grc-*.png, L08-tx-*.png, L08-link-*.png) are
 not generated here: they are taken from the real flowgraphs in
@@ -84,5 +87,22 @@ def burst_sim():
     write("L08-burst-sim", fig)
 
 
+def big_picture():
+    """The lab's two blocks as stacked GRC canvases (scripts/graphics/lab_canvas.py)."""
+    img = ROOT / "book/extras/viz/img"
+    fig, axs = plt.subplots(2, 1, figsize=(12, 7.2), gridspec_kw={"height_ratios": [1, 3.1]})
+    for ax, (name, title) in zip(axs, [("L08-canvas-tx", "Steps 1-7: build the transmitter"),
+                                       ("L08-canvas-link", "Steps 8-13: L08-fsk-link.grc, frequency offset at two deviations")]):
+        ax.imshow(plt.imread(img / f"{name}.png")); ax.axis("off")
+        ax.set_title(title, color=INK, fontsize=13, fontweight="bold", loc="left")
+    fig.tight_layout(h_pad=2.0)
+    fig.savefig(img / "L08-big-picture.png", dpi=110, bbox_inches="tight", facecolor="white")
+    plt.close(fig)
+    print("wrote L08-big-picture.png")
+
+
 if __name__ == "__main__":
-    burst_sim()
+    import sys
+    if "--big-picture" not in sys.argv:
+        burst_sim()
+    big_picture()

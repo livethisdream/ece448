@@ -62,7 +62,7 @@ Run `L08-fsk-tx.grc` and look at the spectrum first: two peaks, at $-1$ and $+1$
 FSK is everywhere because the receiver is simple and the amplitude never changes, so the transmitter's power amplifier can run at full output. POCSAG pagers, weather-balloon radiosondes, and APRS use it, and so do most key fobs and garage-door remotes at 315 and 433.92 MHz, which Lesson 17 reverse engineers. Bluetooth and many drone links use **Gaussian FSK** (GFSK), which smooths each frequency step so the signal takes less bandwidth; a GFSK receiver uses the same blocks as today's.
 ::::
 
-::::{frame} Part 1: The Transmitter
+::::{frame} The Transmitter
 :::{present}
 <img src="../../viz/img/L08-grc-tx.png"
      alt="GNU Radio Companion with the L8 transmitter open: a Vector Source of message bytes feeds Unpack K Bits, Chunks to Symbols, Repeat, and Frequency Mod, then a Throttle into a QT GUI Frequency Sink, with Complex To Real and Complex to Imag feeding a QT GUI Time Sink"
@@ -121,7 +121,7 @@ $$B \approx 2(\Delta f + R_s)$$
 At 1 kHz and 1000 baud that is 4 kHz, and at 3 kHz it is 8 kHz. We use the number for one thing: setting the receiver's first filter. A wider deviation makes the tones easier to tell apart, but the wider filter also lets in more noise.
 ::::
 
-::::{frame} Part 2: The Channel
+::::{frame} The Channel
 :::{present}
 - `L08-fsk-link.grc`: transmitter, channel, and receiver in one file.
 - The **Channel Model** adds noise and a frequency offset, each on a slider.
@@ -130,7 +130,7 @@ At 1 kHz and 1000 baud that is 4 kHz, and at 3 kHz it is 8 kHz. We use the numbe
 Close the transmitter and open `L08-fsk-link.grc`. Its top row is the transmitter you just ran. After the Throttle, a **Channel Model** block stands in for the air: it adds noise of a chosen voltage and shifts the signal by a chosen frequency offset. Run it and drag the noise slider: the tones on the spectrum stay put while the noise floor rises and falls. Set the noise to 0.3 and leave the offset at 0 while we walk through the receiver.
 ::::
 
-::::{frame} Part 3: The Receiver
+::::{frame} The Receiver
 :::{present}
 <img src="../../viz/img/L08-grc-rx.png"
      alt="The receiver half of the L8 link flowgraph in GNU Radio Companion: a Throttle and a Channel Model feed a Low Pass Filter, Quadrature Demod, Moving Average, Symbol Sync, and Binary Slicer, then Correlate Access Code - Tag Stream, Repack Bits, and a Text Sink; a QT GUI Frequency Sink and a QT GUI Eye Sink display the signal"
@@ -181,7 +181,7 @@ A **Moving Average** over `sps` samples smooths each bit. **Symbol Sync** picks 
 Now look at the **eye diagram** on the right, many two-bit stretches of the moving average overlaid. The traces cross at the bit edges; the gap between $+1$ and $-1$ is the **eye opening**. A wide-open eye means every decision is easy, and at this noise setting every line arrives intact.
 ::::
 
-::::{frame} Part 4: Packets
+::::{frame} Packets
 :::{present}
 - The transmitter adds a 64-bit **access code** and a length header to each line.
 - The receiver searches for the access code to find where each line starts.
@@ -236,9 +236,9 @@ The explorer repeats the noise experiment with the receiver's output in view. Th
 - Once the lower level nears zero, the text breaks.
 :::
 
-No two radios agree exactly on frequency: their crystals are off by a few parts per million, and at 915 MHz 2 ppm is 1.8 kHz. With the noise at 0.3, drag the offset slider to 400 Hz. Both tones move right, and the whole eye moves up, as in the figure. Both levels are still on the correct side of zero, so the text still arrives.
+No two radios agree exactly on frequency: their crystals are off by a few parts per million, and at 915 MHz 2 ppm is 1.8 kHz. With the noise at 0.3, drag the offset slider to 400 Hz. Both tones move right, and the whole eye moves up by $f_\text{off}/\Delta f$ = 400/1000 = 0.4, so the levels sit near $+1.4$ and $-0.6$, as in the figure. Both levels are still on the correct side of zero, so the text still arrives.
 
-Keep going. As the lower level nears zero, and the filter starts to cut off the upper tone, lines arrive with errors and then stop. Real receivers either use a deviation much larger than the expected offset, as key fobs do, or measure the offset and remove it before the demodulator. The L8 Lab measures both effects.
+Keep going. As the lower level nears zero, and the filter starts to cut off the upper tone, lines arrive with errors and then stop. Real receivers either use a deviation much larger than the expected offset, as key fobs do, or measure the offset and remove it before the demodulator. The L8 Lab finds how far the offset can go at two deviations.
 ::::
 
 ::::{frame} FSK on a Real Radio
@@ -296,18 +296,24 @@ This lesson follows:
 ::::{frame} Preparing for the Lab
 :class: read-only doc-links
 
-Part 1 of the L8 Lab packet, the Pre-Lab, prepares you for the lab. Do it before the lab period and bring it to class.
+Part 1 of the L8 Lab packet is two predictions you work out before the lab period. A step of the lab uses each one:
+
+| Part 1 entry | Method on this page | Used in |
+| :-- | :-- | :-- |
+| Table A: the Frequency Mod sensitivity for the lab's deviation | "Three Numbers Set the Signal" | Step 5 |
+| Table B: the lower eye level at the lab's offset and deviation | "Frequency Offset" | Step 9 |
 
 - <a class="doc-link" href="../../labs/ECE448_Lab_L08_FSK_blank.pdf" target="_blank" rel="noopener">L8 Lab packet (PDF)</a>
+- <a class="doc-link" href="../L08-lab-fsk/index.html">L8 Lab page</a>
 ::::
 
 ::::{frame} Looking Ahead
 :::{present}
-- The L8 Lab builds the transmitter and measures the link's noise and offset limits.
+- The L8 Lab builds the transmitter and finds how much frequency offset the link takes at two deviations.
 - Lesson 9 sends bits as amplitudes instead of frequencies: PAM.
 :::
 
-Today we built an FSK transmitter from a Frequency Mod block, a receiver from a filter, a quadrature demodulator, and a slicer, and a packet format that lets the receiver find each line of text. The L8 Lab is the hands-on version: build the transmitter from an empty canvas, then use the link flowgraph to find the noise level and the frequency offset at which the text stops arriving, and test whether a wider deviation helps.
+Today we built an FSK transmitter from a Frequency Mod block, a receiver from a filter, a quadrature demodulator, and a slicer, and a packet format that lets the receiver find each line of text. The L8 Lab is the hands-on version: build the transmitter from an empty canvas, then use the link flowgraph to find the frequency offset at which the text stops arriving, at 1 and at 2 kHz of deviation.
 
 Lesson 9 changes what carries the bits. Pulse-amplitude modulation (PAM) sends each symbol as a pulse of a chosen height, and Lesson 10 sends ASCII text over it. Its receiver ends the same way as today's, with symbol timing and a slicer.
 ::::
