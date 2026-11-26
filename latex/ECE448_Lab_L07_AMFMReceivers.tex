@@ -108,8 +108,8 @@ documentation. Bring your PlutoSDR, its antenna, headphones, and your
 \texttt{fm\_capture.sigmf-data} and \texttt{.sigmf-meta} from the L5 Lab. Every flowgraph
 in this lab receives or simulates; nothing transmits.
 
-\textbf{Part 1: Predict} the values indicated in Tables A and B before the lab period,
-attaching your work for one row of each.
+\textbf{Part 1: Predict} the two settings in Table A before the lab period, attaching your
+work for the gain.
 
 \textbf{Part 2: Measure} the indicated quantities in class, and paste Figures 1 to 4.
 
@@ -127,16 +127,15 @@ uncertainty in your readings.
 demodulated multiplex.}
 \procstep{12--19}{\textbf{Receive on the air} with the PlutoSDR: a broadcast station and its
 RDS data with \texttt{L07-rds-rx.grc}, then an ATIS with \texttt{L07-am-rx.grc}.}
-\procstep{20--25}{\textbf{Compare AM and FM in noise} with \texttt{L07-am-vs-fm.grc}: read the
-FM signal's width and find where clicks begin, at two deviations.}
+\procstep{20--23}{\textbf{Compare AM and FM in noise} with \texttt{L07-am-vs-fm.grc}: lower the
+Input SNR at two deviations and find where FM begins to click.}
 \end{procbox}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \fullwidth{\large\textbf{Parts 1 and 2: Predict and Measure}}
 
-Predict before the lab period and measure in class. Your receiver decimates 2.4 MS/s by 5
-at the channel filter and by 10 at the audio filter. \texttt{L07-am-vs-fm.grc} modulates a
-1 kHz tone.
+Work out Table A before the lab period and measure in class. Your receiver decimates
+2.4 MS/s by 5 at the channel filter and by 10 at the audio filter.
 
 \textbf{Table A. Settings you type in} (Part 1 only)
 
@@ -150,15 +149,15 @@ ATIS frequency of an airport you can receive (MHz) & \predv[a.atis]{\keysol{p1.a
 \end{tabular}
 \end{center}
 
-\textbf{Table B. FM in noise} (\texttt{L07-am-vs-fm.grc}, Input SNR 30 dB for the width)
+\textbf{Table B. Where FM breaks up} (\texttt{L07-am-vs-fm.grc}, FM selected under Listen to)
 
 \begin{center}
 \renewcommand{\arraystretch}{1.1}
-\begin{tabular}{| l | K{\boxw} | K{\boxw} | K{\boxw} | l |}
+\begin{tabular}{| l | K{\boxw} | K{\boxw} | l |}
 \hline
-FM deviation & Width, predicted (kHz) & Width, measured (kHz) & Clicks begin (dB) & Steps \\\hline
-5 kHz & \predv[b.w5]{\keysol{p1.b.w5}} & \kv[b.w5]{\keysol{b.w5}} & \kv[b.click5]{\keysol{b.click5}} & 21, 22 \\\hline
-50 kHz & \predv[b.w50]{\keysol{p1.b.w50}} & \kv[b.w50]{\keysol{b.w50}} & \kv[b.click50]{\keysol{b.click50}} & 23, 24 \\\hline
+FM deviation & Predicted & Clicks begin, measured (dB) & Step \\\hline
+50 kHz & \nopred & \kv[b.click50]{\keysol{b.click50}} & 21 \\\hline
+5 kHz & \nopred & \kv[b.click5]{\keysol{b.click5}} & 23 \\\hline
 \end{tabular}
 \end{center}
 
@@ -181,10 +180,10 @@ window playing \texttt{L07-fm-test.sigmf-data}.}{\keysol{fig1}}
 ATIS, on the air.}\par
 
 \newpage
-\noindent\shotpane{0.48\linewidth}{2.0in}{5 kHz deviation}{\keysol{fig4.d5}}\hfill
-\shotpane{0.48\linewidth}{2.0in}{50 kHz deviation}{\keysol{fig4.d50}}\par
-\vspace{2pt}{\small\textbf{Figure 4.} Steps 21 and 23: \texttt{L07-am-vs-fm.grc} at an Input SNR
-of 30 dB, with the meters and the FM signal in view.}\par
+\noindent\shotpane{0.48\linewidth}{2.0in}{Input SNR 30 dB}{\keysol{fig4.snr30}}\hfill
+\shotpane{0.48\linewidth}{2.0in}{Input SNR 10 dB}{\keysol{fig4.snr10}}\par
+\vspace{2pt}{\small\textbf{Figure 4.} Steps 20 and 22: \texttt{L07-am-vs-fm.grc} at 50 kHz of
+deviation, with the meters and the outputs in view.}\par
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \vspace{6pt}
@@ -196,21 +195,21 @@ your reasoning, and the uncertainty in your readings.
 \begin{questions}
 
 \question Identify each part of the multiplex you can see in Figure 2. Say which parts your
-receiver's audio filter keeps, which part the RDS branch decoded in Figure 3, and what a
-receiver would need, that yours does not have, to play the station in stereo.
-	\begin{solution}[1.5in]\keysol{an1}\end{solution}
+receiver's audio filter keeps and which part the RDS branch decoded in Figure 3, and say
+whether your capture's station is stereo, citing what in Figure 2 shows it.
+	\begin{solution}[1.6in]\keysol{an1}\end{solution}
 
-\question Compare the two rows of Table B with the two views in Figure 4. State what raising
-the deviation from 5 to 50 kHz did to the FM signal's width, to the FM output at 30 dB, and to
-the Input SNR at which clicks began, and how far you trust each comparison, given how you
-read the width and judged the first click.
-	\begin{solution}[1.6in]\keysol{an2}\end{solution}
+\question Compare the two views in Figure 4 with the two click points in Table B. Describe how
+the AM and the FM outputs each changed as the Input SNR came down, and what the deviation
+changed about where FM broke up, and say how large a difference between your two click points
+you would trust, and why.
+	\begin{solution}[1.7in]\keysol{an2}\end{solution}
 
 \newpage
-\question Compare the ATIS in Figure 3 and what you heard in Step 19 with the AM and FM
-outputs you heard in Step 25. Give one reason, from your own observations, why aircraft voice
-uses AM and one why broadcast audio uses wideband FM, and name an observation that would test
-each reason.
+\question Compare the ATIS in Figure 3 and what you heard in Step 19 with the AM and FM outputs
+you heard in Step 22. Give one reason, from your own observations, why aircraft voice uses AM
+and one why broadcast audio uses wideband FM, and name an observation that would test each
+reason.
 	\begin{solution}[3.0in]\keysol{an3}\end{solution}
 
 \end{questions}

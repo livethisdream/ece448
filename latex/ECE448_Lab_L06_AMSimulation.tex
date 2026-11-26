@@ -120,13 +120,11 @@ the evidence from your own tables and figures, the reasoning that connects them,
 uncertainty in your readings.
 
 \begin{procbox}
-\procstep{1--9}{\textbf{Build DSB-AM} in GRC from an empty canvas, with the lab's message, an
-envelope detector, and audio out, and read its lines on the frequency sink.}
-\procstep{10--12}{\textbf{Overmodulate}: raise the modulation index until the detector output
-leaves the envelope.}
-\procstep{13--16}{\textbf{Receive DSB-SC} with \texttt{L06-dsb-sc.grc}: read its lines, set the
+\procstep{1--10}{\textbf{Build DSB-AM} in GRC from an empty canvas, with the lab's message, an
+envelope detector, and audio out; screenshot its spectrum, and look briefly at overmodulation.}
+\procstep{11--14}{\textbf{Receive DSB-SC} with \texttt{L06-dsb-sc.grc}: screenshot its spectrum, set the
 receiver's LO phase, and listen to both receivers.}
-\procstep{17--19}{\textbf{Receive SSB} with \texttt{L06-ssb.grc}: read the LSB lines and find the
+\procstep{15--17}{\textbf{Receive SSB} with \texttt{L06-ssb.grc}: screenshot the LSB spectrum and find the
 largest tuning error you cannot hear.}
 \end{procbox}
 
@@ -134,23 +132,22 @@ largest tuning error you cannot hear.}
 \fullwidth{\large\textbf{Parts 1 and 2: Predict and Measure}}
 
 Predict before the lab period and measure in class. Every flowgraph runs at 48 kHz with a
-10 kHz carrier. \textbf{This lab uses its own message}, not the Lesson 6 one: two cosines of
-equal amplitude at 1.5 kHz and 2.25 kHz, scaled so that their sum peaks at exactly 1.
+10 kHz carrier. This lab uses its own message, not the Lesson 6 one: two cosines of equal
+amplitude at 1.5 kHz and 2.25 kHz, scaled so that their sum peaks at exactly 1.
 
-\textbf{Table A. The lines on each spectrum} (kHz)
+\textbf{Table A. The lines on each spectrum} (checked against Figure 2)
 
 \begin{center}
 \renewcommand{\arraystretch}{1.1}
-\begin{tabular}{| l | K{2.15in} | K{2.15in} | l |}
+\begin{tabular}{| l | K{2.6in} | l |}
 \hline
-Signal & Predicted (kHz) & Measured (kHz) & Step \\\hline
-DSB-AM, your build & \predv[a.am]{\keysol{p1.a.am}} & \kv[a.am]{\keysol{a.am}} & 9 \\\hline
-DSB-SC & \predv[a.sc]{\keysol{p1.a.sc}} & \kv[a.sc]{\keysol{a.sc}} & 14 \\\hline
-LSB & \predv[a.lsb]{\keysol{p1.a.lsb}} & \kv[a.lsb]{\keysol{a.lsb}} & 18 \\\hline
+Signal & Predicted lines (kHz) & Checked in \\\hline
+DSB-AM, your build & \predv[a.am]{\keysol{p1.a.am}} & Step 9, Figure 2 left \\\hline
+DSB-SC & \predv[a.sc]{\keysol{p1.a.sc}} & Step 12, Figure 2 middle \\\hline
+LSB & \predv[a.lsb]{\keysol{p1.a.lsb}} & Step 16, Figure 2 right \\\hline
 \end{tabular}
 \end{center}
 
-\newpage
 \textbf{Table B. The receivers}
 
 \begin{center}
@@ -158,32 +155,32 @@ LSB & \predv[a.lsb]{\keysol{p1.a.lsb}} & \kv[a.lsb]{\keysol{a.lsb}} & 18 \\\hlin
 \begin{tabular}{| p{2.5in} | K{\boxw} | K{\boxw} | l |}
 \hline
 Quantity & Predicted & Measured & Step \\\hline
-Modulation index $m$ at which the detector output first leaves the envelope & \predv[b.mover]{\keysol{p1.b.mover}} & \kv[b.mover]{\keysol{b.mover}} & 10 \\\hline
-DSB-SC coherent receiver's peak at an LO phase of $45^\circ$ & \predv[b.lo45]{\keysol{p1.b.lo45}} & \kv[b.lo45]{\keysol{b.lo45}} & 15 \\\hline
-Largest SSB tuning error with no pitch change you can hear (Hz) & \nopred & \kv[b.df]{\keysol{b.df}} & 19 \\\hline
+DSB-SC coherent receiver's peak at an LO phase of $45^\circ$ & \predv[b.lo45]{\keysol{p1.b.lo45}} & \kv[b.lo45]{\keysol{b.lo45}} & 13 \\\hline
+Largest SSB tuning error with no pitch change you can hear (Hz) & \nopred & \kv[b.df]{\keysol{b.df}} & 17 \\\hline
 \end{tabular}
 \end{center}
 
+\newpage
 \begin{solution}[0in]
 \keysol{work}
 \end{solution}
 
-\vspace{4pt}
-\shotbox{3.0in}{\textbf{Figure 1.} Step 9: your DSB-AM flowgraph on the GRC canvas, and its
+\shotbox{2.7in}{\textbf{Figure 1.} Step 9: your DSB-AM flowgraph on the GRC canvas, and its
 running window at $m = 0.5$.}{\keysol{fig1}}
 
 \vspace{8pt}
-\noindent\shotpane{0.48\linewidth}{2.1in}{$m = 1.0$}{\keysol{fig2.low}}\hfill
-\shotpane{0.48\linewidth}{2.1in}{$m = 1.5$}{\keysol{fig2.high}}\par
-\vspace{2pt}{\small\textbf{Figure 2.} Step 11: your time sink comparing the detector output with
-the delayed envelope, at two values of $m$.}\par
+\noindent\shotpane{0.32\linewidth}{1.9in}{DSB-AM (Step 9)}{\keysol{fig2.am}}\hfill
+\shotpane{0.32\linewidth}{1.9in}{DSB-SC (Step 12)}{\keysol{fig2.sc}}\hfill
+\shotpane{0.32\linewidth}{1.9in}{LSB (Step 16)}{\keysol{fig2.lsb}}\par
+\vspace{2pt}{\small\textbf{Figure 2.} The transmitted spectrum of each signal, with the lab's
+message.}\par
 
-\newpage
-\shotbox{2.3in}{\textbf{Figure 3.} Step 15: the DSB-SC time sink with the receiver's LO phase at
+\vspace{8pt}
+\shotbox{2.1in}{\textbf{Figure 3.} Step 13: the DSB-SC time sink with the receiver's LO phase at
 $45^\circ$.}{\keysol{fig3}}
 
+\newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\vspace{6pt}
 \fullwidth{\large\textbf{Part 3: Analyze} \normalsize(individual, after the lab)}
 
 Answer each prompt from your own tables and figures. Give a claim, the evidence,
@@ -191,23 +188,22 @@ your reasoning, and the uncertainty in your readings.
 
 \begin{questions}
 
-\question Compare your predicted and measured lines in Table A. State the rule you used to
-predict each row, show where your measurements agree with it, and say how you would tell
+\question Compare your predicted lines in Table A with the three spectra in Figure 2. State the
+rule you used to predict each row and what each spectrum shows, and say how you would tell
 DSB-AM, DSB-SC, and SSB apart on a spectrum you did not build, and which receiver each needs.
-	\begin{solution}[1.9in]\keysol{an1}\end{solution}
+	\begin{solution}[2.6in]\keysol{an1}\end{solution}
 
-\question Compare your predicted and measured values of $m$ in Table B with the two views in
-Figure 2, and with what you heard on the Envelope setting in Step 16. Explain what the
-envelope detector does to the message in each case, and how large a gap between prediction
-and measurement you would still call agreement, given the slider's step and how you judged
-the point by eye.
-	\begin{solution}[2.2in]\keysol{an2}\end{solution}
+\question Compare your predicted and measured coherent output in Table B with Figure 3 and with
+what you heard on the Envelope setting in Step 14. Explain what each receiver does with the
+DSB-SC signal, and say how large a difference between prediction and measurement you would
+still call agreement, and why.
+	\begin{solution}[2.6in]\keysol{an2}\end{solution}
 
 \newpage
-\question Compare what an LO phase error did to the DSB-SC receiver (Table B and Figure 3)
-with what a tuning error did to the SSB receiver (Table B and Step 19). Describe what each
-error changed in the output, from your readings and your listening, and say what each result
-means for how an operator tunes that kind of receiver on the air.
+\question Compare what the LO phase error did to the DSB-SC receiver (Table B and Figure 3) with
+what the tuning error did to the SSB receiver (Table B and Step 17). Describe what each error
+changed in the output, from your readings and your listening, and say what each result means
+for how an operator tunes that kind of receiver on the air.
 	\begin{solution}[3.0in]\keysol{an3}\end{solution}
 
 \end{questions}

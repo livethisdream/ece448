@@ -118,10 +118,10 @@ Open the Low-pass Filter Taps block and show the four settings. The 2.5 kHz tone
 
 <img src="./img/06-am-simulation/L06-am-overmod.png" alt="Time sinks at m = 1.4: the envelope dips below zero and the detector output folds the dips back up" style="max-height:400px; display:block; margin:0 auto;">
 
-Push $m$ too far and the envelope goes negative; the detector folds it up. It starts at $m = 1/\vert x_\text{min}\vert$: here $1/0.91 = 1.10$.
+Push $m$ too far and the envelope goes negative; the detector folds it up.
 
 Note:
-Drag m slowly from 0.5 to 1.4 with the audio on and ask the class to call out when the traces split and when they hear it. m at or below 1 is safe for any message; this one's deepest trough is minus 0.91, so it holds until m is 1.10. Overmodulation also spreads the spectrum into the neighboring channel.
+Drag m slowly from 0.5 to 1.4 with the audio on and ask the class to call out when the traces split and when they hear it. m at or below 1 is safe for any message; this one never quite reaches minus 1, so it holds a little past 1. Overmodulation also spreads the spectrum into the neighboring channel.
 
 ---
 
@@ -158,7 +158,7 @@ Switch Listen To between Coherent and Envelope. The envelope detector recovers t
 
 ---
 
-## The LO Must Match
+## LO Phase and Frequency
 
 <img src="./img/06-am-simulation/L06-sc-phi90.png" alt="DSB-SC coherent receiver at 90 degrees LO phase: the output is zero" style="max-height:330px; display:block; margin:0 auto;">
 
@@ -256,4 +256,4 @@ An SDR delivers the signal at complex baseband with the carrier at 0 Hz, so the 
 - Lesson 7: real AM and FM with a PlutoSDR
 
 Note:
-Part 1 of the packet predicts the lab message's lines, its overmodulation point, and the coherent output at an LO phase error; in class they turn the sliders and check each one.
+In Part 1 they predict the lab message's lines and the coherent output at an LO phase error; in class they check each one, then step an SSB tuning error by ear.

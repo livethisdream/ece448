@@ -132,10 +132,10 @@ GNU Radio sets the number of taps from the transition width: a narrower transiti
 :::
 :::{present}
 - Push $m$ too far and the envelope goes negative; the detector folds it up.
-- It starts at $m = 1/\vert x_\text{min}\vert$: here $1/0.91 = 1.10$.
+- The audio distorts, and the spectrum spreads.
 :::
 
-Keeping $m \le 1$ guarantees no overmodulation for any message with $\vert x(t)\vert \le 1$. Past that, the bracket $1 + m\,x(t)$ goes negative at the message's deepest trough, $x_\text{min}$, and it first touches zero when $m\vert x_\text{min}\vert = 1$. Our message's deepest trough is $-0.91$, which a time sink on the Add block's output shows, so the trouble starts at $m = 1/0.91 = 1.10$, a little above 1. The carrier's amplitude cannot be negative, so the detector sees the dips fold back up, as the right panel's red trace shows at $m = 1.4$, and the output no longer matches the message. This is **overmodulation**.
+Keeping $m \le 1$ guarantees no overmodulation for any message with $\vert x(t)\vert \le 1$. Past that, the bracket $1 + m\,x(t)$ goes negative at the message's deepest troughs. Our message never quite reaches $-1$, so on the slider overmodulation starts a little above $m = 1$. The carrier's amplitude cannot be negative, so the detector sees the dips fold back up, as the right panel's red trace shows at $m = 1.4$, and the output no longer matches the message. This is **overmodulation**.
 
 Drag $m$ slowly from 0.5 to 1.4 with the audio on. Watch for the red trace to split from the envelope, listen for the tones to turn harsh, and watch new lines appear on the frequency sink, spreading into the neighboring channel. That is why AM transmitters keep $m$ below 1.
 ::::
@@ -180,7 +180,7 @@ A **coherent receiver**, also called a product detector, multiplies the received
 The flowgraph builds both receivers side by side. On its time sink, above, the message is blue, the coherent receiver is red on top of it, and the envelope detector is green and does not match. Switch the Listen To menu between Coherent and Envelope and hear the difference.
 ::::
 
-::::{frame} The LO Must Match
+::::{frame} LO Phase and Frequency
 :::{present}
 <img src="../../viz/img/L06-sc-phi90.png"
      alt="The DSB-SC time sink with the receiver's LO phase at 90 degrees: the coherent receiver's output is a flat line at zero"
@@ -329,10 +329,9 @@ Part 1 of the L6 Lab packet is your predictions, made before the lab period for 
 | Part 1 prediction | Method on this page | Checked in |
 | :-- | :-- | :-- |
 | Table A: the lines of DSB-AM | "DSB-AM" | Step 9 |
-| Table A: the lines of DSB-SC | "DSB-SC" | Step 14 |
-| Table A: the lines of LSB | "SSB" | Step 18 |
-| Table B: the $m$ at which the detector output leaves the envelope | "Overmodulation" | Step 10 |
-| Table B: the coherent receiver's peak at an LO phase error | "The LO Must Match" | Step 15 |
+| Table A: the lines of DSB-SC | "DSB-SC" | Step 12 |
+| Table A: the lines of LSB | "SSB" | Step 16 |
+| Table B: the coherent receiver's peak at an LO phase error | "LO Phase and Frequency" | Step 13 |
 
 Bring headphones: every receiver in the lab plays through the Audio Sink.
 

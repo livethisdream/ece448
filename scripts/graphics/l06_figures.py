@@ -28,9 +28,10 @@ section of ~/.gnuradio/grc.conf), then
 and are cropped here with --canvas DIR, where DIR holds grc-dsb-am.png
 and grc-ssb.png.
 
-  L06-big-picture : the L6 Lab's four blocks as one strip, from the figures
-                    above (the lesson's message, not the lab's, so no panel
-                    shows a Part 1 answer). Needs neither Xvfb nor GNU Radio:
+  L06-big-picture, L06-chain-* : the L6 Lab's blocks drawn as block chains
+                    (GRC block names and connections, no settings), as a 2x2
+                    Big Picture grid and one picture per procedure block.
+                    Needs neither Xvfb nor GNU Radio:
 
     python3 scripts/graphics/l06_figures.py --big-picture
 """
@@ -145,34 +146,128 @@ def canvases(src: Path):
         save(f"L06-grc-{n}", g.crop((0, 0, min(1280, bb[2] + 8), min(750, bb[3] + 8))))
 
 
-def big_picture():
-    """The lab's four blocks as one strip, built from the lesson's own captures."""
+# ---- block chains: how the blocks connect, with no settings shown -----------
+# Each lab block's picture is its flowgraph drawn as named GRC blocks and the
+# connections between them (Neil, 2026-11-26: "crop each step picture to the
+# block chain only", so no lesson setting shows and no result is previewed).
+BW, BH, DX = 1.75, 0.62, 2.15          # box width and height, column spacing
+
+
+def _clip(c, toward):
+    """Where the segment from box center c toward a point leaves the box."""
+    import math
+    (x0, y0), (x1, y1) = c, toward
+    dx, dy = x1 - x0, y1 - y0
+    if dx == 0 and dy == 0:
+        return c
+    t = min((BW / 2) / abs(dx) if dx else math.inf, (BH / 2) / abs(dy) if dy else math.inf)
+    return (x0 + t * dx, y0 + t * dy)
+
+
+def draw_chain(ax, blocks, edges, title=None, accent=()):
+    """blocks: {key: (col, row, label)}; edges: (a, b) or (a, b, [(col,row) bends])."""
+    from matplotlib.patches import FancyBboxPatch
+    pos = {k: (c * DX, -r) for k, (c, r, _) in blocks.items()}
+    for e in edges:
+        a, b = e[0], e[1]
+        pts = [pos[a]] + [(c * DX, -r) for c, r in (e[2] if len(e) > 2 else [])] + [pos[b]]
+        pts[0] = _clip(pos[a], pts[1])
+        pts[-1] = _clip(pos[b], pts[-2])
+        xs, ys = zip(*pts)
+        ax.plot(xs[:-1] + (xs[-1],), ys, color="#5b6573", lw=1.1, solid_capstyle="butt")
+        ax.annotate("", xy=pts[-1], xytext=pts[-2],
+                    arrowprops=dict(arrowstyle="-|>", color="#5b6573", lw=1.1, mutation_scale=9))
+    xs = [v[0] for v in pos.values()]; ys = [v[1] for v in pos.values()]
+    ax.set_xlim(min(xs) - BW / 2 - 0.15, max(xs) + BW / 2 + 0.15)
+    ax.set_ylim(min(ys) - BH / 2 - 0.15, max(ys) + BH / 2 + 0.15)
+    ax.set_aspect("equal"); ax.axis("off")
+    # Size the labels to the boxes as drawn, so every panel reads alike.
+    ax.apply_aspect()
+    bb = ax.get_window_extent()
+    ppu = min(bb.width / (ax.get_xlim()[1] - ax.get_xlim()[0]), bb.height / (ax.get_ylim()[1] - ax.get_ylim()[0]))
+    fs = min(10.5, BW * ppu * 0.92 / (15 * 0.47) * 72 / ax.figure.dpi)
+    for k, (c, r, label) in blocks.items():
+        x, y = pos[k]
+        hot = k in accent
+        ax.add_patch(FancyBboxPatch((x - BW / 2, y - BH / 2), BW, BH, boxstyle="round,pad=0.02,rounding_size=0.08",
+                                    fc="#fde9c8" if hot else "#e8f0f8", ec="#b06b00" if hot else "#004a85", lw=1.1))
+        ax.text(x, y, label, ha="center", va="center", fontsize=fs, color="#15202b", linespacing=1.0)
+    if title:
+        ax.set_title(title, color="#15202b", fontsize=12, fontweight="bold", loc="left")
+
+
+SS, MC, FIR = "Signal Source", "Multiply Const", "Decimating\nFIR Filter"
+
+DSB_AM = ({"s1": (0, 0, SS), "s2": (0, 1, SS), "add": (1, 0.5, "Add"), "mc": (2, 0.5, MC),
+           "ac": (3, 0.5, "Add Const"), "mul": (4, 0.5, "Multiply"), "car": (4, -0.7, SS),
+           "fsk": (5, 0.5, "QT GUI\nFrequency Sink"), "dly": (3, 1.7, "Delay"), "tsk": (5, 1.7, "QT GUI\nTime Sink"),
+           "abs": (0, 2.9, "Abs"), "fir": (1, 2.9, FIR), "pi": (2, 2.9, MC), "dcb": (3, 2.9, "DC Blocker"),
+           "vol": (4, 2.9, MC), "aud": (5, 2.9, "Audio Sink")},
+          [("s1", "add"), ("s2", "add"), ("add", "mc"), ("mc", "ac"), ("ac", "mul"), ("car", "mul"), ("mul", "fsk"),
+           ("ac", "dly"), ("dly", "tsk"), ("mul", "abs", [(4.5, 0.5), (4.5, 2.25), (0, 2.25)]), ("abs", "fir"), ("fir", "pi"),
+           ("pi", "dcb"), ("dcb", "vol"), ("vol", "aud"), ("pi", "tsk", [(2, 2.42), (5.45, 2.42), (5.45, 1.7)])])
+
+DSB_SC = ({"s1": (0, 0, SS), "s2": (0, 1, SS), "add": (1, 0.5, "Add"), "mul": (2, 0.5, "Multiply"),
+           "car": (2, -0.7, SS), "fsk": (3, -0.7, "QT GUI\nFrequency Sink"),
+           "prod": (3, 0.5, "Multiply"), "lo": (3, 1.7, SS), "cl": (4, 0.5, FIR), "x2": (5, 0.5, MC),
+           "rect": (3, 2.9, "Abs"), "el": (4, 2.9, FIR), "pi": (5, 2.9, MC),
+           "sel": (6, 1.7, "Selector"), "tsk": (6, 0.5, "QT GUI\nTime Sink"), "aud": (6, 2.9, "DC Blocker,\nvolume, Audio Sink")},
+          [("s1", "add"), ("s2", "add"), ("add", "mul"), ("car", "mul"), ("mul", "fsk"), ("mul", "prod"), ("lo", "prod"),
+           ("prod", "cl"), ("cl", "x2"), ("mul", "rect", [(2, 2.9)]), ("rect", "el"), ("el", "pi"),
+           ("x2", "sel"), ("pi", "sel"), ("x2", "tsk"), ("sel", "aud")])
+
+SSB = ({"s1": (0, 0, SS), "s2": (0, 1, SS), "add": (1, 0.5, "Add"), "hil": (2, 0.5, "Hilbert"),
+        "mul": (3, 0.5, "Multiply"), "car": (3, -0.7, SS), "re": (4, 0.5, "Complex\nTo Real"),
+        "fsk": (5, -0.7, "QT GUI\nFrequency Sink"), "prod": (5, 0.5, "Multiply"), "lo": (5, 1.7, SS),
+        "lpf": (6, 0.5, FIR), "x2": (7, 0.5, MC), "tsk": (7, 1.7, "QT GUI\nTime Sink"), "aud": (7, -0.7, "volume,\nAudio Sink")},
+       [("s1", "add"), ("s2", "add"), ("add", "hil"), ("hil", "mul"), ("car", "mul"), ("mul", "re"), ("re", "fsk"),
+        ("re", "prod"), ("lo", "prod"), ("prod", "lpf"), ("lpf", "x2"), ("x2", "tsk"), ("x2", "aud")])
+
+
+def chain_fig(name, spec, width):
+    import io
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
+    blocks, edges = spec
+    rows = max(r for _, r, _ in blocks.values()) - min(r for _, r, _ in blocks.values()) + 1
+    fig, ax = plt.subplots(figsize=(width, 0.62 * rows + 0.4))
+    draw_chain(ax, blocks, edges)
     img = ROOT / "book/extras/viz/img"
-    panels = [("L06-grc-dsb-am", "Steps 1-9: build DSB-AM"),
-              ("L06-am-overmod", "Steps 10-12: overmodulate"),
-              ("L06-sc-phi0", "Steps 13-16: DSB-SC"),
-              ("L06-ssb-spectra", "Steps 17-19: SSB")]
-    fig, axs = plt.subplots(1, 4, figsize=(15, 3.4))
-    for ax, (name, title) in zip(axs, panels):
-        ax.imshow(plt.imread(img / f"{name}.png")); ax.axis("off")
-    fig.tight_layout(w_pad=3.0, rect=(0, 0, 1, 0.88))
-    for ax, (_, title) in zip(axs, panels):
-        pos = ax.get_position()
-        fig.text((pos.x0 + pos.x1) / 2, 0.95, title, color="#15202b", fontsize=12, fontweight="bold", ha="center", va="center")
-    for a, b in zip(axs[:-1], axs[1:]):
-        x = (a.get_position().x1 + b.get_position().x0) / 2
-        fig.text(x, 0.47, "\u2192", fontsize=22, color="#5b6573", ha="center", va="center")
-    fig.savefig(img / "L06-big-picture.png", dpi=110, bbox_inches="tight")
+    fig.savefig(img / f"{name}.png", dpi=130, bbox_inches="tight", pad_inches=0.05, facecolor="white")
+    plt.close(fig)
+    print(f"wrote {name}.png")
+
+
+def big_picture():
+    """The lab's three blocks as a 2x2 grid of block chains, plus the lab's own legend panel."""
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    fig, axs = plt.subplots(2, 2, figsize=(13, 6.6))
+    draw_chain(axs[0, 0], *DSB_AM, title="Steps 1-10: build DSB-AM")
+    draw_chain(axs[0, 1], *DSB_SC, title="Steps 11-14: receive DSB-SC")
+    draw_chain(axs[1, 0], *SSB, title="Steps 15-17: receive SSB")
+    ax = axs[1, 1]; ax.axis("off")
+    ax.set_title("What you record", color="#15202b", fontsize=12, fontweight="bold", loc="left")
+    for i, t in enumerate(["Figure 1: your DSB-AM flowgraph and its window",
+                           "Figure 2: the DSB-AM, DSB-SC, and LSB spectra",
+                           "Figure 3: the DSB-SC time sink at an LO phase error",
+                           "Table B: the coherent output's peak",
+                           "Table B: the largest tuning error you cannot hear"]):
+        ax.text(0.02, 0.85 - 0.15 * i, t, fontsize=11.5, color="#15202b", transform=ax.transAxes, va="center")
+    fig.tight_layout(h_pad=2.0, w_pad=2.5)
+    fig.savefig(ROOT / "book/extras/viz/img/L06-big-picture.png", dpi=110, bbox_inches="tight", facecolor="white")
     plt.close(fig)
     print("wrote L06-big-picture.png")
+    chain_fig("L06-chain-dsb-am", DSB_AM, 8)
+    chain_fig("L06-chain-dsb-sc", DSB_SC, 9)
+    chain_fig("L06-chain-ssb", SSB, 10)
 
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
-    ap.add_argument("--big-picture", action="store_true", help="only compose the L6 Lab's Big Picture strip")
+    ap.add_argument("--big-picture", action="store_true", help="only draw the L6 Lab's Big Picture grid and block chains")
     ap.add_argument("--canvas", type=Path, help="directory of grc_canvas.sh captures to crop")
     ap.add_argument("--keep", type=Path, help="also save the uncropped window captures here")
     a = ap.parse_args()

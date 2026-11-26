@@ -29,26 +29,26 @@ L7 Lab · Module 3: Analog Modulation · Dr. Neil Rogers
 ::::{frame} The Big Picture
 :::{present}
 <img src="../../viz/img/L07-big-picture.png"
-     alt="The L7 Lab's four blocks as a strip, in the lesson's screenshots. Steps 1 to 8: build the receiver, shown as the lesson's WBFM receiver on the GRC canvas. Steps 9 to 11: your capture, shown as the simulated test station's demodulated multiplex. Steps 12 to 19: on the air, shown as the simulated RDS constellation and panel. Steps 20 to 25: AM and FM in noise, shown as the lesson's AM-versus-FM window."
-     style="max-width: 980px; width: 100%; display: block; margin: 0 auto;">
+     alt="The L7 Lab's four blocks as block chains in a two-by-two grid. Steps 1 to 8: the receiver you build, File Source, Frequency Xlating FIR, Quadrature Demod, Decimating FIR Filter, FM Deemphasis, Multiply Const, and Audio Sink, with two frequency sinks. Steps 9 to 11: the same receiver on your fm_capture file, with the multiplex sink marked. Steps 12 to 19: the RDS receiver and the AM receiver on the PlutoSDR. Steps 20 to 23: one Signal Source sent as AM and as FM, a Noise Source added to both, and the two receivers into the audio and the SNR meters."
+     style="max-width: 900px; width: 100%; display: block; margin: 0 auto;">
 :::
 
-Steps 1 to 8 build the WBFM receiver from an empty canvas and play the test file through it. Steps 9 to 11 play your own L5 capture and look at its demodulated multiplex. Steps 12 to 19 receive on the air with the PlutoSDR: a broadcast station and its RDS data with `L07-rds-rx.grc`, then an ATIS with `L07-am-rx.grc`. Steps 20 to 25 run `L07-am-vs-fm.grc` at 5 and 50 kHz of deviation, read the FM signal's width, and lower the Input SNR until FM clicks. The pictures use the lesson's settings and test files, not today's. Each reading goes beside your Part 1 prediction in Table B of the packet, and the screenshots go in Figures 1 to 4. Nothing in this lab transmits.
+Steps 1 to 8 build the WBFM receiver from an empty canvas and play the test file through it. Steps 9 to 11 play your own L5 capture and look at its demodulated multiplex. Steps 12 to 19 receive on the air with the PlutoSDR: a broadcast station and its RDS data with `L07-rds-rx.grc`, then an ATIS with `L07-am-rx.grc`. Steps 20 to 23 run `L07-am-vs-fm.grc` and lower the Input SNR at 50 and then 5 kHz of deviation, listening for where FM breaks up. Your Part 1 settings go into Steps 5 and 17, the two click readings go in Table B of the packet, and the screenshots go in Figures 1 to 4. Nothing in this lab transmits.
 ::::
 
 ::::{frame} Predict First
 :class: viz-frame
 
 :::{depth}
-Choose a deviation and a tone. Before you press **Show the spectrum**, mark how wide you think the FM signal will be, by clicking the sink or with the My Prediction slider. Changing the deviation, the tone, or your mark hides the answer again, so each guess comes first. The widget offers 10, 20, and 40 kHz of deviation with a 2 or 3 kHz tone, not the 5 and 50 kHz with a 1 kHz tone of today's flowgraph, so its answers are not your Part 1 answers.
+Choose a deviation. The plot runs from a strong signal on the left to a weak one on the right. Before you press **Show the meters**, mark the Input SNR at which you think FM's output falls to AM's, by clicking the plot or with the My Prediction slider. Changing the deviation or your mark hides the answer again, so each guess comes first. The curves are the two meters of `L07-am-vs-fm.grc` read at 25 and 35 kHz of deviation; today you listen at 5 and 50 kHz, so nothing here is a reading you record.
 :::
 
 :::{present}
-<iframe src="../../viz/fm-width-predict.html"
-        width="100%" height="465"
+<iframe src="../../viz/noise-predict.html"
+        width="100%" height="485"
         style="border: 1px solid #cddce9; border-radius: 6px;"
         loading="lazy"
-        title="Choose an FM deviation and a tone, mark how wide the signal will be on the frequency sink, then show its spectrum">
+        title="Choose an FM deviation, mark the Input SNR at which FM's output falls to AM's, then show the measured meters">
 </iframe>
 :::
 ::::
@@ -60,8 +60,8 @@ Choose a deviation and a tone. Before you press **Show the spectrum**, mark how 
 - Play the test file; screenshot the canvas and the window.
 :::
 :::{present}
-<img src="../../viz/img/L07-grc-wbfm-rx.png"
-     alt="The lesson's WBFM receiver on the GRC canvas, which decimates by 10 and then by 5: a SigMF Source and a disabled PlutoSDR Source, a Frequency Xlating FIR Filter, a Quadrature Demod, a Decimating FIR Filter, FM Deemphasis, a volume control, and an Audio Sink"
+<img src="../../viz/img/L07-chain-wbfm.png"
+     alt="The receiver you build as a block chain: File Source, Frequency Xlating FIR, Quadrature Demod, Decimating FIR Filter, FM Deemphasis, Multiply Const, and Audio Sink, with a QT GUI Frequency Sink on the Quadrature Demod and another on the FM Deemphasis"
      style="max-width: 560px; width: 100%; display: block; margin: 0 auto;">
 :::
 
@@ -82,8 +82,8 @@ Choose a deviation and a tone. Before you press **Show the spectrum**, mark how 
 - Screenshot the demodulated multiplex.
 :::
 :::{present}
-<img src="../../viz/img/L07-mpx.png"
-     alt="Simulated: the lesson's test station's demodulated multiplex, two tones near 0 Hz and RDS near 57 kHz, with no pilot because the test station is mono"
+<img src="../../viz/img/L07-chain-capture.png"
+     alt="The same block chain with the File Source set to fm_capture and the QT GUI Frequency Sink on the Quadrature Demod marked"
      style="max-width: 520px; width: 100%; display: block; margin: 0 auto;">
 :::
 
@@ -100,8 +100,8 @@ Choose a deviation and a tone. Before you press **Show the spectrum**, mark how 
 - Screenshot both.
 :::
 :::{present}
-<img src="../../viz/img/L07-rds-decoded.png"
-     alt="Simulated: the lesson's RDS constellation with two tight clusters, and the gr-rds panel showing the test station's name and radiotext"
+<img src="../../viz/img/L07-chain-air.png"
+     alt="Two block chains: the RDS receiver, PlutoSDR Source, Frequency Xlating FIR, and Quadrature Demod into the audio and into a second Frequency Xlating FIR, Rational Resampler, AGC and Symbol Sync, Constellation Receiver, and RDS Decoder; and the AM receiver, PlutoSDR Source, Frequency Xlating FIR, Complex to Mag, Decimating FIR Filter, DC Blocker, AGC, and the audio"
      style="max-width: 560px; width: 100%; display: block; margin: 0 auto;">
 :::
 
@@ -110,45 +110,35 @@ Choose a deviation and a tone. Before you press **Show the spectrum**, mark how 
 14. **Tune it.** Run it. Type an **SDR center (MHz)** about 300 kHz below the station, so the DC spike stays out of the channel, set **Station (MHz)** to the station's frequency, and set **RF gain (dB)** to the gain you chose in Step 12 of the L5 Lab.
 15. **Screenshot the RDS data.** Wait for the station name, and compare it with the call sign the station announces or the FCC lists for that frequency. If no name appears, raise the gain or choose a stronger station; RDS needs more signal than the audio does. Take one screenshot of the constellation and the panel and paste it as the left pane of Figure 3.
 16. **Switch the AM receiver to the air.** Stop it. Open `L07-am-rx.grc`, disable its File Source, and enable its PlutoSDR Source.
-17. **Tune the ATIS.** Run it. Type an **SDR center (MHz)** 200 kHz above the ATIS frequency from your Part 1 Table A, set **Station (MHz)** to the ATIS frequency, and set **RF gain (dB)** to 50. If the voice sounds muffled, the Pluto's frequency may be a few kilohertz off; nudge Station by 1 to 3 kHz.
+17. **Tune the ATIS.** Run it. Type an **SDR center (MHz)** 200 kHz above the ATIS frequency from your Part 1 Table A, so the DC spike stays out of the channel as in Step 14 (either side of the station works), set **Station (MHz)** to the ATIS frequency, and set **RF gain (dB)** to 50. If the voice sounds muffled, the Pluto's frequency may be a few kilohertz off; nudge **Station (MHz)** by 1 to 3 kHz.
 18. **Screenshot the ATIS.** Paste a screenshot of the receiver window as the right pane of Figure 3.
 19. **Listen as the gain drops.** Lower the RF gain until the voice is hard to understand, and listen to how the audio changes on the way down.
 ::::
 
 ::::{frame} AM and FM in the Same Noise
 :::{present}
-- Add a frequency sink on the FM signal in `L07-am-vs-fm.grc`.
-- At 5 and then 50 kHz deviation, read the FM signal's width.
-- Lower the Input SNR until FM first clicks.
+- Run `L07-am-vs-fm.grc` at 50 kHz of deviation.
+- Lower the Input SNR until FM first clicks; keep going, listening to both.
+- Repeat the click search at 5 kHz.
 :::
 :::{present}
-<img src="../../viz/img/L07-amfm-25.png"
-     alt="The lesson's AM-versus-FM window at 15 kHz deviation and an Input SNR of 25 dB: two output SNR meters, the two outputs' spectrum, and both outputs as clean 1 kHz sine waves"
-     style="max-width: 520px; width: 100%; display: block; margin: 0 auto;">
+<img src="../../viz/img/L07-chain-noise.png"
+     alt="L07-am-vs-fm.grc as a block chain: one Signal Source sent as AM, through Add Const and Float To Complex, and as FM, through a Frequency Mod; one Noise Source added to both; the AM receiver, a Decimating FIR Filter and Complex to Mag, and the FM receiver, a FIR Filter and Quadrature Demod; both into the audio filters and a Selector, then the Audio Sink and the SNR meters"
+     style="max-width: 600px; width: 100%; display: block; margin: 0 auto;">
 :::
 
-20. **Add a sink on the FM signal.** Open `L07-am-vs-fm.grc`. Add a QT GUI Frequency Sink of type complex, bandwidth `samp_rate`, titled "FM signal", and connect it to the output of the Add block that follows the Frequency Mod, which carries the FM signal with its noise.
-21. **Read the width at 5 kHz.** Run it, set **FM deviation (Hz)** to 5000, and leave **Input SNR in 10 kHz (dB)** at 30. On the FM signal sink, hover over the outermost line that stands above the noise floor on each side, and take the difference as the width. Compare it with your Part 1 prediction, and paste a screenshot of the whole window as the left pane of Figure 4.
+20. **Run it.** Open and run `L07-am-vs-fm.grc`. Set **FM deviation (Hz)** to 50000, leave **Input SNR in 10 kHz (dB)** at 30, and choose FM under **Listen to**. Paste a screenshot of the window as the left pane of Figure 4.
+21. **Find the clicks at 50 kHz.** Lower the Input SNR 1 dB at a time, listening after each step, and record the value at which you first hear clicks.
 
     <div class="rec" data-lab="L07">
-    <label>Step 21: FM signal width at 5 kHz deviation (kHz) <input data-field="b.w5"></label>
+    <label>Step 21: Input SNR at which clicks begin, 50 kHz deviation (dB) <input data-field="b.click50"></label>
     </div>
-22. **Find the clicks at 5 kHz.** Choose FM under **Listen to**. Lower the Input SNR 1 dB at a time, listening after each step, and record the value at which you first hear clicks.
+22. **Listen to both.** Keep lowering the Input SNR to 10 dB, switching **Listen to** between AM and FM as you go, and paste a screenshot of the window at 10 dB as the right pane of Figure 4.
+23. **Find the clicks at 5 kHz.** Set the Input SNR back to 30 and the FM deviation to 5000, choose FM, and lower the Input SNR as in Step 21. Record where the clicks begin.
 
     <div class="rec" data-lab="L07">
-    <label>Step 22: Input SNR at which clicks begin, 5 kHz deviation (dB) <input data-field="b.click5"></label>
+    <label>Step 23: Input SNR at which clicks begin, 5 kHz deviation (dB) <input data-field="b.click5"></label>
     </div>
-23. **Read the width at 50 kHz.** Set the Input SNR back to 30 and the FM deviation to 50000. Read the width as in Step 21, compare it with your prediction, and paste a screenshot of the window as the right pane of Figure 4.
-
-    <div class="rec" data-lab="L07">
-    <label>Step 23: FM signal width at 50 kHz deviation (kHz) <input data-field="b.w50"></label>
-    </div>
-24. **Find the clicks at 50 kHz.** Lower the Input SNR as in Step 22 and record where the clicks begin.
-
-    <div class="rec" data-lab="L07">
-    <label>Step 24: Input SNR at which clicks begin, 50 kHz deviation (dB) <input data-field="b.click50"></label>
-    </div>
-25. **Listen to both.** Keep lowering the Input SNR to 5 dB, switching **Listen to** between AM and FM as you go.
 ::::
 
 ::::{frame} No Hardware?
@@ -156,9 +146,9 @@ Choose a deviation and a tone. Before you press **Show the spectrum**, mark how 
 
 :::{admonition} If the PlutoSDR, the station name, or the ATIS does not work
 :class: tip
-Steps 1 to 11 and 20 to 25 need no radio. If your PlutoSDR is missing or will not open, do Steps 12 to 19 at the laptop of a classmate whose PlutoSDR works, taking turns, and take your own screenshots; note whose PlutoSDR you used on the packet's Documentation line. Bring the failed Pluto to EI.
+Steps 1 to 11 and 20 to 23 need no radio. If your PlutoSDR is missing or will not open, do Steps 12 to 19 at the laptop of a classmate whose PlutoSDR works, taking turns, and take your own screenshots; note whose PlutoSDR you used on the packet's Documentation line. Bring the failed Pluto to EI.
 
-If no ATIS reaches the room, try a window, a higher floor, or the airport's other frequency; aircraft band stations need line of sight. If none works, run `L07-am-rx.grc` on `L07-am-test.sigmf-data` for Steps 17 to 19, as it opens, and write "Simulated" on the right pane of Figure 3 and on the Documentation line. If no broadcast station gives a name, run `L07-rds-rx.grc` on its File Source and label the left pane the same way.
+If no ATIS reaches the room, try a window, a higher floor, or the airport's other frequency; aircraft band stations need line of sight. If none works, run `L07-am-rx.grc` with its File Source enabled, as the flowgraph ships, for Steps 17 to 19, and write "Simulated" on the right pane of Figure 3 and on the Documentation line. If no broadcast station gives a name, run `L07-rds-rx.grc` on its File Source and label the left pane the same way.
 
 An Audio Sink that cannot open your sound card stops the flowgraph; plug in your headphones and run it again, as in the L6 Lab.
 :::
@@ -177,7 +167,7 @@ This frame collects every box you filled in on this page. Your entries stay in t
 
 The L7 Lab packet is one submission, turned in complete before Lesson 8:
 
-1. Part 1, Predict (individual, before the lab period): the shaded cells of Tables A and B, with your work for one row of each attached.
+1. Part 1, Predict (individual, before the lab period): the two shaded settings in Table A, with your work for the gain attached.
 2. Part 2, Measure (in class, on your own laptop and PlutoSDR): the white Measured cells of Table B, and Figures 1 to 4.
 3. Part 3, Analyze (individual, after the lab): three prompts, each answered from your own tables and figures.
 
@@ -192,8 +182,8 @@ The L7 Lab packet is one submission, turned in complete before Lesson 8:
 Do Part 3 after class, with your tables and figures beside you. It asks about three comparisons:
 
 1. Figure 2 against Figure 3: the parts of your capture's multiplex, and which of them each receiver uses.
-2. Table B and Figure 4: the FM signal's width, the output at 30 dB, and where clicks began, at 5 and 50 kHz of deviation.
-3. The ATIS in Figure 3 and Step 19, against the AM and FM outputs in Step 25.
+2. Figure 4 and Table B: the AM and FM outputs as the noise rose, and where FM broke up at each deviation.
+3. The ATIS in Figure 3 and Step 19, against the AM and FM outputs in Step 22.
 
 I grade each answer on a claim, the evidence from your own tables and figures, the reasoning that connects them, and the uncertainty in your readings.
 ::::
@@ -201,5 +191,5 @@ I grade each answer on a claim, the evidence from your own tables and figures, t
 ::::{frame} Looking Ahead
 :class: read-only
 
-Keep your receiver: Lesson 8's FSK receiver uses the same Quadrature Demod after a channel filter, followed by a decision on each bit instead of a speaker.
+Keep your receiver: Lesson 8's FSK receiver reuses its Quadrature Demod.
 ::::
