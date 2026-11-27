@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Predict where the PAM text breaks</title>
+<style>
+  :root { --navy:#004a85; --mid:#0067b9; --edge:#cddce9; --edge2:#b9d2e5; --bg:#f5f9fc;
+          --ink:#15202b; --ink3:#5b6573; --amber:#8a5a00; --red:#b01e24; --band:#eaf2fa; }
+  html,body { margin:0; padding:0; font-family:'Inter',system-ui,-apple-system,sans-serif; color:var(--ink); background:#fff; }
+  .app { display:flex; flex-direction:column; gap:8px; padding:12px; }
+  canvas { display:block; box-sizing:border-box; width:100%; height:auto; background:#fff; border:1px solid var(--edge); border-radius:6px; }
+  canvas:focus-visible { outline:2px solid var(--navy); outline-offset:2px; }
+  .controls { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:8px 16px; align-items:end;
+              padding:8px 12px; background:var(--bg); border:1px solid var(--edge); border-radius:6px; }
+  @media (max-width:560px) { .controls { grid-template-columns:1fr; } }
+  .ctl { display:grid; grid-template-columns:auto 1fr; column-gap:8px; row-gap:2px; align-items:center; min-width:0; }
+  .ctl label, .ctl .lab { font-size:10.5px; text-transform:uppercase; letter-spacing:0.05em; color:var(--ink3); font-weight:700; white-space:nowrap; }
+  .ctl .val { color:var(--navy); font-size:12px; font-weight:600; font-variant-numeric:tabular-nums; text-align:right; white-space:nowrap; }
+  .ctl input[type=range] { grid-column:1 / span 2; width:100%; margin:0; accent-color:var(--mid); }
+  .ctl.pred input[type=range] { accent-color:var(--amber); }
+  .ctl.pred .val { color:var(--amber); }
+  /* Before a guess the slider is faint, so its resting place does not suggest an answer. */
+  .ctl.pred.open input[type=range] { opacity:0.35; }
+  .seg { display:flex; gap:4px; justify-content:flex-end; flex-wrap:wrap; }
+  .seg button { font:inherit; font-size:11.5px; font-weight:600; color:var(--navy); background:#fff; border:1px solid var(--edge2); border-radius:14px; padding:3px 10px; cursor:pointer; }
+  .seg button[aria-pressed="true"] { background:var(--navy); color:#fff; border-color:var(--navy); }
+  .show { font:700 12px 'Inter',system-ui,sans-serif; text-transform:uppercase; letter-spacing:0.05em;
+          height:30px; padding:0 14px; border-radius:5px; cursor:pointer;
+          border:1px solid var(--navy); background:var(--navy); color:#fff; }
+  .show[aria-pressed="true"] { background:#fff; color:var(--navy); }
+  .show:disabled { cursor:not-allowed; background:#e3e8ee; border-color:#c7cfd8; color:#7a8591; }
+  .seg button:focus-visible, .show:focus-visible { outline:2px solid var(--navy); outline-offset:2px; }
+  .readouts { display:grid; gap:6px; grid-template-columns:repeat(3,minmax(0,1fr)); }
+  .ro { display:flex; flex-direction:column; align-items:center; gap:2px; padding:5px 4px 6px; min-width:0;
+        border:1px solid var(--edge2); border-radius:6px; background:#eef4fa; }
+  .ro .k { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:var(--ink3); white-space:nowrap; overflow:hidden; max-width:100%; }
+  .ro .v { font-size:14px; font-weight:700; white-space:nowrap; font-variant-numeric:tabular-nums; color:var(--navy); }
+  .ro.p .v { color:var(--amber); }
+  .ro.a .v { color:var(--red); }
+</style>
+</head>
+<body>
+<div class="app">
+  <canvas id="plot" tabindex="0" aria-label="Lines that arrive intact, of every 100 sent, against the noise amplitude, once you ask, with the noise at which you predicted the text starts to break."></canvas>
+
+  <div class="controls">
+    <div class="ctl"><span class="lab">Matched filter</span>
+      <div class="seg" id="mf" role="group" aria-label="Matched filter">
+        <button data-v="1" aria-pressed="true">on</button><button data-v="0" aria-pressed="false">off</button>
+      </div>
+    </div>
+    <div class="ctl pred open" id="pred-ctl"><label for="pred">My prediction: breaks at</label><span class="val" id="pred-v"></span>
+      <input type="range" id="pred" min="0.1" max="1.4" step="0.05" value="1.4"></div>
+    <div class="ctl" style="justify-items:end; grid-column:1 / -1"><span class="lab"></span>
+      <button class="show" id="show" aria-pressed="false" disabled>Show the lines</button></div>
+  </div>
+
+  <div class="readouts">
+    <div class="ro a"><span class="k">breaks at</span><span class="v" id="r-a">?</span></div>
+    <div class="ro p"><span class="k">my guess</span><span class="v" id="r-o">?</span></div>
+    <div class="ro"><span class="k">intact there</span><span class="v" id="r-i">?</span></div>
+  </div>
+</div>
+
+<script>
+'use strict';
+// Lines intact, of every 100 sent, as the noise amplitude rises, for
+// book/extras/grc/L10-pam-link.grc run headless (no GUI, no Throttle) with a
+// fixed number of lines: 400 of the 3-byte line "Hi" and its newline, at a
+// 500 ppm clock error. "Breaks at" is the first setting that loses or damages
+// a line: 0.75 with the filter on and 0.30 with it off. The L10 Lab sends the
+// 31-byte default line, whose break settings differ from these. (A 117-byte
+// and a 255-byte line were tried and dropped: each broke at a setting equal to
+// the lab's.) The prediction slider rests at 1.4, which is neither answer.
+//
+// Prediction first: the counts stay hidden until the cadet moves the
+// prediction slider and presses Show. Any change hides them again.
+const NOISE = Array.from({length: 27}, (_, i) => +(0.10 + 0.05*i).toFixed(2));
+const DATA = {
+  short: { 1: [100,100,100,100,100,100,100,100,100,100,100,100,100,99,98,97,93,90,86,79,70,64,53,43,35,24,19],
+           0: [100,100,100,100,99,95,81,58,40,21,8,3,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0] }
+};
+const SANS = 'Inter, system-ui, -apple-system, sans-serif';
+const C = { navy:'#004a85', red:'#b01e24', amber:'#8a5a00', grid:'#e6eef6', axis:'#8a929c', ink:'#15202b', ink3:'#5b6573' };
+const state = { mf: 1, len: 'short', pred: 1.4, committed: false, shown: false };
+const series = () => DATA[state.len][state.mf];
+const breakIdx = () => series().findIndex(v => v < 100);
+const f2 = v => v.toFixed(2);
+
+const canvas = document.getElementById('plot'), ctx = canvas.getContext('2d');
+const predEl = document.getElementById('pred'), showBtn = document.getElementById('show');
+function stext(s,x,y,px,color,align,bold){ ctx.fillStyle=color; ctx.font=(bold?'700 ':'')+px+'px '+SANS; ctx.textAlign=align||'left'; ctx.textBaseline='middle'; ctx.fillText(s,x,y); }
+
+function resize(){
+  const w = canvas.clientWidth, dpr = window.devicePixelRatio || 1;
+  const h = Math.round(Math.max(230, Math.min(w*0.40, 290)));
+  canvas.style.height = h + 'px';
+  canvas.width = Math.round(w*dpr); canvas.height = Math.round(h*dpr);
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  draw();
+}
+window.addEventListener('resize', resize);
+
+function draw(){
+  const dpr = window.devicePixelRatio || 1, w = canvas.width/dpr, h = canvas.height/dpr;
+  ctx.clearRect(0,0,w,h);
+  const narrow = w < 470, fs = narrow ? 10 : 11, lab = narrow ? 11 : 12.5;
+  const mL = 34, mR = 10, pw = w - mL - mR, top = 28, bot = h - 34;
+  const x0 = 0.05, x1 = 1.45;
+  const xv = n => mL + (n - x0)/(x1 - x0)*pw, yv = v => bot - v/100*(bot - top);
+  stext('Lines intact, of every 100 sent', mL, 12, lab, C.ink, 'left', true);
+  ctx.fillStyle = '#fbfdff'; ctx.fillRect(mL, top, pw, bot - top);
+  [0, 50, 100].forEach(v => {
+    ctx.strokeStyle = v === 0 ? C.axis : C.grid; ctx.lineWidth = v === 0 ? 1.2 : 1;
+    ctx.beginPath(); ctx.moveTo(mL, yv(v)); ctx.lineTo(mL + pw, yv(v)); ctx.stroke();
+    stext(String(v), mL - 4, yv(v), fs, C.ink3, 'right');
+  });
+  (narrow ? [0.2, 0.6, 1.0, 1.4] : [0.2, 0.4, 0.6, 0.8, 1.0, 1.2, 1.4]).forEach(n => {
+    stext(n.toFixed(1), xv(n), bot + 9, fs, C.ink3, 'center');
+  });
+  stext('Noise amplitude', mL + pw/2, bot + 24, fs, C.ink3, 'center');
+  if (state.shown){
+    const bw = Math.max(2, pw/(x1 - x0)*0.05*0.72), s = series(), k = breakIdx();
+    s.forEach((v, i) => {
+      ctx.fillStyle = i === k ? C.red : 'rgba(0,74,133,0.55)';
+      ctx.fillRect(xv(NOISE[i]) - bw/2, yv(v), bw, bot - yv(v));
+    });
+  }
+  if (state.committed){
+    ctx.strokeStyle = C.amber; ctx.lineWidth = 2.2; ctx.setLineDash([6, 4]);
+    ctx.beginPath(); ctx.moveTo(xv(state.pred), top); ctx.lineTo(xv(state.pred), bot); ctx.stroke();
+    ctx.setLineDash([]);
+  }
+  if (!state.committed){
+    const msg = 'Predict where the text breaks first', mpx = narrow ? 12 : 13.5;
+    ctx.font = '700 ' + mpx + 'px ' + SANS;
+    const mw = Math.min(ctx.measureText(msg).width + 20, pw - 8), my = (top + bot)/2;
+    ctx.fillStyle = 'rgba(255,255,255,0.94)'; ctx.strokeStyle = '#b9d2e5'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.roundRect(mL + pw/2 - mw/2, my - mpx, mw, 2*mpx, 5); ctx.fill(); ctx.stroke();
+    stext(msg, mL + pw/2, my, mpx, C.navy, 'center', true);
+  }
+}
+
+function sync(){
+  predEl.value = state.pred;
+  document.getElementById('pred-v').textContent = state.committed ? f2(state.pred) : '?';
+  document.querySelectorAll('#mf button').forEach(b => b.setAttribute('aria-pressed', +b.dataset.v === state.mf ? 'true' : 'false'));
+  showBtn.disabled = !state.committed;
+  showBtn.setAttribute('aria-pressed', state.shown ? 'true' : 'false');
+  showBtn.textContent = state.shown ? 'Hide it' : 'Show the lines';
+  document.getElementById('pred-ctl').classList.toggle('open', !state.committed);
+  const k = breakIdx(), i = NOISE.findIndex(n => Math.abs(n - state.pred) < 0.001);
+  document.getElementById('r-a').textContent = state.shown ? f2(NOISE[k]) : '?';
+  const d = Math.abs(state.pred - NOISE[k]);
+  document.getElementById('r-o').textContent = !state.committed ? '?' : (!state.shown ? f2(state.pred) : (d < 0.001 ? 'right on' : 'off ' + f2(d)));
+  document.getElementById('r-i').textContent = state.shown && i >= 0 ? series()[i] + ' of 100' : '?';
+  draw();
+}
+
+function reset(){ state.committed = false; state.shown = false; state.pred = 1.4; sync(); }
+document.querySelectorAll('#mf button').forEach(b => b.addEventListener('click', () => { state.mf = +b.dataset.v; reset(); }));
+predEl.addEventListener('input', () => { state.pred = +(+predEl.value).toFixed(2); state.committed = true; state.shown = false; sync(); });
+showBtn.addEventListener('click', () => { if (state.committed){ state.shown = !state.shown; sync(); } });
+canvas.addEventListener('keydown', e => {
+  if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+  e.preventDefault();
+  const d = e.key === 'ArrowLeft' ? -0.05 : 0.05;
+  state.pred = Math.max(0.1, Math.min(1.4, +((state.committed ? state.pred : 1.4) + d).toFixed(2)));
+  state.committed = true; state.shown = false; sync();
+});
+
+resize(); sync();
+</script>
+</body>
+</html>

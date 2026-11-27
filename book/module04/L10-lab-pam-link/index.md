@@ -13,7 +13,7 @@ frame_view: true
 
 <div class="title-rule"></div>
 
-Build the packet transmitter, watch noise break the text and the matched filter repair it, and send your own line through a PlutoSDR.
+Build the packet transmitter, find where noise breaks the text with the matched filter on and off, and send your own line through a PlutoSDR.
 
 L10 Lab · Module 4: Digital Modulation · Dr. Neil Rogers
 ::::
@@ -25,156 +25,148 @@ L10 Lab · Module 4: Digital Modulation · Dr. Neil Rogers
 </ol>
 ::::
 
-::::{frame} From Lesson to Bench
+::::{frame} The Big Picture
 :::{present}
-- **Pre-Lab:** run the link and work out one packet.
-- **Bench:** find the bytes by hand, build the transmitter, turn up the noise and the clock error, then use a PlutoSDR.
-- **Writeup:** explain what you saw, in words.
+<img src="../../viz/img/L10-big-picture.png"
+     alt="The L10 Lab's three blocks as GNU Radio Companion canvases: the packet transmitter you build (Steps 1 to 7) beside L10-pam-link.grc (Steps 8 to 10), and L10-pam-pluto.grc below (Steps 11 to 15)."
+     style="max-width: 900px; width: 100%; display: block; margin: 0 auto;">
 :::
 
-Lesson 10 sent a line of text over the PAM link of Lesson 9. Today you first line up the bytes by hand, with no packets, to see the problem the access code solves. Then you build the packet transmitter yourself, turn up the noise until the simulated link breaks, switch the matched filter off and on, and then run the same link on a PlutoSDR. The lab packet has three parts, and you turn it in once, complete, before Lesson 11. **Part 1, the Pre-Lab**, is on your own before the period: run `L10-pam-link.grc` once and work out the bits and time in one packet and the length field of a line of your own. **Part 2** is what you observe in class. **Part 3, the Writeup**, explains it in words.
-
-Questions 1 to 6 run on your laptop and transmit nothing. Question 7 transmits, into a cable only, as the PlutoSDR frame below describes.
+Steps 1 to 7 build the packet transmitter from an empty canvas with your own line of text and look at one packet on the time sink. Steps 8 to 10 run `L10-pam-link.grc` and raise the Noise amplitude slider until lines break, first with the matched filter on and then with it off. Steps 11 to 15 send your line through one PlutoSDR, from its TX port to its RX port through a cable and a 30 dB attenuator at 915 MHz, and note which Polarity setting delivers it. Your Part 1 line goes into Steps 1 and 12 and your packet entries into Steps 2 and 7, the three readings go in Table B of the packet, and the screenshots go in Figures 1 to 3.
 ::::
 
-::::{frame} Part 1: Before the Period
-:::{present}
-- `L10-pam-link.grc` runs and shows the received line.
-- Work out one packet's bits and time.
-- Write your own line's length field and first byte.
+::::{frame} Predict First
+:class: viz-frame
+
+:::{depth}
+Choose the matched filter's setting. Before you press **Show the lines**, set the My Prediction slider to the noise amplitude at which you think lines start to break. Changing the setting or your guess hides the answer again, so each guess comes first. The counts come from `L10-pam-link.grc` run with a 3-byte line; today you send the 31-byte default line, so nothing here is a reading you record.
 :::
 
-Do the Pre-Lab before you arrive. Question 1 checks that the link flowgraph opens and runs on your laptop: if GRC reports an error, the L5 lesson page lists the install checks, and EI before the lab is the place to fix it.
-
-Question 2 is the packet arithmetic from the lesson: the bits and time in one packet of the default line and how many packets 30 s holds, and the length field and first character of a line of your own choosing. You will see both on the time sink of the transmitter you build in Part 2.
+:::{present}
+<iframe src="../../viz/pam-mf-predict.html"
+        width="100%" height="465"
+        style="border: 1px solid #cddce9; border-radius: 6px;"
+        loading="lazy"
+        title="Choose the matched filter setting, predict the noise amplitude at which the PAM link's text starts to break, then show the lines that arrive intact">
+</iframe>
+:::
 ::::
 
-::::{frame} Pre-Lab Check
+::::{frame} Build the Packet Transmitter
 :::{present}
-| Check | Expected |
-| :-- | :-- |
-| One packet | 344 bits, 86 ms |
-| Packets in 30 s | about 349 |
-| Length field for 31 bytes | `0000000000011111` |
+- Start from an empty QT GUI canvas, not `L10-pam-tx.grc`.
+- Put your own line in `msg` and your Part 1 packet length in Stream to Tagged Stream.
+- Run it; find your length field and first character on the time sink.
+:::
+:::{present}
+<img src="../../viz/img/L10-canvas-tx.png"
+     alt="The packet transmitter you build, as GNU Radio Companion shows it: Vector Source, Stream to Tagged Stream with its packet length left as len_table_a for your Part 1 value, Protocol Formatter, Tagged Stream Mux, Unpack K Bits, and Chunks to Symbols, then a Throttle feeding a QT GUI Time Sink and an Interpolating FIR Filter feeding a QT GUI Frequency Sink"
+     style="max-width: 600px; width: 100%; display: block; margin: 0 auto;">
 :::
 
-These follow from Lesson 10. The packet size is exact: 64 bits of access code, 32 of header, and 8 per byte of the line. The bench is where you find out how much noise the link takes, by turning the noise up and watching.
+1. **Start GRC.** Choose File, New, QT GUI, and save the flowgraph in the folder that holds the Lesson 10 flowgraphs. Set `samp_rate` to 32000, and add Variables `sps` = 8, `alpha` = 0.35, `msg` = your line from Part 1 Table A in quotes, `hdr` = `digital.header_format_default(digital.packet_utils.default_access_code, 0)`, and `tx_taps` = `firdes.root_raised_cosine(sps, samp_rate, samp_rate/sps, alpha, 11*sps)`.
+2. **Add the source.** Add a Vector Source of type byte with vector `list(msg.encode()) + [10]` and Repeat set to Yes, then a byte Stream to Tagged Stream with the packet length from your Part 1 Table A and length tag key `"packet_len"`.
+3. **Build the packet.** Add a Protocol Formatter with format object `hdr` and length tag name `"packet_len"`, and a Tagged Stream Mux with 2 inputs and the same tag name. Connect Stream to Tagged Stream to the formatter and to the mux's second input, and the formatter to the mux's first input.
+4. **Turn bytes into symbols.** Add Unpack K Bits with K = 8, then Chunks to Symbols with input byte, output float, and symbol table `[-1, 1]`.
+5. **Shape the pulses.** Add a float Throttle at `samp_rate/sps`, then an Interpolating FIR Filter, float in and out, with interpolation `sps` and taps `tx_taps`, and a float QT GUI Frequency Sink with bandwidth `samp_rate` on the filter's output.
+6. **Add the time sink.** Put a float QT GUI Time Sink on the Throttle's output with 112 points, sample rate `samp_rate/sps`, trigger mode Tag, and trigger tag key `"packet_len"`, so every sweep starts at the first bit of a packet. Every arrow must be black: a red arrow joins two ports of different types, so match that block's type to its neighbor's.
+7. **Run it.** Find the header's length field and the first character of your line on the time sink, and compare both with your Part 1 Table A. If the sweep does not hold still, check that all four tag names, in Stream to Tagged Stream, Protocol Formatter, Tagged Stream Mux, and the time sink's trigger, are `"packet_len"`, with the quotes. Take one screenshot that shows your canvas and the time sink, mark the length field and your first character on it, and paste it as Figure 1.
 ::::
 
-::::{frame} Part 2: Bytes Without Packets
+::::{frame} Noise and the Matched Filter
+:::{present}
+- Run `L10-pam-link.grc` with the matched filter on.
+- Raise the noise until the first line breaks.
+- Switch the matched filter off and search again from a low setting.
+:::
+:::{present}
+<img src="../../viz/img/L10-canvas-link.png"
+     alt="L10-pam-link.grc in GNU Radio Companion: the packet transmitter and RRC filter, a Fractional Resampler and an Add with a Noise Source for the channel, and the receiver from the matched filter through Symbol Sync, Binary Slicer, Correlate Access Code - Tag Stream, and Repack Bits to the Text Sink, with an eye sink and a time sink"
+     style="max-width: 620px; width: 100%; display: block; margin: 0 auto;">
+:::
+
+8. **Run the link.** Open and run `L10-pam-link.grc`, and leave **Clock error (ppm)** at 500 for the whole lab. The Lines label counts the lines received since a slider or the switch last moved.
+9. **Find the break with the filter on.** With **Matched filter** on, raise **Noise amplitude** from 0.3 by 0.05 at a time, waiting about 20 s at each setting, until a line breaks. The link sends about 11 lines a second, so 20 s is about 230 lines, and a line has broken once the correct count falls behind the received count or the received count stops growing. Record that setting, and paste a screenshot of the window there as the left pane of Figure 2.
+
+    <div class="rec" data-lab="L10">
+    <label>Step 9: Noise amplitude at which lines start to break, matched filter on <input data-field="b.mfon"></label>
+    </div>
+10. **Find the break with the filter off.** Set **Noise amplitude** to 0.1 and switch **Matched filter** off, then raise the noise by 0.05 at a time in the same way until a line breaks. Record that setting, and paste a screenshot of the window there as the right pane of Figure 2.
+
+    <div class="rec" data-lab="L10">
+    <label>Step 10: Noise amplitude at which lines start to break, matched filter off <input data-field="b.mfoff"></label>
+    </div>
+::::
+
+::::{frame} The Link on a PlutoSDR
+:::{present}
+- Cable the Pluto's TX port to its RX port through the 30 dB attenuator first.
+- Send your own line with `L10-pam-pluto.grc` at 915 MHz.
+- Restart it three times and note which Polarity works.
+:::
+:::{present}
+<img src="../../viz/img/L10-canvas-pluto.png"
+     alt="L10-pam-pluto.grc in GNU Radio Companion: the packet transmitter and RRC filter feed Float To Complex, a Multiply Const, a Rational Resampler up by 32, and a PlutoSDR Sink at 915 MHz; a PlutoSDR Source feeds a Rational Resampler down by 32, an AGC, the matched filter, Symbol Sync, a Costas Loop, Complex To Real, a polarity Multiply Const, the Binary Slicer, the access-code search, Repack Bits, and the Text Sink"
+     style="max-width: 620px; width: 100%; display: block; margin: 0 auto;">
+:::
+
+11. **Cable the Pluto.** With the Pluto unplugged, connect its TX port to its RX port with a short SMA cable and the inline 30 dB SMA attenuator. Never connect an antenna in this lab, since the cable keeps the 915 MHz signal off the air, and never connect the cable without the attenuator: the RX input survives only a few dBm, and the transmitter can put out more than that.
+12. **Send your line.** Plug in the Pluto, open `L10-pam-pluto.grc`, put your line from Part 1 Table A in `msg`, and run it. **Pluto TX attenuation (dB)** opens at 60 and stops at 30; never set it lower or change the slider's range, because the 30 dB floor and the attenuator together keep the RX input below its limit.
+13. **Lock the polarity.** If no line arrives within 5 s, switch **Polarity**. If neither setting works, raise the TX attenuation by 10 dB and try both again: too strong a signal overloads the receiver and flattens the two levels. Once your line arrives, paste a screenshot of the window as Figure 3.
+14. **Restart it three times.** Stop and start the flowgraph three times, repeat Step 13's search on each run, and note each time which **Polarity** setting delivers lines.
+
+    <div class="rec" data-lab="L10">
+    <label>Step 14: Runs that needed Polarity set to inverted (of 3) <input data-field="b.inv"></label>
+    </div>
+15. **Disconnect.** Stop the flowgraph and unplug the Pluto before you disconnect the cable.
+::::
+
+::::{frame} No Hardware?
 :class: read-only
 
-1. Open and run `L10-pam-raw.grc`. It is the L10 link with no access code and no header: the transmitter sends the line's bytes back to back, and the receiver groups the bits into bytes from whichever bit it starts listening on. Each run starts at a random bit.
-2. Read the Received bytes label. A byte that is not a printable ASCII character shows as a dot, and a newline as a bar.
-3. Step the Bit offset from 0 up, one at a time, waiting about 2 s at each, until the text reads. Record that offset for Question 3(a).
-4. Stop the flowgraph and run it again. Find the offset again, and record it. Repeat for a third run.
-5. Now open and run `L10-pam-link.grc`, the version with packets. Stop and start it three times, and record for Question 3(b) how long the first line takes to appear each time and whether you had to adjust anything.
-::::
-
-::::{frame} The Access Code Lines Up the Bytes
-:::{present}
-<img src="../../viz/img/L10-raw-offset.png"
-     alt="The L10 raw-bits flowgraph running twice: at a bit offset of 0 the Received bytes label shows dots and stray symbols; at a bit offset of 3 it reads ver PAM., a bar for the newline, then USAFA ECE 448: ASCII over PAM."
-     style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
-:::
-:::{present}
-- Without packets, one offset in eight reads, and it changes every run.
-- The access-code search finds the right offset by itself.
-:::
-
-The figure shows one run of `L10-pam-raw.grc`. At an offset of 0 the receiver groups the bits one to seven bits away from the true byte boundary, and almost nothing it prints is a character. At an offset of 3 the same bits read as the line of text. The right offset depends on the bit at which the receiver started listening, so it changes from run to run, and a person has to find it again each time. The receiver in the 2025 reading, <a class="doc-link" href="../../legacy/L14-ascii-pam.pdf" target="_blank" rel="noopener">Mathys (2016), Motivating Undergraduate Communication Theory Using GNU Radio</a>, used this kind of hand-set delay.
-
-The access code removes that step. Correlate Access Code - Tag Stream compares every 64-bit window of the received bits with the code, so it finds the first bit of each packet wherever the receiver started, and Repack Bits starts each byte there. That is why `L10-pam-link.grc` shows text within about a second every time it starts.
-::::
-
-::::{frame} Part 2: Build the Transmitter
-:class: read-only
-
-1. Start GRC and choose File, New, QT GUI. Do not open `L10-pam-tx.grc`; build it yourself.
-2. Set `samp_rate` to 32000. Add Variables `sps` = 8, `alpha` = 0.35, `msg` = your line from Question 2(b) in quotes, `hdr` = `digital.header_format_default(digital.packet_utils.default_access_code, 0)`, and `tx_taps` = `firdes.root_raised_cosine(sps, samp_rate, samp_rate/sps, alpha, 11*sps)`.
-3. Add a **Vector Source**: type byte, vector `list(msg.encode()) + [10]`, repeat Yes. Then **Stream to Tagged Stream**: type byte, packet length `len(msg) + 1`, length tag key `"packet_len"`.
-4. Add a **Protocol Formatter** with format object `hdr` and length tag name `"packet_len"`, and a **Tagged Stream Mux** with 2 inputs and the same tag name. Connect Stream to Tagged Stream to the formatter and to the mux's second input, and the formatter to the mux's first input.
-5. Add **Unpack K Bits** with K = 8, then **Chunks to Symbols**: input byte, output float, symbol table `[-1, 1]`.
-6. Add a **Throttle** (float, sample rate `samp_rate/sps`) and an **Interpolating FIR Filter** (float in and out, interpolation `sps`, taps `tx_taps`).
-7. Add a **QT GUI Time Sink** on the Throttle's output: type float, 112 points, sample rate `samp_rate/sps`, trigger mode Tag, trigger tag key `packet_len`. Add a **QT GUI Frequency Sink** (float, bandwidth `samp_rate`) on the filter's output. Every arrow must be black.
-8. Run it. Screenshot the canvas for Question 4(a) and the time sink for Question 4(b), and read the spectrum's edges for Question 4(c).
-::::
-
-::::{frame} Part 2: Noise, Matched Filter, and Clock Error
-:class: read-only
-
-<img src="../../viz/img/L10-grc-link.png"
-     alt="The whole L10 link flowgraph in GNU Radio Companion: the variables, sliders, and matched-filter chooser at the top, the packet transmitter from Vector Source to Chunks to Symbols, then Throttle, the RRC filter, the Fractional Resampler and Noise Source of the channel, and the receiver from the matched filter through Symbol Sync, Binary Slicer, Correlate Access Code - Tag Stream, and Repack Bits to the Text Sink"
-     style="max-width: 820px; width: 100%; display: block; margin: 0 auto 12px;">
-
-1. Open and run `L10-pam-link.grc`. The Lines label counts the lines received since a slider or the switch last moved.
-2. Note the eye and the Symbol Sync output at the default noise, 0.3. Then, with the clock error at 500 ppm and the matched filter on, set the noise amplitude to 0.5 and raise it by 0.1 at a time. At each step, wait about 20 s and watch the Lines label, the eye, and the Symbol Sync output. Record for Question 5(a) the setting where lines start to break and the setting where no line arrives intact, and describe the displays for Question 5(b).
-3. Near 1.1, wait for a line with a wrong character in the Received label and screenshot it for Question 5(c).
-4. Set the noise to 0.5. Switch the matched filter off, wait 20 s, and record the Lines label and the eye for Question 5(d). Switch it back on and record them again.
-5. Set the noise back to 0.3. Set the clock error to 0, then raise it to 10,000, 20,000, 30,000, and 40,000 ppm in that order, without stopping the flowgraph. At each, wait about 20 s and record the Lines label and the eye's appearance for Question 6(a). Screenshot 10,000 ppm for Question 6(b).
-6. Stop the flowgraph, run it again so the loop locks at the default 500 ppm, and then type 40,000 into the clock-error box in one jump. Record the Lines label after 20 s in the last column of Question 6(a).
-::::
-
-::::{frame} If No Text Arrives
-:class: read-only
-
-:::{admonition} If the Received label stays at "(waiting for a packet)"
+:::{admonition} If the PlutoSDR or the text does not work
 :class: tip
-Close the flowgraph and run it again with the sliders at their defaults, a noise amplitude of 0.3 and a clock error of 500 ppm, where every line should arrive within about a second. In your own transmitter, check that the Stream to Tagged Stream packet length is `len(msg) + 1`, so that it counts the newline, and that all three tag names are `"packet_len"`, with the quotes. If you changed the message, keep it on one line.
+Steps 1 to 10 need no radio. If your PlutoSDR is missing or will not open, do Steps 11 to 15 at the laptop of a classmate whose PlutoSDR works, taking turns, with your own line and your own screenshots, and note whose PlutoSDR you used on the packet's Documentation line. Bring the failed Pluto to EI.
+
+If the Received label stays at "(waiting for a packet)" on `L10-pam-link.grc`, close it and run it again at a noise amplitude of 0.3 with the matched filter on, where every line arrives within about a second. If you changed the message, keep it on one line.
 :::
 ::::
 
-::::{frame} Part 2: The Link on a PlutoSDR
-:::{present}
-<img src="../../viz/img/L10-grc-pluto.png"
-     alt="The L10 PlutoSDR flowgraph in GNU Radio Companion: the packet transmitter and RRC filter feed Float To Complex, a Multiply Const of 0.5, a Rational Resampler up by 32, and a PlutoSDR Sink at 915 MHz; a PlutoSDR Source feeds a Rational Resampler down by 32, an AGC, the matched filter, Symbol Sync, a Costas Loop, Complex To Real, a polarity Multiply Const, the Binary Slicer, the access-code search, Repack Bits, and the Text Sink, with a frequency sink and a constellation sink"
-     style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
-:::
-:::{present}
-- We cable one Pluto's TX port to its RX port through a 30 dB attenuator, at 915 MHz.
-- The cable goes on before the flowgraph runs, and we never connect an antenna.
-:::
-
-`L10-pam-pluto.grc` is the Lesson 10 link with the simulated channel replaced by a PlutoSDR. The transmit half raises the 32 kHz baseband stream to 1.024 MS/s and sends it from the Pluto's TX port at 915 MHz; the receive half takes it from the RX port, lowers it to 32 kHz, and runs the same matched filter, Symbol Sync, and access-code search. An **AGC** sets the received level, and a **Costas Loop**, which Lesson 15 explains, locks to the carrier's phase.
-
-In class we transmit only into a cable, into a shielded enclosure, or at very low power in an ISM band, and only when the lesson says to. This question transmits only into the cable between the Pluto's own TX and RX ports, through an inline 30 dB SMA attenuator. The TX attenuation slider opens at 60 dB and cannot go below 30 dB. Never set TX attenuation below 30 dB or change the slider's range; the RX input is rated to only a few dBm, and the transmitter can put out more than that.
-::::
-
-::::{frame} PlutoSDR Steps
+::::{frame} Your Part 2 Entries
 :class: read-only
 
-1. With the Pluto unplugged, connect its TX port to its RX port with a short SMA cable and an inline 30 dB SMA attenuator. Do not connect an antenna, and do not connect the cable without the attenuator.
-2. Plug the Pluto into USB and run `iio_info -s` at the radioconda prompt; it should list a PlutoSDR context. The flowgraph uses the Pluto's default address, `ip:192.168.2.1`.
-3. Open and run `L10-pam-pluto.grc`. In simulation, the constellation shows two clusters on the horizontal axis within a few seconds, one on each side of zero. Never set TX attenuation below 30 dB or change the slider's range.
-4. If no line arrives within 5 s, switch Polarity. If neither setting works, raise the TX attenuation by 10 dB and try both again. Screenshot the window once lines arrive, for Question 7(a).
-5. Stop and start the flowgraph three times, and record each time which polarity delivers lines, for Question 7(b).
-6. Stop it, put your line from Question 2(b) in `msg`, and run it again for Question 7(c). Stop the flowgraph and unplug the Pluto before you disconnect the cable.
-::::
+This frame collects every box you filled in on this page. Your entries stay in this browser only, saved as you type. **Download my packet** writes them into the Measured cells of the blank packet and saves the PDF. The download locks every field, the Predicted cells included, so type your predictions into your own copy of the packet first, then use **Fill my own copy** and choose that file: the page keeps your predictions and adds your measurements beside them. Paste Figures 1 to 3 and write Part 3 in your copy, or on the printout, and upload one PDF to Gradescope. **Export entries** saves a small backup file you can **Import** on another laptop.
 
-::::{frame} Part 3: After the Lab
-:::{present}
-- Explain why the text goes from all to none so quickly.
-- Explain what the matched filter did.
-- Compare the clock-error limit with a real crystal, and explain the polarity.
-:::
-
-The Writeup is four questions, answered in words. The first asks why your link went from every line to none over a small change in the noise, and what that means for a real radio. The second asks why switching off the matched filter broke the text. The third compares the clock error your link tolerated with the error between two real crystals, and asks what would happen without Symbol Sync. The fourth asks why the polarity that works on the Pluto changes from run to run, and what change to the receiver would make the switch unnecessary.
+<div class="rec-summary" data-lab="L10" data-pdf="../../labs/ECE448_Lab_L10_PAMLink_blank.pdf" data-file="ECE448_L10_Lab"></div>
 ::::
 
 ::::{frame} Lab Packet
 :class: read-only doc-links
 
+The L10 Lab packet is one submission, turned in complete before Lesson 11:
+
+1. Part 1, Predict (individual, before the lab period): your line of text and the three shaded entries in Table A, with your work attached.
+2. Part 2, Measure (in class, on your own laptop and PlutoSDR): the white Measured cells of Table B, and Figures 1 to 3.
+3. Part 3, Analyze (individual, after the lab): two prompts, each answered from your own table and figures.
+
 - <a class="doc-link" href="../../labs/ECE448_Lab_L10_PAMLink_blank.pdf" target="_blank" rel="noopener">L10 Lab packet (PDF)</a>
-- <a class="doc-link" href="../../grc/L10-pam-raw.grc" download>L10-pam-raw.grc</a>: the link with no packets and a bit-offset slider. No hardware needed.
-- <a class="doc-link" href="../../grc/L10-pam-tx.grc" download>L10-pam-tx.grc</a> and <a class="doc-link" href="../../grc/L10-pam-link.grc" download>L10-pam-link.grc</a>
-- <a class="doc-link" href="../../grc/L10-pam-pluto.grc" download>L10-pam-pluto.grc</a>: the link on one PlutoSDR, transmitting at 915 MHz into a cable from its TX port to its RX port. Needs a PlutoSDR.
+- <a class="doc-link" href="../../grc/L10-pam-link.grc" download>L10-pam-link.grc</a>
+- <a class="doc-link" href="../../grc/L10-pam-pluto.grc" download>L10-pam-pluto.grc</a>: the link on one PlutoSDR, transmitting at 915 MHz into a cable from its TX port to its RX port.
+::::
+
+::::{frame} For Part 3
+:class: read-only
+
+Do Part 3 after class, with your table and figures beside you. It asks about two comparisons:
+
+1. Your two break settings in Table B, against the two windows in Figure 2.
+2. Your three PlutoSDR runs in Table B and Figure 3, against the simulated link, which has no Polarity switch.
+
+I grade each answer on a claim, the evidence from your own table and figures, the reasoning that connects them, and the uncertainty in your readings.
 ::::
 
 ::::{frame} Looking Ahead
-:::{present}
-- Lesson 11 writes and packages custom blocks.
-- Lesson 15 explains the Costas Loop that locked to the Pluto's carrier.
-:::
+:class: read-only
 
-Keep your transmitter flowgraph and your tables. Lesson 11 starts Module 5 with out-of-tree modules and custom blocks, including Python blocks like the Text Sink that displayed every line today. Lesson 15, on mPSK, explains carrier recovery, the job the Costas Loop did on the Pluto, and why a phase-modulated signal can lock upside down.
+Lesson 11 writes and packages a custom block like the Text Sink that showed every line today.
 ::::

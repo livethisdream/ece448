@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""L6 and L7 Lab step pictures: GNU Radio Companion canvases, block chain only.
+"""Lab step pictures (L6, L7, L8, L10): GNU Radio Companion canvases, block chain only.
 
 Neil, 2026-11-26: each lab step picture shows how the blocks connect, from
 GRC itself. The flowgraphs pictured are the lab's own builds, in
@@ -13,6 +13,16 @@ scripts/graphics/lab_grc/ (not published to the site):
   L07-lab-rds-air, -am-air       L07-rds-rx.grc and L07-am-rx.grc switched to
                                  the PlutoSDR Source, as the cadet runs them
   L07-am-vs-fm                   book/extras/grc/L07-am-vs-fm.grc as shipped
+  L08-lab-view                   the flowgraph that reads the tones and the
+                                 symbol rate off the L8 Lab recording
+  L08-lab-decoder                the decoder the cadet builds for that recording,
+                                 with f_center, dev, and baud left undefined:
+                                 the cadet sets them from the recording
+  L08-fsk-link                   book/extras/grc/L08-fsk-link.grc as shipped
+  L10-lab-tx                     the packet transmitter the cadet builds; the
+                                 packet length is left as len_table_a, a Part 1
+                                 answer
+  L10-pam-link, L10-pam-pluto    book/extras/grc/ as shipped
 
 For each, a copy moves the Options, variable, and import blocks off the
 visible canvas, GRC is screenshot with scripts/grc/grc_canvas.sh, and the
@@ -43,6 +53,12 @@ SHOTS = {
     "L07-canvas-rds-air": LAB / "L07-lab-rds-air.grc",
     "L07-canvas-am-air": LAB / "L07-lab-am-air.grc",
     "L07-canvas-am-vs-fm": ROOT / "book/extras/grc/L07-am-vs-fm.grc",
+    "L08-canvas-view": LAB / "L08-lab-view.grc",
+    "L08-canvas-decoder": LAB / "L08-lab-decoder.grc",
+    "L08-canvas-link": ROOT / "book/extras/grc/L08-fsk-link.grc",
+    "L10-canvas-tx": LAB / "L10-lab-tx.grc",
+    "L10-canvas-link": ROOT / "book/extras/grc/L10-pam-link.grc",
+    "L10-canvas-pluto": ROOT / "book/extras/grc/L10-pam-pluto.grc",
 }
 
 
@@ -70,7 +86,7 @@ def shoot(name: str, grc: Path, tmp: Path):
         raise SystemExit(f"GRC did not render {grc.name}")
     im = Image.open(raw).convert("RGB").crop((0, 70, W, H))      # drop the menu and toolbar
     bb = ImageOps.invert(im.convert("L")).point(lambda v: 255 if v > 12 else 0).getbbox()
-    im = im.crop((max(0, bb[0] - 10), max(0, bb[1] - 10), min(im.width, bb[2] + 10), min(im.height, bb[3] + 10)))
+    im = im.crop((max(0, bb[0] - 10), max(0, bb[1] - 10), min(im.width, bb[2] + 50), min(im.height, bb[3] + 10)))
     im.save(IMG / f"{name}.png")
     print(f"wrote {name}.png {im.size}")
 

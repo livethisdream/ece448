@@ -167,10 +167,10 @@ Click the Matched filter switch off, then set the noise to 0.4. The noise across
 
 <img src="./img/10-ascii-pam/L10-link-noisy.png" alt="The L10 link at noise 1.0 with the matched filter on: a mostly closed eye, spread symbol bands, and two wrong characters" style="max-height:380px; display:block; margin:0 auto;">
 
-Filter on: every line again. Raise the noise until it breaks.
+Filter on: every line again. At noise 1.0 it breaks again.
 
 Note:
-Switch the filter back on at 0.4 and every line arrives. Then drag the noise up live and stop when characters go wrong; the lab finds the exact settings. A line needs all of its header and payload bits right, which is why the change from all to none is so quick. Point at the eye and the bands.
+Switch the filter back on at 0.4 and every line arrives. Then jump the noise to 1.0, as in the screenshot, without searching for where it breaks; the lab finds that, with the filter on and off. A line needs all of its header and payload bits right, which is why the change from all to none is so quick. Point at the eye and the bands.
 
 ---
 
@@ -223,8 +223,8 @@ Every packet link in the rest of the course finds its packets by searching for a
 
 ## Looking Ahead
 
-- L10 Lab: build the transmitter, find where noise breaks the text, then a PlutoSDR
+- L10 Lab: build the transmitter, find where noise breaks the text with the matched filter on and off, then a PlutoSDR
 - Lesson 11: write a custom block like the Text Sink
 
 Note:
-Before the lab, run both L10 flowgraphs and be able to count the bits and the time in a packet.
+Before the lab, choose a line of text and work out its packet length, its length field, and its first character's bits: Part 1 of the packet.

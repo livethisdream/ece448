@@ -135,7 +135,29 @@ def packet():
     write("L10-packet", fig)
 
 
+def big_picture():
+    """The L10 Lab's three blocks as GRC canvases (scripts/graphics/lab_canvas.py): the
+    transmitter the cadet builds and L10-pam-link.grc side by side, L10-pam-pluto.grc below."""
+    img = ROOT / "book/extras/viz/img"
+    fig = plt.figure(figsize=(14, 9.6))
+    gs = fig.add_gridspec(2, 2, height_ratios=[1.25, 1.45])
+    for spec, (name, title) in zip([gs[0, 0], gs[0, 1], gs[1, :]],
+                                   [("L10-canvas-tx", "Steps 1-7: build the transmitter"),
+                                    ("L10-canvas-link", "Steps 8-10: L10-pam-link.grc, noise and the matched filter"),
+                                    ("L10-canvas-pluto", "Steps 11-15: L10-pam-pluto.grc, the link on a PlutoSDR")]):
+        ax = fig.add_subplot(spec)
+        ax.imshow(plt.imread(img / f"{name}.png")); ax.axis("off")
+        ax.set_title(title, color=INK, fontsize=13, fontweight="bold", loc="left")
+    fig.tight_layout(h_pad=2.0, w_pad=2.5)
+    fig.savefig(img / "L10-big-picture.png", dpi=110, bbox_inches="tight", facecolor="white")
+    plt.close(fig)
+    print("wrote L10-big-picture.png")
+
+
 if __name__ == "__main__":
-    ascii_bits()
-    byte_slip()
-    packet()
+    import sys
+    if "--big-picture" not in sys.argv:
+        ascii_bits()
+        byte_slip()
+        packet()
+    big_picture()

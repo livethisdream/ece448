@@ -49,10 +49,10 @@ Lesson 10 · Module 4: Digital Modulation · Dr. Neil Rogers
 
 The figure is today's flowgraph, `L10-pam-link.grc`, running. A line of text goes in at the transmitter, crosses a channel with noise and a clock error, and comes out of the receiver intact, about 11 times a second. The left plot is the eye after the receive filter, the matched filter, and the right plot is the output of Symbol Sync, the same two checks Lesson 9 used.
 
-Lesson 9 built everything between the symbols and the samples. This lesson adds the two ends, in the order of the 2025 reading, Mathys's "Motivating Undergraduate Communication Theory Using GNU Radio", linked under Downloads: text to bits (Parts 1 and 2, where packets replace the reading's hand-set delay), bits to a waveform (Part 3), the receiver (Part 4), the waveform through noise (Part 5), and the matched filter that cleans it up (Part 6). At the transmitter, text becomes bytes, bytes become bits, and the bits go out in **packets**. At the receiver, a slicer turns each sample back into a bit, and the receiver searches the bits for the start of each packet before it turns them back into text.
+Lesson 9 built everything between the symbols and the samples. This lesson adds the two ends, in the order of the 2025 reading, Mathys's "Motivating Undergraduate Communication Theory Using GNU Radio", linked under Downloads: text to bits, in packets that replace the reading's hand-set delay; bits to a waveform; the receiver; the waveform through noise; and the matched filter that cleans it up. At the transmitter, text becomes bytes, bytes become bits, and the bits go out in **packets**. At the receiver, a slicer turns each sample back into a bit, and the receiver searches the bits for the start of each packet before it turns them back into text.
 ::::
 
-::::{frame} Part 1: Text to Bits
+::::{frame} Text to Bits
 :::{present}
 <img src="../../viz/img/L10-ascii-bits.svg"
      alt="The characters U, S, and A as ASCII bytes 0x55, 0x53, and 0x41, then as their 24 bits, most significant bit first, then as 2-PAM levels: plus 1 for each 1 and minus 1 for each 0"
@@ -84,7 +84,7 @@ The receiver's slicer outputs one bit per symbol, but nothing in the bit stream 
 The same problem appears with any serial data, and the solution is also the same: the transmitter sends a known pattern before the data, and the receiver looks for that pattern. When it finds the pattern, it knows exactly where the first byte of the data starts.
 ::::
 
-::::{frame} Part 2: Packets
+::::{frame} Packets
 :::{present}
 <img src="../../viz/img/L10-packet.svg"
      alt="One packet to scale: a 64-bit access code taking 16 ms, a 32-bit header taking 8 ms, and a 248-bit payload of 31 bytes of text taking 62 ms; 344 bits and 86 ms in all at 4 kbaud"
@@ -100,7 +100,7 @@ We send each line of text as a **packet**, the same format the L8 link used. A p
 The header and access code add 96 bits to our 248, so one packet is 344 bits and takes 86 ms at 4 kbaud. The link sends 11.6 packets a second, and 72% of the bits it sends are text. A longer line spreads the same 96 bits over more text, and a 200-byte payload raises that share to 94%.
 ::::
 
-::::{frame} Part 3: Bits to a Waveform
+::::{frame} Bits to a Waveform
 :::{present}
 <img src="../../viz/img/L10-grc-tx.png"
      alt="The L10 transmitter flowgraph in GNU Radio Companion: Vector Source, Stream to Tagged Stream, Protocol Formatter, and Tagged Stream Mux build each packet; Unpack K Bits and Chunks to Symbols turn it into levels; a Throttle and an Interpolating FIR Filter with RRC taps shape the pulses; a Repeat and a Delay hold the bits for comparison on a QT GUI Time Sink"
@@ -157,7 +157,7 @@ T &= \frac{344}{4000\text{ baud}} = 86 \text{ ms}.
 The share of text grows with the payload, but a longer packet also has more bits that can go wrong, and the line counts as correct only if every bit is right. A longer line therefore starts to break at a lower noise setting than a short one.
 ::::
 
-::::{frame} Part 4: The Receiver
+::::{frame} The Receiver
 :::{present}
 <img src="../../viz/img/L10-grc-rx.png"
      alt="The channel and receiver of the L10 link flowgraph in GNU Radio Companion: Throttle, Interpolating FIR Filter, a Fractional Resampler for the clock error, and an Add with a Noise Source; then a Decimating FIR Filter as the matched filter, Symbol Sync, Binary Slicer, Correlate Access Code - Tag Stream, Repack Bits, and a Text Sink, with an eye sink and a time sink"
@@ -202,7 +202,7 @@ The explorer's SNR slider is in dB, so higher means less noise, the opposite dir
 :::
 ::::
 
-::::{frame} Part 5: Noise Without a Matched Filter
+::::{frame} Noise Without a Matched Filter
 :::{present}
 <img src="../../viz/img/L10-link-mf-off.png"
      alt="The L10 link at noise amplitude 0.4 with the matched filter switched off: the receive-filter eye is a tangle of jagged traces with almost no opening, the Symbol Sync output is scattered between minus 2 and plus 2 with several samples near zero, and the Received label reads USAFA ECU 448: ASCII over PAM., with one wrong character"
@@ -219,7 +219,7 @@ The flowgraph's **Matched filter** switch, set to off, replaces the receive RRC 
 Watch the Lines label too. The correct count falls behind the received count, and the received count grows more slowly than the link sends, because a line that loses a bit in the access code or the header never reaches the receiver as a line at all.
 ::::
 
-::::{frame} Part 6: The Matched Filter
+::::{frame} The Matched Filter
 :::{present}
 <img src="../../viz/img/L10-link-noisy.png"
      alt="The L10 link at noise amplitude 1.0 with the matched filter on: the receive-filter eye is mostly closed, the Symbol Sync output spreads between about minus 1.8 and plus 1.9 with a few samples near zero, and the Received label reads USAFA ECE 648: ASCII over ?AM., with two wrong characters"
@@ -227,13 +227,13 @@ Watch the Lines label too. The correct count falls behind the received count, an
 :::
 :::{present}
 - Switch the matched filter on: every line arrives again.
-- Now raise the noise until the text breaks again.
+- Now set the noise to 1.0: the text breaks again.
 - The screenshot shows characters going wrong.
 :::
 
 Switch the matched filter back on at 0.4, and the eye opens, the symbols pull back into two bands at $\pm 1$, and every line arrives. The signal sits in a few kilohertz of the 32 kHz the samples represent, and the filter, matched to the transmitted pulse, keeps that band and throws the rest of the noise away.
 
-Now raise the noise and watch the same three displays. The eye fills in, the bands spread, and characters start to go wrong again: in the screenshot, at 1.0, '4' became '6' and 'P' became a byte that does not print. A line counts only if every bit of its header and payload is right, and a wrong bit in the header or the access code loses the whole line, so once single bits start to go wrong, whole lines go wrong quickly, and soon no line arrives intact. The L10 Lab finds those two settings on your own link. At the same slider setting, the filter turns a link that loses most lines into one that loses none.
+Now set the noise to 1.0 and watch the same three displays. The eye fills in, the bands spread, and characters start to go wrong again: in the screenshot, at 1.0, '4' became '6' and 'P' became a byte that does not print. A line counts only if every bit of its header and payload is right, and a wrong bit in the header or the access code loses the whole line, so once single bits start to go wrong, whole lines go wrong quickly, and soon no line arrives intact. The L10 Lab finds where the text starts to break, with the filter on and off. At the same slider setting, the filter turns a link that loses most lines into one that loses none.
 ::::
 
 ::::{frame} Clock Error
@@ -289,14 +289,15 @@ Each line goes out as bits in a packet behind an access code. The receiver slice
 
 - <a class="doc-link" href="../../grc/L10-pam-tx.grc" download>L10-pam-tx.grc</a>: a line of text as packets, shown as bits and as the RRC-shaped signal from the first bit of each packet. No hardware needed.
 - <a class="doc-link" href="../../grc/L10-pam-link.grc" download>L10-pam-link.grc</a>: the whole text link, with noise and clock-error sliders, a matched-filter switch, the receive-filter eye, the Symbol Sync output, and the received text. No hardware needed.
+- <a class="doc-link" href="../../grc/L10-pam-raw.grc" download>L10-pam-raw.grc</a>: the link with no access code and no header, and a Bit offset slider. Each run starts listening at a random bit; step the offset until the Received bytes label reads as text, then restart the flowgraph and find the new offset. No hardware needed.
 
 Open a `.grc` file from GRC's File menu, or run `gnuradio-companion L10-pam-link.grc` from the radioconda prompt. The link's Text Sink is an Embedded Python Block, saved inside the `.grc` file. The L10 Lab page has the PlutoSDR version of the link.
 
 This lesson follows the 2025 reading for its topics, <a class="doc-link" href="../../legacy/L14-ascii-pam.pdf" target="_blank" rel="noopener">Mathys (2016), Motivating Undergraduate Communication Theory Using GNU Radio</a>, and these pages for the hands-on steps:
 
-- <a class="doc-link" href="https://wiki.gnuradio.org/index.php/Packet_Communications" target="_blank" rel="noopener">GNU Radio wiki: Packet Communications</a>: Stream to Tagged Stream, Protocol Formatter, and Correlate Access Code - Tag Stream (Parts 1, 2, and 4).
-- <a class="doc-link" href="https://wiki.gnuradio.org/index.php/Guided_Tutorial_PSK_Demodulation" target="_blank" rel="noopener">GNU Radio wiki: Guided Tutorial, PSK Demodulation</a>: the RRC filters and Symbol Sync the link reuses from Lesson 9 (Parts 3 to 6).
-- <a class="doc-link" href="https://pysdr.org/content/pulse_shaping.html" target="_blank" rel="noopener">PySDR: Pulse Shaping</a>: what the matched filter does to the noise (Part 6).
+- <a class="doc-link" href="https://wiki.gnuradio.org/index.php/Packet_Communications" target="_blank" rel="noopener">GNU Radio wiki: Packet Communications</a>: Stream to Tagged Stream, Protocol Formatter, and Correlate Access Code - Tag Stream.
+- <a class="doc-link" href="https://wiki.gnuradio.org/index.php/Guided_Tutorial_PSK_Demodulation" target="_blank" rel="noopener">GNU Radio wiki: Guided Tutorial, PSK Demodulation</a>: the RRC filters and Symbol Sync the link reuses from Lesson 9.
+- <a class="doc-link" href="https://pysdr.org/content/pulse_shaping.html" target="_blank" rel="noopener">PySDR: Pulse Shaping</a>: what the matched filter does to the noise.
 ::::
 
 ::::{frame} Summary
@@ -318,18 +319,25 @@ This lesson follows the 2025 reading for its topics, <a class="doc-link" href=".
 ::::{frame} Preparing for the Lab
 :class: read-only doc-links
 
-Part 1 of the L10 Lab packet, the Pre-Lab, prepares you for the lab. Do it before the lab period and bring it to class.
+Part 1 of the L10 Lab packet is a line of text of your own and three entries about its packet, worked out before the lab period. A step of the lab uses each one:
+
+| Part 1 entry | Method on this page | Used in |
+| :-- | :-- | :-- |
+| Table A: the Stream to Tagged Stream packet length for your line | "Text to Bits" | Step 2 |
+| Table A: the header's 16-bit length field for your line | "One Packet on the Wire" | Step 7 |
+| Table A: the 8 bits of your line's first character | "Text to Bits" | Step 7 |
 
 - <a class="doc-link" href="../../labs/ECE448_Lab_L10_PAMLink_blank.pdf" target="_blank" rel="noopener">L10 Lab packet (PDF)</a>
+- <a class="doc-link" href="../L10-lab-pam-link/index.html">L10 Lab page</a>
 ::::
 
 ::::{frame} Looking Ahead
 :::{present}
-- The L10 Lab builds the transmitter, finds where noise breaks the text, and runs the link on a PlutoSDR.
+- The L10 Lab builds the transmitter, finds where noise breaks the text with the matched filter on and off, and runs the link on a PlutoSDR.
 - Lesson 11 writes a custom block like the Text Sink.
 :::
 
-The L10 Lab is the hands-on version of this lesson. You build the packet transmitter from an empty canvas, find the noise setting where the text starts to break and where it stops, watch the clock error rise, and then send your own line of text through a PlutoSDR and a cable and read it back.
+The L10 Lab is the hands-on version of this lesson. You build the packet transmitter from an empty canvas with your own line, find the noise setting where the text starts to break with the matched filter on and with it off, and then send your line through a PlutoSDR and a cable and read it back.
 
 Module 5 starts with Lesson 11, on out-of-tree modules and custom blocks. The Text Sink that displayed every line today is a small Python block, and Lesson 11 shows how to write one, package it, and use it like any other block in GRC.
 ::::

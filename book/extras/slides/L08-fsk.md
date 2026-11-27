@@ -211,10 +211,10 @@ The widget uses the same receiver as the flowgraph but its own link, 48 kHz at 6
 
 <img src="./img/08-fsk/L08-link-offset.png" alt="The L8 link at noise 0.3 with a 400 Hz offset: the tones shifted right and the eye shifted up to about plus 1.4 and minus 0.6" style="max-height:330px; display:block; margin:0 auto;">
 
-The levels shift by $f_\text{off}/\Delta f$; once the lower level nears zero, the text breaks.
+The levels shift by $f_\text{off}/\Delta f$; lines break before the lower level reaches zero.
 
 Note:
-Demo at noise 0.3 and 400 Hz, then keep dragging until lines start to have errors and then stop. 2 ppm at 915 MHz is 1.8 kHz. Real receivers use a wide deviation or remove the offset before demodulating. The lab measures both.
+Demo at noise 0.3 and stop at 400 Hz; the lab finds where lines break, so do not search for it here. A temperature-compensated oscillator holds about 2 ppm, which is 1.8 kHz at 915 MHz; an inexpensive SDR's reference holds less tightly. Real receivers use a wide deviation or remove the offset before demodulating. The lab finds how far the offset can go at two deviations.
 
 ---
 
@@ -240,9 +240,9 @@ Every digital receiver in the rest of the course ends the same way: timing, then
 
 ## Looking Ahead
 
-- L8 Lab: build the transmitter, then measure the link's noise and offset limits
+- L8 Lab: decode a recording with unknown tones and baud, then find the largest offset the link tolerates at two deviations
 - Lesson 9: bits as amplitudes, PAM
 - Lesson 10: ASCII text over PAM
 
 Note:
-The lab needs no hardware. Cadets should download both flowgraphs before the period.
+The lab needs no hardware. Cadets download the lab recording and L08-fsk-link.grc and work out Part 1 before the period.
