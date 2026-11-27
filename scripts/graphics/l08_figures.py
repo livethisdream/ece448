@@ -5,9 +5,9 @@
                   waterfall: two tones, a 1010 preamble, then data. The tone
                   spacing gives the deviation and the shortest dwell gives the
                   symbol rate. SIMULATED -- labeled so on the figure.
-  L08-big-picture : the L8 Lab's two blocks, the GRC canvases that
-                  scripts/graphics/lab_canvas.py takes of the transmitter the
-                  cadet builds and of L08-fsk-link.grc, stacked; PNG.
+  L08-big-picture : the L8 Lab's three blocks, the GRC canvases that
+                  scripts/graphics/lab_canvas.py takes of the class transmitter
+                  with packets, the decoder added to it, and L08-fsk-link.grc; PNG.
 
 The GNU Radio screenshots (L08-grc-*.png, L08-tx-*.png, L08-link-*.png) are
 not generated here: they are taken from the real flowgraphs in
@@ -88,14 +88,20 @@ def burst_sim():
 
 
 def big_picture():
-    """The lab's two blocks as stacked GRC canvases (scripts/graphics/lab_canvas.py)."""
+    """The lab's three blocks as GRC canvases (scripts/graphics/lab_canvas.py): the class
+    transmitter with packets and a Channel Model beside the decoder added to it, and
+    L08-fsk-link.grc below."""
     img = ROOT / "book/extras/viz/img"
-    fig, axs = plt.subplots(2, 1, figsize=(12, 7.2), gridspec_kw={"height_ratios": [1, 3.1]})
-    for ax, (name, title) in zip(axs, [("L08-canvas-tx", "Steps 1-7: build the transmitter"),
-                                       ("L08-canvas-link", "Steps 8-13: L08-fsk-link.grc, frequency offset at two deviations")]):
+    fig = plt.figure(figsize=(14, 9.0))
+    gs = fig.add_gridspec(2, 2, height_ratios=[1, 1.15])
+    for spec, (name, title) in zip([gs[0, 0], gs[0, 1], gs[1, :]],
+                                   [("L08-canvas-tx", "Steps 1-3: frame your transmitter"),
+                                    ("L08-canvas-rx", "Steps 4-10: build the decoder"),
+                                    ("L08-canvas-link", "Steps 11-16: L08-fsk-link.grc, frequency offset at two deviations")]):
+        ax = fig.add_subplot(spec)
         ax.imshow(plt.imread(img / f"{name}.png")); ax.axis("off")
         ax.set_title(title, color=INK, fontsize=13, fontweight="bold", loc="left")
-    fig.tight_layout(h_pad=2.0)
+    fig.tight_layout(h_pad=2.0, w_pad=2.5)
     fig.savefig(img / "L08-big-picture.png", dpi=110, bbox_inches="tight", facecolor="white")
     plt.close(fig)
     print("wrote L08-big-picture.png")

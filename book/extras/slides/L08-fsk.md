@@ -240,9 +240,9 @@ Every digital receiver in the rest of the course ends the same way: timing, then
 
 ## Looking Ahead
 
-- L8 Lab: build the transmitter, then find the largest offset the link tolerates at two deviations
+- L8 Lab: build a decoder for your transmitter, then find the largest offset the link tolerates at two deviations
 - Lesson 9: bits as amplitudes, PAM
 - Lesson 10: ASCII text over PAM
 
 Note:
-The lab needs no hardware. Cadets should download L08-fsk-link.grc and work out Part 1 before the period.
+The lab needs no hardware. Cadets keep the transmitter they build today, download L08-fsk-link.grc, and work out Part 1 before the period.

@@ -13,9 +13,12 @@ scripts/graphics/lab_grc/ (not published to the site):
   L07-lab-rds-air, -am-air       L07-rds-rx.grc and L07-am-rx.grc switched to
                                  the PlutoSDR Source, as the cadet runs them
   L07-am-vs-fm                   book/extras/grc/L07-am-vs-fm.grc as shipped
-  L08-lab-tx                     the FSK transmitter the cadet builds; the
-                                 Frequency Mod sensitivity is left as
-                                 k_table_a, a Part 1 answer
+  L08-lab-tx                     the cadet's class transmitter with the packet
+                                 front end and a Channel Model added
+  L08-lab-link                   that transmitter with the decoder the cadet
+                                 builds; the Low Pass Filter cutoff and the
+                                 Quadrature Demod gain are left as
+                                 cutoff_table_a and gain_table_a, Part 1 answers
   L08-fsk-link                   book/extras/grc/L08-fsk-link.grc as shipped
   L10-lab-tx                     the packet transmitter the cadet builds; the
                                  packet length is left as len_table_a, a Part 1
@@ -52,6 +55,7 @@ SHOTS = {
     "L07-canvas-am-air": LAB / "L07-lab-am-air.grc",
     "L07-canvas-am-vs-fm": ROOT / "book/extras/grc/L07-am-vs-fm.grc",
     "L08-canvas-tx": LAB / "L08-lab-tx.grc",
+    "L08-canvas-rx": LAB / "L08-lab-link.grc",
     "L08-canvas-link": ROOT / "book/extras/grc/L08-fsk-link.grc",
     "L10-canvas-tx": LAB / "L10-lab-tx.grc",
     "L10-canvas-link": ROOT / "book/extras/grc/L10-pam-link.grc",

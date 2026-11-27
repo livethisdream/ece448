@@ -102,13 +102,13 @@ an FSK transmitter and receiver in GNU Radio.}
 
 \textbf{Instructions:} Submit this packet as one complete submission by the date indicated on
 Gradescope. This is an individual assignment, but you may collaborate, with appropriate
-documentation. Every flowgraph in this lab runs on your laptop: the Channel Model block stands
-in for the air, and nothing transmits. The flowgraphs are on the Lesson 8 page.
+documentation. Bring the FSK transmitter you built in class. Every flowgraph in this lab runs
+on your laptop: the Channel Model block stands in for the air, and nothing transmits.
 
 \textbf{Part 1: Predict} the shaded cells in Tables A and B before the lab period, attaching
 your work for each.
 
-\textbf{Part 2: Measure} the indicated quantities in class, and paste Figures 1 to 3.
+\textbf{Part 2: Measure} the indicated quantities in class, and paste Figures 1 to 4.
 
 \textbf{Part 3: Analyze} the results according to the prompts in this section, after the lab.
 
@@ -118,9 +118,11 @@ your own table and figures, the reasoning that connects them, and the uncertaint
 readings.
 
 \begin{procbox}
-\procstep{1--7}{\textbf{Build the FSK transmitter} in GRC from an empty canvas, at 2 kHz of
-deviation, and look at its spectrum.}
-\procstep{8--13}{\textbf{Raise the frequency offset} on \texttt{L08-fsk-link.grc} at a fixed
+\procstep{1--3}{\textbf{Frame your transmitter}: add packets and a Channel Model to the FSK
+transmitter you built in class, at 1.5 kHz of deviation.}
+\procstep{4--10}{\textbf{Build the decoder} after the Channel Model, from an empty part of the
+canvas, and recover your line of text into a file.}
+\procstep{11--16}{\textbf{Raise the frequency offset} on \texttt{L08-fsk-link.grc} at a fixed
 noise voltage, first at 1 kHz of deviation and then at 2 kHz, until lines fail.}
 \end{procbox}
 
@@ -128,17 +130,18 @@ noise voltage, first at 1 kHz of deviation and then at 2 kHz, until lines fail.}
 \fullwidth{\large\textbf{Parts 1 and 2: Predict and Measure}}
 
 Work out the shaded cells before the lab period and measure in class. Both flowgraphs sample at
-32 kHz with 32 samples per symbol, and the link's Quadrature Demod gain turns a tone at
-$+\Delta f$ into an output of $+1$.
+32 kHz with 32 samples per symbol, and each Quadrature Demod gain turns a tone at $+\Delta f$
+into an output of $+1$.
 
-\textbf{Table A. The setting you type in} (Part 1 only)
+\textbf{Table A. The decoder settings you type in} (Part 1 only, 1.5 kHz of deviation)
 
 \begin{center}
 \renewcommand{\arraystretch}{1.1}
 \begin{tabular}{| p{3.6in} | K{\boxw} | l |}
 \hline
 Setting & Predicted & Step \\\hline
-Frequency Mod sensitivity for 2 kHz of deviation (rad per sample) & \predv[a.k]{\keysol{p1.a.k}} & 5 \\\hline
+Low Pass Filter cutoff (Hz) & \predv[a.cutoff]{\keysol{p1.a.cutoff}} & 4 \\\hline
+Quadrature Demod gain & \predv[a.gain]{\keysol{p1.a.gain}} & 5 \\\hline
 \end{tabular}
 \end{center}
 
@@ -150,9 +153,9 @@ Frequency Mod sensitivity for 2 kHz of deviation (rad per sample) & \predv[a.k]{
 \begin{tabular}{| p{2.5in} | K{\boxw} | K{\boxw} | l |}
 \hline
 Quantity & Predicted & Measured & Step \\\hline
-Lower eye level, 1 kHz deviation, 600 Hz offset (normalized) & \predv[b.low600]{\keysol{p1.b.low600}} & \kv[b.low600]{\keysol{b.low600}} & 9 \\\hline
-Largest offset with every line correct, 1 kHz deviation (Hz) & \nopred & \kv[b.lim1k]{\keysol{b.lim1k}} & 10 \\\hline
-Largest offset with every line correct, 2 kHz deviation (Hz) & \nopred & \kv[b.lim2k]{\keysol{b.lim2k}} & 12 \\\hline
+Lower eye level, 1 kHz deviation, 600 Hz offset (normalized) & \predv[b.low600]{\keysol{p1.b.low600}} & \kv[b.low600]{\keysol{b.low600}} & 12 \\\hline
+Largest offset with every line correct, 1 kHz deviation (Hz) & \nopred & \kv[b.lim1k]{\keysol{b.lim1k}} & 13 \\\hline
+Largest offset with every line correct, 2 kHz deviation (Hz) & \nopred & \kv[b.lim2k]{\keysol{b.lim2k}} & 15 \\\hline
 \end{tabular}
 \end{center}
 \end{minipage}
@@ -161,18 +164,22 @@ Largest offset with every line correct, 2 kHz deviation (Hz) & \nopred & \kv[b.l
 \keysol{work}
 \end{solution}
 
-\shotbox{2.6in}{\textbf{Figure 1.} Step 7: your transmitter on the GRC canvas, and its running
-window at 2 kHz of deviation.}{\keysol{fig1}}
+\shotbox{2.6in}{\textbf{Figure 1.} Step 10: your transmitter and decoder on the GRC canvas, and
+the running window with the eye.}{\keysol{fig1}}
 
 \vspace{8pt}
-\noindent\shotpane{0.48\linewidth}{2.0in}{600 Hz offset}{\keysol{fig2.o600}}\hfill
-\shotpane{0.48\linewidth}{2.0in}{First offset that failed}{\keysol{fig2.fail}}\par
-\vspace{2pt}{\small\textbf{Figure 2.} Steps 9 and 10: \texttt{L08-fsk-link.grc} at 1 kHz of
+\shotbox{1.2in}{\textbf{Figure 2.} Step 10: \texttt{rx.txt}, the text your decoder
+recovered.}{\keysol{fig2}}
+
+\vspace{8pt}
+\noindent\shotpane{0.48\linewidth}{2.0in}{600 Hz offset}{\keysol{fig3.o600}}\hfill
+\shotpane{0.48\linewidth}{2.0in}{First offset that failed}{\keysol{fig3.fail}}\par
+\vspace{2pt}{\small\textbf{Figure 3.} Steps 12 and 13: \texttt{L08-fsk-link.grc} at 1 kHz of
 deviation, with the spectrum, the eye, and the Lines label in view.}\par
 
 \vspace{8pt}
-\shotbox{2.4in}{\textbf{Figure 3.} Step 13: \texttt{L08-fsk-link.grc} at 2 kHz of deviation, at
-the first offset that failed.}{\keysol{fig3}}
+\shotbox{2.4in}{\textbf{Figure 4.} Step 16: \texttt{L08-fsk-link.grc} at 2 kHz of deviation, at
+the first offset that failed.}{\keysol{fig4}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Part 3 starts on this page only if its heading and first prompt fit (no forced break).
@@ -184,15 +191,15 @@ and the uncertainty in your readings.
 
 \begin{questions}
 
-\question Compare your two offset limits in Table B. From the eye and the spectrum in Figures 2
-and 3, explain what ended the link at each deviation, and name a measurement that would test your explanation.
+\question Compare your two offset limits in Table B. From the eye and the spectrum in Figures 3
+and 4, explain what ended the link at each deviation, and name a measurement that would test your explanation.
 	\begin{solution}[2.6in]\keysol{an1}\end{solution}
 
 \newpage
 \question Look up the rated frequency accuracy of the PlutoSDR's reference oscillator, and find
 the largest offset, in hertz, between two PlutoSDRs at 915 MHz. Decide whether this link would
 carry text between them at either deviation you tested, and describe what the wider deviation
-changes in Figures 1 and 2.
+changes in Figures 3 and 4.
 	\begin{solution}[3.0in]\keysol{an2}\end{solution}
 
 \end{questions}
