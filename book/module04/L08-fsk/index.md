@@ -256,7 +256,7 @@ Raise the offset further and two things close in. The lower level moves toward z
 - To transmit, use a cable through the 30 dB attenuator, and only when the lesson says to; nothing in L8 transmits.
 :::
 
-On a waterfall, FSK is two tracks side by side with the signal jumping between them. The figure simulates a 433.92 MHz remote, the kind Lesson 17 decodes. Read two numbers off it: the tracks are 40 kHz apart, so $\Delta f = 20$ kHz, and the shortest stay on one track, in the preamble, is 1 ms, so the symbol rate is 1000 baud. A live waterfall row often lasts longer than one bit, so measure the dwell on the Quadrature Demod output. Those two numbers set the receiver's filter, gain, and samples per symbol.
+On a waterfall, FSK is two tracks side by side with the signal jumping between them. The figure simulates a 433.92 MHz remote, the kind Lesson 17 decodes. Read two numbers off it: the tracks are 40 kHz apart, so $\Delta f = 20$ kHz, and the shortest stay on one track, in the preamble, is 1 ms, so the symbol rate is 1000 baud. A live waterfall row often lasts longer than one bit, so measure the dwell on the Quadrature Demod output. Those two numbers set the receiver's filter, gain, and samples per symbol. If the two tracks do not sit evenly about 0, their midpoint is the carrier, and a Frequency Xlating FIR Filter, as in Lesson 7's receiver, moves it to 0 before the demodulator.
 
 To run this link over the air, replace the Throttle and Channel Model with a PlutoSDR Sink on one side and a source on the other, with a resampler to raise the 32 kHz stream to a rate the radio supports. In class we transmit only into a cable through the 30 dB attenuator, and only when the lesson says to. Nothing in this lesson or its lab transmits.
 ::::
@@ -300,15 +300,16 @@ This lesson follows:
 ::::{frame} Preparing for the Lab
 :class: read-only doc-links
 
-Part 1 of the L8 Lab packet is two decoder settings and one prediction you work out before the lab period. A step of the lab uses each one:
+Part 1 of the L8 Lab packet is one prediction you work out before the lab period. The lab then decodes a recording whose tones and symbol rate you read yourself, with the methods below:
 
-| Part 1 entry | Method on this page | Used in |
+| Part 1 entry or lab step | Method on this page | Used in |
 | :-- | :-- | :-- |
-| Table A: the Low Pass Filter cutoff for the lab's deviation | "The Receiver" | Step 4 |
-| Table A: the Quadrature Demod gain for the lab's deviation | "The Quadrature Demodulator" | Step 5 |
-| Table B: the lower eye level at the lab's offset and deviation | "Frequency Offset" | Step 12 |
+| Table B: the lower eye level at the lab's offset and deviation | "Frequency Offset" | Step 13 |
+| The recording's tones and symbol rate | "FSK on a Real Radio" | Steps 2 and 3 |
+| The receive filter's band | "Bandwidth" and "The Receiver" | Step 5 |
+| The Quadrature Demod gain | "The Quadrature Demodulator" | Step 6 |
 
-Bring the transmitter you build in class: the lab adds a decoder to it.
+Download the recording from the lab page before the period.
 
 - <a class="doc-link" href="../../labs/ECE448_Lab_L08_FSK_blank.pdf" target="_blank" rel="noopener">L8 Lab packet (PDF)</a>
 - <a class="doc-link" href="../L08-lab-fsk/index.html">L8 Lab page</a>
@@ -316,11 +317,11 @@ Bring the transmitter you build in class: the lab adds a decoder to it.
 
 ::::{frame} Looking Ahead
 :::{present}
-- The L8 Lab builds a decoder for your transmitter and finds the largest frequency offset the link tolerates at two deviations.
+- The L8 Lab decodes a recording whose tones and baud you find yourself, then finds the largest offset the link tolerates at two deviations.
 - Lesson 9 sends bits as amplitudes instead of frequencies: PAM.
 :::
 
-Today we built an FSK transmitter from a Frequency Mod block, a receiver from a filter, a quadrature demodulator, and a slicer, and a packet format that lets the receiver find each line of text. The L8 Lab is the hands-on version: build a demodulator and decoder behind the transmitter you built today and recover your own line of text, then use the link flowgraph to find the frequency offset at which the text stops arriving, at 1 and at 2 kHz of deviation.
+Today we built an FSK transmitter from a Frequency Mod block, a receiver from a filter, a quadrature demodulator, and a slicer, and a packet format that lets the receiver find each line of text. The L8 Lab is the hands-on version: read the tones and the symbol rate off a recording from a transmitter like today's, build a decoder with those settings and recover its message, then use the link flowgraph to find the frequency offset at which the text stops arriving, at 1 and at 2 kHz of deviation.
 
 Lesson 9 changes what carries the bits. Pulse-amplitude modulation (PAM) sends each symbol as a pulse of a chosen height, and Lesson 10 sends ASCII text over it. Its receiver ends the same way as today's, with symbol timing and a slicer.
 ::::

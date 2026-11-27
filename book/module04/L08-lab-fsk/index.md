@@ -13,7 +13,7 @@ frame_view: true
 
 <div class="title-rule"></div>
 
-Build a demodulator and decoder that recover the message from your class transmitter, then find the largest frequency offset an FSK link tolerates at two deviations.
+Decode an FSK recording whose tones and baud you find yourself, then find how much frequency offset the link tolerates.
 
 L8 Lab · Module 4: Digital Modulation · Dr. Neil Rogers
 ::::
@@ -28,11 +28,11 @@ L8 Lab · Module 4: Digital Modulation · Dr. Neil Rogers
 ::::{frame} The Big Picture
 :::{present}
 <img src="../../viz/img/L08-big-picture.png"
-     alt="The L8 Lab's three blocks as GNU Radio Companion canvases: your class transmitter with packets and a Channel Model (Steps 1 to 3) beside the decoder you add to it (Steps 4 to 10), and L08-fsk-link.grc below (Steps 11 to 16)."
+     alt="The L8 Lab's three blocks as GNU Radio Companion canvases: the flowgraph that reads the recording (Steps 1 to 4) beside the decoder you build (Steps 5 to 11), and L08-fsk-link.grc below (Steps 12 to 17)."
      style="max-width: 860px; width: 100%; display: block; margin: 0 auto;">
 :::
 
-Steps 1 to 3 add packets and a Channel Model to the transmitter you built in class, at 1.5 kHz of deviation. Steps 4 to 10 build the demodulator and decoder from Lesson 8's blocks and recover your line of text into a file. Steps 11 to 16 run `L08-fsk-link.grc` at a fixed noise voltage and raise the Frequency offset slider, first at 1 kHz of deviation and then at 2 kHz, watching the eye and the Lines label. Your Part 1 settings go into Steps 4 and 5, the three readings go in Table B of the packet, and the screenshots go in Figures 1 to 4. Nothing in this lab transmits.
+Steps 1 to 4 play `L08-lab-unknown.sigmf-data`, a recording from a transmitter like your class one with its own baud rate and tones, and read those off a spectrum and a demodulator. Steps 5 to 11 build a decoder from Lesson 8's blocks with those settings and recover the recording's message into a file. Steps 12 to 17 run `L08-fsk-link.grc` at a fixed noise voltage and raise the Frequency offset slider, first at 1 kHz of deviation and then at 2 kHz, watching the eye and the Lines label. Your Part 1 prediction goes with Step 13, the readings and the message go in Tables A and B of the packet, and the screenshots go in Figures 1 to 4. Nothing in this lab transmits.
 ::::
 
 ::::{frame} Predict First
@@ -52,42 +52,57 @@ Choose a deviation and a frequency offset. The dashed blue lines are the eye's t
 :::
 ::::
 
-::::{frame} Frame Your Transmitter
+::::{frame} Read the Recording
 :::{present}
-- Open the transmitter you built in class and set its deviation to 1.5 kHz.
-- Add the packet front end and a Channel Model.
-- Run it: two tones above the noise floor.
+- Play `L08-lab-unknown.sigmf-data` into a spectrum and a demodulator.
+- Read its two tone frequencies and its symbol rate.
+- Set `f_center`, `dev`, and `baud` from them.
 :::
 :::{present}
-<img src="../../viz/img/L08-canvas-tx.png"
-     alt="Your class transmitter in GNU Radio Companion with the packet front end and a Channel Model added: Vector Source, Stream to Tagged Stream, Protocol Formatter, Tagged Stream Mux, Unpack K Bits, Chunks to Symbols, Repeat, Frequency Mod, Throttle, Channel Model, and a QT GUI Frequency Sink"
-     style="max-width: 620px; width: 100%; display: block; margin: 0 auto;">
+<img src="../../viz/img/L08-canvas-view.png"
+     alt="The flowgraph that reads the recording, in GNU Radio Companion: File Source on L08-lab-unknown.sigmf-data, Throttle, a QT GUI Frequency Sink, and a Quadrature Demod feeding a QT GUI Time Sink"
+     style="max-width: 520px; width: 100%; display: block; margin: 0 auto;">
 :::
 
-1. **Open your transmitter.** Open the FSK transmitter you built in class, or `L08-fsk-tx.grc` if you do not have it, and save it as `L08-lab-link.grc`. Set `dev` to 1500 (the slider's default, if your `dev` is a slider), and put a line of text of your own in `msg`, in quotes; the receiver you build next has to recover it.
-2. **Add the packet front end.** Add a Variable `hdr` = `digital.header_format_default(digital.packet_utils.default_access_code, 0)`. Between the Vector Source and Unpack K Bits, add a byte Stream to Tagged Stream with packet length `len(msg) + 1` and length tag key `"packet_len"`, a Protocol Formatter with format object `hdr`, and a Tagged Stream Mux with 2 inputs, all with the tag name `"packet_len"`. Wire them as the Packets frame of Lesson 8 shows: Stream to Tagged Stream to the formatter and to the mux's second input, and the formatter to the mux's first input.
-3. **Add the channel.** After the Throttle, add a Channel Model with noise voltage 0.3 and the other settings at their defaults, and move the QT GUI Frequency Sink to its output. Run it: the spectrum shows two tones above the noise floor, each 1.5 kHz from the center. Every arrow must be black: a red arrow joins two ports of different types, so match that block's type to its neighbor's.
+The recording comes from a transmitter like the one you built in class, with the same packets, but with a baud rate and tone frequencies of its own. Your job is to recover its message.
+
+1. **Read the meta file.** Put `L08-lab-unknown.sigmf-data` and `L08-lab-unknown.sigmf-meta` from the Lab Packet frame in one folder, open the `.sigmf-meta` in a text editor, and note `core:sample_rate`. The samples are complex float, the type GNU Radio calls complex.
+2. **Find the tones.** In GRC choose File, New, QT GUI, and save the flowgraph as `L08-lab-decoder.grc` in that folder. Set `samp_rate` to the sample rate, and add a complex File Source on the `.sigmf-data` with Repeat set to Yes, a complex Throttle at `samp_rate`, and a complex QT GUI Frequency Sink with bandwidth `samp_rate`. Run it and read the frequencies of the two tones; the two tracks need not sit evenly about 0.
+
+    <div class="rec" data-lab="L08">
+    <label>Step 2: The two tone frequencies (Hz) <input data-field="b.tones"></label>
+    </div>
+3. **Find the symbol rate.** Add a Quadrature Demod with gain 1 on the Throttle's output and a float QT GUI Time Sink on its output, with 2048 points at `samp_rate`. The output jumps between two levels; zoom in with the mouse until you can read the shortest stay at one level, which is one bit, and take the symbol rate as one over its length, as Lesson 8's "FSK on a Real Radio" does.
+
+    <div class="rec" data-lab="L08">
+    <label>Step 3: The symbol rate (baud) <input data-field="b.baud"></label>
+    </div>
+4. **Name the settings.** Add three Variables: `f_center`, the midpoint of the two tones; `dev`, half their spacing; and `baud`, the symbol rate. Every decoder setting below comes from these three, so a mistake here shows up everywhere downstream.
 ::::
 
 ::::{frame} Build the Decoder
 :::{present}
-- After the Channel Model, build the receiver from Lesson 8: filter, demodulate, find each bit.
-- Find each packet and write its bytes to a file.
-- Recover your line; screenshot the canvas and the text.
+- Shift the midpoint to 0 and filter: a Frequency Xlating FIR Filter.
+- Then Lesson 8's receiver, with your three Variables in every setting.
+- Recover the message; screenshot the canvas and the text.
 :::
 :::{present}
-<img src="../../viz/img/L08-canvas-rx.png"
-     alt="L08-lab-link.grc with the decoder added after the Channel Model: Low Pass Filter with its cutoff left as cutoff_table_a and Quadrature Demod with its gain left as gain_table_a for your Part 1 values, Moving Average with a QT GUI Eye Sink, Symbol Sync, Binary Slicer, Correlate Access Code - Tag Stream, Repack Bits, and a File Sink writing rx.txt"
+<img src="../../viz/img/L08-canvas-decoder.png"
+     alt="L08-lab-decoder.grc in GNU Radio Companion: File Source, Throttle, Frequency Xlating FIR Filter, Quadrature Demod, Moving Average with a QT GUI Eye Sink, Symbol Sync, Binary Slicer, Correlate Access Code - Tag Stream, Repack Bits, and a File Sink writing rx.txt; the blocks that use f_center, dev, and baud show red until those Variables exist"
      style="max-width: 620px; width: 100%; display: block; margin: 0 auto;">
 :::
 
-4. **Filter.** On the Channel Model's output, add a Low Pass Filter of type complex to complex with decimation 1, the cutoff from your Part 1 Table A, and a transition width of 1000.
-5. **Demodulate.** Add a Quadrature Demod with the gain from your Part 1 Table A.
-6. **Smooth each bit.** Add a float Moving Average with length `sps` and scale `1/sps`, and put a float QT GUI Eye Sink with `sps` samples per symbol on its output.
-7. **Find each bit.** Add a float Symbol Sync with the Gardner timing error detector, `sps` samples per symbol, loop bandwidth 0.045, and 1 output sample per symbol, then a Binary Slicer.
-8. **Find each packet.** Add Correlate Access Code - Tag Stream with access code `digital.packet_utils.default_access_code`, threshold 2, and tag name `"packet_len"`, then Repack Bits with 1 bit in, 8 bits out, MSB first, and length tag key `"packet_len"`.
-9. **Write the text.** Add a byte File Sink with file `rx.txt` and Unbuffered set to On.
-10. **Recover your line.** Run it for about 10 s with the eye in view, stop it, and open `rx.txt` in a text editor: your line, once per packet. Take one screenshot of your canvas and the running window side by side, and paste it as Figure 1; paste a screenshot of `rx.txt` as Figure 2. If `rx.txt` is empty, the eye tells you where to look: an eye that never opens points to the cutoff or the gain, and an open eye with no text points to the access code, the tag names, or the bit order.
+5. **Shift and filter.** Disable the Quadrature Demod and the Time Sink from Step 3, and on the Throttle's output add a Frequency Xlating FIR Filter, the block Lesson 7's receiver used, with decimation 1, center frequency `f_center`, and taps `firdes.low_pass(1, samp_rate, dev + baud, 1000)`. It moves the midpoint of the two tones to 0 and keeps the band Lesson 8's receive filter keeps.
+6. **Demodulate.** Add a Quadrature Demod whose gain turns a tone at `+dev` into an output of 1, written in terms of `samp_rate` and `dev`, as in Lesson 8's "The Quadrature Demodulator".
+7. **Smooth each bit.** One bit lasts `samp_rate/baud` samples, which need not be a whole number. Add a float Moving Average with length `round(samp_rate/baud)` and scale `1/round(samp_rate/baud)`, and put a float QT GUI Eye Sink with `round(samp_rate/baud)` samples per symbol on its output.
+8. **Find each bit.** Add a float Symbol Sync with the Gardner timing error detector, `samp_rate/baud` samples per symbol, loop bandwidth 0.045, and 1 output sample per symbol, then a Binary Slicer.
+9. **Find each packet.** Add Correlate Access Code - Tag Stream with access code `digital.packet_utils.default_access_code`, threshold 2, and tag name `"packet_len"`, then Repack Bits with 1 bit in, 8 bits out, MSB first, and length tag key `"packet_len"`.
+10. **Write the text.** Add a byte File Sink with file `rx.txt` and Unbuffered set to On. Every arrow must be black: a red arrow joins two ports of different types, so match that block's type to its neighbor's.
+11. **Recover the message.** Run it for about 10 s with the eye in view, stop it, and open `rx.txt` in a text editor. Record the message, take one screenshot of your canvas and the running window side by side for Figure 1, and paste a screenshot of `rx.txt` as Figure 2. If `rx.txt` is empty, the eye tells you where to look: an eye that never opens points to `f_center`, `dev`, or the gain, an eye that smears points to `baud`, and an open eye with no text points to the access code, the tag names, or the bit order.
+
+    <div class="rec" data-lab="L08">
+    <label>Step 11: The recovered message (text) <input data-field="b.msg"></label>
+    </div>
 ::::
 
 ::::{frame} Frequency Offset at Two Deviations
@@ -102,24 +117,24 @@ Choose a deviation and a frequency offset. The dashed blue lines are the eye's t
      style="max-width: 620px; width: 100%; display: block; margin: 0 auto;">
 :::
 
-11. **Run the link.** Open and run `L08-fsk-link.grc`. Leave **Noise voltage** at 0.5 for the whole lab. The Lines label counts the lines received since a slider last moved.
-12. **Read the eye at 600 Hz.** Set **Frequency offset (Hz)** to 600 and read the level the lower traces of the eye settle at between crossings. Compare it with your Part 1 prediction, and paste a screenshot of the window as the left pane of Figure 3.
+12. **Run the link.** Open and run `L08-fsk-link.grc`. Leave **Noise voltage** at 0.5 for the whole lab. The Lines label counts the lines received since a slider last moved.
+13. **Read the eye at 600 Hz.** Set **Frequency offset (Hz)** to 600 and read the level the lower traces of the eye settle at between crossings. Compare it with your Part 1 prediction, and paste a screenshot of the window as the left pane of Figure 3.
 
     <div class="rec" data-lab="L08">
-    <label>Step 12: Lower eye level, 1 kHz deviation, 600 Hz offset (normalized) <input data-field="b.low600"></label>
+    <label>Step 13: Lower eye level, 1 kHz deviation, 600 Hz offset (normalized) <input data-field="b.low600"></label>
     </div>
-13. **Find the limit at 1 kHz.** Raise **Frequency offset (Hz)** 50 Hz at a time, waiting about 20 s at each setting; one line takes about 0.4 s, so 20 s is about 50 lines. The link has failed once the correct count falls behind the received count or the received count stops growing. Record the largest offset at which every line arrived correct, and paste a screenshot at the first offset that failed as the right pane of Figure 3.
+14. **Find the limit at 1 kHz.** Raise **Frequency offset (Hz)** 50 Hz at a time, waiting about 20 s at each setting; one line takes about 0.4 s, so 20 s is about 50 lines. The link has failed once the correct count falls behind the received count or the received count stops growing. Record the largest offset at which every line arrived correct, and paste a screenshot at the first offset that failed as the right pane of Figure 3.
 
     <div class="rec" data-lab="L08">
-    <label>Step 13: Largest offset with every line correct, 1 kHz deviation (Hz) <input data-field="b.lim1k"></label>
+    <label>Step 14: Largest offset with every line correct, 1 kHz deviation (Hz) <input data-field="b.lim1k"></label>
     </div>
-14. **Widen the deviation.** Stop the flowgraph and change the `dev` Variable from 1000 to 2000. The flowgraph computes the Frequency Mod sensitivity, the Low Pass Filter cutoff, and the Quadrature Demod gain from `dev`, so all three change with it.
-15. **Find the limit at 2 kHz.** Run it, and repeat Step 13's search, starting from your 1 kHz limit. Record the largest offset at which every line arrived correct.
+15. **Widen the deviation.** Stop the flowgraph and change the `dev` Variable from 1000 to 2000. The flowgraph computes the Frequency Mod sensitivity, the Low Pass Filter cutoff, and the Quadrature Demod gain from `dev`, so all three change with it.
+16. **Find the limit at 2 kHz.** Run it, and repeat Step 14's search, starting from your 1 kHz limit. Record the largest offset at which every line arrived correct.
 
     <div class="rec" data-lab="L08">
-    <label>Step 15: Largest offset with every line correct, 2 kHz deviation (Hz) <input data-field="b.lim2k"></label>
+    <label>Step 16: Largest offset with every line correct, 2 kHz deviation (Hz) <input data-field="b.lim2k"></label>
     </div>
-16. **Screenshot the failure.** Paste a screenshot of the window at the first offset that failed at 2 kHz as Figure 4.
+17. **Screenshot the failure.** Paste a screenshot of the window at the first offset that failed at 2 kHz as Figure 4.
 ::::
 
 ::::{frame} No Hardware?
@@ -146,12 +161,13 @@ This frame collects every box you filled in on this page. Your entries stay in t
 
 The L8 Lab packet is one submission, turned in complete before Lesson 9:
 
-1. Part 1, Predict (individual, before the lab period): the two shaded decoder settings in Table A and the shaded eye level in Table B, with your work attached.
-2. Part 2, Measure (in class, on your own laptop): the white Measured cells of Table B, and Figures 1 to 4.
+1. Part 1, Predict (individual, before the lab period): the shaded eye level in Table B, with your work attached.
+2. Part 2, Measure (in class, on your own laptop): the white Measured cells of Tables A and B, and Figures 1 to 4.
 3. Part 3, Analyze (individual, after the lab): two prompts, each answered from your own table and figures.
 
 - <a class="doc-link" href="../../labs/ECE448_Lab_L08_FSK_blank.pdf" target="_blank" rel="noopener">L8 Lab packet (PDF)</a>
-- <a class="doc-link" href="../../grc/L08-fsk-link.grc" download>L08-fsk-link.grc</a>, and <a class="doc-link" href="../../grc/L08-fsk-tx.grc" download>L08-fsk-tx.grc</a> if you do not have your class transmitter
+- <a class="doc-link" href="../../grc/L08-lab-unknown.sigmf-data" download>L08-lab-unknown.sigmf-data</a> and <a class="doc-link" href="../../grc/L08-lab-unknown.sigmf-meta" download>L08-lab-unknown.sigmf-meta</a>, the recording you decode
+- <a class="doc-link" href="../../grc/L08-fsk-link.grc" download>L08-fsk-link.grc</a>
 ::::
 
 ::::{frame} For Part 3
