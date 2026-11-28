@@ -241,7 +241,24 @@ budgets, checks) still apply. Where 444 would put a derivation on screen,
     has the cadet build the transmitter and the receiver end to end. Every
     way, the goal is the same: a message that comes through. **Vary the
     shape across the term** (Neil, 2026-11-28: "I like to give them
-    variety"): no long run of labs with the same half to build.
+    variety"): no long run of labs with the same half to build. The plan,
+    lab by lab (Neil, 2026-11-28; a lab session follows its row):
+
+    | Lab | Shape | The puzzle |
+    | :-- | :-- | :-- |
+    | L5 First flowgraphs | Both | build a tone source and an FM receiver; hear a station |
+    | L6 AM | Both | build the AM, DSB-SC, and SSB transmitters and their receivers; recover the message |
+    | L7 AM/FM receivers | Receiver | get audio and the station name out of broadcast FM |
+    | L8 FSK | Receiver | decode Neil's recording, tones and baud unknown |
+    | L10 PAM | Both, over the air | take the course's working PAM chain and get your line across on the PlutoSDR at 915 MHz, low power over the air if I say so, or by cable loopback (Neil: "we have a robust chain. Doing it over the air would be good, but loopback would be ok too") |
+    | L11 Custom block | Both | write the block that makes a broken chain work |
+    | L12 CW | Transmitter | key a CW message that a given decoder reads |
+    | L13 DTMF | Receiver | pull the digits out of the hidden recording |
+    | L14 HD Radio | Receiver | find a station's digital sidebands and decode them with gr-hdradio |
+    | L15 mPSK | Both | a PSK link end to end, carrier and timing recovery included |
+    | L16 FHSS | Receiver | follow the hops and recover the message |
+    | L17 Reverse engineering | Receiver, then transmitter | build a decoder that identifies which button of the fan remote was pushed, and a flowgraph that turns the light on (Neil, 2026-11-28) |
+    | L18-L19 ADS-B/AIS | Transmitter, then receiver | send your own aircraft at 915 MHz so gr-adsb decodes it; decode the AIS recording |
   - **Guided steps toward the goal**, with checkpoints ("you should now see two
     clusters"), not a recipe of readings. Steps say what to build and what to
     look for; the thinking is the cadet's.
