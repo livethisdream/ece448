@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="en" data-mode="read">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>L5 Lab — First Flowgraphs &mdash; ECE 448 — Software Defined Radios</title>
+<meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+<link rel="icon" href="../../_static/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap"><link rel="stylesheet" href="../../_static/custom.css?v=ec0f297254">
+<link rel="stylesheet" href="../../_static/shell.css?v=78396bd831">
+<link rel="stylesheet" href="../../_static/frames.css?v=bb20c1f445">
+<script>window.MathJax = {"tex": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processEscapes": true}, "options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+<script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js"></script>
+</head>
+<body>
+
+<div class="rail"><span id="railfill"></span></div>
+
+<div class="laser" id="laser" aria-hidden="true"></div>
+<div class="spot" id="spot" aria-hidden="true"></div>
+
+<div class="index" id="index" role="dialog" aria-label="Jump to a frame or another lesson">
+  <button class="index-close" id="btnIndexClose" type="button" aria-label="Close">&times;</button>
+  <div class="wrap">
+    <div class="index-cols">
+      <div class="index-here">
+        <h2>This lesson</h2>
+        <ol id="indexlist"></ol>
+      </div>
+      <div class="index-toc">
+        <h2>Course</h2>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Course Information</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../syllabus.html">Syllabus</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../materials.html">Materials</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 1 — Foundations of Detection &amp; Link Budgets</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module01/index.html">Module 1 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module01/L01-course-intro/index.html">L1 — Course Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module01/L02-noise-figure-link-budget/index.html">L2 — Noise Figure and Link Budget</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module01/L03-signal-space/index.html">L3 — Signal Space</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 2 — SDR &amp; GNU Radio Foundations</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Module 2 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L04-sdr-introduction/index.html">L4 — SDR Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L05-gnu-radio-intro/index.html">L5 — GNU Radio Introduction</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">L5 Lab — First Flowgraphs</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 3 — Analog Modulation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module03/index.html">Module 3 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module03/L06-am-simulation/index.html">L6 — AM Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module03/L06-lab-am-simulation/index.html">L6 Lab — AM Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module03/L07-am-fm-receivers/index.html">L7 — AM and FM Receivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module03/L07-lab-am-fm-receivers/index.html">L7 Lab — AM and FM Receivers</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 4 — Digital Modulation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/index.html">Module 4 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/L08-fsk/index.html">L8 — FSK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/L08-lab-fsk/index.html">L8 Lab — FSK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/L09-pam-theory/index.html">L9 — PAM Theory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/L10-ascii-pam/index.html">L10 — ASCII over PAM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module04/L10-lab-pam-link/index.html">L10 Lab — PAM Link</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 5 — Custom Blocks &amp; Midterm</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module05/index.html">Module 5 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module05/L11-custom-blocks/index.html">L11 — Out-of-Tree Modules and Custom Blocks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module05/L11-lab-custom-block/index.html">L11 Lab — Custom Block</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module05/midterm/index.html">Midterm — Fox Hunt and CTF</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 6 — Waveform Applications &amp; RF Reverse Engineering</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/index.html">Module 6 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L12-cw/index.html">L12 — CW</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L12-lab-cw/index.html">L12 Lab — CW</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L13-dtmf/index.html">L13 — DTMF</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L13-lab-dtmf/index.html">L13 Lab — DTMF</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L14-hd-radio/index.html">L14 — HD Radio</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L14-lab-hd-radio/index.html">L14 Lab — HD Radio</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L15-mpsk/index.html">L15 — mPSK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L15-lab-mpsk/index.html">L15 Lab — mPSK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L16-fhss/index.html">L16 — Frequency Hopping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L16-lab-fhss/index.html">L16 Lab — Frequency Hopping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L17-rf-reverse-engineering/index.html">L17 — RF Reverse Engineering</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L17-lab-rf-reverse-engineering/index.html">L17 Lab — RF Reverse Engineering</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L18-adsb/index.html">L18 — ADS-B</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L19-ais/index.html">L19 — AIS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L18-L19-lab-adsb-ais/index.html">L18–L19 Lab — ADS-B and AIS</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 7 — Final Project</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module07/index.html">Module 7 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module07/L20-qam-ofdm/index.html">L20 — QAM and OFDM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module07/final-project/index.html">Final Project</a></li>
+</ul>
+
+      </div>
+    </div>
+  </div>
+</div><div class="hud">
+<div class="hud-group">
+  <button id="btnSite" class="site" type="button"
+          aria-expanded="false" aria-controls="sitepop"
+          title="Elsewhere on this site">ECE 448</button>
+</div>
+<div class="pop" id="sitepop" role="group" aria-label="Site" hidden>
+  <a href="https://livethisdream.github.io/">Home</a>
+  <a href="https://livethisdream.github.io/ece343/intro.html">ECE 343</a>
+  <a href="https://livethisdream.github.io/ece444/intro.html">ECE 444</a>
+  <a href="../../intro.html" aria-current="page">ECE 448</a>
+  <a href="https://livethisdream.github.io/projects">Projects</a>
+  <button class="pop-help" type="button" data-help>Help<kbd>?</kbd></button>
+</div>
+
+  <div class="hud-group hud-mid"><button id="btnMode" type="button" aria-expanded="false" aria-controls="modepop"
+            title="How the lesson is laid out (P)">read</button>
+    <button id="btnTools" type="button" aria-expanded="false" aria-controls="toolspop"
+            title="Presenter tools">tools</button>
+  </div>
+
+  <div class="hud-group"><button id="btnIndex" class="counter" type="button" aria-pressed="false"
+            title="Contents (G) · double-tap for the top"><b id="cur">1</b>/<span id="tot">0</span></button>
+  </div><div class="pop" id="modepop" role="group" aria-label="View mode" hidden>
+    <button id="btnPresent" class="choice" type="button" aria-pressed="false">
+      present<span class="pop-note">one frame at a time</span></button>
+    <button id="btnRead" class="choice" type="button" aria-pressed="true">
+      read<span class="pop-note">the whole lesson, continuous</span></button>
+  </div><div class="pop" id="toolspop" role="group" aria-label="Presenter tools" hidden>
+    <button id="btnLaser" type="button" aria-pressed="false">laser<kbd>L</kbd></button>
+    <button id="btnSpot" type="button" aria-pressed="false">spotlight<kbd>S</kbd></button>
+    <button id="btnFull" type="button">fullscreen<kbd>F</kbd></button>
+    <button id="btnHelp" type="button" data-help>help<kbd>?</kbd></button>
+  </div>
+</div>
+<div class="help" id="help" role="dialog" aria-modal="true" aria-labelledby="helpTitle" hidden>
+  <div class="help-card">
+    <button class="help-close" id="btnHelpClose" type="button" aria-label="Close help">&times;</button>
+    <h2 id="helpTitle">Getting around</h2>
+    <p class="help-lead">Everything is in the bar at the bottom of the screen.</p>
+    <dl class="help-list">
+      <dt><span class="help-chip">ECE 448</span></dt>
+      <dd>The other course sites, the home page, and this help.</dd>
+      <dt><span class="help-chip">read</span></dt>
+      <dd><b>Read</b> shows the whole lesson as one page. <b>Present</b> shows one frame at a time, for class.<span class="help-keys"> <kbd>P</kbd> switches.</span></dd>
+      <dt><span class="help-chip">tools</span></dt>
+      <dd>Laser pointer<span class="help-keys"> <kbd>L</kbd></span>, spotlight<span class="help-keys"> <kbd>S</kbd></span>, and fullscreen<span class="help-keys"> <kbd>F</kbd></span>.</dd>
+      <dt><span class="help-chip">3/9</span></dt>
+      <dd>Where you are in the lesson. Tap it for every frame here and every lesson in the course<span class="help-keys"> <kbd>G</kbd></span>. Double-tap to go back to the top.</dd>
+    </dl>
+    <h3 class="help-keys">Presenting</h3>
+    <p class="help-keys"><kbd>&rarr;</kbd> or <kbd>Space</kbd> next frame, <kbd>&larr;</kbd> back, <kbd>D</kbd> this frame&rsquo;s detail, <kbd>Esc</kbd> close a panel.</p>
+    <h3>Printing</h3>
+    <p>Print from present mode for the slides, one frame a page. Print from read mode for the whole lesson.</p>
+    <p class="help-foot"><span class="help-keys">Press <kbd>?</kbd> to open this again.</span><span class="help-touch">Open this again from the ECE 448 menu.</span></p>
+  </div>
+</div>
+
+<div class="help-hint" id="helpHint" hidden>
+  <button id="btnHintOpen" type="button" data-help>New here? How the bar works</button>
+  <button id="btnHintClose" class="help-hint-close" type="button" aria-label="Dismiss">&times;</button>
+</div><main class="deck bd-article" id="deck" tabindex="-1">
+<section class="tex2jax_ignore mathjax_ignore" id="l5-lab-first-flowgraphs">
+<h1>L5 Lab — First Flowgraphs<a class="headerlink" href="#l5-lab-first-flowgraphs" title="Permalink to this heading">#</a></h1>
+<div class="frame title-frame docutils container" id="frame-1">
+<div class="wrap docutils container">
+<div class="course-mark">ECE 448 · Spring 2027</div>
+<h1 class="frame-title">First Flowgraphs</h1>
+<div class="title-rule"></div>
+<p>Build a tone flowgraph from an empty canvas, then receive, record, and plot the FM band on the PlutoSDR.</p>
+<p>L5 Lab · Module 2: SDR &amp; GNU Radio Foundations · Dr. Neil Rogers</p>
+</div>
+</div>
+<div class="frame docutils container" id="frame-learning-objectives">
+<div class="wrap docutils container">
+<p class="rubric">Learning Objectives</p>
+<ol class="lo-list" style="--module: '2'; counter-reset: lo 2">
+  <li>I can install GNU Radio and use GNU Radio Companion (GRC) to build, inspect, and run a basic flowgraph.</li>
+  <li>I can capture a real RF signal using an SDR and interpret its time- and frequency-domain representations.</li>
+</ol>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-the-big-picture">
+<div class="wrap docutils container">
+<p class="rubric">The Big Picture</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<p><img src="../../viz/img/L05-big-picture.png"
+     alt="The L5 Lab's three runs as a strip. Steps 1 to 7: build a tone flowgraph, shown as the lesson's tone flowgraph on the GRC canvas. Steps 8 to 12: receive the FM band, shown as a simulated spectrum of four stations. Steps 13 to 17: record and plot it, shown as L05-psd.py's plot of a simulated recording."
+     style="max-width: 900px; width: 100%; display: block; margin: 0 auto;"></p>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>Steps 1 to 7 run your own tone flowgraph at a 48 kHz sample rate and read where the <span class="math notranslate nohighlight">\(+20\)</span>, <span class="math notranslate nohighlight">\(+30\)</span>, and <span class="math notranslate nohighlight">\(-35\)</span> kHz tones appear. Steps 8 to 12 run <code class="docutils literal notranslate"><span class="pre">L05-fm-spectrum.grc</span></code> on the PlutoSDR, centered on 96.5 MHz, and step the RF gain from 0 to 71 dB. Steps 13 to 17 record about 3 s with the SigMF Sink and plot the file. The pictures use the lesson’s settings, not today’s. Each reading goes beside your Part 1 prediction in Tables A and B of the packet, and the screenshots go in Figures 1 to 3. Nothing in this lab transmits.</p>
+</div>
+</div>
+</div>
+<div class="frame viz-frame cut docutils container" id="frame-predict-first">
+<div class="wrap docutils container">
+<p class="rubric">Predict First</p>
+<div class="depth docutils container">
+<p>Choose a sample rate and set a tone. Before you press <strong>Show where it appears</strong>, mark on the frequency sink where you think the spike will be, by clicking it or with the My Prediction slider. Changing the sample rate, the tone, or your mark hides the answer again, so each guess comes first. The widget offers 32, 40, and 64 kHz, not the 48 kHz of today’s flowgraph, so its answers are not your Part 1 answers. Make one more prediction before Step 11: which of your three gain views in Figure 2 will show signals between stations where nothing transmits.</p>
+</div>
+<div class="stage docutils container">
+<div class="present docutils container">
+<iframe src="../../viz/alias-predict.html"
+        width="100%" height="506"
+        style="border: 1px solid #cddce9; border-radius: 6px;"
+        loading="lazy"
+        title="Choose a sample rate and a tone, mark where the spike will appear on the frequency sink, then show it">
+</iframe>
+</div>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-build-the-tone-flowgraph">
+<div class="wrap docutils container">
+<p class="rubric">Build the Tone Flowgraph</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<ul class="simple">
+<li><p>Start from an empty QT GUI canvas, not <code class="docutils literal notranslate"><span class="pre">L05-tone.grc</span></code>.</p></li>
+<li><p>Set <code class="docutils literal notranslate"><span class="pre">samp_rate</span></code> to 48000; add a slider, source, throttle, and two sinks.</p></li>
+<li><p>Run it; screenshot the canvas and the window at <span class="math notranslate nohighlight">\(+30\)</span> kHz.</p></li>
+<li><p>Read where each tone appears.</p></li>
+</ul>
+</div>
+<div class="present docutils container">
+<p><img src="../../viz/img/L05-grc-tone.png"
+     alt="The lesson's tone flowgraph on the GRC canvas, at 32 kHz: Options, samp_rate variable, QT GUI Range, Signal Source, Throttle, QT GUI Time Sink, and QT GUI Frequency Sink, every connection black"
+     style="max-width: 560px; width: 100%; display: block; margin: 0 auto;"></p>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>This part needs only your laptop.</p>
+<ol class="arabic">
+<li><p><strong>Start GRC.</strong> Choose File, New, QT GUI. Do not open <code class="docutils literal notranslate"><span class="pre">L05-tone.grc</span></code>; Figure 1 shows the flowgraph you build. If GRC does not open, go back to the lesson’s “Verify the Install” frame.</p></li>
+<li><p><strong>Set the sample rate.</strong> Double-click the <code class="docutils literal notranslate"><span class="pre">samp_rate</span></code> variable and set it to 48000.</p></li>
+<li><p><strong>Add the slider.</strong> Add a QT GUI Range with ID <code class="docutils literal notranslate"><span class="pre">freq</span></code>, from <span class="math notranslate nohighlight">\(-72000\)</span> to <span class="math notranslate nohighlight">\(72000\)</span> in steps of 250, default 1000.</p></li>
+<li><p><strong>Add the source.</strong> Add a Signal Source: type complex, sample rate <code class="docutils literal notranslate"><span class="pre">samp_rate</span></code>, waveform Cosine, frequency <code class="docutils literal notranslate"><span class="pre">freq</span></code>.</p></li>
+<li><p><strong>Add the rest and connect.</strong> Add a Throttle (complex, <code class="docutils literal notranslate"><span class="pre">samp_rate</span></code>), a QT GUI Time Sink (complex), and a QT GUI Frequency Sink (complex, bandwidth <code class="docutils literal notranslate"><span class="pre">samp_rate</span></code>). Connect the source to the throttle and the throttle to both sinks. Every connection must be black; a red one is a type mismatch, so check that each block’s type is complex.</p></li>
+<li><p><strong>Run it.</strong> Set the slider to 30 kHz. Take one screenshot that shows your canvas and the running window side by side, and paste it as Figure 1.</p></li>
+<li><p><strong>Read the tones.</strong> Set the slider to each tone in Table A, read where the spike appears on the frequency sink, and compare with your Part 1 prediction. A computed tone has no noise or hardware in the way, so if a reading disagrees with your prediction, check <code class="docutils literal notranslate"><span class="pre">samp_rate</span></code> and the Signal Source’s frequency first.</p>
+<div class="rec" data-lab="L05">
+<label>Step 7: spike frequency for the +20 kHz tone (kHz) <input data-field="a.t20"></label>
+<label>Step 7: spike frequency for the +30 kHz tone (kHz) <input data-field="a.t30"></label>
+<label>Step 7: spike frequency for the −35 kHz tone (kHz) <input data-field="a.tm35"></label>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-the-fm-band-and-the-gain">
+<div class="wrap docutils container">
+<p class="rubric">The FM Band and the Gain</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<ul class="simple">
+<li><p>Put the whip on <strong>RX</strong> and run <code class="docutils literal notranslate"><span class="pre">L05-fm-spectrum.grc</span></code>.</p></li>
+<li><p>Center on 96.5 MHz and read the band on screen.</p></li>
+<li><p>Find the strongest station, off the DC spike.</p></li>
+<li><p>Step the RF gain from 0 to 71 dB; screenshot three views.</p></li>
+</ul>
+</div>
+<div class="present docutils container">
+<p><img src="../../viz/img/L05-fm-band-sim.svg"
+     alt="Simulated: the FM band around 100.1 MHz on the QT GUI Sink, four stations, the DC spike at the center, the noise floor, and the display span from fc minus fs/2 to fc plus fs/2, over a waterfall"
+     style="max-width: 560px; width: 100%; display: block; margin: 0 auto;"></p>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<ol class="arabic" start="8">
+<li><p><strong>Connect the PlutoSDR.</strong> Screw the course’s broadband whip onto the RX port and plug the Pluto’s middle USB port into your laptop. Open and run <code class="docutils literal notranslate"><span class="pre">L05-fm-spectrum.grc</span></code>. The PlutoSDR Source opens the radio at <code class="docutils literal notranslate"><span class="pre">ip:192.168.2.1</span></code>; if you have not switched your Pluto to NCM mode on a Mac, type the <code class="docutils literal notranslate"><span class="pre">usb:</span></code> URI from <code class="docutils literal notranslate"><span class="pre">iio_info</span> <span class="pre">-s</span></code> into the PlutoSDR Source instead, as the lesson’s “Connect the PlutoSDR” frame shows.</p></li>
+<li><p><strong>Read the band.</strong> Set the <strong>Center frequency (Hz)</strong> slider to 96.5 MHz, hover the cursor at the left and right ends of the plot to read the lowest and highest frequencies it shows, and compare with your Part 1 prediction.</p>
+<div class="rec" data-lab="L05">
+<label>Step 9: lowest to highest frequency on the display at 96.5 MHz (MHz) <input data-field="b.band"></label>
+</div>
+</li>
+<li><p><strong>Find the strongest station.</strong> Drag the center frequency slowly from 88 to 108 MHz and stop on the tallest station. Uncheck <strong>DC tracking</strong> and find the spike at the center of the display: it is the receiver’s own DC offset, not a station. Check the box again, then tune so that the station sits a little to one side of center, because DC tracking can subtract part of a signal centered at 0 Hz.</p></li>
+<li><p><strong>Step the gain.</strong> With the station on screen, set the <strong>RF gain (dB)</strong> slider to 0, 20, 40, 60, and 71 dB in turn, and watch the noise floor, the station, and the space between stations at each.</p></li>
+<li><p><strong>Screenshot three views.</strong> Choose the gain you would use to receive weak stations in this room. Take a screenshot of the display at 0 dB, at your gain, and at 71 dB, with the same station on screen in all three, and paste them as Figure 2.</p>
+<div class="rec" data-lab="L05">
+<label>Step 12: RF gain you chose for weak stations (dB) <input data-field="b.gain"></label>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-record-and-plot">
+<div class="wrap docutils container">
+<p class="rubric">Record and Plot</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<ul class="simple">
+<li><p>Type the center and your gain in as the sliders’ defaults.</p></li>
+<li><p>Enable the SigMF Sink, run about 3 s, and compare the file size.</p></li>
+<li><p>Plot the file with <code class="docutils literal notranslate"><span class="pre">L05-psd.py</span></code>.</p></li>
+</ul>
+</div>
+<div class="present docutils container">
+<p><img src="../../viz/img/L05-psd-sim.png"
+     alt="Simulated: L05-psd.py's plot of the L7 test recording centered on 100.0 MHz, with stations at 99.5 and 100.3 MHz over a flat floor"
+     style="max-width: 520px; width: 100%; display: block; margin: 0 auto;"></p>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<ol class="arabic" start="13">
+<li><p><strong>Set the defaults.</strong> Stop the flowgraph. Double-click the <strong>Center frequency (Hz)</strong> slider block and type the center frequency of your Figure 2 views as its Default Value, then do the same for the <strong>RF gain (dB)</strong> slider with your gain from Step 12. The SigMF Sink writes the center frequency to the meta file when the run starts, so it has to be right before you press Run.</p></li>
+<li><p><strong>Enable the SigMF Sink.</strong> Right-click the gray SigMF Sink and choose Enable. Its file name, <code class="docutils literal notranslate"><span class="pre">fm_capture</span></code>, makes <code class="docutils literal notranslate"><span class="pre">fm_capture.sigmf-data</span></code> and <code class="docutils literal notranslate"><span class="pre">fm_capture.sigmf-meta</span></code> in the flowgraph’s folder. GRC outlines the block in orange because GNU Radio 3.10 marks it deprecated, but the block records correctly.</p></li>
+<li><p><strong>Record.</strong> Run the flowgraph for about 3 s and stop it. Read the size of <code class="docutils literal notranslate"><span class="pre">fm_capture.sigmf-data</span></code> in bytes from its file properties, divide by <span class="math notranslate nohighlight">\(10^6\)</span> to get MB, and compare with your Part 1 prediction. A file browser’s own “MB” may be <span class="math notranslate nohighlight">\(2^{20}\)</span> bytes, about 5% larger, so use the byte count. Open <code class="docutils literal notranslate"><span class="pre">fm_capture.sigmf-meta</span></code> in a text editor and check that its center frequency is the one you set.</p>
+<div class="rec" data-lab="L05">
+<label>Step 15: size of fm_capture.sigmf-data (MB) <input data-field="b.size"></label>
+</div>
+</li>
+<li><p><strong>Disable the sink.</strong> Right-click the SigMF Sink and choose Disable, so the next run does not overwrite the capture.</p></li>
+<li><p><strong>Plot it.</strong> From the radioconda prompt, in the flowgraph’s folder, run <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">L05-psd.py</span> <span class="pre">fm_capture.sigmf-data</span></code>. It reads the sample rate and center frequency from the meta file. Paste the plot as Figure 3.</p></li>
+</ol>
+</div>
+</div>
+</div>
+<div class="frame read-only docutils container" id="frame-no-hardware">
+<div class="wrap docutils container">
+<p class="rubric">No Hardware?</p>
+<div class="tip admonition">
+<p class="admonition-title">If your PlutoSDR is missing or will not open</p>
+<p>Steps 1 to 7 need no radio. For Steps 8 to 17, work at the laptop of a classmate whose PlutoSDR works, taking turns, and take your own readings, your own screenshots, and your own capture; note whose PlutoSDR you used on the packet’s Documentation line. Bring the failed Pluto to EI so it works before the L7 Lab.</p>
+<p>If no PlutoSDR in the room works, do Steps 15 and 17 on a simulated recording. Download <a href="../../grc/L07-fm-test-tx.grc" download>L07-fm-test-tx.grc</a> and run it; it needs no radio, and it writes <code class="docutils literal notranslate"><span class="pre">L07-fm-test.sigmf-data</span></code> and <code class="docutils literal notranslate"><span class="pre">.sigmf-meta</span></code>, 4 s at 2.4 MS/s centered on 100.0 MHz. In Step 15, read that file’s size and compare it with your Part 1 prediction scaled to 4 s. In Step 17, run <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">L05-psd.py</span> <span class="pre">L07-fm-test.sigmf-data</span></code>. Write “Simulated” on Figure 3 and on the Documentation line.</p>
+</div>
+</div>
+</div>
+<div class="frame read-only docutils container" id="frame-your-part-2-entries">
+<div class="wrap docutils container">
+<p class="rubric">Your Part 2 Entries</p>
+<p>This frame collects every box you filled in on this page. Your entries stay in this browser only, saved as you type. <strong>Download my packet</strong> writes them into the Measured cells of the blank packet and saves the PDF. The download locks every field, the Predicted cells included, so type your predictions into your own copy of the packet first, then use <strong>Fill my own copy</strong> and choose that file: the page keeps your predictions and adds your measurements beside them. Paste Figures 1 to 3 and write Part 3 in your copy, or on the printout, and upload one PDF to Gradescope. <strong>Export entries</strong> saves a small backup file you can <strong>Import</strong> on another laptop.</p>
+<div class="rec-summary" data-lab="L05" data-pdf="../../labs/ECE448_Lab_L05_FirstFlowgraphs_blank.pdf" data-file="ECE448_L05_Lab"></div>
+</div>
+</div>
+<div class="frame read-only doc-links docutils container" id="frame-lab-packet">
+<div class="wrap docutils container">
+<p class="rubric">Lab Packet</p>
+<p>The L5 Lab packet is one submission, turned in complete before Lesson 6:</p>
+<ol class="arabic simple">
+<li><p>Part 1, Predict (individual, before the lab period): the shaded Predicted cells of Tables A and B, with your work for one row of each attached.</p></li>
+<li><p>Part 2, Measure (in class, on your own laptop and PlutoSDR): the white Measured cells of the same tables, and Figures 1 to 3.</p></li>
+<li><p>Part 3, Analyze (individual, after the lab): three prompts, each answered from your own tables and figures.</p></li>
+</ol>
+<ul class="simple">
+<li><p><a class="doc-link" href="../../labs/ECE448_Lab_L05_FirstFlowgraphs_blank.pdf" target="_blank" rel="noopener">L5 Lab packet (PDF)</a></p></li>
+<li><p><a class="doc-link" href="../../grc/L05-fm-spectrum.grc" download>L05-fm-spectrum.grc</a> and <a class="doc-link" href="../../grc/L05-psd.py" download>L05-psd.py</a></p></li>
+</ul>
+</div>
+</div>
+<div class="frame read-only docutils container" id="frame-for-part-3">
+<div class="wrap docutils container">
+<p class="rubric">For Part 3</p>
+<p>Do Part 3 after class, with your tables and figures beside you. It asks about three comparisons:</p>
+<ol class="arabic simple">
+<li><p>Table A and Figure 1: your predicted and measured tone positions at 48 kHz.</p></li>
+<li><p>Figure 2: the three gain views, and the gain you chose.</p></li>
+<li><p>Your recording against the live display: the file size against your prediction, and Figure 3 against Figure 2.</p></li>
+</ol>
+<p>I grade each answer on a claim, the evidence from your own tables and figures, the reasoning that connects them, and the uncertainty in your readings.</p>
+</div>
+</div>
+<div class="frame read-only docutils container" id="frame-looking-ahead">
+<div class="wrap docutils container">
+<p class="rubric">Looking Ahead</p>
+<p>Keep both capture files: Lesson 7’s FM receiver plays <code class="docutils literal notranslate"><span class="pre">fm_capture.sigmf-data</span></code> back through a SigMF Source before it receives the live band.</p>
+</div>
+</div>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./module02/L05-lab-first-flowgraphs"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+</main>
+
+<script src="../../_static/shell.js?v=ac36f07766"></script>
+<script src="../../_static/frames.js?v=89e4b02ee3"></script><script src="../../_static/viz-autosize.js?v=4fe0c4e159"></script><script src="../../_static/records.js?v=ef6a7436b3"></script>
+</body>
+</html>

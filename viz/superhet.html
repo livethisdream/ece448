@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Superheterodyne — the spectrum at each stage of a superhet receiver and transmitter</title>
+<style>
+  :root { --navy:#004a85; --mid:#0067b9; --edge:#cddce9; --edge2:#b9d2e5; --bg:#f5f9fc;
+          --ink:#15202b; --ink3:#5b6573;
+          --amber:#8a5a00; --red:#b01e24; --grn:#3f7d34; }
+  html,body { margin:0; padding:0; font-family:'Inter',system-ui,-apple-system,sans-serif; color:var(--ink); background:#fff; }
+  .app { display:flex; flex-direction:column; gap:8px; padding:12px; }
+  canvas { display:block; box-sizing:border-box; width:100%; height:auto; background:#fff; border:1px solid var(--edge); border-radius:6px; }
+  #chain { cursor:pointer; }
+  .controls { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:8px 16px;
+              padding:8px 12px; background:var(--bg); border:1px solid var(--edge); border-radius:6px; }
+  .seg { display:flex; gap:4px; flex-wrap:wrap; }
+  .seg button { font:inherit; font-size:11.5px; font-weight:600; color:var(--navy); background:#fff; border:1px solid var(--edge2); border-radius:14px; padding:3px 10px; cursor:pointer; }
+  .seg button.on { background:var(--navy); color:#fff; border-color:var(--navy); }
+  .chk { display:flex; align-items:center; gap:6px; font-size:10.5px; text-transform:uppercase; letter-spacing:0.05em; color:var(--ink3); font-weight:700; white-space:nowrap; cursor:pointer; }
+  .chk input { margin:0; accent-color:var(--red); }
+  .readouts { display:grid; gap:6px; grid-template-columns:minmax(0,1fr) minmax(0,3fr); }
+  @media (max-width:620px) { .readouts { grid-template-columns:1fr; } }
+  .ro { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; padding:5px 8px 6px; min-width:0;
+        border:1px solid var(--edge2); border-radius:6px; background:#eef4fa; }
+  .ro .k { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:var(--ink3); white-space:nowrap; }
+  .ro .v { font-size:14px; font-weight:700; white-space:nowrap; font-variant-numeric:tabular-nums; color:var(--navy); }
+  .ro.what { align-items:flex-start; }
+  .ro.what .v { font-size:12.5px; font-weight:600; white-space:normal; line-height:1.3; min-height:2.6em; color:var(--ink); }
+  @media (max-width:620px) { .ro.what .v { min-height:3.9em; } }
+  .ro.bad { border-color:#e3b5b7; background:#fbeeee; }
+  .ro.bad .v { color:var(--red); }
+</style>
+</head>
+<body>
+<div class="app">
+  <canvas id="chain" aria-label="Block diagram of the chain, with the current stage highlighted; click a block to jump to it"></canvas>
+  <canvas id="spec" aria-label="Simulated spectrum at the output of the highlighted stage"></canvas>
+  <div class="controls">
+    <div class="seg" id="mode"><button data-m="rx" class="on">Receive</button><button data-m="tx">Transmit</button></div>
+    <div class="seg"><button id="play">Play</button><button id="step">Step</button></div>
+    <label class="chk"><input type="checkbox" id="off"><span id="off-lab">Preselector off</span></label>
+  </div>
+  <div class="readouts">
+    <div class="ro" id="ro-stage"><span class="k">stage</span><span class="v" id="o-stage">—</span></div>
+    <div class="ro what" id="ro-what"><span class="k">what just happened</span><span class="v" id="o-what">—</span></div>
+  </div>
+</div>
+
+<script>
+'use strict';
+// Frequencies in MHz, levels in dB on an arbitrary relative scale. The
+// numbers are the classic broadcast FM superhet: wanted station 100.3 MHz,
+// IF 10.7 MHz, high-side LO at 111.0 MHz, and so an image at 111.0 + 10.7 =
+// 121.7 MHz. The gains, losses, and filter shapes are illustrative, chosen
+// so each effect is visible; they are not any one radio's.
+const DBLO = -115, DBHI = -5;
+const P = d => Math.pow(10, d / 10);
+const psum = (...d) => 10 * Math.log10(d.reduce((s, v) => s + P(v), 0) || 1e-30);
+
+// A filter is an attenuation in dB: zero across its passband, rising at a
+// fixed slope outside it, up to a maximum rejection.
+function band(lo, hi, slope, rej) {
+  return f => { const a = Math.abs(f), d = a < lo ? lo - a : a > hi ? a - hi : 0; return Math.min(rej, slope * d); };
+}
+function lowpass(edge, slope, rej) { return f => Math.min(rej, slope * Math.max(0, Math.abs(f) - edge)); }
+
+// Each operation takes a spectrum { sigs, floor } and returns the next one.
+// floor(f) is the noise floor in dB at frequency f.
+const op = {
+  filter: (S, att) => ({ sigs: S.sigs.map(s => ({ ...s, db: s.db - att(s.f) })), floor: f => S.floor(f) - att(f) }),
+  gain: (S, g, own) => ({ sigs: S.sigs.map(s => ({ ...s, db: s.db + g })), floor: f => psum(S.floor(f) + g, own) }),
+  // One real mixer: every input at g comes out at |g - LO| and at g + LO.
+  mix: (S, lo, loss, own, sumKind, extra) => {
+    const sigs = [];
+    for (const s of S.sigs) {
+      sigs.push({ ...s, f: Math.abs(s.f - lo), db: s.db - loss });
+      sigs.push({ ...s, id: s.id + '+', f: s.f + lo, db: s.db - loss, kind: sumKind });
+    }
+    if (extra) sigs.push(extra);
+    const fl = S.floor;
+    return { sigs, floor: f => { f = Math.abs(f); return psum(fl(lo + f) - loss, fl(Math.abs(f - lo)) - loss, own); } };
+  },
+  // I/Q mixer down to 0 Hz: a real input at +g lands at g - LO, and its
+  // negative-frequency half lands at -(g + LO).
+  iqDown: (S, lo, loss) => {
+    const sigs = [];
+    for (const s of S.sigs) {
+      sigs.push({ ...s, f: s.f - lo, db: s.db - loss });
+      sigs.push({ ...s, id: s.id + '+', f: -(s.f + lo), db: s.db - loss, kind: 'sum' });
+    }
+    return { sigs, floor: f => S.floor(Math.abs(f + lo)) - loss };
+  },
+  // I/Q mixer up from 0 Hz: a complex input at b comes out at |b + LO|.
+  iqUp: (S, lo) => ({ sigs: S.sigs.map(s => ({ ...s, f: Math.abs(s.f + lo) })), floor: f => S.floor(Math.abs(f) - lo) }),
+};
+
+const RF = [84, 128];
+function buildRX(off) {
+  const pre = off ? () => 0 : band(88, 108, 20, 60);
+  const s0 = { sigs: [
+      { id: 'w', f: 100.3, db: -70, w: 0.2, kind: 'want' },
+      { id: 'a', f: 100.7, db: -62, w: 0.2, kind: 'adj' },
+      { id: 'i', f: 121.7, db: -55, w: 0.2, kind: 'img' } ], floor: () => -100 };
+  const s1 = op.filter(s0, pre);
+  const s2 = op.gain(s1, 20, -86);
+  const s3 = op.mix(s2, 111.0, 6, -100, 'sum');
+  const ifF = band(10.57, 10.83, 300, 80);
+  const s4 = op.filter(s3, ifF);
+  const s5 = op.gain(s4, 25, -100);
+  const s6 = op.iqDown(s5, 10.7, 6);
+  const lp = lowpass(0.13, 300, 80);
+  const s7 = op.filter(s6, lp);
+  const s8 = op.gain(s7, 0, -100);
+  return [
+    { name: 'Antenna', sub: '', view: RF, S: s0, at: 'at the antenna',
+      text: 'The antenna picks up every station at once: the wanted 100.3 MHz, a stronger neighbor at 100.7 MHz, and a strong station at 121.7 MHz.' },
+    { name: 'Preselector', sub: off ? 'off' : '88–108 MHz', view: RF, S: s1, filt: off ? null : pre, dim: off, bad: off,
+      text: off ? 'Preselector off: the 121.7 MHz station passes at full strength. Watch where it lands after the mixer.'
+                : 'The preselector passes the FM band and knocks the 121.7 MHz image station down before it reaches the mixer.' },
+    { name: 'LNA', sub: '+20 dB', view: RF, S: s2,
+      text: 'The LNA raises the signals and the noise floor together. As Lesson 2 showed, this first amplifier sets most of the noise figure.' },
+    { name: 'Mixer', sub: 'LO1 111.0', view: [0, 240], S: s3, lo: [111.0, 'LO1 111.0'], bad: off,
+      text: off ? 'Everything moves by the 111.0 MHz LO: 100.3 lands at 10.7 MHz, and so does 121.7, right on top of it. Sum products appear near 211 MHz.'
+                : 'Everything moves by the 111.0 MHz LO: 100.3 MHz lands at 10.7 MHz, the neighbor at 10.3 MHz, and sum products appear near 211 MHz.' },
+    { name: 'IF filter', sub: '10.7 MHz', view: [8.7, 12.7], S: s4, filt: ifF, bad: off,
+      text: off ? 'The IF filter keeps the 10.7 MHz channel, but the image is in that channel too. No filter after the mixer can remove it.'
+                : 'The IF filter keeps one channel at 10.7 MHz and removes the 10.3 MHz neighbor and the sum products.' },
+    { name: 'IF amp', sub: '+25 dB', view: [8.7, 12.7], S: s5, bad: off,
+      text: off ? 'The IF amplifier raises the channel, and the image with it.'
+                : 'The IF amplifier adds most of the gain at one fixed frequency, the same for every station the radio tunes.' },
+    { name: 'I/Q mixer', sub: 'LO2 10.7', view: [-25, 5], S: s6, bad: off,
+      text: off ? 'A second mixer, with LO2 at 10.7 MHz, brings the channel to 0 Hz as I and Q, and brings the image with it.'
+                : 'A second mixer, with LO2 at 10.7 MHz, brings the channel to 0 Hz as I and Q, plus a sum product at −21.4 MHz.' },
+    { name: 'Low-pass', sub: 'one channel', view: [-1, 1], S: s7, filt: lp, bad: off,
+      text: 'The low-pass filters keep the channel around 0 Hz and remove the −21.4 MHz sum product.' },
+    { name: 'ADC', sub: 'to GNU Radio', view: [-1, 1], S: s8, bad: off,
+      text: off ? 'GNU Radio gets the wanted station and the image on top of each other, and nothing downstream can separate them.'
+                : 'The ADCs turn I and Q into samples for GNU Radio: one channel, centered at 0 Hz.' },
+  ];
+}
+function buildTX(off) {
+  const bpf = off ? () => 0 : band(88, 108, 20, 60);
+  const s0 = { sigs: [
+      { id: 'w', f: 0, db: -40, w: 0.2, kind: 'want' },
+      { id: 'c1', f: 2.4, db: -55, w: 0.2, kind: 'other' },
+      { id: 'c2', f: -2.4, db: -55, w: 0.2, kind: 'other' } ], floor: () => -100 };
+  const s1 = op.iqUp(s0, 10.7);
+  const ifF = band(10.57, 10.83, 300, 80);
+  const s2 = op.filter(s1, ifF);
+  const s3 = op.mix(s2, 111.0, 6, -105, 'unw', { id: 'lo', f: 111.0, db: -58, w: 0.05, kind: 'lo' });
+  const s4 = op.filter(s3, bpf);
+  const s5 = op.gain(s4, 30, -75);
+  return [
+    { name: 'DAC', sub: 'from GNU Radio', view: [-4, 4], S: s0,
+      text: 'The DACs turn GNU Radio\'s I and Q samples into voltages: the signal at 0 Hz, with faint copies 2.4 MHz away, at the sample rate.' },
+    { name: 'I/Q mixer', sub: 'LO 10.7', view: [6.5, 15], S: s1, lo: [10.7, 'LO 10.7'],
+      text: 'The I/Q mixer moves the signal from 0 Hz up to the 10.7 MHz IF, and the copies move with it.' },
+    { name: 'IF filter', sub: '10.7 MHz', view: [6.5, 15], S: s2, filt: ifF,
+      text: 'The IF filter keeps the 10.7 MHz channel and removes the DAC\'s copies.' },
+    { name: 'Mixer', sub: 'LO 111.0', view: RF, S: s3, lo: [111.0, 'LO 111.0'],
+      text: 'The mixer puts the signal at 111.0 − 10.7 = 100.3 MHz, plus an unwanted product at 121.7 MHz and some LO leakage at 111.0 MHz.' },
+    { name: 'Band-pass', sub: off ? 'off' : '88–108 MHz', view: RF, S: s4, filt: off ? null : bpf, dim: off, bad: off,
+      text: off ? 'Band-pass off: the 121.7 MHz product and the LO leakage go on to the PA.'
+                : 'The band-pass knocks the 121.7 MHz product and the LO leakage far down before the PA can amplify them.' },
+    { name: 'PA', sub: '+30 dB', view: RF, S: s5, bad: off,
+      text: off ? 'The PA raises the output to drive the antenna, and raises the unwanted products with it.'
+                : 'The PA raises the output to drive the antenna; its noise floor rises with it.' },
+    { name: 'Antenna', sub: '100.3 MHz', view: RF, S: s5, bad: off, at: 'at the antenna',
+      text: off ? 'The antenna radiates at 100.3 MHz, and also at 111.0 and 121.7 MHz, outside the FM band.'
+                : 'The antenna radiates one clean signal at 100.3 MHz.' },
+  ];
+}
+
+const SANS = 'Inter, system-ui, -apple-system, sans-serif';
+const C = { navy:'#004a85', mid:'#0067b9', red:'#b01e24', amber:'#8a5a00', rule:'#cddce9', ink:'#15202b', ink3:'#5b6573',
+            bg:'#eef4fa', edge2:'#b9d2e5' };
+const KIND = { want: { col: C.navy, role: 'wanted' }, adj: { col: '#5b8fbf', role: 'neighbor' },
+               img: { col: C.red, role: 'image' }, unw: { col: C.red, role: 'unwanted' },
+               sum: { col: '#8d97a3', role: 'sum' }, lo: { col: C.amber, role: 'LO leak' },
+               other: { col: '#8d97a3', role: 'copy' } };
+const LABELED = new Set(['w', 'a', 'i', 'w+', 'lo', 'c1']);
+const $ = id => document.getElementById(id);
+
+let mode = 'rx', off = false, stage = 0, stages = buildRX(false), timer = null;
+let shown = null, anim = null;   // the snapshot on screen, and the animation in progress
+
+// A snapshot is what the spectrum canvas draws: a view, signals, and a floor
+// as a function of u, the fraction of the way across the view. Working in u
+// lets two stages with different views blend pixel by pixel: the axis
+// rescales while each trace moves smoothly across the screen.
+function snap(st) {
+  const [lo, hi] = st.view, F = f => st.S.floor(f);
+  return { lo, hi, sigs: st.S.sigs, floorU: u => F(lo + u * (hi - lo)),
+           filtU: st.filt ? (u => st.filt(lo + u * (hi - lo))) : null, filtA: 1,
+           lo1: st.lo || null, loA: 1, at: st.at || 'after the ' + st.name.replace(/^([A-Z])(?=[a-z])/, c => c.toLowerCase()) };
+}
+function lerp(a, b, t) { return a + (b - a) * t; }
+const uOf = (S, s) => s.u ?? (s.f - S.lo) / (S.hi - S.lo);
+function shows(S, s) { const u = uOf(S, s); return u > 0 && u < 1 && s.db > Math.max(DBLO, S.floorU(u)) + 2; }
+function blend(A, B, t) {
+  // The span zooms geometrically, so a 240 MHz view narrowing to 4 MHz does
+  // not rush through the last few frames.
+  const sa = A.hi - A.lo, sb = B.hi - B.lo, span = sa * Math.pow(sb / sa, t);
+  const c = lerp((A.lo + A.hi) / 2, (B.lo + B.hi) / 2, t), lo = c - span / 2, hi = c + span / 2;
+  // Only what shows above the floor at either end takes part, so a signal
+  // buried at both ends stays buried in between.
+  const byA = new Map(A.sigs.filter(s => shows(A, s)).map(s => [s.id, s]));
+  const byB = new Map(B.sigs.filter(s => shows(B, s)).map(s => [s.id, s])), sigs = [];
+  for (const id of new Set([...byA.keys(), ...byB.keys()])) {
+    const a = byA.get(id), b = byB.get(id);
+    // Signals move across the screen, not along the frequency axis, so a
+    // station sliding from 100.3 to 10.7 MHz stays in view while the axis
+    // changes under it.
+    const ua = a && uOf(A, a), ub = b && uOf(B, b);
+    if (a && b) sigs.push({ ...b, f: lerp(a.f, b.f, t), u: lerp(ua, ub, t), db: lerp(a.db, b.db, t) });
+    else if (b) sigs.push({ ...b, u: ub, db: lerp(DBLO - 10, b.db, t) });
+    else sigs.push({ ...a, u: ua, db: lerp(a.db, DBLO - 10, t) });
+  }
+  return { lo, hi, sigs, floorU: u => lerp(A.floorU(u), B.floorU(u), t),
+           filtU: B.filtU || A.filtU, filtA: B.filtU ? t : (1 - t) * A.filtA,
+           lo1: B.lo1 || A.lo1, loA: B.lo1 ? t : (1 - t) * A.loA, at: t < 0.5 ? A.at : B.at };
+}
+
+function setup(cv, h) {
+  const dpr = window.devicePixelRatio || 1, w = Math.max(200, cv.clientWidth || 300);
+  cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); cv.style.height = h + 'px';
+  const bh = cv.offsetHeight - cv.clientHeight; if (bh) cv.style.height = (h + bh) + 'px';
+  const ctx = cv.getContext('2d'); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); return { ctx, w, h };
+}
+function txt(ctx, s, x, y, px, col, align, bold) { ctx.fillStyle = col; ctx.font = (bold ? '700 ' : '') + px + 'px ' + SANS;
+  ctx.textAlign = align || 'left'; ctx.textBaseline = 'middle'; ctx.fillText(s, x, y); }
+function fitPx(ctx, s, maxW, px, bold) {
+  for (; px > 7.5; px -= 0.5) { ctx.font = (bold ? '700 ' : '') + px + 'px ' + SANS; if (ctx.measureText(s).width <= maxW) break; }
+  return px;
+}
+const narrow = () => window.matchMedia && window.matchMedia('(max-width:620px)').matches;
+
+// ---- the block diagram ----------------------------------------------------
+let boxes = [];
+function drawChain() {
+  const cv = $('chain'), n = stages.length, w = Math.max(200, cv.clientWidth || 300);
+  const rows = w < 560 ? 2 : 1, per = Math.ceil(n / rows), m = 8, gap = 12, bh = 40, rgap = 20, pad = 8;
+  const { ctx } = setup(cv, pad * 2 + rows * bh + (rows - 1) * rgap);
+  ctx.clearRect(0, 0, w, 999);
+  const bw = (w - 2 * m - (per - 1) * gap) / per;
+  boxes = [];
+  for (let k = 0; k < n; k++) {
+    const r = Math.floor(k / per), c = k % per;
+    boxes.push({ x: m + c * (bw + gap), y: pad + r * (bh + rgap), w: bw, h: bh });
+  }
+  ctx.strokeStyle = C.ink3; ctx.fillStyle = C.ink3; ctx.lineWidth = 1.2;
+  const head = (x, y, dir) => { ctx.beginPath();
+    if (dir === 'r') { ctx.moveTo(x, y); ctx.lineTo(x - 5, y - 3.5); ctx.lineTo(x - 5, y + 3.5); }
+    else { ctx.moveTo(x, y); ctx.lineTo(x - 3.5, y - 5); ctx.lineTo(x + 3.5, y - 5); }
+    ctx.closePath(); ctx.fill(); };
+  for (let k = 0; k + 1 < n; k++) {
+    const a = boxes[k], b = boxes[k + 1];
+    ctx.beginPath();
+    if (Math.abs(a.y - b.y) < 1) { const y = a.y + bh / 2; ctx.moveTo(a.x + a.w, y); ctx.lineTo(b.x - 1, y); ctx.stroke(); head(b.x, y, 'r'); }
+    else { const x0 = a.x + a.w / 2, x1 = b.x + b.w / 2, ym = a.y + bh + rgap / 2;
+      ctx.moveTo(x0, a.y + bh); ctx.lineTo(x0, ym); ctx.lineTo(x1, ym); ctx.lineTo(x1, b.y - 1); ctx.stroke(); head(x1, b.y, 'd'); }
+  }
+  stages.forEach((st, k) => {
+    const b = boxes[k], cur = k === stage, past = k < stage;
+    ctx.beginPath(); ctx.roundRect ? ctx.roundRect(b.x, b.y, b.w, b.h, 6) : ctx.rect(b.x, b.y, b.w, b.h);
+    ctx.fillStyle = cur ? (st.dim ? C.red : C.navy) : past ? C.bg : '#fff'; ctx.fill();
+    ctx.setLineDash(st.dim && !cur ? [3, 3] : []);
+    ctx.strokeStyle = cur ? (st.dim ? C.red : C.navy) : st.dim ? C.red : C.edge2; ctx.lineWidth = 1.3; ctx.stroke(); ctx.setLineDash([]);
+    const col = cur ? '#fff' : st.dim ? C.red : C.navy, col2 = cur ? '#dbe8f4' : st.dim ? C.red : C.ink3;
+    const px = fitPx(ctx, st.name, b.w - 6, 11.5, true);
+    txt(ctx, st.name, b.x + b.w / 2, b.y + (st.sub ? 14 : bh / 2), px, col, 'center', true);
+    if (st.sub) txt(ctx, st.sub, b.x + b.w / 2, b.y + 28, fitPx(ctx, st.sub, b.w - 6, 9.5), col2, 'center');
+  });
+}
+$('chain').addEventListener('click', e => {
+  const r = $('chain').getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
+  const k = boxes.findIndex(b => x >= b.x && x <= b.x + b.w && y >= b.y && y <= b.y + b.h);
+  if (k >= 0) { stop(); go(k); }
+});
+
+// ---- the spectrum -----------------------------------------------------------
+function niceStep(span) { const raw = span / 6, p = Math.pow(10, Math.floor(Math.log10(raw))), m = raw / p;
+  return (m < 1.5 ? 1 : m < 3.5 ? 2 : m < 7.5 ? 5 : 10) * p; }
+function fmtF(f) { return Math.abs(f) < 0.05 ? '0' : f.toFixed(1).replace('-', '−'); }
+function fmtTick(f) { return (+f.toFixed(6)).toString().replace('-', '−'); }
+function drawSpec(S) {
+  const cv = $('spec'), w = Math.max(200, cv.clientWidth || 300);
+  const h = narrow() ? 220 : Math.round(Math.min(w * 0.34, 250));
+  const { ctx } = setup(cv, h);
+  ctx.clearRect(0, 0, w, h);
+  const mL = 12, mR = 12, top = 30, bot = h - 26, span = S.hi - S.lo;
+  const X = f => mL + (f - S.lo) / span * (w - mL - mR), su = s => s.u ?? (s.f - S.lo) / span;
+  const Y = d => top + (DBHI - Math.max(DBLO, Math.min(DBHI, d))) / (DBHI - DBLO) * (bot - top);
+  // The noise floor, shaded underneath.
+  const N = Math.round(w - mL - mR);
+  ctx.beginPath(); ctx.moveTo(mL, bot);
+  for (let i = 0; i <= N; i++) ctx.lineTo(mL + i, Y(S.floorU(i / N)));
+  ctx.lineTo(w - mR, bot); ctx.closePath(); ctx.fillStyle = C.bg; ctx.fill();
+  ctx.beginPath();
+  for (let i = 0; i <= N; i++) { const y = Y(S.floorU(i / N)); i ? ctx.lineTo(mL + i, y) : ctx.moveTo(mL, y); }
+  ctx.strokeStyle = C.ink3; ctx.lineWidth = 1; ctx.stroke();
+  // The filter's shape, if this stage is a filter, as a dashed line hanging
+  // from the top: flat across the passband, falling outside it.
+  if (S.filtU && S.filtA > 0.02) {
+    ctx.globalAlpha = S.filtA; ctx.beginPath();
+    for (let i = 0; i <= N; i++) { const y = top + 4 + Math.min(80, S.filtU(i / N)) / 80 * (bot - top - 8); i ? ctx.lineTo(mL + i, y) : ctx.moveTo(mL, y); }
+    ctx.setLineDash([5, 4]); ctx.strokeStyle = C.mid; ctx.lineWidth = 1.4; ctx.stroke(); ctx.setLineDash([]);
+    ctx.globalAlpha = 1;
+  }
+  if (S.lo1 && S.loA > 0.02 && S.lo1[0] > S.lo && S.lo1[0] < S.hi) {
+    ctx.globalAlpha = S.loA; const x = X(S.lo1[0]);
+    ctx.setLineDash([3, 3]); ctx.strokeStyle = C.amber; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(x, top + 14); ctx.lineTo(x, bot); ctx.stroke(); ctx.setLineDash([]);
+    txt(ctx, S.lo1[1], x + (x > w * 0.75 ? -4 : 4), top + 8, 10, C.amber, x > w * 0.75 ? 'right' : 'left', true);
+    ctx.globalAlpha = 1;
+  }
+  // Signals, wanted last so it stays on top unless something sits on it.
+  const order = { sum: 0, other: 0, lo: 1, adj: 2, want: 3, unw: 4, img: 4 };
+  const vis = S.sigs.filter(s => shows(S, s))
+                    .sort((a, b) => order[a.kind] - order[b.kind]);
+  const pxMHz = (w - mL - mR) / span, labels = [];
+  for (const s of vis) {
+    const x = mL + su(s) * (w - mL - mR), hw = Math.max(1.5, s.w / 2 * pxMHz), yb = Y(S.floorU(su(s))), yp = Y(s.db);
+    ctx.beginPath(); ctx.moveTo(x - hw - 3, yb); ctx.lineTo(x - hw, yp); ctx.lineTo(x + hw, yp); ctx.lineTo(x + hw + 3, yb); ctx.closePath();
+    ctx.globalAlpha = s.kind === 'img' || s.kind === 'unw' ? 0.8 : 0.9; ctx.fillStyle = KIND[s.kind].col; ctx.fill(); ctx.globalAlpha = 1;
+    if (LABELED.has(s.id)) labels.push({ x, y: yp - 9, s: fmtF(s.f) + ' ' + KIND[s.kind].role, col: s.kind === 'adj' ? C.mid : KIND[s.kind].col });
+  }
+  // Labels: greedy, left to right. Each sits above every peak under it, and
+  // one that would overlap a label already placed moves above that label.
+  ctx.font = '700 10.5px ' + SANS; const placed = [], peaks = vis.map(s => ({ x: mL + su(s) * (w - mL - mR), y: Y(s.db) }));
+  labels.sort((a, b) => a.x - b.x);
+  for (const L of labels) {
+    const wd = ctx.measureText(L.s).width, x = Math.max(mL + wd / 2, Math.min(w - mR - wd / 2, L.x));
+    let y = Math.min(L.y, ...peaks.filter(p => Math.abs(p.x - x) < wd / 2 + 6).map(p => p.y - 9));
+    for (let tries = 0; tries < 4; tries++) {
+      const hits = placed.filter(p => Math.abs(p.x - x) < (p.wd + wd) / 2 + 4 && Math.abs(p.y - y) < 13);
+      if (!hits.length) break; y = Math.min(...hits.map(p => p.y)) - 13;
+    }
+    y = Math.max(top - 6, y);
+    placed.push({ x, y, wd }); txt(ctx, L.s, x, y, 10.5, L.col, 'center', true);
+  }
+  // Axis.
+  ctx.strokeStyle = C.rule; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(mL, bot); ctx.lineTo(w - mR, bot); ctx.stroke();
+  const st = niceStep(span);
+  for (let f = Math.ceil(S.lo / st) * st; f <= S.hi + 1e-9; f += st) {
+    if (f - S.lo < 0.03 * span || S.hi - f < 0.1 * span) continue;
+    const x = X(f); ctx.beginPath(); ctx.moveTo(x, bot); ctx.lineTo(x, bot + 3); ctx.stroke();
+    txt(ctx, fmtTick(f), x, bot + 13, 10.5, C.ink3, 'center');
+  }
+  txt(ctx, 'MHz', w - mR, bot + 13, 10.5, C.ink3, 'right');
+  txt(ctx, 'Simulated', mL + 2, 14, 11, C.amber, 'left', true);
+  txt(ctx, 'spectrum ' + S.at, w - mR - 2, 14, 11, C.mid, 'right', true);
+}
+
+// ---- state and controls -------------------------------------------------
+function readouts() {
+  const st = stages[stage];
+  $('o-stage').textContent = (stage + 1) + ' of ' + stages.length + ' · ' + st.name;
+  $('o-what').textContent = st.text;
+  $('ro-what').className = 'ro what' + (st.bad ? ' bad' : '');
+  $('ro-stage').className = 'ro' + (st.bad ? ' bad' : '');
+}
+function animateTo(target) {
+  const from = shown || target, t0 = performance.now(), dur = 900;
+  if (anim) cancelAnimationFrame(anim);
+  const tick = now => {
+    const t = Math.min(1, (now - t0) / dur), e = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+    shown = t < 1 ? blend(from, target, e) : target; drawSpec(shown);
+    anim = t < 1 ? requestAnimationFrame(tick) : null;
+  };
+  anim = requestAnimationFrame(tick);
+}
+function go(k, instant) {
+  stage = k; drawChain(); readouts();
+  const target = snap(stages[stage]);
+  if (instant || !shown) { shown = target; drawSpec(shown); } else animateTo(target);
+}
+function stop() { if (timer) clearInterval(timer); timer = null; $('play').textContent = 'Play'; $('play').classList.remove('on'); }
+function play() {
+  if (stage === stages.length - 1) go(0);
+  $('play').textContent = 'Pause'; $('play').classList.add('on');
+  timer = setInterval(() => { if (stage + 1 < stages.length) go(stage + 1); if (stage === stages.length - 1) stop(); }, 2600);
+}
+$('play').onclick = () => timer ? stop() : play();
+$('step').onclick = () => { stop(); go((stage + 1) % stages.length); };
+function rebuild() {
+  stages = mode === 'rx' ? buildRX(off) : buildTX(off);
+  $('off-lab').textContent = mode === 'rx' ? 'Preselector off' : 'Band-pass off';
+}
+$('off').onchange = () => { off = $('off').checked; rebuild(); go(stage); };
+document.querySelectorAll('#mode button').forEach(b => b.onclick = () => {
+  stop(); mode = b.dataset.m; document.querySelectorAll('#mode button').forEach(x => x.classList.toggle('on', x === b));
+  rebuild(); shown = null; go(0); });
+
+window.addEventListener('resize', () => { drawChain(); if (shown) drawSpec(shown); });
+const q = new URLSearchParams(location.search);
+if (q.get('mode') === 'tx') mode = 'tx';
+document.querySelectorAll('#mode button').forEach(x => x.classList.toggle('on', x.dataset.m === mode));
+if (q.get('off') === '1') { off = true; $('off').checked = true; }
+rebuild();
+go(Math.max(0, Math.min(stages.length - 1, +(q.get('stage') || 0) || 0)), true);
+</script>
+</body>
+</html>

@@ -1,0 +1,353 @@
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="704.879531pt" height="188.147812pt" viewBox="0 0 704.879531 188.147812" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:date>2026-10-21T13:04:00.359297</dc:date>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.11.2, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 188.1 
+L 704.8 188.1 
+L 704.8 0 
+L 0 0 
+L 0 188.1 
+z
+" style="fill: none"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 19.3 168.8 
+L 169.4 168.8 
+L 169.4 18.6 
+L 19.3 18.6 
+L 19.3 168.8 
+z
+" style="fill: none"/>
+   </g>
+   <g id="matplotlib.axis_1">
+    <g id="text_1">
+     <text style="font-size: 11px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #15202b" x="94.395195" y="181.185234" transform="rotate(-0 94.395195 181.185234)">I (real)</text>
+    </g>
+   </g>
+   <g id="matplotlib.axis_2">
+    <g id="text_2">
+     <text style="font-size: 11px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #15202b" x="12.678281" y="93.752617" transform="rotate(-90 12.678281 93.752617)">Q (imag)</text>
+    </g>
+   </g>
+   <g id="line2d_1">
+    <path d="M 19.3 93.7 
+L 169.4 93.7 
+" clip-path="url(#pf09714b930)" style="fill: none; stroke: #cddce9; stroke-linecap: square"/>
+   </g>
+   <g id="line2d_2">
+    <path d="M 94.3 168.8 
+L 94.3 18.6 
+" clip-path="url(#pf09714b930)" style="fill: none; stroke: #cddce9; stroke-linecap: square"/>
+   </g>
+   <g id="line2d_3">
+    <defs>
+     <path id="mab4a0d0b30" d="M 0 4.5 
+C 1.1 4.5 2.3 4.0 3.1 3.1 
+C 4.0 2.3 4.5 1.1 4.5 0 
+C 4.5 -1.1 4.0 -2.3 3.1 -3.1 
+C 2.3 -4.0 1.1 -4.5 0 -4.5 
+C -1.1 -4.5 -2.3 -4.0 -3.1 -3.1 
+C -4.0 -2.3 -4.5 -1.1 -4.5 0 
+C -4.5 1.1 -4.0 2.3 -3.1 3.1 
+C -2.3 4.0 -1.1 4.5 0 4.5 
+z
+" style="stroke: #004a85"/>
+    </defs>
+    <g clip-path="url(#pf09714b930)">
+     <use xlink:href="#mab4a0d0b30" x="47.473735" y="93.752617" style="fill: #004a85; stroke: #004a85"/>
+    </g>
+   </g>
+   <g id="line2d_4">
+    <g clip-path="url(#pf09714b930)">
+     <use xlink:href="#mab4a0d0b30" x="141.316655" y="93.752617" style="fill: #004a85; stroke: #004a85"/>
+    </g>
+   </g>
+   <g id="patch_3">
+    <path d="M 19.3 168.8 
+L 19.3 18.6 
+" style="fill: none; stroke: #5b6573; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="patch_4">
+    <path d="M 19.3 168.8 
+L 169.4 168.8 
+" style="fill: none; stroke: #5b6573; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="text_3">
+    <text style="font-weight: 700; font-size: 11px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #8a5a00" x="47.473735" y="83.429896" transform="rotate(-0 47.473735 83.429896)">0</text>
+   </g>
+   <g id="text_4">
+    <text style="font-weight: 700; font-size: 11px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #8a5a00" x="141.316655" y="83.429896" transform="rotate(-0 141.316655 83.429896)">1</text>
+   </g>
+   <g id="text_5">
+    <text style="font-size: 11px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #15202b" x="94.395195" y="12.678281" transform="rotate(-0 94.395195 12.678281)">2-PAM</text>
+   </g>
+  </g>
+  <g id="axes_2">
+   <g id="patch_5">
+    <path d="M 196.3 168.8 
+L 346.4 168.8 
+L 346.4 18.6 
+L 196.3 18.6 
+L 196.3 168.8 
+z
+" style="fill: none"/>
+   </g>
+   <g id="matplotlib.axis_3">
+    <g id="text_6">
+     <text style="font-size: 11px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #15202b" x="271.425195" y="181.185234" transform="rotate(-0 271.425195 181.185234)">I (real)</text>
+    </g>
+   </g>
+   <g id="matplotlib.axis_4">
+    <g id="text_7">
+     <text style="font-size: 11px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #15202b" x="189.708281" y="93.752617" transform="rotate(-90 189.708281 93.752617)">Q (imag)</text>
+    </g>
+   </g>
+   <g id="line2d_5">
+    <path d="M 196.3 93.7 
+L 346.4 93.7 
+" clip-path="url(#p83d6064844)" style="fill: none; stroke: #cddce9; stroke-linecap: square"/>
+   </g>
+   <g id="line2d_6">
+    <path d="M 271.4 168.8 
+L 271.4 18.6 
+" clip-path="url(#p83d6064844)" style="fill: none; stroke: #cddce9; stroke-linecap: square"/>
+   </g>
+   <g id="line2d_7">
+    <g clip-path="url(#p83d6064844)">
+     <use xlink:href="#mab4a0d0b30" x="208.473451" y="93.752617" style="fill: #004a85; stroke: #004a85"/>
+    </g>
+   </g>
+   <g id="line2d_8">
+    <g clip-path="url(#p83d6064844)">
+     <use xlink:href="#mab4a0d0b30" x="250.44128" y="93.752617" style="fill: #004a85; stroke: #004a85"/>
+    </g>
+   </g>
+   <g id="line2d_9">
+    <g clip-path="url(#p83d6064844)">
+     <use xlink:href="#mab4a0d0b30" x="292.40911" y="93.752617" style="fill: #004a85; stroke: #004a85"/>
+    </g>
+   </g>
+   <g id="line2d_10">
+    <g clip-path="url(#p83d6064844)">
+     <use xlink:href="#mab4a0d0b30" x="334.37694" y="93.752617" style="fill: #004a85; stroke: #004a85"/>
+    </g>
+   </g>
+   <g id="patch_6">
+    <path d="M 196.3 168.8 
+L 196.3 18.6 
+" style="fill: none; stroke: #5b6573; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="patch_7">
+    <path d="M 196.3 168.8 
+L 346.4 168.8 
+" style="fill: none; stroke: #5b6573; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="text_8">
+    <text style="font-weight: 700; font-size: 11px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #8a5a00" x="208.473451" y="83.429896" transform="rotate(-0 208.473451 83.429896)">00</text>
+   </g>
+   <g id="text_9">
+    <text style="font-weight: 700; font-size: 11px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #8a5a00" x="250.44128" y="83.429896" transform="rotate(-0 250.44128 83.429896)">01</text>
+   </g>
+   <g id="text_10">
+    <text style="font-weight: 700; font-size: 11px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #8a5a00" x="292.40911" y="83.429896" transform="rotate(-0 292.40911 83.429896)">11</text>
+   </g>
+   <g id="text_11">
+    <text style="font-weight: 700; font-size: 11px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #8a5a00" x="334.37694" y="83.429896" transform="rotate(-0 334.37694 83.429896)">10</text>
+   </g>
+   <g id="text_12">
+    <text style="font-size: 11px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #15202b" x="271.425195" y="12.678281" transform="rotate(-0 271.425195 12.678281)">4-PAM, Gray coded</text>
+   </g>
+  </g>
+  <g id="axes_3">
+   <g id="patch_8">
+    <path d="M 373.3 168.8 
+L 523.5 168.8 
+L 523.5 18.6 
+L 373.3 18.6 
+L 373.3 168.8 
+z
+" style="fill: none"/>
+   </g>
+   <g id="matplotlib.axis_5">
+    <g id="text_13">
+     <text style="font-size: 11px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #15202b" x="448.455195" y="181.185234" transform="rotate(-0 448.455195 181.185234)">I (real)</text>
+    </g>
+   </g>
+   <g id="matplotlib.axis_6">
+    <g id="text_14">
+     <text style="font-size: 11px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #15202b" x="366.738281" y="93.752617" transform="rotate(-90 366.738281 93.752617)">Q (imag)</text>
+    </g>
+   </g>
+   <g id="line2d_11">
+    <path d="M 373.3 93.7 
+L 523.5 93.7 
+" clip-path="url(#p8a390d2419)" style="fill: none; stroke: #cddce9; stroke-linecap: square"/>
+   </g>
+   <g id="line2d_12">
+    <path d="M 448.4 168.8 
+L 448.4 18.6 
+" clip-path="url(#p8a390d2419)" style="fill: none; stroke: #cddce9; stroke-linecap: square"/>
+   </g>
+   <g id="line2d_13">
+    <g clip-path="url(#p8a390d2419)">
+     <use xlink:href="#mab4a0d0b30" x="481.633678" y="60.574135" style="fill: #004a85; stroke: #004a85"/>
+    </g>
+   </g>
+   <g id="line2d_14">
+    <g clip-path="url(#p8a390d2419)">
+     <use xlink:href="#mab4a0d0b30" x="415.276713" y="60.574135" style="fill: #004a85; stroke: #004a85"/>
+    </g>
+   </g>
+   <g id="line2d_15">
+    <g clip-path="url(#p8a390d2419)">
+     <use xlink:href="#mab4a0d0b30" x="415.276713" y="126.9311" style="fill: #004a85; stroke: #004a85"/>
+    </g>
+   </g>
+   <g id="line2d_16">
+    <g clip-path="url(#p8a390d2419)">
+     <use xlink:href="#mab4a0d0b30" x="481.633678" y="126.9311" style="fill: #004a85; stroke: #004a85"/>
+    </g>
+   </g>
+   <g id="patch_9">
+    <path d="M 373.3 168.8 
+L 373.3 18.6 
+" style="fill: none; stroke: #5b6573; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="patch_10">
+    <path d="M 373.3 168.8 
+L 523.5 168.8 
+" style="fill: none; stroke: #5b6573; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="text_15">
+    <text style="font-weight: 700; font-size: 11px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #8a5a00" x="481.633678" y="50.251413" transform="rotate(-0 481.633678 50.251413)">00</text>
+   </g>
+   <g id="text_16">
+    <text style="font-weight: 700; font-size: 11px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #8a5a00" x="415.276713" y="50.251413" transform="rotate(-0 415.276713 50.251413)">01</text>
+   </g>
+   <g id="text_17">
+    <text style="font-weight: 700; font-size: 11px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #8a5a00" x="415.276713" y="116.608379" transform="rotate(-0 415.276713 116.608379)">11</text>
+   </g>
+   <g id="text_18">
+    <text style="font-weight: 700; font-size: 11px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #8a5a00" x="481.633678" y="116.608379" transform="rotate(-0 481.633678 116.608379)">10</text>
+   </g>
+   <g id="text_19">
+    <text style="font-size: 11px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #15202b" x="448.455195" y="12.678281" transform="rotate(-0 448.455195 12.678281)">QPSK, Gray coded</text>
+   </g>
+  </g>
+  <g id="axes_4">
+   <g id="patch_11">
+    <path d="M 550.4 168.8 
+L 700.5 168.8 
+L 700.5 18.6 
+L 550.4 18.6 
+L 550.4 168.8 
+z
+" style="fill: none"/>
+   </g>
+   <g id="matplotlib.axis_7">
+    <g id="text_20">
+     <text style="font-size: 11px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #15202b" x="625.485195" y="181.185234" transform="rotate(-0 625.485195 181.185234)">I (real)</text>
+    </g>
+   </g>
+   <g id="matplotlib.axis_8">
+    <g id="text_21">
+     <text style="font-size: 11px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #15202b" x="543.768281" y="93.752617" transform="rotate(-90 543.768281 93.752617)">Q (imag)</text>
+    </g>
+   </g>
+   <g id="line2d_17">
+    <path d="M 550.4 93.7 
+L 700.5 93.7 
+" clip-path="url(#pf2a72f6772)" style="fill: none; stroke: #cddce9; stroke-linecap: square"/>
+   </g>
+   <g id="line2d_18">
+    <path d="M 625.4 168.8 
+L 625.4 18.6 
+" clip-path="url(#pf2a72f6772)" style="fill: none; stroke: #cddce9; stroke-linecap: square"/>
+   </g>
+   <g id="line2d_19">
+    <g clip-path="url(#pf2a72f6772)">
+     <use xlink:href="#mab4a0d0b30" x="672.406655" y="93.752617" style="fill: #004a85; stroke: #004a85"/>
+    </g>
+   </g>
+   <g id="line2d_20">
+    <g clip-path="url(#pf2a72f6772)">
+     <use xlink:href="#mab4a0d0b30" x="658.663678" y="60.574135" style="fill: #004a85; stroke: #004a85"/>
+    </g>
+   </g>
+   <g id="line2d_21">
+    <g clip-path="url(#pf2a72f6772)">
+     <use xlink:href="#mab4a0d0b30" x="625.485195" y="46.831157" style="fill: #004a85; stroke: #004a85"/>
+    </g>
+   </g>
+   <g id="line2d_22">
+    <g clip-path="url(#pf2a72f6772)">
+     <use xlink:href="#mab4a0d0b30" x="592.306713" y="60.574135" style="fill: #004a85; stroke: #004a85"/>
+    </g>
+   </g>
+   <g id="line2d_23">
+    <g clip-path="url(#pf2a72f6772)">
+     <use xlink:href="#mab4a0d0b30" x="578.563735" y="93.752617" style="fill: #004a85; stroke: #004a85"/>
+    </g>
+   </g>
+   <g id="line2d_24">
+    <g clip-path="url(#pf2a72f6772)">
+     <use xlink:href="#mab4a0d0b30" x="592.306713" y="126.9311" style="fill: #004a85; stroke: #004a85"/>
+    </g>
+   </g>
+   <g id="line2d_25">
+    <g clip-path="url(#pf2a72f6772)">
+     <use xlink:href="#mab4a0d0b30" x="625.485195" y="140.674077" style="fill: #004a85; stroke: #004a85"/>
+    </g>
+   </g>
+   <g id="line2d_26">
+    <g clip-path="url(#pf2a72f6772)">
+     <use xlink:href="#mab4a0d0b30" x="658.663678" y="126.9311" style="fill: #004a85; stroke: #004a85"/>
+    </g>
+   </g>
+   <g id="patch_12">
+    <path d="M 550.4 168.8 
+L 550.4 18.6 
+" style="fill: none; stroke: #5b6573; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="patch_13">
+    <path d="M 550.4 168.8 
+L 700.5 168.8 
+" style="fill: none; stroke: #5b6573; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="text_22">
+    <text style="font-size: 11px; font-family:'Source Sans Pro', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; fill: #15202b" x="625.485195" y="12.678281" transform="rotate(-0 625.485195 12.678281)">8-PSK: label it</text>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="pf09714b930">
+   <rect x="19.320859" y="18.678281" width="150.148672" height="150.148672"/>
+  </clipPath>
+  <clipPath id="p83d6064844">
+   <rect x="196.350859" y="18.678281" width="150.148672" height="150.148672"/>
+  </clipPath>
+  <clipPath id="p8a390d2419">
+   <rect x="373.380859" y="18.678281" width="150.148672" height="150.148672"/>
+  </clipPath>
+  <clipPath id="pf2a72f6772">
+   <rect x="550.410859" y="18.678281" width="150.148672" height="150.148672"/>
+  </clipPath>
+ </defs>
+</svg>

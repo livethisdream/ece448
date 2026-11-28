@@ -1,0 +1,401 @@
+<!doctype html>
+<html lang="en" data-mode="read">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>L8 Lab — FSK &mdash; ECE 448 — Software Defined Radios</title>
+<meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+<link rel="icon" href="../../_static/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap"><link rel="stylesheet" href="../../_static/custom.css?v=ec0f297254">
+<link rel="stylesheet" href="../../_static/shell.css?v=78396bd831">
+<link rel="stylesheet" href="../../_static/frames.css?v=bb20c1f445">
+</head>
+<body>
+
+<div class="rail"><span id="railfill"></span></div>
+
+<div class="laser" id="laser" aria-hidden="true"></div>
+<div class="spot" id="spot" aria-hidden="true"></div>
+
+<div class="index" id="index" role="dialog" aria-label="Jump to a frame or another lesson">
+  <button class="index-close" id="btnIndexClose" type="button" aria-label="Close">&times;</button>
+  <div class="wrap">
+    <div class="index-cols">
+      <div class="index-here">
+        <h2>This lesson</h2>
+        <ol id="indexlist"></ol>
+      </div>
+      <div class="index-toc">
+        <h2>Course</h2>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Course Information</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../syllabus.html">Syllabus</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../materials.html">Materials</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 1 — Foundations of Detection &amp; Link Budgets</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module01/index.html">Module 1 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module01/L01-course-intro/index.html">L1 — Course Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module01/L02-noise-figure-link-budget/index.html">L2 — Noise Figure and Link Budget</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module01/L03-signal-space/index.html">L3 — Signal Space</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 2 — SDR &amp; GNU Radio Foundations</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module02/index.html">Module 2 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module02/L04-sdr-introduction/index.html">L4 — SDR Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module02/L05-gnu-radio-intro/index.html">L5 — GNU Radio Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module02/L05-lab-first-flowgraphs/index.html">L5 Lab — First Flowgraphs</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 3 — Analog Modulation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module03/index.html">Module 3 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module03/L06-am-simulation/index.html">L6 — AM Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module03/L06-lab-am-simulation/index.html">L6 Lab — AM Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module03/L07-am-fm-receivers/index.html">L7 — AM and FM Receivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module03/L07-lab-am-fm-receivers/index.html">L7 Lab — AM and FM Receivers</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 4 — Digital Modulation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Module 4 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L08-fsk/index.html">L8 — FSK</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">L8 Lab — FSK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L09-pam-theory/index.html">L9 — PAM Theory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L10-ascii-pam/index.html">L10 — ASCII over PAM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../L10-lab-pam-link/index.html">L10 Lab — PAM Link</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 5 — Custom Blocks &amp; Midterm</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module05/index.html">Module 5 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module05/L11-custom-blocks/index.html">L11 — Out-of-Tree Modules and Custom Blocks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module05/L11-lab-custom-block/index.html">L11 Lab — Custom Block</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module05/midterm/index.html">Midterm — Fox Hunt and CTF</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 6 — Waveform Applications &amp; RF Reverse Engineering</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/index.html">Module 6 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L12-cw/index.html">L12 — CW</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L12-lab-cw/index.html">L12 Lab — CW</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L13-dtmf/index.html">L13 — DTMF</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L13-lab-dtmf/index.html">L13 Lab — DTMF</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L14-hd-radio/index.html">L14 — HD Radio</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L14-lab-hd-radio/index.html">L14 Lab — HD Radio</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L15-mpsk/index.html">L15 — mPSK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L15-lab-mpsk/index.html">L15 Lab — mPSK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L16-fhss/index.html">L16 — Frequency Hopping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L16-lab-fhss/index.html">L16 Lab — Frequency Hopping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L17-rf-reverse-engineering/index.html">L17 — RF Reverse Engineering</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L17-lab-rf-reverse-engineering/index.html">L17 Lab — RF Reverse Engineering</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L18-adsb/index.html">L18 — ADS-B</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L19-ais/index.html">L19 — AIS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module06/L18-L19-lab-adsb-ais/index.html">L18–L19 Lab — ADS-B and AIS</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Module 7 — Final Project</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module07/index.html">Module 7 overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module07/L20-qam-ofdm/index.html">L20 — QAM and OFDM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module07/final-project/index.html">Final Project</a></li>
+</ul>
+
+      </div>
+    </div>
+  </div>
+</div><div class="hud">
+<div class="hud-group">
+  <button id="btnSite" class="site" type="button"
+          aria-expanded="false" aria-controls="sitepop"
+          title="Elsewhere on this site">ECE 448</button>
+</div>
+<div class="pop" id="sitepop" role="group" aria-label="Site" hidden>
+  <a href="https://livethisdream.github.io/">Home</a>
+  <a href="https://livethisdream.github.io/ece343/intro.html">ECE 343</a>
+  <a href="https://livethisdream.github.io/ece444/intro.html">ECE 444</a>
+  <a href="../../intro.html" aria-current="page">ECE 448</a>
+  <a href="https://livethisdream.github.io/projects">Projects</a>
+  <button class="pop-help" type="button" data-help>Help<kbd>?</kbd></button>
+</div>
+
+  <div class="hud-group hud-mid"><button id="btnMode" type="button" aria-expanded="false" aria-controls="modepop"
+            title="How the lesson is laid out (P)">read</button>
+    <button id="btnTools" type="button" aria-expanded="false" aria-controls="toolspop"
+            title="Presenter tools">tools</button>
+  </div>
+
+  <div class="hud-group"><button id="btnIndex" class="counter" type="button" aria-pressed="false"
+            title="Contents (G) · double-tap for the top"><b id="cur">1</b>/<span id="tot">0</span></button>
+  </div><div class="pop" id="modepop" role="group" aria-label="View mode" hidden>
+    <button id="btnPresent" class="choice" type="button" aria-pressed="false">
+      present<span class="pop-note">one frame at a time</span></button>
+    <button id="btnRead" class="choice" type="button" aria-pressed="true">
+      read<span class="pop-note">the whole lesson, continuous</span></button>
+  </div><div class="pop" id="toolspop" role="group" aria-label="Presenter tools" hidden>
+    <button id="btnLaser" type="button" aria-pressed="false">laser<kbd>L</kbd></button>
+    <button id="btnSpot" type="button" aria-pressed="false">spotlight<kbd>S</kbd></button>
+    <button id="btnFull" type="button">fullscreen<kbd>F</kbd></button>
+    <button id="btnHelp" type="button" data-help>help<kbd>?</kbd></button>
+  </div>
+</div>
+<div class="help" id="help" role="dialog" aria-modal="true" aria-labelledby="helpTitle" hidden>
+  <div class="help-card">
+    <button class="help-close" id="btnHelpClose" type="button" aria-label="Close help">&times;</button>
+    <h2 id="helpTitle">Getting around</h2>
+    <p class="help-lead">Everything is in the bar at the bottom of the screen.</p>
+    <dl class="help-list">
+      <dt><span class="help-chip">ECE 448</span></dt>
+      <dd>The other course sites, the home page, and this help.</dd>
+      <dt><span class="help-chip">read</span></dt>
+      <dd><b>Read</b> shows the whole lesson as one page. <b>Present</b> shows one frame at a time, for class.<span class="help-keys"> <kbd>P</kbd> switches.</span></dd>
+      <dt><span class="help-chip">tools</span></dt>
+      <dd>Laser pointer<span class="help-keys"> <kbd>L</kbd></span>, spotlight<span class="help-keys"> <kbd>S</kbd></span>, and fullscreen<span class="help-keys"> <kbd>F</kbd></span>.</dd>
+      <dt><span class="help-chip">3/9</span></dt>
+      <dd>Where you are in the lesson. Tap it for every frame here and every lesson in the course<span class="help-keys"> <kbd>G</kbd></span>. Double-tap to go back to the top.</dd>
+    </dl>
+    <h3 class="help-keys">Presenting</h3>
+    <p class="help-keys"><kbd>&rarr;</kbd> or <kbd>Space</kbd> next frame, <kbd>&larr;</kbd> back, <kbd>D</kbd> this frame&rsquo;s detail, <kbd>Esc</kbd> close a panel.</p>
+    <h3>Printing</h3>
+    <p>Print from present mode for the slides, one frame a page. Print from read mode for the whole lesson.</p>
+    <p class="help-foot"><span class="help-keys">Press <kbd>?</kbd> to open this again.</span><span class="help-touch">Open this again from the ECE 448 menu.</span></p>
+  </div>
+</div>
+
+<div class="help-hint" id="helpHint" hidden>
+  <button id="btnHintOpen" type="button" data-help>New here? How the bar works</button>
+  <button id="btnHintClose" class="help-hint-close" type="button" aria-label="Dismiss">&times;</button>
+</div><main class="deck bd-article" id="deck" tabindex="-1">
+<section class="tex2jax_ignore mathjax_ignore" id="l8-lab-fsk">
+<h1>L8 Lab — FSK<a class="headerlink" href="#l8-lab-fsk" title="Permalink to this heading">#</a></h1>
+<div class="frame title-frame docutils container" id="frame-1">
+<div class="wrap docutils container">
+<div class="course-mark">ECE 448 · Spring 2027</div>
+<h1 class="frame-title">FSK</h1>
+<div class="title-rule"></div>
+<p>Decode an FSK recording whose tones and baud you find yourself, then find out why a frequency offset stops your decoder and fix it.</p>
+<p>L8 Lab · Module 4: Digital Modulation · Dr. Neil Rogers</p>
+</div>
+</div>
+<div class="frame docutils container" id="frame-learning-objectives">
+<div class="wrap docutils container">
+<p class="rubric">Learning Objectives</p>
+<ol class="lo-list" style="--module: '4'">
+  <li>I can describe FSK modulation and implement an FSK transmitter and receiver in GNU Radio.</li>
+</ol>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-the-big-picture">
+<div class="wrap docutils container">
+<p class="rubric">The Big Picture</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<p><img src="../../viz/img/L08-big-picture.png"
+     alt="The L8 Lab's three blocks as GNU Radio Companion canvases: the flowgraph that reads the recording (Steps 1 to 4) beside the decoder you build (Steps 5 to 11), and below it the same decoder with a Signal Source and a Multiply that add an offset (Steps 12 to 16)."
+     style="max-width: 860px; width: 100%; display: block; margin: 0 auto;"></p>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>Steps 1 to 4 play <code class="docutils literal notranslate"><span class="pre">L08-lab-unknown.sigmf-data</span></code>, a recording from a transmitter like the one you built in class, with its own baud rate and tones, and read those off a spectrum and a demodulator. Steps 5 to 11 build a decoder from Lesson 8’s blocks with those settings and recover the recording’s message into a file. Steps 12 to 16 shift the recording by a frequency offset your flowgraph draws at random and does not show, as a second radio’s oscillator would; you find out from the spectrum and the eye why the text stops, and retune your receiver to bring it back. Your Part 1 predictions go with Steps 15 and 16, what you work out goes in Tables A and B of the packet, and the screenshots go in Figures 1 to 4. Nothing in this lab transmits.</p>
+</div>
+</div>
+</div>
+<div class="frame viz-frame cut docutils container" id="frame-predict-first">
+<div class="wrap docutils container">
+<p class="rubric">Predict First</p>
+<div class="depth docutils container">
+<p>Choose a deviation and a frequency offset. The dashed blue lines are the eye’s two levels with no offset. Before you press <strong>Show the eye</strong>, set the My Prediction slider to where you think the lower level will sit. Changing either setting or your guess hides the answer again, so each guess comes first. The widget leaves out the receive filter and keeps every offset at or below half the deviation, where the text still arrives; Step 12’s offset is larger, and the flowgraph hides its value.</p>
+</div>
+<div class="stage docutils container">
+<div class="present docutils container">
+<iframe src="../../viz/fsk-offset-predict.html"
+        width="100%" height="466"
+        style="border: 1px solid #cddce9; border-radius: 6px;"
+        loading="lazy"
+        title="Choose an FSK deviation and a frequency offset, predict the lower level of the demodulator's eye, then show the eye">
+</iframe>
+</div>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-read-the-recording">
+<div class="wrap docutils container">
+<p class="rubric">Read the Recording</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<ul class="simple">
+<li><p>Play <code class="docutils literal notranslate"><span class="pre">L08-lab-unknown.sigmf-data</span></code> into a spectrum and a demodulator.</p></li>
+<li><p>Read its two tone frequencies and its symbol rate.</p></li>
+<li><p>Set <code class="docutils literal notranslate"><span class="pre">f_center</span></code>, <code class="docutils literal notranslate"><span class="pre">dev</span></code>, and <code class="docutils literal notranslate"><span class="pre">baud</span></code> from them.</p></li>
+</ul>
+</div>
+<div class="present docutils container">
+<p><img src="../../viz/img/L08-canvas-view.png"
+     alt="The flowgraph that reads the recording, in GNU Radio Companion: File Source on L08-lab-unknown.sigmf-data, Throttle, a QT GUI Frequency Sink, and a Quadrature Demod feeding a QT GUI Time Sink"
+     style="max-width: 520px; width: 100%; display: block; margin: 0 auto;"></p>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<p>The recording comes from a transmitter like the one you built in class, with the same packets, but with a baud rate and tone frequencies of its own. Your job is to recover its message.</p>
+<ol class="arabic">
+<li><p><strong>Read the meta file.</strong> Put <code class="docutils literal notranslate"><span class="pre">L08-lab-unknown.sigmf-data</span></code> and <code class="docutils literal notranslate"><span class="pre">L08-lab-unknown.sigmf-meta</span></code> from the Lab Packet frame in one folder, open the <code class="docutils literal notranslate"><span class="pre">.sigmf-meta</span></code> in a text editor, and note <code class="docutils literal notranslate"><span class="pre">core:sample_rate</span></code>. The samples are complex float, the type GNU Radio calls complex.</p></li>
+<li><p><strong>Find the tones.</strong> In GRC choose File, New, QT GUI, and save the flowgraph as <code class="docutils literal notranslate"><span class="pre">L08-lab-decoder.grc</span></code> in that folder. Set <code class="docutils literal notranslate"><span class="pre">samp_rate</span></code> to the sample rate, and add a complex File Source on the <code class="docutils literal notranslate"><span class="pre">.sigmf-data</span></code> with Repeat set to Yes, a complex Throttle at <code class="docutils literal notranslate"><span class="pre">samp_rate</span></code>, and a complex QT GUI Frequency Sink with bandwidth <code class="docutils literal notranslate"><span class="pre">samp_rate</span></code>. Run it and read the frequencies of the two tones; the two tracks need not sit evenly about 0.</p>
+ <div class="rec" data-lab="L08">
+ <label>Step 2: The two tone frequencies (Hz) <input data-field="b.tones"></label>
+ </div>
+</li>
+<li><p><strong>Find the symbol rate.</strong> Add a Quadrature Demod with gain 1 on the Throttle’s output and a float QT GUI Time Sink on its output, with 2048 points at <code class="docutils literal notranslate"><span class="pre">samp_rate</span></code>. The output jumps between two levels; zoom in with the mouse until you can read the shortest stay at one level, which is one bit, and take the symbol rate as one over its length, as Lesson 8’s “FSK on a Real Radio” does.</p>
+ <div class="rec" data-lab="L08">
+ <label>Step 3: The symbol rate (baud) <input data-field="b.baud"></label>
+ </div>
+</li>
+<li><p><strong>Name the settings.</strong> Add three Variables: <code class="docutils literal notranslate"><span class="pre">f_center</span></code>, the midpoint of the two tones; <code class="docutils literal notranslate"><span class="pre">dev</span></code>, half their spacing; and <code class="docutils literal notranslate"><span class="pre">baud</span></code>, the symbol rate. Every decoder setting below comes from these three, so a mistake here shows up everywhere downstream.</p></li>
+</ol>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-build-the-decoder">
+<div class="wrap docutils container">
+<p class="rubric">Build the Decoder</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<ul class="simple">
+<li><p>Shift the midpoint to 0 and filter: a Frequency Xlating FIR Filter.</p></li>
+<li><p>Then Lesson 8’s receiver, with your three Variables in every setting.</p></li>
+<li><p>Recover the message; screenshot the canvas and the text.</p></li>
+</ul>
+</div>
+<div class="present docutils container">
+<p><img src="../../viz/img/L08-canvas-decoder.png"
+     alt="L08-lab-decoder.grc in GNU Radio Companion: File Source, Throttle, Frequency Xlating FIR Filter, Quadrature Demod, Moving Average with a QT GUI Eye Sink, Symbol Sync, Binary Slicer, Correlate Access Code - Tag Stream, Repack Bits, and a File Sink writing rx.txt; the blocks that use f_center, dev, and baud show red until those Variables exist"
+     style="max-width: 620px; width: 100%; display: block; margin: 0 auto;"></p>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<ol class="arabic" start="5">
+<li><p><strong>Shift and filter.</strong> Disable the Quadrature Demod and the Time Sink from Step 3, and on the Throttle’s output add a Frequency Xlating FIR Filter, the block Lesson 7’s receiver used, with decimation 1, center frequency <code class="docutils literal notranslate"><span class="pre">f_center</span></code>, and taps <code class="docutils literal notranslate"><span class="pre">firdes.low_pass(1,</span> <span class="pre">samp_rate,</span> <span class="pre">dev</span> <span class="pre">+</span> <span class="pre">baud,</span> <span class="pre">1000)</span></code>. It moves the midpoint of the two tones to 0 and keeps the band Lesson 8’s receive filter keeps.</p></li>
+<li><p><strong>Demodulate.</strong> Add a Quadrature Demod whose gain turns a tone at <code class="docutils literal notranslate"><span class="pre">+dev</span></code> into an output of 1, written in terms of <code class="docutils literal notranslate"><span class="pre">samp_rate</span></code> and <code class="docutils literal notranslate"><span class="pre">dev</span></code>, as in Lesson 8’s “The Quadrature Demodulator”.</p></li>
+<li><p><strong>Smooth each bit.</strong> One bit lasts <code class="docutils literal notranslate"><span class="pre">samp_rate/baud</span></code> samples, which need not be a whole number. Add a float Moving Average with length <code class="docutils literal notranslate"><span class="pre">round(samp_rate/baud)</span></code> and scale <code class="docutils literal notranslate"><span class="pre">1/round(samp_rate/baud)</span></code>, and put a float QT GUI Eye Sink with <code class="docutils literal notranslate"><span class="pre">round(samp_rate/baud)</span></code> samples per symbol on its output.</p></li>
+<li><p><strong>Find each bit.</strong> Add a float Symbol Sync with the Gardner timing error detector, <code class="docutils literal notranslate"><span class="pre">samp_rate/baud</span></code> samples per symbol, loop bandwidth 0.045, and 1 output sample per symbol, then a Binary Slicer.</p></li>
+<li><p><strong>Find each packet.</strong> Add Correlate Access Code - Tag Stream with access code <code class="docutils literal notranslate"><span class="pre">digital.packet_utils.default_access_code</span></code>, threshold 2, and tag name <code class="docutils literal notranslate"><span class="pre">&quot;packet_len&quot;</span></code>, then Repack Bits with 1 bit in, 8 bits out, MSB first, and length tag key <code class="docutils literal notranslate"><span class="pre">&quot;packet_len&quot;</span></code>.</p></li>
+<li><p><strong>Write the text.</strong> Add a byte File Sink with file <code class="docutils literal notranslate"><span class="pre">rx.txt</span></code> and Unbuffered set to On. Every arrow must be black: a red arrow joins two ports of different types, so match that block’s type to its neighbor’s.</p></li>
+<li><p><strong>Recover the message.</strong> Run it for about 10 s with the eye in view, stop it, and open <code class="docutils literal notranslate"><span class="pre">rx.txt</span></code> in a text editor. Record the message, take one screenshot of your canvas and the running window side by side for Figure 1, and paste a screenshot of <code class="docutils literal notranslate"><span class="pre">rx.txt</span></code> as Figure 2. If <code class="docutils literal notranslate"><span class="pre">rx.txt</span></code> is empty, the eye tells you where to look: an eye that never opens points to <code class="docutils literal notranslate"><span class="pre">f_center</span></code>, <code class="docutils literal notranslate"><span class="pre">dev</span></code>, or the gain, an eye that smears points to <code class="docutils literal notranslate"><span class="pre">baud</span></code>, and an open eye with no text points to the access code, the tag names, or the bit order.</p>
+<div class="rec" data-lab="L08">
+<label>Step 11: The recovered message (text) <input data-field="b.msg"></label>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="frame cut docutils container" id="frame-break-it-and-fix-it">
+<div class="wrap docutils container">
+<p class="rubric">Break It and Fix It</p>
+<div class="stage docutils container">
+<div class="present docutils container">
+<ul class="simple">
+<li><p>Shift the recording by an offset the flowgraph draws and does not show.</p></li>
+<li><p>Find out from the spectrum and the eye why the text stops.</p></li>
+<li><p>Retune your receiver until the message comes back.</p></li>
+</ul>
+</div>
+<div class="present docutils container">
+<p><img src="../../viz/img/L08-canvas-offset.png"
+     alt="Your decoder in GNU Radio Companion with the offset added: a complex Signal Source at frequency foff and a Multiply between the Throttle and the Frequency Xlating FIR Filter, the QT GUI Frequency Sink moved to the Multiply's output, and the filter's center frequency set to f_center + rx_tune; the blocks show red here only because the picture leaves out the Variables they use"
+     style="max-width: 620px; width: 100%; display: block; margin: 0 auto;"></p>
+</div>
+</div>
+<div class="depth depth-cut docutils container">
+<ol class="arabic" start="12">
+<li><p><strong>Add the offset.</strong> Stop the flowgraph. Add an Import block with <code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">random</span></code>, and a Variable <code class="docutils literal notranslate"><span class="pre">foff</span></code> with value <code class="docutils literal notranslate"><span class="pre">random.choice([-1,</span> <span class="pre">1])*random.uniform(1.2,</span> <span class="pre">1.6)*dev</span></code>. Between the Throttle and the Frequency Xlating FIR Filter, add a complex Multiply, and feed its second input from a complex Signal Source with waveform Cosine, frequency <code class="docutils literal notranslate"><span class="pre">foff</span></code>, and amplitude 1. Move the Frequency Sink’s input from the Throttle to the Multiply’s output. The Multiply shifts the whole recording by <code class="docutils literal notranslate"><span class="pre">foff</span></code>, as a transmitter whose oscillator is off from yours would. Each run draws a new offset, and nothing on the window shows it.</p></li>
+<li><p><strong>Add a tuning control.</strong> Add a QT GUI Range <code class="docutils literal notranslate"><span class="pre">rx_tune</span></code> labeled RX tuning (Hz), from <code class="docutils literal notranslate"><span class="pre">-3*dev</span></code> to <code class="docutils literal notranslate"><span class="pre">3*dev</span></code> in steps of 10, starting at 0, and change the Frequency Xlating FIR Filter’s center frequency to <code class="docutils literal notranslate"><span class="pre">f_center</span> <span class="pre">+</span> <span class="pre">rx_tune</span></code>. At 0 it changes nothing.</p></li>
+<li><p><strong>Break it.</strong> Run it for about 10 s with <strong>RX tuning (Hz)</strong> at 0, stop it, and open <code class="docutils literal notranslate"><span class="pre">rx.txt</span></code>. Compare it with the message you recovered in Step 11.</p></li>
+<li><p><strong>Find out why.</strong> Run it again with <strong>RX tuning (Hz)</strong> at 0, and leave it running through Step 16, because a restart draws a new offset. Read the two tone frequencies on the spectrum and the eye level nearer zero, and compare both with your Part 1 predictions. The other level may run off the eye or sink into the noise, because its tone can sit past the filter’s cutoff; the level nearer zero is the one to read. Paste a screenshot of the running window, with the spectrum and the eye, as Figure 3.</p>
+<div class="rec" data-lab="L08">
+<label>Step 15: The two tone frequencies with the offset (Hz) <input data-field="b.toneoff"></label>
+<label>Step 15: The eye level nearer zero with the offset (normalized) <input data-field="b.eyeoff"></label>
+</div>
+</li>
+<li><p><strong>Fix it.</strong> The offset stands for the other radio’s oscillator, which you do not control, so the fix goes in your receiver. Set <strong>RX tuning (Hz)</strong> from what the spectrum shows, and watch the eye. If the eye moves further from where it sat in Step 11, the sign is backward. Once the eye is back, let it run about 10 s, stop it, and open <code class="docutils literal notranslate"><span class="pre">rx.txt</span></code>: the lines written after the fix are the message again. Record the setting, and paste a screenshot of the running window with <code class="docutils literal notranslate"><span class="pre">rx.txt</span></code> beside it as Figure 4. If <code class="docutils literal notranslate"><span class="pre">rx.txt</span></code> stays empty, stop the flowgraph, set the value of <code class="docutils literal notranslate"><span class="pre">foff</span></code> to 0, and run it with <strong>RX tuning (Hz)</strong> at 0: your decoder should recover the message as it did in Step 11, and if it does not, the fault is in Steps 5 to 10, not in the offset.</p>
+<div class="rec" data-lab="L08">
+<label>Step 16: RX tuning that brings the text back (Hz) <input data-field="b.tune"></label>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="frame read-only docutils container" id="frame-no-hardware">
+<div class="wrap docutils container">
+<p class="rubric">No Hardware?</p>
+<div class="tip admonition">
+<p class="admonition-title">This lab needs no radio</p>
+<p>Every flowgraph here runs on your laptop on my recording, and the Signal Source and Multiply of Step 12 stand in for a second radio’s oscillator, so a missing or broken PlutoSDR does not matter today.</p>
+</div>
+</div>
+</div>
+<div class="frame read-only docutils container" id="frame-your-part-2-entries">
+<div class="wrap docutils container">
+<p class="rubric">Your Part 2 Entries</p>
+<p>This frame collects every box you filled in on this page. Your entries stay in this browser only, saved as you type. <strong>Download my packet</strong> writes them into the Measured cells of the blank packet and saves the PDF. The download locks every field, the Predicted cells included, so type your predictions into your own copy of the packet first, then use <strong>Fill my own copy</strong> and choose that file: the page keeps your predictions and adds your measurements beside them. Paste Figures 1 to 4 and write Part 3 in your copy, or on the printout, and upload one PDF to Gradescope. <strong>Export entries</strong> saves a small backup file you can <strong>Import</strong> on another laptop.</p>
+<div class="rec-summary" data-lab="L08" data-pdf="../../labs/ECE448_Lab_L08_FSK_blank.pdf" data-file="ECE448_L08_Lab"></div>
+</div>
+</div>
+<div class="frame read-only doc-links docutils container" id="frame-lab-packet">
+<div class="wrap docutils container">
+<p class="rubric">Lab Packet</p>
+<p>The L8 Lab packet is one submission, turned in complete before Lesson 9:</p>
+<ol class="arabic simple">
+<li><p>Part 1, Predict (individual, before the lab period): the three shaded cells in Table B, with your reasoning attached.</p></li>
+<li><p>Part 2, Measure (in class, on your own laptop): the white Measured cells of Tables A and B, and Figures 1 to 4.</p></li>
+<li><p>Part 3, Analyze (individual, after the lab): three prompts, each answered from your own tables and figures.</p></li>
+</ol>
+<ul class="simple">
+<li><p><a class="doc-link" href="../../labs/ECE448_Lab_L08_FSK_blank.pdf" target="_blank" rel="noopener">L8 Lab packet (PDF)</a></p></li>
+<li><p><a class="doc-link" href="../../grc/L08-lab-unknown.sigmf-data" download>L08-lab-unknown.sigmf-data</a> and <a class="doc-link" href="../../grc/L08-lab-unknown.sigmf-meta" download>L08-lab-unknown.sigmf-meta</a>, the recording you decode</p></li>
+</ul>
+</div>
+</div>
+<div class="frame read-only docutils container" id="frame-for-part-3">
+<div class="wrap docutils container">
+<p class="rubric">For Part 3</p>
+<p>Do Part 3 after class, with your tables and figures beside you. It asks about three things:</p>
+<ol class="arabic simple">
+<li><p>Your decoder on the canvas and its eye in Figure 1, block by block.</p></li>
+<li><p>Your offset readings and RX tuning in Table B, against Figures 3 and 4.</p></li>
+<li><p>Your RX tuning, which you set by hand from the spectrum, and a decoder that would not need it.</p></li>
+</ol>
+<p>I grade each answer on a claim, the evidence from your own table and figures, the reasoning that connects them, and the uncertainty in your readings.</p>
+</div>
+</div>
+<div class="frame read-only docutils container" id="frame-looking-ahead">
+<div class="wrap docutils container">
+<p class="rubric">Looking Ahead</p>
+<p>Lesson 9 sends each bit as the height of a pulse instead of a frequency: PAM.</p>
+</div>
+</div>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./module04/L08-lab-fsk"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+</main>
+
+<script src="../../_static/shell.js?v=ac36f07766"></script>
+<script src="../../_static/frames.js?v=89e4b02ee3"></script><script src="../../_static/viz-autosize.js?v=4fe0c4e159"></script><script src="../../_static/records.js?v=ef6a7436b3"></script>
+</body>
+</html>

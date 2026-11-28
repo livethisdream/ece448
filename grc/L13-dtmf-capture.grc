@@ -1,0 +1,315 @@
+options:
+  parameters:
+    author: ECE 448
+    catch_exceptions: 'True'
+    category: '[GRC Hier Blocks]'
+    cmake_opt: ''
+    comment: ''
+    copyright: ''
+    description: 'L13: dials a number as DTMF at 8 kHz, adds noise, and writes one
+      dialing and its pause to a WAV file. Runs once and stops.'
+    gen_cmake: 'On'
+    gen_linking: dynamic
+    generate_options: no_gui
+    hier_block_src_path: '.:'
+    id: L13_dtmf_capture
+    max_nouts: '0'
+    output_language: python
+    placement: (0,0)
+    qt_qss_theme: ''
+    realtime_scheduling: ''
+    run: 'True'
+    run_command: '{python} -u {filename}'
+    run_options: run
+    sizing_mode: fixed
+    thread_safe_setters: ''
+    title: L13 - DTMF Capture
+    window_size: (1100,700)
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [8, 8]
+    rotation: 0
+    state: enabled
+
+blocks:
+- name: gap_ms
+  id: variable
+  parameters:
+    comment: ''
+    value: '50'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [580, 12]
+    rotation: 0
+    state: enabled
+- name: length
+  id: variable
+  parameters:
+    comment: ''
+    value: int(round(samp_rate * (len(number) * (tone_ms + gap_ms) + pause_ms) / 1000))
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [480, 220]
+    rotation: 0
+    state: enabled
+- name: level
+  id: variable
+  parameters:
+    comment: ''
+    value: '0.3'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1000, 100]
+    rotation: 0
+    state: enabled
+- name: noise_amp
+  id: variable
+  parameters:
+    comment: ''
+    value: level * ((1 + 10**(twist_db/10)) / 2 / 10**(snr_db/10)) ** 0.5
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [200, 220]
+    rotation: 0
+    state: enabled
+- name: number
+  id: variable
+  parameters:
+    comment: The digits to dial
+    value: '''7195550148'''
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [320, 12]
+    rotation: 0
+    state: enabled
+- name: pause_ms
+  id: variable
+  parameters:
+    comment: ''
+    value: '500'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [680, 12]
+    rotation: 0
+    state: enabled
+- name: samp_rate
+  id: variable
+  parameters:
+    comment: ''
+    value: '8000'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [200, 12]
+    rotation: 0
+    state: enabled
+- name: snr_db
+  id: variable
+  parameters:
+    comment: SNR during a tone, over 0 to 4 kHz
+    value: '20'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [760, 100]
+    rotation: 0
+    state: enabled
+- name: tone_ms
+  id: variable
+  parameters:
+    comment: ''
+    value: '50'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [480, 12]
+    rotation: 0
+    state: enabled
+- name: twist_db
+  id: variable
+  parameters:
+    comment: Column tone level minus row tone level
+    value: '-2'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [480, 100]
+    rotation: 0
+    state: enabled
+- name: wav
+  id: variable
+  parameters:
+    comment: ''
+    value: '''L13-capture.wav'''
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [800, 12]
+    rotation: 0
+    state: enabled
+- name: add
+  id: blocks_add_xx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_inputs: '2'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [300, 340]
+    rotation: 0
+    state: enabled
+- name: dialer
+  id: epy_block
+  parameters:
+    _source_code: "\"\"\"DTMF Dialer: sends `digits` as DTMF tones, then a pause,\
+      \ over and over.\n\nEach digit is a row tone and a column tone, `tone_ms` long,\
+      \ followed by\n`gap_ms` of silence. The row tone has amplitude `level`; the\
+      \ column tone is\n`twist_db` above it (negative: below it). `offset_pct` moves\
+      \ every tone by\nthat percentage. Characters other than 0-9, A-D, * and # are\
+      \ skipped.\"\"\"\n\nimport numpy as np\nfrom gnuradio import gr\n\nROWS = (697,\
+      \ 770, 852, 941)\nCOLS = (1209, 1336, 1477, 1633)\nKEYS = ('123A', '456B', '789C',\
+      \ '*0#D')\n\n\nclass blk(gr.sync_block):\n    def __init__(self, samp_rate=8000,\
+      \ digits='123', tone_ms=70, gap_ms=70,\n                 pause_ms=500, level=0.3,\
+      \ twist_db=0.0, offset_pct=0.0):\n        gr.sync_block.__init__(self, name='DTMF\
+      \ Dialer', in_sig=None, out_sig=[np.float32])\n        self.samp_rate, self.digits\
+      \ = samp_rate, digits\n        self.tone_ms, self.gap_ms, self.pause_ms = tone_ms,\
+      \ gap_ms, pause_ms\n        self.level, self.twist_db, self.offset_pct = level,\
+      \ twist_db, offset_pct\n        self.made = None\n        self.pos = 0\n\n \
+      \   def make(self):\n        fs = self.samp_rate\n        n_tone = int(round(fs\
+      \ * self.tone_ms / 1000))\n        t = np.arange(n_tone) / fs\n        scale\
+      \ = 1 + self.offset_pct / 100\n        hi_amp = self.level * 10 ** (self.twist_db\
+      \ / 20)\n        parts = []\n        for d in str(self.digits).upper():\n  \
+      \          for r, row in enumerate(KEYS):\n                if d in row:\n  \
+      \                  c = row.index(d)\n                    parts.append(self.level\
+      \ * np.sin(2 * np.pi * ROWS[r] * scale * t)\n                              \
+      \   + hi_amp * np.sin(2 * np.pi * COLS[c] * scale * t))\n                  \
+      \  parts.append(np.zeros(int(round(fs * self.gap_ms / 1000))))\n        parts.append(np.zeros(int(round(fs\
+      \ * self.pause_ms / 1000))))\n        self.wave = np.concatenate(parts).astype(np.float32)\n\
+      \n    def work(self, input_items, output_items):\n        now = (self.samp_rate,\
+      \ self.digits, self.tone_ms, self.gap_ms, self.pause_ms,\n               self.level,\
+      \ self.twist_db, self.offset_pct)\n        if now != self.made:            \
+      \        # a setting changed: rebuild the sequence\n            self.make()\n\
+      \            self.made = now\n            self.pos = 0\n        out = output_items[0]\n\
+      \        n = 0\n        while n < len(out):\n            k = min(len(out) -\
+      \ n, len(self.wave) - self.pos)\n            out[n:n + k] = self.wave[self.pos:self.pos\
+      \ + k]\n            n += k\n            self.pos = (self.pos + k) % len(self.wave)\n\
+      \        return len(out)\n"
+    affinity: ''
+    alias: ''
+    comment: ''
+    digits: number
+    gap_ms: gap_ms
+    level: level
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    offset_pct: '0'
+    pause_ms: pause_ms
+    samp_rate: samp_rate
+    tone_ms: tone_ms
+    twist_db: twist_db
+  states:
+    _io_cache: ('DTMF Dialer', 'blk', [('samp_rate', '8000'), ('digits', "'123'"),
+      ('tone_ms', '70'), ('gap_ms', '70'), ('pause_ms', '500'), ('level', '0.3'),
+      ('twist_db', '0.0'), ('offset_pct', '0.0')], [], [('0', 'float', 1)], '', ['digits',
+      'gap_ms', 'level', 'offset_pct', 'pause_ms', 'samp_rate', 'tone_ms', 'twist_db'])
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [40, 280]
+    rotation: 0
+    state: enabled
+- name: head
+  id: blocks_head
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_items: length
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [420, 352]
+    rotation: 0
+    state: enabled
+- name: noise
+  id: analog_noise_source_x
+  parameters:
+    affinity: ''
+    alias: ''
+    amp: noise_amp
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    noise_type: analog.GR_GAUSSIAN
+    seed: '448'
+    type: float
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [40, 420]
+    rotation: 0
+    state: enabled
+- name: wavsink
+  id: blocks_wavfile_sink
+  parameters:
+    affinity: ''
+    alias: ''
+    append: 'False'
+    bits_per_sample1: FORMAT_PCM_16
+    bits_per_sample2: FORMAT_PCM_16
+    bits_per_sample3: FORMAT_VORBIS
+    bits_per_sample4: FORMAT_PCM_16
+    comment: ''
+    file: wav
+    format: FORMAT_WAV
+    nchan: '1'
+    samp_rate: samp_rate
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [600, 336]
+    rotation: 0
+    state: enabled
+
+connections:
+- [add, '0', head, '0']
+- [dialer, '0', add, '0']
+- [head, '0', wavsink, '0']
+- [noise, '0', add, '1']
+
+metadata:
+  file_format: 1
+  grc_version: 3.10.9.2

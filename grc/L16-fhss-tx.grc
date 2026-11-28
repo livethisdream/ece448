@@ -1,0 +1,791 @@
+options:
+  parameters:
+    author: ECE 448
+    catch_exceptions: 'True'
+    category: '[GRC Hier Blocks]'
+    cmake_opt: ''
+    comment: ''
+    copyright: ''
+    description: 'L16: L8''s FSK packets, one per hop, hopped over 8 channels by a
+      pseudo-random sequence. No hardware.'
+    gen_cmake: 'On'
+    gen_linking: dynamic
+    generate_options: qt_gui
+    hier_block_src_path: '.:'
+    id: L16_fhss_tx
+    max_nouts: '0'
+    output_language: python
+    placement: (0,0)
+    qt_qss_theme: ''
+    realtime_scheduling: ''
+    run: 'True'
+    run_command: '{python} -u {filename}'
+    run_options: prompt
+    sizing_mode: fixed
+    thread_safe_setters: ''
+    title: L16 - FHSS Transmitter
+    window_size: (1060,600)
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    state: enabled
+
+blocks:
+- name: baud
+  id: variable
+  parameters:
+    comment: ''
+    value: '1000'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 200
+    - 228
+    state: enabled
+- name: chan_f
+  id: variable
+  parameters:
+    comment: ''
+    value: '[spacing*(k - (nch - 1)/2) for k in range(nch)]'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 680
+    - 296
+    state: enabled
+- name: dev
+  id: variable
+  parameters:
+    comment: ''
+    value: '1000'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 200
+    - 296
+    state: enabled
+- name: dwell
+  id: variable
+  parameters:
+    comment: ''
+    value: hop_bits*sps
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 520
+    - 296
+    state: enabled
+- name: guard
+  id: variable
+  parameters:
+    comment: ''
+    value: '2'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 520
+    - 160
+    state: enabled
+- name: hdr
+  id: variable
+  parameters:
+    comment: ''
+    value: digital.header_format_default(digital.packet_utils.default_access_code,
+      0)
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 360
+    - 296
+    state: enabled
+- name: hop_bits
+  id: variable
+  parameters:
+    comment: ''
+    value: 8*(2*guard + 12 + len(msg) + 1)
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 520
+    - 228
+    state: enabled
+- name: hop_f
+  id: variable
+  parameters:
+    comment: ''
+    value: '[chan_f[c] for c in seq]'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 840
+    - 228
+    state: enabled
+- name: key
+  id: variable_qtgui_range
+  parameters:
+    comment: ''
+    gui_hint: 0,0,1,2
+    label: Hop key (seed)
+    min_len: '200'
+    orient: QtCore.Qt.Horizontal
+    rangeType: int
+    start: '0'
+    step: '1'
+    stop: '999'
+    value: '448'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 200
+    - 8
+    state: enabled
+- name: msg
+  id: variable
+  parameters:
+    comment: ''
+    value: '''USAFA ECE 448'''
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 360
+    - 228
+    state: enabled
+- name: nch
+  id: variable
+  parameters:
+    comment: ''
+    value: '8'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 680
+    - 160
+    state: enabled
+- name: samp_rate
+  id: variable
+  parameters:
+    comment: ''
+    value: '128000'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 200
+    - 160
+    state: enabled
+- name: seq
+  id: variable
+  parameters:
+    comment: ''
+    value: '[int(c) for c in np.random.default_rng(key).permutation(nch)]'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 840
+    - 160
+    state: enabled
+- name: seq_label
+  id: variable_qtgui_label
+  parameters:
+    comment: ''
+    formatter: 'lambda x: '':  '' + x'
+    gui_hint: 1,0,1,2
+    label: Hop sequence (channels 0 to 7)
+    type: string
+    value: '''  ''.join(str(c) for c in seq)'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 375
+    - 8
+    state: enabled
+- name: spacing
+  id: variable
+  parameters:
+    comment: ''
+    value: '10000'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 680
+    - 228
+    state: enabled
+- name: sps
+  id: variable
+  parameters:
+    comment: ''
+    value: int(samp_rate/baud)
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 360
+    - 160
+    state: enabled
+- name: fsk
+  id: analog_frequency_modulator_fc
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    sensitivity: 2*math.pi*dev/samp_rate
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 1170
+    - 480
+    state: enabled
+- name: guard_src
+  id: blocks_vector_source_x
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    repeat: 'True'
+    tags: '[]'
+    type: byte
+    vector: '[0x55]*guard'
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 8
+    - 400
+    state: enabled
+- name: guard_tag
+  id: blocks_stream_to_tagged_stream
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    len_tag_key: '"packet_len"'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    packet_len: guard
+    type: byte
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 200
+    - 400
+    state: enabled
+- name: header
+  id: digital_protocol_formatter_bb
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    format: hdr
+    len_tag_key: '"packet_len"'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 200
+    - 590
+    state: enabled
+- name: hop_frame
+  id: blocks_tagged_stream_mux
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    lengthtagname: '"packet_len"'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    ninputs: '4'
+    tag_preserve_head_pos: '0'
+    type: byte
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 430
+    - 460
+    state: enabled
+- name: hop_keep
+  id: blocks_keep_one_in_n
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    n: int(samp_rate/1000)
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 1010
+    - 760
+    state: enabled
+- name: hop_plot
+  id: qtgui_time_sink_x
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha1: '1.0'
+    alpha10: '1.0'
+    alpha2: '1.0'
+    alpha3: '1.0'
+    alpha4: '1.0'
+    alpha5: '1.0'
+    alpha6: '1.0'
+    alpha7: '1.0'
+    alpha8: '1.0'
+    alpha9: '1.0'
+    autoscale: 'False'
+    axislabels: 'True'
+    color1: blue
+    color10: dark blue
+    color2: red
+    color3: green
+    color4: black
+    color5: cyan
+    color6: magenta
+    color7: yellow
+    color8: dark red
+    color9: dark green
+    comment: ''
+    ctrlpanel: 'False'
+    entags: 'True'
+    grid: 'True'
+    gui_hint: 2,1,4,1
+    label1: Signal 1
+    label10: Signal 10
+    label2: Signal 2
+    label3: Signal 3
+    label4: Signal 4
+    label5: Signal 5
+    label6: Signal 6
+    label7: Signal 7
+    label8: Signal 8
+    label9: Signal 9
+    legend: 'False'
+    marker1: '-1'
+    marker10: '-1'
+    marker2: '-1'
+    marker3: '-1'
+    marker4: '-1'
+    marker5: '-1'
+    marker6: '-1'
+    marker7: '-1'
+    marker8: '-1'
+    marker9: '-1'
+    name: '"Hop frequency (kHz)"'
+    nconnections: '1'
+    size: '4000'
+    srate: '1000'
+    stemplot: 'False'
+    style1: '1'
+    style10: '1'
+    style2: '1'
+    style3: '1'
+    style4: '1'
+    style5: '1'
+    style6: '1'
+    style7: '1'
+    style8: '1'
+    style9: '1'
+    tr_chan: '0'
+    tr_delay: '0'
+    tr_level: '0.0'
+    tr_mode: qtgui.TRIG_MODE_FREE
+    tr_slope: qtgui.TRIG_SLOPE_POS
+    tr_tag: '""'
+    type: float
+    update_time: '0.1'
+    width1: '1'
+    width10: '1'
+    width2: '1'
+    width3: '1'
+    width4: '1'
+    width5: '1'
+    width6: '1'
+    width7: '1'
+    width8: '1'
+    width9: '1'
+    ylabel: '"Frequency"'
+    ymax: '40'
+    ymin: '-40'
+    yunit: '"kHz"'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 1400
+    - 740
+    state: enabled
+- name: hop_src
+  id: blocks_vector_source_x
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    repeat: 'True'
+    tags: '[]'
+    type: float
+    vector: hop_f
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 640
+    - 630
+    state: enabled
+- name: hop_synth
+  id: blocks_vco_c
+  parameters:
+    affinity: ''
+    alias: ''
+    amplitude: '1'
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samp_rate: samp_rate
+    sensitivity: 2*math.pi
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 1010
+    - 630
+    state: enabled
+- name: import_0
+  id: import
+  parameters:
+    alias: ''
+    comment: ''
+    imports: 'import math
+
+      import numpy as np'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 8
+    - 170
+    state: enabled
+- name: msg_src
+  id: blocks_vector_source_x
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    repeat: 'True'
+    tags: '[]'
+    type: byte
+    vector: list(msg.encode()) + [10]
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 8
+    - 500
+    state: enabled
+- name: msg_tag
+  id: blocks_stream_to_tagged_stream
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    len_tag_key: '"packet_len"'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    packet_len: len(msg) + 1
+    type: byte
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 200
+    - 500
+    state: enabled
+- name: repeat_bits
+  id: blocks_repeat
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    interp: sps
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 1000
+    - 480
+    state: enabled
+- name: repeat_hop
+  id: blocks_repeat
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    interp: dwell
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 840
+    - 638
+    state: enabled
+- name: symbols
+  id: digital_chunks_to_symbols_xx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    dimension: '1'
+    in_type: byte
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_ports: '1'
+    out_type: float
+    symbol_table: '[-1, 1]'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 800
+    - 472
+    state: enabled
+- name: throttle
+  id: blocks_throttle2
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    ignoretag: 'True'
+    limit: auto
+    maximum: '0.1'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samples_per_second: samp_rate
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 1540
+    - 560
+    state: enabled
+- name: to_khz
+  id: blocks_multiply_const_vxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    const: 1/1000
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 1200
+    - 760
+    state: enabled
+- name: tx_mixer
+  id: blocks_multiply_xx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_inputs: '2'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 1380
+    - 550
+    state: enabled
+- name: unpack
+  id: blocks_unpack_k_bits_bb
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    k: '8'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 640
+    - 480
+    state: enabled
+- name: waterfall
+  id: qtgui_waterfall_sink_x
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha1: '1.0'
+    alpha10: '1.0'
+    alpha2: '1.0'
+    alpha3: '1.0'
+    alpha4: '1.0'
+    alpha5: '1.0'
+    alpha6: '1.0'
+    alpha7: '1.0'
+    alpha8: '1.0'
+    alpha9: '1.0'
+    axislabels: 'True'
+    bw: samp_rate
+    color1: '0'
+    color10: '0'
+    color2: '0'
+    color3: '0'
+    color4: '0'
+    color5: '0'
+    color6: '0'
+    color7: '0'
+    color8: '0'
+    color9: '0'
+    comment: ''
+    fc: '0'
+    fftsize: '1024'
+    freqhalf: 'True'
+    grid: 'False'
+    gui_hint: 2,0,4,1
+    int_max: '0'
+    int_min: '-30'
+    label1: ''
+    label10: ''
+    label2: ''
+    label3: ''
+    label4: ''
+    label5: ''
+    label6: ''
+    label7: ''
+    label8: ''
+    label9: ''
+    legend: 'True'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    name: '"Transmitted band"'
+    nconnections: '1'
+    showports: 'False'
+    type: complex
+    update_time: '0.05'
+    wintype: window.WIN_BLACKMAN_hARRIS
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 1740
+    - 520
+    state: enabled
+
+connections:
+- [fsk, '0', tx_mixer, '0']
+- [guard_src, '0', guard_tag, '0']
+- [guard_tag, '0', hop_frame, '0']
+- [guard_tag, '0', hop_frame, '3']
+- [header, '0', hop_frame, '1']
+- [hop_frame, '0', unpack, '0']
+- [hop_keep, '0', to_khz, '0']
+- [hop_src, '0', repeat_hop, '0']
+- [hop_synth, '0', tx_mixer, '1']
+- [msg_src, '0', msg_tag, '0']
+- [msg_tag, '0', header, '0']
+- [msg_tag, '0', hop_frame, '2']
+- [repeat_bits, '0', fsk, '0']
+- [repeat_hop, '0', hop_keep, '0']
+- [repeat_hop, '0', hop_synth, '0']
+- [symbols, '0', repeat_bits, '0']
+- [throttle, '0', waterfall, '0']
+- [to_khz, '0', hop_plot, '0']
+- [tx_mixer, '0', throttle, '0']
+- [unpack, '0', symbols, '0']
+
+metadata:
+  file_format: 1
+  grc_version: 3.10.9.2
