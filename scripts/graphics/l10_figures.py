@@ -10,6 +10,17 @@
                    a 32-bit header holding the length twice, and 31 bytes of
                    text, 344 bits in all, or 86 ms at 4 kbaud.
 
+  L10-carrier    : the two constellation sinks of L10-pam-sim.grc, before and
+                   after the Costas Loop, at three TX-RX offsets (0, 300 Hz,
+                   700 Hz), cropped from grc_shot.py screenshots of the
+                   flowgraph with its random phase fixed at 0.6 rad and its
+                   TX error fixed at 700 Hz (RX tuning 400 Hz leaves 300 Hz).
+                   SIMULATED -- labeled so on the figure. Build with
+                   python3 scripts/graphics/l10_figures.py --carrier DIR, where
+                   DIR holds same.png, h300.png, and k1.png.
+  L10-big-picture: L10-pam-pluto.grc as GRC shows it (lab_canvas.py), the one
+                   flowgraph every step of the L10 Lab runs.
+
 The GNU Radio screenshots (L10-grc-*.png, L10-tx-packet.png, L10-link-*.png)
 are not generated here: they are taken from the real flowgraphs in
 book/extras/grc/ running under Xvfb (see CLAUDE.md, "Flowgraphs").
@@ -136,26 +147,46 @@ def packet():
 
 
 def big_picture():
-    """The L10 Lab's three blocks as GRC canvases (scripts/graphics/lab_canvas.py): the
-    transmitter the cadet builds and L10-pam-link.grc side by side, L10-pam-pluto.grc below."""
+    """The L10 Lab's one flowgraph, L10-pam-pluto.grc, as GRC shows it (lab_canvas.py)."""
     img = ROOT / "book/extras/viz/img"
-    fig = plt.figure(figsize=(14, 9.6))
-    gs = fig.add_gridspec(2, 2, height_ratios=[1.25, 1.45])
-    for spec, (name, title) in zip([gs[0, 0], gs[0, 1], gs[1, :]],
-                                   [("L10-canvas-tx", "Steps 1-7: build the transmitter"),
-                                    ("L10-canvas-link", "Steps 8-10: L10-pam-link.grc, noise and the matched filter"),
-                                    ("L10-canvas-pluto", "Steps 11-15: L10-pam-pluto.grc, the link on a PlutoSDR")]):
-        ax = fig.add_subplot(spec)
-        ax.imshow(plt.imread(img / f"{name}.png")); ax.axis("off")
-        ax.set_title(title, color=INK, fontsize=13, fontweight="bold", loc="left")
-    fig.tight_layout(h_pad=2.0, w_pad=2.5)
+    fig, ax = plt.subplots(figsize=(14, 7.2))
+    ax.imshow(plt.imread(img / "L10-canvas-pluto.png")); ax.axis("off")
+    ax.set_title("Steps 1-13: L10-pam-pluto.grc, transmitter on top, receiver below", color=INK,
+                 fontsize=13, fontweight="bold", loc="left")
+    fig.tight_layout()
     fig.savefig(img / "L10-big-picture.png", dpi=110, bbox_inches="tight", facecolor="white")
     plt.close(fig)
     print("wrote L10-big-picture.png")
 
 
+def carrier(shots: Path):
+    """Before and after the Costas Loop at three TX-RX offsets, from L10-pam-sim.grc."""
+    img = ROOT / "book/extras/viz/img"
+    cols = [("same.png", "One frequency"), ("h300.png", "300 Hz apart"), ("k1.png", "700 Hz apart")]
+    fig, axs = plt.subplots(2, 3, figsize=(9.6, 6.6))
+    # Each constellation sink spans -2..2 over 453 px; crop to about +-1.2 around its origin.
+    for c, (f, label) in enumerate(cols):
+        im = plt.imread(shots / f)
+        for r, x0 in enumerate((318, 851)):
+            ax = axs[r, c]
+            ax.imshow(im[690 - 140:690 + 140, x0 - 140:x0 + 140]); ax.set_xticks([]); ax.set_yticks([])
+            for sp in ax.spines.values():
+                sp.set_visible(True); sp.set_color(RULE)
+        axs[0, c].set_title(label, color=INK, fontsize=13, fontweight="bold")
+    axs[0, 0].set_ylabel("Before the Costas Loop", color=INK, fontsize=12)
+    axs[1, 0].set_ylabel("After the Costas Loop", color=INK, fontsize=12)
+    fig.text(0.99, 0.005, "Simulated: L10-pam-sim.grc", ha="right", va="bottom", color=GRAY, fontsize=10)
+    fig.tight_layout(rect=(0, 0.03, 1, 1))
+    fig.savefig(img / "L10-carrier.png", dpi=110, facecolor="white")
+    plt.close(fig)
+    print("wrote L10-carrier.png")
+
+
 if __name__ == "__main__":
     import sys
+    if "--carrier" in sys.argv:
+        carrier(Path(sys.argv[sys.argv.index("--carrier") + 1]))
+        raise SystemExit
     if "--big-picture" not in sys.argv:
         ascii_bits()
         byte_slip()

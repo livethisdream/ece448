@@ -106,8 +106,8 @@ documentation. Download \texttt{L08-lab-unknown.sigmf-data} and \texttt{.sigmf-m
 the lab page before the period. Every flowgraph in this lab runs on your laptop, and nothing
 transmits.
 
-\textbf{Part 1: Predict} the shaded cell in Table B before the lab period, attaching your
-work.
+\textbf{Part 1: Predict} the three shaded cells in Table B before the lab period, attaching your
+reasoning.
 
 \textbf{Part 2: Measure} the indicated quantities in class, and paste Figures 1 to 4.
 
@@ -115,7 +115,7 @@ work.
 
 \textbf{Grading:} I grade the packet against Objective 4.1 on the course's 1 / 0 scale, and you
 may revise it under course policy. I grade each Part 3 answer on its claim, the evidence from
-your own table and figures, the reasoning that connects them, and the uncertainty in your
+your own tables and figures, the reasoning that connects them, and the uncertainty in your
 readings.
 
 \begin{procbox}
@@ -123,17 +123,21 @@ readings.
 spectrum and a demodulator, and read its two tones and its symbol rate.}
 \procstep{5--11}{\textbf{Build the decoder} from those settings and recover the recording's
 message into a file.}
-\procstep{12--17}{\textbf{Raise the frequency offset} on \texttt{L08-fsk-link.grc} at a fixed
-noise voltage, first at 1 kHz of deviation and then at 2 kHz, until lines fail.}
+\procstep{12--16}{\textbf{Break it and fix it}: shift the recording by a frequency offset the
+flowgraph draws at random and does not show, find out from the spectrum and the eye why the
+text stops, and retune your receiver until the message comes back.}
 \end{procbox}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \fullwidth{\large\textbf{Parts 1 and 2: Predict and Measure}}
 
-Work out the shaded cell before the lab period and measure in class. The recording comes from a
-transmitter like your class one, with the same packets and its own baud rate and tones.
-\texttt{L08-fsk-link.grc} samples at 32 kHz with 32 samples per symbol, and its Quadrature Demod
-gain turns a tone at $+\Delta f$ into an output of $+1$.
+Work out the shaded cells before the lab period and measure in class. The recording comes from
+a transmitter like your class one, with the same packets and its own baud rate and tones. In
+Step 12 a Signal Source and a Multiply shift the whole recording by an offset $\Delta$ that you
+do not see, between 1.2 and 1.6 times \texttt{dev} in either direction, and in
+Step 13 the RX tuning slider moves the Frequency Xlating FIR Filter's center to
+\texttt{f\_center + rx\_tune}. Predict each shaded cell in terms of \texttt{f\_center},
+\texttt{dev}, $\Delta$, and what you will read on the spectrum.
 
 \noindent\begin{minipage}{\linewidth}
 \textbf{Table A. The recording and its message} (\texttt{L08-lab-unknown.sigmf-data})
@@ -151,16 +155,16 @@ The recovered message (text) & \multicolumn{2}{p{\dimexpr2\boxw+2\tabcolsep+\arr
 \end{minipage}
 
 \noindent\begin{minipage}{\linewidth}
-\textbf{Table B. The eye and the offset limit} (\texttt{L08-fsk-link.grc}, noise voltage 0.5)
+\textbf{Table B. The offset and the fix} (your decoder with Steps 12 and 13 added)
 
 \begin{center}
 \renewcommand{\arraystretch}{1.1}
-\begin{tabular}{| p{2.5in} | K{\boxw} | K{\boxw} | l |}
+\begin{tabular}{| p{2.0in} | K{2.1in} | K{\boxw} | l |}
 \hline
 Quantity & Predicted & Measured & Step \\\hline
-Lower eye level, 1 kHz deviation, 600 Hz offset (normalized) & \predv[b.low600]{\keysol{p1.b.low600}} & \kv[b.low600]{\keysol{b.low600}} & 13 \\\hline
-Largest offset with every line correct, 1 kHz deviation (Hz) & \nopred & \kv[b.lim1k]{\keysol{b.lim1k}} & 14 \\\hline
-Largest offset with every line correct, 2 kHz deviation (Hz) & \nopred & \kv[b.lim2k]{\keysol{b.lim2k}} & 16 \\\hline
+The two tone frequencies with the offset (Hz) & \predv[b.toneoff]{\keysol{p1.b.toneoff}} & \kv[b.toneoff]{\keysol{b.toneoff}} & 15 \\\hline
+The eye's two levels with the offset (normalized) & \predv[b.eyeoff]{\keysol{p1.b.eyeoff}} & \kv[b.eyeoff]{\keysol{b.eyeoff}} & 15 \\\hline
+RX tuning that brings the text back (Hz) & \predv[b.tune]{\keysol{p1.b.tune}} & \kv[b.tune]{\keysol{b.tune}} & 16 \\\hline
 \end{tabular}
 \end{center}
 \end{minipage}
@@ -177,35 +181,40 @@ with the eye.}{\keysol{fig1}}
 recovered.}{\keysol{fig2}}
 
 \vspace{8pt}
-\noindent\shotpane{0.48\linewidth}{2.0in}{600 Hz offset}{\keysol{fig3.o600}}\hfill
-\shotpane{0.48\linewidth}{2.0in}{First offset that failed}{\keysol{fig3.fail}}\par
-\vspace{2pt}{\small\textbf{Figure 3.} Steps 13 and 14: \texttt{L08-fsk-link.grc} at 1 kHz of
-deviation, with the spectrum, the eye, and the Lines label in view.}\par
+\shotbox{2.4in}{\textbf{Figure 3.} Step 15: your decoder with the offset, RX tuning at 0, with
+the spectrum and the eye in view.}{\keysol{fig3}}
 
 \vspace{8pt}
-\shotbox{2.4in}{\textbf{Figure 4.} Step 17: \texttt{L08-fsk-link.grc} at 2 kHz of deviation, at
-the first offset that failed.}{\keysol{fig4}}
+\shotbox{2.4in}{\textbf{Figure 4.} Step 16: the running window after your fix, with
+\texttt{rx.txt} beside it.}{\keysol{fig4}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Part 3 starts on this page only if its heading and first prompt fit (no forced break).
 \par\vspace{0pt plus 3in}\penalty-300\vspace{0pt plus -3in}\vspace{8pt}
 \fullwidth{\large\textbf{Part 3: Analyze} \normalsize(individual, after the lab)}
 
-Answer each prompt from your own table and figures. Give a claim, the evidence, your reasoning,
+Answer each prompt from your own tables and figures. Give a claim, the evidence, your reasoning,
 and the uncertainty in your readings.
 
 \begin{questions}
 
-\question Compare your two offset limits in Table B. From the eye and the spectrum in Figures 3
-and 4, explain what ended the link at each deviation, and name a measurement that would test your explanation.
-	\begin{solution}[2.6in]\keysol{an1}\end{solution}
+\question Follow the recording through your decoder in Figure 1, from the Frequency Xlating FIR
+Filter to Repack Bits. For each block, say what it does to the signal and which step of the
+transmitter it undoes, and point to what in Figure 1 or Table A shows it working.
+	\begin{solution}[2.0in]\keysol{an1}\end{solution}
+
+\question Compare Figures 3 and 4 with your entries in Table B. Explain why the text stopped
+with the offset in place, using both the spectrum and the eye, and why your RX tuning brought
+it back. Say how far your RX tuning could have been from the setting you used and still
+delivered the message, and what in your figures supports that.
+	\begin{solution}[2.0in]\keysol{an2}\end{solution}
 
 \newpage
-\question Look up the rated frequency accuracy of the PlutoSDR's reference oscillator, and find
-the largest offset, in hertz, between two PlutoSDRs at 915 MHz. Decide whether this link would
-carry text between them at either deviation you tested, and describe what the wider deviation
-changes in Figures 3 and 4.
-	\begin{solution}[3.0in]\keysol{an2}\end{solution}
+\question You set the RX tuning by hand from the spectrum, and a restart drew a new offset that
+needed a new setting. Propose a change to your decoder that would keep the message coming
+through without that step, and describe the run, with the blocks you already have, that would
+test it.
+	\begin{solution}[3.0in]\keysol{an3}\end{solution}
 
 \end{questions}
 

@@ -18,11 +18,11 @@ scripts/graphics/lab_grc/ (not published to the site):
   L08-lab-decoder                the decoder the cadet builds for that recording,
                                  with f_center, dev, and baud left undefined:
                                  the cadet sets them from the recording
-  L08-fsk-link                   book/extras/grc/L08-fsk-link.grc as shipped
-  L10-lab-tx                     the packet transmitter the cadet builds; the
-                                 packet length is left as len_table_a, a Part 1
-                                 answer
-  L10-pam-link, L10-pam-pluto    book/extras/grc/ as shipped
+  L08-lab-offset                 that decoder with the offset the cadet adds (a
+                                 Signal Source at a random, unshown frequency and
+                                 a Multiply) and the RX tuning slider that moves
+                                 the Frequency Xlating FIR Filter's center
+  L10-pam-pluto                  book/extras/grc/ as shipped
 
 For each, a copy moves the Options, variable, and import blocks off the
 visible canvas, GRC is screenshot with scripts/grc/grc_canvas.sh, and the
@@ -55,9 +55,7 @@ SHOTS = {
     "L07-canvas-am-vs-fm": ROOT / "book/extras/grc/L07-am-vs-fm.grc",
     "L08-canvas-view": LAB / "L08-lab-view.grc",
     "L08-canvas-decoder": LAB / "L08-lab-decoder.grc",
-    "L08-canvas-link": ROOT / "book/extras/grc/L08-fsk-link.grc",
-    "L10-canvas-tx": LAB / "L10-lab-tx.grc",
-    "L10-canvas-link": ROOT / "book/extras/grc/L10-pam-link.grc",
+    "L08-canvas-offset": LAB / "L08-lab-offset.grc",
     "L10-canvas-pluto": ROOT / "book/extras/grc/L10-pam-pluto.grc",
 }
 

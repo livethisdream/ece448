@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Predict the constellation before and after carrier recovery</title>
+<style>
+  :root { --navy:#004a85; --mid:#0067b9; --edge:#cddce9; --edge2:#b9d2e5; --bg:#f5f9fc;
+          --ink:#15202b; --ink3:#5b6573; --amber:#8a5a00; --red:#b01e24; --band:#eaf2fa; }
+  html,body { margin:0; padding:0; font-family:'Inter',system-ui,-apple-system,sans-serif; color:var(--ink); background:#fff; }
+  .app { display:flex; flex-direction:column; gap:8px; padding:12px; }
+  canvas { display:block; box-sizing:border-box; width:100%; height:auto; background:#fff; border:1px solid var(--edge); border-radius:6px; }
+  canvas:focus-visible { outline:2px solid var(--navy); outline-offset:2px; }
+  .controls { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:8px 16px; align-items:end;
+              padding:8px 12px; background:var(--bg); border:1px solid var(--edge); border-radius:6px; }
+  @media (max-width:560px) { .controls { grid-template-columns:1fr; } }
+  .ctl { display:grid; grid-template-columns:auto 1fr; column-gap:8px; row-gap:2px; align-items:center; min-width:0; }
+  .ctl label, .ctl .lab { font-size:10.5px; text-transform:uppercase; letter-spacing:0.05em; color:var(--ink3); font-weight:700; white-space:nowrap; }
+  .ctl .val { color:var(--navy); font-size:12px; font-weight:600; font-variant-numeric:tabular-nums; text-align:right; white-space:nowrap; }
+  .ctl input[type=range] { grid-column:1 / span 2; width:100%; margin:0; accent-color:var(--mid); }
+  .ctl.pred input[type=range] { accent-color:var(--amber); }
+  .ctl.pred .val { color:var(--amber); }
+  /* Before a guess the slider is faint, so its resting place does not suggest an answer. */
+  .ctl.pred.open input[type=range] { opacity:0.35; }
+  .seg { display:flex; gap:4px; justify-content:flex-end; flex-wrap:wrap; }
+  .seg button { font:inherit; font-size:11.5px; font-weight:600; color:var(--navy); background:#fff; border:1px solid var(--edge2); border-radius:14px; padding:3px 10px; cursor:pointer; }
+  .seg button[aria-pressed="true"] { background:var(--navy); color:#fff; border-color:var(--navy); }
+  .show { font:700 12px 'Inter',system-ui,sans-serif; text-transform:uppercase; letter-spacing:0.05em;
+          height:30px; padding:0 14px; border-radius:5px; cursor:pointer;
+          border:1px solid var(--navy); background:var(--navy); color:#fff; }
+  .show[aria-pressed="true"] { background:#fff; color:var(--navy); }
+  .show:disabled { cursor:not-allowed; background:#e3e8ee; border-color:#c7cfd8; color:#7a8591; }
+  .seg button:focus-visible, .show:focus-visible { outline:2px solid var(--navy); outline-offset:2px; }
+  .readouts { display:grid; gap:6px; grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .ro { display:flex; flex-direction:column; align-items:center; gap:2px; padding:5px 4px 6px; min-width:0;
+        border:1px solid var(--edge2); border-radius:6px; background:#eef4fa; }
+  .ro .k { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:var(--ink3); white-space:nowrap; overflow:hidden; max-width:100%; }
+  .ro .v { font-size:14px; font-weight:700; white-space:nowrap; font-variant-numeric:tabular-nums; color:var(--navy); }
+  .ro.p .v { color:var(--amber); }
+  .ro.a .v { color:var(--red); }
+  .seg.pick button[aria-pressed="true"] { background:var(--amber); border-color:var(--amber); }
+  .ctl.full { grid-column:1 / -1; }
+  @media (max-width:560px) { .ctl { grid-template-columns:1fr; } .seg { justify-content:flex-start; } }
+</style>
+</head>
+<body>
+<div class="app">
+  <canvas id="plot" tabindex="0" aria-label="Two constellation plots, before and after the Costas Loop, shown once you have predicted both."></canvas>
+
+  <div class="controls">
+    <div class="ctl full"><span class="lab">Situation</span>
+      <div class="seg" id="sit" role="group" aria-label="Situation">
+        <button data-v="sim" aria-pressed="false">No radio</button><button data-v="same" aria-pressed="true">One frequency</button><button data-v="off" aria-pressed="false">TX 100 Hz off</button>
+      </div>
+    </div>
+    <div class="ctl full"><span class="lab">Before the Costas Loop</span>
+      <div class="seg pick" id="pre" role="group" aria-label="My prediction before the Costas Loop">
+        <button data-v="axis" aria-pressed="false">On the I axis</button><button data-v="tilt" aria-pressed="false">Tilted</button><button data-v="ring" aria-pressed="false">A ring</button>
+      </div>
+    </div>
+    <div class="ctl full"><span class="lab">After the Costas Loop</span>
+      <div class="seg pick" id="post" role="group" aria-label="My prediction after the Costas Loop">
+        <button data-v="axis" aria-pressed="false">On the I axis</button><button data-v="tilt" aria-pressed="false">Tilted</button><button data-v="ring" aria-pressed="false">A ring</button>
+      </div>
+    </div>
+    <div class="ctl full" style="justify-items:end"><span class="lab"></span>
+      <button class="show" id="show" aria-pressed="false" disabled>Show the constellations</button></div>
+  </div>
+
+  <div class="readouts">
+    <div class="ro p"><span class="k">before: my guess</span><span class="v" id="r-pre">?</span></div>
+    <div class="ro p"><span class="k">after: my guess</span><span class="v" id="r-post">?</span></div>
+  </div>
+</div>
+
+<script>
+'use strict';
+// A 2-PAM signal after Symbol Sync, one dot per symbol, before and after a
+// Costas Loop. "No radio" has no carrier at all, so the dots sit on the I axis
+// at both points. "One frequency" is a PlutoSDR whose TX and RX share one
+// frequency: the carrier phase between them is unknown (0.6 rad here), so the
+// two clusters sit on a tilted line until the loop turns them onto the axis.
+// "TX 100 Hz off" turns that line 9 degrees per symbol at 4 kbaud, so the dots
+// trace a ring; the loop follows an offset this small and the dots sit on the
+// axis again. None of these is a reading the L10 Lab records: the lab records
+// how many restarts needed Polarity inverted, where its signal sits on the
+// spectrum, and the RX tuning that brings its line back.
+const SANS = 'Inter, system-ui, -apple-system, sans-serif';
+const C = { navy:'#004a85', red:'#b01e24', amber:'#8a5a00', grid:'#e6eef6', axis:'#8a929c', ink:'#15202b', ink3:'#5b6573' };
+const ANSWER = { sim:['axis','axis'], same:['tilt','axis'], off:['ring','axis'] };
+const NAME = { axis:'on the I axis', tilt:'tilted', ring:'a ring' };
+const state = { sit:'same', pre:null, post:null, shown:false };
+
+let seed = 448;
+const rnd = () => { seed = (seed*1103515245 + 12345) % 2147483648; return seed/2147483648; };
+const gauss = () => Math.sqrt(-2*Math.log(rnd() + 1e-12))*Math.cos(2*Math.PI*rnd());
+const N = 240, BITS = [], NOISE = [];
+for (let i = 0; i < N; i++){ BITS.push(rnd() < 0.5 ? -1 : 1); NOISE.push([0.03*gauss(), 0.03*gauss()]); }
+
+function points(sit, after){
+  return BITS.map((b, i) => {
+    let ph = 0;
+    if (!after && sit === 'same') ph = 0.6;
+    if (!after && sit === 'off') ph = 0.6 + 2*Math.PI*100/4000*i;
+    const r = 0.5*b;
+    return [r*Math.cos(ph) + NOISE[i][0], r*Math.sin(ph) + NOISE[i][1]];
+  });
+}
+
+const canvas = document.getElementById('plot'), ctx = canvas.getContext('2d');
+const showBtn = document.getElementById('show');
+function stext(s,x,y,px,color,align,bold){ ctx.fillStyle=color; ctx.font=(bold?'700 ':'')+px+'px '+SANS; ctx.textAlign=align||'left'; ctx.textBaseline='middle'; ctx.fillText(s,x,y); }
+
+function resize(){
+  const w = canvas.clientWidth, dpr = window.devicePixelRatio || 1;
+  const h = Math.round(Math.max(w < 400 ? 190 : 220, Math.min(w*0.42, 280)));
+  canvas.style.height = h + 'px';
+  canvas.width = Math.round(w*dpr); canvas.height = Math.round(h*dpr);
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  draw();
+}
+window.addEventListener('resize', resize);
+
+function panel(x0, y0, s, title, pts){
+  const narrow = s < 150, fs = narrow ? 10 : 11;
+  stext(title, x0 + s/2, y0 - 12, narrow ? 11 : 12.5, C.ink, 'center', true);
+  ctx.fillStyle = '#fbfdff'; ctx.fillRect(x0, y0, s, s);
+  ctx.strokeStyle = C.grid; ctx.lineWidth = 1; ctx.strokeRect(x0, y0, s, s);
+  const c = v => v*s/2.0;
+  ctx.strokeStyle = C.axis; ctx.lineWidth = 1.2;
+  ctx.beginPath(); ctx.moveTo(x0, y0 + s/2); ctx.lineTo(x0 + s, y0 + s/2); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(x0 + s/2, y0); ctx.lineTo(x0 + s/2, y0 + s); ctx.stroke();
+  stext('I', x0 + s - 4, y0 + s/2 - 8, fs, C.ink3, 'right');
+  stext('Q', x0 + s/2 + 5, y0 + 8, fs, C.ink3, 'left');
+  if (!pts) return;
+  ctx.fillStyle = 'rgba(0,74,133,0.75)';
+  pts.forEach(([i, q]) => { ctx.beginPath(); ctx.arc(x0 + s/2 + c(i), y0 + s/2 - c(q), 2.2, 0, 2*Math.PI); ctx.fill(); });
+}
+
+function draw(){
+  const dpr = window.devicePixelRatio || 1, w = canvas.width/dpr, h = canvas.height/dpr;
+  ctx.clearRect(0,0,w,h);
+  const top = 28, s = Math.min(h - top - 8, (w - 36)/2), gap = w - 2*s;
+  const xa = gap/3, xb = 2*gap/3 + s;
+  panel(xa, top, s, 'Before the Costas Loop', state.shown ? points(state.sit, false) : null);
+  panel(xb, top, s, 'After the Costas Loop', state.shown ? points(state.sit, true) : null);
+  if (!state.shown){
+    const msg = (state.pre && state.post) ? 'Press Show to check' : 'Predict both first', mpx = w < 470 ? 12 : 13.5;
+    ctx.font = '700 ' + mpx + 'px ' + SANS;
+    const mw = Math.min(ctx.measureText(msg).width + 20, w - 16), my = top + s/2;
+    ctx.fillStyle = 'rgba(255,255,255,0.94)'; ctx.strokeStyle = '#b9d2e5'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.roundRect(w/2 - mw/2, my - mpx, mw, 2*mpx, 5); ctx.fill(); ctx.stroke();
+    stext(msg, w/2, my, mpx, C.navy, 'center', true);
+  }
+}
+
+function verdict(k, i){
+  if (!state[k]) return '?';
+  if (!state.shown) return NAME[state[k]];
+  return state[k] === ANSWER[state.sit][i] ? 'right' : 'it is ' + NAME[ANSWER[state.sit][i]];
+}
+
+function sync(){
+  [['sit','sit'],['pre','pre'],['post','post']].forEach(([id, k]) =>
+    document.querySelectorAll('#' + id + ' button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === state[k] ? 'true' : 'false')));
+  const ready = !!(state.pre && state.post);
+  showBtn.disabled = !ready;
+  showBtn.setAttribute('aria-pressed', state.shown ? 'true' : 'false');
+  showBtn.textContent = state.shown ? 'Hide them' : 'Show the constellations';
+  document.getElementById('r-pre').textContent = verdict('pre', 0);
+  document.getElementById('r-post').textContent = verdict('post', 1);
+  draw();
+}
+
+document.querySelectorAll('#sit button').forEach(b => b.addEventListener('click', () => { state.sit = b.dataset.v; state.pre = null; state.post = null; state.shown = false; sync(); }));
+['pre','post'].forEach(k => document.querySelectorAll('#' + k + ' button').forEach(b => b.addEventListener('click', () => { state[k] = b.dataset.v; state.shown = false; sync(); })));
+showBtn.addEventListener('click', () => { if (state.pre && state.post){ state.shown = !state.shown; sync(); } });
+
+resize(); sync();
+</script>
+</body>
+</html>

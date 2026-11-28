@@ -7,7 +7,7 @@
                   symbol rate. SIMULATED -- labeled so on the figure.
   L08-big-picture : the L8 Lab's three blocks, the GRC canvases that
                   scripts/graphics/lab_canvas.py takes of the recording viewer,
-                  the decoder the cadet builds, and L08-fsk-link.grc; PNG.
+                  the decoder the cadet builds, and that decoder with an offset; PNG.
 
 The GNU Radio screenshots (L08-grc-*.png, L08-tx-*.png, L08-link-*.png) are
 not generated here: they are taken from the real flowgraphs in
@@ -89,14 +89,14 @@ def burst_sim():
 
 def big_picture():
     """The lab's three blocks as GRC canvases (scripts/graphics/lab_canvas.py): the
-    recording viewer beside the decoder, and L08-fsk-link.grc below."""
+    recording viewer beside the decoder, and the decoder with an offset below."""
     img = ROOT / "book/extras/viz/img"
     fig = plt.figure(figsize=(14, 9.0))
     gs = fig.add_gridspec(2, 2, height_ratios=[1, 1.15])
     for spec, (name, title) in zip([gs[0, 0], gs[0, 1], gs[1, :]],
                                    [("L08-canvas-view", "Steps 1-4: read the recording"),
                                     ("L08-canvas-decoder", "Steps 5-11: build the decoder"),
-                                    ("L08-canvas-link", "Steps 12-17: L08-fsk-link.grc, frequency offset at two deviations")]):
+                                    ("L08-canvas-offset", "Steps 12-16: add an offset, find why the text stops, and fix it")]):
         ax = fig.add_subplot(spec)
         ax.imshow(plt.imread(img / f"{name}.png")); ax.axis("off")
         ax.set_title(title, color=INK, fontsize=13, fontweight="bold", loc="left")

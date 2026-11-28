@@ -24,7 +24,7 @@ options:
     sizing_mode: fixed
     thread_safe_setters: ''
     title: L10 - PAM Text Link on a PlutoSDR
-    window_size: (1000,900)
+    window_size: (1100,1000)
   states:
     bus_sink: false
     bus_source: false
@@ -87,7 +87,7 @@ blocks:
   id: variable_qtgui_chooser
   parameters:
     comment: ''
-    gui_hint: 1,0,1,2
+    gui_hint: 1,0,1,1
     label: Polarity
     label0: normal
     label1: inverted
@@ -151,7 +151,7 @@ blocks:
   parameters:
     comment: ''
     formatter: 'lambda x: '':  '' + x'
-    gui_hint: 3,0,1,2
+    gui_hint: 5,0,1,2
     label: Received
     type: string
     value: rx_text
@@ -206,6 +206,27 @@ blocks:
     coordinate: [1000, 420]
     rotation: 0
     state: enabled
+- name: rx_tune
+  id: variable_qtgui_range
+  parameters:
+    comment: ''
+    gui_hint: 2,0,1,2
+    label: RX tuning (Hz)
+    min_len: '200'
+    orient: QtCore.Qt.Horizontal
+    rangeType: float
+    start: '-4000'
+    step: '10'
+    stop: '4000'
+    value: '0'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1240, 120]
+    rotation: 0
+    state: enabled
 - name: samp_rate
   id: variable
   parameters:
@@ -235,7 +256,7 @@ blocks:
   parameters:
     comment: ''
     formatter: 'lambda x: '':  '' + x'
-    gui_hint: 4,0,1,2
+    gui_hint: 6,0,1,2
     label: Lines
     type: string
     value: rx_stats
@@ -267,6 +288,50 @@ blocks:
     coordinate: [1080, 12]
     rotation: 0
     state: enabled
+- name: tx_err
+  id: variable
+  parameters:
+    comment: 'The TX oscillator''s error when the TX oscillator switch reads off:
+
+      2.2 to 3.4 kHz either way, drawn at random each run and not shown.'
+    value: random.choice([-1, 1])*random.uniform(2200, 3400)
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1050, 12]
+    rotation: 0
+    state: enabled
+- name: tx_error
+  id: variable_qtgui_chooser
+  parameters:
+    comment: ''
+    gui_hint: 1,1,1,1
+    label: TX oscillator
+    label0: exact
+    label1: 'off'
+    label2: ''
+    label3: ''
+    label4: ''
+    labels: '["exact", "off"]'
+    num_opts: '2'
+    option0: '0'
+    option1: '1'
+    option2: '2'
+    option3: '3'
+    option4: '4'
+    options: '[0, 1]'
+    orient: Qt.QHBoxLayout
+    type: real
+    value: '0'
+    widget: radio_buttons
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1330, 520]
+    rotation: 0
+    state: enabled
 - name: tx_taps
   id: variable
   parameters:
@@ -279,16 +344,15 @@ blocks:
     coordinate: [176, 92]
     rotation: 0
     state: enabled
-- name: analog_agc3_xx_0
-  id: analog_agc3_xx
+- name: analog_agc2_xx_0
+  id: analog_agc2_xx
   parameters:
     affinity: ''
     alias: ''
-    attack_rate: 1e-3
-    comment: 'Reference 0.5: at high SNR AGC3 overshoots'
-    decay_rate: 1e-4
+    attack_rate: 1e-1
+    comment: ''
+    decay_rate: 1e-2
     gain: '1.0'
-    iir_update_decim: '1'
     max_gain: '65536'
     maxoutbuf: '0'
     minoutbuf: '0'
@@ -614,7 +678,7 @@ blocks:
     expected: msg
     maxoutbuf: '0'
     minoutbuf: '0'
-    settings: (tx_atten, rx_gain, polarity)
+    settings: (tx_atten, rx_gain, polarity, tx_error, rx_tune)
   states:
     _io_cache: ('Text Sink', 'blk', [('expected', "''"), ('settings', 'None')], [('0',
       'byte', 1)], [], '', ['expected', 'settings'])
@@ -656,7 +720,7 @@ blocks:
     filter: '""'
     filter_source: '''Auto'''
     fpass: '0'
-    frequency: int(fc)
+    frequency: int(fc + tx_error*tx_err)
     fstop: '0'
     len_tag_key: '""'
     samplerate: int(radio_rate)
@@ -681,7 +745,7 @@ blocks:
     filter: '""'
     filter_source: '''Auto'''
     fpass: '0'
-    frequency: int(fc)
+    frequency: int(fc + rx_tune)
     fstop: '0'
     gain1: '''manual'''
     len_tag_key: '""'
@@ -705,7 +769,9 @@ blocks:
   parameters:
     alias: ''
     comment: ''
-    imports: import math
+    imports: 'import math
+
+      import random'
   states:
     bus_sink: false
     bus_source: false
@@ -761,7 +827,7 @@ blocks:
     color9: '"dark green"'
     comment: ''
     grid: 'True'
-    gui_hint: 2,1,1,1
+    gui_hint: 4,1,1,1
     label1: ''
     label10: ''
     label2: ''
@@ -824,6 +890,98 @@ blocks:
     coordinate: [1380, 720]
     rotation: 0
     state: enabled
+- name: qtgui_const_sink_x_1
+  id: qtgui_const_sink_x
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha1: '1.0'
+    alpha10: '1.0'
+    alpha2: '1.0'
+    alpha3: '1.0'
+    alpha4: '1.0'
+    alpha5: '1.0'
+    alpha6: '1.0'
+    alpha7: '1.0'
+    alpha8: '1.0'
+    alpha9: '1.0'
+    autoscale: 'False'
+    axislabels: 'True'
+    color1: '"blue"'
+    color10: '"dark blue"'
+    color2: '"red"'
+    color3: '"green"'
+    color4: '"black"'
+    color5: '"cyan"'
+    color6: '"magenta"'
+    color7: '"yellow"'
+    color8: '"dark red"'
+    color9: '"dark green"'
+    comment: ''
+    grid: 'True'
+    gui_hint: 4,0,1,1
+    label1: ''
+    label10: ''
+    label2: ''
+    label3: ''
+    label4: ''
+    label5: ''
+    label6: ''
+    label7: ''
+    label8: ''
+    label9: ''
+    legend: 'False'
+    marker1: '0'
+    marker10: '0'
+    marker2: '0'
+    marker3: '0'
+    marker4: '0'
+    marker5: '0'
+    marker6: '0'
+    marker7: '0'
+    marker8: '0'
+    marker9: '0'
+    name: '"Before carrier recovery"'
+    nconnections: '1'
+    size: '512'
+    style1: '0'
+    style10: '0'
+    style2: '0'
+    style3: '0'
+    style4: '0'
+    style5: '0'
+    style6: '0'
+    style7: '0'
+    style8: '0'
+    style9: '0'
+    tr_chan: '0'
+    tr_level: '0.0'
+    tr_mode: qtgui.TRIG_MODE_FREE
+    tr_slope: qtgui.TRIG_SLOPE_POS
+    tr_tag: '""'
+    type: complex
+    update_time: '0.1'
+    width1: '1'
+    width10: '1'
+    width2: '1'
+    width3: '1'
+    width4: '1'
+    width5: '1'
+    width6: '1'
+    width7: '1'
+    width8: '1'
+    width9: '1'
+    xmax: '2'
+    xmin: '-2'
+    ymax: '2'
+    ymin: '-2'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1380, 840]
+    rotation: 0
+    state: enabled
 - name: qtgui_freq_sink_x_0
   id: qtgui_freq_sink_x
   parameters:
@@ -859,7 +1017,7 @@ blocks:
     fftsize: '1024'
     freqhalf: 'True'
     grid: 'True'
-    gui_hint: 2,0,1,1
+    gui_hint: 3,0,1,1
     label: Relative Gain
     label1: ''
     label10: ''''''
@@ -905,6 +1063,103 @@ blocks:
     coordinate: [490, 745]
     rotation: 0
     state: enabled
+- name: qtgui_time_sink_x_0
+  id: qtgui_time_sink_x
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha1: '1.0'
+    alpha10: '1.0'
+    alpha2: '1.0'
+    alpha3: '1.0'
+    alpha4: '1.0'
+    alpha5: '1.0'
+    alpha6: '1.0'
+    alpha7: '1.0'
+    alpha8: '1.0'
+    alpha9: '1.0'
+    autoscale: 'False'
+    axislabels: 'True'
+    color1: blue
+    color10: dark blue
+    color2: red
+    color3: green
+    color4: black
+    color5: cyan
+    color6: magenta
+    color7: yellow
+    color8: dark red
+    color9: dark green
+    comment: ''
+    ctrlpanel: 'False'
+    entags: 'False'
+    grid: 'True'
+    gui_hint: 3,1,1,1
+    label1: I
+    label10: Signal 10
+    label2: Q
+    label3: Signal 3
+    label4: Signal 4
+    label5: Signal 5
+    label6: Signal 6
+    label7: Signal 7
+    label8: Signal 8
+    label9: Signal 9
+    legend: 'True'
+    marker1: '-1'
+    marker10: '-1'
+    marker2: '-1'
+    marker3: '-1'
+    marker4: '-1'
+    marker5: '-1'
+    marker6: '-1'
+    marker7: '-1'
+    marker8: '-1'
+    marker9: '-1'
+    name: '"Received samples"'
+    nconnections: '1'
+    size: '1024'
+    srate: radio_rate
+    stemplot: 'False'
+    style1: '1'
+    style10: '1'
+    style2: '1'
+    style3: '1'
+    style4: '1'
+    style5: '1'
+    style6: '1'
+    style7: '1'
+    style8: '1'
+    style9: '1'
+    tr_chan: '0'
+    tr_delay: '0'
+    tr_level: '0.0'
+    tr_mode: qtgui.TRIG_MODE_FREE
+    tr_slope: qtgui.TRIG_SLOPE_POS
+    tr_tag: '""'
+    type: complex
+    update_time: '0.10'
+    width1: '1'
+    width10: '1'
+    width2: '1'
+    width3: '1'
+    width4: '1'
+    width5: '1'
+    width6: '1'
+    width7: '1'
+    width8: '1'
+    width9: '1'
+    ylabel: Amplitude
+    ymax: '1.2'
+    ymin: '-1.2'
+    yunit: '""'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [300, 760]
+    rotation: 0
+    state: enabled
 - name: rational_resampler_xxx_0
   id: rational_resampler_xxx
   parameters:
@@ -947,7 +1202,7 @@ blocks:
     state: enabled
 
 connections:
-- [analog_agc3_xx_0, '0', fir_filter_xxx_0, '0']
+- [analog_agc2_xx_0, '0', fir_filter_xxx_0, '0']
 - [blocks_complex_to_real_0, '0', blocks_multiply_const_vxx_1, '0']
 - [blocks_float_to_complex_0, '0', blocks_multiply_const_vxx_0, '0']
 - [blocks_multiply_const_vxx_0, '0', rational_resampler_xxx_0, '0']
@@ -965,11 +1220,13 @@ connections:
 - [digital_costas_loop_cc_0, '0', qtgui_const_sink_x_0, '0']
 - [digital_protocol_formatter_bb_0, '0', blocks_tagged_stream_mux_0, '0']
 - [digital_symbol_sync_xx_0, '0', digital_costas_loop_cc_0, '0']
+- [digital_symbol_sync_xx_0, '0', qtgui_const_sink_x_1, '0']
 - [fir_filter_xxx_0, '0', digital_symbol_sync_xx_0, '0']
+- [iio_pluto_source_0, '0', qtgui_time_sink_x_0, '0']
 - [iio_pluto_source_0, '0', rational_resampler_xxx_1, '0']
 - [interp_fir_filter_xxx_0, '0', blocks_float_to_complex_0, '0']
 - [rational_resampler_xxx_0, '0', iio_pluto_sink_0, '0']
-- [rational_resampler_xxx_1, '0', analog_agc3_xx_0, '0']
+- [rational_resampler_xxx_1, '0', analog_agc2_xx_0, '0']
 - [rational_resampler_xxx_1, '0', qtgui_freq_sink_x_0, '0']
 
 metadata:
