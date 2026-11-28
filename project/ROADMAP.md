@@ -215,6 +215,45 @@ budgets, checks) still apply. Where 444 would put a derivation on screen,
     generator transmits at 915 MHz only.
   - The final project's legacy deck is set to `[]`; the page covers it.
 
+- **Labs are puzzles: build it, recover it (Neil, 2026-11-26 and 11-27).**
+  This rule leads every lab rule below it; where a 444 lab rule pulls toward
+  measurement, this one wins. Neil: "The point of the class is not to measure
+  every little dB of SNR or bandwidth. It's to see how modulated signals are
+  built and how to recover them." And: "It's a class of puzzles and thinking,
+  not a traditional comms class." On L8: "the lab is simple: write a decoder
+  to recover the message. We build the encoder and modulator in class, they
+  demodulate and decode."
+  - **The goal is a recovered message** (audio, text, bits) or a working link,
+    never a reading. A lab is a puzzle with that goal: often a recording whose
+    settings the cadet works out from the spectrum and the waveform (the L8
+    Lab's `L08-lab-unknown`, recorded by Neil), or a signal that will not
+    decode until the cadet finds out why.
+  - **Class builds the transmitter; the lab builds the receiver.** The lesson
+    builds the encoder and modulator; the lab has the cadet build the
+    demodulator and decoder that undo them, block by block.
+  - **Guided steps toward the goal**, with checkpoints ("you should now see two
+    clusters"), not a recipe of readings. Steps say what to build and what to
+    look for; the thinking is the cadet's.
+  - **Predict means reason, not compute a number:** what kind of signal is
+    this, what will the spectrum or constellation look like after this block,
+    which receiver block undoes which transmitter step. Predict First widgets
+    ask that, never "how many dB".
+  - **Impairments are puzzles to diagnose and fix** (an offset, a phase flip, a
+    wrong rate, a missing filter), not parameters to sweep and tabulate. No
+    SNR, bandwidth, or threshold sweeps.
+  - **The packet records the thinking:** the settings the cadet worked out, a
+    screenshot at each checkpoint, the recovered message, and two or three
+    Part 3 prompts on how the chain works and why each fix worked. A table
+    holds only what the cadet had to work out (tones, baud, a gain) or the
+    message itself. The lean shape, the procedure box, and the documentation
+    statement still hold.
+  - **Departure from 444:** 444's packets are measurement-centered
+    (predicted beside measured) because 444 is a measurement course. 448
+    keeps the shape and the macros but not the measurement focus.
+  - **Labs to bring in line:** L8's offset-limit steps become a diagnose-and-fix
+    step; L10 becomes a puzzle (recover your line through the PlutoSDR, and
+    work out why it sometimes arrives inverted); L5-L7 get a light pass; L11-L18
+    are written to this rule from the start.
 - **Labs follow 444's lab rules; no practice sets (Neil, 2026-11-21).** ECE
   444 settled its lab rules between 2026-11-08 and 11-17 (its CLAUDE.md,
   ROADMAP §4 "Lessons are topics" through "The lean shape", COURSE_SPEC §M5,

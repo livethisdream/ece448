@@ -111,6 +111,15 @@ budget; the lab follows it.
   before-and-after picture (the signal into it and what comes out), and
   what each control does. No walk through its source. L11, where the cadet
   writes the block, is the exception by subject.
+- **A lab is a puzzle: build it, recover it** (Neil, 2026-11-26/27; ROADMAP
+  "Labs are puzzles"). The goal is a recovered message or a working link,
+  never a reading. Class builds the transmitter; the lab builds the receiver.
+  Steps guide toward the goal with checkpoints; predictions are reasoning
+  (what the signal is, what each block undoes), never dB; impairments are
+  diagnosed and fixed, never swept. The packet keeps what the cadet worked
+  out, a screenshot per checkpoint, the recovered message, and two or three
+  prompts on how the chain works. Where any rule below pulls toward
+  measuring, this one wins.
 - **The lab page has cadets predict first.** Keep it as short as it can be,
   and prefer a figure or a widget to bullets ("Visuals are always better");
   `LAB_BEATS` (10) is a ceiling. It presents: title; objectives; **The Big
