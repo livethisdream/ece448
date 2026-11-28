@@ -159,7 +159,7 @@ The recovered message (text) & \multicolumn{2}{p{\dimexpr2\boxw+2\tabcolsep+\arr
 
 \begin{center}
 \renewcommand{\arraystretch}{1.1}
-\begin{tabular}{| p{2.0in} | K{2.1in} | K{\boxw} | l |}
+\begin{tabular}{| p{1.9in} | K{2.1in} | K{\boxw} | l |}
 \hline
 Quantity & Predicted & Measured & Step \\\hline
 The two tone frequencies with the offset (Hz) & \predv[b.toneoff]{\keysol{p1.b.toneoff}} & \kv[b.toneoff]{\keysol{b.toneoff}} & 15 \\\hline
@@ -181,12 +181,10 @@ with the eye.}{\keysol{fig1}}
 recovered.}{\keysol{fig2}}
 
 \vspace{8pt}
-\shotbox{2.4in}{\textbf{Figure 3.} Step 15: your decoder with the offset, RX tuning at 0, with
-the spectrum and the eye in view.}{\keysol{fig3}}
-
-\vspace{8pt}
-\shotbox{2.4in}{\textbf{Figure 4.} Step 16: the running window after your fix, with
-\texttt{rx.txt} beside it.}{\keysol{fig4}}
+\noindent\shotpane{0.48\linewidth}{2.2in}{Figure 3: the offset, RX tuning at 0}{\keysol{fig3}}\hfill
+\shotpane{0.48\linewidth}{2.2in}{Figure 4: after your fix}{\keysol{fig4}}\par
+\vspace{2pt}{\small\textbf{Figures 3 and 4.} Steps 15 and 16: your decoder with the offset, with the
+spectrum and the eye in view; then the running window after your fix, with \texttt{rx.txt} beside it.}\par
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Part 3 starts on this page only if its heading and first prompt fit (no forced break).
