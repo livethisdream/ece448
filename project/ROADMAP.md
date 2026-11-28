@@ -224,13 +224,19 @@ budgets, checks) still apply. Where 444 would put a derivation on screen,
   to recover the message. We build the encoder and modulator in class, they
   demodulate and decode."
   - **The goal is a recovered message** (audio, text, bits) or a working link,
-    never a reading. A lab is a puzzle with that goal: often a recording whose
+    or a transmitted signal that a given receiver decodes, never a reading. A lab is a puzzle with that goal: often a recording whose
     settings the cadet works out from the spectrum and the waveform (the L8
     Lab's `L08-lab-unknown`, recorded by Neil), or a signal that will not
     decode until the cadet finds out why.
-  - **Class builds the transmitter; the lab builds the receiver.** The lesson
-    builds the encoder and modulator; the lab has the cadet build the
-    demodulator and decoder that undo them, block by block.
+  - **The lab builds whichever half the class did not** (Neil, 2026-11-28:
+    "Sometimes the lab will be the 'build the transmitter' part of the
+    puzzle"). Most often the class builds the encoder and modulator and the
+    lab has the cadet build the demodulator and decoder that undo them. Just
+    as often the other way: the class or a provided receiver fixes what must
+    arrive, and the lab has the cadet build the transmitter that a given
+    receiver decodes (a known flowgraph, Neil's receiver, a classmate's, or
+    an off-the-shelf decoder). Either way the goal is the same: a message
+    that comes through.
   - **Guided steps toward the goal**, with checkpoints ("you should now see two
     clusters"), not a recipe of readings. Steps say what to build and what to
     look for; the thinking is the cadet's.

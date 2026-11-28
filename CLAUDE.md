@@ -82,9 +82,11 @@ the lesson; solutions stay in `ECE448-faculty`.
 **Labs are puzzles: build it, recover it** (Neil, 2026-11-26/27: "It's a
 class of puzzles and thinking, not a traditional comms class"; "The point of
 the class is not to measure every little dB of SNR or bandwidth. It's to see
-how modulated signals are built and how to recover them"). Class builds the
-transmitter; the lab has the cadet build the receiver and recover a message,
-often from a recording whose settings they work out. Steps guide toward that
+how modulated signals are built and how to recover them"). A lab builds
+whichever half the class did not: usually the receiver that recovers a
+message, often from a recording whose settings the cadet works out, and
+sometimes the transmitter that a given receiver must decode (Neil,
+2026-11-28). Steps guide toward that
 goal with checkpoints; predictions are reasoning, not numbers; impairments
 are puzzles to diagnose and fix, never sweeps to tabulate. This leads every
 lab rule below; details in `project/ROADMAP.md`, "Labs are puzzles".
