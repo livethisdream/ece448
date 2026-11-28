@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Predict the RX tuning that recenters a PAM signal</title>
+<style>
+  :root { --navy:#004a85; --mid:#0067b9; --edge:#cddce9; --edge2:#b9d2e5; --bg:#f5f9fc;
+          --ink:#15202b; --ink3:#5b6573; --amber:#8a5a00; --red:#b01e24; --band:#eaf2fa; }
+  html,body { margin:0; padding:0; font-family:'Inter',system-ui,-apple-system,sans-serif; color:var(--ink); background:#fff; }
+  .app { display:flex; flex-direction:column; gap:8px; padding:12px; }
+  canvas { display:block; box-sizing:border-box; width:100%; height:auto; background:#fff; border:1px solid var(--edge); border-radius:6px; }
+  canvas:focus-visible { outline:2px solid var(--navy); outline-offset:2px; }
+  .controls { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:8px 16px; align-items:end;
+              padding:8px 12px; background:var(--bg); border:1px solid var(--edge); border-radius:6px; }
+  @media (max-width:560px) { .controls { grid-template-columns:1fr; } }
+  .ctl { display:grid; grid-template-columns:auto 1fr; column-gap:8px; row-gap:2px; align-items:center; min-width:0; }
+  .ctl label, .ctl .lab { font-size:10.5px; text-transform:uppercase; letter-spacing:0.05em; color:var(--ink3); font-weight:700; white-space:nowrap; }
+  .ctl .val { color:var(--navy); font-size:12px; font-weight:600; font-variant-numeric:tabular-nums; text-align:right; white-space:nowrap; }
+  .ctl input[type=range] { grid-column:1 / span 2; width:100%; margin:0; accent-color:var(--mid); }
+  .ctl.pred input[type=range] { accent-color:var(--amber); }
+  .ctl.pred .val { color:var(--amber); }
+  /* Before a guess the slider is faint, so its resting place does not suggest an answer. */
+  .ctl.pred.open input[type=range] { opacity:0.35; }
+  .seg { display:flex; gap:4px; justify-content:flex-end; flex-wrap:wrap; }
+  .seg button { font:inherit; font-size:11.5px; font-weight:600; color:var(--navy); background:#fff; border:1px solid var(--edge2); border-radius:14px; padding:3px 10px; cursor:pointer; }
+  .seg button[aria-pressed="true"] { background:var(--navy); color:#fff; border-color:var(--navy); }
+  .show { font:700 12px 'Inter',system-ui,sans-serif; text-transform:uppercase; letter-spacing:0.05em;
+          height:30px; padding:0 14px; border-radius:5px; cursor:pointer;
+          border:1px solid var(--navy); background:var(--navy); color:#fff; }
+  .show[aria-pressed="true"] { background:#fff; color:var(--navy); }
+  .show:disabled { cursor:not-allowed; background:#e3e8ee; border-color:#c7cfd8; color:#7a8591; }
+  .seg button:focus-visible, .show:focus-visible { outline:2px solid var(--navy); outline-offset:2px; }
+  .readouts { display:grid; gap:6px; grid-template-columns:repeat(3,minmax(0,1fr)); }
+  .ro { display:flex; flex-direction:column; align-items:center; gap:2px; padding:5px 4px 6px; min-width:0;
+        border:1px solid var(--edge2); border-radius:6px; background:#eef4fa; }
+  .ro .k { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:var(--ink3); white-space:nowrap; overflow:hidden; max-width:100%; }
+  .ro .v { font-size:14px; font-weight:700; white-space:nowrap; font-variant-numeric:tabular-nums; color:var(--navy); }
+  .ro.p .v { color:var(--amber); }
+  .ro.a .v { color:var(--red); }
+  .ctl.full { grid-column:1 / -1; }
+</style>
+</head>
+<body>
+<div class="app">
+  <canvas id="plot" tabindex="0" aria-label="The received spectrum of a PAM signal at RX tuning 0 and, once you ask, the spectrum after your RX tuning, with the matched filter's band shaded."></canvas>
+
+  <div class="controls">
+    <div class="ctl"><span class="lab">Received run</span>
+      <div class="seg" id="run" role="group" aria-label="Received run">
+        <button data-v="0" aria-pressed="true">Run A</button><button data-v="1" aria-pressed="false">Run B</button><button data-v="2" aria-pressed="false">Run C</button>
+      </div>
+    </div>
+    <div class="ctl" style="justify-items:end"><span class="lab"></span>
+      <button class="show" id="show" aria-pressed="false" disabled>Show the retune</button></div>
+    <div class="ctl pred open full" id="pred-ctl"><label for="pred">My prediction: RX tuning (Hz)</label><span class="val" id="pred-v"></span>
+      <input type="range" id="pred" min="-2000" max="2000" step="50" value="0"></div>
+  </div>
+
+  <div class="readouts">
+    <div class="ro"><span class="k">tuning needed</span><span class="v" id="r-n">?</span></div>
+    <div class="ro p"><span class="k">my tuning</span><span class="v" id="r-m">?</span></div>
+    <div class="ro a"><span class="k">my guess</span><span class="v" id="r-o">?</span></div>
+  </div>
+</div>
+
+<script>
+'use strict';
+// A 2-PAM signal at 4 kbaud with RRC pulses (alpha 0.35), 5.4 kHz wide, as a
+// PlutoSDR receiver's spectrum shows it when the transmitter's oscillator is
+// off. The PlutoSDR Source sits at 915 MHz plus the RX tuning, so the signal
+// appears at (offset - RX tuning) and the tuning that recenters it equals the
+// offset read off this spectrum, with the same sign. The three runs sit at
+// +1200, -1600, and +700 Hz: all inside the 2.2 kHz the L10 Lab's hidden error
+// never goes below, so no run is a value the lab's key holds. The shaded band
+// is the matched filter's +-2.7 kHz (Lesson 9).
+//
+// Prediction first: the lower plot stays empty until the cadet moves the
+// prediction slider and presses Show. Any change hides it again.
+const SANS = 'Inter, system-ui, -apple-system, sans-serif';
+const C = { navy:'#004a85', red:'#b01e24', amber:'#8a5a00', grid:'#e6eef6', axis:'#8a929c', ink:'#15202b', ink3:'#5b6573', band:'#eaf2fa' };
+const RUNS = [1200, -1600, 700];
+const state = { run: 0, pred: 0, committed: false, shown: false };
+
+let seed = 448;
+const rnd = () => { seed = (seed*1103515245 + 12345) % 2147483648; return seed/2147483648; };
+const F = [], RIP = [];
+for (let i = 0; i <= 320; i++){ F.push(-8000 + 50*i); RIP.push(2.2*(rnd() - 0.5)); }
+// RRC power spectrum in dB, relative to the signal's flat top.
+function psd(f){
+  const a = 0.35, rs = 4000, f1 = (1 - a)*rs/2, f2 = (1 + a)*rs/2, x = Math.abs(f);
+  if (x <= f1) return 0;
+  if (x >= f2) return -60;
+  const g = 0.5*(1 + Math.cos(Math.PI*(x - f1)/(f2 - f1)));
+  return Math.max(-60, 10*Math.log10(g + 1e-6));
+}
+
+const canvas = document.getElementById('plot'), ctx = canvas.getContext('2d');
+const predEl = document.getElementById('pred'), showBtn = document.getElementById('show');
+function stext(s,x,y,px,color,align,bold){ ctx.fillStyle=color; ctx.font=(bold?'700 ':'')+px+'px '+SANS; ctx.textAlign=align||'left'; ctx.textBaseline='middle'; ctx.fillText(s,x,y); }
+
+function resize(){
+  const w = canvas.clientWidth, dpr = window.devicePixelRatio || 1;
+  const h = Math.round(Math.max(w < 400 ? 250 : 270, Math.min(w*0.46, 310)));
+  canvas.style.height = h + 'px';
+  canvas.width = Math.round(w*dpr); canvas.height = Math.round(h*dpr);
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  draw();
+}
+window.addEventListener('resize', resize);
+
+function spectrum(y0, ph, title, center, show){
+  const dpr = window.devicePixelRatio || 1, w = canvas.width/dpr;
+  const narrow = w < 470, fs = narrow ? 10 : 11;
+  const mL = 30, mR = 10, pw = w - mL - mR;
+  const xv = f => mL + (f + 8000)/16000*pw, yv = d => y0 + ph*(-d/66);
+  stext(title, mL, y0 - 10, narrow ? 11 : 12.5, C.ink, 'left', true);
+  ctx.fillStyle = '#fbfdff'; ctx.fillRect(mL, y0, pw, ph);
+  ctx.fillStyle = C.band; ctx.fillRect(xv(-2700), y0, xv(2700) - xv(-2700), ph);
+  [-8, -4, 0, 4, 8].forEach(k => {
+    ctx.strokeStyle = k === 0 ? C.amber : C.grid; ctx.lineWidth = k === 0 ? 1.4 : 1;
+    if (k === 0) ctx.setLineDash([4, 3]);
+    ctx.beginPath(); ctx.moveTo(xv(1000*k), y0); ctx.lineTo(xv(1000*k), y0 + ph); ctx.stroke();
+    ctx.setLineDash([]);
+  });
+  if (show){
+    ctx.strokeStyle = C.navy; ctx.lineWidth = 1.4; ctx.beginPath();
+    F.forEach((f, i) => { const X = xv(f), Y = yv(psd(f - center) + RIP[i]); i ? ctx.lineTo(X, Y) : ctx.moveTo(X, Y); });
+    ctx.stroke();
+  }
+  return { xv, mL, pw, fs };
+}
+
+function draw(){
+  const dpr = window.devicePixelRatio || 1, w = canvas.width/dpr, h = canvas.height/dpr;
+  ctx.clearRect(0,0,w,h);
+  const ph = (h - 70)/2, off = RUNS[state.run];
+  const a = spectrum(22, ph, 'Received spectrum (kHz), RX tuning 0', off, true);
+  const b = spectrum(22 + ph + 36, ph, 'After my RX tuning (kHz)', off - state.pred, state.shown);
+  [-8, -4, 0, 4, 8].forEach(k => stext((k > 0 ? '+' : (k < 0 ? '−' : '')) + Math.abs(k), b.xv(1000*k), h - 8, b.fs, C.ink3, 'center'));
+  stext('matched filter', b.xv(-2700) + 4, 22 + ph + 36 + ph - 8, b.fs, C.ink3, 'left');
+  if (!state.committed){
+    const msg = 'Predict the RX tuning first', mpx = w < 470 ? 12 : 13.5;
+    ctx.font = '700 ' + mpx + 'px ' + SANS;
+    const mw = Math.min(ctx.measureText(msg).width + 20, w - 16), my = 22 + ph + 36 + ph/2;
+    ctx.fillStyle = 'rgba(255,255,255,0.94)'; ctx.strokeStyle = '#b9d2e5'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.roundRect(w/2 - mw/2, my - mpx, mw, 2*mpx, 5); ctx.fill(); ctx.stroke();
+    stext(msg, w/2, my, mpx, C.navy, 'center', true);
+  }
+}
+
+const hz = v => (v > 0 ? '+' : (v < 0 ? '−' : '')) + Math.abs(v) + ' Hz';
+function sync(){
+  predEl.value = state.pred;
+  document.getElementById('pred-v').textContent = state.committed ? hz(state.pred) : '?';
+  document.querySelectorAll('#run button').forEach(b => b.setAttribute('aria-pressed', +b.dataset.v === state.run ? 'true' : 'false'));
+  showBtn.disabled = !state.committed;
+  showBtn.setAttribute('aria-pressed', state.shown ? 'true' : 'false');
+  showBtn.textContent = state.shown ? 'Hide it' : 'Show the retune';
+  document.getElementById('pred-ctl').classList.toggle('open', !state.committed);
+  const need = RUNS[state.run], d = state.pred - need;
+  document.getElementById('r-n').textContent = state.shown ? hz(need) : '?';
+  document.getElementById('r-m').textContent = state.committed ? hz(state.pred) : '?';
+  document.getElementById('r-o').textContent = !state.shown ? '?' :
+    (Math.abs(d) <= 100 ? 'right on' : (state.pred*need < 0 ? 'wrong way' : 'off ' + Math.abs(d) + ' Hz'));
+  draw();
+}
+
+function reset(){ state.committed = false; state.shown = false; state.pred = 0; sync(); }
+document.querySelectorAll('#run button').forEach(b => b.addEventListener('click', () => { state.run = +b.dataset.v; reset(); }));
+predEl.addEventListener('input', () => { state.pred = +predEl.value; state.committed = true; state.shown = false; sync(); });
+showBtn.addEventListener('click', () => { if (state.committed){ state.shown = !state.shown; sync(); } });
+canvas.addEventListener('keydown', e => {
+  if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+  e.preventDefault();
+  const d = e.key === 'ArrowLeft' ? -50 : 50;
+  state.pred = Math.max(-2000, Math.min(2000, (state.committed ? state.pred : 0) + d));
+  state.committed = true; state.shown = false; sync();
+});
+
+resize(); sync();
+</script>
+</body>
+</html>

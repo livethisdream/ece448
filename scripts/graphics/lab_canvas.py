@@ -18,16 +18,18 @@ scripts/graphics/lab_grc/ (not published to the site):
   L08-lab-decoder                the decoder the cadet builds for that recording,
                                  with f_center, dev, and baud left undefined:
                                  the cadet sets them from the recording
-  L08-fsk-link                   book/extras/grc/L08-fsk-link.grc as shipped
-  L10-lab-tx                     the packet transmitter the cadet builds; the
-                                 packet length is left as len_table_a, a Part 1
-                                 answer
-  L10-pam-link, L10-pam-pluto    book/extras/grc/ as shipped
   L11-lab-rx, L11-lab-link       book/extras/grc/ as shipped, with the Key
                                  Decoder's work() (and the Key Encoder's
                                  make_key()) still empty; the sliders, msg,
                                  and the Received label and its probe stay
                                  in view (KEEP)
+  L08-lab-offset                 that decoder with the offset the cadet adds (a
+                                 Signal Source at a random, unshown frequency and
+                                 a Multiply) and the RX tuning slider that moves
+                                 the Frequency Xlating FIR Filter's center
+  L10-pam-pluto                  book/extras/grc/ as shipped, as three
+                                 crops (CLUSTERS) for the L10 Lab's polarity,
+                                 oscillator, and level blocks
 
 For each, a copy moves the Options, variable, and import blocks off the
 visible canvas, GRC is screenshot with scripts/grc/grc_canvas.sh, and the
@@ -60,15 +62,51 @@ SHOTS = {
     "L07-canvas-am-vs-fm": ROOT / "book/extras/grc/L07-am-vs-fm.grc",
     "L08-canvas-view": LAB / "L08-lab-view.grc",
     "L08-canvas-decoder": LAB / "L08-lab-decoder.grc",
-    "L08-canvas-link": ROOT / "book/extras/grc/L08-fsk-link.grc",
-    "L10-canvas-tx": LAB / "L10-lab-tx.grc",
-    "L10-canvas-link": ROOT / "book/extras/grc/L10-pam-link.grc",
-    "L10-canvas-pluto": ROOT / "book/extras/grc/L10-pam-pluto.grc",
     "L11-canvas-rx": ROOT / "book/extras/grc/L11-lab-rx.grc",
     "L11-canvas-link": ROOT / "book/extras/grc/L11-lab-link.grc",
     "L11-chain-rx": ROOT / "book/extras/grc/L11-lab-rx.grc",       # signal blocks only, for
     "L11-chain-link": ROOT / "book/extras/grc/L11-lab-link.grc",   # the lab's Big Picture
+    "L08-canvas-offset": LAB / "L08-lab-offset.grc",
 }
+
+
+# Crops of L10-pam-pluto.grc for the L10 Lab's procedure blocks: the named blocks
+# are laid out near the origin, sliders and switches included, and every other
+# block drops far below the canvas, so its wires leave the picture downward and
+# no port is left unconnected (which GRC would draw red). {name: (ymax, {block: (x, y)})}
+L10 = ROOT / "book/extras/grc/L10-pam-pluto.grc"
+CLUSTERS = {
+    "L10-canvas-polarity": (540, {
+        "polarity": (770, 8), "digital_symbol_sync_xx_0": (8, 200), "digital_costas_loop_cc_0": (330, 220),
+        "blocks_complex_to_real_0": (575, 240), "blocks_multiply_const_vxx_1": (770, 240),
+        "digital_binary_slicer_fb_0": (970, 245), "qtgui_const_sink_x_1": (8, 420),
+        "qtgui_const_sink_x_0": (575, 400)}),
+    # tx_err stays off the picture: GRC would print the random draw it made.
+    "L10-canvas-oscillator": (580, {
+        "tx_error": (8, 8), "rx_tune": (560, 8),
+        "rational_resampler_xxx_0": (8, 210), "iio_pluto_sink_0": (250, 190),
+        "iio_pluto_source_0": (560, 180), "rational_resampler_xxx_1": (820, 220),
+        "qtgui_freq_sink_x_0": (820, 400)}),
+    "L10-canvas-level": (560, {
+        "tx_atten": (8, 8), "rx_gain": (330, 8),
+        "rational_resampler_xxx_0": (8, 170), "iio_pluto_sink_0": (250, 150),
+        "iio_pluto_source_0": (560, 150), "rational_resampler_xxx_1": (820, 190),
+        "analog_agc2_xx_0": (1060, 190), "qtgui_time_sink_x_0": (820, 380)}),
+}
+
+
+def cluster(src: Path, dst: Path, place: dict):
+    """Copy a flowgraph with the named blocks placed as given and every other block,
+    the Options block included, dropped below the visible canvas."""
+    d = yaml.safe_load(src.read_text())
+    for b in d["blocks"]:
+        if b["name"] in place:
+            b["states"]["coordinate"] = list(place[b["name"]])
+        else:
+            x, y = b["states"]["coordinate"]
+            b["states"]["coordinate"] = [x, y + H + 600]
+    d["options"]["states"]["coordinate"] = [W + 600, H + 600]
+    dst.write_text(yaml.safe_dump(d, sort_keys=False))
 
 
 # Variable blocks a lab step names, kept on the canvas for that picture.
@@ -90,9 +128,12 @@ def offstage(src: Path, dst: Path, keep=frozenset()):
     dst.write_text(yaml.safe_dump(d, sort_keys=False))
 
 
-def shoot(name: str, grc: Path, tmp: Path):
+def shoot(name: str, grc: Path, tmp: Path, ymax: int | None = None, place: dict | None = None):
     g = tmp / grc.name
-    offstage(grc, g, KEEP.get(name, frozenset()))
+    if place:
+        cluster(grc, g, place)
+    else:
+        offstage(grc, g, KEEP.get(name, frozenset()))
     raw = tmp / f"{name}-raw.png"
     for _ in range(4):                  # GRC under Xvfb now and then dies at start-up; try again
         raw.unlink(missing_ok=True)
@@ -102,7 +143,7 @@ def shoot(name: str, grc: Path, tmp: Path):
             break
     else:
         raise SystemExit(f"GRC did not render {grc.name}")
-    im = Image.open(raw).convert("RGB").crop((0, 70, W, H))      # drop the menu and toolbar
+    im = Image.open(raw).convert("RGB").crop((0, 70, W, H if ymax is None else 70 + ymax))  # drop the menu and toolbar
     bb = ImageOps.invert(im.convert("L")).point(lambda v: 255 if v > 12 else 0).getbbox()
     im = im.crop((max(0, bb[0] - 10), max(0, bb[1] - 10), min(im.width, bb[2] + 50), min(im.height, bb[3] + 10)))
     im.save(IMG / f"{name}.png")
@@ -157,3 +198,6 @@ if __name__ == "__main__":
                 shoot(name, grc, Path(t))
         if len(sys.argv) == 1 or "L11-decoder-props" in sys.argv[1:]:
             decoder_props(Path(t))
+        for name, (ymax, place) in CLUSTERS.items():
+            if len(sys.argv) == 1 or name in sys.argv[1:]:
+                shoot(name, L10, Path(t), ymax, place)
