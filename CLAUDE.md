@@ -150,7 +150,9 @@ for a signal (gr-adsb in radioconda), use it. Every cadet is issued a Pluto,
 and lessons are written for it alone (no HackRF or PHASER); an RTL-SDR,
 SDR Flex, and GQRX are optional extras at most, and URH is out. A signal the course generates is
 recorded or sent at 915 MHz (cable or low-power over the air), never on its
-real frequency. See
+real frequency; the one exception is the L17 Lab, where a cadet's flowgraph turns
+the classroom fan's light on at the remote's own frequency, very low power, when
+Neil says so (Neil, 2026-11-28). See
 `project/ROADMAP.md`, "How Neil teaches it".
 
 Recordings a cadet downloads or makes are **SigMF** (`.sigmf-data` plus

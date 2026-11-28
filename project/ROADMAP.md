@@ -257,7 +257,7 @@ budgets, checks) still apply. Where 444 would put a derivation on screen,
     | L14 HD Radio | Receiver | find a station's digital sidebands and decode them with gr-hdradio |
     | L15 mPSK | Both | a PSK link end to end, carrier and timing recovery included |
     | L16 FHSS | Receiver | follow the hops and recover the message |
-    | L17 Reverse engineering | Receiver, then transmitter | build a decoder that identifies which button of the fan remote was pushed, and a flowgraph that turns the light on (Neil, 2026-11-28) |
+    | L17 Reverse engineering | Receiver, then transmitter | build a decoder that identifies which button of the fan remote was pushed, and a flowgraph that turns the light on, sent on the fan's own frequency at very low power when Neil says so: the one exception to the 915 MHz rule (Neil, 2026-11-28) |
     | L18-L19 ADS-B/AIS | Transmitter, then receiver | send your own aircraft at 915 MHz so gr-adsb decodes it; decode the AIS recording |
   - **Guided steps toward the goal**, with checkpoints ("you should now see two
     clusters"), not a recipe of readings. Steps say what to build and what to
@@ -600,8 +600,11 @@ since they follow this structure. Two changes:
 - **L17 over-the-air fan demo** (Neil, 2026-10-29): L17 closes with a
   demo by Neil that operates the classroom's Hunter fan over the air, at
   very low power and a few meters away, from Neil's own encoder flowgraph
-  (`ECE448-faculty/L20_Remotes`). Cadets transmit at 915 MHz, by cable or, if
-  Neil says so, over the air at low power.
+  (`ECE448-faculty/L20_Remotes`). **The L17 Lab is the one exception to the
+  915 MHz rule** (Neil, 2026-11-28): each cadet's own flowgraph turns the
+  fan's light on, transmitting on the fan remote's own frequency, at very
+  low power, a few meters away, and only when Neil says so. Every other
+  course-generated signal, in L17 too, stays at 915 MHz.
 - **Open for Neil:** whether to publish the third-party AIS recording
   ("bebau") from the faculty repo for L19.
 
