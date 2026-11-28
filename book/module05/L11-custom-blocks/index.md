@@ -245,6 +245,17 @@ Read the two levels off the Power plot: with the carrier on, the power sits just
 
 ::::{frame} Timing the Key
 :::{present}
+<img src="../../viz/img/L11-key-timing.svg"
+     alt="The Morse ECE key at 1000 samples per second: a label over each mark gives its length, 60 samples for a dit and 180 for a dah; a red bar marks the 120-sample boundary between a dit and a dah; a dashed green line through the first dah marks where one call of work() ends, with self.run at 90 carrying to the next call"
+     style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
+:::
+:::{present}
+- Count each level's samples in `self`, since a mark can span two calls.
+- A boundary halfway between two lengths tells them apart.
+:::
+
+The key carries its meaning in how long each level lasts. The **Key Timer** is a sink block, a sync block with inputs and no outputs, made with `gr_modtool add -t sink`; its constructor passes `in_sig=[np.float32]` and `out_sig=None`, and stores its one argument, the key's sample rate, as `self.rate`. Its `work()` counts how many key samples each level holds, and when a **mark**, a run of 1s, ends, it converts the count to milliseconds and keeps it. The level and the count live in `self`, because a mark can start in one call of `work()` and end in the next, and GNU Radio hands `work()` whatever samples have arrived.
+
 ```python
 def work(self, input_items, output_items):
     for k in input_items[0]:
@@ -256,13 +267,8 @@ def work(self, input_items, output_items):
         self.state, self.run = k, 1
     return len(input_items[0])
 ```
-- Count each level's samples in `self`, since a mark can span two calls.
-- A boundary halfway between two lengths tells them apart.
-:::
 
-The key carries its meaning in how long each level lasts. The **Key Timer** is a sink block, a sync block with inputs and no outputs, made with `gr_modtool add -t sink`; its constructor passes `in_sig=[np.float32]` and `out_sig=None`, and stores its one argument, the key's sample rate, as `self.rate`. Its `work()` counts how many key samples each level holds, and when a **mark**, a run of 1s, ends, it converts the count to milliseconds and keeps it. The level and the count live in `self`, because a mark can start in one call of `work()` and end in the next, and GNU Radio hands `work()` whatever samples have arrived.
-
-On the Energy Detector's key, at 1000 samples per second, 20 words per minute gives every dit 60 key samples, 60 ms, and every dah 180, so a boundary at 120 samples, halfway between, tells one from the other. A method `last_mark()` returns the newest mark. A Function Probe block reads it: its Block ID names the block and its Function Name names the method, and a QT GUI Label shows the value. The Text Sink inside the Lesson 8 and Lesson 10 flowgraphs reaches its Received label the same way.
+On the Energy Detector's key, at 1000 samples per second, 20 words per minute gives every dit 60 key samples, 60 ms, and every dah 180, so a boundary at 120 samples, halfway between, tells one from the other. A method `last_mark()` returns the newest mark. A Function Probe block reads it: its Block ID names the block and its Function Name names the method, and a QT GUI Label shows the value. The Text Sink inside the Lesson 8 and Lesson 10 flowgraphs reaches its Received label the same way. `L11-keyed-carrier-epy.grc` runs the Key Timer as an Embedded Python Block, with its Last mark label under the plots.
 ::::
 
 ::::{frame} Energy Detector Explorer
@@ -332,7 +338,7 @@ A block several flowgraphs need belongs in an out-of-tree module: gr_modtool wri
 
 - <a class="doc-link" href="../../grc/L11-gr-ece448.zip" download>L11-gr-ece448.zip</a>: the `gr-ece448` module, with the Energy Detector, its YAML file, and its unit test. Its `README.md` lists the build steps.
 - <a class="doc-link" href="../../grc/L11-keyed-carrier.grc" download>L11-keyed-carrier.grc</a>: Morse "ECE" as a keyed carrier in noise, through the installed Energy Detector, with noise, threshold, and hysteresis sliders. Needs `gr-ece448` installed; no hardware.
-- <a class="doc-link" href="../../grc/L11-keyed-carrier-epy.grc" download>L11-keyed-carrier-epy.grc</a>: the same flowgraph with the Energy Detector in an Embedded Python Block. Needs nothing installed.
+- <a class="doc-link" href="../../grc/L11-keyed-carrier-epy.grc" download>L11-keyed-carrier-epy.grc</a>: the same flowgraph with the Energy Detector in an Embedded Python Block, plus the Key Timer and its Last mark label. Needs nothing installed.
 - <a class="doc-link" href="../../grc/L11-ook-pluto.grc" download>L11-ook-pluto.grc</a>: the Energy Detector on a PlutoSDR at 433.92 MHz, for OOK remotes, with a waterfall to find the bursts. Needs `gr-ece448` and a PlutoSDR; receive only.
 
 Unzip the module, then follow its `README.md` from the radioconda prompt. Open a `.grc` file from GRC's File menu, or run `gnuradio-companion L11-keyed-carrier.grc`.

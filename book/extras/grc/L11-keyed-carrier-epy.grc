@@ -7,7 +7,8 @@ options:
     comment: ''
     copyright: ''
     description: 'L11: the Energy Detector as an Embedded Python Block, for a laptop
-      with no OOT build tools.'
+      with no OOT build tools, and the Key Timer of "Timing the Key", whose Last mark
+      label shows each mark''s length.'
     gen_cmake: 'On'
     gen_linking: dynamic
     generate_options: qt_gui
@@ -24,7 +25,7 @@ options:
     sizing_mode: fixed
     thread_safe_setters: ''
     title: L11 - Keyed Carrier (Embedded Python Block)
-    window_size: (1060,600)
+    window_size: (1060,720)
   states:
     bus_sink: false
     bus_source: false
@@ -65,6 +66,38 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [720, 8]
+    rotation: 0
+    state: enabled
+- name: mark_label
+  id: variable_qtgui_label
+  parameters:
+    comment: ''
+    formatter: 'lambda x: '':  %.0f ms'' % x'
+    gui_hint: 3,0,1,3
+    label: Last mark
+    type: real
+    value: mark_ms
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1500, 680]
+    rotation: 0
+    state: enabled
+- name: mark_ms
+  id: variable_function_probe
+  parameters:
+    block_id: key_timer
+    comment: ''
+    function_args: ''
+    function_name: last_mark
+    poll_rate: '4'
+    value: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1320, 680]
     rotation: 0
     state: enabled
 - name: noise
@@ -434,6 +467,37 @@ blocks:
     coordinate: [8, 140]
     rotation: 0
     state: enabled
+- name: key_timer
+  id: epy_block
+  parameters:
+    _source_code: "\"\"\"Key Timer: a sink that measures how long each mark of the\
+      \ Energy\nDetector's key lasts (Lesson 11, \"Timing the Key\"). The Last mark\
+      \ label\nreads last_mark() through a Function Probe.\"\"\"\n\nimport numpy as\
+      \ np\nfrom gnuradio import gr\n\n\nclass blk(gr.sync_block):\n    def __init__(self,\
+      \ rate=1000.0):\n        gr.sync_block.__init__(self, name='Key Timer', in_sig=[np.float32],\
+      \ out_sig=None)\n        self.rate, self.state, self.run, self.marks = rate,\
+      \ 0.0, 0, []\n\n    def work(self, input_items, output_items):\n        for\
+      \ k in input_items[0]:\n            if k == self.state:\n                self.run\
+      \ += 1                  # the level holds\n                continue\n      \
+      \      if self.state == 1.0:              # a mark just ended\n            \
+      \    self.marks.append(1000 * self.run / self.rate)\n            self.state,\
+      \ self.run = k, 1\n        return len(input_items[0])\n\n    def last_mark(self):\n\
+      \        return self.marks[-1] if self.marks else 0.0\n"
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    rate: samp_rate / decim
+  states:
+    _io_cache: ('Key Timer', 'blk', [('rate', '1000.0')], [('0', 'float', 1)], [],
+      '', ['rate'])
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1320, 600]
+    rotation: 0
+    state: enabled
 - name: qtgui_time_sink_x_0
   id: qtgui_time_sink_x
   parameters:
@@ -644,6 +708,7 @@ connections:
 - [blocks_throttle2_0, '0', epy_block_0, '0']
 - [blocks_vector_source_x_0, '0', blocks_repeat_0, '0']
 - [epy_block_0, '0', qtgui_time_sink_x_0, '0']
+- [epy_block_0, '1', key_timer, '0']
 - [epy_block_0, '1', qtgui_time_sink_x_1, '0']
 
 metadata:

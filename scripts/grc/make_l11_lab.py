@@ -170,7 +170,8 @@ def base():
     d["connections"] = [c for c in d["connections"] if not (c[2] == "qtgui_time_sink_x_1" and c[3] == "1")]
     dec = {
         "name": "decoder", "id": "epy_block",
-        "parameters": {"_source_code": SKELETON, "affinity": "", "alias": "", "comment": "",
+        "parameters": {"_source_code": SKELETON, "affinity": "", "alias": "",
+                       "comment": "work() is empty: you write it",
                        "maxoutbuf": "0", "minoutbuf": "0"},
         "states": {"_io_cache": "('Key Decoder', 'blk', [], [('0', 'float', 1)], [], '', [])",
                    "bus_sink": False, "bus_source": False, "bus_structure": None,
@@ -237,7 +238,8 @@ def link():
                                    "coordinate": [176, 76], "rotation": 0, "state": "enabled"}})
     d["blocks"].append({
         "name": "encoder", "id": "epy_block",
-        "parameters": {"_source_code": ENCODER, "affinity": "", "alias": "", "comment": "",
+        "parameters": {"_source_code": ENCODER, "affinity": "", "alias": "",
+                       "comment": "make_key() is empty: you write it",
                        "maxoutbuf": "0", "minoutbuf": "0", "msg": "msg", "samples_per_unit": "1"},
         "states": {"_io_cache": "('Key Encoder', 'blk', [('msg', \"'Your line here'\"), ('samples_per_unit', '1')], [], [('0', 'float', 1)], '', ['msg', 'samples_per_unit'])",
                    "bus_sink": False, "bus_source": False, "bus_structure": None,

@@ -29,8 +29,8 @@ L11 Lab · Module 5: Custom Blocks & Midterm · Dr. Neil Rogers
 ::::{frame} The Big Picture
 :::{present}
 <img src="../../viz/img/L11-big-picture.png"
-     alt="The L11 Lab's blocks: L11-lab-rx.grc in GNU Radio Companion, with a File Source, Throttle, Energy Detector, two time sinks, and an empty Key Decoder (Steps 1 to 8); the module steps, gr_modtool, the YAML file, a unit test, and ctest (Steps 9 to 14); and L11-lab-link.grc, with an empty Key Encoder that sends your own line in noise (Steps 15 to 18)."
-     style="max-width: 860px; width: 100%; display: block; margin: 0 auto;">
+     alt="The L11 Lab's three blocks, top to bottom: L11-lab-rx.grc in GNU Radio Companion, with a File Source, Throttle, Energy Detector, two time sinks, the sliders, and a Key Decoder whose work() is empty (Steps 1 to 8); the gr-l11lab files the module steps edit (Steps 9 to 14); and L11-lab-link.grc, with a Key Encoder whose make_key() is empty, noise, and the same receiver (Steps 15 to 18)."
+     style="max-width: 760px; width: 100%; display: block; margin: 0 auto;">
 :::
 
 Steps 1 to 4 run `L11-lab-rx.grc` on `L11-lab-remote.sigmf-data`, a simulated on-off keyed transmitter at 915 MHz that sends one line of text four times, and read the code it uses off the Energy Detector's key. Steps 5 to 8 write the `work()` of the flowgraph's Key Decoder, an Embedded Python Block, until the line comes through. Steps 9 to 14 move the block into a module of your own with a unit test. Steps 15 to 18 write the transmitter's half, a Key Encoder that sends your own line in the same code, and get that line through noise to your block. Your Part 1 answers go with Steps 4 and 6, the entries go in Tables A and B of the packet, and the screenshots go in Figures 1 to 4.
@@ -40,7 +40,7 @@ Steps 1 to 4 run `L11-lab-rx.grc` on `L11-lab-remote.sigmf-data`, a simulated on
 :class: viz-frame
 
 :::{depth}
-Each key sends two characters in a pulse-width code: every bit is a mark of one of two lengths, then a short space. Choose which mark you think is a 0, then press **Show the bytes**. Changing the key or your choice hides the answer again. The three keys do not all use the same mark for a 0, and the lab's code is a different one; the same first-bit reasoning finds its 0. A wrong choice reads as characters outside ASCII, the symptom Step 8 names.
+Each key sends two characters after a long silence. In some keys the length of each mark carries the bit and every space is short; in others every mark is short and the length of the space after it carries the bit. Choose where you think the bit is and which length is a 0, then press **Show the bytes**. Changing the key or either choice hides the answer again. Each kind of key appears once with a short 0 and once with a long 0, and the lab's lengths are different, so the same reasoning finds the lab's 0 and the widget does not. A wrong choice reads as characters outside ASCII, the symptom Step 8 names.
 :::
 
 :::{present}
@@ -48,7 +48,7 @@ Each key sends two characters in a pulse-width code: every bit is a mark of one 
         width="100%" height="390"
         style="border: 1px solid #cddce9; border-radius: 6px;"
         loading="lazy"
-        title="A key in a pulse-width code: choose which mark length is a 0, then show the bits and the text">
+        title="A key: choose whether the mark or the space carries the bit and which length is a 0, then show the bits and the text">
 </iframe>
 :::
 ::::
@@ -86,6 +86,11 @@ Each key sends two characters in a pulse-width code: every bit is a mark of one 
 - Write `work()`: a bit from each length, eight bits per character.
 - Recover the line; screenshot your code beside the running window.
 :::
+:::{present}
+<img src="../../viz/img/L11-decoder-props.png"
+     alt="The Key Decoder's properties dialog in GNU Radio Companion once boundary and gap are arguments of __init__(): an Open in Editor button and Boundary and Gap fields, here holding placeholder zeros"
+     style="max-width: 480px; width: 100%; display: block; margin: 0 auto;">
+:::
 
 5. **Choose the limits.** The key runs at `samp_rate / decim` samples per second, so convert your Step 3 lengths to key samples. Choose a **boundary** that splits the two lengths of the part that carries the bit, and a **gap**, longer than any length inside a line and shorter than the silence between lines, that tells your block a line has ended.
 
@@ -106,6 +111,11 @@ Each key sends two characters in a pulse-width code: every bit is a mark of one 
 - Make `gr-l11lab` with `gr_modtool`, and add a sink block, `key_decoder`.
 - Move your class in, fill in the YAML file, and write a unit test.
 - Build, test, install, and swap your block into the receiver.
+:::
+:::{present}
+<img src="../../viz/img/L11-lab-tree.svg"
+     alt="The gr-l11lab files the steps edit: grc/l11lab_key_decoder.block.yml in Step 11; python/l11lab/key_decoder.py in Step 10; qa_key_decoder.py in Step 12; python/l11lab/CMakeLists.txt, whose gr_python_install line must list key_decoder.py, in Step 10; and build/ for cmake, ctest, and install in Step 13"
+     style="max-width: 640px; width: 100%; display: block; margin: 0 auto;">
 :::
 
 9. **Make the module.** On a Windows laptop without WSL2, do Steps 9 to 14 on another cadet's Linux, macOS, or WSL2 laptop and note it on the Documentation line. In a new folder at the radioconda prompt, run `gr_modtool newmod l11lab`, `cd gr-l11lab`, and `gr_modtool add -t sink -l python key_decoder`. Give your name as the copyright holder and your two arguments with their Step 5 values as the argument list, and answer yes when `gr_modtool` asks whether to add Python QA code.

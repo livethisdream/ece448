@@ -329,7 +329,7 @@ blocks:
       \        return len(key)\n\n    def last_line(self):\n        return self.line\n"
     affinity: ''
     alias: ''
-    comment: ''
+    comment: 'work() is empty: you write it'
     maxoutbuf: '0'
     minoutbuf: '0'
   states:
@@ -360,7 +360,7 @@ blocks:
       \      return len(out)\n"
     affinity: ''
     alias: ''
-    comment: ''
+    comment: 'make_key() is empty: you write it'
     maxoutbuf: '0'
     minoutbuf: '0'
     msg: msg

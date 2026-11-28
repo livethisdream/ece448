@@ -24,7 +24,10 @@ scripts/graphics/lab_grc/ (not published to the site):
                                  answer
   L10-pam-link, L10-pam-pluto    book/extras/grc/ as shipped
   L11-lab-rx, L11-lab-link       book/extras/grc/ as shipped, with the Key
-                                 Decoder's work() still empty
+                                 Decoder's work() (and the Key Encoder's
+                                 make_key()) still empty; the sliders, msg,
+                                 and the Received label and its probe stay
+                                 in view (KEEP)
 
 For each, a copy moves the Options, variable, and import blocks off the
 visible canvas, GRC is screenshot with scripts/grc/grc_canvas.sh, and the
@@ -63,13 +66,24 @@ SHOTS = {
     "L10-canvas-pluto": ROOT / "book/extras/grc/L10-pam-pluto.grc",
     "L11-canvas-rx": ROOT / "book/extras/grc/L11-lab-rx.grc",
     "L11-canvas-link": ROOT / "book/extras/grc/L11-lab-link.grc",
+    "L11-chain-rx": ROOT / "book/extras/grc/L11-lab-rx.grc",       # signal blocks only, for
+    "L11-chain-link": ROOT / "book/extras/grc/L11-lab-link.grc",   # the lab's Big Picture
 }
 
 
-def offstage(src: Path, dst: Path):
+# Variable blocks a lab step names, kept on the canvas for that picture.
+KEEP = {
+    "L11-canvas-rx": {"threshold", "hyst", "rx_text", "rx_label"},
+    "L11-canvas-link": {"threshold", "hyst", "noise", "msg", "rx_text", "rx_label"},
+}
+
+
+def offstage(src: Path, dst: Path, keep=frozenset()):
     """Copy a flowgraph with its Options, variable, and import blocks moved off screen."""
     d = yaml.safe_load(src.read_text())
     for b in d["blocks"]:
+        if b["name"] in keep:
+            continue
         if b["id"].startswith("variable") or b["id"] in ("import",):
             b["states"]["coordinate"] = [W + 400, H + 400]
     d["options"]["states"]["coordinate"] = [W + 600, H + 600]
@@ -78,7 +92,7 @@ def offstage(src: Path, dst: Path):
 
 def shoot(name: str, grc: Path, tmp: Path):
     g = tmp / grc.name
-    offstage(grc, g)
+    offstage(grc, g, KEEP.get(name, frozenset()))
     raw = tmp / f"{name}-raw.png"
     for _ in range(4):                  # GRC under Xvfb now and then dies at start-up; try again
         raw.unlink(missing_ok=True)
@@ -95,9 +109,51 @@ def shoot(name: str, grc: Path, tmp: Path):
     print(f"wrote {name}.png {im.size}")
 
 
+def decoder_props(tmp: Path):
+    """L11-decoder-props: the Key Decoder's properties dialog once boundary and gap
+    are arguments, with placeholder zeros (no lab values), from GRC itself."""
+    d = yaml.safe_load((ROOT / "book/extras/grc/L11-lab-rx.grc").read_text())
+    for b in d["blocks"]:
+        if b["name"] == "decoder":
+            b["parameters"]["_source_code"] = b["parameters"]["_source_code"].replace(
+                "def __init__(self):", "def __init__(self, boundary=0, gap=0):")
+            b["parameters"].update(boundary="0", gap="0")
+            b["states"]["_io_cache"] = ("('Key Decoder', 'blk', [('boundary', '0'), ('gap', '0')], "
+                                        "[('0', 'float', 1)], [], '', [])")
+            b["states"]["coordinate"] = [100, 100]
+        else:
+            b["states"]["coordinate"] = [3000, 3000]
+    d["options"]["states"]["coordinate"] = [3200, 3200]
+    d["connections"] = []
+    g = tmp / "props.grc"
+    g.write_text(yaml.safe_dump(d, sort_keys=False))
+    raw = tmp / "props.png"
+    sh = tmp / "props.sh"
+    sh.write_text(f"""#!/bin/bash
+export NO_AT_BRIDGE=1
+/usr/bin/python3.12 /usr/bin/gnuradio-companion {g} >/dev/null 2>&1 &
+for i in $(seq 1 40); do sleep 0.5; W=$(xdotool search --name "GNU Radio Companion" 2>/dev/null | head -1); [ -n "$W" ] && break; done
+sleep 4
+xdotool mousemove 140 198 click --repeat 2 --delay 80 1; sleep 3
+xwd -root -silent | convert xwd:- {raw}
+""")
+    sh.chmod(0o755)
+    for _ in range(4):                  # GRC under Xvfb now and then dies at start-up; try again
+        raw.unlink(missing_ok=True)
+        subprocess.run(["xvfb-run", "-a", "-s", "-screen 0 1280x820x24", str(sh)])
+        if raw.exists() and raw.stat().st_size > 20000:
+            break
+    else:
+        raise SystemExit("GRC did not open the properties dialog")
+    Image.open(raw).convert("RGB").crop((682, 320, 1280, 470)).save(IMG / "L11-decoder-props.png")
+    print("wrote L11-decoder-props.png")
+
+
 if __name__ == "__main__":
     with tempfile.TemporaryDirectory() as t:
         import sys
         for name, grc in SHOTS.items():
             if len(sys.argv) == 1 or name in sys.argv[1:]:
                 shoot(name, grc, Path(t))
+        if len(sys.argv) == 1 or "L11-decoder-props" in sys.argv[1:]:
+            decoder_props(Path(t))

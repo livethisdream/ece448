@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Predict which mark is a 0</title>
+<title>Predict where the bit is and which length is a 0</title>
 <style>
   :root { --navy:#004a85; --mid:#0067b9; --edge:#cddce9; --edge2:#b9d2e5; --bg:#f5f9fc;
           --ink:#15202b; --ink3:#5b6573; --amber:#8a5a00; --red:#b01e24; }
@@ -18,7 +18,7 @@
   .seg { display:flex; gap:4px; justify-content:flex-end; flex-wrap:wrap; }
   .seg button { font:inherit; font-size:11.5px; font-weight:600; color:var(--navy); background:#fff; border:1px solid var(--edge2); border-radius:14px; padding:3px 10px; cursor:pointer; }
   .seg button[aria-pressed="true"] { background:var(--navy); color:#fff; border-color:var(--navy); }
-  #guess button[aria-pressed="true"] { background:var(--amber); border-color:var(--amber); }
+  #part button[aria-pressed="true"], #guess button[aria-pressed="true"] { background:var(--amber); border-color:var(--amber); }
   .show { font:700 12px 'Inter',system-ui,sans-serif; text-transform:uppercase; letter-spacing:0.05em;
           height:30px; padding:0 14px; border-radius:5px; cursor:pointer;
           border:1px solid var(--navy); background:var(--navy); color:#fff; }
@@ -36,62 +36,79 @@
 </head>
 <body>
 <div class="app">
-  <canvas id="plot" aria-label="A key made by a pulse-width code: after a long silence, every bit is a mark of one of two lengths followed by a short space. Once you choose which mark is a 0 and ask, the bits and the text appear below the key."></canvas>
+  <canvas id="plot" aria-label="A key after a long silence, carrying two characters: either every mark has one of two lengths and every space is short, or every mark is short and every space has one of two lengths. Once you choose where the bit is and which length is a 0, the bits and the text appear below the key."></canvas>
 
   <div class="controls">
     <div class="ctl"><span class="lab">Key</span>
       <div class="seg" id="ex" role="group" aria-label="Key">
-        <button data-v="0" aria-pressed="true">A</button><button data-v="1" aria-pressed="false">B</button><button data-v="2" aria-pressed="false">C</button>
+        <button data-v="0" aria-pressed="true">A</button><button data-v="1" aria-pressed="false">B</button><button data-v="2" aria-pressed="false">C</button><button data-v="3" aria-pressed="false">D</button>
       </div>
     </div>
-    <div class="ctl"><span class="lab">My prediction: a 0 is</span>
-      <div class="seg" id="guess" role="group" aria-label="My prediction: which mark is a 0">
-        <button data-v="short" aria-pressed="false">the short mark</button><button data-v="long" aria-pressed="false">the long mark</button>
+    <div class="ctl"><span class="lab">The bit is in</span>
+      <div class="seg" id="part" role="group" aria-label="My prediction: which part carries the bit">
+        <button data-v="mark" aria-pressed="false">the mark</button><button data-v="space" aria-pressed="false">the space</button>
       </div>
     </div>
-    <div class="ctl" style="grid-column:1 / -1; justify-items:end"><span class="lab"></span>
+    <div class="ctl"><span class="lab">A 0 is</span>
+      <div class="seg" id="guess" role="group" aria-label="My prediction: which length is a 0">
+        <button data-v="short" aria-pressed="false">the short one</button><button data-v="long" aria-pressed="false">the long one</button>
+      </div>
+    </div>
+    <div class="ctl" style="justify-items:end"><span class="lab"></span>
       <button class="show" id="show" aria-pressed="false" disabled>Show the bytes</button></div>
   </div>
 
   <div class="readouts">
     <div class="ro p"><span class="k">my reading</span><span class="v" id="r-g">?</span></div>
     <div class="ro a"><span class="k">the text</span><span class="v" id="r-a">?</span></div>
-    <div class="ro"><span class="k">a 0 is</span><span class="v" id="r-z">?</span></div>
+    <div class="ro"><span class="k">the code</span><span class="v" id="r-z">?</span></div>
   </div>
 </div>
 
 <script>
 'use strict';
-// A pulse-width code: after a long silence, every bit is a mark (carrier on)
-// whose length carries the bit, followed by a one-unit space. Each key
-// sends two ASCII characters, most significant bit first. Which mark is a 0
-// differs between keys, so the widget teaches the method (every ASCII
-// byte starts with a 0, so the mark that starts every byte is the 0) without
-// teaching an answer. The L11 Lab's code is not a pulse-width code, and none of
-// these words or lengths is the lab's.
+// Two kinds of key. In a pulse-width key the length of each mark (carrier on)
+// carries the bit and every space is short; in a pulse-distance key every mark
+// is short and the length of the space after it carries the bit, with one more
+// mark to end the last space. Each key sends two ASCII characters, most
+// significant bit first. Each kind appears once with a short 0 and once with a
+// long 0, so the widget teaches the method (find the part whose length
+// changes; every ASCII byte starts with a 0) without teaching the L11 Lab's
+// answer. The lengths here (1 and 2.4 units) and the words are not the lab's.
 //
-// Prediction first: the bits stay hidden until the cadet chooses a mark and
-// presses Show. Changing the key or the choice hides them again.
+// Prediction first: the bits stay hidden until the cadet makes both choices and
+// presses Show. Changing the key or either choice hides them again.
 const SANS = 'Inter, system-ui, -apple-system, sans-serif';
 const C = { navy:'#004a85', red:'#b01e24', amber:'#8a5a00', grid:'#e6eef6', axis:'#8a929c', ink:'#15202b', ink3:'#5b6573', band:'#fbe9d0' };
-const EX = [ { text:'Ok', zero:'long' }, { text:'Up', zero:'short' }, { text:'Go', zero:'long' } ];
-const state = { ex: 0, guess: null, shown: false };
+const EX = [ { text:'Ok', part:'mark', zero:'long' }, { text:'Up', part:'space', zero:'short' },
+             { text:'Go', part:'mark', zero:'short' }, { text:'Hi', part:'space', zero:'long' } ];
+const LONG = 2.4;
+const state = { ex: 0, part: null, guess: null, shown: false };
 
 function bitsOf(t){ return [...t].map(c => c.charCodeAt(0).toString(2).padStart(8, '0')).join(''); }
-// The key as runs of [level, units]: 3 units of silence, then a mark and a space per bit.
+// The key as runs of [level, units, bit index or -1]: silence, then one bit per mark-and-space.
 function runs(e){
-  const out = [[0, 8]];
-  for (const b of bitsOf(e.text)){
-    const zeroLen = e.zero === 'short' ? 1 : 2.4, oneLen = e.zero === 'short' ? 2.4 : 1;
-    out.push([1, b === '0' ? zeroLen : oneLen], [0, 1]);
-  }
-  out.push([0, 2]);
+  const out = [[0, 8, -1]];
+  [...bitsOf(e.text)].forEach((b, i) => {
+    const len = (b === '0') === (e.zero === 'short') ? 1 : LONG;
+    if (e.part === 'mark') out.push([1, len, i], [0, 1, -1]);
+    else out.push([1, 1, -1], [0, len, i]);
+  });
+  if (e.part === 'space') out.push([1, 1, -1]);
+  out.push([0, 2, -1]);
   return out;
 }
 function decode(bits){ let s = ''; for (let i = 0; i + 8 <= bits.length; i += 8){ const c = parseInt(bits.slice(i, i + 8), 2); s += c >= 32 && c < 127 ? String.fromCharCode(c) : '?'; } return s; }
-function reading(e, zero){
-  const b = bitsOf(e.text);
-  return zero === e.zero ? b : [...b].map(x => x === '0' ? '1' : '0').join('');
+// What the cadet's two choices read: measure the chosen part of each bit, split at the midpoint.
+function reading(e){
+  const R = runs(e), lens = [];
+  for (let k = 1; k < R.length; k++){
+    const [lev, n, idx] = R[k];
+    if (state.part === 'mark' && lev === 1 && (idx >= 0 || e.part === 'space') && lens.length < 16) lens.push(n);
+    if (state.part === 'space' && lev === 0 && R[k - 1][0] === 1 && lens.length < 16) lens.push(n);
+  }
+  const lo = Math.min(...lens), hi = Math.max(...lens), mid = (lo + hi)/2;
+  return lens.map(n => ((hi > lo && n > mid) ? 'long' : 'short') === state.guess ? '0' : '1').join('');
 }
 
 const canvas = document.getElementById('plot'), ctx = canvas.getContext('2d');
@@ -117,13 +134,12 @@ function draw(){
   const xu = u => mL + u/total*pw;
   const top = 34, hi = top + 4, lo = top + 62;
   stext('Key, after a long silence', mL, 13, lab, C.ink, 'left', true);
-  // The key.
-  let u = 0, marks = [];
+  let u = 0; const bitAt = [];
   ctx.strokeStyle = C.navy; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(xu(0), lo);
-  for (const [lev, n] of R){
+  for (const [lev, n, idx] of R){
     const y = lev ? hi : lo;
     ctx.lineTo(xu(u), y); ctx.lineTo(xu(u + n), y);
-    if (lev) marks.push([u, n]);
+    if (idx >= 0) bitAt[idx] = [u, n];
     u += n;
   }
   ctx.lineTo(xu(u), lo); ctx.stroke();
@@ -131,20 +147,19 @@ function draw(){
   const by = lo + 22, ty = lo + 50;
   if (state.shown){
     const b = bitsOf(e.text);
-    marks.forEach(([m0, n], i) => {
+    bitAt.forEach(([m0, n], i) => {
       const cx = xu(m0 + n/2);
       if (i % 8 === 0){ ctx.fillStyle = C.band; ctx.fillRect(xu(m0) - 2, top - 2, xu(m0 + n) - xu(m0) + 4, by - top + 10); }
       stext(b[i], cx, by, fs + 1, i % 8 === 0 ? C.red : C.ink, 'center', i % 8 === 0);
     });
-    for (let k = 0; k < marks.length/8; k++){
-      const a = marks[8*k][0], z = marks[8*k + 7][0] + marks[8*k + 7][1];
+    for (let k = 0; k < bitAt.length/8; k++){
+      const a = bitAt[8*k][0], z = bitAt[8*k + 7][0] + bitAt[8*k + 7][1];
       ctx.strokeStyle = C.ink3; ctx.lineWidth = 1; ctx.beginPath();
       ctx.moveTo(xu(a), ty - 10); ctx.lineTo(xu(a), ty - 6); ctx.lineTo(xu(z), ty - 6); ctx.lineTo(xu(z), ty - 10); ctx.stroke();
-      const c = e.text[k], code = e.text.charCodeAt(k);
-      stext("'" + c + "' = " + code, (xu(a) + xu(z))/2, ty + 6, fs + 1, C.ink, 'center', true);
+      stext("'" + e.text[k] + "' = " + e.text.charCodeAt(k), (xu(a) + xu(z))/2, ty + 6, fs + 1, C.ink, 'center', true);
     }
   } else {
-    const msg = state.guess ? 'Press Show the bytes' : 'Choose which mark is a 0 first', mpx = narrow ? 12 : 13.5;
+    const msg = state.part && state.guess ? 'Press Show the bytes' : 'Make both choices first', mpx = narrow ? 12 : 13.5;
     ctx.font = '700 ' + mpx + 'px ' + SANS;
     const mw = Math.min(ctx.measureText(msg).width + 20, pw - 8), my = by + 14;
     ctx.fillStyle = 'rgba(255,255,255,0.94)'; ctx.strokeStyle = '#b9d2e5'; ctx.lineWidth = 1;
@@ -156,19 +171,22 @@ function draw(){
 function sync(){
   const e = EX[state.ex];
   document.querySelectorAll('#ex button').forEach(b => b.setAttribute('aria-pressed', +b.dataset.v === state.ex ? 'true' : 'false'));
+  document.querySelectorAll('#part button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === state.part ? 'true' : 'false'));
   document.querySelectorAll('#guess button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === state.guess ? 'true' : 'false'));
-  showBtn.disabled = !state.guess;
+  const ready = !!(state.part && state.guess);
+  showBtn.disabled = !ready;
   showBtn.setAttribute('aria-pressed', state.shown ? 'true' : 'false');
   showBtn.textContent = state.shown ? 'Hide them' : 'Show the bytes';
-  document.getElementById('r-g').textContent = state.shown ? decode(reading(e, state.guess)) : '?';
+  document.getElementById('r-g').textContent = state.shown ? decode(reading(e)) : '?';
   document.getElementById('r-a').textContent = state.shown ? e.text : '?';
-  document.getElementById('r-z').textContent = state.shown ? (e.zero === 'short' ? 'short mark' : 'long mark') : '?';
+  document.getElementById('r-z').textContent = state.shown ? (e.part + ', ' + e.zero + ' = 0') : '?';
   draw();
 }
 
-document.querySelectorAll('#ex button').forEach(b => b.addEventListener('click', () => { state.ex = +b.dataset.v; state.guess = null; state.shown = false; sync(); }));
+document.querySelectorAll('#ex button').forEach(b => b.addEventListener('click', () => { state.ex = +b.dataset.v; state.part = null; state.guess = null; state.shown = false; sync(); }));
+document.querySelectorAll('#part button').forEach(b => b.addEventListener('click', () => { state.part = b.dataset.v; state.shown = false; sync(); }));
 document.querySelectorAll('#guess button').forEach(b => b.addEventListener('click', () => { state.guess = b.dataset.v; state.shown = false; sync(); }));
-showBtn.addEventListener('click', () => { if (state.guess){ state.shown = !state.shown; sync(); } });
+showBtn.addEventListener('click', () => { if (state.part && state.guess){ state.shown = !state.shown; sync(); } });
 
 resize(); sync();
 </script>
