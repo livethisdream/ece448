@@ -85,8 +85,9 @@ the class is not to measure every little dB of SNR or bandwidth. It's to see
 how modulated signals are built and how to recover them"). A lab builds
 whichever half the class did not: usually the receiver that recovers a
 message, often from a recording whose settings the cadet works out, and
-sometimes the transmitter that a given receiver must decode (Neil,
-2026-11-28). Steps guide toward that
+sometimes the transmitter that a given receiver must decode, and sometimes
+both, the lesson discussing the chain's principles and the lab building the
+transmitter and receiver end to end (Neil, 2026-11-28). Steps guide toward that
 goal with checkpoints; predictions are reasoning, not numbers; impairments
 are puzzles to diagnose and fix, never sweeps to tabulate. This leads every
 lab rule below; details in `project/ROADMAP.md`, "Labs are puzzles".

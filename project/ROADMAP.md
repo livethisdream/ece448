@@ -228,15 +228,18 @@ budgets, checks) still apply. Where 444 would put a derivation on screen,
     settings the cadet works out from the spectrum and the waveform (the L8
     Lab's `L08-lab-unknown`, recorded by Neil), or a signal that will not
     decode until the cadet finds out why.
-  - **The lab builds whichever half the class did not** (Neil, 2026-11-28:
+  - **The lab builds whichever half the class did not, or both** (Neil, 2026-11-28:
     "Sometimes the lab will be the 'build the transmitter' part of the
     puzzle"). Most often the class builds the encoder and modulator and the
     lab has the cadet build the demodulator and decoder that undo them. Just
     as often the other way: the class or a provided receiver fixes what must
     arrive, and the lab has the cadet build the transmitter that a given
     receiver decodes (a known flowgraph, Neil's receiver, a classmate's, or
-    an off-the-shelf decoder). Either way the goal is the same: a message
-    that comes through.
+    an off-the-shelf decoder). Or both (Neil, 2026-11-28: "it might be both
+    ... we might discuss the principles of a signal chain and then build the
+    tx and rx chain"): the lesson discusses how the chain works, and the lab
+    has the cadet build the transmitter and the receiver end to end. Every
+    way, the goal is the same: a message that comes through.
   - **Guided steps toward the goal**, with checkpoints ("you should now see two
     clusters"), not a recipe of readings. Steps say what to build and what to
     look for; the thinking is the cadet's.
