@@ -39,8 +39,8 @@
   <canvas id="plot" aria-label="A key made by a pulse-width code: after a long silence, every bit is a mark of one of two lengths followed by a short space. Once you choose which mark is a 0 and ask, the bits and the text appear below the key."></canvas>
 
   <div class="controls">
-    <div class="ctl"><span class="lab">Recording</span>
-      <div class="seg" id="ex" role="group" aria-label="Recording">
+    <div class="ctl"><span class="lab">Key</span>
+      <div class="seg" id="ex" role="group" aria-label="Key">
         <button data-v="0" aria-pressed="true">A</button><button data-v="1" aria-pressed="false">B</button><button data-v="2" aria-pressed="false">C</button>
       </div>
     </div>
@@ -63,15 +63,15 @@
 <script>
 'use strict';
 // A pulse-width code: after a long silence, every bit is a mark (carrier on)
-// whose length carries the bit, followed by a one-unit space. Each recording
+// whose length carries the bit, followed by a one-unit space. Each key
 // sends two ASCII characters, most significant bit first. Which mark is a 0
-// differs between recordings, so the widget teaches the method (every ASCII
+// differs between keys, so the widget teaches the method (every ASCII
 // byte starts with a 0, so the mark that starts every byte is the 0) without
 // teaching an answer. The L11 Lab's code is not a pulse-width code, and none of
 // these words or lengths is the lab's.
 //
 // Prediction first: the bits stay hidden until the cadet chooses a mark and
-// presses Show. Changing the recording or the choice hides them again.
+// presses Show. Changing the key or the choice hides them again.
 const SANS = 'Inter, system-ui, -apple-system, sans-serif';
 const C = { navy:'#004a85', red:'#b01e24', amber:'#8a5a00', grid:'#e6eef6', axis:'#8a929c', ink:'#15202b', ink3:'#5b6573', band:'#fbe9d0' };
 const EX = [ { text:'Ok', zero:'long' }, { text:'Up', zero:'short' }, { text:'Go', zero:'long' } ];
@@ -80,7 +80,7 @@ const state = { ex: 0, guess: null, shown: false };
 function bitsOf(t){ return [...t].map(c => c.charCodeAt(0).toString(2).padStart(8, '0')).join(''); }
 // The key as runs of [level, units]: 3 units of silence, then a mark and a space per bit.
 function runs(e){
-  const out = [[0, 3]];
+  const out = [[0, 8]];
   for (const b of bitsOf(e.text)){
     const zeroLen = e.zero === 'short' ? 1 : 2.4, oneLen = e.zero === 'short' ? 2.4 : 1;
     out.push([1, b === '0' ? zeroLen : oneLen], [0, 1]);
@@ -100,7 +100,7 @@ function stext(s,x,y,px,color,align,bold){ ctx.fillStyle=color; ctx.font=(bold?'
 
 function resize(){
   const w = canvas.clientWidth, dpr = window.devicePixelRatio || 1;
-  const h = w < 470 ? 176 : 180;
+  const h = w < 470 ? 160 : 180;
   canvas.style.height = h + 'px';
   canvas.width = Math.round(w*dpr); canvas.height = Math.round(h*dpr);
   ctx.setTransform(dpr,0,0,dpr,0,0);

@@ -11,15 +11,17 @@
       Decoder whose work() is empty, read by a Function Probe into the
       Received label.
   book/extras/grc/L11-lab-link.grc
-      The same code made from the cadet's own line, in noise, into the same
-      receiver. The Noise amplitude slider opens where the levels need
-      setting.
+      The cadet's own line, from a Key Encoder whose make_key() the cadet
+      writes, in noise, into the same receiver. The Noise amplitude slider
+      opens where the levels need setting.
 
-The code itself (which space is a 1, how long each part lasts) is the lab's
-puzzle, and its constants live here and in the faculty key, not on any page.
+The code itself (which part carries a bit, how long each part lasts) is the
+lab's puzzle. Its constants and the line are not in this public file: the
+recording is made from a private code file in ECE448-faculty, passed as the
+one argument. Without it, only the two flowgraphs are written.
 Normalize and check the flowgraphs after running this:
 
-    /usr/bin/python3.12 scripts/grc/make_l11_lab.py
+    /usr/bin/python3.12 scripts/grc/make_l11_lab.py [L11-lab-code.json]
     /usr/bin/python3.12 scripts/grc/grc_normalize.py book/extras/grc/L11-lab-*.grc
 """
 
@@ -38,9 +40,6 @@ TEMPLATE = GRC / "L11-keyed-carrier-epy.grc"
 
 FS = 24000              # recording and link sample rate (S/s)
 DECIM = 12              # Energy Detector: key at 2 kHz
-UNIT = 48               # samples in one unit of the code (2 ms)
-SHORT, LONG = 1, 3      # space after a mark, in units, for a 0 and a 1
-GAP = 20                # units of silence after a line's stop mark
 TONE = 2000.0           # carrier offset in the recording (Hz)
 AMP = 0.5
 NOISE_DB = -30.0        # recording noise power (dB, relative to 1)
@@ -71,18 +70,49 @@ class blk(gr.sync_block):
 '''
 
 
-def units(text: str) -> list[int]:
-    """One line of text as the code's key, one entry per unit."""
+ENCODER = '''"""Key Encoder: sends the line msg in the lab's code as a key, over and
+over: 1 while the carrier is on, 0 while it is off.
+
+make_key() is yours to write (L11 Lab, Step 16). Set Samples per unit to the
+number of 24 kHz samples in one unit of the code you worked out."""
+
+import numpy as np
+from gnuradio import gr
+
+
+class blk(gr.sync_block):
+    def __init__(self, msg='Your line here', samples_per_unit=1):
+        gr.sync_block.__init__(self, name='Key Encoder', in_sig=None, out_sig=[np.float32])
+        units = self.make_key(msg) or [0]
+        self.key = np.repeat(np.array(units, dtype=np.float32), max(1, int(samples_per_unit)))
+        self.i = 0
+
+    def make_key(self, msg):
+        # Return the key for msg plus its newline, one entry per unit, ending
+        # with the silence that separates two sendings.
+        return []
+
+    def work(self, input_items, output_items):
+        out = output_items[0]
+        idx = (self.i + np.arange(len(out))) % len(self.key)
+        out[:] = self.key[idx]
+        self.i = (self.i + len(out)) % len(self.key)
+        return len(out)
+'''
+
+
+def units(code: dict) -> list[int]:
+    """One line of text as the code's key, one entry per unit (the private code file)."""
     seq: list[int] = []
-    for c in (text + "\n").encode():
+    for c in (code["text"] + "\n").encode():
         for b in format(c, "08b"):
-            seq += [1] + [0] * (LONG if b == "1" else SHORT)
-    return seq + [1] + [0] * GAP
+            seq += code["bit"][b]
+    return seq + code["end"]
 
 
-def recording(text: str):
-    seq = [0] * 12 + units(text) * REPEATS
-    key = np.repeat(np.array(seq, dtype=np.float32), UNIT)
+def recording(code: dict):
+    seq = [0] * code["lead"] + units(code) * REPEATS
+    key = np.repeat(np.array(seq, dtype=np.float32), code["unit_samples"])
     n = np.arange(key.size)
     rng = np.random.default_rng(448)
     s = AMP * key * np.exp(2j * np.pi * TONE / FS * n)
@@ -196,42 +226,40 @@ def link():
     names = {b["name"]: b for b in t["blocks"]}
     add = []
     for n in ("noise", "analog_noise_source_x_0", "analog_sig_source_x_0", "blocks_add_xx_0",
-              "blocks_float_to_complex_0", "blocks_multiply_xx_0", "blocks_repeat_0",
-              "blocks_vector_source_x_0"):
+              "blocks_float_to_complex_0", "blocks_multiply_xx_0"):
         add.append(copy.deepcopy(names[n]))
     d["blocks"] += add
     block(d, "noise")["parameters"].update(value="0.12", stop="0.5", step="0.01",
                                            label="Noise amplitude", gui_hint="0,2,1,1")
     block(d, "analog_sig_source_x_0")["parameters"].update(freq=str(int(TONE)), amp=str(AMP))
-    block(d, "blocks_repeat_0")["parameters"]["interp"] = "unit"
-    vs = block(d, "blocks_vector_source_x_0")["parameters"]
-    vs.update(vector="key_units", tags="[]")
-    seq = ("sum([[1] + [0] * (3 if b == '1' else 1) for c in (msg + '\\n').encode() "
-           "for b in format(c, '08b')], []) + [1] + [0] * 20")
-    for name, val, xy in (("msg", "'Your line here'", [176, 76]),
-                          ("unit", str(UNIT), [272, 8]),
-                          ("key_units", seq, [400, 76])):
-        d["blocks"].append({"name": name, "id": "variable",
-                            "parameters": {"comment": "", "value": val},
-                            "states": {"bus_sink": False, "bus_source": False, "bus_structure": None,
-                                       "coordinate": xy, "rotation": 0, "state": "enabled"}})
+    d["blocks"].append({"name": "msg", "id": "variable", "parameters": {"comment": "", "value": "'Your line here'"},
+                        "states": {"bus_sink": False, "bus_source": False, "bus_structure": None,
+                                   "coordinate": [176, 76], "rotation": 0, "state": "enabled"}})
+    d["blocks"].append({
+        "name": "encoder", "id": "epy_block",
+        "parameters": {"_source_code": ENCODER, "affinity": "", "alias": "", "comment": "",
+                       "maxoutbuf": "0", "minoutbuf": "0", "msg": "msg", "samples_per_unit": "1"},
+        "states": {"_io_cache": "('Key Encoder', 'blk', [('msg', \"'Your line here'\"), ('samples_per_unit', '1')], [], [('0', 'float', 1)], '', ['msg', 'samples_per_unit'])",
+                   "bus_sink": False, "bus_source": False, "bus_structure": None,
+                   "coordinate": [8, 220], "rotation": 0, "state": "enabled"}})
     for c in t["connections"]:
-        if c[0] in names and c[2] in names and c[2] != "blocks_keep_one_in_n_0" \
-                and c[0] != "blocks_add_xx_0" and "blocks_add_xx_0" in (c[0], c[2]) or \
-                (c[0], c[2]) in (("blocks_vector_source_x_0", "blocks_repeat_0"),
-                                 ("blocks_repeat_0", "blocks_float_to_complex_0"),
-                                 ("blocks_float_to_complex_0", "blocks_multiply_xx_0"),
-                                 ("analog_sig_source_x_0", "blocks_multiply_xx_0")):
+        if (c[0], c[2]) in (("blocks_float_to_complex_0", "blocks_multiply_xx_0"),
+                            ("analog_sig_source_x_0", "blocks_multiply_xx_0"),
+                            ("blocks_multiply_xx_0", "blocks_add_xx_0"),
+                            ("analog_noise_source_x_0", "blocks_add_xx_0")):
             d["connections"].append(c)
+    d["connections"].append(["encoder", "0", "blocks_float_to_complex_0", "0"])
     d["connections"].append(["blocks_add_xx_0", "0", "blocks_throttle2_0", "0"])
     (GRC / "L11-lab-link.grc").write_text(yaml.safe_dump(d, sort_keys=False))
 
 
 if __name__ == "__main__":
     import sys
-    text = sys.argv[1] if len(sys.argv) > 1 else None
-    if text:
-        print(f"recording: {recording(text):.2f} s")
+    # The recording needs the private code file (ECE448-faculty/lab-keys/src/
+    # L11-lab-code.json): its text, units per bit, end, lead, and samples per unit.
+    if len(sys.argv) > 1:
+        code = json.loads(Path(sys.argv[1]).read_text())
+        print(f"recording: {recording(code):.2f} s")
     rx()
     link()
     print("wrote L11-lab-rx.grc and L11-lab-link.grc")

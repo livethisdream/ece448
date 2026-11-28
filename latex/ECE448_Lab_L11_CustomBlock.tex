@@ -103,13 +103,13 @@ and add a custom Python block to it.
 \\[2pt]\textbf{Learning Objective 5.2: } I can implement a custom signal-processing block from
 scratch and integrate it into a GNU Radio flowgraph.}
 
-\textbf{Instructions:} Submit this packet as one complete submission by the date indicated on
-Gradescope. This is an individual assignment, but you may collaborate, with appropriate
+\textbf{Instructions:} Submit this packet as one complete submission by the Gradescope date, before
+the midterm. This is an individual assignment, but you may collaborate, with appropriate
 documentation. Download \texttt{L11-lab-remote.sigmf-data} and \texttt{.sigmf-meta},
 \texttt{L11-lab-rx.grc}, and \texttt{L11-lab-link.grc} from the lab page before the period.
 Every flowgraph in this lab runs on your laptop, and nothing transmits.
 
-\textbf{Part 1: Predict} the shaded entries in Table A before the lab period, attaching your
+\textbf{Part 1: Predict} the two shaded entries in Table A before the lab period, attaching your
 reasoning.
 
 \textbf{Part 2: Measure} the white cells of Table B in class, and paste Figures 1 to 4.
@@ -128,16 +128,16 @@ your readings.
 the recording's line comes through.}
 \procstep{9--14}{\textbf{Put it in a module}, \texttt{gr-l11lab}, with a YAML file and a unit
 test; build, test, install, and swap it into the receiver.}
-\procstep{15--17}{\textbf{Send your own line} through \texttt{L11-lab-link.grc}, which adds
-noise, and fix what keeps it from arriving.}
+\procstep{15--18}{\textbf{Send your own line}: write the Key Encoder in
+\texttt{L11-lab-link.grc}, which adds noise, and fix what keeps your line from arriving.}
 \end{procbox}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \fullwidth{\large\textbf{Parts 1 and 2: Predict and Measure}}
 
-Work out Table A before the lab period, from Lessons 10 and 11. \texttt{L11-lab-rx.grc} plays
-the recording at 24 kHz into an Energy Detector that averages 12 samples per output, and every
-character of the recording's line is printable ASCII, sent most significant bit first.
+Work out Table A before the lab period, from Lessons 10 and 11. Every character of the
+recording's line is printable ASCII, sent most significant bit first, and the line ends with a
+newline, byte 10, as in Lesson 10.
 
 \textbf{Table A. Before you see the key} (Part 1 only)
 
@@ -147,7 +147,6 @@ character of the recording's line is printable ASCII, sent most significant bit 
 \hline
 Entry & Predicted & Step \\\hline
 The first bit of every printable ASCII character (0 or 1) & \predv[a.zero]{\keysol{p1.a.zero}} & 4 \\\hline
-Key samples in 1 ms at the Energy Detector's output & \predv[a.bnd]{\keysol{p1.a.bnd}} & 5 \\\hline
 \multicolumn{2}{|p{\dimexpr3.6in+\boxw+2\tabcolsep+\arrayrulewidth\relax}|}{What your block must keep in
 \texttt{self} from one call of \texttt{work()} to the next:\newline
 \predl[a.state]{\dimexpr3.6in+\boxw\relax}{\keysol{p1.a.state}}\par\vspace{3pt}} & 6 \\\hline
@@ -171,7 +170,7 @@ Space lengths you see (ms) & \kv[a.spaces]{\keysol{a.spaces}} & 3 \\\hline
 What carries a 0 (text) & \kv[a.zero]{\keysol{a.zero}} & 4 \\\hline
 Boundary and gap (key samples) & \kv[a.bnd]{\keysol{a.bnd}} & 5 \\\hline
 The recovered line (text) & \kv[a.msg]{\keysol{a.msg}} & 7 \\\hline
-What brought your line through (text) & \kv[b.fix]{\keysol{b.fix}} & 17 \\\hline
+What brought your line through (text) & \kv[b.fix]{\keysol{b.fix}} & 18 \\\hline
 \end{tabular}
 \end{center}
 \end{minipage}
@@ -180,7 +179,7 @@ What brought your line through (text) & \kv[b.fix]{\keysol{b.fix}} & 17 \\\hline
 few dozen marks.}{\keysol{fig1}}
 
 \vspace{8pt}
-\shotbox{2.3in}{\textbf{Figure 2.} Step 7: your \texttt{work()} beside the running window, with
+\shotbox{2.2in}{\textbf{Figure 2.} Step 7: your \texttt{work()} beside the running window, with
 the Received label in view.}{\keysol{fig2}}
 
 % The KEY prints the reference Key Decoder from the private repo
@@ -195,13 +194,13 @@ the Received label in view.}{\keysol{fig2}}
 \fi
 
 \vspace{8pt}
-\shotbox{0.9in}{\textbf{Figure 3.} Step 13: the output of \texttt{ctest --output-on-failure} for
-\texttt{gr-l11lab}.}{\keysol{fig3}}
+\shotbox{0.9in}{\textbf{Figure 3.} Step 13: your test's key lines from \texttt{qa\_key\_decoder.py}
+and the output of \texttt{ctest --output-on-failure}.}{\keysol{fig3}}
 
 \vspace{8pt}
-\noindent\shotpane{0.48\linewidth}{1.7in}{Before (Step 16)}{\keysol{fig4.before}}\hfill
-\shotpane{0.48\linewidth}{1.7in}{After (Step 17)}{\keysol{fig4.after}}\par
-\vspace{2pt}{\small\textbf{Figure 4.} Steps 16 and 17: \texttt{L11-lab-link.grc} with your Key
+\noindent\shotpane{0.48\linewidth}{1.7in}{Before, with \texttt{make\_key()} (Step 17)}{\keysol{fig4.before}}\hfill
+\shotpane{0.48\linewidth}{1.7in}{After (Step 18)}{\keysol{fig4.after}}\par
+\vspace{2pt}{\small\textbf{Figure 4.} Steps 17 and 18: \texttt{L11-lab-link.grc} with your Key
 Decoder, the Power and Key plots, and the Received label in view.}\par
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -216,14 +215,13 @@ reasoning, and the uncertainty in your readings.
 
 \question From your code in Figure 2 and the key in Figure 1, explain how your block decides each
 bit and finds where each character starts, and what it does when a mark or a space begins in one
-call of \texttt{work()} and ends in the next. Name one case your unit test in Figure 3 does not
-check, and how you would test it.
+call of \texttt{work()} and ends in the next. Then name one case your test in Figure 3 does not
+check, and the test you would add for it.
 	\begin{solution}[1.7in]\keysol{an1}\end{solution}
 
-\question The Energy Detector's key held the whole line before you wrote a block, yet no block in
-GNU Radio's library turned it into text. From the key in Figure 1, explain what about this code
-keeps a receiver like those of Lessons 8 and 10, a Symbol Sync and a Binary Slicer, from reading
-it, and what your block does in their place.
+\question From the key in Figure 1, decide whether a receiver like those of Lessons 8 and 10, a
+Symbol Sync and a Binary Slicer, could have recovered this line. Give your answer, the features of
+the key that support it, and what your block does differently.
 	\begin{solution}[1.7in]\keysol{an2}\end{solution}
 
 \newpage

@@ -256,10 +256,13 @@ def work(self, input_items, output_items):
         self.state, self.run = k, 1
     return len(input_items[0])
 ```
-- A **sink** has inputs and no outputs; `out_sig=None` makes one.
+- Count each level's samples in `self`, since a mark can span two calls.
+- A boundary halfway between two lengths tells them apart.
 :::
 
-The key carries its meaning in how long each level lasts. The **Key Timer** is a sink block, a sync block with no outputs, made with `gr_modtool add -t sink`. Its constructor calls `gr.sync_block.__init__` with `in_sig=[np.float32]` and `out_sig=None`, and sets `self.state = 0.0`, `self.run = 0`, and an empty list `self.marks`. Its `work()` counts how many key samples each level holds, and when a **mark**, a run of 1s, ends, it converts the count to milliseconds with the key's sample rate, `rate`, and keeps it. A method `last_mark()` returns the newest one. The level and the count live in `self`, because a mark can start in one call of `work()` and end in the next, and GNU Radio hands `work()` whatever samples have arrived. On the Energy Detector's 1 kHz key at 20 words per minute, the Key Timer reads every dit as 60 ms, which is 60 key samples, and every dah as 180 ms, so a boundary at 120 samples, halfway between, tells one from the other. A **Function Probe** block calls `last_mark()` a few times a second, and a **QT GUI Label** shows its value, as the Text Sink's `last_line()` reaches its label in the Lesson 8 and Lesson 10 flowgraphs.
+The key carries its meaning in how long each level lasts. The **Key Timer** is a sink block, a sync block with inputs and no outputs, made with `gr_modtool add -t sink`; its constructor passes `in_sig=[np.float32]` and `out_sig=None`, and stores its one argument, the key's sample rate, as `self.rate`. Its `work()` counts how many key samples each level holds, and when a **mark**, a run of 1s, ends, it converts the count to milliseconds and keeps it. The level and the count live in `self`, because a mark can start in one call of `work()` and end in the next, and GNU Radio hands `work()` whatever samples have arrived.
+
+On the Energy Detector's key, at 1000 samples per second, 20 words per minute gives every dit 60 key samples, 60 ms, and every dah 180, so a boundary at 120 samples, halfway between, tells one from the other. A method `last_mark()` returns the newest mark. A Function Probe block reads it: its Block ID names the block and its Function Name names the method, and a QT GUI Label shows the value. The Text Sink inside the Lesson 8 and Lesson 10 flowgraphs reaches its Received label the same way.
 ::::
 
 ::::{frame} Energy Detector Explorer
@@ -359,13 +362,12 @@ Tutorials this lesson follows, on the GNU Radio wiki:
 ::::{frame} Preparing for the Lab
 :class: read-only doc-links
 
-Part 1 of the L11 Lab packet is three entries in Table A, worked out before the lab period. A step of the lab uses each one:
+Part 1 of the L11 Lab packet is two entries in Table A, worked out before the lab period. A step of the lab uses each one:
 
 | Part 1 entry | Method | Used in |
 | :-- | :-- | :-- |
-| Table A: the first bit of every printable ASCII character | Lesson 10's "Text to Bits": ASCII runs from 0 to 127 | Step 4 |
-| Table A: key samples in 1 ms at the Energy Detector's output | "Part 2: The Energy Detector": one output per $N$ inputs | Step 5 |
-| Table A: what your block keeps in `self` between calls of `work()` | "The work() Function" and "Timing the Key" | Step 6 |
+| The first bit of every printable ASCII character | Lesson 10's "Text to Bits": ASCII runs from 0 to 127 | Step 4 |
+| What your block keeps in `self` between calls of `work()` | "The work() Function" and "Timing the Key" | Step 6 |
 
 - <a class="doc-link" href="../../labs/ECE448_Lab_L11_CustomBlock_blank.pdf" target="_blank" rel="noopener">L11 Lab packet (PDF)</a>
 - <a class="doc-link" href="../L11-lab-custom-block/index.html">L11 Lab page</a>
@@ -374,5 +376,5 @@ Part 1 of the L11 Lab packet is three entries in Table A, worked out before the 
 ::::{frame} Looking Ahead
 :class: read-only
 
-The L11 Lab hands you a recording whose key carries a line of text in a code no library block reads, and you write the block that reads it, first as an Embedded Python Block and then in a module of your own. Lesson 12, on CW, receives Morse code, whose receiver tells a dit from a dah by the timing of the key, as the Key Timer does.
+In the L11 Lab you write the block that reads a recorded key whose bits are in the lengths of its levels, not in samples at a fixed rate, and the encoder that sends your own line in the same code. Lesson 12, on CW, receives Morse code, whose receiver tells a dit from a dah by the timing of the key, as the Key Timer does.
 ::::

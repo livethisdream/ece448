@@ -159,7 +159,7 @@ def big_picture():
     fig, axs = plt.subplots(2, 2, figsize=(14, 7.4))
     for ax, (name, title) in zip((axs[0, 0], axs[1, 0]),
                                  [("L11-canvas-rx", "Steps 1-8: run the broken chain, write the decoder"),
-                                  ("L11-canvas-link", "Steps 15-17: send your own line")]):
+                                  ("L11-canvas-link", "Steps 15-18: write the encoder, send your own line")]):
         ax.imshow(plt.imread(img / f"{name}.png")); ax.axis("off")
         ax.set_title(title, color="#15202b", fontsize=13, fontweight="bold", loc="left")
     for ax, title, lines in (
@@ -168,10 +168,10 @@ def big_picture():
               "key_decoder.py, its .block.yml, and qa_key_decoder.py",
               "build, ctest, install, and swap it into the receiver"]),
             (axs[1, 1], "What you record",
-             ["Table A: three Part 1 entries, before the period",
+             ["Table A: two Part 1 entries, before the period",
               "Table B: the code you worked out, the line, and your fix",
               "Figure 1: the zoomed key", "Figure 2: your work() and the running window",
-              "Figure 3: ctest", "Figure 4: the link before and after your fix"])):
+              "Figure 3: ctest", "Figure 4: your make_key() and the link, before and after your fix"])):
         ax.axis("off")
         ax.set_title(title, color="#15202b", fontsize=13, fontweight="bold", loc="left")
         mono = title.startswith("Steps")

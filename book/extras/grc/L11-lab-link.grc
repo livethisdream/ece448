@@ -67,19 +67,6 @@ blocks:
     coordinate: [720, 8]
     rotation: 0
     state: enabled
-- name: key_units
-  id: variable
-  parameters:
-    comment: ''
-    value: sum([[1] + [0] * (3 if b == '1' else 1) for c in (msg + '\n').encode()
-      for b in format(c, '08b')], []) + [1] + [0] * 20
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [400, 76]
-    rotation: 0
-    state: enabled
 - name: msg
   id: variable
   parameters:
@@ -176,18 +163,6 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [560, 8]
-    rotation: 0
-    state: enabled
-- name: unit
-  id: variable
-  parameters:
-    comment: ''
-    value: '48'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [272, 8]
     rotation: 0
     state: enabled
 - name: analog_const_source_x_0
@@ -318,24 +293,6 @@ blocks:
     coordinate: [540, 260]
     rotation: 0
     state: enabled
-- name: blocks_repeat_0
-  id: blocks_repeat
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    interp: unit
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    type: float
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [200, 236]
-    rotation: 0
-    state: enabled
 - name: blocks_throttle2_0
   id: blocks_throttle2
   parameters:
@@ -355,26 +312,6 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [840, 300]
-    rotation: 0
-    state: enabled
-- name: blocks_vector_source_x_0
-  id: blocks_vector_source_x
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    repeat: 'True'
-    tags: '[]'
-    type: float
-    vector: key_units
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [8, 220]
     rotation: 0
     state: enabled
 - name: decoder
@@ -401,6 +338,40 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [1320, 560]
+    rotation: 0
+    state: enabled
+- name: encoder
+  id: epy_block
+  parameters:
+    _source_code: "\"\"\"Key Encoder: sends the line msg in the lab's code as a key,\
+      \ over and\nover: 1 while the carrier is on, 0 while it is off.\n\nmake_key()\
+      \ is yours to write (L11 Lab, Step 16). Set Samples per unit to the\nnumber\
+      \ of 24 kHz samples in one unit of the code you worked out.\"\"\"\n\nimport\
+      \ numpy as np\nfrom gnuradio import gr\n\n\nclass blk(gr.sync_block):\n    def\
+      \ __init__(self, msg='Your line here', samples_per_unit=1):\n        gr.sync_block.__init__(self,\
+      \ name='Key Encoder', in_sig=None, out_sig=[np.float32])\n        units = self.make_key(msg)\
+      \ or [0]\n        self.key = np.repeat(np.array(units, dtype=np.float32), max(1,\
+      \ int(samples_per_unit)))\n        self.i = 0\n\n    def make_key(self, msg):\n\
+      \        # Return the key for msg plus its newline, one entry per unit, ending\n\
+      \        # with the silence that separates two sendings.\n        return []\n\
+      \n    def work(self, input_items, output_items):\n        out = output_items[0]\n\
+      \        idx = (self.i + np.arange(len(out))) % len(self.key)\n        out[:]\
+      \ = self.key[idx]\n        self.i = (self.i + len(out)) % len(self.key)\n  \
+      \      return len(out)\n"
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    msg: msg
+    samples_per_unit: '1'
+  states:
+    _io_cache: ('Key Encoder', 'blk', [('msg', "'Your line here'"), ('samples_per_unit',
+      '1')], [], [('0', 'float', 1)], '', [])
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [8, 220]
     rotation: 0
     state: enabled
 - name: energy
@@ -659,9 +630,8 @@ connections:
 - [blocks_add_xx_0, '0', blocks_throttle2_0, '0']
 - [blocks_float_to_complex_0, '0', blocks_multiply_xx_0, '0']
 - [blocks_multiply_xx_0, '0', blocks_add_xx_0, '0']
-- [blocks_repeat_0, '0', blocks_float_to_complex_0, '0']
 - [blocks_throttle2_0, '0', energy, '0']
-- [blocks_vector_source_x_0, '0', blocks_repeat_0, '0']
+- [encoder, '0', blocks_float_to_complex_0, '0']
 - [energy, '0', qtgui_time_sink_x_0, '0']
 - [energy, '1', decoder, '0']
 - [energy, '1', qtgui_time_sink_x_1, '0']
