@@ -224,13 +224,41 @@ budgets, checks) still apply. Where 444 would put a derivation on screen,
   to recover the message. We build the encoder and modulator in class, they
   demodulate and decode."
   - **The goal is a recovered message** (audio, text, bits) or a working link,
-    never a reading. A lab is a puzzle with that goal: often a recording whose
+    or a transmitted signal that a given receiver decodes, never a reading. A lab is a puzzle with that goal: often a recording whose
     settings the cadet works out from the spectrum and the waveform (the L8
     Lab's `L08-lab-unknown`, recorded by Neil), or a signal that will not
     decode until the cadet finds out why.
-  - **Class builds the transmitter; the lab builds the receiver.** The lesson
-    builds the encoder and modulator; the lab has the cadet build the
-    demodulator and decoder that undo them, block by block.
+  - **The lab builds whichever half the class did not, or both** (Neil, 2026-11-28:
+    "Sometimes the lab will be the 'build the transmitter' part of the
+    puzzle"). Most often the class builds the encoder and modulator and the
+    lab has the cadet build the demodulator and decoder that undo them. Just
+    as often the other way: the class or a provided receiver fixes what must
+    arrive, and the lab has the cadet build the transmitter that a given
+    receiver decodes (a known flowgraph, Neil's receiver, a classmate's, or
+    an off-the-shelf decoder). Or both (Neil, 2026-11-28: "it might be both
+    ... we might discuss the principles of a signal chain and then build the
+    tx and rx chain"): the lesson discusses how the chain works, and the lab
+    has the cadet build the transmitter and the receiver end to end. Every
+    way, the goal is the same: a message that comes through. **Vary the
+    shape across the term** (Neil, 2026-11-28: "I like to give them
+    variety"): no long run of labs with the same half to build. The plan,
+    lab by lab (Neil, 2026-11-28; a lab session follows its row):
+
+    | Lab | Shape | The puzzle |
+    | :-- | :-- | :-- |
+    | L5 First flowgraphs | Both | build a tone source and an FM receiver; hear a station |
+    | L6 AM | Both | build the AM, DSB-SC, and SSB transmitters and their receivers; recover the message |
+    | L7 AM/FM receivers | Receiver | get audio and the station name out of broadcast FM |
+    | L8 FSK | Receiver | decode Neil's recording, tones and baud unknown |
+    | L10 PAM | Both, over the air | take the course's working PAM chain and get your line across on the PlutoSDR at 915 MHz, low power over the air if I say so, or by cable loopback (Neil: "we have a robust chain. Doing it over the air would be good, but loopback would be ok too") |
+    | L11 Custom block | Both | write the block that makes a broken chain work |
+    | L12 CW | Transmitter | key a CW message that a given decoder reads |
+    | L13 DTMF | Receiver | pull the digits out of the hidden recording |
+    | L14 HD Radio | Receiver | find a station's digital sidebands and decode them with gr-hdradio |
+    | L15 mPSK | Both | a PSK link end to end, carrier and timing recovery included |
+    | L16 FHSS | Receiver | follow the hops and recover the message |
+    | L17 Reverse engineering | Receiver, then transmitter | build a decoder that identifies which button of the fan remote was pushed, and a flowgraph that turns the light on, sent on the fan's own frequency at very low power when Neil says so: the one exception to the 915 MHz rule (Neil, 2026-11-28) |
+    | L18-L19 ADS-B/AIS | Transmitter, then receiver | send your own aircraft at 915 MHz so gr-adsb decodes it; decode the AIS recording |
   - **Guided steps toward the goal**, with checkpoints ("you should now see two
     clusters"), not a recipe of readings. Steps say what to build and what to
     look for; the thinking is the cadet's.
@@ -572,8 +600,11 @@ since they follow this structure. Two changes:
 - **L17 over-the-air fan demo** (Neil, 2026-10-29): L17 closes with a
   demo by Neil that operates the classroom's Hunter fan over the air, at
   very low power and a few meters away, from Neil's own encoder flowgraph
-  (`ECE448-faculty/L20_Remotes`). Cadets transmit at 915 MHz, by cable or, if
-  Neil says so, over the air at low power.
+  (`ECE448-faculty/L20_Remotes`). **The L17 Lab is the one exception to the
+  915 MHz rule** (Neil, 2026-11-28): each cadet's own flowgraph turns the
+  fan's light on, transmitting on the fan remote's own frequency, at very
+  low power, a few meters away, and only when Neil says so. Every other
+  course-generated signal, in L17 too, stays at 915 MHz.
 - **Open for Neil:** whether to publish the third-party AIS recording
   ("bebau") from the faculty repo for L19.
 

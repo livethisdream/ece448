@@ -82,9 +82,12 @@ the lesson; solutions stay in `ECE448-faculty`.
 **Labs are puzzles: build it, recover it** (Neil, 2026-11-26/27: "It's a
 class of puzzles and thinking, not a traditional comms class"; "The point of
 the class is not to measure every little dB of SNR or bandwidth. It's to see
-how modulated signals are built and how to recover them"). Class builds the
-transmitter; the lab has the cadet build the receiver and recover a message,
-often from a recording whose settings they work out. Steps guide toward that
+how modulated signals are built and how to recover them"). A lab builds
+whichever half the class did not: usually the receiver that recovers a
+message, often from a recording whose settings the cadet works out, and
+sometimes the transmitter that a given receiver must decode, and sometimes
+both, the lesson discussing the chain's principles and the lab building the
+transmitter and receiver end to end; vary the shape across the term (Neil, 2026-11-28: "I like to give them variety"). Steps guide toward that
 goal with checkpoints; predictions are reasoning, not numbers; impairments
 are puzzles to diagnose and fix, never sweeps to tabulate. This leads every
 lab rule below; details in `project/ROADMAP.md`, "Labs are puzzles".
@@ -147,7 +150,9 @@ for a signal (gr-adsb in radioconda), use it. Every cadet is issued a Pluto,
 and lessons are written for it alone (no HackRF or PHASER); an RTL-SDR,
 SDR Flex, and GQRX are optional extras at most, and URH is out. A signal the course generates is
 recorded or sent at 915 MHz (cable or low-power over the air), never on its
-real frequency. See
+real frequency; the one exception is the L17 Lab, where a cadet's flowgraph turns
+the classroom fan's light on at the remote's own frequency, very low power, when
+Neil says so (Neil, 2026-11-28). See
 `project/ROADMAP.md`, "How Neil teaches it".
 
 Recordings a cadet downloads or makes are **SigMF** (`.sigmf-data` plus
