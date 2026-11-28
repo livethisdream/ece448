@@ -75,9 +75,9 @@
 // so a frequency offset foff adds foff/dev to both levels: the lower level is
 // -1 + foff/dev. The model leaves out the receive filter, so the offsets stay
 // at or below half the deviation, where the real link still runs. The settings
-// offered (900, 1250, 2500 Hz; 250, 350, 450 Hz) are neither the L8 Lab's (1000
-// and 2000 Hz; 600 Hz) nor the lesson's worked 400 Hz at 1000 Hz, and no
-// combination gives the lab's lower level (-0.40) or the lesson's (-0.60).
+// offered (900, 1250, 2500 Hz; 250, 350, 450 Hz) are not the lesson's worked 400
+// Hz at 1000 Hz, and no combination reaches the L8 Lab's hidden offset, which is
+// 1.2 to 1.6 times the recording's deviation.
 //
 // Prediction first: the eye stays hidden until the cadet moves the prediction
 // slider and presses Show. Any change hides it again.

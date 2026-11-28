@@ -242,7 +242,7 @@ $$\frac{f_\text{off}}{\Delta f} = \frac{400}{1000} = 0.4$$
 
 so the levels sit near $+1.4$ and $-0.6$, as in the figure. Both levels are still on the correct side of zero, so the text still arrives.
 
-Raise the offset further and two things close in. The lower level moves toward zero, where the noise on it starts to cross the slicer's threshold, and the upper tone moves toward the edge of the receive filter, whose cutoff is $\Delta f + R_s$. Lines start to arrive with errors before the lower level reaches zero. Real receivers either use a deviation much larger than the expected offset, as key fobs do, or measure the offset and remove it before the demodulator. On the spectrum the offset is the distance the midpoint of the two tones has moved, and a Frequency Xlating FIR Filter whose center moves by the same amount puts the midpoint back at 0.
+Raise the offset further and two limits come closer. The lower level moves toward zero, where the noise on it starts to cross the slicer's threshold, and the upper tone moves toward the edge of the receive filter, whose cutoff is $\Delta f + R_s$. Lines start to arrive with errors before the lower level reaches zero. Real receivers either use a deviation much larger than the expected offset, as key fobs do, or measure the offset and remove it before the demodulator. Once the offset passes the deviation, both levels sit above zero, every bit slices to a 1, and no access code is ever found; a tone pushed past the filter's cutoff also loses its level in the noise. On the spectrum the offset is the distance the midpoint of the two tones has moved, and a Frequency Xlating FIR Filter whose center moves by the same amount puts the midpoint back at 0.
 ::::
 
 ::::{frame} FSK on a Real Radio

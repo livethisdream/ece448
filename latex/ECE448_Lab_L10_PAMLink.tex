@@ -102,13 +102,13 @@ receives ASCII text end-to-end.}
 
 \textbf{Instructions:} Submit this packet as one complete submission by the date indicated on
 Gradescope. This is an individual assignment, but you may collaborate, with appropriate
-documentation. Bring your PlutoSDR, a short SMA cable, the 30 dB SMA attenuator, and its two
-antennas. Every step transmits from your PlutoSDR at 915 MHz: through the cable and the
+documentation. Bring your PlutoSDR and its two antennas, a short SMA cable, and the 30 dB SMA
+attenuator. Every step transmits from your PlutoSDR at 915 MHz: through the cable and the
 attenuator from its TX port to its RX port, or over the air at low power when I say so.
 Connect the cable and attenuator, or the antennas, before you run the flowgraph.
 
-\textbf{Part 1: Predict} your line in Table A and the two shaded cells in Table B before the
-lab period, attaching your reasoning.
+\textbf{Part 1: Predict} the two shaded cells in Table B, and write your own line of text in
+Table A, before the lab period, attaching your reasoning.
 
 \textbf{Part 2: Measure} the indicated quantities in class, and paste Figures 1 to 4.
 
@@ -126,15 +126,15 @@ constellation before and after carrier recovery with your prediction.}
 setting that delivers your line on each run.}
 \procstep{7--9}{\textbf{A second radio's oscillator}: switch on a TX oscillator error the
 flowgraph hides, find it on the spectrum, and retune the receiver.}
-\procstep{10--13}{\textbf{Too little, too much}: starve the receiver of signal, then overload
-it, and watch what reaches the slicer.}
+\procstep{10--13}{\textbf{Too little, too much}: drop the signal toward the noise floor, then
+overload the receiver, and watch the samples, the constellations, and the line.}
 \end{procbox}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \fullwidth{\large\textbf{Parts 1 and 2: Predict and Measure}}
 
 Work out Table A and the shaded cells of Table B before the lab period and measure in class.
-Choose a line of text of your own, such as your class year and name, on one line, and use it in
+Choose a single line of text of your own, such as your class year and name, and use it in
 Step 2. In Step 7 the TX oscillator switch moves the PlutoSDR Sink off 915 MHz by an error the
 flowgraph does not show, and the RX tuning slider moves the PlutoSDR Source to 915 MHz plus its
 setting. Predict the RX tuning in terms of what you will read on the spectrum.
@@ -158,7 +158,7 @@ Your line: \predl[a.line]{4.9in}{\keysol{p1.a.line}} & 2 \\\hline
 \hline
 Quantity & Predicted & Measured & Step \\\hline
 Runs that needed Polarity set to inverted (of 4) & \predv[b.inv]{\keysol{p1.b.inv}} & \kv[b.inv]{\keysol{b.inv}} & 6 \\\hline
-Center of the signal on the spectrum, TX oscillator off (Hz) & \nopred & \kv[b.shift]{\keysol{b.shift}} & 8 \\\hline
+Center of the signal on the spectrum, TX oscillator offset (Hz) & \nopred & \kv[b.shift]{\keysol{b.shift}} & 8 \\\hline
 RX tuning that brings the line back (Hz) & \predv[b.tune]{\keysol{p1.b.tune}} & \kv[b.tune]{\keysol{b.tune}} & 9 \\\hline
 \end{tabular}
 \end{center}
@@ -172,7 +172,7 @@ RX tuning that brings the line back (Hz) & \predv[b.tune]{\keysol{p1.b.tune}} & 
 both constellations, and the Lines label in view.}{\keysol{fig1}}
 
 \vspace{8pt}
-\shotbox{2.4in}{\textbf{Figure 2.} Step 7: the TX oscillator off and the line stopped, with the
+\shotbox{2.4in}{\textbf{Figure 2.} Step 7: the TX oscillator on offset and the line stopped, with the
 spectrum and both constellations in view.}{\keysol{fig2}}
 
 \vspace{8pt}
@@ -182,8 +182,8 @@ again.}{\keysol{fig3}}
 \vspace{8pt}
 \noindent\shotpane{0.48\linewidth}{2.0in}{Too little}{\keysol{fig4.little}}\hfill
 \shotpane{0.48\linewidth}{2.0in}{Too much}{\keysol{fig4.much}}\par
-\vspace{2pt}{\small\textbf{Figure 4.} Steps 11 and 12: the receiver starved of signal, then
-overloaded, with the Received samples, both constellations, and the Lines label in view.}\par
+\vspace{2pt}{\small\textbf{Figure 4.} Steps 11 and 12: the signal near the noise floor, then the
+receiver overloaded, with the Received samples, both constellations, and the Lines label in view.}\par
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Part 3 starts on this page only if its heading and first prompt fit (no forced break).
@@ -196,15 +196,15 @@ and the uncertainty in your readings.
 \begin{questions}
 
 \question From the two constellations in Figure 1 and your four runs in Table B, explain what
-the Costas Loop did to the signal and why some runs needed the Polarity switch. Propose a
+the Costas Loop did to the signal and what decided the Polarity setting on each run. Propose a
 change to the transmitter or the receiver that would make the switch unnecessary, and the run
 that would test it.
 	\begin{solution}[2.0in]\keysol{an1}\end{solution}
 
 \question Compare Figures 2 and 3 with your entries in Table B. Explain why your line stopped
-with the TX oscillator off, using the spectrum and both constellations, and why your RX tuning
-brought it back. Say how far your RX tuning could have been from the setting you used and still
-delivered the line, and what in your figures supports that.
+with the TX oscillator on offset, using the spectrum and both constellations, and why your RX
+tuning brought it back. Say which part of the receiver you think failed first, and what in
+Figure 2 supports that.
 	\begin{solution}[2.0in]\keysol{an2}\end{solution}
 
 \newpage

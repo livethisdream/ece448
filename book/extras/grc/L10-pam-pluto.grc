@@ -291,7 +291,7 @@ blocks:
 - name: tx_err
   id: variable
   parameters:
-    comment: 'The TX oscillator''s error when the TX oscillator switch reads off:
+    comment: 'The TX oscillator''s error when the TX oscillator switch reads offset:
 
       2.2 to 3.4 kHz either way, drawn at random each run and not shown.'
     value: random.choice([-1, 1])*random.uniform(2200, 3400)
@@ -309,11 +309,11 @@ blocks:
     gui_hint: 1,1,1,1
     label: TX oscillator
     label0: exact
-    label1: 'off'
+    label1: offset
     label2: ''
     label3: ''
     label4: ''
-    labels: '["exact", "off"]'
+    labels: '["exact", "offset"]'
     num_opts: '2'
     option0: '0'
     option1: '1'

@@ -32,14 +32,14 @@ L8 Lab · Module 4: Digital Modulation · Dr. Neil Rogers
      style="max-width: 860px; width: 100%; display: block; margin: 0 auto;">
 :::
 
-Steps 1 to 4 play `L08-lab-unknown.sigmf-data`, a recording from a transmitter like your class one with its own baud rate and tones, and read those off a spectrum and a demodulator. Steps 5 to 11 build a decoder from Lesson 8's blocks with those settings and recover the recording's message into a file. Steps 12 to 16 shift the recording by a frequency offset your flowgraph draws at random and does not show, as a second radio's oscillator would; you find out from the spectrum and the eye why the text stops, and retune your receiver to bring it back. Your Part 1 predictions go with Steps 15 and 16, what you work out goes in Tables A and B of the packet, and the screenshots go in Figures 1 to 4. Nothing in this lab transmits.
+Steps 1 to 4 play `L08-lab-unknown.sigmf-data`, a recording from a transmitter like the one you built in class, with its own baud rate and tones, and read those off a spectrum and a demodulator. Steps 5 to 11 build a decoder from Lesson 8's blocks with those settings and recover the recording's message into a file. Steps 12 to 16 shift the recording by a frequency offset your flowgraph draws at random and does not show, as a second radio's oscillator would; you find out from the spectrum and the eye why the text stops, and retune your receiver to bring it back. Your Part 1 predictions go with Steps 15 and 16, what you work out goes in Tables A and B of the packet, and the screenshots go in Figures 1 to 4. Nothing in this lab transmits.
 ::::
 
 ::::{frame} Predict First
 :class: viz-frame
 
 :::{depth}
-Choose a deviation and a frequency offset. The dashed blue lines are the eye's two levels with no offset. Before you press **Show the eye**, set the My Prediction slider to where you think the lower level will sit. Changing either setting or your guess hides the answer again, so each guess comes first. The widget leaves out the receive filter and keeps every offset below the deviation, where the text still arrives; Step 14's offset is larger, and the flowgraph hides its value.
+Choose a deviation and a frequency offset. The dashed blue lines are the eye's two levels with no offset. Before you press **Show the eye**, set the My Prediction slider to where you think the lower level will sit. Changing either setting or your guess hides the answer again, so each guess comes first. The widget leaves out the receive filter and keeps every offset at or below half the deviation, where the text still arrives; Step 12's offset is larger, and the flowgraph hides its value.
 :::
 
 :::{present}
@@ -113,20 +113,20 @@ The recording comes from a transmitter like the one you built in class, with the
 :::
 :::{present}
 <img src="../../viz/img/L08-canvas-offset.png"
-     alt="Your decoder in GNU Radio Companion with the offset added: a complex Signal Source at frequency foff and a Multiply between the Throttle and the Frequency Xlating FIR Filter, the QT GUI Frequency Sink moved to the Multiply's output, and the filter's center frequency set to f_center + rx_tune"
+     alt="Your decoder in GNU Radio Companion with the offset added: a complex Signal Source at frequency foff and a Multiply between the Throttle and the Frequency Xlating FIR Filter, the QT GUI Frequency Sink moved to the Multiply's output, and the filter's center frequency set to f_center + rx_tune; the blocks show red here only because the picture leaves out the Variables they use"
      style="max-width: 620px; width: 100%; display: block; margin: 0 auto;">
 :::
 
 12. **Add the offset.** Stop the flowgraph. Add an Import block with `import random`, and a Variable `foff` with value `random.choice([-1, 1])*random.uniform(1.2, 1.6)*dev`. Between the Throttle and the Frequency Xlating FIR Filter, add a complex Multiply, and feed its second input from a complex Signal Source with waveform Cosine, frequency `foff`, and amplitude 1. Move the Frequency Sink's input from the Throttle to the Multiply's output. The Multiply shifts the whole recording by `foff`, as a transmitter whose oscillator is off from yours would. Each run draws a new offset, and nothing on the window shows it.
 13. **Add a tuning control.** Add a QT GUI Range `rx_tune` labeled RX tuning (Hz), from `-3*dev` to `3*dev` in steps of 10, starting at 0, and change the Frequency Xlating FIR Filter's center frequency to `f_center + rx_tune`. At 0 it changes nothing.
 14. **Break it.** Run it for about 10 s with **RX tuning (Hz)** at 0, stop it, and open `rx.txt`. Compare it with the message you recovered in Step 11.
-15. **Find out why.** Run it again and leave it running through Step 16, because a restart draws a new offset. Read the two tone frequencies on the spectrum and the two levels the eye settles at, and compare both with your Part 1 predictions. Paste a screenshot of the running window, with the spectrum and the eye, as Figure 3.
+15. **Find out why.** Run it again with **RX tuning (Hz)** at 0, and leave it running through Step 16, because a restart draws a new offset. Read the two tone frequencies on the spectrum and the level the lower traces of the eye settle at, and compare both with your Part 1 predictions; the upper traces may run off the top of the eye, and the lower level is the one to read. Paste a screenshot of the running window, with the spectrum and the eye, as Figure 3.
 
     <div class="rec" data-lab="L08">
     <label>Step 15: The two tone frequencies with the offset (Hz) <input data-field="b.toneoff"></label>
-    <label>Step 15: The eye's two levels with the offset (normalized) <input data-field="b.eyeoff"></label>
+    <label>Step 15: The eye's lower level with the offset (normalized) <input data-field="b.eyeoff"></label>
     </div>
-16. **Fix it.** The offset stands for the other radio's oscillator, which you do not control, so the fix goes in your receiver. Set **RX tuning (Hz)** from what the spectrum shows, and watch the eye. If the eye moves further from where it sat in Step 11, the sign is backward. Once the eye is back, let it run about 10 s, stop it, and open `rx.txt`: the lines written after the fix are the message again. Record the setting, and paste a screenshot of the running window with `rx.txt` beside it as Figure 4.
+16. **Fix it.** The offset stands for the other radio's oscillator, which you do not control, so the fix goes in your receiver. Set **RX tuning (Hz)** from what the spectrum shows, and watch the eye. If the eye moves further from where it sat in Step 11, the sign is backward. Once the eye is back, let it run about 10 s, stop it, and open `rx.txt`: the lines written after the fix are the message again. Record the setting, and paste a screenshot of the running window with `rx.txt` beside it as Figure 4. If `rx.txt` stays empty, stop the flowgraph, set the value of `foff` to 0, and run it with **RX tuning (Hz)** at 0: your decoder should recover the message as it did in Step 11, and if it does not, the fault is in Steps 5 to 10, not in the offset.
 
     <div class="rec" data-lab="L08">
     <label>Step 16: RX tuning that brings the text back (Hz) <input data-field="b.tune"></label>
@@ -139,8 +139,6 @@ The recording comes from a transmitter like the one you built in class, with the
 :::{admonition} This lab needs no radio
 :class: tip
 Every flowgraph here runs on your laptop on my recording, and the Signal Source and Multiply of Step 12 stand in for a second radio's oscillator, so a missing or broken PlutoSDR does not matter today.
-
-If `rx.txt` stays empty after Step 16, stop the flowgraph, set the value of `foff` to 0, and run it with **RX tuning (Hz)** at 0: your decoder should recover the message as it did in Step 11. If it does not, the fault is in Steps 5 to 10, not in the offset.
 :::
 ::::
 

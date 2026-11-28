@@ -231,9 +231,9 @@ Watch the Lines label too. The correct count falls behind the received count, an
 - The screenshot shows characters going wrong.
 :::
 
-Switch the matched filter back on at 0.4, and the eye opens, the symbols pull back into two bands at $\pm 1$, and every line arrives. The signal sits in a few kilohertz of the 32 kHz the samples represent, and the filter, matched to the transmitted pulse, keeps that band and throws the rest of the noise away.
+Switch the matched filter back on at 0.4, and the eye opens, the symbols pull back into two bands at $\pm 1$, and every line arrives: at 0.4 the filter turns a link that loses most lines into one that loses none. The signal sits in a few kilohertz of the 32 kHz the samples represent, and the filter, matched to the transmitted pulse, keeps that band and throws the rest of the noise away.
 
-Now set the noise to 1.0 and watch the same three displays. The eye fills in, the bands spread, and characters start to go wrong again: in the screenshot, at 1.0, '4' became '6' and 'P' became a byte that does not print. A line counts only if every bit of its header and payload is right, and a wrong bit in the header or the access code loses the whole line, so once single bits start to go wrong, whole lines go wrong quickly, and soon no line arrives intact. At the same slider setting, the filter turns a link that loses most lines into one that loses none.
+Now set the noise to 1.0 and watch the same three displays. The eye fills in, the bands spread, and characters start to go wrong again: in the screenshot, at 1.0, '4' became '6' and 'P' became a byte that does not print. A line counts only if every bit of its header and payload is right, and a wrong bit in the header or the access code loses the whole line, so once single bits start to go wrong, whole lines go wrong quickly, and soon no line arrives intact.
 ::::
 
 ::::{frame} Clock Error
@@ -286,18 +286,18 @@ A radio also adds something the simulation did not have: the carrier's phase at 
      style="max-width: 640px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
-- One frequency: a tilted line, which the loop turns flat.
+- On one frequency the line is tilted, and the loop turns it flat.
 - An offset turns the line into a ring; the loop follows 300 Hz.
 - At 700 Hz the ring survives the loop: retune the receiver.
 :::
 
-The figure runs `L10-pam-sim.grc`, the lab's link with a simulated channel in place of the radio, and shows the two constellation sinks, after Symbol Sync and after the Costas Loop. With the transmitter and receiver on one frequency, the carrier phase between them is a fixed angle nobody knows, so the two clusters sit on a line tilted by that angle. The Costas Loop measures the angle and turns the line onto the I axis, with either cluster on the right.
+The figure comes from running `L10-pam-sim.grc`, the lab's link with a simulated channel in place of the radio, and shows the two constellation sinks, after Symbol Sync and after the Costas Loop. With the transmitter and receiver on one frequency, the carrier phase between them is a fixed, unknown angle, so the two clusters sit on a line tilted by that angle. The Costas Loop measures the angle and turns the line onto the I axis. A 2-PAM symbol and its negative look alike to the loop, so it settles on whichever direction along the axis the start phase is nearer, and since each start draws a new phase, the line comes out upside down on about half of them.
 
 An offset between the two ends turns the line a little further every symbol. At 4 kbaud, 300 Hz turns it each symbol by
 
 $$360^\circ \times \frac{300\text{ Hz}}{4000\text{ baud}} = 27^\circ,$$
 
-so the dots trace a ring. The loop follows an offset of a few hundred hertz and the dots return to the axis. At 700 Hz, $63^\circ$ a symbol, it no longer follows, the ring passes straight through, and no packet arrives. The receiver then has to move to the transmitter's frequency: the spectrum shows the signal shifted from 0 by the offset, and retuning the receiver by that amount brings the signal back to 0.
+so the dots trace a ring. The loop follows an offset of a few hundred hertz and the dots return to the axis. At 700 Hz, $63^\circ$ a symbol, the loop no longer follows, the constellation after the loop is still a ring, and no packet arrives. An offset of a few kilohertz also moves the 5.4 kHz signal partly out of the matched filter's band of Lesson 9, so less of it reaches Symbol Sync at all. The receiver then has to move to the transmitter's frequency: the spectrum shows the signal shifted from 0 by the offset, and a signal at $+\delta$ needs the receiver tuned up by $\delta$, which brings it back to 0.
 ::::
 
 ::::{frame} Key Point

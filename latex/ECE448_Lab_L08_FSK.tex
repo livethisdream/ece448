@@ -132,12 +132,12 @@ text stops, and retune your receiver until the message comes back.}
 \fullwidth{\large\textbf{Parts 1 and 2: Predict and Measure}}
 
 Work out the shaded cells before the lab period and measure in class. The recording comes from
-a transmitter like your class one, with the same packets and its own baud rate and tones. In
-Step 12 a Signal Source and a Multiply shift the whole recording by an offset $\Delta$ that you
+a transmitter like the one you built in class, with the same packets and its own baud rate and tones. In
+Step 12 a Signal Source and a Multiply shift the whole recording by an offset $f_\text{off}$ that you
 do not see, between 1.2 and 1.6 times \texttt{dev} in either direction, and in
 Step 13 the RX tuning slider moves the Frequency Xlating FIR Filter's center to
 \texttt{f\_center + rx\_tune}. Predict each shaded cell in terms of \texttt{f\_center},
-\texttt{dev}, $\Delta$, and what you will read on the spectrum.
+\texttt{dev}, $f_\text{off}$, and what you will read on the spectrum.
 
 \noindent\begin{minipage}{\linewidth}
 \textbf{Table A. The recording and its message} (\texttt{L08-lab-unknown.sigmf-data})
@@ -163,7 +163,7 @@ The recovered message (text) & \multicolumn{2}{p{\dimexpr2\boxw+2\tabcolsep+\arr
 \hline
 Quantity & Predicted & Measured & Step \\\hline
 The two tone frequencies with the offset (Hz) & \predv[b.toneoff]{\keysol{p1.b.toneoff}} & \kv[b.toneoff]{\keysol{b.toneoff}} & 15 \\\hline
-The eye's two levels with the offset (normalized) & \predv[b.eyeoff]{\keysol{p1.b.eyeoff}} & \kv[b.eyeoff]{\keysol{b.eyeoff}} & 15 \\\hline
+The eye's lower level with the offset (normalized) & \predv[b.eyeoff]{\keysol{p1.b.eyeoff}} & \kv[b.eyeoff]{\keysol{b.eyeoff}} & 15 \\\hline
 RX tuning that brings the text back (Hz) & \predv[b.tune]{\keysol{p1.b.tune}} & \kv[b.tune]{\keysol{b.tune}} & 16 \\\hline
 \end{tabular}
 \end{center}
@@ -204,9 +204,8 @@ transmitter it undoes, and point to what in Figure 1 or Table A shows it working
 	\begin{solution}[2.0in]\keysol{an1}\end{solution}
 
 \question Compare Figures 3 and 4 with your entries in Table B. Explain why the text stopped
-with the offset in place, using both the spectrum and the eye, and why your RX tuning brought
-it back. Say how far your RX tuning could have been from the setting you used and still
-delivered the message, and what in your figures supports that.
+with the offset in place, using the tones on the spectrum and the lower level of the eye, and
+why your RX tuning brought it back. Say which of your readings you would trust least, and why.
 	\begin{solution}[2.0in]\keysol{an2}\end{solution}
 
 \newpage
