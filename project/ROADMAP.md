@@ -239,7 +239,9 @@ budgets, checks) still apply. Where 444 would put a derivation on screen,
     ... we might discuss the principles of a signal chain and then build the
     tx and rx chain"): the lesson discusses how the chain works, and the lab
     has the cadet build the transmitter and the receiver end to end. Every
-    way, the goal is the same: a message that comes through.
+    way, the goal is the same: a message that comes through. **Vary the
+    shape across the term** (Neil, 2026-11-28: "I like to give them
+    variety"): no long run of labs with the same half to build.
   - **Guided steps toward the goal**, with checkpoints ("you should now see two
     clusters"), not a recipe of readings. Steps say what to build and what to
     look for; the thinking is the cadet's.

@@ -116,7 +116,8 @@ budget; the lab follows it.
   never a reading. The lab builds whichever half the class did not: usually
   the receiver, sometimes the transmitter a given receiver must decode, and
   sometimes both, the lesson covering the chain's principles and the lab
-  building transmitter and receiver end to end (Neil, 2026-11-28).
+  building transmitter and receiver end to end (Neil, 2026-11-28). Vary
+  the shape across labs ("I like to give them variety").
   Steps guide toward the goal with checkpoints; predictions are reasoning
   (what the signal is, what each block undoes), never dB; impairments are
   diagnosed and fixed, never swept. The packet keeps what the cadet worked
