@@ -46,63 +46,45 @@
 %% exam class customization
 \input{exam_config}
 \input{ece448_fonts}   % Barlow body text (needs lualatex)
-\printselectedfalse      % full worked solutions in the key, not answers-only
+\input{ece448_labpacket} % \predv, \kv, \boxw, anscol, \shotbox, \keysol
+\usepackage{listings}    % the KEY prints the reference block
+\printselectedfalse
 \CorrectChoiceEmphasis{\color{red}}
 \SolutionEmphasis{\color{red}}
 \renewcommand\questionlabel{\textbf{\thequestion.}}
 \renewcommand{\thepartno}{\alph{partno}}
 \renewcommand{\partlabel}{(\thepartno)}
 
-% Fillable table cell: blank in the student copy, the expected value in red on
-% the KEY. Fixed-width centered columns keep the blank cells writable.
-\newcolumntype{K}[1]{>{\centering\arraybackslash}p{#1}}
-\newcommand{\kv}[1]{\ifkey{\color{red}#1}\fi\rule[-0.10in]{0pt}{0.34in}}
-
-% Answers are not in this public file. Every solution, \kv value, and \ansbox
-% value is \keysol{<id>}, defined in the private ECE448-faculty repo at
-% lab-keys/src/ECE448_Lab_L11_CustomBlock_solutions.tex; build_lab.sh puts that
-% folder on TEXINPUTS (KEYDIR) for the KEY. A KEY build without it stops.
-\long\def\defkeysol#1#2{\expandafter\long\expandafter\def\csname keysol@#1\endcsname{#2}}
-\def\keysol#1{\ifcsname keysol@#1\endcsname\csname keysol@#1\endcsname\fi}
-\ifkey
-	\IfFileExists{ECE448_Lab_L11_CustomBlock_solutions.tex}%
-		{\input{ECE448_Lab_L11_CustomBlock_solutions}}%
-		{\errmessage{KEY build needs ECE448_Lab_L11_CustomBlock_solutions.tex from ECE448-faculty/lab-keys/src (set KEYDIR)}}
-\fi
+% Answers are not in this public file. Every expected value is \keysol{<id>},
+% defined in the private ECE448-faculty repo at
+% lab-keys/src/ECE448_Lab_L11_CustomBlock_solutions.tex; build_lab.sh puts
+% that folder on TEXINPUTS (KEYDIR) for the KEY. A KEY build without it stops.
+\loadkeysols{ECE448_Lab_L11_CustomBlock}
 
 % print the answers if this is the key
 \ifkey
-	\printanswers % if this IS the key
+	\printanswers
 \else
-	\noprintanswers  %if this is NOT the key
+	\noprintanswers
 \fi
 
-% print the header and footer
-% need to print key on top if this is the key
 \ifkey
 	\firstpageheader{}{\color{red}{ KEY}}{}
 	\runningheader{\thisclass\hspace{1pt} -- \thisterm }{L\labLesson\ Lab\hspace{1pt}\color{red}{ KEY}}{\thepage\hspace{1pt} of\hspace{1pt} \numpages}
-	\firstpagefooter{}{}{}
-	\runningfooter{}{}{}
 \else
 	\firstpageheader{}{}{}
 	\runningheader{\thisclass \hspace{1pt} -- \thisterm }{L\labLesson\ Lab\hspace{1pt}}{\thepage\hspace{1pt} of\hspace{1pt} \numpages}
-	\firstpagefooter{}{}{}
-	\runningfooter{}{}{}
 \fi
-
+\firstpagefooter{}{}{}
+\runningfooter{}{}{}
 \runningheadrule
 
 
 \begin{document}
-\pagestyle{headandfoot}   % exam class
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% title block
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\pagestyle{headandfoot}
+\begin{Form}
 
 \begin{center}
-USAF ACADEMY \\
 DEPARTMENT OF ELECTRICAL AND COMPUTER ENGINEERING \\
 LESSON \labLesson\ LAB - CUSTOM BLOCK \\
 \textbf{Lab Packet} \\
@@ -121,250 +103,138 @@ and add a custom Python block to it.
 \\[2pt]\textbf{Learning Objective 5.2: } I can implement a custom signal-processing block from
 scratch and integrate it into a GNU Radio flowgraph.}
 
-\vspace{2pt}
+\textbf{Instructions:} Submit this packet as one complete submission by the date indicated on
+Gradescope. This is an individual assignment, but you may collaborate, with appropriate
+documentation. Download \texttt{L11-lab-remote.sigmf-data} and \texttt{.sigmf-meta},
+\texttt{L11-lab-rx.grc}, and \texttt{L11-lab-link.grc} from the lab page before the period.
+Every flowgraph in this lab runs on your laptop, and nothing transmits.
 
-This packet is the L\labLesson\ Lab, in three parts, and you turn it in once, complete,
-before the midterm. Do \textbf{Part 1} on your own before the lab period: check your
-laptop's tools and work out the Morse timing you will check at the bench. \textbf{Part 2} is
-your own work in class: build and test the course module, set the Energy Detector's
-levels, and then write a block of your own, the \textbf{Key Timer}, in a module of your
-own. Do \textbf{Part 3} on your own after the lab.
+\textbf{Part 1: Predict} the shaded entries in Table A before the lab period, attaching your
+reasoning.
 
-\textbf{Grading.} One submission, graded against Objectives 5.1 and 5.2 on the course's
-1 / 0 scale, with revision allowed under course policy. Paste screenshots and code where
-a question asks for them.
+\textbf{Part 2: Measure} the white cells of Table B in class, and paste Figures 1 to 4.
 
-Nothing in this lab transmits: every flowgraph is a simulation on your laptop.
+\textbf{Part 3: Analyze} the results according to the prompts in this section, after the lab.
 
-The files are on the L11 lesson page: \texttt{L11-gr-ece448.zip},
-\texttt{L11-keyed-carrier.grc}, and \texttt{L11-keyed-carrier-epy.grc}. Every number
-below assumes the flowgraph's settings: \texttt{samp\_rate} = 32 kHz, a tone of
-amplitude 1, and Morse ``ECE'' repeating. One Morse unit lasts $1.2/\text{WPM}$ seconds: a dit
-is 1 unit, a dah 3, the gap inside a letter 1, the gap between letters 3, and the gap
-after a word 7.
+\textbf{Grading:} I grade the packet against Objectives 5.1 and 5.2 on the course's 1 / 0 scale,
+and you may revise it under course policy. I grade each Part 3 answer on its claim, the evidence
+from your own tables, code, and figures, the reasoning that connects them, and the uncertainty in
+your readings.
 
-\textbf{Routes.} On Linux with \texttt{gnuradio-build-deps} installed, you build real
-modules; macOS should work the same way, but the course has not tested it. On Windows,
-first install WSL2 with Ubuntu 24.04 and follow the lab page's Ubuntu steps inside it.
-Without WSL2, take the Embedded Python Block route the lab page describes, and as a last
-resort build the two modules on a teammate's laptop for Questions 3(a) and 5.
+\begin{procbox}
+\procstep{1--4}{\textbf{Run the broken chain}: play \texttt{L11-lab-remote.sigmf-data} through
+\texttt{L11-lab-rx.grc}, whose Key Decoder does nothing, and work out the code from the key.}
+\procstep{5--8}{\textbf{Write the decoder}'s \texttt{work()} in the Embedded Python Block until
+the recording's line comes through.}
+\procstep{9--14}{\textbf{Put it in a module}, \texttt{gr-l11lab}, with a YAML file and a unit
+test; build, test, install, and swap it into the receiver.}
+\procstep{15--17}{\textbf{Send your own line} through \texttt{L11-lab-link.grc}, which adds
+noise, and fix what keeps it from arriving.}
+\end{procbox}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\fullwidth{\large\textbf{Parts 1 and 2: Predict and Measure}}
+
+Work out Table A before the lab period, from Lessons 10 and 11. \texttt{L11-lab-rx.grc} plays
+the recording at 24 kHz into an Energy Detector that averages 12 samples per output, and every
+character of the recording's line is printable ASCII, sent most significant bit first.
+
+\textbf{Table A. Before you see the key} (Part 1 only)
+
+\begin{center}
+\renewcommand{\arraystretch}{1.1}
+\begin{tabular}{| p{3.6in} | K{\boxw} | l |}
+\hline
+Entry & Predicted & Step \\\hline
+The first bit of every printable ASCII character (0 or 1) & \predv[a.zero]{\keysol{p1.a.zero}} & 4 \\\hline
+Key samples in 1 ms at the Energy Detector's output & \predv[a.bnd]{\keysol{p1.a.bnd}} & 5 \\\hline
+\multicolumn{2}{|p{\dimexpr3.6in+\boxw+2\tabcolsep+\arrayrulewidth\relax}|}{What your block must keep in
+\texttt{self} from one call of \texttt{work()} to the next:\newline
+\predl[a.state]{\dimexpr3.6in+\boxw\relax}{\keysol{p1.a.state}}\par\vspace{3pt}} & 6 \\\hline
+\end{tabular}
+\end{center}
+
+\begin{solution}[0in]
+\keysol{work}
+\end{solution}
+
+\noindent\begin{minipage}{\linewidth}
+\textbf{Table B. The code, the line, and the fix}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.1}
+\begin{tabular}{| p{2.4in} | K{3.2in} | l |}
+\hline
+Entry & Measured & Step \\\hline
+Mark lengths you see (ms) & \kv[a.marks]{\keysol{a.marks}} & 3 \\\hline
+Space lengths you see (ms) & \kv[a.spaces]{\keysol{a.spaces}} & 3 \\\hline
+What carries a 0 (text) & \kv[a.zero]{\keysol{a.zero}} & 4 \\\hline
+Boundary and gap (key samples) & \kv[a.bnd]{\keysol{a.bnd}} & 5 \\\hline
+The recovered line (text) & \kv[a.msg]{\keysol{a.msg}} & 7 \\\hline
+What brought your line through (text) & \kv[b.fix]{\keysol{b.fix}} & 17 \\\hline
+\end{tabular}
+\end{center}
+\end{minipage}
+
+\shotbox{1.3in}{\textbf{Figure 1.} Step 3: the Key plot of \texttt{L11-lab-rx.grc}, zoomed in on a
+few dozen marks.}{\keysol{fig1}}
+
+\vspace{8pt}
+\shotbox{2.3in}{\textbf{Figure 2.} Step 7: your \texttt{work()} beside the running window, with
+the Received label in view.}{\keysol{fig2}}
+
+% The KEY prints the reference Key Decoder from the private repo
+% (lab-keys/src/ECE448_Lab_L11_CustomBlock_ref.py, on TEXINPUTS through KEYDIR).
+\ifkey
+\begin{solution}[0in]
+\textbf{Reference Key Decoder} (one correct block; any block that recovers the line passes):
+\IfFileExists{ECE448_Lab_L11_CustomBlock_ref.py}%
+	{\lstinputlisting[basicstyle=\ttfamily\scriptsize, columns=fullflexible]{ECE448_Lab_L11_CustomBlock_ref.py}}%
+	{\keysol{ref}}
+\end{solution}
+\fi
+
+\vspace{8pt}
+\shotbox{0.9in}{\textbf{Figure 3.} Step 13: the output of \texttt{ctest --output-on-failure} for
+\texttt{gr-l11lab}.}{\keysol{fig3}}
+
+\vspace{8pt}
+\noindent\shotpane{0.48\linewidth}{1.7in}{Before (Step 16)}{\keysol{fig4.before}}\hfill
+\shotpane{0.48\linewidth}{1.7in}{After (Step 17)}{\keysol{fig4.after}}\par
+\vspace{2pt}{\small\textbf{Figure 4.} Steps 16 and 17: \texttt{L11-lab-link.grc} with your Key
+Decoder, the Power and Key plots, and the Received label in view.}\par
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Part 3 starts on this page only if its heading and first prompt fit (no forced break).
+\par\vspace{0pt plus 2in}\penalty-300\vspace{0pt plus -2in}\vspace{8pt}
+\fullwidth{\large\textbf{Part 3: Analyze} \normalsize(individual, after the lab)}
+
+Answer each prompt from your own tables, code, and figures. Give a claim, the evidence, your
+reasoning, and the uncertainty in your readings.
 
 \begin{questions}
 
-\fullwidth{\large\textbf{Part 1: Pre-Lab} \normalsize(individual, before the lab period)}
+\question From your code in Figure 2 and the key in Figure 1, explain how your block decides each
+bit and finds where each character starts, and what it does when a mark or a space begins in one
+call of \texttt{work()} and ends in the next. Name one case your unit test in Figure 3 does not
+check, and how you would test it.
+	\begin{solution}[1.7in]\keysol{an1}\end{solution}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\question \textbf{Your tools.} At the radioconda prompt, run
-\texttt{gnuradio-config-info --version}, \texttt{gr\_modtool --help}, and
-\texttt{cmake --version}.
+\question The Energy Detector's key held the whole line before you wrote a block, yet no block in
+GNU Radio's library turned it into text. From the key in Figure 1, explain what about this code
+keeps a receiver like those of Lessons 8 and 10, a Symbol Sync and a Binary Slicer, from reading
+it, and what your block does in their place.
+	\begin{solution}[1.7in]\keysol{an2}\end{solution}
 
-\begin{parts}
-
-	\begin{minipage}[t]{0.58\linewidth}
-		\part Record your operating system, your GNU Radio version, and whether
-		\texttt{gr\_modtool} and \texttt{cmake} run. Name the route you will take.
-		\begin{solution}[0.9in]\keysol{sol1}\end{solution}
-	\end{minipage}\hfill%
-	\begin{minipage}[t]{0.37\linewidth}
-		\raggedleft \vspace{12pt}
-		\ansbox[1.6in]{\keysol{ans1}}
-	\end{minipage}
-
-	\part Open and run \texttt{L11-keyed-carrier-epy.grc}, which needs nothing installed.
-	Paste a screenshot of its window at the default settings.
-		\begin{solution}[1.5in]\keysol{sol2}\end{solution}
-
-\end{parts}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newpage
-\question \textbf{Timing.} You will check these at the bench.
-
-\begin{parts}
-
-	\part At 15 words per minute, find the length of a dit, a dah, the gap inside a
-	letter, the gap between letters, and the gap after the word, and the number of
-	samples in one unit at 32 kHz.
-
-	\begin{center}
-	\renewcommand{\arraystretch}{1.25}
-	\begin{tabular}{| K{0.62in} | K{0.62in} | K{0.75in} | K{0.75in} | K{0.75in} | K{0.75in} |}
-	\hline
-	Dit & Dah & Inside a letter & Between letters & After the word & Samples per unit \\\hline
-	\kv{\keysol{kv1}} & \kv{\keysol{kv2}} & \kv{\keysol{kv3}} & \kv{\keysol{kv4}} & \kv{\keysol{kv5}} & \kv{\keysol{kv6}} \\\hline
-	\end{tabular}
-	\end{center}
-
-		\begin{solution}[0.4in]\keysol{sol3}\end{solution}
-
-	\begin{minipage}[t]{0.58\linewidth}
-		\part One sending of ``ECE'' is 26 units long, with its final word gap. How long
-		does it last at 15 WPM, and how many points is that at the detector's 1 kHz
-		output rate? You set the Time Sinks' Number of Points to this at the bench.
-		\begin{solution}[0.6in]\keysol{sol4}\end{solution}
-	\end{minipage}\hfill%
-	\begin{minipage}[t]{0.37\linewidth}
-		\raggedleft \vspace{12pt}
-		\ansbox[1.0in]{\keysol{ans2}}
-	\end{minipage}
-
-	\begin{minipage}[t]{0.58\linewidth}
-		\part Averaging 32 samples, how many detector outputs is a dit? Averaging 128, how
-		long does one output last, and how many outputs is a dit? How many marks (key-downs)
-		does one sending of ``ECE'' hold, and how many arrive in 30 s?
-		\begin{solution}[1.2in]\keysol{sol5}\end{solution}
-	\end{minipage}\hfill%
-	\begin{minipage}[t]{0.37\linewidth}
-		\raggedleft \vspace{12pt}
-		$N=32$: \ansbox[1.0in]{\keysol{ans3}}
-
-		\vspace{4pt}
-		$N=128$: \ansbox[1.0in]{\keysol{ans4}}
-
-		\vspace{4pt}
-		marks: \ansbox[1.0in]{\keysol{ans5}}
-	\end{minipage}
-
-\end{parts}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\newpage
-\fullwidth{\large\textbf{Part 2: At the Bench} \normalsize(in class)}
-
-\question \textbf{Build and test gr-ece448.} Follow the lab page's steps.
-
-\begin{parts}
-
-	\part Paste the output of \texttt{ctest}, and the \texttt{gr\_python\_install} line
-	of \texttt{python/ece448/CMakeLists.txt}.
-		\begin{solution}[1.2in]\keysol{sol6}\end{solution}
-
-	\part Open \texttt{L11-keyed-carrier.grc}, which uses the installed block, and run it.
-	Paste a screenshot of the Energy Detector's properties dialog.
-		\begin{solution}[1.3in]\keysol{sol7}\end{solution}
-
-\end{parts}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\question \textbf{Set the levels.} In the running flowgraph, set the noise amplitude to
-0.5. Then stop it, set \texttt{wpm} to 15 and both Time Sinks' Number of Points to one sending of ECE at
-1 kHz, from your Question 2(b) answer, and run it again.
-
-\begin{parts}
-
-	\begin{minipage}[t]{0.58\linewidth}
-		\part Read the floor and the carrier-on level from the power plot, and describe
-		how much the floor jumps up and down.
-		\begin{solution}[0.8in]\keysol{sol8}\end{solution}
-	\end{minipage}\hfill%
-	\begin{minipage}[t]{0.37\linewidth}
-		\raggedleft \vspace{12pt}
-		off: \ansbox[1.0in]{\keysol{ans6}}
-
-		\vspace{4pt}
-		on: \ansbox[1.0in]{\keysol{ans7}}
-	\end{minipage}
-
-	\part Set the threshold to the floor's level with no hysteresis, and describe the
-	key. Then choose your own threshold and hysteresis so that the key follows the
-	keying for at least 20 s. Record your settings and paste a screenshot.
-		\begin{solution}[1.3in]\keysol{sol9}\end{solution}
-
-\end{parts}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\newpage
-\question \textbf{Write the Key Timer.} Make a module of your own and write a block in it
-from the template, as the lab page lists. The block is a sink with one float input, the
-Energy Detector's key, and one parameter, \texttt{rate}, the key's sample rate. It
-counts how many samples each mark and each space lasts and keeps the length of the last
-mark and the last space, in ms, and the number of marks so far. Three methods,
-\texttt{last\_mark()}, \texttt{last\_space()}, and \texttt{mark\_count()}, return them.
-
-\begin{parts}
-
-	\part Paste your \texttt{key\_timer.py}.
-		\begin{solution}[2.4in]\keysol{sol10}\end{solution}
-
-	\part Paste your \texttt{qa\_key\_timer.py} test and the output of \texttt{ctest}. The
-	test must feed a known key, such as five 0s, three 1s, two 0s, one 1, and four 0s at
-	a rate of 1000, and check all three methods.
-		\begin{solution}[1.4in]\keysol{sol11}\end{solution}
-
-	\part Paste your \texttt{grc/*.block.yml}, and the \texttt{gr\_python\_install}
-	line, which must list \texttt{key\_timer.py}.
-		\begin{solution}[1.2in]\keysol{sol12}\end{solution}
-
-\end{parts}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\newpage
-\question \textbf{Time the Morse.} Save a copy of \texttt{L11-keyed-carrier.grc} with your
-settings from Question 4, add your Key Timer on the Energy Detector's key output with
-\texttt{rate} = \texttt{samp\_rate / decim}, and show its three values on QT GUI Labels
-through Function Probes.
-
-\begin{parts}
-
-	\part Watch the labels for a few sendings and record the mark and space lengths you
-	see. Compare them with Question 2(a).
-
-	\begin{center}
-	\renewcommand{\arraystretch}{1.25}
-	\begin{tabular}{| l | K{0.72in} | K{0.72in} | K{0.72in} | K{0.72in} | K{0.72in} |}
-	\hline
-	& Dit & Dah & Inside a letter & Between letters & After the word \\\hline
-	Measured (ms) & \kv{\keysol{kv7}} & \kv{\keysol{kv8}} & \kv{\keysol{kv9}} & \kv{\keysol{kv10}} & \kv{\keysol{kv11}} \\\hline
-	\end{tabular}
-	\end{center}
-
-		\begin{solution}[0.5in]\keysol{sol13}\end{solution}
-
-	\part Paste a screenshot of your flowgraph's canvas and of its running window.
-		\begin{solution}[1.6in]\keysol{sol14}\end{solution}
-
-\end{parts}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\newpage
-\question \textbf{A noisier signal.} Set the noise amplitude to 0.8.
-
-\begin{parts}
-
-	\part With 32 samples averaged, choose the best threshold and hysteresis you can
-	find. Record them, then restart the flowgraph and record the mark count after 30 s.
-		\begin{solution}[1.0in]\keysol{sol15}\end{solution}
-
-	\part Stop the flowgraph, set \texttt{decim} to 128, and repeat. Describe how the
-	floor on the power plot changed. Record your settings, the count after 30 s, and the
-	dit length the Key Timer reports.
-		\begin{solution}[1.0in]\keysol{sol16}\end{solution}
-
-\end{parts}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\newpage
-\fullwidth{\large\textbf{Part 3: Writeup} \normalsize(individual, after the lab)}
-
-\question \textbf{Hysteresis and timing.} At a noise amplitude of 0.5, with a $-2.5$ dB threshold, and
-3 dB of hysteresis, some dits read 81 or 82 ms; with no hysteresis, they read 80 ms.
-Explain why, and what Question 7 says about choosing $N$.
-		\begin{solution}[1.5in]\keysol{sol17}\end{solution}
-
-\question \textbf{Module or Embedded Python Block?} Lesson 12 builds a Morse decoder that
-uses the Energy Detector and your Key Timer. Explain which of the two should live in an
-OOT module and why, and what the unit test caught or would catch that watching the
-flowgraph would not.
-		\begin{solution}[1.5in]\keysol{sol18}\end{solution}
-
-\question \textbf{From timing to letters.} The Key Timer reports the dit and dah lengths you measured in
-Question 6(a). Propose a rule a decoder can use to tell a dit from a dah, and a rule to tell
-the end of a letter from the gap inside one, that still works at 20 WPM.
-		\begin{solution}[1.5in]\keysol{sol19}\end{solution}
-
-\vspace{1.5em}
-\noindent\textbf{Documentation:} \rule[-2pt]{0.6\linewidth}{0.4pt}
+\question Compare the two panes of Figure 4. State what kept your line from arriving, the evidence
+in the plots, and why your change in Table B worked. Decide whether that fix belongs in the Energy
+Detector's settings or in your block, and give the reason.
+	\begin{solution}[3.0in]\keysol{an3}\end{solution}
 
 \end{questions}
 
+\docstatement
+
+\end{Form}
 \end{document}

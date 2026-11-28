@@ -11,6 +11,10 @@
                      threshold and off below the threshold minus the
                      hysteresis.
 
+  L11-big-picture  : the L11 Lab's blocks: the receiver canvas, the module
+                     steps, and the link canvas (from scripts/graphics/lab_canvas.py),
+                     with what the cadet records. Run with --big-picture.
+
 It also writes book/extras/grc/L11-gr-ece448.zip from the module tree beside
 it, so the download and the tree on GitHub are the same files.
 
@@ -149,7 +153,42 @@ def module_zip():
     print(f"wrote {ZIP.name}: {len(files)} files")
 
 
+def big_picture():
+    """The lab's blocks as a 2x2 grid: receiver canvas, module steps, link canvas, records."""
+    img = ROOT / "book/extras/viz/img"
+    fig, axs = plt.subplots(2, 2, figsize=(14, 7.4))
+    for ax, (name, title) in zip((axs[0, 0], axs[1, 0]),
+                                 [("L11-canvas-rx", "Steps 1-8: run the broken chain, write the decoder"),
+                                  ("L11-canvas-link", "Steps 15-17: send your own line")]):
+        ax.imshow(plt.imread(img / f"{name}.png")); ax.axis("off")
+        ax.set_title(title, color="#15202b", fontsize=13, fontweight="bold", loc="left")
+    for ax, title, lines in (
+            (axs[0, 1], "Steps 9-14: put it in a module",
+             ["gr_modtool newmod l11lab", "gr_modtool add -t sink -l python key_decoder",
+              "key_decoder.py, its .block.yml, and qa_key_decoder.py",
+              "build, ctest, install, and swap it into the receiver"]),
+            (axs[1, 1], "What you record",
+             ["Table A: three Part 1 entries, before the period",
+              "Table B: the code you worked out, the line, and your fix",
+              "Figure 1: the zoomed key", "Figure 2: your work() and the running window",
+              "Figure 3: ctest", "Figure 4: the link before and after your fix"])):
+        ax.axis("off")
+        ax.set_title(title, color="#15202b", fontsize=13, fontweight="bold", loc="left")
+        mono = title.startswith("Steps")
+        for i, t in enumerate(lines):
+            ax.text(0.02, 0.85 - 0.14 * i, t, fontsize=12.5, color="#15202b", transform=ax.transAxes,
+                    va="center", family="monospace" if mono and i < 2 else None)
+    fig.tight_layout(h_pad=2.0, w_pad=2.5)
+    fig.savefig(img / "L11-big-picture.png", dpi=110, bbox_inches="tight", facecolor="white")
+    plt.close(fig)
+    print("wrote L11-big-picture.png")
+
+
 if __name__ == "__main__":
+    import sys
+    if "--big-picture" in sys.argv:
+        big_picture()
+        raise SystemExit
     oot_tree()
     block_types()
     energy_steps()

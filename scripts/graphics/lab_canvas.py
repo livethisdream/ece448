@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Lab step pictures (L6, L7, L8, L10): GNU Radio Companion canvases, block chain only.
+"""Lab step pictures (L6, L7, L8, L10, L11): GNU Radio Companion canvases, block chain only.
 
 Neil, 2026-11-26: each lab step picture shows how the blocks connect, from
 GRC itself. The flowgraphs pictured are the lab's own builds, in
@@ -23,6 +23,8 @@ scripts/graphics/lab_grc/ (not published to the site):
                                  packet length is left as len_table_a, a Part 1
                                  answer
   L10-pam-link, L10-pam-pluto    book/extras/grc/ as shipped
+  L11-lab-rx, L11-lab-link       book/extras/grc/ as shipped, with the Key
+                                 Decoder's work() still empty
 
 For each, a copy moves the Options, variable, and import blocks off the
 visible canvas, GRC is screenshot with scripts/grc/grc_canvas.sh, and the
@@ -59,6 +61,8 @@ SHOTS = {
     "L10-canvas-tx": LAB / "L10-lab-tx.grc",
     "L10-canvas-link": ROOT / "book/extras/grc/L10-pam-link.grc",
     "L10-canvas-pluto": ROOT / "book/extras/grc/L10-pam-pluto.grc",
+    "L11-canvas-rx": ROOT / "book/extras/grc/L11-lab-rx.grc",
+    "L11-canvas-link": ROOT / "book/extras/grc/L11-lab-link.grc",
 }
 
 

@@ -1,0 +1,17 @@
+{
+  "global": {
+    "core:datatype": "cf32_le",
+    "core:sample_rate": 24000.0,
+    "core:version": "1.0.0",
+    "core:hw": "Simulated in Python; no radio",
+    "core:author": "ECE 448",
+    "core:description": "L11 Lab: a Simulated on-off keyed transmitter sending one line of text four times, recorded at 915 MHz with the carrier 2 kHz above center."
+  },
+  "captures": [
+    {
+      "core:sample_start": 0,
+      "core:frequency": 915000000.0
+    }
+  ],
+  "annotations": []
+}

@@ -13,7 +13,7 @@ frame_view: true
 
 <div class="title-rule"></div>
 
-Build and test the course module, set the Energy Detector for a noisier signal, and write a Key Timer block of your own.
+Work out a keyed recording's code, write the block that reads it, and send your own line through it.
 
 L11 Lab · Module 5: Custom Blocks & Midterm · Dr. Neil Rogers
 ::::
@@ -26,141 +26,165 @@ L11 Lab · Module 5: Custom Blocks & Midterm · Dr. Neil Rogers
 </ol>
 ::::
 
-::::{frame} From Lesson to Bench
+::::{frame} The Big Picture
 :::{present}
-- **Pre-Lab:** check your tools and work out the Morse timing at 15 WPM.
-- **Bench:** build `gr-ece448`, set the levels from the plot, then write and time a Key Timer.
-- **Writeup:** explain hysteresis and timing, and what a Morse decoder needs.
+<img src="../../viz/img/L11-big-picture.png"
+     alt="The L11 Lab's blocks: L11-lab-rx.grc in GNU Radio Companion, with a File Source, Throttle, Energy Detector, two time sinks, and an empty Key Decoder (Steps 1 to 8); the module steps, gr_modtool, the YAML file, a unit test, and ctest (Steps 9 to 14); and L11-lab-link.grc, which makes the same code from your own line in noise (Steps 15 to 17)."
+     style="max-width: 860px; width: 100%; display: block; margin: 0 auto;">
 :::
 
-Lesson 11 packaged the Energy Detector in an out-of-tree module. Today you build and test that module on your own laptop, set the detector's levels for a noisier signal than the lesson used, and then make a module of your own from an empty `gr_modtool` template and write a second block in it, the **Key Timer**, which measures how long each key-down and key-up lasts, the lengths Lesson 12's Morse decoder needs.
-
-The lab packet has three parts, and you turn it in once, complete, before the midterm. **Part 1, the Pre-Lab**, is on your own before the period. **Part 2** is your own work in class, and **Part 3, the Writeup**, explains it. Nothing in this lab transmits: every flowgraph is a simulation on your laptop.
+Steps 1 to 4 run `L11-lab-rx.grc` on `L11-lab-remote.sigmf-data`, a Simulated on-off keyed transmitter at 915 MHz that sends one line of text four times, and read the code it uses off the Energy Detector's key. The flowgraph's Key Decoder has an empty `work()`, so the Received label stays at "(nothing decoded)". Steps 5 to 8 write that `work()` as an Embedded Python Block until the line comes through. Steps 9 to 14 move the block into a module of your own with a unit test. Steps 15 to 17 put your block in `L11-lab-link.grc`, which sends your own line in the same code through noise, and get the line through. Your Part 1 answers go with Steps 4 to 6, the entries go in Tables A and B of the packet, and the screenshots go in Figures 1 to 4. Nothing in this lab transmits.
 ::::
 
-::::{frame} Part 1: Before the Period
-:::{present}
-- Check that `gr_modtool` and `cmake` run, and choose your route.
-- Run `L11-keyed-carrier-epy.grc`, which needs nothing installed.
-- Work out the Morse timing at 15 WPM.
+::::{frame} Predict First
+:class: viz-frame
+
+:::{depth}
+Each recording sends two characters in a pulse-width code: every bit is a mark of one of two lengths, then a short space. Choose which mark you think is a 0, then press **Show the bytes**. Changing the recording or your choice hides the answer again. The recordings do not all use the same mark for a 0, and the lab's code is a different one, so the method carries over and the answer does not.
 :::
 
-At the radioconda prompt, run `gnuradio-config-info --version`, `gr_modtool --help`, and `cmake --version`. If `cmake` is missing, run `conda install -c conda-forge gnuradio-build-deps`; on macOS, also run `xcode-select --install` once. Question 2 asks for the length of each Morse element at 15 words per minute, where one unit lasts $1.2/15$ s, how long one sending of "ECE" lasts and how many points that is at 1 kHz, and how many detector outputs a dit spans. You read the Energy Detector's levels off its Power plot at the bench.
+:::{present}
+<iframe src="../../viz/key-code-predict.html"
+        width="100%" height="380"
+        style="border: 1px solid #cddce9; border-radius: 6px;"
+        loading="lazy"
+        title="A key in a pulse-width code: choose which mark length is a 0, then show the bits and the text">
+</iframe>
+:::
 ::::
 
-::::{frame} Two Routes
+::::{frame} Run the Broken Chain
 :::{present}
-| Laptop | Route |
-| :-- | :-- |
-| Linux | build both modules with CMake |
-| macOS | the same, untested on a Mac |
-| Windows | WSL2 with Ubuntu 24.04, then build both modules |
-| Windows, no WSL2 | Embedded Python Blocks |
+- Run `L11-lab-rx.grc` on the recording: the key comes through, the text does not.
+- Zoom in on the key and read the lengths of its marks and spaces.
+- Work out which part carries the bits, and which length is a 0.
+:::
+:::{present}
+<img src="../../viz/img/L11-canvas-rx.png"
+     alt="L11-lab-rx.grc in GNU Radio Companion: File Source on L11-lab-remote.sigmf-data, Throttle, and the Energy Detector, whose power output goes to a time sink with the on and off levels and whose key output goes to a second time sink and to the Key Decoder"
+     style="max-width: 560px; width: 100%; display: block; margin: 0 auto;">
 :::
 
-A Python-only module still runs CMake, and CMake needs a C++ compiler, which radioconda does not include, and which `gnuradio-build-deps` cannot supply by itself on Windows. On Windows, install WSL2 with Ubuntu 24.04, run `sudo apt install gnuradio-dev cmake g++` inside it, and follow the Ubuntu steps; WSLg opens GRC in a window. Without WSL2, use `L11-keyed-carrier-epy.grc` for the Energy Detector, and write the Key Timer in an Embedded Python Block: GRC's **Python Block**, with the class renamed `blk`. The code is the same in both routes. Questions 3(a) and 5 still need a real module and `ctest`, so as a last resort build those on a teammate's Linux, macOS, or WSL2 laptop.
+1. **Run the chain.** Put `L11-lab-remote.sigmf-data`, `L11-lab-remote.sigmf-meta`, and `L11-lab-rx.grc` from the Lab Packet frame in one folder, open the flowgraph in GRC, and run it. The Energy Detector is the Lesson 11 block, here as an Embedded Python Block so the flowgraph runs on any laptop, and its key output feeds the **Key Decoder**, whose `work()` returns without doing anything. The Received label stays at "(nothing decoded)".
+2. **Check the key.** Every burst on the Power plot should be one mark on the Key plot. If the key stays on or misses bursts, set the **Threshold (dB)** slider halfway between the floor and the bursts, as in Lesson 11's "Setting the Levels".
+3. **Read the lengths.** Drag a box on the Key plot to zoom in on a few dozen marks, and read the length of each kind of mark and each kind of space, in milliseconds, including the long silence between two sendings of the line. Paste a screenshot of the zoomed key as Figure 1.
+
+    <div class="rec" data-lab="L11">
+    <label>Step 3: Mark lengths you see (ms) <input data-field="a.marks"></label>
+    <label>Step 3: Space lengths you see (ms) <input data-field="a.spaces"></label>
+    </div>
+4. **Work out the code.** Decide which part of the key changes from bit to bit, and use your Part 1 answer about the bit every character starts with to decide which length is a 0. Count where each character starts from the long silence.
+
+    <div class="rec" data-lab="L11">
+    <label>Step 4: What carries a 0 (text) <input data-field="a.zero"></label>
+    </div>
 ::::
 
-::::{frame} Part 2: Build and Test gr-ece448
-:class: read-only
-
-1. Download `L11-gr-ece448.zip` from the Lesson 11 page and unzip it. At the radioconda prompt, `cd` into `gr-ece448`.
-2. Check that the `gr_python_install` line of `python/ece448/CMakeLists.txt` lists `energy_detector.py`.
-3. Run `mkdir build`, `cd build`, and `cmake -G Ninja -DCMAKE_INSTALL_PREFIX=${CONDA_PREFIX} -DCMAKE_PREFIX_PATH=${CONDA_PREFIX} ..`. With Ubuntu's own GNU Radio instead of radioconda, run `cmake ..` and use `make` and `sudo make install` below.
-4. Run `cmake --build .`, then `ctest --output-on-failure`. Copy its output for Question 3(a).
-5. Run `cmake --install .`, then close and restart GRC.
-6. Open and run `L11-keyed-carrier.grc`. Double-click the Energy Detector and screenshot its properties dialog for Question 3(b).
-::::
-
-::::{frame} Part 2: Set the Levels
-:class: read-only
-
-1. In the running flowgraph, set the noise amplitude to 0.5.
-2. Stop the flowgraph. Set the variable `wpm` to 15, and set both Time Sinks' Number of Points to one sending of "ECE" at 1 kHz, from your Question 2(b) answer. Run it again.
-3. Read the floor and the carrier-on level from the power plot, and note how far the floor wanders, for Question 4(a).
-4. Set the threshold to the floor's level and the hysteresis to 0, and watch the key.
-5. Choose your own threshold and hysteresis so that the detected key follows the sent keying for at least 20 s. Record them and screenshot the window for Question 4(b). Save this flowgraph under a new name; Question 6 adds to it.
-::::
-
-::::{frame} Part 2: Write the Key Timer
-:class: read-only
-
-1. In a new directory, run `gr_modtool newmod l11lab`, then `cd gr-l11lab`.
-2. Run `gr_modtool add -t sink -l python key_timer`. Give your name as the copyright holder, `rate=1000.0` as the argument list, and answer yes to the Python QA code.
-3. In `python/l11lab/key_timer.py`, set `in_sig=[numpy.float32]` (the template imports `numpy`), and write `__init__()`, `work()`, `last_mark()`, `last_space()`, and `mark_count()` to the specification in the packet's Question 5.
-4. In `python/l11lab/qa_key_timer.py`, replace the template's test with one that feeds a known key from a Vector Source and checks all three methods.
-5. Fill in `grc/l11lab_key_timer.block.yml`: a label, the `make` template, one `real` parameter `rate`, and one `float` input.
-6. Check the `gr_python_install` line lists `key_timer.py`. Then build, run `ctest`, and install, as for `gr-ece448`, and restart GRC.
-::::
-
-::::{frame} The Key Timer
+::::{frame} Write the Decoder
 :::{present}
-| Part | What it is |
-| :-- | :-- |
-| Type | sink: one float input, no outputs |
-| Parameter | `rate`, the key's sample rate |
-| Methods | `last_mark()`, `last_space()` in ms; `mark_count()` |
+- Turn the lengths into key samples at the key's own rate.
+- Write `work()`: one bit per mark and space, eight bits per character.
+- Recover the line; screenshot your code beside the running window.
 :::
 
-The Key Timer reads the Energy Detector's key, a stream of 0s and 1s, and counts how many samples each run of 1s, a **mark**, and each run of 0s, a **space**, lasts. When the key changes, it converts the count to milliseconds with `rate` and keeps it as the last mark or the last space. Like the Energy Detector's key state, the count must survive from one call of `work()` to the next, because a dah can span many calls.
+5. **Choose the limits.** The key runs at `samp_rate / decim` samples per second, your Part 1 rate. Choose a **boundary** in key samples that splits the two lengths of the part that carries the bits, and a **gap** in key samples, longer than any length inside a line and shorter than the silence between lines, that tells your block a line has ended.
+
+    <div class="rec" data-lab="L11">
+    <label>Step 5: Boundary and gap (key samples) <input data-field="a.bnd"></label>
+    </div>
+6. **Write work().** Double-click the Key Decoder and press **Open in Editor**. Add `boundary` and `gap` to `__init__()` as arguments, and write `work()` so it counts how long the key holds each level, decides one bit each time the part that carries a bit ends, builds each character from eight bits, most significant first, and sets `self.line` when a line ends. Keep in `self` everything your Part 1 list says must survive from one call of `work()` to the next. Save; GRC shows the new arguments in the block's properties, where you enter your Step 5 values.
+7. **Recover the line.** Run the flowgraph, and the Received label shows the line after its first full sending, about 1.5 s. Record it, and paste a screenshot of your `work()` beside the running window as Figure 2.
+
+    <div class="rec" data-lab="L11">
+    <label>Step 7: The recovered line (text) <input data-field="a.msg"></label>
+    </div>
+8. **If the text is wrong.** The pattern of the error points to the cause. Text that is all `?` points to the bit decision being reversed, a line that is right after its first few characters points to where your block starts a character, and nothing at all points to the gap or to the code that sets `self.line`. A Python error appears in GRC's console at the bottom of the window, with the line number.
 ::::
 
-::::{frame} Part 2: Time the Morse
-:class: read-only
+::::{frame} Put It in a Module
+:::{present}
+- Make `gr-l11lab` with `gr_modtool`, and add a sink block, `key_decoder`.
+- Move your class in, fill in the YAML file, and write a unit test.
+- Build, test, install, and swap your block into the receiver.
+:::
 
-1. Open your flowgraph from the Set the Levels steps. Add your **Key Timer** from the block library and connect the Energy Detector's `key` output to it. Set `rate` to `samp_rate / decim`.
-2. Add three **Function Probes**, with Block ID your Key Timer's ID, Function Names `last_mark`, `last_space`, and `mark_count`, and a poll rate of 4 Hz.
-3. Add three **QT GUI Labels** that show the three probes, with GUI hints `3,0,1,1`, `3,1,1,1`, and `3,2,1,1`.
-4. Run it. Watch the labels through several sendings and record the lengths you see for each element for Question 6(a). Screenshot the canvas and the window for Question 6(b).
+9. **Make the module.** In a new folder at the radioconda prompt, run `gr_modtool newmod l11lab`, `cd gr-l11lab`, and `gr_modtool add -t sink -l python key_decoder`. Give your name as the copyright holder, your two arguments with their Step 5 values as the argument list, and answer yes to the Python QA code.
+10. **Move the class in.** Copy your class from the Embedded Python Block into `python/l11lab/key_decoder.py`, named `key_decoder` instead of `blk`, and check that the `gr_python_install(FILES ...)` line of `python/l11lab/CMakeLists.txt` lists `key_decoder.py`, as Lesson 11's "The Module Tree" warns.
+11. **Fill in the YAML file.** In `grc/l11lab_key_decoder.block.yml`, give the block the label Key Decoder, a `make` template with both arguments, an `int` parameter for each, and one `float` input, as in Lesson 11's "The Block's YAML File".
+12. **Write the test.** In `python/l11lab/qa_key_decoder.py`, replace the template's test with one that builds the key for a short word of your own in the lab's code, at the key's own rate, runs it from a Vector Source into your block, and checks `last_line()`.
+13. **Build and test.** Build, run `ctest --output-on-failure`, and install, as in Lesson 11's "Build, Test, and Install", then restart GRC. Paste the `ctest` output as Figure 3.
+14. **Swap it in.** In `L11-lab-rx.grc`, disable the Embedded Key Decoder, add your **Key Decoder** from the L11 Lab category of the block library with ID `decoder`, connect the key to it, and run. The line arrives as before. On a Windows laptop without WSL2, build Steps 9 to 14 on a teammate's Linux, macOS, or WSL2 laptop and note it on the Documentation line.
 ::::
 
-::::{frame} Part 2: A Noisier Signal
-:class: read-only
+::::{frame} Send Your Own Line
+:::{present}
+- Put your module's block in `L11-lab-link.grc` and type your own line.
+- The link adds noise; diagnose from the plots why the line does not arrive.
+- Fix it until your line comes through; screenshot before and after.
+:::
+:::{present}
+<img src="../../viz/img/L11-canvas-link.png"
+     alt="L11-lab-link.grc in GNU Radio Companion: a Vector Source of key_units, Repeat, Float To Complex, and Multiply with a Signal Source make the keyed carrier; a Noise Source and Add put it in noise; a Throttle feeds the Energy Detector, whose outputs go to the power and key time sinks and to the Key Decoder"
+     style="max-width: 620px; width: 100%; display: block; margin: 0 auto;">
+:::
 
-1. Set the noise amplitude to 0.8. With 32 samples averaged, find the best threshold and hysteresis you can.
-2. Stop the flowgraph, run it again, and record the Marks label after 30 s for Question 7(a).
-3. Stop it, set the variable `decim` to 128, and run it again. Watch how the floor on the power plot changes. Find your best settings again, and record the Marks label after 30 s and the dit length for Question 7(b).
+15. **Run the link.** Open `L11-lab-link.grc`, disable its Embedded Key Decoder, and add your Key Decoder with ID `decoder`, as in Step 14. Set the `msg` variable to a line of your own, up to 40 characters, and run it. The flowgraph sends your line in the lab's code, over and over, with the **Noise amplitude** slider's noise added.
+16. **Diagnose.** Your line does not arrive. Use the Power and Key plots to work out why, and paste a screenshot of the window as the left pane of Figure 4.
+17. **Fix it.** Change what your diagnosis points to, in the sliders or in your block, until your line arrives on every sending for 20 s. Record what you changed, and paste a screenshot as the right pane of Figure 4.
+
+    <div class="rec" data-lab="L11">
+    <label>Step 17: What brought your line through (text) <input data-field="b.fix"></label>
+    </div>
 ::::
 
-::::{frame} If the Block Does Not Appear
+::::{frame} No Hardware?
 :class: read-only
 
-:::{admonition} Troubleshooting a Missing Block
+:::{admonition} This lab needs no radio
 :class: tip
-CMake prints several warnings marked "for project developers" about policies and an old minimum version; they come from `gr_modtool`'s template and do not stop the build. Restart GRC after every install; it reads its block library only when it starts. Check that you ran CMake with `-DCMAKE_INSTALL_PREFIX=${CONDA_PREFIX}` from the same radioconda prompt that runs GRC. A `ModuleNotFoundError` for your block means the `gr_python_install` line does not list its `.py` file; add it, then build and install again. A flowgraph with red arrows usually has a type mismatch: the Key Timer's input must be `float`, to match the Energy Detector's `key` output.
+Every flowgraph here runs on your laptop from the recording or from a simulated link, so a missing or broken PlutoSDR does not matter today.
+
+If a flowgraph shows red blocks after Step 14 or 15, the Key Decoder from your module is missing from GRC's library: restart GRC, and check that you installed from the same radioconda prompt that runs it. A `ModuleNotFoundError` for `key_decoder` means the `gr_python_install` line does not list `key_decoder.py`. If the Received label never changes, check that the Key Decoder's ID is exactly `decoder`, the block the Function Probe reads.
 :::
 ::::
 
-::::{frame} Part 3: After the Lab
-:::{present}
-- Explain why hysteresis can lengthen a mark, and how a larger $N$ smooths the floor but coarsens the timing.
-- Decide which blocks belong in a module.
-- Propose a rule that tells a dit from a dah at any speed.
-:::
+::::{frame} Your Part 2 Entries
+:class: read-only
 
-The Writeup is three questions. The first explains why some marks read a millisecond or two long with hysteresis, and what the noisier signal showed about choosing the number of samples averaged. The second decides whether the Energy Detector and the Key Timer belong in a module or in Embedded Python Blocks for Lesson 12's decoder, and what the unit test checks that the flowgraph cannot. The third proposes the timing rules a Morse decoder needs, which Lesson 12 builds.
+This frame collects every box you filled in on this page. Your entries stay in this browser only, saved as you type. **Download my packet** writes them into the Measured cells of the blank packet and saves the PDF. The download locks every field, the Predicted cells included, so type your Part 1 answers into your own copy of the packet first, then use **Fill my own copy** and choose that file: the page keeps your answers and adds your entries beside them. Paste Figures 1 to 4 and write Part 3 in your copy, or on the printout, and upload one PDF to Gradescope. **Export entries** saves a small backup file you can **Import** on another laptop.
+
+<div class="rec-summary" data-lab="L11" data-pdf="../../labs/ECE448_Lab_L11_CustomBlock_blank.pdf" data-file="ECE448_L11_Lab"></div>
 ::::
 
 ::::{frame} Lab Packet
 :class: read-only doc-links
 
+The L11 Lab packet is one submission, turned in complete before the midterm:
+
+1. Part 1, Predict (individual, before the lab period): the three shaded entries, with your reasoning.
+2. Part 2, Measure (in class, on your own laptop): the white cells of Tables A and B, and Figures 1 to 4.
+3. Part 3, Analyze (individual, after the lab): three prompts, each answered from your own tables, code, and figures.
+
 - <a class="doc-link" href="../../labs/ECE448_Lab_L11_CustomBlock_blank.pdf" target="_blank" rel="noopener">L11 Lab packet (PDF)</a>
-- <a class="doc-link" href="../../grc/L11-gr-ece448.zip" download>L11-gr-ece448.zip</a>: the `gr-ece448` module with the Energy Detector and its unit test.
-- <a class="doc-link" href="../../grc/L11-keyed-carrier.grc" download>L11-keyed-carrier.grc</a>: the keyed carrier through the installed Energy Detector. No hardware needed.
-- <a class="doc-link" href="../../grc/L11-keyed-carrier-epy.grc" download>L11-keyed-carrier-epy.grc</a>: the same flowgraph with the Energy Detector in an Embedded Python Block. Needs nothing installed.
+- <a class="doc-link" href="../../grc/L11-lab-remote.sigmf-data" download>L11-lab-remote.sigmf-data</a> and <a class="doc-link" href="../../grc/L11-lab-remote.sigmf-meta" download>L11-lab-remote.sigmf-meta</a>, the recording you decode
+- <a class="doc-link" href="../../grc/L11-lab-rx.grc" download>L11-lab-rx.grc</a>: the receiver, with the Key Decoder's `work()` empty
+- <a class="doc-link" href="../../grc/L11-lab-link.grc" download>L11-lab-link.grc</a>: your own line in the same code, in noise
+::::
 
-Tutorials this lab follows, on the GNU Radio wiki:
+::::{frame} For Part 3
+:class: read-only
 
-- <a class="doc-link" href="https://wiki.gnuradio.org/index.php/Creating_Your_First_Block" target="_blank" rel="noopener">Creating Your First Block</a>
-- <a class="doc-link" href="https://wiki.gnuradio.org/index.php/Embedded_Python_Block" target="_blank" rel="noopener">Embedded Python Block</a>
-- <a class="doc-link" href="https://wiki.gnuradio.org/index.php/Creating_Python_OOT_with_gr-modtool" target="_blank" rel="noopener">Creating Python OOT with gr-modtool</a>
+Do Part 3 after class, with your tables, code, and figures beside you. It asks about three things:
+
+1. How your block in Figure 2 turns the key in Figure 1 into characters, and what it does when a mark or space spans two calls of `work()`.
+2. Why the chain needed a block of your own, from the key in Figure 1 and the receivers of Lessons 8 and 10.
+3. The two panes of Figure 4: what kept your line from arriving, and where the fix belongs.
+
+I grade each answer on a claim, the evidence from your own tables, code, and figures, the reasoning that connects them, and the uncertainty in your readings.
 ::::
 
 ::::{frame} Looking Ahead
-:::{present}
-- Keep both modules installed and your flowgraph saved.
-- Lesson 12 decodes Morse from the key and its timing.
-:::
+:class: read-only
 
-Keep `gr-ece448`, your own `gr-l11lab`, and your timed flowgraph. Lesson 12, on CW, receives Morse code: its receiver uses the Energy Detector to make the key and timing like the Key Timer's to tell each dit from each dah.
+Keep `gr-l11lab` installed. Lesson 12 receives Morse code, another key whose meaning is in its timing.
 ::::

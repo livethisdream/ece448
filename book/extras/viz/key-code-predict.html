@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Predict which mark is a 0</title>
+<style>
+  :root { --navy:#004a85; --mid:#0067b9; --edge:#cddce9; --edge2:#b9d2e5; --bg:#f5f9fc;
+          --ink:#15202b; --ink3:#5b6573; --amber:#8a5a00; --red:#b01e24; }
+  html,body { margin:0; padding:0; font-family:'Inter',system-ui,-apple-system,sans-serif; color:var(--ink); background:#fff; }
+  .app { display:flex; flex-direction:column; gap:8px; padding:12px; }
+  canvas { display:block; box-sizing:border-box; width:100%; height:auto; background:#fff; border:1px solid var(--edge); border-radius:6px; }
+  .controls { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:8px 16px; align-items:end;
+              padding:8px 12px; background:var(--bg); border:1px solid var(--edge); border-radius:6px; }
+  @media (max-width:560px) { .controls { grid-template-columns:1fr; } }
+  .ctl { display:grid; grid-template-columns:auto 1fr; column-gap:8px; row-gap:4px; align-items:center; min-width:0; }
+  .ctl .lab { font-size:10.5px; text-transform:uppercase; letter-spacing:0.05em; color:var(--ink3); font-weight:700; white-space:nowrap; }
+  .seg { display:flex; gap:4px; justify-content:flex-end; flex-wrap:wrap; }
+  .seg button { font:inherit; font-size:11.5px; font-weight:600; color:var(--navy); background:#fff; border:1px solid var(--edge2); border-radius:14px; padding:3px 10px; cursor:pointer; }
+  .seg button[aria-pressed="true"] { background:var(--navy); color:#fff; border-color:var(--navy); }
+  #guess button[aria-pressed="true"] { background:var(--amber); border-color:var(--amber); }
+  .show { font:700 12px 'Inter',system-ui,sans-serif; text-transform:uppercase; letter-spacing:0.05em;
+          height:30px; padding:0 14px; border-radius:5px; cursor:pointer;
+          border:1px solid var(--navy); background:var(--navy); color:#fff; }
+  .show[aria-pressed="true"] { background:#fff; color:var(--navy); }
+  .show:disabled { cursor:not-allowed; background:#e3e8ee; border-color:#c7cfd8; color:#7a8591; }
+  .seg button:focus-visible, .show:focus-visible { outline:2px solid var(--navy); outline-offset:2px; }
+  .readouts { display:grid; gap:6px; grid-template-columns:repeat(3,minmax(0,1fr)); }
+  .ro { display:flex; flex-direction:column; align-items:center; gap:2px; padding:5px 4px 6px; min-width:0;
+        border:1px solid var(--edge2); border-radius:6px; background:#eef4fa; }
+  .ro .k { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:var(--ink3); white-space:nowrap; overflow:hidden; max-width:100%; }
+  .ro .v { font-size:14px; font-weight:700; white-space:nowrap; font-variant-numeric:tabular-nums; color:var(--navy); }
+  .ro.p .v { color:var(--amber); }
+  .ro.a .v { color:var(--red); }
+</style>
+</head>
+<body>
+<div class="app">
+  <canvas id="plot" aria-label="A key made by a pulse-width code: after a long silence, every bit is a mark of one of two lengths followed by a short space. Once you choose which mark is a 0 and ask, the bits and the text appear below the key."></canvas>
+
+  <div class="controls">
+    <div class="ctl"><span class="lab">Recording</span>
+      <div class="seg" id="ex" role="group" aria-label="Recording">
+        <button data-v="0" aria-pressed="true">A</button><button data-v="1" aria-pressed="false">B</button><button data-v="2" aria-pressed="false">C</button>
+      </div>
+    </div>
+    <div class="ctl"><span class="lab">My prediction: a 0 is</span>
+      <div class="seg" id="guess" role="group" aria-label="My prediction: which mark is a 0">
+        <button data-v="short" aria-pressed="false">the short mark</button><button data-v="long" aria-pressed="false">the long mark</button>
+      </div>
+    </div>
+    <div class="ctl" style="grid-column:1 / -1; justify-items:end"><span class="lab"></span>
+      <button class="show" id="show" aria-pressed="false" disabled>Show the bytes</button></div>
+  </div>
+
+  <div class="readouts">
+    <div class="ro p"><span class="k">my reading</span><span class="v" id="r-g">?</span></div>
+    <div class="ro a"><span class="k">the text</span><span class="v" id="r-a">?</span></div>
+    <div class="ro"><span class="k">a 0 is</span><span class="v" id="r-z">?</span></div>
+  </div>
+</div>
+
+<script>
+'use strict';
+// A pulse-width code: after a long silence, every bit is a mark (carrier on)
+// whose length carries the bit, followed by a one-unit space. Each recording
+// sends two ASCII characters, most significant bit first. Which mark is a 0
+// differs between recordings, so the widget teaches the method (every ASCII
+// byte starts with a 0, so the mark that starts every byte is the 0) without
+// teaching an answer. The L11 Lab's code is not a pulse-width code, and none of
+// these words or lengths is the lab's.
+//
+// Prediction first: the bits stay hidden until the cadet chooses a mark and
+// presses Show. Changing the recording or the choice hides them again.
+const SANS = 'Inter, system-ui, -apple-system, sans-serif';
+const C = { navy:'#004a85', red:'#b01e24', amber:'#8a5a00', grid:'#e6eef6', axis:'#8a929c', ink:'#15202b', ink3:'#5b6573', band:'#fbe9d0' };
+const EX = [ { text:'Ok', zero:'long' }, { text:'Up', zero:'short' }, { text:'Go', zero:'long' } ];
+const state = { ex: 0, guess: null, shown: false };
+
+function bitsOf(t){ return [...t].map(c => c.charCodeAt(0).toString(2).padStart(8, '0')).join(''); }
+// The key as runs of [level, units]: 3 units of silence, then a mark and a space per bit.
+function runs(e){
+  const out = [[0, 3]];
+  for (const b of bitsOf(e.text)){
+    const zeroLen = e.zero === 'short' ? 1 : 2.4, oneLen = e.zero === 'short' ? 2.4 : 1;
+    out.push([1, b === '0' ? zeroLen : oneLen], [0, 1]);
+  }
+  out.push([0, 2]);
+  return out;
+}
+function decode(bits){ let s = ''; for (let i = 0; i + 8 <= bits.length; i += 8){ const c = parseInt(bits.slice(i, i + 8), 2); s += c >= 32 && c < 127 ? String.fromCharCode(c) : '?'; } return s; }
+function reading(e, zero){
+  const b = bitsOf(e.text);
+  return zero === e.zero ? b : [...b].map(x => x === '0' ? '1' : '0').join('');
+}
+
+const canvas = document.getElementById('plot'), ctx = canvas.getContext('2d');
+const showBtn = document.getElementById('show');
+function stext(s,x,y,px,color,align,bold){ ctx.fillStyle=color; ctx.font=(bold?'700 ':'')+px+'px '+SANS; ctx.textAlign=align||'left'; ctx.textBaseline='middle'; ctx.fillText(s,x,y); }
+
+function resize(){
+  const w = canvas.clientWidth, dpr = window.devicePixelRatio || 1;
+  const h = w < 470 ? 176 : 180;
+  canvas.style.height = h + 'px';
+  canvas.width = Math.round(w*dpr); canvas.height = Math.round(h*dpr);
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  draw();
+}
+window.addEventListener('resize', resize);
+
+function draw(){
+  const dpr = window.devicePixelRatio || 1, w = canvas.width/dpr, h = canvas.height/dpr;
+  ctx.clearRect(0,0,w,h);
+  const narrow = w < 470, fs = narrow ? 9.5 : 11, lab = narrow ? 11 : 12.5;
+  const e = EX[state.ex], R = runs(e), total = R.reduce((a, r) => a + r[1], 0);
+  const mL = 10, mR = 10, pw = w - mL - mR;
+  const xu = u => mL + u/total*pw;
+  const top = 34, hi = top + 4, lo = top + 62;
+  stext('Key, after a long silence', mL, 13, lab, C.ink, 'left', true);
+  // The key.
+  let u = 0, marks = [];
+  ctx.strokeStyle = C.navy; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(xu(0), lo);
+  for (const [lev, n] of R){
+    const y = lev ? hi : lo;
+    ctx.lineTo(xu(u), y); ctx.lineTo(xu(u + n), y);
+    if (lev) marks.push([u, n]);
+    u += n;
+  }
+  ctx.lineTo(xu(u), lo); ctx.stroke();
+  ctx.strokeStyle = C.axis; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(mL, lo + 0.5); ctx.lineTo(mL + pw, lo + 0.5); ctx.stroke();
+  const by = lo + 22, ty = lo + 50;
+  if (state.shown){
+    const b = bitsOf(e.text);
+    marks.forEach(([m0, n], i) => {
+      const cx = xu(m0 + n/2);
+      if (i % 8 === 0){ ctx.fillStyle = C.band; ctx.fillRect(xu(m0) - 2, top - 2, xu(m0 + n) - xu(m0) + 4, by - top + 10); }
+      stext(b[i], cx, by, fs + 1, i % 8 === 0 ? C.red : C.ink, 'center', i % 8 === 0);
+    });
+    for (let k = 0; k < marks.length/8; k++){
+      const a = marks[8*k][0], z = marks[8*k + 7][0] + marks[8*k + 7][1];
+      ctx.strokeStyle = C.ink3; ctx.lineWidth = 1; ctx.beginPath();
+      ctx.moveTo(xu(a), ty - 10); ctx.lineTo(xu(a), ty - 6); ctx.lineTo(xu(z), ty - 6); ctx.lineTo(xu(z), ty - 10); ctx.stroke();
+      const c = e.text[k], code = e.text.charCodeAt(k);
+      stext("'" + c + "' = " + code, (xu(a) + xu(z))/2, ty + 6, fs + 1, C.ink, 'center', true);
+    }
+  } else {
+    const msg = state.guess ? 'Press Show the bytes' : 'Choose which mark is a 0 first', mpx = narrow ? 12 : 13.5;
+    ctx.font = '700 ' + mpx + 'px ' + SANS;
+    const mw = Math.min(ctx.measureText(msg).width + 20, pw - 8), my = by + 14;
+    ctx.fillStyle = 'rgba(255,255,255,0.94)'; ctx.strokeStyle = '#b9d2e5'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.roundRect(mL + pw/2 - mw/2, my - mpx, mw, 2*mpx, 5); ctx.fill(); ctx.stroke();
+    stext(msg, mL + pw/2, my, mpx, C.navy, 'center', true);
+  }
+}
+
+function sync(){
+  const e = EX[state.ex];
+  document.querySelectorAll('#ex button').forEach(b => b.setAttribute('aria-pressed', +b.dataset.v === state.ex ? 'true' : 'false'));
+  document.querySelectorAll('#guess button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === state.guess ? 'true' : 'false'));
+  showBtn.disabled = !state.guess;
+  showBtn.setAttribute('aria-pressed', state.shown ? 'true' : 'false');
+  showBtn.textContent = state.shown ? 'Hide them' : 'Show the bytes';
+  document.getElementById('r-g').textContent = state.shown ? decode(reading(e, state.guess)) : '?';
+  document.getElementById('r-a').textContent = state.shown ? e.text : '?';
+  document.getElementById('r-z').textContent = state.shown ? (e.zero === 'short' ? 'short mark' : 'long mark') : '?';
+  draw();
+}
+
+document.querySelectorAll('#ex button').forEach(b => b.addEventListener('click', () => { state.ex = +b.dataset.v; state.guess = null; state.shown = false; sync(); }));
+document.querySelectorAll('#guess button').forEach(b => b.addEventListener('click', () => { state.guess = b.dataset.v; state.shown = false; sync(); }));
+showBtn.addEventListener('click', () => { if (state.guess){ state.shown = !state.shown; sync(); } });
+
+resize(); sync();
+</script>
+</body>
+</html>
