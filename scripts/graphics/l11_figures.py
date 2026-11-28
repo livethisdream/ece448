@@ -11,6 +11,16 @@
                      threshold and off below the threshold minus the
                      hysteresis.
 
+  L11-key-timing   : what the Key Timer counts on the Morse "ECE" key at 1000
+                     samples per second: each mark's length in key samples,
+                     the 120-sample boundary between a dit and a dah, and a
+                     call of work() that ends inside a dah.
+  L11-lab-tree     : the gr-l11lab files the L11 Lab edits (Steps 9-12), with
+                     a PNG copy for the lab's Big Picture.
+  L11-big-picture  : the L11 Lab's blocks: the receiver canvas, the module
+                     steps, and the link canvas (from scripts/graphics/lab_canvas.py),
+                     with what the cadet records. Run with --big-picture.
+
 It also writes book/extras/grc/L11-gr-ece448.zip from the module tree beside
 it, so the download and the tree on GitHub are the same files.
 
@@ -29,6 +39,7 @@ import zipfile
 from pathlib import Path
 
 import matplotlib
+import numpy as np
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
@@ -149,7 +160,87 @@ def module_zip():
     print(f"wrote {ZIP.name}: {len(files)} files")
 
 
+def key_timing():
+    pat = [1, 0, 0, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 0, 0, 1, 0, 0]
+    key = np.repeat(pat, 60)
+    n = np.arange(key.size)
+    fig, ax = plt.subplots(figsize=(8.6, 2.9))
+    ax.step(n, key, where="post", color=NAVY, lw=1.8)
+    ax.set_ylim(-0.95, 1.85)
+    ax.set_xlim(-10, key.size + 10)
+    ax.set_yticks([0, 1])
+    ax.set_xlabel("key sample (1000 per second)")
+    ax.set_ylabel("key")
+    edges = np.flatnonzero(np.diff(np.r_[0, key, 0]))
+    for a, b in zip(edges[::2], edges[1::2]):
+        w = b - a
+        col = AMBER if w > 120 else GRAY
+        ax.annotate("", (a, 1.18), (b, 1.18), arrowprops=dict(arrowstyle="<->", color=col, lw=1))
+        ax.text((a + b) / 2, 1.34, f"{w}", ha="center", va="bottom", fontsize=10, color=col, fontweight="bold")
+    ax.text(key.size + 5, 1.62, "samples in each mark", ha="right", va="bottom", fontsize=9.5, color=GRAY)
+    ax.annotate("", (480, -0.45), (600, -0.45), arrowprops=dict(arrowstyle="|-|", color=RED, lw=1.2))
+    ax.text(615, -0.45, "boundary: 120 samples; shorter is a dit, longer a dah", ha="left", va="center",
+            fontsize=9.5, color=RED)
+    ax.axvline(330, color=GREEN, lw=1.2, ls=(0, (4, 3)))
+    ax.text(340, -0.78, "a call of work() ends here; self.run = 90 carries to the next call", ha="left",
+            va="center", fontsize=9.5, color=GREEN)
+    write("L11-key-timing", fig)
+
+
+def lab_tree():
+    rows = [
+        (0, "gr-l11lab/", INK, "gr_modtool newmod l11lab"),
+        (1, "grc/", INK, ""),
+        (2, "l11lab_key_decoder.block.yml", NAVY, "Step 11: label, make, parameters, input"),
+        (1, "python/l11lab/", INK, ""),
+        (2, "key_decoder.py", NAVY, "Step 10: your class, renamed key_decoder"),
+        (2, "qa_key_decoder.py", NAVY, "Step 12: your unit test"),
+        (2, "CMakeLists.txt", AMBER, "Step 10: gr_python_install lists key_decoder.py"),
+        (1, "build/", GRAY, "Step 13: cmake, ctest, install"),
+    ]
+    fig, ax = plt.subplots(figsize=(8.4, 2.9))
+    n = len(rows)
+    ax.set_xlim(0, 10)
+    ax.set_ylim(-0.4, n)
+    ax.axis("off")
+    for k, (ind, name, col, note) in enumerate(rows):
+        y = n - 1 - k
+        x = 0.15 + 0.42 * ind
+        if ind:
+            ax.plot([x - 0.3, x - 0.3, x - 0.08], [y + 0.5, y, y], color=RULE, lw=1.2)
+        ax.text(x, y, name, ha="left", va="center", family=MONO, fontsize=10.5, color=col,
+                fontweight="bold" if col in (NAVY, AMBER) else "normal")
+        if note:
+            ax.text(5.0, y, note, ha="left", va="center", fontsize=10, color=AMBER if col == AMBER else GRAY)
+    fig.savefig(ROOT / "book/extras/viz/img/L11-lab-tree.png", dpi=110, bbox_inches="tight", facecolor="white")
+    write("L11-lab-tree", fig)
+
+
+def big_picture():
+    """The lab's three blocks in a row: receiver canvas, module files, link canvas."""
+    img = ROOT / "book/extras/viz/img"
+    fig, axs = plt.subplots(3, 1, figsize=(11, 10), gridspec_kw={"height_ratios": [1.0, 0.75, 1.0]})
+    for ax, (name, title) in zip(axs, [
+            ("L11-chain-rx", "Steps 1-8: run the broken chain, write the Key Decoder"),
+            ("L11-lab-tree", "Steps 9-14: put it in a module, gr-l11lab"),
+            ("L11-chain-link", "Steps 15-18: write the Key Encoder, send your own line")]):
+        ax.imshow(plt.imread(img / f"{name}.png")); ax.axis("off")
+        ax.set_title(title, color=INK, fontsize=15, fontweight="bold", loc="left")
+    fig.tight_layout(h_pad=1.5)
+    fig.savefig(img / "L11-big-picture.png", dpi=100, bbox_inches="tight", facecolor="white")
+    plt.close(fig)
+    print("wrote L11-big-picture.png")
+
+
 if __name__ == "__main__":
+    import sys
+    if "--lab" in sys.argv:
+        key_timing()
+        lab_tree()
+        raise SystemExit
+    if "--big-picture" in sys.argv:
+        big_picture()
+        raise SystemExit
     oot_tree()
     block_types()
     energy_steps()

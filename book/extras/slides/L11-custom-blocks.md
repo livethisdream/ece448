@@ -245,12 +245,21 @@ The Energy Detector is the first block in gr-ece448; Lesson 12 can reuse it.
 
 ---
 
-## Looking Ahead
+## Timing the Key
 
-- L11 Lab: build gr-ece448, then write a Key Timer block in a module of your own
-- Lesson 12: turn the key into Morse letters
+```python
+def work(self, input_items, output_items):
+    for k in input_items[0]:
+        if k == self.state:
+            self.run += 1                  # the level holds
+            continue
+        if self.state == 1.0:              # a mark just ended
+            self.marks.append(1000 * self.run / self.rate)
+        self.state, self.run = k, 1
+    return len(input_items[0])
+```
 
-Wiki tutorials: Creating Your First Block · Embedded Python Block · Creating Python OOT with gr-modtool
+A **sink** has inputs and no outputs: `out_sig=None`.
 
 Note:
-Before the lab, make sure gr_modtool runs at the radioconda prompt, and decide with me whether your laptop takes the module route or the Embedded Python Block route.
+The Key Timer, made with gr_modtool add -t sink. The level and the count live in self, because a mark can start in one call of work() and end in the next. At 20 WPM on the 1 kHz key, every dit reads 60 ms and every dah 180 ms, so a boundary at 120 samples tells them apart. A Function Probe calls last_mark() and a QT GUI Label shows it, like the Text Sink's last_line() in Lessons 8 and 10. The L11 Lab hands you a recording whose key carries a line of text in a code no library block reads; you write the block. Lesson 12 tells a dit from a dah the same way. Wiki tutorials: Creating Your First Block, Embedded Python Block, Creating Python OOT with gr-modtool.

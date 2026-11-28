@@ -243,6 +243,34 @@ At a noise amplitude of 0.3, the Power plot shows the noise floor near $-10.5$ d
 Read the two levels off the Power plot: with the carrier on, the power sits just above 0 dB, and with it off, near $-10.5$ dB. Raising the threshold to $-5$ dB puts the on level at $-5$ dB and the off level at $-8$ dB, both well inside that 11 dB gap, and the key follows the keying exactly. A good rule is to set the threshold about halfway between the floor and the signal on the plot, and the hysteresis a little larger than the floor's ragged up-and-down, so noise near the threshold cannot switch the key.
 ::::
 
+::::{frame} Timing the Key
+:::{present}
+<img src="../../viz/img/L11-key-timing.svg"
+     alt="The Morse ECE key at 1000 samples per second: a label over each mark gives its length, 60 samples for a dit and 180 for a dah; a red bar marks the 120-sample boundary between a dit and a dah; a dashed green line through the first dah marks where one call of work() ends, with self.run at 90 carrying to the next call"
+     style="max-width: 820px; width: 100%; display: block; margin: 0 auto;">
+:::
+:::{present}
+- Count each level's samples in `self`, since a mark can span two calls.
+- A boundary halfway between two lengths tells them apart.
+:::
+
+The key carries its meaning in how long each level lasts. The **Key Timer** is a sink block, a sync block with inputs and no outputs, made with `gr_modtool add -t sink`; its constructor passes `in_sig=[np.float32]` and `out_sig=None`, and stores its one argument, the key's sample rate, as `self.rate`. Its `work()` counts how many key samples each level holds, and when a **mark**, a run of 1s, ends, it converts the count to milliseconds and keeps it. The level and the count live in `self`, because a mark can start in one call of `work()` and end in the next, and GNU Radio hands `work()` whatever samples have arrived.
+
+```python
+def work(self, input_items, output_items):
+    for k in input_items[0]:
+        if k == self.state:
+            self.run += 1                  # the level holds
+            continue
+        if self.state == 1.0:              # a mark just ended
+            self.marks.append(1000 * self.run / self.rate)
+        self.state, self.run = k, 1
+    return len(input_items[0])
+```
+
+On the Energy Detector's key, at 1000 samples per second, 20 words per minute gives every dit 60 key samples, 60 ms, and every dah 180, so a boundary at 120 samples, halfway between, tells one from the other. A method `last_mark()` returns the newest mark. A Function Probe block reads it: its Block ID names the block and its Function Name names the method, and a QT GUI Label shows the value. The Text Sink inside the Lesson 8 and Lesson 10 flowgraphs reaches its Received label the same way. `L11-keyed-carrier-epy.grc` runs the Key Timer as an Embedded Python Block, with its Last mark label under the plots.
+::::
+
 ::::{frame} Energy Detector Explorer
 :class: viz-frame
 
@@ -310,7 +338,7 @@ A block several flowgraphs need belongs in an out-of-tree module: gr_modtool wri
 
 - <a class="doc-link" href="../../grc/L11-gr-ece448.zip" download>L11-gr-ece448.zip</a>: the `gr-ece448` module, with the Energy Detector, its YAML file, and its unit test. Its `README.md` lists the build steps.
 - <a class="doc-link" href="../../grc/L11-keyed-carrier.grc" download>L11-keyed-carrier.grc</a>: Morse "ECE" as a keyed carrier in noise, through the installed Energy Detector, with noise, threshold, and hysteresis sliders. Needs `gr-ece448` installed; no hardware.
-- <a class="doc-link" href="../../grc/L11-keyed-carrier-epy.grc" download>L11-keyed-carrier-epy.grc</a>: the same flowgraph with the Energy Detector in an Embedded Python Block. Needs nothing installed.
+- <a class="doc-link" href="../../grc/L11-keyed-carrier-epy.grc" download>L11-keyed-carrier-epy.grc</a>: the same flowgraph with the Energy Detector in an Embedded Python Block, plus the Key Timer and its Last mark label. Needs nothing installed.
 - <a class="doc-link" href="../../grc/L11-ook-pluto.grc" download>L11-ook-pluto.grc</a>: the Energy Detector on a PlutoSDR at 433.92 MHz, for OOK remotes, with a waterfall to find the bursts. Needs `gr-ece448` and a PlutoSDR; receive only.
 
 Unzip the module, then follow its `README.md` from the radioconda prompt. Open a `.grc` file from GRC's File menu, or run `gnuradio-companion L11-keyed-carrier.grc`.
@@ -340,18 +368,19 @@ Tutorials this lesson follows, on the GNU Radio wiki:
 ::::{frame} Preparing for the Lab
 :class: read-only doc-links
 
-Part 1 of the L11 Lab packet, the Pre-Lab, prepares you for the lab. Do it before the lab period and bring it to class.
+Part 1 of the L11 Lab packet is two entries in Table A, worked out before the lab period. A step of the lab uses each one:
+
+| Part 1 entry | Method | Used in |
+| :-- | :-- | :-- |
+| The first bit of every printable ASCII character | Lesson 10's "Text to Bits": ASCII runs from 0 to 127 | Step 4 |
+| What your block keeps in `self` between calls of `work()` | "The work() Function" and "Timing the Key" | Step 6 |
 
 - <a class="doc-link" href="../../labs/ECE448_Lab_L11_CustomBlock_blank.pdf" target="_blank" rel="noopener">L11 Lab packet (PDF)</a>
+- <a class="doc-link" href="../L11-lab-custom-block/index.html">L11 Lab page</a>
 ::::
 
 ::::{frame} Looking Ahead
-:::{present}
-- The L11 Lab builds the module and adds a block you write yourself.
-- Lesson 12 turns the key into Morse letters.
-:::
+:class: read-only
 
-The L11 Lab is the hands-on version of this lesson. You build and test `gr-ece448` on your laptop, set the detector's levels for a noisier signal, and then make a module of your own and write a Key Timer block in it, which measures how long each key-down and key-up lasts.
-
-Lesson 12, on CW, receives Morse code. Its receiver uses the Energy Detector to make the key and the timing of the key to tell a dit from a dah, which is the job the Key Timer starts.
+In the L11 Lab you write the block that reads a recorded key whose bits are in the lengths of its levels, not in samples at a fixed rate, and the encoder that sends your own line in the same code. Lesson 12, on CW, receives Morse code, whose receiver tells a dit from a dah by the timing of the key, as the Key Timer does.
 ::::
