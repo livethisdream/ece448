@@ -214,7 +214,7 @@ The widget uses the same receiver as the flowgraph but its own link, 48 kHz at 6
 The levels shift by $f_\text{off}/\Delta f$; lines break before the lower level reaches zero.
 
 Note:
-Demo at noise 0.3 and stop at 400 Hz; the lab finds where lines break, so do not search for it here. A temperature-compensated oscillator holds about 2 ppm, which is 1.8 kHz at 915 MHz; an inexpensive SDR's reference holds less tightly. Real receivers use a wide deviation or remove the offset before demodulating. The lab finds how far the offset can go at two deviations.
+Demo at noise 0.3 and stop at 400 Hz; the lab breaks the decoder with a larger, hidden offset, so do not go past the deviation here. A temperature-compensated oscillator holds about 2 ppm, which is 1.8 kHz at 915 MHz; an inexpensive SDR's reference holds less tightly. Real receivers use a wide deviation or remove the offset before demodulating. The lab retunes the Xlating filter's center to undo an offset it cannot see.
 
 ---
 
@@ -240,7 +240,7 @@ Every digital receiver in the rest of the course ends the same way: timing, then
 
 ## Looking Ahead
 
-- L8 Lab: decode a recording with unknown tones and baud, then find the largest offset the link tolerates at two deviations
+- L8 Lab: decode a recording with unknown tones and baud, then fix the decoder when a hidden frequency offset stops it
 - Lesson 9: bits as amplitudes, PAM
 - Lesson 10: ASCII text over PAM
 

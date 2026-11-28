@@ -205,7 +205,7 @@ Read LSB first, 'U' 01010101 becomes 10101010, 0xAA. The polarity case happens o
 - Resample 32 kHz up to 1.024 MS/s and back down
 - Costas Loop for the carrier phase, plus a polarity switch
 
-Nothing in L10 transmits; the L10 Lab transmits into a cable.
+Nothing in L10 transmits; the L10 Lab sends your line through the Pluto at 915 MHz.
 
 Note:
 In class we transmit only into a cable, into a shielded enclosure, or at very low power in an ISM band, and only when the lesson says to. The Costas Loop is Lesson 15; today it is one block that can lock upside down, which inverts every bit.
@@ -223,7 +223,7 @@ Every packet link in the rest of the course finds its packets by searching for a
 
 ## Looking Ahead
 
-- L10 Lab: build the transmitter, find where noise breaks the text with the matched filter on and off, then a PlutoSDR
+- L10 Lab: send your line through a PlutoSDR and fix a polarity flip, an oscillator error, and a signal too weak or too strong
 - Lesson 11: write a custom block like the Text Sink
 
 Note:

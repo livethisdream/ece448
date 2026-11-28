@@ -242,7 +242,7 @@ $$\frac{f_\text{off}}{\Delta f} = \frac{400}{1000} = 0.4$$
 
 so the levels sit near $+1.4$ and $-0.6$, as in the figure. Both levels are still on the correct side of zero, so the text still arrives.
 
-Raise the offset further and two things close in. The lower level moves toward zero, where the noise on it starts to cross the slicer's threshold, and the upper tone moves toward the edge of the receive filter, whose cutoff is $\Delta f + R_s$. Lines start to arrive with errors before the lower level reaches zero. Real receivers either use a deviation much larger than the expected offset, as key fobs do, or measure the offset and remove it before the demodulator. The L8 Lab finds how far the offset can go at two deviations.
+Raise the offset further and two limits come closer. The lower level moves toward zero, where the noise on it starts to cross the slicer's threshold, and the upper tone moves toward the edge of the receive filter, whose cutoff is $\Delta f + R_s$. Lines start to arrive with errors before the lower level reaches zero. Real receivers either use a deviation much larger than the expected offset, as key fobs do, or measure the offset and remove it before the demodulator. Once the offset passes the deviation, both levels sit above zero, every bit slices to a 1, and no access code is ever found; a tone pushed past the filter's cutoff also loses its level in the noise. On the spectrum the offset is the distance the midpoint of the two tones has moved, and a Frequency Xlating FIR Filter whose center moves by the same amount puts the midpoint back at 0.
 ::::
 
 ::::{frame} FSK on a Real Radio
@@ -300,11 +300,12 @@ This lesson follows:
 ::::{frame} Preparing for the Lab
 :class: read-only doc-links
 
-Part 1 of the L8 Lab packet is one prediction you work out before the lab period. The lab then decodes a recording whose tones and symbol rate you read yourself, with the methods below:
+Part 1 of the L8 Lab packet is three predictions you work out before the lab period. The lab then decodes a recording whose tones and symbol rate you read yourself, with the methods below:
 
 | Part 1 entry or lab step | Method on this page | Used in |
 | :-- | :-- | :-- |
-| Table B: the lower eye level at the lab's offset and deviation | "Frequency Offset" | Step 13 |
+| Table B: where the tones and the eye's levels sit with an offset | "Frequency Offset" | Step 15 |
+| Table B: the RX tuning that undoes the offset | "Frequency Offset" and "FSK on a Real Radio" | Step 16 |
 | The recording's tones and symbol rate | "FSK on a Real Radio" | Steps 2 and 3 |
 | The receive filter's band | "Bandwidth" and "The Receiver" | Step 5 |
 | The Quadrature Demod gain | "The Quadrature Demodulator" | Step 6 |
@@ -317,11 +318,11 @@ Download the recording from the lab page before the period.
 
 ::::{frame} Looking Ahead
 :::{present}
-- The L8 Lab decodes a recording whose tones and baud you find yourself, then finds the largest offset the link tolerates at two deviations.
+- The L8 Lab decodes a recording whose tones and baud you find yourself, then fixes the decoder when a frequency offset stops it.
 - Lesson 9 sends bits as amplitudes instead of frequencies: PAM.
 :::
 
-Today we built an FSK transmitter from a Frequency Mod block, a receiver from a filter, a quadrature demodulator, and a slicer, and a packet format that lets the receiver find each line of text. The L8 Lab is the hands-on version: read the tones and the symbol rate off a recording from a transmitter like today's, build a decoder with those settings and recover its message, then use the link flowgraph to find the frequency offset at which the text stops arriving, at 1 and at 2 kHz of deviation.
+Today we built an FSK transmitter from a Frequency Mod block, a receiver from a filter, a quadrature demodulator, and a slicer, and a packet format that lets the receiver find each line of text. The L8 Lab is the hands-on version: read the tones and the symbol rate off a recording from a transmitter like today's, build a decoder with those settings and recover its message, then shift the recording by a hidden frequency offset, find out from the spectrum and the eye why the text stops, and retune the decoder until it comes back.
 
 Lesson 9 changes what carries the bits. Pulse-amplitude modulation (PAM) sends each symbol as a pulse of a chosen height, and Lesson 10 sends ASCII text over it. Its receiver ends the same way as today's, with symbol timing and a slicer.
 ::::

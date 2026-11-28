@@ -231,9 +231,9 @@ Watch the Lines label too. The correct count falls behind the received count, an
 - The screenshot shows characters going wrong.
 :::
 
-Switch the matched filter back on at 0.4, and the eye opens, the symbols pull back into two bands at $\pm 1$, and every line arrives. The signal sits in a few kilohertz of the 32 kHz the samples represent, and the filter, matched to the transmitted pulse, keeps that band and throws the rest of the noise away.
+Switch the matched filter back on at 0.4, and the eye opens, the symbols pull back into two bands at $\pm 1$, and every line arrives: at 0.4 the filter turns a link that loses most lines into one that loses none. The signal sits in a few kilohertz of the 32 kHz the samples represent, and the filter, matched to the transmitted pulse, keeps that band and throws the rest of the noise away.
 
-Now set the noise to 1.0 and watch the same three displays. The eye fills in, the bands spread, and characters start to go wrong again: in the screenshot, at 1.0, '4' became '6' and 'P' became a byte that does not print. A line counts only if every bit of its header and payload is right, and a wrong bit in the header or the access code loses the whole line, so once single bits start to go wrong, whole lines go wrong quickly, and soon no line arrives intact. The L10 Lab finds where the text starts to break, with the filter on and off. At the same slider setting, the filter turns a link that loses most lines into one that loses none.
+Now set the noise to 1.0 and watch the same three displays. The eye fills in, the bands spread, and characters start to go wrong again: in the screenshot, at 1.0, '4' became '6' and 'P' became a byte that does not print. A line counts only if every bit of its header and payload is right, and a wrong bit in the header or the access code loses the whole line, so once single bits start to go wrong, whole lines go wrong quickly, and soon no line arrives intact.
 ::::
 
 ::::{frame} Clock Error
@@ -267,14 +267,37 @@ Every setting at the transmitter has a partner at the receiver, and the link wor
 
 ::::{frame} PAM Text on a Real Radio
 :::{present}
-- Replace the Noise Source and resampler with one PlutoSDR and a cable.
+- Replace the Noise Source and resampler with one PlutoSDR at 915 MHz.
 - Resamplers, an AGC, carrier recovery, and a polarity switch are the new blocks.
-- Nothing in L10 transmits; the L10 Lab transmits into a cable.
+- Nothing in L10 transmits; the L10 Lab sends your line through the Pluto.
 :::
 
 The L10 Lab moves this link onto a PlutoSDR. The transmit half ends at a PlutoSDR Sink at 915 MHz instead of the resampler, and the receive half starts at a PlutoSDR Source, with the same matched filter, Symbol Sync, slicer, and access-code search. A 32 kHz baseband stream is too slow for the radio, so a Rational Resampler raises it by 32, to 1.024 MS/s, on the way out and lowers it again on the way in.
 
-A radio adds one thing the simulation did not have: the carrier's phase at the receiver is unknown. A **Costas Loop**, which Lesson 15 explains, locks to it, but it can lock upside down, which inverts every bit, so the lab flowgraph has a polarity switch. In class we transmit only into a cable, into a shielded enclosure, or at very low power in an ISM band, and only when the lesson says to. Nothing in this lesson transmits; the L10 Lab transmits from the Pluto's TX port into a cable to its own RX port.
+An **AGC** (automatic gain control) scales whatever arrives to a fixed level, so the constellation keeps its size whether the signal is strong or weak. Too weak a signal sinks toward the noise floor, and the AGC raises the noise with it; too strong a signal drives the Pluto's samples to their limit of ±1, where the tops flatten, which is **clipping**.
+
+A radio also adds something the simulation did not have: the carrier's phase at the receiver is unknown. A **Costas Loop**, which Lesson 15 explains, locks to it, but it can lock upside down, which inverts every bit, so the lab flowgraph has a polarity switch. In class we transmit only at 915 MHz, into a cable through the 30 dB attenuator, or at low power over the air when I say so. Nothing in this lesson transmits.
+::::
+
+::::{frame} Carrier Recovery on the Constellation
+:::{present}
+<img src="../../viz/img/L10-carrier.png"
+     alt="Simulated results from L10-pam-sim.grc at Polarity normal, in four columns, with rows for the spectrum, the constellation before the Costas Loop, the constellation after it, and whether the line arrived. One frequency: spectrum centered on 0, two clusters on a tilted line before, two clusters on the I axis after, your line arrives. One frequency from another start: the same pictures, but nothing arrives. 300 Hz apart: spectrum shifted 300 Hz, a ring before, two clusters on the I axis after, your line arrives. 1.1 kHz apart: spectrum shifted 1.1 kHz, a ring before and after, nothing arrives."
+     style="max-width: 760px; width: 100%; display: block; margin: 0 auto;">
+:::
+:::{present}
+- One frequency: the loop turns the tilted line flat, either way up.
+- An offset spins the line into a ring; the loop follows 300 Hz.
+- At 1.1 kHz the ring survives: read the shift, retune.
+:::
+
+The figure comes from running `L10-pam-sim.grc`, the lab's link with a simulated channel in place of the radio, at Polarity normal. Each column is one run; the rows are the spectrum, the constellation after Symbol Sync, the constellation after the Costas Loop, and whether the line arrived. With the transmitter and receiver on one frequency, the carrier phase between them is a fixed, unknown angle, so the two clusters sit on a line tilted by that angle, and the Costas Loop measures the angle and turns the line onto the I axis. A 2-PAM symbol and its negative look alike to the loop, so it settles on whichever direction along the axis the start phase is nearer. The first two columns differ only in that start phase: the constellations look the same, but the second run locked upside down and nothing arrives until the Polarity switch flips it. Each start draws a new phase, so about half of them come out upside down.
+
+An offset between the two ends turns the line a little further every symbol. At 4 kbaud, 300 Hz turns it each symbol by
+
+$$360^\circ \times \frac{300\text{ Hz}}{4000\text{ baud}} = 27^\circ,$$
+
+so the dots trace a ring. The loop follows an offset of a few hundred hertz and the dots return to the axis. At 1.1 kHz, $99^\circ$ a symbol, the loop no longer follows, the constellation after the loop is still a ring, and no packet arrives. An offset of a few kilohertz also moves the 5.4 kHz signal partly out of the matched filter's band of Lesson 9, so less of it reaches Symbol Sync at all. The receiver then has to move to the transmitter's frequency. The spectrum shows how far: the red line marks the signal's center, 1.1 kHz above 0 in the last column, and a signal at $+\delta$ needs the receiver tuned up by $\delta$, which brings it back to 0.
 ::::
 
 ::::{frame} Key Point
@@ -314,18 +337,19 @@ This lesson follows the 2025 reading for its topics, <a class="doc-link" href=".
 | Matched filter | the receive RRC | keeps the text alive at noise that breaks it without |
 | Clock error | Symbol Sync tracks it | locks from a cold start to about 25,000 ppm |
 | Polarity | an inverted link finds no packets | the Costas Loop can flip it |
+| Carrier offset | turns the constellation into a ring | the loop follows a few hundred hertz; retune beyond that |
 ::::
 
 ::::{frame} Preparing for the Lab
 :class: read-only doc-links
 
-Part 1 of the L10 Lab packet is a line of text of your own and three entries about its packet, worked out before the lab period. A step of the lab uses each one:
+Part 1 of the L10 Lab packet is a line of text of your own and two predictions, worked out before the lab period. A step of the lab uses each one:
 
 | Part 1 entry | Method on this page | Used in |
 | :-- | :-- | :-- |
-| Table A: the Stream to Tagged Stream packet length for your line | "Text to Bits" | Step 2 |
-| Table A: the header's 16-bit length field for your line | "One Packet on the Wire" | Step 7 |
-| Table A: the 8 bits of your line's first character | "Text to Bits" | Step 7 |
+| Table A: your line, on one line | "Text to Bits" | Step 2 |
+| Table B: how many of four restarts need Polarity inverted | "PAM Text on a Real Radio" | Step 6 |
+| Table B: the RX tuning that brings the line back | "Carrier Recovery on the Constellation" | Step 9 |
 
 - <a class="doc-link" href="../../labs/ECE448_Lab_L10_PAMLink_blank.pdf" target="_blank" rel="noopener">L10 Lab packet (PDF)</a>
 - <a class="doc-link" href="../L10-lab-pam-link/index.html">L10 Lab page</a>
@@ -333,11 +357,11 @@ Part 1 of the L10 Lab packet is a line of text of your own and three entries abo
 
 ::::{frame} Looking Ahead
 :::{present}
-- The L10 Lab builds the transmitter, finds where noise breaks the text with the matched filter on and off, and runs the link on a PlutoSDR.
+- The L10 Lab sends your line through a PlutoSDR and fixes what the radio does to it.
 - Lesson 11 writes a custom block like the Text Sink.
 :::
 
-The L10 Lab is the hands-on version of this lesson. You build the packet transmitter from an empty canvas with your own line, find the noise setting where the text starts to break with the matched filter on and with it off, and then send your line through a PlutoSDR and a cable and read it back.
+The L10 Lab is the hands-on version of this lesson. You send your own line through a PlutoSDR at 915 MHz with this link, and you fix what a real radio does to it: a Costas Loop that locks upside down, an oscillator error between the two ends, and a signal too weak or too strong.
 
 Module 5 starts with Lesson 11, on out-of-tree modules and custom blocks. The Text Sink that displayed every line today is a small Python block, and Lesson 11 shows how to write one, package it, and use it like any other block in GRC.
 ::::
