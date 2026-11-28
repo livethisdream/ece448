@@ -282,22 +282,22 @@ A radio also adds something the simulation did not have: the carrier's phase at 
 ::::{frame} Carrier Recovery on the Constellation
 :::{present}
 <img src="../../viz/img/L10-carrier.png"
-     alt="Simulated constellations from L10-pam-sim.grc, before the Costas Loop on the top row and after it on the bottom, in three columns. TX and RX on one frequency: two clusters on a tilted line before, two clusters on the I axis after. 300 Hz apart: a ring before, two clusters on the I axis after. 700 Hz apart: a ring before and a ring after."
-     style="max-width: 640px; width: 100%; display: block; margin: 0 auto;">
+     alt="Simulated results from L10-pam-sim.grc at Polarity normal, in four columns, with rows for the spectrum, the constellation before the Costas Loop, the constellation after it, and whether the line arrived. One frequency: spectrum centered on 0, two clusters on a tilted line before, two clusters on the I axis after, your line arrives. One frequency from another start: the same pictures, but nothing arrives. 300 Hz apart: spectrum shifted 300 Hz, a ring before, two clusters on the I axis after, your line arrives. 1.1 kHz apart: spectrum shifted 1.1 kHz, a ring before and after, nothing arrives."
+     style="max-width: 760px; width: 100%; display: block; margin: 0 auto;">
 :::
 :::{present}
-- On one frequency the line is tilted, and the loop turns it flat.
-- An offset turns the line into a ring; the loop follows 300 Hz.
-- At 700 Hz the ring survives the loop: retune the receiver.
+- One frequency: the loop turns the tilted line flat, either way up.
+- An offset spins the line into a ring; the loop follows 300 Hz.
+- At 1.1 kHz the ring survives: read the shift, retune.
 :::
 
-The figure comes from running `L10-pam-sim.grc`, the lab's link with a simulated channel in place of the radio, and shows the two constellation sinks, after Symbol Sync and after the Costas Loop. With the transmitter and receiver on one frequency, the carrier phase between them is a fixed, unknown angle, so the two clusters sit on a line tilted by that angle. The Costas Loop measures the angle and turns the line onto the I axis. A 2-PAM symbol and its negative look alike to the loop, so it settles on whichever direction along the axis the start phase is nearer, and since each start draws a new phase, the line comes out upside down on about half of them.
+The figure comes from running `L10-pam-sim.grc`, the lab's link with a simulated channel in place of the radio, at Polarity normal. Each column is one run; the rows are the spectrum, the constellation after Symbol Sync, the constellation after the Costas Loop, and whether the line arrived. With the transmitter and receiver on one frequency, the carrier phase between them is a fixed, unknown angle, so the two clusters sit on a line tilted by that angle, and the Costas Loop measures the angle and turns the line onto the I axis. A 2-PAM symbol and its negative look alike to the loop, so it settles on whichever direction along the axis the start phase is nearer. The first two columns differ only in that start phase: the constellations look the same, but the second run locked upside down and nothing arrives until the Polarity switch flips it. Each start draws a new phase, so about half of them come out upside down.
 
 An offset between the two ends turns the line a little further every symbol. At 4 kbaud, 300 Hz turns it each symbol by
 
 $$360^\circ \times \frac{300\text{ Hz}}{4000\text{ baud}} = 27^\circ,$$
 
-so the dots trace a ring. The loop follows an offset of a few hundred hertz and the dots return to the axis. At 700 Hz, $63^\circ$ a symbol, the loop no longer follows, the constellation after the loop is still a ring, and no packet arrives. An offset of a few kilohertz also moves the 5.4 kHz signal partly out of the matched filter's band of Lesson 9, so less of it reaches Symbol Sync at all. The receiver then has to move to the transmitter's frequency: the spectrum shows the signal shifted from 0 by the offset, and a signal at $+\delta$ needs the receiver tuned up by $\delta$, which brings it back to 0.
+so the dots trace a ring. The loop follows an offset of a few hundred hertz and the dots return to the axis. At 1.1 kHz, $99^\circ$ a symbol, the loop no longer follows, the constellation after the loop is still a ring, and no packet arrives. An offset of a few kilohertz also moves the 5.4 kHz signal partly out of the matched filter's band of Lesson 9, so less of it reaches Symbol Sync at all. The receiver then has to move to the transmitter's frequency. The spectrum shows how far: the red line marks the signal's center, 1.1 kHz above 0 in the last column, and a signal at $+\delta$ needs the receiver tuned up by $\delta$, which brings it back to 0.
 ::::
 
 ::::{frame} Key Point

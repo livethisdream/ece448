@@ -91,8 +91,8 @@ def big_picture():
     """The lab's three blocks as GRC canvases (scripts/graphics/lab_canvas.py): the
     recording viewer beside the decoder, and the decoder with an offset below."""
     img = ROOT / "book/extras/viz/img"
-    fig = plt.figure(figsize=(14, 9.0))
-    gs = fig.add_gridspec(2, 2, height_ratios=[1, 1.15])
+    fig = plt.figure(figsize=(14, 8.6))
+    gs = fig.add_gridspec(2, 2, height_ratios=[0.75, 1], width_ratios=[0.38, 0.62])
     for spec, (name, title) in zip([gs[0, 0], gs[0, 1], gs[1, :]],
                                    [("L08-canvas-view", "Steps 1-4: read the recording"),
                                     ("L08-canvas-decoder", "Steps 5-11: build the decoder"),
